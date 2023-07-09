@@ -30,14 +30,6 @@ abstract class InstallerJar extends Zip {
                 from(project.universalJar) {
                     into '/maven/' + project.group.replace('.', '/') + '/' + project.universalJar.archiveBaseName.get() + '/' + project.version + '/'
                 }
-
-                packedDependencies.get().forEach {
-                    def jarTask = project.rootProject.getTasks().findByPath(it)
-                    dependsOn(jarTask)
-                    from(jarTask) {
-                        into '/maven/' + jarTask.project.group.replace('.', '/') + '/' + jarTask.archiveBaseName.get() + '/' + jarTask.project.version + '/'
-                    }
-                }
             }
         }
     }

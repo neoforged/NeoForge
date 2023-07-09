@@ -39,7 +39,7 @@ abstract class SetupCheckJarCompatibility extends DefaultTask {
 
         def baseForgeUserdev = project.layout.buildDirectory.dir(name).map { it.file("forge-${inputVersion}-userdev.jar") }.get().asFile
         project.rootProject.extensions.download.run {
-            src "https://maven.minecraftforge.net/net/minecraftforge/forge/${inputVersion}/forge-${inputVersion}-userdev.jar"
+            src "https://maven.neoforged.net/releases/net/minecraftforge/forge/${inputVersion}/forge-${inputVersion}-userdev.jar"
             dest baseForgeUserdev
         }
 

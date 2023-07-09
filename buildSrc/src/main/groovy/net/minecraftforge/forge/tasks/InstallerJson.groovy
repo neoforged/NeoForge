@@ -25,7 +25,7 @@ abstract class InstallerJson extends DefaultTask {
     InstallerJson() {
         getLauncherJsonName().convention('/version.json')
         getLogo().convention('/big_logo.png')
-        getMirrors().convention('https://files.minecraftforge.net/mirrors-2.0.json')
+        getMirrors().convention('https://mirrors.neoforged.net/')
         getWelcome().convention("Welcome to the simple ${project.name.capitalize()} installer.")
                 
         getOutput().convention(project.layout.buildDirectory.file('install_profile.json'))
@@ -41,33 +41,47 @@ abstract class InstallerJson extends DefaultTask {
             input.from(tsk.output)
         }
 
-        
         project.afterEvaluate {
-            (packedDependencies.get().collect{ project.rootProject.tasks.findByPath(it) } + [project.universalJar]).forEach {
-                dependsOn(it)
-                input.from it.archiveFile
-            }
+            dependsOn(project.tasks.universalJar)
+            input.from project.tasks.universalJar.archiveFile
         }
     }
 
     @TaskAction
     protected void exec() {
         def libs = libraries
-        for (def child : packedDependencies.get().collect{ project.rootProject.tasks.findByPath(it) } + [project.universalJar]) {
-            def dep = Util.getMavenDep(child)
-            def path = Util.getMavenPath(child)
+        packedDependencies.get().forEach {
+            def path = Util.getMavenPath(project, it)
+            def dep = Util.getMavenDep(project, it)
+            def file = Util.getMavenFile(project, it)
+
             libs.put(dep.toString(), [
                 name: dep,
                 downloads: [
                     artifact: [
                         path: path,
-                        url: "https://maven.minecraftforge.net/${path}",
-                        sha1: child.archiveFile.get().asFile.sha1(),
-                        size: child.archiveFile.get().asFile.length()
+                        url: "https://maven.neoforged.net/releases/${path}",
+                        sha1: file.sha1(),
+                        size: file.length()
                     ]
                 ]
             ])
         }
+
+        def path = Util.getMavenPath(project.tasks.universalJar)
+        def dep = Util.getMavenDep(project.tasks.universalJar)
+        libs.put(dep.toString(), [
+                name: dep,
+                downloads: [
+                    artifact: [
+                        path: path,
+                        url: "https://maven.neoforged.net/releases/${path}",
+                        sha1: file.sha1(),
+                        size: file.length()
+                    ]
+                ]
+        ])
+
         json.libraries = libs.values().sort{a,b -> a.name.compareTo(b.name)}
         json.icon = "data:image/png;base64," + new String(Base64.getEncoder().encode(Files.readAllBytes(icon.get().asFile.toPath())))
         json.json = launcherJsonName.get()
