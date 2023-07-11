@@ -73,12 +73,12 @@ abstract class InstallerJson extends DefaultTask {
         libs.put(dep.toString(), [
                 name: dep,
                 downloads: [
-                    artifact: [
-                        path: path,
-                        url: "https://maven.neoforged.net/releases/${path}",
-                        sha1: file.sha1(),
-                        size: file.length()
-                    ]
+                        artifact: [
+                                path: path,
+                                url: "https://maven.neoforged.net/releases/${path}",
+                                sha1: project.tasks.universalJar.archiveFile.get().asFile.sha1(),
+                                size: project.tasks.universalJar.archiveFile.get().asFile.length()
+                        ]
                 ]
         ])
 
