@@ -5,7 +5,7 @@ NeoForge
 [![Discord](https://img.shields.io/discord/313125603924639766.svg?color=%237289da&label=Discord&logo=discord&logoColor=%237289da)][Discord] 
 
 
-NeoForge is a free, open-source modding API all of your favourite mods use!
+NeoForge is a free, open-source modding API many of your favourite mods use!
 
 | Version |    Support    |
 |---------| ------------- |
