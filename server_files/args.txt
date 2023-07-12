@@ -6,11 +6,13 @@
 --add-exports jdk.naming.dns/com.sun.jndi.dns=java.naming
 -Djava.net.preferIPv6Addresses=system
 -DignoreList=@IGNORE_LIST@
+-Dfml.pluginLayerLibraries=@PLUGIN_LAYER_LIBRARIES@
+-Dfml.gameLayerLibraries=@GAME_LAYER_LIBRARIES@
 -DlibraryDirectory=libraries
 -DlegacyClassPath=@CLASS_PATH@
 cpw.mods.bootstraplauncher.BootstrapLauncher
 --launchTarget @TASK@
 --fml.forgeVersion @FORGE_VERSION@
+--fml.fmlVersion @FML_VERSION@
 --fml.mcVersion @MC_VERSION@
---fml.forgeGroup @FORGE_GROUP@
 --fml.mcpVersion @MCP_VERSION@

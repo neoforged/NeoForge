@@ -13,7 +13,6 @@ import java.nio.file.Files
 abstract class InstallerJson extends DefaultTask {
     @OutputFile abstract RegularFileProperty getOutput()
     @InputFiles abstract ConfigurableFileCollection getInput()
-    @Input @Optional abstract SetProperty<String> getPackedDependencies()
     @Input @Optional final Map<String, Object> libraries = new LinkedHashMap<>()
     @Input Map<String, Object> json = new LinkedHashMap<>()
     @InputFile abstract RegularFileProperty getIcon()
@@ -50,23 +49,6 @@ abstract class InstallerJson extends DefaultTask {
     @TaskAction
     protected void exec() {
         def libs = libraries
-        packedDependencies.get().forEach {
-            def path = Util.getMavenPath(project, it)
-            def dep = Util.getMavenDep(project, it)
-            def file = Util.getMavenFile(project, it)
-
-            libs.put(dep.toString(), [
-                name: dep,
-                downloads: [
-                    artifact: [
-                        path: path,
-                        url: "https://maven.neoforged.net/releases/${path}",
-                        sha1: file.sha1(),
-                        size: file.length()
-                    ]
-                ]
-            ])
-        }
 
         def path = Util.getMavenPath(project.tasks.universalJar)
         def dep = Util.getMavenDep(project.tasks.universalJar)

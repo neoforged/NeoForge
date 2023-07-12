@@ -16,8 +16,7 @@ abstract class LauncherJson extends DefaultTask {
     @OutputFile abstract RegularFileProperty getOutput()
     @InputFiles abstract ConfigurableFileCollection getInput()
     @Input Map<String, Object> json = new LinkedHashMap<>()
-    @Input @Optional abstract SetProperty<String> getPackedDependencies()
-    
+
     @Internal final vanilla = project.project(':mcp').file('build/mcp/downloadJson/version.json')
     @Internal final timestamp = iso8601Now()
     @Internal final id = "${project.rootProject.ext.MC_VERSION}-${project.name}${project.version.substring(project.rootProject.ext.MC_VERSION.length())}"
@@ -37,24 +36,9 @@ abstract class LauncherJson extends DefaultTask {
         def libs = [:]
         getArtifacts(project, project.configurations.installer, false).each { key, lib -> libs[key] = lib }
         getArtifacts(project, project.configurations.moduleonly, false).each { key, lib -> libs[key] = lib }
+        getArtifacts(project, project.configurations.gameLayerLibrary, false).each { key, lib -> libs[key] = lib }
+        getArtifacts(project, project.configurations.pluginLayerLibrary, false).each { key, lib -> libs[key] = lib }
 
-        packedDependencies.get().forEach {
-            def path = Util.getMavenPath(project, it)
-            def key = Util.getMavenDep(project, it)
-            def file = Util.getMavenFile(project, it)
-            
-            libs[key] = [
-                name: key,
-                downloads: [
-                    artifact: [
-                        path: path,
-                        url: "https://maven.neoforged.net/releases/${path}",
-                        sha1: file.sha1(),
-                        size: file.length()
-                    ]
-                ]
-            ]
-        }
         libs.each { key, lib -> json.libraries.add(lib) }
         Files.writeString(output.get().asFile.toPath(), new JsonBuilder(json).toPrettyString())
     }

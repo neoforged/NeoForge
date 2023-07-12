@@ -67,6 +67,7 @@ ext {
     SLF4J_API_VERSION = '1.8.0-beta4'
     APACHE_MAVEN_ARTIFACT_VERSION = '3.8.5'
     JARJAR_VERSION = '0.3.19'
+    FANCY_MOD_LOADER_VERSION = '47.1.37'
 
     // These versions should be kept in sync with the version manifest JSON
     // To use a version newer than the version manifest JSON, the dependency must be added to the installer configuration
@@ -80,7 +81,6 @@ ext {
 
     GIT_INFO = gradleutils.gitInfo
     VERSION = gradleutils.getFilteredMCTagOffsetBranchVersion(true, '[0-9]', MC_VERSION)
-    // FML_VERSION = gradleutils.getFilteredMCTagOffsetBranchVersion(true, 'FML', MC_VERSION)
     FORGE_VERSION = VERSION.substring(MC_VERSION.length() + 1)
 
     BINPATCH_TOOL = 'net.minecraftforge:binarypatcher:1.1.1:fatjar'
@@ -258,50 +258,6 @@ project(':clean') {
     }
 }
 
-def sharedDeps = {
-    moduleonly "cpw.mods:securejarhandler:${SECUREJARHANDLER_VERSION}"
-    moduleonly "org.ow2.asm:asm:${ASM_VERSION}"
-    moduleonly "org.ow2.asm:asm-commons:${ASM_VERSION}"
-    moduleonly "org.ow2.asm:asm-tree:${ASM_VERSION}"
-    moduleonly "org.ow2.asm:asm-util:${ASM_VERSION}"
-    moduleonly "org.ow2.asm:asm-analysis:${ASM_VERSION}"
-    moduleonly "cpw.mods:bootstraplauncher:${BOOTSTRAPLAUNCHER_VERSION}"
-    moduleonly "net.minecraftforge:JarJarFileSystems:${JARJAR_VERSION}"
-
-    installer "cpw.mods:securejarhandler:${SECUREJARHANDLER_VERSION}"
-    installer "org.ow2.asm:asm:${ASM_VERSION}"
-    installer "org.ow2.asm:asm-commons:${ASM_VERSION}"
-    installer "org.ow2.asm:asm-tree:${ASM_VERSION}"
-    installer "org.ow2.asm:asm-util:${ASM_VERSION}"
-    installer "org.ow2.asm:asm-analysis:${ASM_VERSION}"
-    installer "net.minecraftforge:accesstransformers:${ACCESSTRANSFORMERS_VERSION}"
-    installer 'org.antlr:antlr4-runtime:4.9.1' // Dep of AccessTransformer
-    installer "net.minecraftforge:eventbus:${EVENTBUS_VERSION}"
-    installer "net.minecraftforge:forgespi:${SPI_VERSION}"
-    installer "net.minecraftforge:coremods:${COREMODS_VERSION}"
-    installer "cpw.mods:modlauncher:${MODLAUNCHER_VERSION}"
-    installer 'net.minecraftforge:unsafe:0.2.+'
-    installer "net.minecraftforge:mergetool:${MERGETOOL_VERSION}:api"
-    installer "com.electronwill.night-config:core:${NIGHTCONFIG_VERSION}"
-    installer "com.electronwill.night-config:toml:${NIGHTCONFIG_VERSION}"
-    installer "org.apache.maven:maven-artifact:${APACHE_MAVEN_ARTIFACT_VERSION}"
-    installer 'net.jodah:typetools:0.6.3'
-    installer "net.minecrell:terminalconsoleappender:${TERMINALCONSOLEAPPENDER_VERSION}"
-    installer "org.jline:jline-reader:${JLINE_VERSION}"   // Dep of TerminalConsoleAppender
-    installer "org.jline:jline-terminal:${JLINE_VERSION}" // Dep of TerminalConsoleAppender
-    installer "org.spongepowered:mixin:${MIXIN_VERSION}"
-    installer 'org.openjdk.nashorn:nashorn-core:15.3'
-    installer "net.minecraftforge:JarJarSelector:${JARJAR_VERSION}"
-    installer "net.minecraftforge:JarJarMetadata:${JARJAR_VERSION}"
-
-    /*
-    installer 'org.lwjgl:lwjgl:3.2.2'
-    installer 'org.lwjgl:lwjgl-glfw:3.2.2'
-    installer 'org.lwjgl:lwjgl-opengl:3.2.2'
-    installer 'org.lwjgl:lwjgl-stb:3.2.2'
-    */
-}
-
 project(':forge') {
     evaluationDependsOn(':clean')
     apply plugin: 'java-library'
@@ -352,15 +308,6 @@ project(':forge') {
         // Essentially, the same as the old, except dropping the first number, and the builds are no longer unique.
         MCP_ARTIFACT = project(':mcp').mcp.config.get()
         VERSION_JSON = project(':mcp').file('build/mcp/downloadJson/version.json')
-        PACKED_DEPS = [
-                "net.neoforged.fancymodloader:core:${fancy_mod_loader_version}",
-                "net.neoforged.fancymodloader:events:${fancy_mod_loader_version}",
-                "net.neoforged.fancymodloader:loader:${fancy_mod_loader_version}",
-                "net.neoforged.fancymodloader:earlydisplay:${fancy_mod_loader_version}",
-                "net.neoforged.fancymodloader:language-java:${fancy_mod_loader_version}",
-                "net.neoforged.fancymodloader:language-lowcode:${fancy_mod_loader_version}",
-                "net.neoforged.fancymodloader:language-minecraft:${fancy_mod_loader_version}",
-        ]
         MAVEN_PATH = "${group.replace('.', '/')}/${project.name}/${VERSION}"
     }
 
@@ -370,7 +317,14 @@ project(':forge') {
             transitive = false
         }
         moduleonly
-        api.extendsFrom(installer)
+        gameLayerLibrary {
+            transitive = false
+        }
+        pluginLayerLibrary {
+            transitive = false
+        }
+
+        api.extendsFrom(gameLayerLibrary, pluginLayerLibrary, installer)
     }
 
     dependencies {
@@ -378,16 +332,58 @@ project(':forge') {
         testImplementation 'org.junit.vintage:junit-vintage-engine:5.+'
         testImplementation 'org.opentest4j:opentest4j:1.2.0' // needed for junit 5
         testImplementation 'org.hamcrest:hamcrest-all:1.3' // needs advanced matching for list order
-        implementation "net.neoforged.fancymodloader:core:${fancy_mod_loader_version}"
-        implementation "net.neoforged.fancymodloader:events:${fancy_mod_loader_version}"
-        implementation "net.neoforged.fancymodloader:loader:${fancy_mod_loader_version}"
-        implementation "net.neoforged.fancymodloader:earlydisplay:${fancy_mod_loader_version}"
-        implementation "net.neoforged.fancymodloader:language-java:${fancy_mod_loader_version}"
-        implementation "net.neoforged.fancymodloader:language-lowcode:${fancy_mod_loader_version}"
-        implementation "net.neoforged.fancymodloader:language-minecraft:${fancy_mod_loader_version}"
+
+        pluginLayerLibrary "net.neoforged.fancymodloader:core:${FANCY_MOD_LOADER_VERSION}"
+        installer "net.neoforged.fancymodloader:loader:${FANCY_MOD_LOADER_VERSION}"
+        installer "net.neoforged.fancymodloader:earlydisplay:${FANCY_MOD_LOADER_VERSION}"
+        pluginLayerLibrary "net.neoforged.fancymodloader:language-java:${FANCY_MOD_LOADER_VERSION}"
+        pluginLayerLibrary "net.neoforged.fancymodloader:language-lowcode:${FANCY_MOD_LOADER_VERSION}"
+        pluginLayerLibrary "net.neoforged.fancymodloader:language-minecraft:${FANCY_MOD_LOADER_VERSION}"
+        gameLayerLibrary "net.neoforged.fancymodloader:events:${FANCY_MOD_LOADER_VERSION}"
         runtimeOnly "cpw.mods:bootstraplauncher:${BOOTSTRAPLAUNCHER_VERSION}"
+
+        moduleonly "cpw.mods:securejarhandler:${SECUREJARHANDLER_VERSION}"
+        moduleonly "org.ow2.asm:asm:${ASM_VERSION}"
+        moduleonly "org.ow2.asm:asm-commons:${ASM_VERSION}"
+        moduleonly "org.ow2.asm:asm-tree:${ASM_VERSION}"
+        moduleonly "org.ow2.asm:asm-util:${ASM_VERSION}"
+        moduleonly "org.ow2.asm:asm-analysis:${ASM_VERSION}"
+        moduleonly "cpw.mods:bootstraplauncher:${BOOTSTRAPLAUNCHER_VERSION}"
+        moduleonly "net.minecraftforge:JarJarFileSystems:${JARJAR_VERSION}"
+
+        installer "cpw.mods:securejarhandler:${SECUREJARHANDLER_VERSION}"
+        installer "org.ow2.asm:asm:${ASM_VERSION}"
+        installer "org.ow2.asm:asm-commons:${ASM_VERSION}"
+        installer "org.ow2.asm:asm-tree:${ASM_VERSION}"
+        installer "org.ow2.asm:asm-util:${ASM_VERSION}"
+        installer "org.ow2.asm:asm-analysis:${ASM_VERSION}"
+        installer "net.minecraftforge:accesstransformers:${ACCESSTRANSFORMERS_VERSION}"
+        installer 'org.antlr:antlr4-runtime:4.9.1' // Dep of AccessTransformer
+        installer "net.minecraftforge:eventbus:${EVENTBUS_VERSION}"
+        installer "net.minecraftforge:forgespi:${SPI_VERSION}"
+        installer "net.minecraftforge:coremods:${COREMODS_VERSION}"
+        installer "cpw.mods:modlauncher:${MODLAUNCHER_VERSION}"
+        installer 'net.minecraftforge:unsafe:0.2.+'
+        installer "net.minecraftforge:mergetool:${MERGETOOL_VERSION}:api"
+        installer "com.electronwill.night-config:core:${NIGHTCONFIG_VERSION}"
+        installer "com.electronwill.night-config:toml:${NIGHTCONFIG_VERSION}"
+        installer "org.apache.maven:maven-artifact:${APACHE_MAVEN_ARTIFACT_VERSION}"
+        installer 'net.jodah:typetools:0.6.3'
+        installer "net.minecrell:terminalconsoleappender:${TERMINALCONSOLEAPPENDER_VERSION}"
+        installer "org.jline:jline-reader:${JLINE_VERSION}" // Dep of TerminalConsoleAppender
+        installer "org.jline:jline-terminal:${JLINE_VERSION}" // Dep of TerminalConsoleAppender
+        installer "org.spongepowered:mixin:${MIXIN_VERSION}"
+        installer 'org.openjdk.nashorn:nashorn-core:15.3'
+        installer "net.minecraftforge:JarJarSelector:${JARJAR_VERSION}"
+        installer "net.minecraftforge:JarJarMetadata:${JARJAR_VERSION}"
+
+        /*
+        installer 'org.lwjgl:lwjgl:3.2.2'
+        installer 'org.lwjgl:lwjgl-glfw:3.2.2'
+        installer 'org.lwjgl:lwjgl-opengl:3.2.2'
+        installer 'org.lwjgl:lwjgl-stb:3.2.2'
+        */
     }
-    dependencies sharedDeps
 
     patcher {
         excs.from file("$rootDir/src/main/resources/forge.exc")
@@ -647,15 +643,13 @@ project(':forge') {
 
     tasks.userdevConfig {
         def launchPrefix = "forge"
-        getArtifacts(project(':forge'), configurations.installer, true).each { key, lib -> libraries.add(lib.name) }
-        getArtifacts(project(':forge'), configurations.moduleonly, true).each { key, lib ->
+        getArtifacts(project, configurations.installer, true).each { key, lib -> libraries.add(lib.name) }
+        getArtifacts(project, configurations.gameLayerLibrary, true).each { key, lib -> libraries.add(lib.name) }
+        getArtifacts(project, configurations.pluginLayerLibrary, true).each { key, lib -> libraries.add(lib.name) }
+        getArtifacts(project, configurations.moduleonly, true).each { key, lib ->
             libraries.add(lib.name)
             modules.add(lib.name)
         }
-        for (child in project(':forge').ext.PACKED_DEPS) {
-            libraries.add(child)
-        }
-        //libraries.add("${project.group}:${project.name}:${project.version}:launcher")
         inject = '' // We don't have a userdev sourceset anymore. Empty as a gradle workaround...
         runs {
             client {
@@ -706,10 +700,9 @@ project(':forge') {
         run.main 'cpw.mods.bootstraplauncher.BootstrapLauncher'
 
         run.args '--gameDir', '.'
-        run.args '--fml.fmlVersion', fancy_mod_loader_version
         run.args '--fml.forgeVersion', FORGE_VERSION
+        run.args '--fml.fmlVersion', FANCY_MOD_LOADER_VERSION
         run.args '--fml.mcVersion', MC_VERSION
-        run.args '--fml.forgeGroup', group
         run.args '--fml.mcpVersion', MCP_VERSION
 
         run.jvmArgs '-Djava.net.preferIPv6Addresses=system'
@@ -721,7 +714,15 @@ project(':forge') {
         }
 
         // SecureJarHandler bootstrap values.
-        run.property 'ignoreList', configurations.moduleonly.files.collect {it.name.replaceAll(/([-_]([.\d]*\d+)|\.jar$)/, '') }.join(',') + ",client-extra,${name}-"
+        run.property 'ignoreList', ['moduleonly', 'gameLayerLibrary', 'pluginLayerLibrary'].collectMany { configurations.getByName(it).files }.collect {
+            if (it.name.startsWith('events') || it.name.startsWith('core')) {
+                it.name // These names are too generic by themselves, so let's keep the version info
+            } else {
+                it.name.replaceAll(/([-_]([.\d]*\d+)|\.jar$)/, '')
+            }
+        }.join(',') + ",client-extra,${project.name}-"
+        run.property 'fml.pluginLayerLibraries', configurations.pluginLayerLibrary.files.collect { it.name }.join(';')
+        run.property 'fml.gameLayerLibraries', configurations.gameLayerLibrary.files.collect { it.name }.join(';')
         // FIXME: Without this jna doesn't work at runtime. Someone figure out why please?
         run.property 'mergeModules', 'jna-5.10.0.jar,jna-platform-5.10.0.jar'
         if (userdevRuns.contains(run)) {
@@ -770,23 +771,26 @@ project(':forge') {
         }
     }
 
-    def MODULE_PATH = Util.getArtifacts(project(':forge'), configurations.moduleonly, false).values().collect{"libraries/${it.downloads.artifact.path}"}
+    def MODULE_PATH = Util.getArtifacts(project, configurations.moduleonly, false).values().collect{"libraries/${it.downloads.artifact.path}"}
     def tokens = [
             TASK:          'forgeserver',
             MAVEN_PATH:    ext.MAVEN_PATH.toString(),
             FORGE_VERSION: FORGE_VERSION,
+            FML_VERSION:   FANCY_MOD_LOADER_VERSION,
             MC_VERSION:    MC_VERSION,
             MCP_VERSION:   MCP_VERSION,
             FORGE_GROUP:   group,
-            IGNORE_LIST: Util.getArtifacts(project(':forge'), configurations.moduleonly, false).values().collect{it.downloads.artifact.path.rsplit('/', 1)[1]}.join(','),
+            IGNORE_LIST: Util.getArtifacts(project, configurations.moduleonly, false).values().collect{it.downloads.artifact.path.rsplit('/', 1)[1]}.join(','),
+            PLUGIN_LAYER_LIBRARIES: project.patcher.runs.forge_client.properties['fml.pluginLayerLibraries'],
+            GAME_LAYER_LIBRARIES: project.patcher.runs.forge_client.properties['fml.gameLayerLibraries'],
             MODULES: 'ALL-MODULE-PATH'
     ]
 
     task([dependsOn: rootProject.downloadServerRaw], 'makeClasspathFiles') {
         doLast {
-            def CLASS_PATH = Util.getArtifacts(project(':forge'), configurations.installer, false).values().collect{"libraries/${it.downloads.artifact.path}"} +
+            def CLASS_PATH = Util.getArtifacts(project, configurations.installer, false).values().collect{"libraries/${it.downloads.artifact.path}"} +
                     [
-                            'libraries/' + Util.getMavenPath(project(':forge'), "net.neoforged.fancymodloader:loader:${fancy_mod_loader_version}"),
+                            'libraries/' + Util.getMavenPath(project, "net.neoforged.fancymodloader:loader:${FANCY_MOD_LOADER_VERSION}"),
                             "libraries/net/minecraft/server/${MC_VERSION}-${MCP_VERSION}/server-${MC_VERSION}-${MCP_VERSION}-extra.jar"
                     ]
             def claimed = CLASS_PATH.collect{ it.rsplit('/', 2)[0] }.toSet() // Allow us to override versions
@@ -965,21 +969,14 @@ project(':forge') {
 
         inputJar = project.tasks.named('reobfJar').flatMap { it.output }
 
-        concreteLibraries.from(Util.createConfiguration(PACKED_DEPS))
-
         commonLibraries.from(project.configurations.minecraftImplementation)
-        commonLibraries.from(project.configurations.installer)
+        commonLibraries.from(project.configurations.api)
         commonLibraries.from(project.configurations.moduleonly)
     }
 
     task launcherJson(type: LauncherJson) {
-        packedDependencies = [
-                "net.neoforged.fancymodloader:loader:${fancy_mod_loader_version}",
-                "net.neoforged.fancymodloader:earlydisplay:${fancy_mod_loader_version}",
-        ]
-
         doFirst {
-            def forge_client = project(':forge').patcher.runs.forge_client
+            def forge_client = project.patcher.runs.forge_client
             json = [
                 id: id,
                 time: timestamp,
@@ -990,14 +987,15 @@ project(':forge') {
                 logging: {},
                 arguments: [
                     game: ['--launchTarget', 'forgeclient',
-                           '--fml.fmlVersion', fancy_mod_loader_version,
                            '--fml.forgeVersion', FORGE_VERSION,
+                           '--fml.fmlVersion', FANCY_MOD_LOADER_VERSION,
                            '--fml.mcVersion', MC_VERSION,
-                           '--fml.forgeGroup', project.group,
                            '--fml.mcpVersion', MCP_VERSION],
                     jvm: ['-Djava.net.preferIPv6Addresses=system',
                           "-DignoreList=${forge_client.properties.ignoreList},\${version_name}.jar",
                           "-DmergeModules=${forge_client.properties.mergeModules}",
+                          "-Dfml.pluginLayerLibraries=${forge_client.properties['fml.pluginLayerLibraries']}",
+                          "-Dfml.gameLayerLibraries=${forge_client.properties['fml.gameLayerLibraries']}",
                           '-DlibraryDirectory=${library_directory}',
                           '-p', Util.getArtifacts(project, configurations.moduleonly, false).values().collect{'${library_directory}/' + it.downloads.artifact.path}.join('${classpath_separator}'),
                           '--add-modules', 'ALL-MODULE-PATH',
@@ -1020,7 +1018,6 @@ project(':forge') {
         }
         input.from applyClientBinPatches.output, applyServerBinPatches.output, genClientBinPatches.toolJar, launcherJson.output
         icon = rootProject.file('docs/assets/shitty_neoforged_installer_icon.ico')
-        packedDependencies = PACKED_DEPS
 
         doFirst {
             def libs = libraries
@@ -1248,7 +1245,6 @@ project(':forge') {
     }
 
     task installerJar(type: InstallerJar, dependsOn: [genClientBinPatches, genServerBinPatches, 'signUniversalJar', launcherJson]) {
-        packedDependencies = PACKED_DEPS
         from(extraTxts)
         from(rootProject.file('docs/assets/shitty_neoforged_logo.png')) {
             rename { 'big_logo.png' }

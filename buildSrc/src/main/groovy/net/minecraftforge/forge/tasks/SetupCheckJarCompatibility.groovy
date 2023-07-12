@@ -1,7 +1,6 @@
 package net.minecraftforge.forge.tasks
 
 import org.gradle.api.DefaultTask
-import org.gradle.api.artifacts.Dependency
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
@@ -26,16 +25,6 @@ abstract class SetupCheckJarCompatibility extends DefaultTask {
     @TaskAction
     void run() {
         def inputVersion = inputVersion.get()
-        def fmlLibs = project.configurations.detachedConfiguration(project.PACKED_DEPS.collect {
-            def artifactId = it.split(':')[1]
-            return project.dependencies.create("net.minecraftforge:${artifactId}:${inputVersion}")
-        }.toArray(Dependency[]::new))
-
-        project.tasks.named('checkJarCompatibility') {
-            baseLibraries.from(project.provider {
-                fmlLibs.resolvedConfiguration.lenientConfiguration.files
-            })
-        }
 
         def baseForgeUserdev = project.layout.buildDirectory.dir(name).map { it.file("forge-${inputVersion}-userdev.jar") }.get().asFile
         project.rootProject.extensions.download.run {

@@ -5,8 +5,6 @@ import org.gradle.api.tasks.*
 import org.gradle.api.provider.SetProperty
 
 abstract class InstallerJar extends Zip {
-    @Input @Optional abstract SetProperty<String> getPackedDependencies()
-
     InstallerJar() {
         archiveClassifier.set('installer')
         archiveExtension.set('jar') // Needs to be Zip task to not override Manifest, so set extension
