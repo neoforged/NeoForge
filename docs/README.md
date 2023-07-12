@@ -5,7 +5,7 @@ NeoForge
 [![Discord](https://img.shields.io/discord/313125603924639766.svg?color=%237289da&label=Discord&logo=discord&logoColor=%237289da)][Discord] 
 
 
-Forge is a free, open-source modding API all of your favourite mods use!
+NeoForge is a free, open-source modding API all of your favourite mods use!
 
 | Version |    Support    |
 |---------| ------------- |
@@ -31,16 +31,16 @@ For support and questions, visit [the NeoForged Discord server][Discord].
 
 [See the "Getting Started" section in the NeoForged Documentation][Getting-Started].
 
-# Contribute to Forge
+# Contribute to NeoForge
 
-If you wish to actually inspect Forge, submit PRs or otherwise work
- with Forge itself, you're in the right place!
+If you wish to actually inspect NeoForge, submit PRs or otherwise work
+ with NeoForge itself, you're in the right place!
 
- [See the guide to setting up a Forge workspace][ForgeDev].
+ [See the guide to setting up a NeoForge workspace][NeoForgeDev].
 
 ### Pull requests
 
-[See the "Making Changes and Pull Requests" section in the Forge documentation][Pull-Requests].
+[See the "Making Changes and Pull Requests" section in the NeoForge documentation][Pull-Requests].
 
 Please read the contributing guidelines found [here][Contributing] before making a pull request.
 
@@ -62,7 +62,7 @@ our opencollective.*
 [Discord]: https://discord.neoforged.net/
 
 [Documentation]: https://docs.neoforged.net/
-[Getting-Started]: https://docs.neoforged.net/en/latest/gettingstarted/
-[ForgeDev]: https://docs.neoforged.net/en/latest/forgedev/
-[Pull-Requests]: https://docs.neoforged.net/en/latest/forgedev/#making-changes-and-pull-requests
+[Getting-Started]: https://docs.neoforged.net/docs/1.20.x/gettingstarted/
+[NeoForgeDev]: https://docs.neoforged.net/docs/1.20.x/forgedev/
+[Pull-Requests]: https://docs.neoforged.net/docs/1.20.x/forgedev/#making-changes-and-pull-requests
 [CurseForge]: https://curseforge.com/placeholder
