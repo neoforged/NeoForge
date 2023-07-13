@@ -630,7 +630,7 @@ project(':forge') {
                     JAR_SIGNER != null && t.state.failure == null
                 }
                 def jarsigner = JAR_SIGNER == null ? [:] : JAR_SIGNER
-                alias = 'forge'
+                alias = 'neoforge'
                 storePass = jarsigner.storepass
                 keyPass = jarsigner.keypass
                 keyStore = jarsigner.keystore
