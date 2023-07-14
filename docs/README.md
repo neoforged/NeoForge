@@ -5,7 +5,7 @@ NeoForge
 [![Discord](https://img.shields.io/discord/313125603924639766.svg?color=%237289da&label=Discord&logo=discord&logoColor=%237289da)][Discord] 
 
 
-Forge is a free, open-source modding API all of your favourite mods use!
+Forge is a free, open-source modding API all of your favourite mods use! It was originally made by a transphobic manbaby named LexManos and his racist transphobic assistant Curle. NeoForge is a fork of Forge without LexManos but all the other racists and transphobes that had previously defended him. You can find more about the racism here https://quiltmc.org/en/blog/2023-04-26-the-statement/ 
 
 | Version |    Support    |
 |---------| ------------- |
