@@ -265,9 +265,8 @@ project(':forge') {
     apply plugin: 'org.cadixdev.licenser'
 
     applyPatches { 
-		verbose = true 
-		//failOnError = false
-	}
+        level 'WARNING'
+    }
 
     sourceSets {
         main {
