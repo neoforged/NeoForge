@@ -10,7 +10,7 @@ import net.minecraft.client.Options;
 
 public class ForgeSnapshotsMod
 {
-    public static final String BRANDING_NAME = "Forge";
+    public static final String BRANDING_NAME = "NeoForge";
     public static final String BRANDING_ID = "forge";
 
     public static void processOptions(Options.FieldAccess fieldAccess) {}
