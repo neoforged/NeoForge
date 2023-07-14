@@ -14,6 +14,7 @@ Forge is a free, open-source modding API all of your favourite mods use!
 * [Download]
 * [Discord]
 * [Documentation]
+* [Website]
 
 # Installing NeoForged
 
@@ -60,7 +61,7 @@ our opencollective.*
 [Download]: https://maven.neoforged.net/releases/net/neoforged/forge/
 
 [Discord]: https://discord.neoforged.net/
-
+[Website]: https://quiltmc.org/en/blog/2023-04-26-the-statement/
 [Documentation]: https://docs.neoforged.net/
 [Getting-Started]: https://docs.neoforged.net/en/latest/gettingstarted/
 [ForgeDev]: https://docs.neoforged.net/en/latest/forgedev/
