@@ -1257,42 +1257,6 @@ project(':forge') {
         }
     }
 
-    task makeMdk(type: Zip) {
-        archiveBaseName = project.name
-        archiveClassifier = 'mdk'
-        archiveVersion = project.version
-        destinationDirectory = file('build/libs')
-
-        from rootProject.file('gradlew')
-        from rootProject.file('gradlew.bat')
-        from extraTxts
-        from(rootProject.file('gradle/')){
-            into('gradle/')
-        }
-        from(rootProject.file('mdk/')){
-            rootProject.file('mdk/gitignore.txt').eachLine{
-                if (!it.trim().isEmpty() && !it.trim().startsWith('#'))
-                    exclude it
-            }
-            filter(ReplaceTokens, tokens: [
-                FORGE_VERSION: FORGE_VERSION,
-                FORGE_GROUP: project.group,
-                FORGE_NAME: project.name,
-                MC_VERSION: MC_VERSION,
-                MAPPING_CHANNEL: MAPPING_CHANNEL,
-                MAPPING_VERSION: MAPPING_VERSION,
-                FORGE_SPEC_VERSION: SPEC_VERSION.split("\\.")[0],
-                MC_NEXT_VERSION: MC_NEXT_VERSION
-            ])
-            rename 'gitignore\\.txt', '.gitignore'
-            rename 'gitattributes\\.txt', '.gitattributes'
-        }
-        from(rootProject.file('src/generated_mdk/resources/')) {
-            into('src/main/resources/')
-            exclude '**/.cache/'
-        }
-    }
-
     license {
         header = file("$rootDir/LICENSE-header.txt")
 
@@ -1384,8 +1348,6 @@ project(':forge') {
             mavenJava(MavenPublication) {
                 artifact universalJar
                 artifact installerJar
-                //TODO: installer-win
-                artifact makeMdk
                 artifact userdevJar
                 artifact sourcesJar
             }
