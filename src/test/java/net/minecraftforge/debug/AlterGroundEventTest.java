@@ -12,14 +12,17 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod("alter_ground_event_test")
 @Mod.EventBusSubscriber
-public class AlterGroundEventTest {
+public class AlterGroundEventTest
+{
     public static final boolean ENABLE = true;
 
     @SubscribeEvent
     public static void onAlterGround(AlterGroundEvent event)
     {
-        if (ENABLE) {
-            if (event.getOriginalAlteredState().is(Blocks.PODZOL)) {
+        if (ENABLE)
+        {
+            if (event.getOriginalAlteredState().is(Blocks.PODZOL))
+            {
                 event.setNewAlteredState(Blocks.REDSTONE_BLOCK.defaultBlockState());
             }
         }

@@ -17,19 +17,23 @@ import net.minecraft.world.item.FireworkRocketItem;
  * Keeps track of custom firework shape types, because Particle is client side only this can't be on the Shape itself.
  * So sometime during your client initalization call register.
  */
-public class FireworkShapeFactoryRegistry {
-	private static final Map<FireworkRocketItem.Shape, Factory> factories = new HashMap<>();
+public class FireworkShapeFactoryRegistry
+{
+    private static final Map<FireworkRocketItem.Shape, Factory> factories = new HashMap<>();
 
-	public static interface Factory {
-		void build(FireworkParticles.Starter starter, boolean trail, boolean flicker, int[] colors, int[] fadecolors);
-	}
+    public interface Factory
+	{
+        void build(FireworkParticles.Starter starter, boolean trail, boolean flicker, int[] colors, int[] fadeColors);
+    }
 
-	public static void register(FireworkRocketItem.Shape shape, Factory factory) {
-		factories.put(shape, factory);
-	}
+    public static void register(FireworkRocketItem.Shape shape, Factory factory)
+    {
+        factories.put(shape, factory);
+    }
 
-	@Nullable
-	public static Factory get(FireworkRocketItem.Shape shape) {
-		return factories.get(shape);
-	}
+    @Nullable
+    public static Factory get(FireworkRocketItem.Shape shape)
+    {
+        return factories.get(shape);
+    }
 }

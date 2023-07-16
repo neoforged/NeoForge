@@ -66,7 +66,8 @@ import java.util.stream.Stream;
  * @see DataProvider
  * @see net.minecraft.client.particle.ParticleDescription
  */
-public abstract class ParticleDescriptionProvider implements DataProvider {
+public abstract class ParticleDescriptionProvider implements DataProvider
+{
 
     private final PackOutput.PathProvider particlesPath;
     @VisibleForTesting
@@ -80,7 +81,8 @@ public abstract class ParticleDescriptionProvider implements DataProvider {
      * @param output the expected root directory the data generator outputs to
      * @param fileHelper the helper used to validate a texture's existence
      */
-    protected ParticleDescriptionProvider(PackOutput output, ExistingFileHelper fileHelper) {
+    protected ParticleDescriptionProvider(PackOutput output, ExistingFileHelper fileHelper)
+    {
         this.particlesPath = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "particles");
         this.fileHelper = fileHelper;
         this.descriptions = new HashMap<>();
@@ -107,7 +109,8 @@ public abstract class ParticleDescriptionProvider implements DataProvider {
      *                                  file, or the particle type has already been
      *                                  provided
      */
-    protected void sprite(ParticleType<?> type, ResourceLocation texture) {
+    protected void sprite(ParticleType<?> type, ResourceLocation texture)
+    {
         this.spriteSet(type, texture);
     }
 
@@ -137,19 +140,23 @@ public abstract class ParticleDescriptionProvider implements DataProvider {
      *                                  file, or the particle type has already been
      *                                  provided
      */
-    protected void spriteSet(ParticleType<?> type, ResourceLocation baseName, int numOfTextures, boolean reverse) {
+    protected void spriteSet(ParticleType<?> type, ResourceLocation baseName, int numOfTextures, boolean reverse)
+    {
         Preconditions.checkArgument(numOfTextures > 0, "The number of textures to generate must be positive");
-        this.spriteSet(type, () -> new Iterator<>() {
+        this.spriteSet(type, () -> new Iterator<>()
+        {
 
             private int counter = 0;
 
             @Override
-            public boolean hasNext() {
+            public boolean hasNext()
+            {
                 return this.counter < numOfTextures;
             }
 
             @Override
-            public ResourceLocation next() {
+            public ResourceLocation next()
+            {
                 var texture = baseName.withSuffix("_" + (reverse ? numOfTextures - this.counter - 1 : this.counter));
                 this.counter++;
                 return texture;
@@ -175,7 +182,8 @@ public abstract class ParticleDescriptionProvider implements DataProvider {
      *                                  file, or the particle type has already been
      *                                  provided
      */
-    protected void spriteSet(ParticleType<?> type, ResourceLocation texture, ResourceLocation... textures) {
+    protected void spriteSet(ParticleType<?> type, ResourceLocation texture, ResourceLocation... textures)
+    {
         this.spriteSet(type, Stream.concat(Stream.of(texture), Arrays.stream(textures))::iterator);
     }
 
@@ -195,13 +203,15 @@ public abstract class ParticleDescriptionProvider implements DataProvider {
      *                                  does not have an associated PNG file, or
      *                                  the particle type has already been provided
      */
-    protected void spriteSet(ParticleType<?> type, Iterable<ResourceLocation> textures) {
+    protected void spriteSet(ParticleType<?> type, Iterable<ResourceLocation> textures)
+    {
         // Make sure particle type is registered
         var particle = Preconditions.checkNotNull(ForgeRegistries.PARTICLE_TYPES.getKey(type), "The particle type is not registered");
 
         // Validate textures
         List<String> desc = new ArrayList<>();
-        for (var texture : textures) {
+        for (var texture : textures)
+        {
             Preconditions.checkArgument(this.fileHelper.exists(texture, PackType.CLIENT_RESOURCES, ".png", "textures/particle"),
                     "Texture '%s' does not exist in any known resource pack", texture);
             desc.add(texture.toString());
@@ -209,9 +219,8 @@ public abstract class ParticleDescriptionProvider implements DataProvider {
         Preconditions.checkArgument(desc.size() > 0, "The particle type '%s' must have one texture", particle);
 
         // Insert into map
-        if (this.descriptions.putIfAbsent(particle, desc) != null) {
+        if (this.descriptions.putIfAbsent(particle, desc) != null)
             throw new IllegalArgumentException(String.format("The particle type '%s' already has a description associated with it", particle));
-        }
     }
 
     @Override
@@ -232,7 +241,8 @@ public abstract class ParticleDescriptionProvider implements DataProvider {
     }
 
     @Override
-    public String getName() {
+    public String getName()
+    {
         return "Particle Descriptions";
     }
 }

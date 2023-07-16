@@ -303,7 +303,7 @@ public interface IForgeItemStack extends ICapabilitySerializable<CompoundTag>
      */
     default void onInventoryTick(Level level, Player player, int slotIndex, int selectedIndex)
     {
-    	self().getItem().onInventoryTick(self(), level, player, slotIndex, selectedIndex);
+        self().getItem().onInventoryTick(self(), level, player, slotIndex, selectedIndex);
     }
 
 

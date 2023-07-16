@@ -21,15 +21,15 @@ public class LivingMakeBrainEventTest extends EventTest
 
     @Override
     public void registerEvents() {
-        if(ENABLE)
+        if (ENABLE)
         {
             MinecraftForge.EVENT_BUS.addListener(this::livingMakeBrainEventListener);
         }
     }
 
-    public void livingMakeBrainEventListener(LivingMakeBrainEvent event)
+    private void livingMakeBrainEventListener(LivingMakeBrainEvent event)
     {
-        if(event.getEntity() instanceof Piglin piglin)
+        if (event.getEntity() instanceof Piglin piglin)
         {
             // lets us test in the Overworld
             piglin.setImmuneToZombification(true);

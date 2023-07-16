@@ -40,7 +40,8 @@ import org.jetbrains.annotations.ApiStatus;
  * </ul>
  * Of course, nothing egregious will happen should a modder choose to use them for their own purposes.<br>
  */
-public class BrainBuilder<E extends LivingEntity> {
+public class BrainBuilder<E extends LivingEntity>
+{
     private final Collection<MemoryModuleType<?>> memoryTypes = new HashSet<>();
     private final Collection<SensorType<? extends Sensor<? super E>>> sensorTypes = new HashSet<>();
     private final Map<Integer, Map<Activity, Set<BehaviorControl<? super E>>>> availableBehaviorsByPriority = Maps.newTreeMap();
@@ -52,62 +53,76 @@ public class BrainBuilder<E extends LivingEntity> {
 
     public BrainBuilder(Brain<E> ignoredBrain) {}
 
-    public Brain.Provider<E> provider() {
+    public Brain.Provider<E> provider()
+    {
         return Brain.provider(this.memoryTypes, this.sensorTypes);
     }
 
-    public Collection<MemoryModuleType<?>> getMemoryTypes() {
+    public Collection<MemoryModuleType<?>> getMemoryTypes()
+    {
         return this.memoryTypes;
     }
 
-    public Collection<SensorType<? extends Sensor<? super E>>> getSensorTypes() {
+    public Collection<SensorType<? extends Sensor<? super E>>> getSensorTypes()
+    {
         return this.sensorTypes;
     }
 
-    public Map<Integer, Map<Activity, Set<BehaviorControl<? super E>>>> getAvailableBehaviorsByPriority() {
+    public Map<Integer, Map<Activity, Set<BehaviorControl<? super E>>>> getAvailableBehaviorsByPriority()
+    {
         return this.availableBehaviorsByPriority;
     }
 
-    public Schedule getSchedule() {
+    public Schedule getSchedule()
+    {
         return this.schedule;
     }
 
-    public void setSchedule(Schedule schedule) {
+    public void setSchedule(Schedule schedule)
+    {
         this.schedule = schedule;
     }
 
-    public Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryStatus>>> getActivityRequirements() {
+    public Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryStatus>>> getActivityRequirements()
+    {
         return this.activityRequirements;
     }
 
-    public Map<Activity, Set<MemoryModuleType<?>>> getActivityMemoriesToEraseWhenStopped() {
+    public Map<Activity, Set<MemoryModuleType<?>>> getActivityMemoriesToEraseWhenStopped()
+    {
         return this.activityMemoriesToEraseWhenStopped;
     }
 
-    public Set<Activity> getCoreActivities() {
+    public Set<Activity> getCoreActivities()
+    {
         return this.coreActivities;
     }
 
-    public Activity getDefaultActivity() {
+    public Activity getDefaultActivity()
+    {
         return this.defaultActivity;
     }
 
-    public void setDefaultActivity(Activity defaultActivity) {
+    public void setDefaultActivity(Activity defaultActivity)
+    {
         this.defaultActivity = defaultActivity;
     }
 
     /** You may use this as a helper method for adding a behavior to an Activity by priority to an entity's brain. */
-    public void addBehaviorToActivityByPriority(Integer priority, Activity activity, BehaviorControl<? super E> behaviorControl) {
+    public void addBehaviorToActivityByPriority(Integer priority, Activity activity, BehaviorControl<? super E> behaviorControl)
+    {
         this.availableBehaviorsByPriority.computeIfAbsent(priority, (i) -> Maps.newHashMap()).computeIfAbsent(activity, (a) -> Sets.newLinkedHashSet()).add(behaviorControl);
     }
 
     /** You may use this as a helper method for adding memory requirements for an Activity to an entity's brain. */
-    public void addRequirementsToActivity(Activity activity, Collection<Pair<MemoryModuleType<?>, MemoryStatus>> requirements) {
+    public void addRequirementsToActivity(Activity activity, Collection<Pair<MemoryModuleType<?>, MemoryStatus>> requirements)
+    {
         addRequirementsToActivityInternal(this.activityRequirements, activity, requirements);
     }
 
     /** You may use this as a helper method for adding a collection of memories to erase when an Activity is stopped to entity's brain. */
-    public void addMemoriesToEraseWhenActivityStopped(Activity activity, Collection<MemoryModuleType<?>> memories) {
+    public void addMemoriesToEraseWhenActivityStopped(Activity activity, Collection<MemoryModuleType<?>> memories)
+    {
         addMemoriesToEraseWhenActivityStoppedInternal(this.activityMemoriesToEraseWhenStopped, activity, memories);
     }
 
@@ -116,45 +131,54 @@ public class BrainBuilder<E extends LivingEntity> {
     //====================================================================================================================//
 
     @ApiStatus.Internal
-    public void addAvailableBehaviorsByPriorityFrom(Map<Integer, Map<Activity, Set<BehaviorControl<? super E>>>> addFrom) {
+    public void addAvailableBehaviorsByPriorityFrom(Map<Integer, Map<Activity, Set<BehaviorControl<? super E>>>> addFrom)
+    {
         addFrom.forEach(((priority, activitySetMap) -> activitySetMap.forEach(((activity, behaviorControls) -> this.availableBehaviorsByPriority.computeIfAbsent(priority, (p) -> Maps.newHashMap()).computeIfAbsent(activity, (a) -> Sets.newLinkedHashSet()).addAll(behaviorControls)))));
     }
 
     @ApiStatus.Internal
-    public void addAvailableBehaviorsByPriorityTo(Map<Integer, Map<Activity, Set<BehaviorControl<? super E>>>> addTo){
+    public void addAvailableBehaviorsByPriorityTo(Map<Integer, Map<Activity, Set<BehaviorControl<? super E>>>> addTo)
+    {
         this.availableBehaviorsByPriority.forEach(((priority, activitySetMap) -> activitySetMap.forEach(((activity, behaviorControls) -> addTo.computeIfAbsent(priority, (p) -> Maps.newHashMap()).computeIfAbsent(activity, (a) -> Sets.newLinkedHashSet()).addAll(behaviorControls)))));
     }
 
     @ApiStatus.Internal
-    public void addActivityRequirementsFrom(Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryStatus>>> addFrom) {
+    public void addActivityRequirementsFrom(Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryStatus>>> addFrom)
+    {
         addFrom.forEach(this::addRequirementsToActivity);
     }
 
     @ApiStatus.Internal
-    public void addActivityRequirementsTo(Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryStatus>>> addTo) {
+    public void addActivityRequirementsTo(Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryStatus>>> addTo)
+    {
         this.activityRequirements.forEach(((activity, requirements) -> addRequirementsToActivityInternal(addTo, activity, requirements)));
     }
 
     @ApiStatus.Internal
-    public void addActivityMemoriesToEraseWhenStoppedFrom(Map<Activity, Set<MemoryModuleType<?>>> addFrom) {
+    public void addActivityMemoriesToEraseWhenStoppedFrom(Map<Activity, Set<MemoryModuleType<?>>> addFrom)
+    {
         addFrom.forEach(this::addMemoriesToEraseWhenActivityStopped);
     }
 
     @ApiStatus.Internal
-    public void addActivityMemoriesToEraseWhenStoppedTo(Map<Activity, Set<MemoryModuleType<?>>> addTo) {
+    public void addActivityMemoriesToEraseWhenStoppedTo(Map<Activity, Set<MemoryModuleType<?>>> addTo)
+    {
         this.activityMemoriesToEraseWhenStopped.forEach(((activity, memories) -> addMemoriesToEraseWhenActivityStoppedInternal(addTo, activity, memories)));
     }
 
-    private static void addMemoriesToEraseWhenActivityStoppedInternal(Map<Activity, Set<MemoryModuleType<?>>> activityMemoriesToEraseWhenStopped, Activity activity, Collection<MemoryModuleType<?>> memories) {
+    private static void addMemoriesToEraseWhenActivityStoppedInternal(Map<Activity, Set<MemoryModuleType<?>>> activityMemoriesToEraseWhenStopped, Activity activity, Collection<MemoryModuleType<?>> memories)
+    {
         activityMemoriesToEraseWhenStopped.computeIfAbsent(activity, (a) -> Sets.newHashSet()).addAll(memories);
     }
 
-    private static void addRequirementsToActivityInternal(Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryStatus>>> activityRequirements, Activity activity, Collection<Pair<MemoryModuleType<?>, MemoryStatus>> requirements) {
+    private static void addRequirementsToActivityInternal(Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryStatus>>> activityRequirements, Activity activity, Collection<Pair<MemoryModuleType<?>, MemoryStatus>> requirements)
+    {
         activityRequirements.computeIfAbsent(activity, (a) -> Sets.newHashSet()).addAll(requirements);
     }
 
     @ApiStatus.Internal
-    public Brain<E> makeBrain(Dynamic<?> dynamic) {
+    public Brain<E> makeBrain(Dynamic<?> dynamic)
+    {
         Brain<E> brain = Brain.provider(this.memoryTypes, this.sensorTypes).makeBrain(dynamic);
         brain.copyFromBuilder(this);
         return brain;

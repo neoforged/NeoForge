@@ -23,31 +23,40 @@ import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 public class KeyMappingTest
 {
     @Mod.EventBusSubscriber(modid = "keymapping_test", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class ClientStuff {
+    public static class ClientStuff
+    {
         // these are two separate keys to stand in for keys added by different
         // mods that each do something similar with a held item from the
         // respective mod, so the user wants them on the same physical key.
         static KeyMapping stickKey = new KeyMapping("stick_key", InputConstants.KEY_BACKSLASH, KeyMapping.CATEGORY_MISC);
         static KeyMapping rockKey = new KeyMapping("rock_key", InputConstants.KEY_BACKSLASH, KeyMapping.CATEGORY_MISC);
+
         @SubscribeEvent
-        public static void init(FMLConstructModEvent event) {
+        public static void init(FMLConstructModEvent event)
+        {
             MinecraftForge.EVENT_BUS.addListener(ClientStuff::tick);
         }
+
         @SubscribeEvent
-        public static void initKeys(RegisterKeyMappingsEvent event) {
+        public static void initKeys(RegisterKeyMappingsEvent event)
+        {
             event.register(stickKey);
             event.register(rockKey);
         }
-        public static void tick(TickEvent.ClientTickEvent event) {
-            if(event.phase != TickEvent.Phase.START) return;
-            if(stickKey.consumeClick()) {
+
+        public static void tick(TickEvent.ClientTickEvent event)
+        {
+            if (event.phase != TickEvent.Phase.START) return;
+            if (stickKey.consumeClick())
+            {
                 Player player = Minecraft.getInstance().player;
-                if(player != null && player.getMainHandItem().is(Items.STICK))
+                if (player != null && player.getMainHandItem().is(Items.STICK))
                     player.sendSystemMessage(Component.literal("stick found!"));
             }
-            if(rockKey.consumeClick()) {
+            if (rockKey.consumeClick())
+            {
                 Player player = Minecraft.getInstance().player;
-                if(player != null && player.getMainHandItem().is(Items.COBBLESTONE))
+                if (player != null && player.getMainHandItem().is(Items.COBBLESTONE))
                     player.sendSystemMessage(Component.literal("rock found!"));
             }
         }

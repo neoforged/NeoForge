@@ -24,7 +24,8 @@ import org.jetbrains.annotations.ApiStatus;
  * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
  * only on the {@linkplain net.minecraftforge.fml.LogicalSide#SERVER logical server}.
  */
-public class AlterGroundEvent extends Event {
+public class AlterGroundEvent extends Event
+{
     private final LevelSimulatedReader level;
     private final RandomSource random;
     private final BlockPos pos;
@@ -32,8 +33,8 @@ public class AlterGroundEvent extends Event {
     private BlockState newAltered;
 
     @ApiStatus.Internal
-    public AlterGroundEvent(LevelSimulatedReader level, RandomSource random, BlockPos pos, BlockState altered) {
-        super();
+    public AlterGroundEvent(LevelSimulatedReader level, RandomSource random, BlockPos pos, BlockState altered)
+    {
         this.level = level;
         this.random = random;
         this.pos = pos;
@@ -41,39 +42,45 @@ public class AlterGroundEvent extends Event {
         this.newAltered = altered;
     }
 
-    public LevelSimulatedReader getLevel() {
+    public LevelSimulatedReader getLevel()
+    {
         return this.level;
     }
 
-    public RandomSource getRandom() {
+    public RandomSource getRandom()
+    {
         return this.random;
     }
 
     /**
      * {@return the position of the block that will be altered}
      */
-    public BlockPos getPos() {
+    public BlockPos getPos()
+    {
         return this.pos;
     }
 
     /**
      * {@return the original block state that would be placed by the ground decorator}
      */
-    public BlockState getOriginalAlteredState() {
+    public BlockState getOriginalAlteredState()
+    {
         return this.originalAltered;
     }
 
     /**
      * {@return the new block state to be placed by the ground decorator}
      */
-    public BlockState getNewAlteredState() {
+    public BlockState getNewAlteredState()
+    {
         return this.newAltered;
     }
 
     /**
      * @param newAltered the new block state to be placed by the ground decorator
      */
-    public void setNewAlteredState(BlockState newAltered) {
+    public void setNewAlteredState(BlockState newAltered)
+    {
         this.newAltered = newAltered;
     }
 }

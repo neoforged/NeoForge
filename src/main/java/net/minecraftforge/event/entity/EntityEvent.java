@@ -152,10 +152,31 @@ public class EntityEvent extends Event
             this.newSize = size;
         }
 
-        public Pose getPose() { return pose; }
-        public EntityDimensions getOriginalSize() { return originalSize; }
-        public EntityDimensions getNewSize() { return newSize; }
-        public void setNewSize(EntityDimensions newSize) { this.newSize = newSize; }
+        public Pose getPose()
+        {
+            return pose;
+        }
+
+        @Deprecated(forRemoval = true, since = "1.20.1")
+        public EntityDimensions getOldSize()
+        {
+            return getOriginalSize();
+        }
+
+        public EntityDimensions getOriginalSize()
+        {
+            return originalSize;
+        }
+
+        public EntityDimensions getNewSize()
+        {
+            return newSize;
+        }
+
+        public void setNewSize(EntityDimensions newSize)
+        {
+            this.newSize = newSize;
+        }
     }
 
     /**
@@ -184,10 +205,29 @@ public class EntityEvent extends Event
             this.newEyeHeight = eyeHeight;
         }
 
-        public Pose getPose() { return pose; }
-        public EntityDimensions getSize() { return size; }
-        public float getOriginalEyeHeight() { return originalEyeHeight; }
-        public float getNewEyeHeight() { return newEyeHeight; }
-        public void setNewEyeHeight(float newEyeHeight) { this.newEyeHeight = newEyeHeight; }
+        public Pose getPose()
+        {
+            return pose;
+        }
+
+        public EntityDimensions getSize()
+        {
+            return size;
+        }
+
+        public float getOriginalEyeHeight()
+        {
+            return originalEyeHeight;
+        }
+
+        public float getNewEyeHeight()
+        {
+            return newEyeHeight;
+        }
+
+        public void setNewEyeHeight(float newEyeHeight)
+        {
+            this.newEyeHeight = newEyeHeight;
+        }
     }
 }
