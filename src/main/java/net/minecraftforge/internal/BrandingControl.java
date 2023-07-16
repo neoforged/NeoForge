@@ -34,7 +34,6 @@ public class BrandingControl
             ImmutableList.Builder<String> brd = ImmutableList.builder();
             brd.add(ForgeSnapshotsMod.BRANDING_NAME + ' ' + ForgeVersion.getVersion());
             brd.add("Minecraft " + MCPVersion.getMCVersion());
-            brd.add("MCP " + MCPVersion.getMCPVersion());
             int tModCount = ModList.get().size();
             brd.add(ForgeI18n.parseMessage("fml.menu.loadingmods", tModCount));
             brandings = brd.build();
