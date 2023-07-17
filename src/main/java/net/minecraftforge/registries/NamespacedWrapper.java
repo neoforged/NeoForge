@@ -72,7 +72,7 @@ class NamespacedWrapper<T> extends MappedRegistry<T> implements ILockableRegistr
     public Holder.Reference<T> registerMapping(int id, ResourceKey<T> key, T value, Lifecycle lifecycle)
     {
         if (locked)
-            throw new IllegalStateException("Can not register to a locked registry. Modder should use Forge Register methods.");
+            throw new IllegalStateException("Can not register to a locked registry. Modder should use NeoForge Register methods.");
 
         Validate.notNull(value);
         markKnown();

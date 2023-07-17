@@ -642,7 +642,7 @@ public class GameData
             List<ResourceLocation> missingRegs = snapshot.keySet().stream().filter(name -> !RegistryManager.ACTIVE.registries.containsKey(name)).collect(Collectors.toList());
             if (missingRegs.size() > 0)
             {
-                String header = "Forge Mod Loader detected missing/unknown registrie(s).\n\n" +
+                String header = "NeoForge Mod Loader detected missing/unknown registrie(s).\n\n" +
                         "There are " + missingRegs.size() + " missing registries in this save.\n" +
                         "If you continue the missing registries will get removed.\n" +
                         "This may cause issues, it is advised that you create a world backup before continuing.\n\n";
@@ -706,7 +706,7 @@ public class GameData
 
             if (!defaulted.isEmpty())
             {
-                String header = "Forge Mod Loader detected missing registry entries.\n\n" +
+                String header = "NeoForge Mod Loader detected missing registry entries.\n\n" +
                    "There are " + defaulted.size() + " missing entries in this save.\n" +
                    "If you continue the missing entries will get removed.\n" +
                    "A world backup will be automatically created in your saves directory.\n\n";

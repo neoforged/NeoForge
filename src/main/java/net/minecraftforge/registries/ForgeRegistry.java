@@ -701,7 +701,7 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
     public void clear()
     {
         if (!this.isModifiable)
-            throw new UnsupportedOperationException("Attempted to clear a non-modifiable Forge Registry");
+            throw new UnsupportedOperationException("Attempted to clear a non-modifiable NeoForge Registry");
 
         if (this.isLocked())
             throw new IllegalStateException("Attempted to clear the registry to late.");
@@ -722,7 +722,7 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
     public V remove(ResourceLocation key)
     {
         if (!this.isModifiable)
-            throw new UnsupportedOperationException("Attempted to remove from a non-modifiable Forge Registry");
+            throw new UnsupportedOperationException("Attempted to remove from a non-modifiable NeoForge Registry");
 
         if (this.isLocked())
             throw new IllegalStateException("Attempted to remove from the registry to late.");
