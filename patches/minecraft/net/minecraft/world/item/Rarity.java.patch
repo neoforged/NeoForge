@@ -30,7 +30,7 @@
 +      return this.styleModifier;
 +   }
 +
-+   public static Rarity create(String name, ChatFormatting p_43028_) {
++   public static Rarity create(String name, ChatFormatting color) {
 +      throw new IllegalStateException("Enum not extended");
 +   }
 +

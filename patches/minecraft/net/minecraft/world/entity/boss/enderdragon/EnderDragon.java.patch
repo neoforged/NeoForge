@@ -8,10 +8,10 @@
 +   }
 +
 +   @Override
-+   public void m_20234_(int p_20235_) {
-+      super.m_20234_(p_20235_);
++   public void m_20234_(int id) {
++      super.m_20234_(id);
 +      for (int i = 0; i < this.f_31089_.length; i++) // Forge: Fix MC-158205: Set part ids to successors of parent mob id
-+         this.f_31089_[i].m_20234_(p_20235_ + i + 1);
++         this.f_31089_[i].m_20234_(id + i + 1);
     }
  
     public void m_287231_(EndDragonFight p_287736_) {
