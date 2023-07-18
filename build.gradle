@@ -209,6 +209,11 @@ subprojects {
             maven gradleutils.getPublishingForgeMaven()
         }
     }
+    
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+        options.warnings = false // Shutup deprecated for removal warnings
+    }
 }
 
 project(':mcp') {
@@ -1343,6 +1348,13 @@ project(':forge') {
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
     }
+
+    // Since we need the modules in the bootstrap, we need to make sure they are compiled before we do each run
+    afterEvaluate { prepareRuns.dependsOn(PACKED_DEPS) }
+    
+    // Make sure we run bin compat checking during local testing.
+    if (!System.env.MAVEN_USER || !System.env.MAVEN_PASSWORD)
+        publish.dependsOn(':forge:checkJarCompatibility')
 }
 
 //evaluationDependsOnChildren()
@@ -1350,6 +1362,14 @@ task setup() {  //These must be strings so that we can do lazy resolution. Else 
     dependsOn ':clean:extractMapped'
     dependsOn ':forge:extractMapped'
 }
+
+task doChecks {
+    dependsOn ':forge:checkJarCompatibility'
+    dependsOn ':forge:publish'
+}
+
+if (symlinkValid)
+    project.gradle.startParameter.excludedTaskNames.add(':fmlonly:genPatches')
 
 project.gradle.startParameter.excludedTaskNames.add(':clean:genPatches')
 
