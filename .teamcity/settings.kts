@@ -99,6 +99,10 @@ object BuildSecondaryBranches : BuildType({
     description = "Builds and Publishes the secondary branches of the project."
     params {
         text("git_branch_spec", """
+                -:refs/heads/(main*)
+                -:refs/heads/(master*)
+                -:refs/heads/(develop|release|staging|main|master)
+                -:refs/heads/(1.*)
                 +:refs/heads/(*)
                 -:refs/heads/noci*
             """.trimIndent(), label = "The branch specification of the repository", description = "By default all main branches are build by the configuration. Modify this value to adapt the branches build.", display = ParameterDisplay.HIDDEN, allowEmpty = true)
@@ -110,6 +114,12 @@ object PullRequests : BuildType({
     id("MinecraftForge_MinecraftForge__PullRequests")
     name = "Pull Requests"
     description = "Builds pull requests for the project"
+
+    params {
+        add {
+            param("git_branch_spec", "")
+        }
+    }
 
     params {
         checkbox("should_execute_build", "true", label = "Should build", description = "Indicates if the build task should be executed.", display = ParameterDisplay.HIDDEN,
@@ -131,6 +141,12 @@ object PullRequestChecks : BuildType({
     name = "Pull Requests (Checks)"
     description = "Checks pull requests for the project"
 
+    params {
+        add {
+            param("git_branch_spec", "")
+        }
+    }
+
     steps {
         gradle {
             name = "Check"
@@ -149,6 +165,12 @@ object PullRequestCompatibility : BuildType({
     name = "Pull Requests (Compatibility)"
     description = "Validates binary compatibility for pull requests made to the project"
 
+    params {
+        add {
+            param("git_branch_spec", "")
+        }
+    }
+
     steps {
         gradle {
             name = "Validate"
@@ -166,6 +188,12 @@ object PullRequestPatchModifications : BuildType({
     id("MinecraftForge_MinecraftForge__PullRequestPatchModifications")
     name = "Pull Requests (Patch Correctness)"
     description = "Validates initial patch correctness"
+
+    params {
+        add {
+            param("git_branch_spec", "")
+        }
+    }
 
     steps {
         gradle {
