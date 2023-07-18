@@ -34,6 +34,7 @@ project {
     buildType(PullRequests)
     buildType(PullRequestChecks)
     buildType(PullRequestCompatibility)
+    buildType(PullRequestPatchModifications)
 
     params {
         text("docker_jdk_version", "17", label = "Gradle version", description = "The version of the JDK to use during execution of tasks in a JDK.", display = ParameterDisplay.HIDDEN, allowEmpty = false)
@@ -153,14 +154,6 @@ object PullRequestChecks : BuildType({
             tasks = "checkAll"
             gradleParams = "--continue %gradle_custom_args%"
             enableStacktrace = true
-            dockerImage = "%docker_gradle_image%"
-            dockerRunParameters = """
-                -v "/opt/cache/agent/gradle:/home/gradle/.gradle"
-                -v "/opt/cache/shared/gradle:/home/gradle/rocache:ro"
-                --network=host
-                -u 1000:1000
-                %docker_additional_args%
-            """.trimIndent()
         }
     }
 
@@ -187,14 +180,32 @@ object PullRequestCompatibility : BuildType({
             tasks = "checkJarCompatibility"
             gradleParams = "--continue %gradle_custom_args%"
             enableStacktrace = true
-            dockerImage = "%docker_gradle_image%"
-            dockerRunParameters = """
-                -v "/opt/cache/agent/gradle:/home/gradle/.gradle"
-                -v "/opt/cache/shared/gradle:/home/gradle/rocache:ro"
-                --network=host
-                -u 1000:1000
-                %docker_additional_args%
-            """.trimIndent()
+        }
+    }
+
+    vcs {
+        branchFilter = """
+            +:*
+            -:1.*
+            -:<default>
+        """.trimIndent()
+    }
+})
+
+object PullRequestPatchModifications : BuildType({
+    templates(AbsoluteId("MinecraftForge_BuildPullRequests"), AbsoluteId("MinecraftForge_SetupGradleUtilsCiEnvironmen"), AbsoluteId("MinecraftForge_BuildWithDiscordNotifications"), AbsoluteId("MinecraftForge_SetupProjectUsingGradle"))
+    id("MinecraftForge_MinecraftForge__PullRequestPatchModifications")
+    name = "Pull Requests (Patch Correctness)"
+    description = "Validates initial patch correctness"
+
+    steps {
+        gradle {
+            name = "Validate"
+            id = "RUNNER_10_Compatibility"
+
+            tasks = "failGitChanges"
+            gradleParams = "--continue %gradle_custom_args%"
+            enableStacktrace = true
         }
     }
 
