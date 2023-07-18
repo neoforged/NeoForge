@@ -103,13 +103,6 @@ object BuildSecondaryBranches : BuildType({
                 -:refs/heads/noci*
             """.trimIndent(), label = "The branch specification of the repository", description = "By default all main branches are build by the configuration. Modify this value to adapt the branches build.", display = ParameterDisplay.HIDDEN, allowEmpty = true)
     }
-    vcs {
-        branchFilter = """
-            +:*
-            -:1.*
-            -:<default>
-        """.trimIndent()
-    }
 })
 
 object PullRequests : BuildType({
@@ -130,14 +123,6 @@ object PullRequests : BuildType({
             allowEmpty = false
         )
     }
-
-    vcs {
-        branchFilter = """
-            +:*
-            -:1.*
-            -:<default>
-        """.trimIndent()
-    }
 })
 
 object PullRequestChecks : BuildType({
@@ -155,14 +140,6 @@ object PullRequestChecks : BuildType({
             gradleParams = "--continue %gradle_custom_args%"
             enableStacktrace = true
         }
-    }
-
-    vcs {
-        branchFilter = """
-            +:*
-            -:1.*
-            -:<default>
-        """.trimIndent()
     }
 })
 
@@ -182,14 +159,6 @@ object PullRequestCompatibility : BuildType({
             enableStacktrace = true
         }
     }
-
-    vcs {
-        branchFilter = """
-            +:*
-            -:1.*
-            -:<default>
-        """.trimIndent()
-    }
 })
 
 object PullRequestPatchModifications : BuildType({
@@ -207,13 +176,5 @@ object PullRequestPatchModifications : BuildType({
             gradleParams = "--continue %gradle_custom_args%"
             enableStacktrace = true
         }
-    }
-
-    vcs {
-        branchFilter = """
-            +:*
-            -:1.*
-            -:<default>
-        """.trimIndent()
     }
 })
