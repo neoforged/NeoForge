@@ -116,9 +116,7 @@ object PullRequests : BuildType({
     description = "Builds pull requests for the project"
 
     params {
-        add {
-            param("git_branch_spec", "")
-        }
+        param("git_branch_spec", "")
     }
 
     params {
@@ -142,9 +140,7 @@ object PullRequestChecks : BuildType({
     description = "Checks pull requests for the project"
 
     params {
-        add {
-            param("git_branch_spec", "")
-        }
+        param("git_branch_spec", "")
     }
 
     steps {
@@ -166,9 +162,7 @@ object PullRequestCompatibility : BuildType({
     description = "Validates binary compatibility for pull requests made to the project"
 
     params {
-        add {
-            param("git_branch_spec", "")
-        }
+        param("git_branch_spec", "")
     }
 
     steps {
@@ -190,9 +184,7 @@ object PullRequestPatchModifications : BuildType({
     description = "Validates initial patch correctness"
 
     params {
-        add {
-            param("git_branch_spec", "")
-        }
+        param("git_branch_spec", "")
     }
 
     steps {
