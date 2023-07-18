@@ -37,12 +37,15 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.items.wrapper.ShulkerItemStackInvWrapper;
 import net.minecraftforge.registries.IForgeRegistry;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -329,27 +332,54 @@ public interface IForgeItem
 
     /**
      * Called to tick armor in the armor slot. Override to do something
+     * @deprecated Use {@link #inventoryTick(ItemStack, Level, Entity, NonNullList, int, int, ResourceLocation)}
      */
-    @Deprecated(forRemoval = true, since = "1.20.1") // Use onInventoryTick
+    @Deprecated(forRemoval = true, since = "1.20.1")
     default void onArmorTick(ItemStack stack, Level level, Player player)
     {
     }
 
     /**
-     * Called to tick this items in a players inventory, the indexes are the global slot index.
+     * Compartment ID for the player main inventory, for use in {@link #inventoryTick(ItemStack, Level, Entity, NonNullList, int, int, ResourceLocation)}
+     * @see Inventory#items
      */
-    default void onInventoryTick(ItemStack stack, Level level, Player player, int slotIndex, int selectedIndex)
+    public static final ResourceLocation PLAYER_ITEMS = new ResourceLocation("items");
+
+    /**
+     * Compartment ID for the player armor inventory, for use in {@link #inventoryTick(ItemStack, Level, Entity, NonNullList, int, int, ResourceLocation)}
+     * @see Inventory#armor
+     */
+    public static final ResourceLocation PLAYER_ARMOR = new ResourceLocation("armor");
+
+    /**
+     * Compartment ID for the player offhand inventory, for use in {@link #inventoryTick(ItemStack, Level, Entity, NonNullList, int, int, ResourceLocation)}
+     * @see Inventory#offhand
+     */
+    public static final ResourceLocation PLAYER_OFFHAND = new ResourceLocation("offhand");
+
+    /**
+     * Called when this item is ticked in an inventory.<br>
+     * This is a more contextual version of {@link Item#inventoryTick(ItemStack, Level, Entity, int, boolean)}
+     * which allows accessing the specific sub-compartment the item is in.<br>
+     * In addition, this version takes a compartment identifier, allowing for differentiation between compartments (including modded compartments).
+     * <p>
+     * The vanilla compartment IDs are {@link #PLAYER_ITEMS}, {@link #PLAYER_ARMOR}, and {@link #PLAYER_OFFHAND}.
+     * <p>
+     * In vanilla, the only inventory that ticks items is the player inventory, and the compartments are "armor", "inventory", and "offhand".
+     * @param stack The stack being ticked.
+     * @param level The level of the of the ticking inventory. May be a client level.
+     * @param entity The entity which owns the ticking inventory.
+     * @param compartment The list of items that the item being ticked lives in.
+     * @param slotIndex The slot index of where the ticked stack is in the current compartment.
+     * @param compartmentId The ID of the compartment parameter.
+     * @param selectedIndex If the compartment is {@link #PLAYER_ITEMS}, this is the index of the selected hotbar slot, otherwise -1.
+     * @apiNote Override-Only, call via {@link IForgeItemStack#inventoryTick}
+     */
+    @ApiStatus.OverrideOnly
+    default void inventoryTick(ItemStack stack, Level level, Entity entity, NonNullList<ItemStack> compartment, int slotIndex, ResourceLocation compartmentId, int selectedIndex)
     {
-    	// For compatibility reasons we have to use non-local index values, I think this is a vanilla bug but lets maintain compatibility
-    	int vanillaIndex = slotIndex;
-    	if (slotIndex >= 36) {
-    		vanillaIndex -= 36;
-    		if (vanillaIndex >= 4)
-    			vanillaIndex -= 4;
-			else
-				onArmorTick(stack, level, player);
-    	}
-		stack.inventoryTick(level, player, vanillaIndex, selectedIndex == vanillaIndex);
+        // Vanilla always passes the "local" slotIndex, despite it being useless without the compartment.
+        stack.inventoryTick(level, entity, slotIndex, selectedIndex == slotIndex);
     }
 
     /**

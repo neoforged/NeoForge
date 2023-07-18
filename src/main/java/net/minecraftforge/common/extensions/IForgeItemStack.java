@@ -29,7 +29,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
@@ -299,11 +301,11 @@ public interface IForgeItemStack extends ICapabilitySerializable<CompoundTag>
     }
 
     /**
-     * Called to tick this items in a players inventory, the indexes are the global slot index.
+     * @see {@link IForgeItem#inventoryTick(ItemStack, Level, Entity, NonNullList, int, ResourceLocation, int)}
      */
-    default void onInventoryTick(Level level, Player player, int slotIndex, int selectedIndex)
+    default void inventoryTick(Level level, Entity entity, NonNullList<ItemStack> compartment, int slotIndex, ResourceLocation compartmentId, int selectedIndex)
     {
-    	self().getItem().onInventoryTick(self(), level, player, slotIndex, selectedIndex);
+    	self().getItem().inventoryTick(self(), level, entity, compartment, slotIndex, compartmentId, selectedIndex);
     }
 
 

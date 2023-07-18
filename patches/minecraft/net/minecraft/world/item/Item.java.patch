@@ -72,7 +72,7 @@
        return Mth.m_14169_(f / 3.0F, 1.0F, 1.0F);
     }
  
-@@ -229,10 +_,12 @@
+@@ -229,14 +_,17 @@
     }
  
     @Nullable
@@ -85,6 +85,11 @@
     public boolean m_41470_() {
        return this.f_41378_ != null;
     }
+ 
++   @Deprecated // Neo: Use IForgeItem#inventoryTick(ItemStack, Level, Entity, NonNullList, int, ResourceLocation, int)
+    public void m_6883_(ItemStack p_41404_, Level p_41405_, Entity p_41406_, int p_41407_, boolean p_41408_) {
+    }
+ 
 @@ -253,7 +_,7 @@
  
     public int m_8105_(ItemStack p_41454_) {

@@ -192,6 +192,14 @@
        }
     }
  
+@@ -442,6 +_,7 @@
+       return this.m_41613_() + " " + this.m_41720_();
+    }
+ 
++   @Deprecated // Neo: Use IForgeItemStack#inventoryTick(Level, Entity, NonNullList, int, ResourceLocation, int)
+    public void m_41666_(Level p_41667_, Entity p_41668_, int p_41669_, boolean p_41670_) {
+       if (this.f_41588_ > 0) {
+          --this.f_41588_;
 @@ -522,7 +_,7 @@
  
     public void m_41751_(@Nullable CompoundTag p_41752_) {
