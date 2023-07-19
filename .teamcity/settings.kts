@@ -34,6 +34,7 @@ project {
     buildType(PullRequests)
     buildType(PullRequestChecks)
     buildType(PullRequestCompatibility)
+    buildType(PullRequestPatchModifications)
 
     params {
         text("docker_jdk_version", "17", label = "Gradle version", description = "The version of the JDK to use during execution of tasks in a JDK.", display = ParameterDisplay.HIDDEN, allowEmpty = false)
@@ -98,16 +99,13 @@ object BuildSecondaryBranches : BuildType({
     description = "Builds and Publishes the secondary branches of the project."
     params {
         text("git_branch_spec", """
+                -:refs/heads/(main*)
+                -:refs/heads/(master*)
+                -:refs/heads/(develop|release|staging|main|master)
+                -:refs/heads/(1.*)
                 +:refs/heads/(*)
                 -:refs/heads/noci*
             """.trimIndent(), label = "The branch specification of the repository", description = "By default all main branches are build by the configuration. Modify this value to adapt the branches build.", display = ParameterDisplay.HIDDEN, allowEmpty = true)
-    }
-    vcs {
-        branchFilter = """
-            +:*
-            -:1.*
-            -:<default>
-        """.trimIndent()
     }
 })
 
@@ -116,6 +114,10 @@ object PullRequests : BuildType({
     id("MinecraftForge_MinecraftForge__PullRequests")
     name = "Pull Requests"
     description = "Builds pull requests for the project"
+
+    params {
+        param("git_branch_spec", "")
+    }
 
     params {
         checkbox("should_execute_build", "true", label = "Should build", description = "Indicates if the build task should be executed.", display = ParameterDisplay.HIDDEN,
@@ -129,14 +131,6 @@ object PullRequests : BuildType({
             allowEmpty = false
         )
     }
-
-    vcs {
-        branchFilter = """
-            +:*
-            -:1.*
-            -:<default>
-        """.trimIndent()
-    }
 })
 
 object PullRequestChecks : BuildType({
@@ -144,6 +138,10 @@ object PullRequestChecks : BuildType({
     id("MinecraftForge_MinecraftForge__PullRequestChecks")
     name = "Pull Requests (Checks)"
     description = "Checks pull requests for the project"
+
+    params {
+        param("git_branch_spec", "")
+    }
 
     steps {
         gradle {
@@ -153,23 +151,7 @@ object PullRequestChecks : BuildType({
             tasks = "checkAll"
             gradleParams = "--continue %gradle_custom_args%"
             enableStacktrace = true
-            dockerImage = "%docker_gradle_image%"
-            dockerRunParameters = """
-                -v "/opt/cache/agent/gradle:/home/gradle/.gradle"
-                -v "/opt/cache/shared/gradle:/home/gradle/rocache:ro"
-                --network=host
-                -u 1000:1000
-                %docker_additional_args%
-            """.trimIndent()
         }
-    }
-
-    vcs {
-        branchFilter = """
-            +:*
-            -:1.*
-            -:<default>
-        """.trimIndent()
     }
 })
 
@@ -179,6 +161,10 @@ object PullRequestCompatibility : BuildType({
     name = "Pull Requests (Compatibility)"
     description = "Validates binary compatibility for pull requests made to the project"
 
+    params {
+        param("git_branch_spec", "")
+    }
+
     steps {
         gradle {
             name = "Validate"
@@ -187,22 +173,28 @@ object PullRequestCompatibility : BuildType({
             tasks = "checkJarCompatibility"
             gradleParams = "--continue %gradle_custom_args%"
             enableStacktrace = true
-            dockerImage = "%docker_gradle_image%"
-            dockerRunParameters = """
-                -v "/opt/cache/agent/gradle:/home/gradle/.gradle"
-                -v "/opt/cache/shared/gradle:/home/gradle/rocache:ro"
-                --network=host
-                -u 1000:1000
-                %docker_additional_args%
-            """.trimIndent()
         }
     }
+})
 
-    vcs {
-        branchFilter = """
-            +:*
-            -:1.*
-            -:<default>
-        """.trimIndent()
+object PullRequestPatchModifications : BuildType({
+    templates(AbsoluteId("MinecraftForge_BuildPullRequests"), AbsoluteId("MinecraftForge_SetupGradleUtilsCiEnvironmen"), AbsoluteId("MinecraftForge_BuildWithDiscordNotifications"), AbsoluteId("MinecraftForge_SetupProjectUsingGradle"))
+    id("MinecraftForge_MinecraftForge__PullRequestPatchModifications")
+    name = "Pull Requests (Patch Correctness)"
+    description = "Validates initial patch correctness"
+
+    params {
+        param("git_branch_spec", "")
+    }
+
+    steps {
+        gradle {
+            name = "Validate"
+            id = "RUNNER_10_Compatibility"
+
+            tasks = "failGitChanges"
+            gradleParams = "--continue %gradle_custom_args%"
+            enableStacktrace = true
+        }
     }
 })
