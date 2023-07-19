@@ -192,7 +192,7 @@ object PullRequestPatchModifications : BuildType({
             name = "Validate"
             id = "RUNNER_10_Compatibility"
 
-            tasks = "failGitChanges"
+            tasks = ":forge:genPatches failGitChanges"
             gradleParams = "--continue %gradle_custom_args%"
             enableStacktrace = true
         }

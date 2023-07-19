@@ -217,9 +217,9 @@ public class Util {
 	}
 
     static String getLatestForgeVersion(mcVersion) {
-        final json = new JsonSlurper().parseText(new URL('https://maven.neoforged.net/releases/net/neoforged/forge/promotions_slim.json').getText('UTF-8'))
-        final ver = json.promos["$mcVersion-latest"]
-        ver === null ? null : (mcVersion + '-' + ver)
+        final url = "https://maven.neoforged.net/api/maven/latest/version/releases/net/neoforged/forge?classifier=universal&filter=$mcVersion-"
+        final json = new JsonSlurper().parseText(new URL(url).getText('UTF-8'))
+        return json.version
     }
 
     static void processClassNodes(File file, Closure process) {
