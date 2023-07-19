@@ -6,12 +6,17 @@
 package net.minecraftforge.registries;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderOwner;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import com.mojang.datafixers.util.Either;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -21,15 +26,30 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public final class RegistryObject<T> implements Supplier<T>
+/**
+ * This class is deprecated, for replacements, see the following options:
+ * <ul>
+ * <li>For objects typed to {@link RegistryObject} - replace their type with {@link Holder}</li>
+ * <li>For {@link RegistryObject#create} - replace these with {@link Registry#getHolder(ResourceKey)}</li>
+ * <li>For instance methods on {@link RegistryObject} - replace with equivalent functionality from {@link Holder}</li>
+ * </ul>
+ */
+@Deprecated(since = "1.20.1", forRemoval = true)
+public final class RegistryObject<T> implements Supplier<T>, Holder<T>
 {
-    @Nullable
-    private final ResourceLocation name;
-    @Nullable
+    /**
+     * The resource key of the target object.
+     */
     private ResourceKey<T> key;
+
+    /**
+     * True if the value may refer to an unbound registry, and should not error if the registry is absent.
+     */
     private final boolean optionalRegistry;
-    @Nullable
-    private T value;
+
+    /**
+     * The currently cached value.
+     */
     @Nullable
     private Holder<T> holder;
 
@@ -42,7 +62,7 @@ public final class RegistryObject<T> implements Supplier<T>
      */
     public static <T, U extends T> RegistryObject<U> create(final ResourceLocation name, IForgeRegistry<T> registry)
     {
-        return new RegistryObject<U>(name, registry);
+        return create(name, registry.getRegistryKey(), "");
     }
 
     /**
@@ -124,7 +144,7 @@ public final class RegistryObject<T> implements Supplier<T>
         return new RegistryObject<>(name, registryName, modid, true);
     }
 
-    private static final RegistryObject<?> EMPTY = new RegistryObject<>();
+    private static final RegistryObject<?> EMPTY = createOptional(new ResourceLocation("empty", "empty"), new ResourceLocation("empty", "empty"), "empty");
 
     private static <T> RegistryObject<T> empty() {
         @SuppressWarnings("unchecked")
@@ -132,31 +152,8 @@ public final class RegistryObject<T> implements Supplier<T>
         return t;
     }
 
-    private RegistryObject() {
-        this.name = null;
-        this.key = null;
-        this.optionalRegistry = false;
-    }
-
-    @SuppressWarnings("unchecked")
-    private RegistryObject(ResourceLocation name, IForgeRegistry<?> registry)
-    {
-        if (registry == null)
-            throw new IllegalArgumentException("Invalid registry argument, must not be null");
-        this.name = name;
-        this.key = (ResourceKey<T>) ResourceKey.create(registry.getRegistryKey(), name);
-        this.optionalRegistry = false;
-        ObjectHolderRegistry.addHandler(pred ->
-        {
-            if (pred.test(registry.getRegistryName()))
-                this.updateReference((IForgeRegistry<? extends T>) registry);
-        });
-        this.updateReference((IForgeRegistry<? extends T>) registry);
-    }
-
     private RegistryObject(final ResourceLocation name, final ResourceLocation registryName, final String modid, boolean optionalRegistry)
     {
-        this.name = name;
         this.key = ResourceKey.create(ResourceKey.createRegistryKey(registryName), name);
         this.optionalRegistry = optionalRegistry;
         final Throwable callerStack = new Throwable("Calling Site from mod: " + modid);
@@ -200,41 +197,32 @@ public final class RegistryObject<T> implements Supplier<T>
     @Override
     public T get()
     {
-        T ret = this.value;
-        Objects.requireNonNull(ret, () -> "Registry Object not present: " + this.name);
-        return ret;
+        Objects.requireNonNull(this.holder, () -> "Registry Object not present: " + this.key);
+        return this.holder.get();
     }
 
-    @SuppressWarnings("unchecked")
-    void updateReference(IForgeRegistry<? extends T> registry)
+    @SuppressWarnings({"unchecked","rawtypes"})
+    void updateReference(IForgeRegistry<? super T> registry)
     {
-        if (this.name == null || this.key == null)
-            return;
-        if (registry.containsKey(this.name))
+        if (registry.containsKey(this.key.location()))
         {
-            this.value = registry.getValue(this.name);
-            this.holder = (Holder<T>) registry.getHolder(this.name).orElse(null);
+            this.holder = (Holder<T>) registry.getHolder((ResourceKey) this.key).get();
         }
         else
         {
-            this.value = null;
             this.holder = null;
         }
     }
 
-    @SuppressWarnings("unchecked")
-    void updateReference(Registry<? extends T> registry)
+    @SuppressWarnings({"unchecked","rawtypes"})
+    void updateReference(Registry<? super T> registry)
     {
-        if (this.name == null || this.key == null)
-            return;
-        if (registry.containsKey(this.name))
+        if (registry.containsKey(this.key.location()))
         {
-            this.value = registry.get(this.name);
-            this.holder = ((Registry<T>) registry).getHolder(this.key).orElse(null);
+            this.holder = (Holder<T>) registry.getHolder((ResourceKey) this.key).get();
         }
         else
         {
-            this.value = null;
             this.holder = null;
         }
     }
@@ -242,40 +230,37 @@ public final class RegistryObject<T> implements Supplier<T>
     @SuppressWarnings("unchecked")
     void updateReference(ResourceLocation registryName)
     {
-        if (this.name == null)
-            return;
-        IForgeRegistry<? extends T> forgeRegistry = RegistryManager.ACTIVE.getRegistry(registryName);
+        IForgeRegistry<? super T> forgeRegistry = RegistryManager.ACTIVE.getRegistry(registryName);
         if (forgeRegistry != null)
         {
             updateReference(forgeRegistry);
             return;
         }
 
-        Registry<? extends T> vanillaRegistry = (Registry<? extends T>) BuiltInRegistries.REGISTRY.get(registryName);
+        Registry<? super T> vanillaRegistry = (Registry<? super T>) BuiltInRegistries.REGISTRY.get(registryName);
         if (vanillaRegistry != null)
         {
             updateReference(vanillaRegistry);
             return;
         }
 
-        this.value = null;
         this.holder = null;
     }
 
     void updateReference(RegisterEvent event)
     {
-        IForgeRegistry<? extends T> forgeRegistry = event.getForgeRegistry();
+        IForgeRegistry<? super T> forgeRegistry = event.getForgeRegistry();
         if (forgeRegistry != null)
         {
             updateReference(forgeRegistry);
             return;
         }
 
-        Registry<? extends T> vanillaRegistry = event.getVanillaRegistry();
+        Registry<? super T> vanillaRegistry = event.getVanillaRegistry();
         if (vanillaRegistry != null)
             updateReference(vanillaRegistry);
         else
-            this.value = null;
+            this.holder = null;
     }
 
     private static boolean registryExists(ResourceLocation registryName)
@@ -286,7 +271,7 @@ public final class RegistryObject<T> implements Supplier<T>
 
     public ResourceLocation getId()
     {
-        return this.name;
+        return this.key.location();
     }
 
     /**
@@ -296,7 +281,7 @@ public final class RegistryObject<T> implements Supplier<T>
      * @return the resource key that points to the registry and name of this registry object
      */
     @Nullable
-    public ResourceKey<T> getKey()
+    public ResourceKey<? super T> getKey()
     {
         return this.key;
     }
@@ -311,7 +296,7 @@ public final class RegistryObject<T> implements Supplier<T>
      * @return {@code true} if there is a mod object present, otherwise {@code false}
      */
     public boolean isPresent() {
-        return this.value != null;
+        return this.holder != null;
     }
 
     /**
@@ -474,11 +459,11 @@ public final class RegistryObject<T> implements Supplier<T>
      * The returned optional will be empty if the registry does not exist or if {@link #isPresent() returns false}.
      *
      * @return an optional {@link Holder} instance pointing to this RegistryObject's name and value
+     * @deprecated Use the native methods, as this class now implements Holder.
      */
-    @NotNull
     public Optional<Holder<T>> getHolder()
     {
-        return Optional.ofNullable(this.holder);
+        return Optional.of(this);
     }
 
     @Override
@@ -486,7 +471,7 @@ public final class RegistryObject<T> implements Supplier<T>
     {
         if (this == obj) return true;
         if (obj instanceof RegistryObject) {
-            return Objects.equals(((RegistryObject<?>)obj).name, name);
+            return ((RegistryObject<?>) obj).key == this.key;
         }
         return false;
     }
@@ -494,6 +479,73 @@ public final class RegistryObject<T> implements Supplier<T>
     @Override
     public int hashCode()
     {
-        return Objects.hashCode(name);
+        return this.key.hashCode();
+    }
+
+    @Override
+    public T value()
+    {
+        return get();
+    }
+
+    @Override
+    public boolean isBound()
+    {
+        return isPresent() && this.holder.isBound();
+    }
+
+    @Override
+    public boolean is(ResourceLocation id)
+    {
+        return id.equals(this.key.location());
+    }
+
+    @Override
+    public boolean is(ResourceKey<T> key)
+    {
+        return key == this.key;
+    }
+
+    @Override
+    @SuppressWarnings({"rawtypes","unchecked"})
+    public boolean is(Predicate<ResourceKey<T>> filter)
+    {
+        return filter.test((ResourceKey) this.key);
+    }
+
+    @Override
+    public boolean is(TagKey<T> tag)
+    {
+        return isPresent() && this.holder.is(tag);
+    }
+
+    @Override
+    public Stream<TagKey<T>> tags()
+    {
+        return isPresent() ? this.holder.tags() : Stream.empty();
+    }
+
+    @Override
+    public Either<ResourceKey<T>,T> unwrap()
+    {
+        return isPresent() ? this.holder.unwrap() : Either.left(this.key);
+    }
+
+    @Override
+    public Optional<ResourceKey<T>> unwrapKey()
+    {
+        return Optional.of(this.key);
+    }
+
+    @Override
+    public Kind kind()
+    {
+        return Kind.REFERENCE;
+    }
+
+    @Override
+    public boolean canSerializeIn(HolderOwner<T> owner)
+    {
+        return isPresent() && this.holder.canSerializeIn(owner);
     }
 }

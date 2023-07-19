@@ -7,6 +7,7 @@ package net.minecraftforge.registries;
 
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
@@ -170,6 +171,7 @@ public class DeferredRegister<T>
      * @param name The new entry's name, it will automatically have the modid prefixed.
      * @param sup A factory for the new entry, it should return a new instance every time it is called.
      * @return A RegistryObject that will be updated with when the entries in the registry change.
+     * @apiNote This method will return {@link Holder} in future versions.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <I extends T> RegistryObject<I> register(final String name, final Supplier<? extends I> sup)
@@ -330,6 +332,7 @@ public class DeferredRegister<T>
     }
     /**
      * @return The unmodifiable view of registered entries. Useful for bulk operations on all values.
+     * @apiNote This method will return a collection of {@link Holder}s in future versions.
      */
     public Collection<RegistryObject<T>> getEntries()
     {
@@ -378,7 +381,7 @@ public class DeferredRegister<T>
 
     private void addEntries(RegisterEvent event)
     {
-        if (event.getRegistryKey().equals(this.registryKey))
+        if (event.getRegistryKey() == this.registryKey)
         {
             this.seenRegisterEvent = true;
             for (Entry<RegistryObject<T>, Supplier<? extends T>> e : entries.entrySet())
