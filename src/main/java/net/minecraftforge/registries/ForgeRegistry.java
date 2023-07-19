@@ -75,7 +75,6 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
     private final int max;
     private final boolean allowOverrides;
     private final boolean isModifiable;
-    private final boolean hasWrapper;
 
     private V defaultValue = null;
     boolean isFrozen = false;
@@ -104,8 +103,7 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
         this.missing = builder.getMissingFactory();
         this.allowOverrides = builder.getAllowOverrides();
         this.isModifiable = builder.getAllowModifications();
-        this.hasWrapper = true;
-        this.tagManager = this.hasWrapper ? new ForgeRegistryTagManager<>(this) : null;
+        this.tagManager = new ForgeRegistryTagManager<>(this);
         if (this.create != null)
             this.create.onCreate(this, stage);
     }
@@ -228,9 +226,6 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
     @Nullable
     NamespacedWrapper<V> getWrapper()
     {
-        if (!this.hasWrapper)
-            return null;
-
         return this.defaultKey != null
                 ? this.getSlaveMap(NamespacedDefaultedWrapper.Factory.ID, NamespacedDefaultedWrapper.class)
                 : this.getSlaveMap(NamespacedWrapper.Factory.ID, NamespacedWrapper.class);
@@ -438,15 +433,12 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
         this.availabilityMap.set(idToUse);
         this.owners.put(new OverrideOwner<V>(owner == null ? key.getNamespace() : owner, rkey), value);
 
-        if (hasWrapper)
+        bindDelegate(rkey, value);
+        if (oldEntry != null)
         {
-            bindDelegate(rkey, value);
-            if (oldEntry != null)
-            {
-                if (!this.overrides.get(key).contains(oldEntry))
-                    this.overrides.put(key, oldEntry);
-                this.overrides.get(key).remove(value);
-            }
+            if (!this.overrides.get(key).contains(oldEntry))
+                this.overrides.put(key, oldEntry);
+            this.overrides.get(key).remove(value);
         }
 
         if (this.add != null)
@@ -545,9 +537,6 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
 
     void resetDelegates()
     {
-        if (!this.hasWrapper)
-            return;
-
         for (Entry<ResourceKey<V>, V> entry : this.keys.entrySet())
             bindDelegate(entry.getKey(), entry.getValue());
 

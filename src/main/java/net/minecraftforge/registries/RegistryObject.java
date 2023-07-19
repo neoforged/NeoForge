@@ -12,6 +12,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,7 +64,7 @@ public final class RegistryObject<T> implements Supplier<T>, Holder<T>
      */
     public static <T, U extends T> RegistryObject<U> create(final ResourceLocation name, IForgeRegistry<T> registry)
     {
-        return create(name, registry.getRegistryKey(), "");
+        return create(name, registry.getRegistryKey(), ModLoadingContext.get().getActiveNamespace());
     }
 
     /**
@@ -281,7 +283,7 @@ public final class RegistryObject<T> implements Supplier<T>, Holder<T>
      * @return the resource key that points to the registry and name of this registry object
      */
     @Nullable
-    public ResourceKey<? super T> getKey()
+    public ResourceKey<T> getKey()
     {
         return this.key;
     }
@@ -470,10 +472,7 @@ public final class RegistryObject<T> implements Supplier<T>, Holder<T>
     public boolean equals(Object obj)
     {
         if (this == obj) return true;
-        if (obj instanceof RegistryObject) {
-            return ((RegistryObject<?>) obj).key == this.key;
-        }
-        return false;
+        return obj instanceof RegistryObject<?> ro ? ro.key == this.key : false;
     }
 
     @Override
@@ -526,7 +525,7 @@ public final class RegistryObject<T> implements Supplier<T>, Holder<T>
     }
 
     @Override
-    public Either<ResourceKey<T>,T> unwrap()
+    public Either<ResourceKey<T>, T> unwrap()
     {
         return isPresent() ? this.holder.unwrap() : Either.left(this.key);
     }
