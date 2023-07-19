@@ -7,8 +7,6 @@ package net.minecraftforge.registries;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.IntFunction;
-
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -16,7 +14,6 @@ import com.mojang.serialization.DynamicOps;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.common.util.LogMessageAdapter;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
@@ -35,7 +32,6 @@ import com.google.common.collect.Sets;
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -48,7 +44,6 @@ import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.VisibleForTesting;
 
 @ApiStatus.Internal
 public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegistryModifiable<V>
@@ -63,7 +58,6 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
     private final Map<ResourceLocation, ResourceLocation> aliases = Maps.newHashMap();
     final Map<ResourceLocation, ?> slaves = Maps.newHashMap();
     private final ResourceLocation defaultKey;
-    private final ResourceKey<V> defaultResourceKey;
     private final CreateCallback<V> create;
     private final AddCallback<V> add;
     private final ClearCallback<V> clear;
@@ -92,7 +86,6 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
 
     private final Codec<V> codec = new RegistryCodec();
 
-    @SuppressWarnings("unchecked")
     ForgeRegistry(RegistryManager stage, ResourceLocation name, RegistryBuilder<V> builder)
     {
         this.name = name;
@@ -100,7 +93,6 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
         this.builder = builder;
         this.stage = stage;
         this.defaultKey = builder.getDefault();
-        this.defaultResourceKey = ResourceKey.create(key, defaultKey);
         this.min = builder.getMinId();
         this.max = builder.getMaxId();
         this.availabilityMap = new BitSet(Math.min(max + 1, 0x0FFF));
@@ -112,7 +104,7 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
         this.missing = builder.getMissingFactory();
         this.allowOverrides = builder.getAllowOverrides();
         this.isModifiable = builder.getAllowModifications();
-        this.hasWrapper = builder.getHasWrapper();
+        this.hasWrapper = true;
         this.tagManager = this.hasWrapper ? new ForgeRegistryTagManager<>(this) : null;
         if (this.create != null)
             this.create.onCreate(this, stage);
@@ -448,7 +440,7 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
 
         if (hasWrapper)
         {
-            Holder.Reference<V> delegate = bindDelegate(rkey, value);
+            bindDelegate(rkey, value);
             if (oldEntry != null)
             {
                 if (!this.overrides.get(key).contains(oldEntry))
@@ -787,7 +779,7 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
                 getKeys().stream().map(this::getID).sorted().map(id -> {
                     V val = getValue(id);
                     ResourceLocation key = getKey(val);
-                    return new DumpRow(Integer.toString(id), getKey(val).toString(), val.toString());
+                    return new DumpRow(Integer.toString(id), key.toString(), val.toString());
                 }).forEach(tab::add);
                 tab.build(sb);
             }));

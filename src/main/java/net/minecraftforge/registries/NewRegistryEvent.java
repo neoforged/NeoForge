@@ -90,7 +90,7 @@ public class NewRegistryEvent extends Event implements IModBusEvent
 
         builtRegistries.put(builder, registry);
 
-        if (builder.getHasWrapper() && !BuiltInRegistries.REGISTRY.containsKey(registry.getRegistryName()))
+        if (!BuiltInRegistries.REGISTRY.containsKey(registry.getRegistryName()))
             RegistryManager.registerToRootRegistry((ForgeRegistry<?>) registry);
 
         data.registryHolder.registry = registry;

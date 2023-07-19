@@ -37,7 +37,6 @@ public class RegistryBuilder<T>
     private boolean sync = true;
     private boolean allowOverrides = true;
     private boolean allowModifications = false;
-    private boolean hasWrapper = false;
     private MissingFactory<T> missingFactory;
     private Set<ResourceLocation> legacyNames = new HashSet<>();
     @Nullable
@@ -180,9 +179,12 @@ public class RegistryBuilder<T>
         return this;
     }
 
+    /**
+     * @deprecated All registries now have vanilla wrappers.
+     */
+    @Deprecated(since = "1.20.1", forRemoval = true)
     RegistryBuilder<T> hasWrapper()
     {
-        this.hasWrapper = true;
         return this;
     }
 
@@ -209,11 +211,11 @@ public class RegistryBuilder<T>
      *
      * @return this builder
      * @see RegistryBuilder#hasWrapper()
+     * @deprecated All registries now have vanilla wrappers.
      */
+    @Deprecated(since = "1.20.1", forRemoval = true)
     public RegistryBuilder<T> hasTags()
     {
-        // Tag system heavily relies on Registry<?> objects, so we need a wrapper for this registry to take advantage
-        this.hasWrapper();
         return this;
     }
 
@@ -222,13 +224,10 @@ public class RegistryBuilder<T>
      */
     IForgeRegistry<T> create()
     {
-        if (hasWrapper)
-        {
-            if (getDefault() == null)
-                addCallback(new NamespacedWrapper.Factory<T>());
-            else
-                addCallback(new NamespacedDefaultedWrapper.Factory<T>());
-        }
+        if (getDefault() == null)
+            addCallback(new NamespacedWrapper.Factory<T>());
+        else
+            addCallback(new NamespacedDefaultedWrapper.Factory<T>());
         return RegistryManager.ACTIVE.createRegistry(registryName, this);
     }
 
@@ -357,10 +356,5 @@ public class RegistryBuilder<T>
     Function<T, Holder.Reference<T>> getIntrusiveHolderCallback()
     {
         return this.intrusiveHolderCallback;
-    }
-
-    boolean getHasWrapper()
-    {
-        return this.hasWrapper;
     }
 }
