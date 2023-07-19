@@ -12,7 +12,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 
 import org.jetbrains.annotations.NotNull;
@@ -506,10 +505,9 @@ public final class RegistryObject<T> implements Supplier<T>, Holder<T>
     }
 
     @Override
-    @SuppressWarnings({"rawtypes","unchecked"})
     public boolean is(Predicate<ResourceKey<T>> filter)
     {
-        return filter.test((ResourceKey) this.key);
+        return filter.test(this.key);
     }
 
     @Override
