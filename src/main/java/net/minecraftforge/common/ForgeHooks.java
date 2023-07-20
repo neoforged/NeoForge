@@ -1352,7 +1352,7 @@ public class ForgeHooks
         if (failedElements != null && !failedElements.isEmpty())
         {
             StringBuilder buf = new StringBuilder();
-            buf.append("Forge Mod Loader could not load this save.\n\n")
+            buf.append("Fancy Mod Loader could not load this save.\n\n")
                 .append("There are ").append(failedElements.size()).append(" unassigned registry entries in this save.\n")
                 .append("You will not be able to load until they are present again.\n\n");
 

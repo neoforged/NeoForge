@@ -772,7 +772,7 @@ public class ForgeHooksClient
         }
         catch (IOException e)
         {
-            LOGGER.error("Unable to get Forge metadata for {}, falling back to vanilla loading", name);
+            LOGGER.error("Unable to get NeoForge metadata for {}, falling back to vanilla loading", name);
             e.printStackTrace();
             return null;
         }
