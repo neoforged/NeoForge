@@ -24,14 +24,14 @@
 +   }
 +
 +   /**
-+    * @param p_54694_ A fluid supplier such as {@link net.minecraftforge.registries.RegistryObject<FlowingFluid>}
++    * @param fluid A fluid supplier such as {@link net.minecraftforge.registries.RegistryObject<FlowingFluid>}
 +    */
-+   public LiquidBlock(java.util.function.Supplier<? extends FlowingFluid> p_54694_, BlockBehaviour.Properties p_54695_) {
++   public LiquidBlock(java.util.function.Supplier<? extends FlowingFluid> fluid, BlockBehaviour.Properties p_54695_) {
 +      super(p_54695_);
 +      this.f_54689_ = null;
 +      this.f_54691_ = Lists.newArrayList();
 +      this.m_49959_(this.f_49792_.m_61090_().m_61124_(f_54688_, Integer.valueOf(0)));
-+      this.supplier = p_54694_;
++      this.supplier = fluid;
     }
  
     public VoxelShape m_5939_(BlockState p_54760_, BlockGetter p_54761_, BlockPos p_54762_, CollisionContext p_54763_) {

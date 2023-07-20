@@ -10,7 +10,7 @@
 +      for(int i = 0; i <= 2; ++i) {
 +         stack.push(AdvancementVisibilityEvaluator.VisibilityRule.NO_CHANGE);
 +      }
-+      return m_264402_(advancement.m_264348_(), stack, test, (p_265639_, p_265580_) -> {});
++      return m_264402_(advancement.m_264348_(), stack, test, (adv, visible) -> {});
 +   }
 +
     @FunctionalInterface
