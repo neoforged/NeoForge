@@ -54,7 +54,7 @@ import java.util.function.Supplier;
 public class DeferredRegister<T>
 {
     /**
-     * Factory method for DeferredRegister. Supports both registries that already exist or do not exist yet.<br>
+     * Factory method for DeferredRegister. The target registry does not need to exist yet.<br>
      * <p>
      * If the registry is never created, any created {@link DeferredHolder}s will never become {@linkplain DeferredHolder#isPresent() present}.
      * <p>
