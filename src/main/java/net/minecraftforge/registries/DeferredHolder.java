@@ -31,13 +31,13 @@ public class DeferredHolder<T> implements Holder<T>
     /**
      * The resource key of the target object.
      */
-    protected ResourceKey<T> key;
+    protected final ResourceKey<T> key;
 
     /**
      * The currently cached value.
      */
     @Nullable
-    protected Holder<T> holder;
+    protected Holder<T> holder = null;
 
     /**
      * Creates a new DeferredHolder targeting the value with the specified name in the specified registry.
@@ -125,10 +125,6 @@ public class DeferredHolder<T> implements Holder<T>
         if (registry != null && registry.containsKey(this.key.location()))
         {
             this.holder = registry.getHolder(this.key).get();
-        }
-        else
-        {
-            this.holder = null;
         }
     }
 
