@@ -29,6 +29,7 @@ plugins {
     id 'de.undercouch.download' version '5.4.0'
     id 'net.neoforged.gradle.patcher' version '[6.0.12,6.2)' apply false
     id 'net.neoforged.gradle.mcp' version '[6.0.12,6.2)' apply false
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+' apply false
 }
 
 Util.init() //Init all our extension methods!
@@ -42,8 +43,8 @@ ext {
             keystore: project.properties.keystore
         ]
     }
-    MAPPING_CHANNEL = 'official'
-    MAPPING_VERSION = '1.20.1'
+    MAPPING_CHANNEL = 'parchment'
+    MAPPING_VERSION = '2023.07.16-1.20.1'
     MC_VERSION = '1.20.1'
     MC_NEXT_VERSION = '1.21'
     MCP_VERSION = '20230612.114412'
@@ -67,7 +68,7 @@ ext {
     SLF4J_API_VERSION = '1.8.0-beta4'
     APACHE_MAVEN_ARTIFACT_VERSION = '3.8.5'
     JARJAR_VERSION = '0.3.19'
-    FANCY_MOD_LOADER_VERSION = '47.1.40'
+    FANCY_MOD_LOADER_VERSION = '47.1.41'
 
     // These versions should be kept in sync with the version manifest JSON
     // To use a version newer than the version manifest JSON, the dependency must be added to the installer configuration
@@ -222,6 +223,7 @@ project(':mcp') {
 project(':clean') {
     evaluationDependsOn(':mcp')
     apply plugin: 'net.neoforged.gradle.patcher'
+    apply plugin: 'org.parchmentmc.librarian.forgegradle'
     tasks.withType(AbstractPublishToMaven.class).forEach{tsk -> tsk.enabled = false } // We don't want to publish anything
 
     dependencies {
@@ -267,6 +269,7 @@ project(':forge') {
     evaluationDependsOn(':clean')
     apply plugin: 'java-library'
     apply plugin: 'net.neoforged.gradle.patcher'
+    apply plugin: 'org.parchmentmc.librarian.forgegradle'
     apply plugin: 'org.cadixdev.licenser'
 
     applyPatches { 

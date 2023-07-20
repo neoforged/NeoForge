@@ -6,6 +6,7 @@
 package net.minecraftforge.server.console;
 
 import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraftforge.forge.snapshots.ForgeSnapshotsMod;
 import net.minecrell.terminalconsole.TerminalConsoleAppender;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
@@ -27,7 +28,7 @@ public final class TerminalHandler
             return false;
 
         LineReader reader = LineReaderBuilder.builder()
-                .appName("Forge")
+                .appName(ForgeSnapshotsMod.BRANDING_NAME)
                 .terminal(terminal)
                 .completer(new ConsoleCommandCompleter(server))
                 .build();

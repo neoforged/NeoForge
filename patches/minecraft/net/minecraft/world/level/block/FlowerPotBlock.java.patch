@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/FlowerPotBlock.java
 +++ b/net/minecraft/world/level/block/FlowerPotBlock.java
-@@ -28,10 +_,33 @@
+@@ -28,10 +_,31 @@
     protected static final VoxelShape f_53523_ = Block.m_49796_(5.0D, 0.0D, 5.0D, 11.0D, 6.0D, 11.0D);
     private final Block f_53525_;
  
@@ -19,9 +19,7 @@
 +    * For mod use, eliminates the need to extend this class, and prevents modded
 +    * flower pots from altering vanilla behavior.
 +    *
-+    * @param emptyPot    The empty pot for this pot, or null for self.
-+    * @param p_53528_ The flower block.
-+    * @param properties
++    * @param emptyPot The empty pot for this pot, or null for self.
 +    */
 +   public FlowerPotBlock(@org.jetbrains.annotations.Nullable java.util.function.Supplier<FlowerPotBlock> emptyPot, java.util.function.Supplier<? extends Block> p_53528_, BlockBehaviour.Properties properties) {
 +      super(properties);

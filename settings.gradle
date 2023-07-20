@@ -2,7 +2,17 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         mavenLocal()
-        maven { url = 'https://maven.neoforged.net/releases' }
+        maven {
+            name = 'NeoForged'
+            url = 'https://maven.neoforged.net/releases'
+        }
+        maven {
+            name = 'ParchmentMC'
+            url = 'https://maven.parchmentmc.org'
+            content {
+                includeGroupAndSubgroups 'org.parchmentmc'
+            }
+        }
     }
 }
 

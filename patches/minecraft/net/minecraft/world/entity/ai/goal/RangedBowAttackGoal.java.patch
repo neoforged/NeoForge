@@ -13,7 +13,7 @@
     private boolean f_25789_;
     private int f_25790_ = -1;
  
-+   public <M extends Monster & RangedAttackMob> RangedBowAttackGoal(M p_25792_, double p_25793_, int p_25794_, float p_25795_){
++   public <M extends Monster & RangedAttackMob> RangedBowAttackGoal(M p_25792_, double p_25793_, int p_25794_, float p_25795_) {
 +      this((T) p_25792_, p_25793_, p_25794_, p_25795_);
 +   }
 +
