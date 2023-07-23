@@ -108,11 +108,11 @@ public class AlterGroundEvent extends Event
     }
 
     @FunctionalInterface
-    public static interface StateProvider
+    public interface StateProvider
     {
         /**
          * Gets the BlockState that will be placed at the passed position.
          */
-        public BlockState getState(RandomSource random, BlockPos state);
+        BlockState getState(RandomSource random, BlockPos state);
     }
 }

@@ -412,8 +412,8 @@ public class ForgeHooks
     }
 
     static final Pattern URL_PATTERN = Pattern.compile(
-        // schema ipv4 OR namespace port path ends
-        // |-----------------| |-------------------------| |-------------------------| |---------| |--| |---------------|
+        //         schema                          ipv4            OR        namespace                 port     path         ends
+        //   |-----------------|        |-------------------------|  |-------------------------|    |---------| |--|   |---------------|
         "((?:[a-z0-9]{2,}:\\/\\/)?(?:(?:[0-9]{1,3}\\.){3}[0-9]{1,3}|(?:[-\\w_]{1,}\\.[a-z]{2,}?))(?::[0-9]{1,5})?.*?(?=[!\"\u00A7 \n]|$))",
         Pattern.CASE_INSENSITIVE);
 
@@ -1576,11 +1576,19 @@ public class ForgeHooks
      * @param entity           The living entity which is currently updated
      * @param consumeAirAmount The amount of air to consume when the entity is unable to breathe
      * @param refillAirAmount  The amount of air to refill when the entity is able to breathe
+     * @implNote This method needs to closely replicate the logic found right after the call site in {@link LivingEntity#baseTick()} as it overrides it.
      */
     public static void onLivingBreathe(LivingEntity entity, int consumeAirAmount, int refillAirAmount)
     {
+        // Check things that vanilla considers to be air - these will cause the air supply to be increased.
         boolean isAir = entity.getEyeInFluidType().isAir() || entity.level().getBlockState(BlockPos.containing(entity.getX(), entity.getEyeY(), entity.getZ())).is(Blocks.BUBBLE_COLUMN);
-        boolean canBreathe = isAir || !entity.canDrownInFluidType(entity.getEyeInFluidType()) || MobEffectUtil.hasWaterBreathing(entity) || (entity instanceof Player && ((Player) entity).getAbilities().invulnerable);
+        boolean canBreathe = isAir;
+        // The following effects cause the entity to not drown, but do not cause the air supply to be increased.
+        if (MobEffectUtil.hasWaterBreathing(entity) || !entity.canDrownInFluidType(entity.getEyeInFluidType()) || (entity instanceof Player player && player.getAbilities().invulnerable))
+        {
+            canBreathe = true;
+            refillAirAmount = 0;
+        }
         LivingBreatheEvent breatheEvent = new LivingBreatheEvent(entity, canBreathe, consumeAirAmount, refillAirAmount);
         MinecraftForge.EVENT_BUS.post(breatheEvent);
         if (breatheEvent.canBreathe())
@@ -1594,13 +1602,13 @@ public class ForgeHooks
 
         if (entity.getAirSupply() <= 0)
         {
-            LivingDrownEvent drownEvent = new LivingDrownEvent(entity, entity.getAirSupply() <= -20);
+            LivingDrownEvent drownEvent = new LivingDrownEvent(entity);
             if (!MinecraftForge.EVENT_BUS.post(drownEvent) && drownEvent.isDrowning())
             {
                 entity.setAirSupply(0);
                 Vec3 vec3 = entity.getDeltaMovement();
 
-                for (int i = 0; i < 8; ++i)
+                for (int i = 0; i < drownEvent.getBubbleCount(); ++i)
                 {
                     double d2 = entity.getRandom().nextDouble() - entity.getRandom().nextDouble();
                     double d3 = entity.getRandom().nextDouble() - entity.getRandom().nextDouble();
@@ -1608,11 +1616,11 @@ public class ForgeHooks
                     entity.level().addParticle(ParticleTypes.BUBBLE, entity.getX() + d2, entity.getY() + d3, entity.getZ() + d4, vec3.x, vec3.y, vec3.z);
                 }
 
-                entity.hurt(entity.damageSources().drown(), 2.0F);
+                if(drownEvent.getDamageAmount() > 0) entity.hurt(entity.damageSources().drown(), drownEvent.getDamageAmount());
             }
         }
 
-        if (isAir && !entity.level().isClientSide && entity.isPassenger() && entity.getVehicle() != null && !entity.getVehicle().canBeRiddenUnderFluidType(entity.getEyeInFluidType(), entity))
+        if (!isAir && !entity.level().isClientSide && entity.isPassenger() && entity.getVehicle() != null && !entity.getVehicle().canBeRiddenUnderFluidType(entity.getEyeInFluidType(), entity))
         {
             entity.stopRiding();
         }

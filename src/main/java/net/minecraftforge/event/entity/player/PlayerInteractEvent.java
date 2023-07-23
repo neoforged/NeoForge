@@ -313,7 +313,7 @@ public class PlayerInteractEvent extends PlayerEvent
             }
         }
 
-        public static enum Action {
+        public enum Action {
             /**
              * When the player first left clicks a block
              */
