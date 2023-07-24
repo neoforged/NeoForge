@@ -38,28 +38,34 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public final class ForgeRecipeProvider extends VanillaRecipeProvider {
+public final class ForgeRecipeProvider extends VanillaRecipeProvider
+{
     private final Map<Item, TagKey<Item>> replacements = new HashMap<>();
     private final Set<ResourceLocation> excludes = new HashSet<>();
 
-    public ForgeRecipeProvider(PackOutput packOutput) {
+    public ForgeRecipeProvider(PackOutput packOutput)
+    {
         super(packOutput);
     }
 
-    private void exclude(ItemLike item) {
+    private void exclude(ItemLike item)
+    {
         excludes.add(ForgeRegistries.ITEMS.getKey(item.asItem()));
     }
 
-    private void exclude(String name) {
+    private void exclude(String name)
+    {
         excludes.add(new ResourceLocation(name));
     }
 
-    private void replace(ItemLike item, TagKey<Item> tag) {
+    private void replace(ItemLike item, TagKey<Item> tag)
+    {
         replacements.put(item.asItem(), tag);
     }
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+    protected void buildRecipes(Consumer<FinishedRecipe> consumer)
+    {
         replace(Items.STICK, Tags.Items.RODS_WOODEN);
         replace(Items.GOLD_INGOT, Tags.Items.INGOTS_GOLD);
         replace(Items.IRON_INGOT, Tags.Items.INGOTS_IRON);
@@ -100,7 +106,8 @@ public final class ForgeRecipeProvider extends VanillaRecipeProvider {
     }
 
     @Nullable
-    private FinishedRecipe enhance(FinishedRecipe vanilla) {
+    private FinishedRecipe enhance(FinishedRecipe vanilla)
+    {
         if (vanilla instanceof ShapelessRecipeBuilder.Result shapeless)
             return enhance(shapeless);
         if (vanilla instanceof ShapedRecipeBuilder.Result shaped)
@@ -109,12 +116,15 @@ public final class ForgeRecipeProvider extends VanillaRecipeProvider {
     }
 
     @Nullable
-    private FinishedRecipe enhance(ShapelessRecipeBuilder.Result vanilla) {
+    private FinishedRecipe enhance(ShapelessRecipeBuilder.Result vanilla)
+    {
         List<Ingredient> ingredients = getField(ShapelessRecipeBuilder.Result.class, vanilla, 4);
         boolean modified = false;
-        for (int x = 0; x < ingredients.size(); x++) {
+        for (int x = 0; x < ingredients.size(); x++)
+        {
             Ingredient ing = enhance(vanilla.getId(), ingredients.get(x));
-            if (ing != null) {
+            if (ing != null)
+            {
                 ingredients.set(x, ing);
                 modified = true;
             }
@@ -124,24 +134,29 @@ public final class ForgeRecipeProvider extends VanillaRecipeProvider {
 
     @Nullable
     @Override
-    protected CompletableFuture<?> saveAdvancement(CachedOutput output, FinishedRecipe recipe, JsonObject json) {
+    protected CompletableFuture<?> saveAdvancement(CachedOutput output, FinishedRecipe recipe, JsonObject json)
+    {
         // NOOP - We don't replace any of the advancement things yet...
         return null;
     }
 
     @Override
-    protected CompletableFuture<?> buildAdvancement(CachedOutput output, ResourceLocation name, Advancement.Builder builder) {
+    protected CompletableFuture<?> buildAdvancement(CachedOutput output, ResourceLocation name, Advancement.Builder builder)
+    {
         // NOOP - We don't replace any of the advancement things yet...
         return CompletableFuture.allOf();
     }
 
     @Nullable
-    private FinishedRecipe enhance(ShapedRecipeBuilder.Result vanilla) {
+    private FinishedRecipe enhance(ShapedRecipeBuilder.Result vanilla)
+    {
         Map<Character, Ingredient> ingredients = getField(ShapedRecipeBuilder.Result.class, vanilla, 5);
         boolean modified = false;
-        for (Character x : ingredients.keySet()) {
+        for (Character x : ingredients.keySet())
+        {
             Ingredient ing = enhance(vanilla.getId(), ingredients.get(x));
-            if (ing != null) {
+            if (ing != null)
+            {
                 ingredients.put(x, ing);
                 modified = true;
             }
@@ -150,35 +165,46 @@ public final class ForgeRecipeProvider extends VanillaRecipeProvider {
     }
 
     @Nullable
-    private Ingredient enhance(ResourceLocation name, Ingredient vanilla) {
+    private Ingredient enhance(ResourceLocation name, Ingredient vanilla)
+    {
         if (excludes.contains(name))
             return null;
 
         boolean modified = false;
         List<Value> items = new ArrayList<>();
-        Value[] vanillaItems = getField(Ingredient.class, vanilla, 2); //This will probably crash between versions, if null fix index
-        for (Value entry : vanillaItems) {
-            if (entry instanceof ItemValue) {
+        // This will probably crash between versions, if null fix index
+        Value[] vanillaItems = getField(Ingredient.class, vanilla, 2);
+        for (Value entry : vanillaItems)
+        {
+            if (entry instanceof ItemValue)
+            {
                 ItemStack stack = entry.getItems().stream().findFirst().orElse(ItemStack.EMPTY);
                 TagKey<Item> replacement = replacements.get(stack.getItem());
-                if (replacement != null) {
+                if (replacement != null)
+                {
                     items.add(new TagValue(replacement));
                     modified = true;
-                } else
+                }
+                else
                     items.add(entry);
-            } else
+            }
+            else
                 items.add(entry);
         }
         return modified ? Ingredient.fromValues(items.stream()) : null;
     }
 
     @SuppressWarnings("unchecked")
-    private <T, R> R getField(Class<T> clz, T inst, int index) {
+    private <T, R> R getField(Class<T> clz, T inst, int index)
+    {
         Field fld = clz.getDeclaredFields()[index];
         fld.setAccessible(true);
-        try {
+        try
+        {
             return (R) fld.get(inst);
-        } catch (IllegalArgumentException | IllegalAccessException e) {
+        }
+        catch (IllegalArgumentException | IllegalAccessException e)
+        {
             throw new RuntimeException(e);
         }
     }
