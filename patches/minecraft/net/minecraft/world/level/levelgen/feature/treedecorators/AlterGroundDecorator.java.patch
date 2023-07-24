@@ -1,11 +1,62 @@
 --- a/net/minecraft/world/level/levelgen/feature/treedecorators/AlterGroundDecorator.java
 +++ b/net/minecraft/world/level/levelgen/feature/treedecorators/AlterGroundDecorator.java
-@@ -72,7 +_,7 @@
+@@ -35,21 +_,22 @@
+       }
+ 
+       if (!list.isEmpty()) {
++         var eventProvider = net.minecraftforge.event.ForgeEventFactory.alterGround(p_225969_, list, this.f_69303_::m_213972_);
+          int i = list.get(0).m_123342_();
+          list.stream().filter((p_69310_) -> {
+             return p_69310_.m_123342_() == i;
+          }).forEach((p_225978_) -> {
+-            this.m_225970_(p_225969_, p_225978_.m_122024_().m_122012_());
+-            this.m_225970_(p_225969_, p_225978_.m_122030_(2).m_122012_());
+-            this.m_225970_(p_225969_, p_225978_.m_122024_().m_122020_(2));
+-            this.m_225970_(p_225969_, p_225978_.m_122030_(2).m_122020_(2));
++            this.placeCircle(p_225969_, p_225978_.m_122024_().m_122012_(), eventProvider);
++            this.placeCircle(p_225969_, p_225978_.m_122030_(2).m_122012_(), eventProvider);
++            this.placeCircle(p_225969_, p_225978_.m_122024_().m_122020_(2), eventProvider);
++            this.placeCircle(p_225969_, p_225978_.m_122030_(2).m_122020_(2), eventProvider);
+ 
+             for(int j = 0; j < 5; ++j) {
+                int k = p_225969_.m_226067_().m_188503_(64);
+                int l = k % 8;
+                int i1 = k / 8;
+                if (l == 0 || l == 7 || i1 == 0 || i1 == 7) {
+-                  this.m_225970_(p_225969_, p_225978_.m_7918_(-3 + l, 0, -3 + i1));
++                  this.placeCircle(p_225969_, p_225978_.m_7918_(-3 + l, 0, -3 + i1), eventProvider);
+                }
+             }
+ 
+@@ -58,10 +_,14 @@
+    }
+ 
+    private void m_225970_(TreeDecorator.Context p_225971_, BlockPos p_225972_) {
++      placeCircle(p_225971_, p_225972_, this.f_69303_::m_213972_);
++   }
++
++   private void placeCircle(TreeDecorator.Context p_225971_, BlockPos p_225972_, net.minecraftforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
+       for(int i = -2; i <= 2; ++i) {
+          for(int j = -2; j <= 2; ++j) {
+             if (Math.abs(i) != 2 || Math.abs(j) != 2) {
+-               this.m_225973_(p_225971_, p_225972_.m_7918_(i, 0, j));
++               this.placeBlockAt(p_225971_, p_225972_.m_7918_(i, 0, j), eventProvider);
+             }
+          }
+       }
+@@ -69,10 +_,14 @@
+    }
+ 
+    private void m_225973_(TreeDecorator.Context p_225974_, BlockPos p_225975_) {
++      placeCircle(p_225974_, p_225975_, this.f_69303_::m_213972_);
++   }
++
++   private void placeBlockAt(TreeDecorator.Context p_225974_, BlockPos p_225975_, net.minecraftforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
        for(int i = 2; i >= -3; --i) {
           BlockPos blockpos = p_225975_.m_6630_(i);
           if (Feature.m_65788_(p_225974_.m_226058_(), blockpos)) {
 -            p_225974_.m_226061_(blockpos, this.f_69303_.m_213972_(p_225974_.m_226067_(), p_225975_));
-+            p_225974_.m_226061_(blockpos, net.minecraftforge.event.ForgeEventFactory.alterGround(p_225974_.m_226058_(), p_225974_.m_226067_(), blockpos, this.f_69303_.m_213972_(p_225974_.m_226067_(), p_225975_)));
++            p_225974_.m_226061_(blockpos, eventProvider.getState(p_225974_.m_226067_(), p_225975_));
              break;
           }
  
