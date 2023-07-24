@@ -6,7 +6,9 @@
 package net.minecraftforge.debug;
 
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.level.AlterGroundEvent;
+import net.minecraftforge.event.level.AlterGroundEvent.StateProvider;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -21,10 +23,11 @@ public class AlterGroundEventTest
     {
         if (ENABLE)
         {
-            if (event.getOriginalAlteredState().is(Blocks.PODZOL))
-            {
-                event.setNewAlteredState(Blocks.REDSTONE_BLOCK.defaultBlockState());
-            }
+            StateProvider old = event.getStateProvider();
+            event.setStateProvider((rand, pos) -> {
+                BlockState state = old.getState(rand, pos);
+                return state.is(Blocks.PODZOL) && rand.nextBoolean() ? Blocks.REDSTONE_BLOCK.defaultBlockState() : state;
+            });
         }
     }
 }

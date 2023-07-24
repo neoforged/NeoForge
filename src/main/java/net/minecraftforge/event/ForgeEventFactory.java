@@ -34,6 +34,8 @@ import net.minecraft.world.level.LevelSimulatedReader;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
+import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecorator;
 import net.minecraft.world.level.portal.PortalShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.TooltipFlag;
@@ -130,6 +132,7 @@ import net.minecraftforge.event.entity.player.SleepingLocationCheckEvent;
 import net.minecraftforge.event.entity.player.SleepingTimeCheckEvent;
 import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.minecraftforge.event.level.AlterGroundEvent;
+import net.minecraftforge.event.level.AlterGroundEvent.StateProvider;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.BlockEvent.BlockToolModificationEvent;
 import net.minecraftforge.event.level.BlockEvent.CreateFluidSourceEvent;
@@ -728,11 +731,20 @@ public class ForgeEventFactory
         return event;
     }
 
-    public static BlockState alterGround(LevelSimulatedReader level, RandomSource random, BlockPos pos, BlockState altered)
+    /**
+     * Fires the {@link AlterGroundEvent} and retrieves the resulting {@link StateProvider}.
+     * @param ctx The tree decoration context for the current alteration.
+     * @param positions The list of positions that are considered roots.
+     * @param provider The original {@link BlockStateProvider} from the {@link AlterGroundDecorator}.
+     * @return The (possibly event-modified) {@link StateProvider} to be used for ground alteration.
+     * @apiNote This method is called off-thread during world generation.
+     */
+    public static StateProvider alterGround(TreeDecorator.Context ctx, List<BlockPos> positions, StateProvider provider)
     {
-        AlterGroundEvent event = new AlterGroundEvent(level, random, pos, altered);
+        if (positions.isEmpty()) return provider; // I don't think this list is ever empty, but if it is, firing the event is pointless anyway.
+        AlterGroundEvent event = new AlterGroundEvent(ctx, positions, provider);
         MinecraftForge.EVENT_BUS.post(event);
-        return event.getNewAlteredState();
+        return event.getStateProvider();
     }
 
     public static void fireChunkTicketLevelUpdated(ServerLevel level, long chunkPos, int oldTicketLevel, int newTicketLevel, @Nullable ChunkHolder chunkHolder)
