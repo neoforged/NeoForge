@@ -25,24 +25,29 @@ import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod(RemoveTagDatagenTest.MODID)
-public class RemoveTagDatagenTest {
+public class RemoveTagDatagenTest
+{
 
     public static final String MODID = "remove_tag_datagen_test";
     public static final TagKey<Block> TEST_TAG = BlockTags.create(new ResourceLocation("test_tag"));
 
-    public RemoveTagDatagenTest() {
+    public RemoveTagDatagenTest()
+    {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(this::onGatherData);
     }
 
-    private void onGatherData(GatherDataEvent event) {
+    private void onGatherData(GatherDataEvent event)
+    {
         DataGenerator generator = event.getGenerator();
         ExistingFileHelper helper = event.getExistingFileHelper();
 
-        var blocks = new BlockTagsProvider(generator.getPackOutput(), event.getLookupProvider(), MODID, helper) {
+        var blocks = new BlockTagsProvider(generator.getPackOutput(), event.getLookupProvider(), MODID, helper)
+        {
             @SuppressWarnings("unchecked")
             @Override
-            protected void addTags(HolderLookup.Provider provider) {
+            protected void addTags(HolderLookup.Provider provider)
+            {
                 this.tag(TEST_TAG)
                     .remove(key(Blocks.DIRT))
                     .remove(key(Blocks.OAK_DOOR), key(Blocks.DARK_OAK_DOOR))
@@ -55,9 +60,11 @@ public class RemoveTagDatagenTest {
 
         generator.addProvider(event.includeServer(), blocks);
 
-        generator.addProvider(event.includeServer(), new ItemTagsProvider(generator.getPackOutput(), event.getLookupProvider(), blocks.contentsGetter(), MODID, helper) {
+        generator.addProvider(event.includeServer(), new ItemTagsProvider(generator.getPackOutput(), event.getLookupProvider(), blocks.contentsGetter(), MODID, helper)
+        {
             @Override
-            protected void addTags(HolderLookup.Provider provider) {
+            protected void addTags(HolderLookup.Provider provider)
+            {
                 // This is for testing if it is functional, remove spruce_planks from planks, which makes us unable to craft beds with them.
                 this.tag(ItemTags.PLANKS).remove(key(Blocks.SPRUCE_PLANKS));
                 // This is for testing deep values, removing a entry in a tag that is referenced by another tag
@@ -69,11 +76,13 @@ public class RemoveTagDatagenTest {
         });
     }
 
-    private static ResourceLocation key(Block value) {
-         return ForgeRegistries.BLOCKS.getKey(value);
+    private static ResourceLocation key(Block value)
+    {
+        return ForgeRegistries.BLOCKS.getKey(value);
     }
 
-    private static ResourceLocation key(Item value) {
-         return ForgeRegistries.ITEMS.getKey(value);
+    private static ResourceLocation key(Item value)
+    {
+        return ForgeRegistries.ITEMS.getKey(value);
     }
 }

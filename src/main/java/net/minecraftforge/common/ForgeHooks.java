@@ -305,9 +305,9 @@ public class ForgeHooks
     {
         int looting = 0;
         if (killer instanceof LivingEntity)
-            looting = EnchantmentHelper.getMobLooting((LivingEntity)killer);
+            looting = EnchantmentHelper.getMobLooting((LivingEntity) killer);
         if (target instanceof LivingEntity)
-            looting = getLootingLevel((LivingEntity)target, cause, looting);
+            looting = getLootingLevel((LivingEntity) target, cause, looting);
         return looting;
     }
 
@@ -318,16 +318,18 @@ public class ForgeHooks
         return event.getLootingLevel();
     }
 
-    public static double getEntityVisibilityMultiplier(LivingEntity entity, Entity lookingEntity, double originalMultiplier){
+    public static double getEntityVisibilityMultiplier(LivingEntity entity, Entity lookingEntity, double originalMultiplier)
+    {
         LivingEvent.LivingVisibilityEvent event = new LivingEvent.LivingVisibilityEvent(entity, lookingEntity, originalMultiplier);
         MinecraftForge.EVENT_BUS.post(event);
-        return Math.max(0,event.getVisibilityModifier());
+        return Math.max(0, event.getVisibilityModifier());
     }
 
     public static Optional<BlockPos> isLivingOnLadder(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull LivingEntity entity)
     {
         boolean isSpectator = (entity instanceof Player && entity.isSpectator());
-        if (isSpectator) return Optional.empty();
+        if (isSpectator)
+            return Optional.empty();
         if (!ForgeConfig.SERVER.fullBoundingBoxLadders.get())
         {
             return state.isLadder(level, pos, entity) ? Optional.of(pos) : Optional.empty();
@@ -410,12 +412,16 @@ public class ForgeHooks
     }
 
     static final Pattern URL_PATTERN = Pattern.compile(
-            //         schema                          ipv4            OR        namespace                 port     path         ends
-            //   |-----------------|        |-------------------------|  |-------------------------|    |---------| |--|   |---------------|
-            "((?:[a-z0-9]{2,}:\\/\\/)?(?:(?:[0-9]{1,3}\\.){3}[0-9]{1,3}|(?:[-\\w_]{1,}\\.[a-z]{2,}?))(?::[0-9]{1,5})?.*?(?=[!\"\u00A7 \n]|$))",
-            Pattern.CASE_INSENSITIVE);
+        // schema ipv4 OR namespace port path ends
+        // |-----------------| |-------------------------| |-------------------------| |---------| |--| |---------------|
+        "((?:[a-z0-9]{2,}:\\/\\/)?(?:(?:[0-9]{1,3}\\.){3}[0-9]{1,3}|(?:[-\\w_]{1,}\\.[a-z]{2,}?))(?::[0-9]{1,5})?.*?(?=[!\"\u00A7 \n]|$))",
+        Pattern.CASE_INSENSITIVE);
 
-    public static Component newChatWithLinks(String string){ return newChatWithLinks(string, true); }
+    public static Component newChatWithLinks(String string)
+    {
+        return newChatWithLinks(string, true);
+    }
+
     public static Component newChatWithLinks(String string, boolean allowMissingHeader)
     {
         // Includes ipv4 and domain pattern
@@ -463,8 +469,10 @@ public class ForgeHooks
             catch (URISyntaxException e)
             {
                 // Bad syntax bail out!
-                if (ichat == null) ichat = Component.literal(url);
-                else ichat.append(url);
+                if (ichat == null)
+                    ichat = Component.literal(url);
+                else
+                    ichat.append(url);
                 continue;
             }
 
@@ -584,7 +592,7 @@ public class ForgeHooks
                 newNBT = itemstack.getTag().copy();
             }
             @SuppressWarnings("unchecked")
-            List<BlockSnapshot> blockSnapshots = (List<BlockSnapshot>)level.capturedBlockSnapshots.clone();
+            List<BlockSnapshot> blockSnapshots = (List<BlockSnapshot>) level.capturedBlockSnapshots.clone();
             level.capturedBlockSnapshots.clear();
 
             // make sure to set pre-placement item data for event
@@ -641,8 +649,10 @@ public class ForgeHooks
     public static boolean onAnvilChange(AnvilMenu container, @NotNull ItemStack left, @NotNull ItemStack right, Container outputSlot, String name, int baseCost, Player player)
     {
         AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost, player);
-        if (MinecraftForge.EVENT_BUS.post(e)) return false;
-        if (e.getOutput().isEmpty()) return true;
+        if (MinecraftForge.EVENT_BUS.post(e))
+            return false;
+        if (e.getOutput().isEmpty())
+            return true;
 
         outputSlot.setItem(0, e.getOutput());
         container.setMaximumCost(e.getCost());
@@ -665,7 +675,8 @@ public class ForgeHooks
             outputSlot.setItem(0, ItemStack.EMPTY);
             return -1;
         }
-        if (e.getOutput().isEmpty()) return Integer.MIN_VALUE;
+        if (e.getOutput().isEmpty())
+            return Integer.MIN_VALUE;
 
         outputSlot.setItem(0, e.getOutput());
         return e.getXp();
@@ -673,7 +684,7 @@ public class ForgeHooks
 
     public static boolean onGrindstoneTake(Container inputSlots, ContainerLevelAccess access, Function<Level, Integer> xpFunction)
     {
-        access.execute((l,p) -> {
+        access.execute((l, p) -> {
             int xp = xpFunction.apply(l);
             GrindstoneEvent.OnTakeItem e = new GrindstoneEvent.OnTakeItem(inputSlots.getItem(0), inputSlots.getItem(1), xp);
             if (MinecraftForge.EVENT_BUS.post(e))
@@ -682,7 +693,7 @@ public class ForgeHooks
             }
             if (l instanceof ServerLevel)
             {
-                ExperienceOrb.award((ServerLevel)l, Vec3.atCenterOf(p), e.getXp());
+                ExperienceOrb.award((ServerLevel) l, Vec3.atCenterOf(p), e.getXp());
             }
             l.levelEvent(1042, p, 0);
             inputSlots.setItem(0, e.getNewTopItem());
@@ -693,14 +704,17 @@ public class ForgeHooks
     }
 
     private static ThreadLocal<Player> craftingPlayer = new ThreadLocal<Player>();
+
     public static void setCraftingPlayer(Player player)
     {
         craftingPlayer.set(player);
     }
+
     public static Player getCraftingPlayer()
     {
         return craftingPlayer.get();
     }
+
     @NotNull
     public static ItemStack getCraftingRemainingItem(@NotNull ItemStack stack)
     {
@@ -719,7 +733,8 @@ public class ForgeHooks
 
     public static boolean onPlayerAttackTarget(Player player, Entity target)
     {
-        if (MinecraftForge.EVENT_BUS.post(new AttackEntityEvent(player, target))) return false;
+        if (MinecraftForge.EVENT_BUS.post(new AttackEntityEvent(player, target)))
+            return false;
         ItemStack stack = player.getMainHandItem();
         return stack.isEmpty() || !stack.getItem().onLeftClickEntity(stack, player, target);
     }
@@ -814,6 +829,7 @@ public class ForgeHooks
     }
 
     private static final ThreadLocal<Deque<LootTableContext>> lootContext = new ThreadLocal<>();
+
     private static LootTableContext getLootTableContext()
     {
         LootTableContext ctx = lootContext.get().peek();
@@ -870,7 +886,7 @@ public class ForgeHooks
             ret = ForgeEventFactory.loadLootTable(name, ret);
 
         if (ret != null)
-           ret.freeze();
+            ret.freeze();
 
         return ret;
     }
@@ -898,7 +914,7 @@ public class ForgeHooks
             return GsonHelper.getAsString(json, "name");
 
         if (ctx.custom)
-            return "custom#" + json.hashCode(); //We don't care about custom ones modders shouldn't be editing them!
+            return "custom#" + json.hashCode(); // We don't care about custom ones modders shouldn't be editing them!
 
         ctx.poolCount++;
 
@@ -927,18 +943,19 @@ public class ForgeHooks
 
     public static TagKey<Block> getTagFromVanillaTier(Tiers tier)
     {
-        return switch(tier)
-                {
-                    case WOOD -> Tags.Blocks.NEEDS_WOOD_TOOL;
-                    case GOLD -> Tags.Blocks.NEEDS_GOLD_TOOL;
-                    case STONE -> BlockTags.NEEDS_STONE_TOOL;
-                    case IRON -> BlockTags.NEEDS_IRON_TOOL;
-                    case DIAMOND -> BlockTags.NEEDS_DIAMOND_TOOL;
-                    case NETHERITE -> Tags.Blocks.NEEDS_NETHERITE_TOOL;
-                };
+        return switch (tier)
+        {
+            case WOOD -> Tags.Blocks.NEEDS_WOOD_TOOL;
+            case GOLD -> Tags.Blocks.NEEDS_GOLD_TOOL;
+            case STONE -> BlockTags.NEEDS_STONE_TOOL;
+            case IRON -> BlockTags.NEEDS_IRON_TOOL;
+            case DIAMOND -> BlockTags.NEEDS_DIAMOND_TOOL;
+            case NETHERITE -> Tags.Blocks.NEEDS_NETHERITE_TOOL;
+        };
     }
 
-    public static Collection<CreativeModeTab> onCheckCreativeTabs(CreativeModeTab... vanillaTabs) {
+    public static Collection<CreativeModeTab> onCheckCreativeTabs(CreativeModeTab... vanillaTabs)
+    {
         final List<CreativeModeTab> tabs = new ArrayList<>(Arrays.asList(vanillaTabs));
         return tabs;
     }
@@ -951,7 +968,7 @@ public class ForgeHooks
 
     public static boolean onCropsGrowPre(Level level, BlockPos pos, BlockState state, boolean def)
     {
-        BlockEvent ev = new BlockEvent.CropGrowEvent.Pre(level,pos,state);
+        BlockEvent ev = new BlockEvent.CropGrowEvent.Pre(level, pos, state);
         MinecraftForge.EVENT_BUS.post(ev);
         return (ev.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || (ev.getResult() == net.minecraftforge.eventbus.api.Event.Result.DEFAULT && def));
     }
@@ -976,7 +993,7 @@ public class ForgeHooks
     /**
      * Hook to fire {@link ItemAttributeModifierEvent}. Modders should use {@link ItemStack#getAttributeModifiers(EquipmentSlot)} instead.
      */
-    public static Multimap<Attribute,AttributeModifier> getAttributeModifiers(ItemStack stack, EquipmentSlot equipmentSlot, Multimap<Attribute,AttributeModifier> attributes)
+    public static Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack stack, EquipmentSlot equipmentSlot, Multimap<Attribute, AttributeModifier> attributes)
     {
         ItemAttributeModifierEvent event = new ItemAttributeModifierEvent(stack, equipmentSlot, attributes);
         MinecraftForge.EVENT_BUS.post(event);
@@ -1049,7 +1066,8 @@ public class ForgeHooks
         return false;
     }
 
-    public static int onNoteChange(Level level, BlockPos pos, BlockState state, int old, int _new) {
+    public static int onNoteChange(Level level, BlockPos pos, BlockState state, int old, int _new)
+    {
         NoteBlockEvent.Change event = new NoteBlockEvent.Change(level, pos, state, old, _new);
         if (MinecraftForge.EVENT_BUS.post(event))
             return -1;
@@ -1059,10 +1077,11 @@ public class ForgeHooks
     public static boolean hasNoElements(Ingredient ingredient)
     {
         ItemStack[] items = ingredient.getItems();
-        if (items.length == 0) return true;
+        if (items.length == 0)
+            return true;
         if (items.length == 1)
         {
-            //If we potentially added a barrier due to the ingredient being an empty tag, try and check if it is the stack we added
+            // If we potentially added a barrier due to the ingredient being an empty tag, try and check if it is the stack we added
             ItemStack item = items[0];
             return item.getItem() == Items.BARRIER && item.getHoverName() instanceof MutableComponent hoverName && hoverName.getString().startsWith("Empty Tag: ");
         }
@@ -1070,7 +1089,9 @@ public class ForgeHooks
     }
 
     @Deprecated(forRemoval = true, since = "1.20.1") // Tags use a codec now This was never used in 1.20
-    public static <T> void deserializeTagAdditions(List<TagEntry> list, JsonObject json, List<TagEntry> allList) {}
+    public static <T> void deserializeTagAdditions(List<TagEntry> list, JsonObject json, List<TagEntry> allList)
+    {
+    }
 
     @Nullable
     public static EntityDataSerializer<?> getSerializer(int id, CrudeIncrementalIntIdentityHashBiMap<EntityDataSerializer<?>> vanilla)
@@ -1134,41 +1155,42 @@ public class ForgeHooks
     }
 
     /**
-     * All loot table drops should be passed to this function so that mod added effects
-     * (e.g. smelting enchantments) can be processed.
+     * All loot table drops should be passed to this function so that mod added effects (e.g. smelting enchantments) can be processed.
      *
-     * @param list The loot generated
+     * @param list    The loot generated
      * @param context The loot context that generated that loot
      * @return The modified list
      *
      * @deprecated Use {@link #modifyLoot(ResourceLocation, ObjectArrayList, LootContext)} instead.
      *
-     * @implNote This method will use the {@linkplain LootTableIdCondition#UNKNOWN_LOOT_TABLE
-     *           unknown loot table marker} when redirecting.
+     * @implNote This method will use the {@linkplain LootTableIdCondition#UNKNOWN_LOOT_TABLE unknown loot table marker} when redirecting.
      */
     @Deprecated
-    public static List<ItemStack> modifyLoot(List<ItemStack> list, LootContext context) {
+    public static List<ItemStack> modifyLoot(List<ItemStack> list, LootContext context)
+    {
         return modifyLoot(LootTableIdCondition.UNKNOWN_LOOT_TABLE, ObjectArrayList.wrap((ItemStack[]) list.toArray()), context);
     }
 
     /**
-     * Handles the modification of loot table drops via the registered Global Loot Modifiers,
-     * so that custom effects can be processed.
+     * Handles the modification of loot table drops via the registered Global Loot Modifiers, so that custom effects can be processed.
      *
-     * <p>All loot-table generated loot should be passed to this function.</p>
+     * <p>
+     * All loot-table generated loot should be passed to this function.
+     * </p>
      *
-     * @param lootTableId The ID of the loot table currently being queried
+     * @param lootTableId   The ID of the loot table currently being queried
      * @param generatedLoot The loot generated by the loot table
-     * @param context The loot context that generated the loot, unmodified
+     * @param context       The loot context that generated the loot, unmodified
      * @return The modified list of drops
      *
-     * @apiNote The given context will be modified by this method to also store the ID of the
-     *          loot table being queried.
+     * @apiNote The given context will be modified by this method to also store the ID of the loot table being queried.
      */
-    public static ObjectArrayList<ItemStack> modifyLoot(ResourceLocation lootTableId, ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
+    public static ObjectArrayList<ItemStack> modifyLoot(ResourceLocation lootTableId, ObjectArrayList<ItemStack> generatedLoot, LootContext context)
+    {
         context.setQueriedLootTableId(lootTableId); // In case the ID was set via copy constructor, this will be ignored: intended
         LootModifierManager man = ForgeInternalHandler.getLootModifierManager();
-        for (IGlobalLootModifier mod : man.getAllLootMods()) {
+        for (IGlobalLootModifier mod : man.getAllLootMods())
+        {
             generatedLoot = mod.apply(generatedLoot, context);
         }
         return generatedLoot;
@@ -1177,7 +1199,7 @@ public class ForgeHooks
     public static List<String> getModPacks()
     {
         List<String> modpacks = ResourcePackLoader.getPackNames();
-        if(modpacks.isEmpty())
+        if (modpacks.isEmpty())
             throw new IllegalStateException("Attempted to retrieve mod packs before they were loaded in!");
         return modpacks;
     }
@@ -1194,14 +1216,15 @@ public class ForgeHooks
     private static final String SEED_KEY = "seed";
 
     private static final Map<EntityType<? extends LivingEntity>, AttributeSupplier> FORGE_ATTRIBUTES = new HashMap<>();
-    /**  FOR INTERNAL USE ONLY, DO NOT CALL DIRECTLY */
+
+    /** FOR INTERNAL USE ONLY, DO NOT CALL DIRECTLY */
     @Deprecated
     public static Map<EntityType<? extends LivingEntity>, AttributeSupplier> getAttributesView()
     {
         return Collections.unmodifiableMap(FORGE_ATTRIBUTES);
     }
 
-    /**  FOR INTERNAL USE ONLY, DO NOT CALL DIRECTLY */
+    /** FOR INTERNAL USE ONLY, DO NOT CALL DIRECTLY */
     @Deprecated
     public static void modifyAttributes()
     {
@@ -1209,8 +1232,7 @@ public class ForgeHooks
         Map<EntityType<? extends LivingEntity>, AttributeSupplier.Builder> finalMap = new HashMap<>();
         ModLoader.get().postEvent(new EntityAttributeModificationEvent(finalMap));
 
-        finalMap.forEach((k, v) ->
-        {
+        finalMap.forEach((k, v) -> {
             AttributeSupplier supplier = DefaultAttributes.getSupplier(k);
             AttributeSupplier.Builder newBuilder = supplier != null ? new AttributeSupplier.Builder(supplier) : new AttributeSupplier.Builder();
             newBuilder.combine(v);
@@ -1241,8 +1263,7 @@ public class ForgeHooks
     {
         CompoundTag fmlData = new CompoundTag();
         ListTag modList = new ListTag();
-        ModList.get().getMods().forEach(mi ->
-        {
+        ModList.get().getMods().forEach(mi -> {
             final CompoundTag mod = new CompoundTag();
             mod.putString("ModId", mi.getModId());
             mod.putString("ModVersion", MavenVersionStringHelper.artifactVersionToString(mi.getVersion()));
@@ -1263,7 +1284,7 @@ public class ForgeHooks
     }
 
     /**
-     * @param rootTag Level data file contents.
+     * @param rootTag        Level data file contents.
      * @param levelDirectory Level currently being loaded.
      */
     @ApiStatus.Internal
@@ -1279,15 +1300,14 @@ public class ForgeHooks
             {
                 CompoundTag mod = modList.getCompound(i);
                 String modId = mod.getString("ModId");
-                if (Objects.equals("minecraft",  modId))
+                if (Objects.equals("minecraft", modId))
                 {
                     continue;
                 }
 
                 String modVersion = mod.getString("ModVersion");
                 final var previousVersion = new DefaultArtifactVersion(modVersion);
-                ModList.get().getModContainerById(modId).ifPresentOrElse(container ->
-                {
+                ModList.get().getModContainerById(modId).ifPresentOrElse(container -> {
                     final var loadingVersion = container.getModInfo().getVersion();
                     if (!loadingVersion.equals(previousVersion))
                     {
@@ -1304,39 +1324,34 @@ public class ForgeHooks
             StringBuilder unresolved = new StringBuilder("The following mods have version differences that were not resolved:");
 
             // For mods that were marked resolved, log the version resolution and the mod that resolved the mismatch
-            mismatchEvent.getResolved().forEachOrdered((res) ->
-            {
+            mismatchEvent.getResolved().forEachOrdered((res) -> {
                 final var modid = res.modid();
                 final var diff = res.versionDifference();
                 if (res.wasSelfResolved())
                 {
                     resolved.append(System.lineSeparator())
-                            .append(diff.isMissing()
-                                    ? "%s (version %s -> MISSING, self-resolved)".formatted(modid, diff.oldVersion())
-                                    : "%s (version %s -> %s, self-resolved)".formatted(modid, diff.oldVersion(), diff.newVersion())
-                            );
+                        .append(diff.isMissing()
+                            ? "%s (version %s -> MISSING, self-resolved)".formatted(modid, diff.oldVersion())
+                            : "%s (version %s -> %s, self-resolved)".formatted(modid, diff.oldVersion(), diff.newVersion()));
                 }
                 else
                 {
                     final var resolver = res.resolver().getModId();
                     resolved.append(System.lineSeparator())
-                            .append(diff.isMissing()
-                                    ? "%s (version %s -> MISSING, resolved by %s)".formatted(modid, diff.oldVersion(), resolver)
-                                    : "%s (version %s -> %s, resolved by %s)".formatted(modid, diff.oldVersion(), diff.newVersion(), resolver)
-                            );
+                        .append(diff.isMissing()
+                            ? "%s (version %s -> MISSING, resolved by %s)".formatted(modid, diff.oldVersion(), resolver)
+                            : "%s (version %s -> %s, resolved by %s)".formatted(modid, diff.oldVersion(), diff.newVersion(), resolver));
                 }
             });
 
             // For mods that did not specify handling, show a warning to users that errors may occur
-            mismatchEvent.getUnresolved().forEachOrdered((unres) ->
-            {
+            mismatchEvent.getUnresolved().forEachOrdered((unres) -> {
                 final var modid = unres.modid();
                 final var diff = unres.versionDifference();
                 unresolved.append(System.lineSeparator())
-                        .append(diff.isMissing()
-                                ? "%s (version %s -> MISSING)".formatted(modid, diff.oldVersion())
-                                : "%s (version %s -> %s)".formatted(modid, diff.oldVersion(), diff.newVersion())
-                        );
+                    .append(diff.isMissing()
+                        ? "%s (version %s -> MISSING)".formatted(modid, diff.oldVersion())
+                        : "%s (version %s -> %s)".formatted(modid, diff.oldVersion(), diff.newVersion()));
             });
 
             if (mismatchEvent.anyResolved())
@@ -1372,8 +1387,7 @@ public class ForgeHooks
                 .append("There are ").append(failedElements.size()).append(" unassigned registry entries in this save.\n")
                 .append("You will not be able to load until they are present again.\n\n");
 
-            failedElements.asMap().forEach((name, entries) ->
-            {
+            failedElements.asMap().forEach((name, entries) -> {
                 buf.append("Missing ").append(name).append(":\n");
                 entries.forEach(rl -> buf.append("    ").append(rl).append("\n"));
             });
@@ -1456,7 +1470,8 @@ public class ForgeHooks
      */
     public static boolean checkStructureNamespace(String biome)
     {
-        @Nullable ResourceLocation biomeLocation = ResourceLocation.tryParse(biome);
+        @Nullable
+        ResourceLocation biomeLocation = ResourceLocation.tryParse(biome);
         return biomeLocation != null && !biomeLocation.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE);
     }
 
@@ -1496,19 +1511,16 @@ public class ForgeHooks
 
     /**
      * <p>
-     *    This method is used to prefix the path, where elements of the associated registry are stored, with their namespace, if it is not minecraft
+     * This method is used to prefix the path, where elements of the associated registry are stored, with their namespace, if it is not minecraft
      * </p>
      * <p>
-     *    This rules conflicts with equal paths out. If for example the mod {@code fancy_cheese} adds a registry named {@code cheeses},
-     *    but the mod {@code awesome_cheese} also adds a registry called {@code cheeses},
-     *    they are going to have the same path {@code cheeses}, just with different namespaces.
-     *    If {@code additional_cheese} wants to add additional cheese to {@code awesome_cheese}, but not {@code fancy_cheese},
-     *    it can not differentiate both. Both paths will look like {@code data/additional_cheese/cheeses}.
+     * This rules conflicts with equal paths out. If for example the mod {@code fancy_cheese} adds a registry named {@code cheeses}, but the mod {@code awesome_cheese} also adds a registry called {@code cheeses}, they are going to have the
+     * same path {@code cheeses}, just with different namespaces. If {@code additional_cheese} wants to add additional cheese to {@code awesome_cheese}, but not {@code fancy_cheese}, it can not differentiate both. Both paths will look like
+     * {@code data/additional_cheese/cheeses}.
      * </p>
      * <p>
-     *    The fix, which is applied here prefixes the path of the registry with the namespace,
-     *    so {@code fancy_cheese}'s registry stores its elements in {@code data/<namespace>/fancy_cheese/cheeses}
-     *    and {@code awesome_cheese}'s registry stores its elements in {@code data/namespace/awesome_cheese/cheeses}
+     * The fix, which is applied here prefixes the path of the registry with the namespace, so {@code fancy_cheese}'s registry stores its elements in {@code data/<namespace>/fancy_cheese/cheeses} and {@code awesome_cheese}'s registry stores
+     * its elements in {@code data/namespace/awesome_cheese/cheeses}
      * </p>
      *
      * @param registryKey key of the registry
@@ -1516,7 +1528,7 @@ public class ForgeHooks
      */
     public static String prefixNamespace(ResourceLocation registryKey)
     {
-        return registryKey.getNamespace().equals("minecraft") ? registryKey.getPath() : registryKey.getNamespace() +  "/"  + registryKey.getPath();
+        return registryKey.getNamespace().equals("minecraft") ? registryKey.getPath() : registryKey.getNamespace() + "/" + registryKey.getPath();
     }
 
     public static boolean canUseEntitySelectors(SharedSuggestionProvider provider)
@@ -1537,15 +1549,28 @@ public class ForgeHooks
     {
         return new HolderLookup.RegistryLookup.Delegate<>()
         {
-            @Override protected RegistryLookup<T> parent() { return lookup; }
-            @Override public Stream<HolderSet.Named<T>> listTags() { return Stream.empty(); }
-            @Override public Optional<HolderSet.Named<T>> get(TagKey<T> key) { return Optional.of(HolderSet.emptyNamed(lookup, key)); }
+            @Override
+            protected RegistryLookup<T> parent()
+            {
+                return lookup;
+            }
+
+            @Override
+            public Stream<HolderSet.Named<T>> listTags()
+            {
+                return Stream.empty();
+            }
+
+            @Override
+            public Optional<HolderSet.Named<T>> get(TagKey<T> key)
+            {
+                return Optional.of(HolderSet.emptyNamed(lookup, key));
+            }
         };
     }
 
     /**
-     * Handles living entities being underwater. This fires the {@link LivingBreatheEvent} and if the entity's air supply
-     * is less than or equal to zero also the {@link LivingDrownEvent}. Additionally, when the entity is underwater it will
+     * Handles living entities being underwater. This fires the {@link LivingBreatheEvent} and if the entity's air supply is less than or equal to zero also the {@link LivingDrownEvent}. Additionally, when the entity is underwater it will
      * dismount if {@link net.minecraftforge.common.extensions.IForgeEntity#canBeRiddenUnderFluidType(FluidType, Entity)} returns false.
      *
      * @param entity           The living entity which is currently updated
