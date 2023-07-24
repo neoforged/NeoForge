@@ -40,7 +40,6 @@ public class FlatQuadLighter extends QuadLighter
         {
             packedLight[side.ordinal()] = LevelRenderer.getLightColor(level, state, pos.relative(side));
         }
-        //Note: We can just use the LevelRenderer method as we know the state is the state at the given position
         packedLight[6] = LevelRenderer.getLightColor(level, state, pos);
     }
 

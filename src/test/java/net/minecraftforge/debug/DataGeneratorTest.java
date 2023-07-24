@@ -1126,14 +1126,17 @@ public class DataGeneratorTest
         }
     }
 
-    private static class ParticleDescriptions extends ParticleDescriptionProvider {
+    private static class ParticleDescriptions extends ParticleDescriptionProvider
+    {
 
-        public ParticleDescriptions(PackOutput output, ExistingFileHelper fileHelper) {
+        public ParticleDescriptions(PackOutput output, ExistingFileHelper fileHelper)
+        {
             super(output, fileHelper);
         }
 
         @Override
-        protected void addDescriptions() {
+        protected void addDescriptions()
+        {
             this.sprite(ParticleTypes.DRIPPING_LAVA, new ResourceLocation("drip_hang"));
 
             this.spriteSet(ParticleTypes.CLOUD, new ResourceLocation("generic"), 8, true);
@@ -1145,7 +1148,8 @@ public class DataGeneratorTest
                     new ResourceLocation("splash_3")
             );
 
-            this.spriteSet(ParticleTypes.ENCHANT, () -> new Iterator<>() {
+            this.spriteSet(ParticleTypes.ENCHANT, () -> new Iterator<>()
+            {
 
                 private final ResourceLocation base = new ResourceLocation("sga");
                 private char suffix = 'a';
@@ -1163,38 +1167,47 @@ public class DataGeneratorTest
         }
 
         @Override
-        public CompletableFuture<?> run(CachedOutput cache) {
+        public CompletableFuture<?> run(CachedOutput cache)
+        {
             return super.run(cache).thenRun(this::validateResults);
         }
 
-        private void validateResults() {
+        private void validateResults()
+        {
             var errors = Stream.of(ParticleTypes.DRIPPING_LAVA, ParticleTypes.CLOUD, ParticleTypes.FISHING, ParticleTypes.ENCHANT)
                     .map(ForgeRegistries.PARTICLE_TYPES::getKey).map(particle -> {
-                        try (var resource = this.fileHelper.getResource(particle, PackType.CLIENT_RESOURCES, ".json", "particles").openAsReader()) {
+                        try (var resource = this.fileHelper.getResource(particle, PackType.CLIENT_RESOURCES, ".json", "particles").openAsReader())
+                        {
                             var existingTextures = GSON.fromJson(resource, JsonObject.class).get("textures").getAsJsonArray();
                             var generatedTextures = this.descriptions.get(particle);
 
                             // Check texture size
-                            if (existingTextures.size() != generatedTextures.size()) {
+                            if (existingTextures.size() != generatedTextures.size())
+                            {
                                 LOGGER.error("%s had a different number of sprites, expected %s, actual %s", particle, existingTextures.size(), generatedTextures.size());
                                 return particle;
                             }
 
                             boolean error = false;
-                            for (int i = 0; i < generatedTextures.size(); ++i) {
-                                if (!existingTextures.get(i).getAsString().equals(generatedTextures.get(i))) {
+                            for (int i = 0; i < generatedTextures.size(); ++i)
+                            {
+                                if (!existingTextures.get(i).getAsString().equals(generatedTextures.get(i)))
+                                {
                                     LOGGER.error("%s index %s: expected %s, actual %s", particle, i, existingTextures.get(i).getAsString(), generatedTextures.get(i));
                                     error = true;
                                 }
                             }
 
                             return error ? particle : null;
-                        } catch (IOException e) {
+                        }
+                        catch (IOException e)
+                        {
                             throw new RuntimeException(e);
                         }
                     }).filter(Objects::nonNull).toList();
 
-            if (!errors.isEmpty()) {
+            if (!errors.isEmpty())
+            {
                 throw new AssertionError(String.format("Validation errors found in %s; see above for details", errors.stream().reduce("", (str, rl) -> str + ", " + rl, (str1, str2) -> str1 + ", " + str2)));
             }
         }
