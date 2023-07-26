@@ -1265,6 +1265,9 @@ project(':forge') {
                 files.from files("$rootDir/src/test/java")
             }
         }
+
+        // Skip legacy Forge Development LLC headers
+        skipExistingHeaders = true
     }
 
     tasks.register('genAllData') {

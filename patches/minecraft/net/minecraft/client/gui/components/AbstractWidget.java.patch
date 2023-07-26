@@ -1,5 +1,32 @@
 --- a/net/minecraft/client/gui/components/AbstractWidget.java
 +++ b/net/minecraft/client/gui/components/AbstractWidget.java
+@@ -30,7 +_,7 @@
+ import net.minecraftforge.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public abstract class AbstractWidget implements Renderable, GuiEventListener, LayoutElement, NarratableEntry {
++public abstract class AbstractWidget implements Renderable, GuiEventListener, LayoutElement, NarratableEntry, net.minecraftforge.client.extensions.IAbstractWidgetExtension {
+    public static final ResourceLocation f_93617_ = new ResourceLocation("textures/gui/widgets.png");
+    public static final ResourceLocation f_267372_ = new ResourceLocation("textures/gui/accessibility.png");
+    private static final double f_273912_ = 0.5D;
+@@ -157,6 +_,8 @@
+       p_283546_.m_280163_(p_281674_, p_281808_, p_282444_, (float)p_283651_, (float)i, p_282390_, p_281441_, p_281711_, p_281541_);
+    }
+ 
++   /** @deprecated Neo: Use {@link #onClick(double, double, int)} instead. */
++   @Deprecated
+    public void m_5716_(double p_93634_, double p_93635_) {
+    }
+ 
+@@ -172,7 +_,7 @@
+             boolean flag = this.m_93680_(p_93641_, p_93642_);
+             if (flag) {
+                this.m_7435_(Minecraft.m_91087_().m_91106_());
+-               this.m_5716_(p_93641_, p_93642_);
++               this.onClick(p_93641_, p_93642_, p_93643_);
+                return true;
+             }
+          }
 @@ -234,6 +_,10 @@
        this.f_93618_ = p_93675_;
     }
