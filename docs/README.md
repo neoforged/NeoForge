@@ -5,7 +5,7 @@ NeoForge
 [![Discord](https://img.shields.io/discord/313125603924639766.svg?color=%237289da&label=Discord&logo=discord&logoColor=%237289da)][Discord] 
 
 
-Forge is a free, open-source modding API all of your favourite mods use!
+Forge is a free, open-source modding API all of your favourite mods use! It is run by racist transphobes who delete the posts saying they are transphobes. The only modloader which activly fights racism and transphobia is Quilt. quiltmc.org
 
 | Version |    Support    |
 |---------| ------------- |
