@@ -242,7 +242,7 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
         if (super.mouseClicked(mouseX, mouseY, button))
             return true;
 
-        this.scrolling = button == 0 && mouseX >= barLeft && mouseX < barLeft + barWidth;
+        this.scrolling = button == 0 && mouseX >= barLeft && mouseX < barLeft + barWidth && mouseY >= top && mouseY <= bottom;
         if (this.scrolling)
         {
             return true;
