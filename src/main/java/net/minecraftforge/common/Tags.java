@@ -11,6 +11,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
@@ -27,6 +28,7 @@ public class Tags
         Items.init();
         Fluids.init();
         Biomes.init();
+        DamageTypes.init();
     }
 
     public static class Blocks
@@ -568,6 +570,49 @@ public class Tags
         private static TagKey<Biome> tag(String name)
         {
             return TagKey.create(Registries.BIOME, new ResourceLocation("forge", name));
+        }
+    }
+    
+    public static class DamageTypes
+    {
+        private static void init() {}
+
+        /**
+         * Damage types representing magic damage.
+         */
+        public static final TagKey<DamageType> IS_MAGIC = tag("is_magic");
+
+        /**
+         * Damage types representing poison damage.
+         */
+        public static final TagKey<DamageType> IS_POISON = tag("is_poison");
+
+        /**
+         * Damage types representing damage that can be attributed to withering or the wither.
+         */
+        public static final TagKey<DamageType> IS_WITHER = tag("is_wither");
+
+        /**
+         * Damage types representing environmental damage, such as fire, lava, magma, cactus, lightning, etc.
+         */
+        public static final TagKey<DamageType> IS_ENVIRONMENT = tag("is_environment");
+
+        /**
+         * Damage types representing physical damage.<br>
+         * These are types that do not fit other #is_x tags (except #is_fall)
+         * and would meet the general definition of physical damage.
+         */
+        public static final TagKey<DamageType> IS_PHYSICAL = tag("is_physical");
+
+        /**
+         * Damage types representing damage from commands or other non-gameplay sources.<br>
+         * Damage from these types should not be reduced, and bypasses invulnerability.
+         */
+        public static final TagKey<DamageType> IS_TECHNICAL = tag("is_technical");
+
+        private static TagKey<DamageType> tag(String name)
+        {
+            return TagKey.create(Registries.DAMAGE_TYPE, new ResourceLocation("forge", name));
         }
     }
 }

@@ -117,6 +117,16 @@
        if (this.m_6673_(p_36154_)) {
           return false;
        } else if (this.f_36077_.f_35934_ && !p_36154_.m_269533_(DamageTypeTags.f_268738_)) {
+@@ -805,7 +_,8 @@
+                this.m_36328_();
+             }
+ 
+-            if (p_36154_.m_7986_()) {
++            p_36155_ = Math.max(0.0F, p_36154_.m_269415_().f_268501_().getScalingFunction().scaleDamage(p_36154_, this, p_36155_, this.m_9236_().m_46791_()));
++            if (false && p_36154_.m_7986_()) {
+                if (this.m_9236_().m_46791_() == Difficulty.PEACEFUL) {
+                   p_36155_ = 0.0F;
+                }
 @@ -826,7 +_,7 @@
  
     protected void m_6728_(LivingEntity p_36295_) {
