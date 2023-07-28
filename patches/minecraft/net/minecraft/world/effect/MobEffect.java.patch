@@ -17,6 +17,16 @@
     }
  
     public Optional<MobEffectInstance.FactorData> m_216881_() {
+@@ -56,7 +_,8 @@
+          }
+       } else if (this == MobEffects.f_19614_) {
+          if (p_19467_.m_21223_() > 1.0F) {
+-            p_19467_.m_6469_(p_19467_.m_269291_().m_269425_(), 1.0F);
++            // Neo: Replace DamageSources#magic() with forge:poison to allow differentiating poison damage.
++            p_19467_.m_6469_(p_19467_.m_269291_().m_269079_(net.minecraftforge.common.ForgeMod.POISON_DAMAGE), 1.0F);
+          }
+       } else if (this == MobEffects.f_19615_) {
+          p_19467_.m_6469_(p_19467_.m_269291_().m_269251_(), 1.0F);
 @@ -194,4 +_,29 @@
     public boolean m_19486_() {
        return this.f_19447_ == MobEffectCategory.BENEFICIAL;

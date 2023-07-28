@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/damagesource/DamageSource.java
++++ b/net/minecraft/world/damagesource/DamageSource.java
+@@ -91,6 +_,10 @@
+       return this.m_269415_().f_268677_();
+    }
+ 
++   /**
++    * @deprecated Use {@link DamageScaling#getScalingFunction()}
++    */
++   @Deprecated(since = "1.20.1")
+    public boolean m_7986_() {
+       boolean flag;
+       switch (this.m_269415_().f_268501_()) {
