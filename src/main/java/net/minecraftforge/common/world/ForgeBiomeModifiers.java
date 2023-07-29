@@ -116,7 +116,7 @@ public final class ForgeBiomeModifiers
      * <p>Stock biome modifier that adds carvers to biomes (from the configured_carver json registry). Has the following json format:</p>
      * <pre>
      * {
-     *   "type": "forge:add_features", // required
+     *   "type": "forge:add_carvers", // required
      *   "biomes": "#namespace:your_biome_tag" // accepts a biome id, [list of biome ids], or #namespace:biome_tag
      *   "carvers": "namespace:your_carver", // accepts a configured carver id, [list of configured carver ids], or #namespace:carver_tag
      *   "step": "air" // Carving step, can be "air" or "liquid"
@@ -157,7 +157,7 @@ public final class ForgeBiomeModifiers
      * }
      * </pre>
      *
-     * @param biomes Biomes to remove features from.
+     * @param biomes Biomes to remove carvers from.
      * @param features ConfiguredWorldCarvers to remove from biomes.
      * @param steps Carving steps to remove carvers from. Can be 
      */
