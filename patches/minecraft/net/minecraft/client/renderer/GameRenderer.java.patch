@@ -75,6 +75,17 @@
        }
     }
  
+@@ -789,6 +_,10 @@
+             return;
+          }
+ 
++         // Neo: Prevent screen shake if the damage type is marked as "forge:no_flinch"
++         var lastSrc = livingentity.m_21225_();
++         if (lastSrc != null && lastSrc.m_269533_(net.minecraftforge.common.Tags.DamageTypes.NO_FLINCH)) return;
++
+          f /= (float)livingentity.f_20917_;
+          f = Mth.m_14031_(f * f * f * f * (float)Math.PI);
+          float f3 = livingentity.m_264297_();
 @@ -907,12 +_,12 @@
  
           Window window = this.f_109059_.m_91268_();

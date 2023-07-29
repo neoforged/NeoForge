@@ -38,7 +38,8 @@ public interface IScalingFunction
     };
 
     /**
-     * Scales the incoming damage amount based on the current difficulty.
+     * Scales the incoming damage amount based on the current difficulty.<br>
+     * Only damage dealt to players is scaled, other damage is not impacted.
      * 
      * @param source     The source of the incoming damage.
      * @param target     The player which is being attacked.
