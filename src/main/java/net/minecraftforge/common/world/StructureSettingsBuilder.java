@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.core.HolderSet;
 import net.minecraft.util.random.WeightedRandomList;
@@ -187,6 +188,11 @@ public class StructureSettingsBuilder
         public void removeSpawn(MobSpawnSettings.SpawnerData spawn)
         {
             this.spawns.remove(spawn);
+        }
+        
+        public void removeSpawns(Predicate<MobSpawnSettings.SpawnerData> spawnPredicate)
+        {
+            this.spawns.removeIf(spawnPredicate);
         }
 
         /**

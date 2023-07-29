@@ -126,8 +126,7 @@ public final class ForgeStructureModifiers
                     if (overrides == null || overrides.getSpawns().isEmpty())
                         continue;
                     
-                    List<SpawnerData> spawns = overrides.getSpawns();
-                    spawns.removeIf(spawnerData -> this.entityTypes.contains(ForgeRegistries.ENTITY_TYPES.getHolder(spawnerData.type).get()));
+                    overrides.removeSpawns(spawnerData -> this.entityTypes.contains(ForgeRegistries.ENTITY_TYPES.getHolder(spawnerData.type).get()));
                 }
             }
         }
