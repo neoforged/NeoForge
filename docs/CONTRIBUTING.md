@@ -7,7 +7,7 @@
 
 3) Follow the code style of the class you're working in (braces on newlines & spaces instead of tabs in Forge classes, inline brackets in patches, etc).
 
-4) Sign the [CLA](phttps://cla-assistant.io/neoforged/NeoForge]
+4) Sign the [CLA](https://cla-assistant.io/neoforged/NeoForge]
 
 For more information, refer to [the wiki][Wiki].
 
