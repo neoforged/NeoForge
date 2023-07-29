@@ -13,7 +13,7 @@ Before reporting an issue on this repository's bug tracker, please carefully rea
     1. [Analyzing a Stacktrace](#analyzing-a-stacktrace)
     2. [Isolating an Issue](#isolating-an-issue)
  2. [Choosing the Correct Support Channel](#choosing-the-correct-support-channel)
-    1. [Forge Support](#forge-support)
+    1. [NeoForge Support](#neoforge-support)
     2. [Mod Support](#mod-support)
     3. [Vanilla Support](#vanilla-support)
  3. [Writing a Helpful Bug Report](#writing-a-helpful-bug-report)
@@ -27,7 +27,7 @@ Identifying the Source of a Problem
 
 You're most likely to get fast and valuable responses to your issues if you report them in the correct place. For this, you need to find the root cause of the problem.
 
-The most important source for this information are the log files Forge creates for every run of the game. You can find them in the `logs` subdirectory of your Minecraft game directory. The most important log file is `latest.log` which contains all of Forge's and any mod's output for `info` of above. `debug.log` contains all the logs in `latest.log` plus the `debug` logs for more detailed debugging.
+The most important source for this information are the log files NeoForge creates for every run of the game. You can find them in the `logs` subdirectory of your Minecraft game directory. The most important log file is `latest.log` which contains all of Forge's and any mod's output for `info` of above. `debug.log` contains all the logs in `latest.log` plus the `debug` logs for more detailed debugging.
 
 If you're faced by a crash, consult these logs files first. Near the end of the log should be a section labelled 'Minecraft Crash Report', and after it, one about `a detailed walkthrough of the error, ...`. In these sections, you'll see a bunch of lines that look like
 
@@ -43,7 +43,7 @@ You can generally tell pretty quickly what caused the error at the head of your 
 
  1. If you can find the name of a mod in the trace, that mod most likely is the culprit.
     - Be aware that you may find multiple mods as participants of a crash. In that case, you can either report to both or try to reason (using the names in the stacktrace) about which mod is at fault.
- 2. If you can only find Forge (usually starting with `net.minecraftforge`) alongside Vanilla (usually starting with `net.minecraft`) references, chances are that you have found a bug in Forge. In this case, use one of the various [support channels](#forge-support) listed below.
+ 2. If you can only find Forge (usually starting with `net.minecraftforge`) alongside Vanilla (usually starting with `net.minecraft`) references, chances are that you have found a bug in Forge. In this case, use one of the various [support channels](#neoforge-support) listed below.
     - The occurrence of a single call to Forge somewhere in the stacktrace *does not* warrant a report to Forge if there are mods present in the crash report.
  3. If there's no mention of Forge or a mod, but any Vanilla class, you might have found a Vanilla bug. You should probably still report it via the Forge channels first, however, due the nature of modded environments and the rarity of Vanilla crash bugs.
  4. Always check whether there's a mention of coremods at the beginning of a crash report. If there is and you can't find any clear culprit, consider reporting to these coremods first, since they are free to change any of the code executed in your environment.
@@ -70,14 +70,14 @@ The place you need to report issues to varies depending on the source of the pro
 
 Please note that this list has to be considered incomplete as there is a large number of sub-communities within the Minecraft modding world. You should always prefer channels you know and have access to over any of those listed below which would require extra effort on your part.
 
-### Forge Support
+### NeoForge Support
 
 If you're certain you've found an issue that is directly caused by Forge, you have the following three platforms available for dealing with it, with decreasing relevance for end-users:
 
- 1. **Forge Forums:** There's a dedicated [Support & Bug Report][Bug-Reports] section on the Forge forums, which is led by team of moderators and volunteers who will try to deal with your reports as quickly as possible. *As a player you should probably report here first.*
+ 1. **NeoForge Forums:** There's a dedicated [Support & Bug Report][Bug-Reports] section on the Forge forums, which is led by team of moderators and volunteers who will try to deal with your reports as quickly as possible. *As a player you should probably report here first.*
    - For modders, there also is a separate [Modder Support][Modder-Support] section where you can ask all your development-related questions. *You should prefer this section for coding help.*
- 2. **Forge Discord Server:** You can find a lot of help on the official [Discord Server][Discord], especially smaller issues that you quickly need help with. *Be aware that the channel is more suited towards development questions, so while you may get support there as a player, you should almost always prefer the forums.*
- 3. **Forge Issue Tracker:** If you're absolutely certain that you've found an issue in the Forge codebase (e.g. you're a modder yourself and have analyzed the stacktrace and relevant code), don't refrain from reporting it on this repository's [issue tracker](https://github.com/MinecraftForge/MinecraftForge/issues). *Please do not use the issues as a means of getting coding help. For developers, the IRC and the [official documentation][Documentation] are the best sources of information.*
+ 2. **NeoForge Discord Server:** You can find a lot of help on the official [Discord Server][Discord], especially smaller issues that you quickly need help with. *Be aware that the channel is more suited towards development questions, so while you may get support there as a player, you should almost always prefer the forums.*
+ 3. **NeoForge Issue Tracker:** If you're absolutely certain that you've found an issue in the Forge codebase (e.g. you're a modder yourself and have analyzed the stacktrace and relevant code), don't refrain from reporting it on this repository's [issue tracker](https://github.com/MinecraftForge/MinecraftForge/issues). *Please do not use the issues as a means of getting coding help. For developers, the IRC and the [official documentation][Documentation] are the best sources of information.*
 
 ### Mod Support
 
@@ -117,7 +117,7 @@ GitHub and BitBucket allow you to use the Markdown format for writing your issue
 ```markdown
 **Minecraft Version:** {mc version}
 
-**Forge Version:** {forge version}
+**NeoForge Version:** {neoforge version}
 
 **Mod Version:** {mod version} // Remove this line if you're reporting to Forge and no specific mod is involved
 
