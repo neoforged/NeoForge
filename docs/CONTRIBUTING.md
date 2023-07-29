@@ -12,9 +12,9 @@ For more information, refer to [the wiki][Wiki].
 
 Contributor License Agreement
 =============================
-- You grant Forge a license to use your code contributed to the primary codebase (everything **not** under patches) in Forge, under the LGPLv2.1 license.
-- You assign copyright ownership of your contributions to the patches codebase (everything under patches) to Forge, where it will be licensed under the LGPLv2.1 license.
+- You grant NeoForged a license to use your code contributed to the primary codebase (everything **not** under patches) in NeoForge, under the LGPLv2.1 license.
+- You assign copyright ownership of your contributions to the patches codebase (everything under patches) to NeoForged, where it will be licensed under the LGPLv2.1 license.
 
-"NeoForge" is NeoForged Development LLC, a legally incorporated entity in Oregon, USA.
+"NeoForge" is NeoForged Development LLC, a legally incorporated entity in ***, USA.
 
 [Wiki]: https://github.com/MinecraftForge/MinecraftForge/wiki/If-you-want-to-contribute-to-Forge
