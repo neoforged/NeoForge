@@ -232,8 +232,8 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
     @Override
     public boolean isMouseOver(double mouseX, double mouseY)
     {
-        return mouseX >= this.left && mouseX <= this.left + this.width &&
-                mouseY >= this.top && mouseY <= this.bottom;
+        return mouseX >= this.left && mouseX < this.right &&
+                mouseY >= this.top && mouseY < this.bottom;
     }
 
     @Override
@@ -242,13 +242,13 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
         if (super.mouseClicked(mouseX, mouseY, button))
             return true;
 
-        this.scrolling = button == 0 && mouseX >= barLeft && mouseX < barLeft + barWidth;
+        this.scrolling = button == 0 && mouseX >= barLeft && mouseX < right && mouseY >= top && mouseY < bottom;
         if (this.scrolling)
         {
             return true;
         }
         int mouseListY = ((int)mouseY) - this.top - this.getContentHeight() + (int)this.scrollDistance - border;
-        if (mouseX >= left && mouseX <= right && mouseListY < 0)
+        if (mouseX >= left && mouseX < right && mouseListY < 0)
         {
             return this.clickPanel(mouseX - left, mouseY - this.top + (int)this.scrollDistance - border, button);
         }
