@@ -15,7 +15,7 @@ Forge is a free, open-source modding API all of your favourite mods use!
 * [Discord]
 * [Documentation]
 
-# Installing NeoForged
+# Installing NeoForge
 
 Go to [CurseForge][CurseForge] project, select the minecraft version and installer, and run it.
 
