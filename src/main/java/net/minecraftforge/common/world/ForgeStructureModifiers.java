@@ -58,20 +58,20 @@ public final class ForgeStructureModifiers
      * }
      * </pre>
      *
-     * @param structures Biomes to add mob spawns to.
+     * @param structures Structures to add mob spawns to.
      * @param spawners List of SpawnerDatas specifying EntityType, weight, and pack size.
      */
     public record AddSpawnsStructureModifier(HolderSet<Structure> structures, List<SpawnerData> spawners) implements StructureModifier
     {
         /**
          * Convenience method for using a single spawn data.
-         * @param biomes Biomes to add mob spawns to.
+         * @param structures Structures to add mob spawns to.
          * @param spawner SpawnerData specifying EntityTYpe, weight, and pack size.
-         * @return AddSpawnsBiomeModifier that adds a single spawn entry to the specified biomes.
+         * @return AddSpawnsStructureModifier that adds a single spawn entry to the specified biomes.
          */
-        public static AddSpawnsBiomeModifier singleSpawn(HolderSet<Biome> biomes, SpawnerData spawner)
+        public static AddSpawnsStructureModifier singleSpawn(HolderSet<Structure> biomes, SpawnerData spawner)
         {
-            return new AddSpawnsBiomeModifier(biomes, List.of(spawner));
+            return new AddSpawnsStructureModifier(biomes, List.of(spawner));
         }
 
         @Override
