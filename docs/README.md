@@ -31,7 +31,7 @@ For support and questions, visit [the NeoForged Discord server][Discord].
 
 [See the "Getting Started" section in the NeoForged Documentation][Getting-Started].
 
-# Contribute to Forge
+# Contribute to NeoForge
 
 If you wish to actually inspect Forge, submit PRs or otherwise work
  with Forge itself, you're in the right place!
