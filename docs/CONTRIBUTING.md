@@ -19,4 +19,5 @@ Contributor License Agreement
 
 "NeoForge" is NeoForged Development LLC, a legally incorporated entity in ***, USA.
 
-[Wiki]: https://github.com/MinecraftForge/MinecraftForge/wiki/If-you-want-to-contribute-to-Forge
+[Wiki]:
+https://github.com/neoforged/NeoForge/wiki/***
