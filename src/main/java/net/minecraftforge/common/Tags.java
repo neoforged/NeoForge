@@ -5,6 +5,7 @@
 
 package net.minecraftforge.common;
 
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -572,7 +573,7 @@ public class Tags
             return TagKey.create(Registries.BIOME, new ResourceLocation("forge", name));
         }
     }
-    
+
     public static class DamageTypes
     {
         private static void init() {}
@@ -609,6 +610,13 @@ public class Tags
          * Damage from these types should not be reduced, and bypasses invulnerability.
          */
         public static final TagKey<DamageType> IS_TECHNICAL = tag("is_technical");
+
+        /**
+         * Damage types that will not cause the red flashing effect.<br>
+         * This tag is empty by default.
+         * @see GameRenderer#bobHurt
+         */
+        public static final TagKey<DamageType> NO_FLINCH = tag("no_flinch");
 
         private static TagKey<DamageType> tag(String name)
         {
