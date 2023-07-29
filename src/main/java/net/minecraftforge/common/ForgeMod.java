@@ -69,6 +69,7 @@ import net.minecraftforge.common.world.ForgeBiomeModifiers.AddSpawnCostsBiomeMod
 import net.minecraftforge.common.world.ForgeBiomeModifiers.AddSpawnsBiomeModifier;
 import net.minecraftforge.common.world.ForgeBiomeModifiers.RemoveCarversBiomeModifier;
 import net.minecraftforge.common.world.ForgeBiomeModifiers.RemoveFeaturesBiomeModifier;
+import net.minecraftforge.common.world.ForgeBiomeModifiers.RemoveSpawnCostsBiomeModifier;
 import net.minecraftforge.common.world.ForgeBiomeModifiers.RemoveSpawnsBiomeModifier;
 import net.minecraftforge.common.world.ForgeStructureModifiers.AddSpawnsStructureModifier;
 import net.minecraftforge.common.world.ForgeStructureModifiers.ClearSpawnsStructureModifier;
@@ -225,7 +226,7 @@ public class ForgeMod
     /**
      * Stock biome modifier for adding carvers to biomes.
      */
-    public static final RegistryObject<Codec<AddCarversBiomeModifier>> ADD_CARVERS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_features", () ->
+    public static final RegistryObject<Codec<AddCarversBiomeModifier>> ADD_CARVERS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_carvers", () ->
         RecordCodecBuilder.create(builder -> builder.group(
                 Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddCarversBiomeModifier::biomes),
                 ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(AddCarversBiomeModifier::carvers),
@@ -236,7 +237,7 @@ public class ForgeMod
     /**
      * Stock biome modifier for removing carvers from biomes.
      */
-    public static final RegistryObject<Codec<RemoveCarversBiomeModifier>> REMOVE_CARVERS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_features", () ->
+    public static final RegistryObject<Codec<RemoveCarversBiomeModifier>> REMOVE_CARVERS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_carvers", () ->
         RecordCodecBuilder.create(builder -> builder.group(
                 Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveCarversBiomeModifier::biomes),
                 ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(RemoveCarversBiomeModifier::carvers),
@@ -275,7 +276,7 @@ public class ForgeMod
     /**
      * Stock biome modifier for adding mob spawn costs to biomes.
      */
-    public static final RegistryObject<Codec<AddSpawnCostsBiomeModifier>> ADD_SPAWN_COSTS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_spawns", () ->
+    public static final RegistryObject<Codec<AddSpawnCostsBiomeModifier>> ADD_SPAWN_COSTS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_spawn_costs", () ->
         RecordCodecBuilder.create(builder -> builder.group(
                 Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddSpawnCostsBiomeModifier::biomes),
                 RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(AddSpawnCostsBiomeModifier::entityTypes),
@@ -286,11 +287,11 @@ public class ForgeMod
     /**
      * Stock biome modifier for removing mob spawn costs from biomes.
      */
-    public static final RegistryObject<Codec<RemoveSpawnsBiomeModifier>> REMOVE_SPAWN_COSTS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_spawns", () ->
+    public static final RegistryObject<Codec<RemoveSpawnCostsBiomeModifier>> REMOVE_SPAWN_COSTS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_spawn_costs", () ->
         RecordCodecBuilder.create(builder -> builder.group(
-                Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveSpawnsBiomeModifier::biomes),
-                RegistryCodecs.homogeneousList(ForgeRegistries.Keys.ENTITY_TYPES).fieldOf("entity_types").forGetter(RemoveSpawnsBiomeModifier::entityTypes)
-            ).apply(builder, RemoveSpawnsBiomeModifier::new))
+                Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveSpawnCostsBiomeModifier::biomes),
+                RegistryCodecs.homogeneousList(ForgeRegistries.Keys.ENTITY_TYPES).fieldOf("entity_types").forGetter(RemoveSpawnCostsBiomeModifier::entityTypes)
+            ).apply(builder, RemoveSpawnCostsBiomeModifier::new))
         );
     
     /**
@@ -318,7 +319,7 @@ public class ForgeMod
      */
     public static final RegistryObject<Codec<RemoveSpawnsStructureModifier>> REMOVE_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("remove_spawns", () ->
         RecordCodecBuilder.create(builder -> builder.group(
-                RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("biomes").forGetter(RemoveSpawnsStructureModifier::structures),
+                RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(RemoveSpawnsStructureModifier::structures),
                 RegistryCodecs.homogeneousList(ForgeRegistries.Keys.ENTITY_TYPES).fieldOf("entity_types").forGetter(RemoveSpawnsStructureModifier::entityTypes)
             ).apply(builder, RemoveSpawnsStructureModifier::new))
         );
@@ -549,6 +550,7 @@ public class ForgeMod
         modEventBus.register(this);
         ATTRIBUTES.register(modEventBus);
         COMMAND_ARGUMENT_TYPES.register(modEventBus);
+        GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
         STRUCTURE_MODIFIER_SERIALIZERS.register(modEventBus);
         HOLDER_SET_TYPES.register(modEventBus);
