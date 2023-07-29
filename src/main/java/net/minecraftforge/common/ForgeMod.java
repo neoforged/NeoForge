@@ -22,6 +22,7 @@ import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.commands.Commands;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
@@ -31,9 +32,13 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.MobSpawnSettings.MobSpawnCost;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
+import net.minecraft.world.level.levelgen.GenerationStep.Carving;
 import net.minecraft.world.level.levelgen.GenerationStep.Decoration;
+import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.Items;
 import net.minecraft.sounds.SoundEvent;
@@ -53,13 +58,21 @@ import net.minecraftforge.common.data.ForgeSpriteSourceProvider;
 import net.minecraftforge.common.data.VanillaSoundDefinitionsProvider;
 import net.minecraftforge.common.extensions.IForgeEntity;
 import net.minecraftforge.common.extensions.IForgePlayer;
+import net.minecraftforge.common.loot.AddTableModifier;
 import net.minecraftforge.common.loot.CanToolPerformAction;
+import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootTableIdCondition;
 import net.minecraftforge.common.world.BiomeModifier;
+import net.minecraftforge.common.world.ForgeBiomeModifiers.AddCarversBiomeModifier;
 import net.minecraftforge.common.world.ForgeBiomeModifiers.AddFeaturesBiomeModifier;
+import net.minecraftforge.common.world.ForgeBiomeModifiers.AddSpawnCostsBiomeModifier;
 import net.minecraftforge.common.world.ForgeBiomeModifiers.AddSpawnsBiomeModifier;
+import net.minecraftforge.common.world.ForgeBiomeModifiers.RemoveCarversBiomeModifier;
 import net.minecraftforge.common.world.ForgeBiomeModifiers.RemoveFeaturesBiomeModifier;
 import net.minecraftforge.common.world.ForgeBiomeModifiers.RemoveSpawnsBiomeModifier;
+import net.minecraftforge.common.world.ForgeStructureModifiers.AddSpawnsStructureModifier;
+import net.minecraftforge.common.world.ForgeStructureModifiers.ClearSpawnsStructureModifier;
+import net.minecraftforge.common.world.ForgeStructureModifiers.RemoveSpawnsStructureModifier;
 import net.minecraftforge.common.world.NoneBiomeModifier;
 import net.minecraftforge.common.world.NoneStructureModifier;
 import net.minecraftforge.common.world.StructureModifier;
@@ -137,6 +150,7 @@ public class ForgeMod
 
     private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.Keys.ATTRIBUTES, "forge");
     private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, "forge");
+    private static final DeferredRegister<Codec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, "forge");
     private static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, "forge");
     private static final DeferredRegister<Codec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, "forge");
     private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(ForgeRegistries.Keys.HOLDER_SET_TYPES, "forge");
@@ -175,6 +189,10 @@ public class ForgeMod
     public static final RegistryObject<Attribute> STEP_HEIGHT_ADDITION = ATTRIBUTES.register("step_height_addition", () -> new RangedAttribute("forge.step_height", 0.0D, -512.0D, 512.0D).setSyncable(true));
 
     /**
+     * Stock loot modifier type that adds loot from a subtable to the final loot.
+     */
+    public static final RegistryObject<Codec<AddTableModifier>> ADD_TABLE_LOOT_MODIFIER_TYPE = GLOBAL_LOOT_MODIFIER_SERIALIZERS.register("add_table", () -> AddTableModifier.CODEC);
+    /**
      * Noop biome modifier. Can be used in a biome modifier json with "type": "forge:none".
      */
     public static final RegistryObject<Codec<NoneBiomeModifier>> NONE_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("none", () -> Codec.unit(NoneBiomeModifier.INSTANCE));
@@ -205,6 +223,31 @@ public class ForgeMod
         );
 
     /**
+     * Stock biome modifier for adding carvers to biomes.
+     */
+    public static final RegistryObject<Codec<AddCarversBiomeModifier>> ADD_CARVERS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_features", () ->
+        RecordCodecBuilder.create(builder -> builder.group(
+                Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddCarversBiomeModifier::biomes),
+                ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(AddCarversBiomeModifier::carvers),
+                Carving.CODEC.fieldOf("step").forGetter(AddCarversBiomeModifier::step)
+            ).apply(builder, AddCarversBiomeModifier::new))
+        );
+
+    /**
+     * Stock biome modifier for removing carvers from biomes.
+     */
+    public static final RegistryObject<Codec<RemoveCarversBiomeModifier>> REMOVE_CARVERS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_features", () ->
+        RecordCodecBuilder.create(builder -> builder.group(
+                Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveCarversBiomeModifier::biomes),
+                ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(RemoveCarversBiomeModifier::carvers),
+                new ExtraCodecs.EitherCodec<List<Carving>, Carving>(Carving.CODEC.listOf(), Carving.CODEC).<Set<Carving>>xmap(
+                        either -> either.map(Set::copyOf, Set::of), // convert list/singleton to set when decoding
+                        set -> set.size() == 1 ? Either.right(set.toArray(Carving[]::new)[0]) : Either.left(List.copyOf(set))
+                    ).optionalFieldOf("steps", EnumSet.allOf(Carving.class)).forGetter(RemoveCarversBiomeModifier::steps)
+            ).apply(builder, RemoveCarversBiomeModifier::new))
+        );
+
+    /**
      * Stock biome modifier for adding mob spawns to biomes.
      */
     public static final RegistryObject<Codec<AddSpawnsBiomeModifier>> ADD_SPAWNS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_spawns", () ->
@@ -228,10 +271,70 @@ public class ForgeMod
                 RegistryCodecs.homogeneousList(ForgeRegistries.Keys.ENTITY_TYPES).fieldOf("entity_types").forGetter(RemoveSpawnsBiomeModifier::entityTypes)
             ).apply(builder, RemoveSpawnsBiomeModifier::new))
         );
+
+    /**
+     * Stock biome modifier for adding mob spawn costs to biomes.
+     */
+    public static final RegistryObject<Codec<AddSpawnCostsBiomeModifier>> ADD_SPAWN_COSTS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_spawns", () ->
+        RecordCodecBuilder.create(builder -> builder.group(
+                Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddSpawnCostsBiomeModifier::biomes),
+                RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(AddSpawnCostsBiomeModifier::entityTypes),
+                MobSpawnCost.CODEC.fieldOf("spawn_cost").forGetter(AddSpawnCostsBiomeModifier::spawnCost)
+            ).apply(builder, AddSpawnCostsBiomeModifier::new))
+        );
+
+    /**
+     * Stock biome modifier for removing mob spawn costs from biomes.
+     */
+    public static final RegistryObject<Codec<RemoveSpawnsBiomeModifier>> REMOVE_SPAWN_COSTS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_spawns", () ->
+        RecordCodecBuilder.create(builder -> builder.group(
+                Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveSpawnsBiomeModifier::biomes),
+                RegistryCodecs.homogeneousList(ForgeRegistries.Keys.ENTITY_TYPES).fieldOf("entity_types").forGetter(RemoveSpawnsBiomeModifier::entityTypes)
+            ).apply(builder, RemoveSpawnsBiomeModifier::new))
+        );
+    
     /**
      * Noop structure modifier. Can be used in a structure modifier json with "type": "forge:none".
      */
     public static final RegistryObject<Codec<NoneStructureModifier>> NONE_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("none", () -> Codec.unit(NoneStructureModifier.INSTANCE));
+    
+    /**
+     * Stock structure modifier for adding mob spawns to structures.
+     */
+    public static final RegistryObject<Codec<AddSpawnsStructureModifier>> ADD_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("add_spawns", () ->
+        RecordCodecBuilder.create(builder -> builder.group(
+            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(AddSpawnsStructureModifier::structures),
+            // Allow either a list or single spawner, attempting to decode the list format first.
+            // Uses the better EitherCodec that logs both errors if both formats fail to parse.
+            new ExtraCodecs.EitherCodec<>(SpawnerData.CODEC.listOf(), SpawnerData.CODEC).xmap(
+                    either -> either.map(Function.identity(), List::of), // convert list/singleton to list when decoding
+                    list -> list.size() == 1 ? Either.right(list.get(0)) : Either.left(list) // convert list to singleton/list when encoding
+                ).fieldOf("spawners").forGetter(AddSpawnsStructureModifier::spawners)
+        ).apply(builder, AddSpawnsStructureModifier::new))
+    );
+
+    /**
+     * Stock structure modifier for removing mob spawns from structures.
+     */
+    public static final RegistryObject<Codec<RemoveSpawnsStructureModifier>> REMOVE_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("remove_spawns", () ->
+        RecordCodecBuilder.create(builder -> builder.group(
+                RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("biomes").forGetter(RemoveSpawnsStructureModifier::structures),
+                RegistryCodecs.homogeneousList(ForgeRegistries.Keys.ENTITY_TYPES).fieldOf("entity_types").forGetter(RemoveSpawnsStructureModifier::entityTypes)
+            ).apply(builder, RemoveSpawnsStructureModifier::new))
+        );
+
+    /**
+     * Stock structure modifier for removing spawn override lists from structures.
+     */
+    public static final RegistryObject<Codec<ClearSpawnsStructureModifier>> CLEAR_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("clear_spawns", () ->
+        RecordCodecBuilder.create(builder -> builder.group(
+                RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(ClearSpawnsStructureModifier::structures),
+                new ExtraCodecs.EitherCodec<List<MobCategory>, MobCategory>(MobCategory.CODEC.listOf(), MobCategory.CODEC).<Set<MobCategory>>xmap(
+                        either -> either.map(Set::copyOf, Set::of), // convert list/singleton to set when decoding
+                        set -> set.size() == 1 ? Either.right(set.toArray(MobCategory[]::new)[0]) : Either.left(List.copyOf(set))
+                    ).optionalFieldOf("categories", EnumSet.allOf(MobCategory.class)).forGetter(ClearSpawnsStructureModifier::categories)
+            ).apply(builder, ClearSpawnsStructureModifier::new))
+        );
 
     /**
      * Stock holder set type that represents any/all values in a registry. Can be used in a holderset object with {@code { "type": "forge:any" }}
