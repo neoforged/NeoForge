@@ -1,4 +1,4 @@
-Contributing to Forge
+Contributing to NeoForge
 =====================
 
 1) Keep patches to Minecraft classes together. If you need a lot of things done, you may either add to relevant forge classes or make a new class. Try not to spread out your patches across multiple disjoint lines, as this makes maintenance of your patches difficult.
@@ -15,6 +15,6 @@ Contributor License Agreement
 - You grant Forge a license to use your code contributed to the primary codebase (everything **not** under patches) in Forge, under the LGPLv2.1 license.
 - You assign copyright ownership of your contributions to the patches codebase (everything under patches) to Forge, where it will be licensed under the LGPLv2.1 license.
 
-"Forge" is Forge Development LLC, a legally incorporated entity in Oregon, USA.
+"NeoForge" is NeoForged Development LLC, a legally incorporated entity in Oregon, USA.
 
 [Wiki]: https://github.com/MinecraftForge/MinecraftForge/wiki/If-you-want-to-contribute-to-Forge
