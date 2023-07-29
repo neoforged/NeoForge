@@ -104,7 +104,7 @@ public final class ForgeStructureModifiers
      * <pre>
      * {
      *   "type": "forge:remove_spawns", // Required
-     *   "biomes": "#namespace:biome_tag", // Accepts a biome id, [list of biome ids], or #namespace:biome_tag
+     *   "structures": "#namespace:structure_tag", // Accepts a structure id, [list of structure ids], or #namespace:structure_tag
      *   "entity_types": #namespace:entitytype_tag // Accepts an entity type, [list of entity types], or #namespace:entitytype_tag
      * }
      * </pre>
@@ -147,6 +147,7 @@ public final class ForgeStructureModifiers
      * <pre>
      * {
      *   "type": "forge:clear_spawns", // Required
+     *   "structures": "#namespace:structure_tag", // Accepts a structure id, [list of structure ids], or #namespace:structure_tag
      *   "categories": "monster" OR ["monster", "creature"] // Optional, one or more {@link MobCategory}s; defaults to all categories if not specified.
      * }
      * </pre>
