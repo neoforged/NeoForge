@@ -147,9 +147,9 @@ Every project has a different way of dealing with issues, so don't wonder if the
 Once your issue is closed, you will know whether it was valid or turned out to be unreproducible. If you included all of the data from above in your report, chances are that the latter won't be the case.
 
 [Bug-Reports]: https://forums.minecraftforge.net/forum/18-support-bug-reports/
-[Modder-Support]: https://forums.minecraftforge.net/forum/70-modder-support/
+[Modder-Support]: https://docs.neoforged.net/docs/gettingstarted/
 
 [Discord]:
 https://discord.neoforged.net/
 
-[Documentation]: https://docs.minecraftforge.net/
+[Documentation]: https://docs.neoforged.net/docs/forgedev/
