@@ -179,15 +179,6 @@ public class RegistryBuilder<T>
         return this;
     }
 
-    /**
-     * @deprecated All registries now have vanilla wrappers.
-     */
-    @Deprecated(since = "1.20.1", forRemoval = true)
-    RegistryBuilder<T> hasWrapper()
-    {
-        return this;
-    }
-
     public RegistryBuilder<T> legacyName(String name)
     {
         return legacyName(new ResourceLocation(name));

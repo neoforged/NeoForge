@@ -25,6 +25,7 @@ import java.util.function.Supplier;
  * @see #register(ResourceKey, ResourceLocation, Supplier)
  * @see #register(ResourceKey, Consumer)
  */
+// TODO: Make register() methods return the newly-created Holder.Reference<T> or a bound DeferredHolder<T>
 public class RegisterEvent extends Event implements IModBusEvent
 {
     @NotNull

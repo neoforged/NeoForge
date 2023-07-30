@@ -178,15 +178,15 @@ public class GameData
 
     private static <T> RegistryBuilder<T> makeRegistry(ResourceKey<? extends Registry<T>> key)
     {
-        return new RegistryBuilder<T>().setName(key.location()).setMaxID(MAX_VARINT).hasWrapper();
+        return new RegistryBuilder<T>().setName(key.location()).setMaxID(MAX_VARINT);
     }
     private static <T> RegistryBuilder<T> makeRegistry(ResourceKey<? extends Registry<T>> key, int min, int max)
     {
-        return new RegistryBuilder<T>().setName(key.location()).setIDRange(min, max).hasWrapper();
+        return new RegistryBuilder<T>().setName(key.location()).setIDRange(min, max);
     }
     private static <T> RegistryBuilder<T> makeRegistry(ResourceKey<? extends Registry<T>> key, String _default)
     {
-        return new RegistryBuilder<T>().setName(key.location()).setMaxID(MAX_VARINT).hasWrapper().setDefaultKey(new ResourceLocation(_default));
+        return new RegistryBuilder<T>().setName(key.location()).setMaxID(MAX_VARINT).setDefaultKey(new ResourceLocation(_default));
     }
 
     public static <T> MappedRegistry<T> getWrapper(ResourceKey<? extends Registry<T>> key, Lifecycle lifecycle)

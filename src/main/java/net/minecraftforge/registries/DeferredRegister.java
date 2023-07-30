@@ -73,7 +73,7 @@ public class DeferredRegister<T>
     /**
      * @deprecated Use {@link #create(ResourceKey, String)} via {@link IForgeRegistry#getRegistryKey()}
      */
-    @Deprecated
+    @Deprecated(since = "1.20.1", forRemoval = true)
     public static <B> DeferredRegister<B> create(IForgeRegistry<B> reg, String modid)
     {
         return create(reg.getRegistryKey(), modid);
@@ -120,13 +120,8 @@ public class DeferredRegister<T>
 
     private DeferredRegister(ResourceKey<? extends Registry<T>> registryKey, String modid)
     {
-        this.registryKey = registryKey;
-        this.modid = modid;
-    }
-
-    private DeferredRegister(IForgeRegistry<T> reg, String modid)
-    {
-        this(reg.getRegistryKey(), modid);
+        this.registryKey = Objects.requireNonNull(registryKey);
+        this.modid = Objects.requireNonNull(modid);
     }
 
     /**
@@ -191,8 +186,6 @@ public class DeferredRegister<T>
      */
     public TagKey<T> createTagKey(@NotNull ResourceLocation location)
     {
-        if (this.registryKey == null)
-            throw new IllegalStateException("The registry name was not set, cannot create a tag key");
         Objects.requireNonNull(location);
         return TagKey.create(this.registryKey, location);
     }
@@ -256,11 +249,16 @@ public class DeferredRegister<T>
      */
     public void register(IEventBus bus)
     {
-        bus.register(new EventDispatcher(this));
+        bus.addListener(this::addEntries);
         if (this.registryFactory != null) {
             bus.addListener(this::createRegistry);
         }
     }
+
+    /**
+     * @deprecated Unused
+     */
+    @Deprecated(since = "1.20.1", forRemoval = true)
     public static class EventDispatcher {
         private final DeferredRegister<?> register;
 
@@ -296,7 +294,7 @@ public class DeferredRegister<T>
      */
     public ResourceLocation getRegistryName()
     {
-        return Objects.requireNonNull(this.registryKey).location();
+        return this.registryKey.location();
     }
 
     private Supplier<IForgeRegistry<T>> makeRegistry(final ResourceLocation registryName, final Supplier<RegistryBuilder<T>> sup) {

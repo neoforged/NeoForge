@@ -936,7 +936,7 @@ public class ForgeHooks
             return ForgeMod.WATER_TYPE.get();
         if (fluid == Fluids.LAVA || fluid == Fluids.FLOWING_LAVA)
             return ForgeMod.LAVA_TYPE.get();
-        if (ForgeMod.MILK.filter(milk -> milk == fluid).isPresent() || ForgeMod.FLOWING_MILK.filter(milk -> milk == fluid).isPresent())
+        if (ForgeMod.MILK.isPresent() && ForgeMod.MILK.get() == fluid || ForgeMod.FLOWING_MILK.isPresent() && ForgeMod.FLOWING_MILK.get() == fluid)
             return ForgeMod.MILK_TYPE.get();
         throw new RuntimeException("Mod fluids must override getFluidType.");
     }

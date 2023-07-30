@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.mojang.datafixers.util.Either;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -47,9 +48,10 @@ public class DeferredHolder<T> implements Holder<T>
      * @param valueName The name of the target value.
      */
     @SuppressWarnings({"unchecked","rawtypes"})
-    public static <T, U extends T> DeferredHolder<U> create(ResourceKey<? extends Registry<T>> registryKey, ResourceLocation valueName)
+    public static <T> DeferredHolder<T> create(ResourceKey<? extends Registry<? super T>> registryKey, ResourceLocation valueName)
     {
-        return new DeferredHolder<U>(ResourceKey.create((ResourceKey) registryKey, valueName));
+        // This cast has to stay inside ResourceKey.create, otherwise it will create a compile-time error.
+        return new DeferredHolder<T>(ResourceKey.create((ResourceKey) registryKey, valueName));
     }
 
     /**
@@ -59,14 +61,14 @@ public class DeferredHolder<T> implements Holder<T>
      * @param registryName The name of the registry the target value is a member of.
      * @param valueName The name of the target value.
      */
-    public static <T, U extends T> DeferredHolder<U> create(ResourceLocation registryName, ResourceLocation valueName)
+    public static <T> DeferredHolder<T> create(ResourceLocation registryName, ResourceLocation valueName)
     {
-        return create(ResourceKey.<T>createRegistryKey(registryName), valueName);
+        return create(ResourceKey.createRegistryKey(registryName), valueName);
     }
 
     /**
-     * This constructor requires a ResourceKey which is strongly-typed to the underlying type of this DH.<br>
-     * For this reason, use the static factory methods, which hide the generic cast.
+     * This constructor requires a ResourceKey which is strongly-typed to the underlying type.<br>
+     * If you extend this class, you may want to provide static helper methods similar to the above ones.
      * @param key The resource key of the target object.
      * @see #create(ResourceKey, ResourceLocation)
      * @see #create(ResourceLocation, ResourceLocation)
@@ -83,7 +85,7 @@ public class DeferredHolder<T> implements Holder<T>
      * @throws NullPointerException If the underlying Holder has not been populated (the target object is not registered).
      */
     @Override
-    public T get()
+    public T value()
     {
         if (getRegistry() == null)
         {
@@ -122,9 +124,9 @@ public class DeferredHolder<T> implements Holder<T>
         if (this.holder != null) return;
 
         Registry<T> registry = getRegistry();
-        if (registry != null && registry.containsKey(this.key.location()))
+        if (registry != null)
         {
-            this.holder = registry.getHolder(this.key).get();
+            this.holder = registry.getHolder(this.key).orElse(null);
         }
     }
 
@@ -157,7 +159,7 @@ public class DeferredHolder<T> implements Holder<T>
     public boolean equals(Object obj)
     {
         if (this == obj) return true;
-        return obj instanceof DeferredHolder<?> dh ? dh.key == this.key : false;
+        return obj instanceof DeferredHolder<?> dh && dh.key == this.key;
     }
 
     @Override
@@ -169,16 +171,7 @@ public class DeferredHolder<T> implements Holder<T>
     @Override
     public String toString()
     {
-        return String.format("DeferredHolder{%s}", this.key);
-    }
-
-    /**
-     * Fulfills standard Holder interface. Prefer using {@link #get()}
-     */
-    @Override
-    public T value()
-    {
-        return get();
+        return String.format("DeferredHolder{%s}", this.key, Locale.ENGLISH);
     }
 
     /**
