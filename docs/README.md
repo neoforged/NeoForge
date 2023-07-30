@@ -65,4 +65,4 @@ our opencollective.*
 [Getting-Started]: https://docs.neoforged.net/docs/gettingstarted/
 [NeoForgeDev]: https://docs.neoforged.net/docs/forgedev/
 [Pull-Requests]: https://docs.neoforged.net/docs/forgedev/#making-changes-and-pull-requests
-[CurseForge]: https://curseforge.com/placeholder
+[CurseForge]: https://curseforge.com/
