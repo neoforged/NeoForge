@@ -778,7 +778,11 @@ project(':forge') {
             MC_VERSION:    MC_VERSION,
             MCP_VERSION:   MCP_VERSION,
             FORGE_GROUP:   group,
-            IGNORE_LIST: Util.getArtifacts(project, configurations.moduleonly, false).values().collect{it.downloads.artifact.path.rsplit('/', 1)[1]}.join(','),
+            IGNORE_LIST: [
+                configurations.moduleonly, configurations.gameLayerLibrary, configurations.pluginLayerLibrary
+            ].collectMany { Util.getArtifacts(project, it, false).values() }
+                .collect{it.downloads.artifact.path.rsplit('/', 1)[1]}
+                .join(','),
             PLUGIN_LAYER_LIBRARIES: project.patcher.runs.forge_client.properties['fml.pluginLayerLibraries'],
             GAME_LAYER_LIBRARIES: project.patcher.runs.forge_client.properties['fml.gameLayerLibraries'],
             MODULES: 'ALL-MODULE-PATH'
