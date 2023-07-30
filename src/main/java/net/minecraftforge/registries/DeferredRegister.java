@@ -328,7 +328,8 @@ public class DeferredRegister<T>
             for (Entry<RegistryObject<T>, Supplier<? extends T>> e : entries.entrySet())
             {
                 event.register(this.registryKey, e.getKey().getId(), () -> e.getValue().get());
-                e.getKey().bind();
+                // Throw on missing registry here because absence of the registry indicates something is very wrong.
+                e.getKey().bind(true);
             }
         }
     }

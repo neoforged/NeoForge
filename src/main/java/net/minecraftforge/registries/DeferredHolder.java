@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 /**
  * A Deferred Holder is a Holder that is constructed with only a ResourceKey.<br>
  * It will be populated with the underlying Holder from the registry when available.
+ * 
  * @param <T> The type of object being held by this DeferredHolder.
  */
 public class DeferredHolder<T> implements Holder<T>
@@ -42,12 +43,13 @@ public class DeferredHolder<T> implements Holder<T>
 
     /**
      * Creates a new DeferredHolder targeting the value with the specified name in the specified registry.
-     * @param <T> The registry type.
-     * @param <U> The type of the target value.
+     * 
+     * @param <T>         The registry type.
+     * @param <U>         The type of the target value.
      * @param registryKey The name of the registry the target value is a member of.
-     * @param valueName The name of the target value.
+     * @param valueName   The name of the target value.
      */
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T> DeferredHolder<T> create(ResourceKey<? extends Registry<? super T>> registryKey, ResourceLocation valueName)
     {
         // This cast has to stay inside ResourceKey.create, otherwise it will create a compile-time error.
@@ -56,10 +58,11 @@ public class DeferredHolder<T> implements Holder<T>
 
     /**
      * Creates a new DeferredHolder targeting the value with the specified name in the specified registry.
-     * @param <T> The registry type.
-     * @param <U> The type of the target value.
+     * 
+     * @param <T>          The registry type.
+     * @param <U>          The type of the target value.
      * @param registryName The name of the registry the target value is a member of.
-     * @param valueName The name of the target value.
+     * @param valueName    The name of the target value.
      */
     public static <T> DeferredHolder<T> create(ResourceLocation registryName, ResourceLocation valueName)
     {
@@ -69,6 +72,7 @@ public class DeferredHolder<T> implements Holder<T>
     /**
      * This constructor requires a ResourceKey which is strongly-typed to the underlying type.<br>
      * If you extend this class, you may want to provide static helper methods similar to the above ones.
+     * 
      * @param key The resource key of the target object.
      * @see #create(ResourceKey, ResourceLocation)
      * @see #create(ResourceLocation, ResourceLocation)
@@ -76,22 +80,19 @@ public class DeferredHolder<T> implements Holder<T>
     protected DeferredHolder(ResourceKey<T> key)
     {
         this.key = key;
-        this.bind();
+        this.bind(false);
     }
 
     /**
      * Gets the object stored by this DeferredHolder, if this holder {@linkplain #isPresent() is present}.<br>
+     * 
      * @throws IllegalStateException If the backing registry is unavailable.
-     * @throws NullPointerException If the underlying Holder has not been populated (the target object is not registered).
+     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
     @Override
     public T value()
     {
-        if (getRegistry() == null)
-        {
-            throw new IllegalStateException("Registry not present for " + this + ": " + this.key.registry());
-        }
-        bind();
+        bind(true);
         Objects.requireNonNull(this.holder, () -> "Trying to access unbound value: " + this.key);
         return this.holder.get();
     }
@@ -103,9 +104,10 @@ public class DeferredHolder<T> implements Holder<T>
     {
         return isPresent() ? Optional.of(get()) : Optional.empty();
     }
-    
+
     /**
      * The type of the registry is really <? super T> but this saves us some additional ugly casting and doesn't break anything.
+     * 
      * @return The registry that this DeferredHolder is pointing at, or null if it doesn't exist.
      */
     @Nullable
@@ -118,8 +120,11 @@ public class DeferredHolder<T> implements Holder<T>
     /**
      * Binds this DeferredHolder to the underlying registry and target object.<br>
      * Has no effect if already bound.
+     * 
+     * @param throwOnMissingRegistry If true, an exception will be thrown if the registry is absent.
+     * @throws IllegalStateException If throwOnMissingRegistry is true and the backing registry is unavailable.
      */
-    protected void bind()
+    protected void bind(boolean throwOnMissingRegistry)
     {
         if (this.holder != null) return;
 
@@ -127,6 +132,10 @@ public class DeferredHolder<T> implements Holder<T>
         if (registry != null)
         {
             this.holder = registry.getHolder(this.key).orElse(null);
+        }
+        else if (throwOnMissingRegistry)
+        {
+            throw new IllegalStateException("Registry not present for " + this + ": " + this.key.registry());
         }
     }
 
@@ -151,7 +160,7 @@ public class DeferredHolder<T> implements Holder<T>
      */
     public boolean isPresent()
     {
-        bind();
+        bind(false);
         return this.holder != null;
     }
 
@@ -167,7 +176,7 @@ public class DeferredHolder<T> implements Holder<T>
     {
         return this.key.hashCode();
     }
-    
+
     @Override
     public String toString()
     {
@@ -231,6 +240,7 @@ public class DeferredHolder<T> implements Holder<T>
     /**
      * If this DH {@linkplain #isPresent() is present}, this method returns an {@link Either#right()} containing the underlying object.<br>
      * Otherwise, this method returns and {@link Either#left()} containing {@linkplain #getKey() this DH's resource key}.
+     * 
      * @return The unwrapped form of this DeferredHolder.
      */
     @Override
