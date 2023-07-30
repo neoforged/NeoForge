@@ -783,7 +783,6 @@ project(':forge') {
         doLast {
             def CLASS_PATH = Util.getArtifacts(project, configurations.installer, false).values().collect{"libraries/${it.downloads.artifact.path}"} +
                     [
-                            'libraries/' + Util.getMavenPath(project, "net.neoforged.fancymodloader:loader:${FANCY_MOD_LOADER_VERSION}"),
                             "libraries/net/minecraft/server/${MC_VERSION}-${MCP_VERSION}/server-${MC_VERSION}-${MCP_VERSION}-extra.jar"
                     ]
             def claimed = CLASS_PATH.collect{ it.rsplit('/', 2)[0] }.toSet() // Allow us to override versions
