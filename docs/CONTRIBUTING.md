@@ -1,4 +1,4 @@
- to NeoForge
+Contributing to NeoForge
 =====================
 
 1) Keep patches to Minecraft classes together. If you need a lot of things done, you may either add to relevant NeoForge classes or make a new class. Try not to spread out your patches across multiple disjoint lines, as this makes maintenance of your patches difficult.
