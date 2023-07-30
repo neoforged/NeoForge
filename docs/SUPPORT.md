@@ -22,6 +22,8 @@ Before reporting an issue on this repository's bug tracker, please carefully rea
     3. [Markdown Issue Template](#markdown-issue-template)
     4. [Waiting for an Issue to Be Resolved](#waiting-for-an-issue-to-be-resolved)
 
+<br>
+
 Identifying the Source of a Problem
 -----------------------------------
 
@@ -63,6 +65,8 @@ Reliable methods of isolating the issue are listed below:
    3. If the issue does not occur anymore without the other half, repeat from step 1 but instead discard the half you just used and split the other one (plus any definitely required mods).
    4. Repeat these steps until you can't remove any more mods from your instance without also 'solving' the issue. This set of mods can serve as a basis for your issue report.
 
+<br>
+
 Choosing the Correct Support Channel
 -------------------------------------
 
@@ -90,6 +94,8 @@ A lot of mods also use GitHub or other source management systems and their integ
 ### Vanilla Support
 
 Just like NeoForge or mods, Mojang has its own issue tracker for Vanilla Minecraft. This official [bug tracker](https://bugs.mojang.com/projects/MC/issues/) has the exclusive purpose of managing any concrete issues with the game's code and functionality. It is *not* a place for requesting any features or getting help with playing the game, similar to the Forge issue tracker.
+
+<br>
 
 Writing a Helpful Bug Report
 ----------------------------
