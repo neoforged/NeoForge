@@ -27,7 +27,7 @@ import net.minecraftforge.common.ForgeMod;
  * <p> Json format:
  * <pre>
  * {
- *   "type": "forge": "add_table",
+ *   "type": "forge:add_table",
  *   "conditions": [], // conditions block to predicate target tables by
  *   "table": "namespace:loot_table_id" // subtable to roll loot for to add to the target table(s)
  * }
