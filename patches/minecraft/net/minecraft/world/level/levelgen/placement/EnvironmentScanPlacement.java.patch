@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/levelgen/placement/EnvironmentScanPlacement.java
++++ b/net/minecraft/world/level/levelgen/placement/EnvironmentScanPlacement.java
+@@ -15,7 +_,7 @@
+    private final BlockPredicate f_191641_;
+    private final int f_191642_;
+    public static final Codec<EnvironmentScanPlacement> f_191638_ = RecordCodecBuilder.create((p_191650_) -> {
+-      return p_191650_.group(Direction.f_194527_.fieldOf("direction_of_search").forGetter((p_191672_) -> {
++      return p_191650_.group(Direction.f_175356_.fieldOf("direction_of_search").forGetter((p_191672_) -> {
+          return p_191672_.f_191639_;
+       }), BlockPredicate.f_190392_.fieldOf("target_condition").forGetter((p_191670_) -> {
+          return p_191670_.f_191640_;
