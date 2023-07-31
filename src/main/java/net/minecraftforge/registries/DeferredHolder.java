@@ -5,6 +5,16 @@
 
 package net.minecraftforge.registries;
 
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+import org.jetbrains.annotations.Nullable;
+
+import com.mojang.datafixers.util.Either;
+
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderOwner;
 import net.minecraft.core.Registry;
@@ -12,15 +22,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import org.jetbrains.annotations.Nullable;
-
-import com.mojang.datafixers.util.Either;
-
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /**
  * A Deferred Holder is a Holder that is constructed with only a ResourceKey.<br>
@@ -44,23 +45,20 @@ public class DeferredHolder<T> implements Holder<T>
     /**
      * Creates a new DeferredHolder targeting the value with the specified name in the specified registry.
      * 
-     * @param <T>         The registry type.
-     * @param <U>         The type of the target value.
+     * @param <T>         The type of the target value.
+     * @param <R>         The registry type.
      * @param registryKey The name of the registry the target value is a member of.
      * @param valueName   The name of the target value.
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public static <T> DeferredHolder<T> create(ResourceKey<? extends Registry<? super T>> registryKey, ResourceLocation valueName)
+    public static <R, T extends R> DeferredHolder<T> create(ResourceKey<? extends Registry<R>> registryKey, ResourceLocation valueName)
     {
-        // This cast has to stay inside ResourceKey.create, otherwise it will create a compile-time error.
-        return new DeferredHolder<T>(ResourceKey.create((ResourceKey) registryKey, valueName));
+        return create(ResourceKey.create(registryKey, valueName));
     }
 
     /**
      * Creates a new DeferredHolder targeting the value with the specified name in the specified registry.
      * 
      * @param <T>          The registry type.
-     * @param <U>          The type of the target value.
      * @param registryName The name of the registry the target value is a member of.
      * @param valueName    The name of the target value.
      */
@@ -70,16 +68,28 @@ public class DeferredHolder<T> implements Holder<T>
     }
 
     /**
-     * This constructor requires a ResourceKey which is strongly-typed to the underlying type.<br>
-     * If you extend this class, you may want to provide static helper methods similar to the above ones.
+     * Creates a new DeferredHolder targeting the specified value.
+     * 
+     * @param <T> The type of the target value.
+     * @param key The resource key of the target value.
+     */
+    public static <T> DeferredHolder<T> create(ResourceKey<? super T> key)
+    {
+        return new DeferredHolder<>(key);
+    }
+
+    /**
+     * Creates a new DeferredHolder with a ResourceKey.<br>
+     * Attempts to bind immediately if possible.
      * 
      * @param key The resource key of the target object.
      * @see #create(ResourceKey, ResourceLocation)
      * @see #create(ResourceLocation, ResourceLocation)
      */
-    protected DeferredHolder(ResourceKey<T> key)
+    @SuppressWarnings("unchecked")
+    protected DeferredHolder(ResourceKey<? super T> key)
     {
-        this.key = key;
+        this.key = (ResourceKey<T>) Objects.requireNonNull(key);
         this.bind(false);
     }
 
