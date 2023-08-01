@@ -127,6 +127,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerFlyableFallEvent;
 import net.minecraftforge.event.entity.player.PlayerSetSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
+import net.minecraftforge.event.entity.player.PlayerSpawnPhantomsEvent;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.event.entity.player.SleepingLocationCheckEvent;
 import net.minecraftforge.event.entity.player.SleepingTimeCheckEvent;
@@ -303,6 +304,13 @@ public class ForgeEventFactory
         var event = new MobSpawnEvent.FinalizeSpawn(mob, level, mob.getX(), mob.getY(), mob.getZ(), difficulty, MobSpawnType.SPAWNER, spawnData, spawnTag, spawner);
         boolean cancel = MinecraftForge.EVENT_BUS.post(event);
         return cancel ? null : event;
+    }
+
+    public static PlayerSpawnPhantomsEvent onPhantomSpawn(ServerPlayer player, int phantomsToSpawn)
+    {
+        var event = new PlayerSpawnPhantomsEvent(player, phantomsToSpawn);
+        MinecraftForge.EVENT_BUS.post(event);
+        return event;
     }
 
     public static Result canEntityDespawn(Mob entity, ServerLevelAccessor level)

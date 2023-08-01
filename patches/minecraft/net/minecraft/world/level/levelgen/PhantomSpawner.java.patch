@@ -7,7 +7,7 @@
 -                     if (!p_64576_.m_6042_().f_223549_() || blockpos.m_123342_() >= p_64576_.m_5736_() && p_64576_.m_45527_(blockpos)) {
 -                        DifficultyInstance difficultyinstance = p_64576_.m_6436_(blockpos);
 +                     DifficultyInstance difficultyinstance = p_64576_.m_6436_(blockpos);
-+                     var event = new net.minecraftforge.event.entity.player.PlayerSpawnPhantomsEvent(serverplayer, 1 + randomsource.m_188503_(difficultyinstance.m_19048_().m_19028_() + 1));
++                     var event = net.minecraftforge.event.ForgeEventFactory.onPhantomSpawn(serverplayer, 1 + randomsource.m_188503_(difficultyinstance.m_19048_().m_19028_() + 1));
 +                     if (event.getResult() == net.minecraftforge.eventbus.api.Event.Result.DENY) continue;
 +                     if (event.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || !p_64576_.m_6042_().f_223549_() || blockpos.m_123342_() >= p_64576_.m_5736_() && p_64576_.m_45527_(blockpos)) {
                          if (difficultyinstance.m_19049_(randomsource.m_188501_() * 3.0F)) {
