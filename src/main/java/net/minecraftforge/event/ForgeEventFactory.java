@@ -306,7 +306,8 @@ public class ForgeEventFactory
         return cancel ? null : event;
     }
 
-    public static PlayerSpawnPhantomsEvent onPhantomSpawn(ServerPlayer player, int phantomsToSpawn) {
+    public static PlayerSpawnPhantomsEvent onPhantomSpawn(ServerPlayer player, int phantomsToSpawn)
+    {
         var event = new PlayerSpawnPhantomsEvent(player, phantomsToSpawn);
         MinecraftForge.EVENT_BUS.post(event);
         return event;
