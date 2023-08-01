@@ -201,8 +201,7 @@ public class RegistryBuilder<T>
      * All forge registries with wrappers inherently support tags.
      *
      * @return this builder
-     * @see RegistryBuilder#hasWrapper()
-     * @deprecated All registries now have vanilla wrappers.
+     * @deprecated All registries now have vanilla wrappers, and thus have tags.
      */
     @Deprecated(since = "1.20.1", forRemoval = true)
     public RegistryBuilder<T> hasTags()

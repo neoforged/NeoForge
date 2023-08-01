@@ -85,6 +85,7 @@ public class DeferredHolder<T> implements Holder<T>
      * @param key The resource key of the target object.
      * @see #create(ResourceKey, ResourceLocation)
      * @see #create(ResourceLocation, ResourceLocation)
+     * @see #create(ResourceKey)
      */
     @SuppressWarnings("unchecked")
     protected DeferredHolder(ResourceKey<? super T> key)
@@ -112,7 +113,7 @@ public class DeferredHolder<T> implements Holder<T>
      */
     public Optional<T> getOptional()
     {
-        return isPresent() ? Optional.of(get()) : Optional.empty();
+        return isPresent() ? Optional.of(value()) : Optional.empty();
     }
 
     /**
@@ -166,7 +167,7 @@ public class DeferredHolder<T> implements Holder<T>
     }
 
     /**
-     * @return True if this DeferredHolder has been bound, and {@link #get()} may be called.
+     * @return True if this DeferredHolder has been bound, and {@link #get()} or {@link #value()} may be called.
      */
     public boolean isPresent()
     {
@@ -190,7 +191,7 @@ public class DeferredHolder<T> implements Holder<T>
     @Override
     public String toString()
     {
-        return String.format("DeferredHolder{%s}", this.key, Locale.ENGLISH);
+        return String.format(Locale.ENGLISH, "DeferredHolder{%s}", this.key);
     }
 
     /**
