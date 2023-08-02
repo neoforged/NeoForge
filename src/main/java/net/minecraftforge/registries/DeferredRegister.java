@@ -194,7 +194,7 @@ public class DeferredRegister<T>
     }
 
     /**
-     * Calls {@link #createTagKey(ResourceLocation)} with the given path, using {@linkplain #namespace the provided namespace}.
+     * Creates a tag key with the given path, using {@linkplain #namespace the provided namespace}.
      *
      * @param path The path of the TagKey.
      * @see #createTagKey(ResourceLocation)
@@ -206,7 +206,7 @@ public class DeferredRegister<T>
     }
 
     /**
-     * Creates a tag key based on the provided resource location and the registry name linked to this DeferredRegister.
+     * Creates a tag key based on the provided resource location and the registry key of this DeferredRegister.
      *
      * @param location The resource location of the TagKey.
      * @see #createTagKey(String)
@@ -219,7 +219,7 @@ public class DeferredRegister<T>
     }
 
     /**
-     * Calls {@link #createOptionalTagKey(ResourceLocation, Set)} with the given path, using {@linkplain #namespace the provided namespace}.
+     * Creates an optional tag key with the given path, using {@linkplain #namespace the provided namespace}.
      * 
      * @param path     The path of the TagKey.
      * @param defaults A set of default entries that will populate the tag if it is not loaded.
