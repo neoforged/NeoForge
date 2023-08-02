@@ -8,14 +8,13 @@ package net.minecraftforge.registries;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.tags.ITagManager;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -34,15 +33,15 @@ import java.util.function.Supplier;
  * Maintains a list of all suppliers for entries and registers them during the proper event.<br>
  * Suppliers should return new instances every time.
  * <p>
- * Example Usage:
- * <code><pre>
- * private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+ * Example Usage: <code><pre>
  * private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
+ * private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
  *
- * public static final DeferredHolder<Block> ROCK_BLOCK = BLOCKS.register("rock", () -> new Block(Block.Properties.create(Material.ROCK)));
- * public static final DeferredHolder<Item> ROCK_ITEM = ITEMS.register("rock", () -> new BlockItem(ROCK_BLOCK.get(), new Item.Properties().group(ItemGroup.MISC)));
+ * public static final DeferredHolder<Block> ROCK_BLOCK = BLOCKS.register("rock", () -> new Block(Block.Properties.of()));
+ * public static final DeferredHolder<Item> ROCK_ITEM = ITEMS.register("rock", () -> new BlockItem(ROCK_BLOCK.get(), new Item.Properties()));
  *
- * public ExampleMod() {
+ * public ExampleMod()
+ * {
  *     ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
  *     BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
  * }
@@ -54,97 +53,128 @@ import java.util.function.Supplier;
 public class DeferredRegister<T>
 {
     /**
-     * Factory method for DeferredRegister. The target registry does not need to exist yet.<br>
+     * Factory method for DeferredRegister. The target registry does not need to exist yet.
      * <p>
      * If the registry is never created, any created {@link DeferredHolder}s will never become {@linkplain DeferredHolder#isPresent() present}.
      * <p>
-     * This method requires a ResourceKey for a registry - how these are obtained varies by registry.<br>
-     * For {@linkplain IForgeRegistry forge registries}, use {@link IForgeRegistry#getRegistryKey()}.<br>
-     * For {@linkplain Registry vanilla registries}, use the static fields on {@link BuiltInRegistries}.<br>
-     * Additionally, the names of vanilla registries can be retrieved from {@link BuiltInRegistries#REGISTRY}.
-     * @param key The key of the registry to register objects to.
-     * @param modid The namespace for all objects registered to this DeferredRegister.
+     * This method requires a ResourceKey for a registry. Fields containing these keys exist at the following locations:
+     * <ul>
+     * <li>For {@linkplain IForgeRegistry forge registries}, see {@link ForgeRegistries.Keys}.</li>
+     * <li>For {@linkplain Registry vanilla registries}, see {@link Registries}.</li>
+     * </ul>
+     * 
+     * @param key       The key of the registry to register objects to.
+     * @param namespace The namespace for all objects registered to this DeferredRegister.
      */
-    public static <B> DeferredRegister<B> create(ResourceKey<? extends Registry<B>> key, String modid)
+    public static <B> DeferredRegister<B> create(ResourceKey<? extends Registry<B>> key, String namespace)
     {
-        return new DeferredRegister<>(key, modid);
-    }
-
-    /**
-     * @deprecated Use {@link #create(ResourceKey, String)} via {@link IForgeRegistry#getRegistryKey()}
-     */
-    @Deprecated(since = "1.20.1", forRemoval = true)
-    public static <B> DeferredRegister<B> create(IForgeRegistry<B> reg, String modid)
-    {
-        return create(reg.getRegistryKey(), modid);
+        return new DeferredRegister<>(key, namespace);
     }
 
     /**
      * @deprecated Use {@link #create(ResourceKey, String)}
      */
     @Deprecated(since = "1.20.1", forRemoval = true)
-    public static <B> DeferredRegister<B> createOptional(ResourceKey<? extends Registry<B>> key, String modid)
+    public static <B> DeferredRegister<B> create(IForgeRegistry<B> reg, String namespace)
     {
-        return create(key, modid);
+        return create(reg.getRegistryKey(), namespace);
+    }
+
+    /**
+     * The behavior of Optional DeferredRegister(s) has been removed. The only work it was doing was checking 
+     * if the registry existed at registration time, and throwing. This can be done manually if desired.
+     * 
+     * @deprecated Use {@link #create(ResourceKey, String)}
+     */
+    @Deprecated(since = "1.20.1", forRemoval = true)
+    public static <B> DeferredRegister<B> createOptional(ResourceKey<? extends Registry<B>> key, String namespace)
+    {
+        return create(key, namespace);
     }
 
     /**
      * Variant of {@link #create(ResourceKey, String)} that accepts a ResourceLocation instead of a ResourceKey.
+     * 
+     * @param registryName The name of the registry to register objects to.
+     * @param namespace    The namespace for all objects registered to this DeferredRegister.
      * @see #create(ResourceKey, String)
      */
-    public static <B> DeferredRegister<B> create(ResourceLocation registryName, String modid)
+    public static <B> DeferredRegister<B> create(ResourceLocation registryName, String namespace)
     {
-        return create(ResourceKey.createRegistryKey(registryName), modid);
+        return create(ResourceKey.createRegistryKey(registryName), namespace);
     }
 
     /**
+     * The behavior of Optional DeferredRegister(s) has been removed. The only work it was doing was checking 
+     * if the registry existed at registration time, and throwing. This can be done manually if desired.
+     * 
      * @deprecated Use {@link #create(ResourceLocation, String)}
      */
     @Deprecated(since = "1.20.1", forRemoval = true)
-    public static <B> DeferredRegister<B> createOptional(ResourceLocation registryName, String modid)
+    public static <B> DeferredRegister<B> createOptional(ResourceLocation registryName, String namespace)
     {
-        return create(ResourceKey.createRegistryKey(registryName), modid);
-    }
-
-    private final ResourceKey<? extends Registry<T>> registryKey;
-    private final String modid;
-    // TODO: Replace with DeferredHolder
-    private final Map<RegistryObject<T>, Supplier<? extends T>> entries = new LinkedHashMap<>();
-    private final Set<RegistryObject<T>> entriesView = Collections.unmodifiableSet(entries.keySet());
-
-    @Nullable
-    private Supplier<RegistryBuilder<?>> registryFactory;
-    @Nullable
-    private SetMultimap<TagKey<T>, Supplier<T>> optionalTags;
-    private boolean seenRegisterEvent = false;
-
-    private DeferredRegister(ResourceKey<? extends Registry<T>> registryKey, String modid)
-    {
-        this.registryKey = Objects.requireNonNull(registryKey);
-        this.modid = Objects.requireNonNull(modid);
+        return create(ResourceKey.createRegistryKey(registryName), namespace);
     }
 
     /**
-     * Adds a new supplier to the list of entries to be registered, and returns a DeferredHolder pointing to the to-be-registered object.
-     * <p>
-     * @param name The new entry's name. The modid from the constructor will be used as the namespace.
-     * @param sup A factory for the new entry, it should return a new instance every time it is called.
+     * Key of the registry that this DR will register to.
+     */
+    protected final ResourceKey<? extends Registry<T>> registryKey;
+
+    /**
+     * The namespace this DR will use when registering objects.
+     */
+    protected final String namespace;
+
+    /**
+     * Entries that are scheduled for registration via {@link #register(String, Supplier)}.
+     * TODO: Switch RegistryObject to DeferredHolder.
+     */
+    protected final Map<RegistryObject<T>, Supplier<? extends T>> entries = new LinkedHashMap<>();
+    protected final Set<RegistryObject<T>> entriesView = Collections.unmodifiableSet(entries.keySet());
+
+    @Nullable
+    private Supplier<RegistryBuilder<?>> registryFactory;
+
+    @Nullable
+    private SetMultimap<TagKey<T>, Supplier<T>> optionalTags;
+
+    private boolean seenRegisterEvent = false;
+
+    /**
+     * Creates a new DeferredRegister for a specific registry.
+     * 
+     * @param key       The key of the registry to register objects to.
+     * @param namespace The namespace for all objects registered to this DeferredRegister.
+     */
+    protected DeferredRegister(ResourceKey<? extends Registry<T>> registryKey, String namespace)
+    {
+        this.registryKey = Objects.requireNonNull(registryKey);
+        this.namespace = Objects.requireNonNull(namespace);
+    }
+
+    /**
+     * Adds a new supplier to the list of entries to be registered, and returns a {@link DeferredHolder} pointing to the to-be-registered object.
+     *
+     * @param name The path of the new entry. The namespace will be the one passed to the constructor.
+     * @param sup  A factory for the new entry. The factory should return a new instance on each invocation.
      * @return A DeferredHolder that will be updated with when the entries in the registry change.
      * @apiNote The return type of this method will be changed to DeferredHolder in the next breaking changes window.
      */
-    @SuppressWarnings({ "unchecked" }) // TODO: Remove - Update this method to return DeferredHolder in next BC cycle.
+    @SuppressWarnings({"unchecked", "removal"}) // TODO: Remove - Update this method to return DeferredHolder in next BC cycle.
     public <I extends T> RegistryObject<I> register(String name, Supplier<? extends I> sup)
     {
         if (seenRegisterEvent)
-            throw new IllegalStateException("Cannot register new entries to DeferredRegister after RegisterEvent has been fired.");
+            throw new IllegalStateException("Cannot register new entries to DeferredRegister after the RegisterEvent has been fired.");
         Objects.requireNonNull(name);
         Objects.requireNonNull(sup);
-        final ResourceLocation key = new ResourceLocation(modid, name);
+        final ResourceLocation key = new ResourceLocation(namespace, name);
 
-        RegistryObject<I> ret = RegistryObject.create(key, this.registryKey, this.modid);
+        RegistryObject<I> ret = RegistryObject.create(key, this.registryKey, this.namespace);
 
-        if (entries.putIfAbsent((RegistryObject<T>) ret, sup) != null) {
-            throw new IllegalArgumentException("Duplicate registration " + name);
+        if (entries.putIfAbsent((RegistryObject<T>) ret, sup) != null)
+        {
+            throw new IllegalArgumentException("Duplicate registration: " + name);
         }
 
         return ret;
@@ -156,8 +186,7 @@ public class DeferredRegister<T>
      * Calls {@link RegistryBuilder#setName} automatically.
      *
      * @param sup Supplier of a RegistryBuilder that initializes a {@link IForgeRegistry} during the {@link NewRegistryEvent} event
-     * @return A supplier of the {@link IForgeRegistry} created by the builder.
-     * Will always return null until after the {@link NewRegistryEvent} event fires.
+     * @return A supplier of the {@link IForgeRegistry} created by the builder. Will always return null until after the {@link NewRegistryEvent} event fires.
      */
     public Supplier<IForgeRegistry<T>> makeRegistry(final Supplier<RegistryBuilder<T>> sup)
     {
@@ -165,92 +194,87 @@ public class DeferredRegister<T>
     }
 
     /**
-     * Calls {@link #createTagKey(ResourceLocation)} with the given path, using the current modid as the namespace.
+     * Calls {@link #createTagKey(ResourceLocation)} with the given path, using {@linkplain #namespace the provided namespace}.
      *
+     * @param path The path of the TagKey.
      * @see #createTagKey(ResourceLocation)
      */
-    public TagKey<T> createTagKey(@NotNull String path)
+    public TagKey<T> createTagKey(String path)
     {
         Objects.requireNonNull(path);
-        return createTagKey(new ResourceLocation(this.modid, path));
+        return createTagKey(new ResourceLocation(this.namespace, path));
     }
 
     /**
      * Creates a tag key based on the provided resource location and the registry name linked to this DeferredRegister.
-     * To use the current modid as the namespace, use {@link #createTagKey(String)}.
      *
-     * @throws IllegalStateException If the registry name was not set.
-     * Use the factories that take {@link #create(ResourceLocation, String) a registry name} or {@link #create(IForgeRegistry, String) forge registry}.
+     * @param location The resource location of the TagKey.
      * @see #createTagKey(String)
      * @see #createOptionalTagKey(ResourceLocation, Set)
      */
-    public TagKey<T> createTagKey(@NotNull ResourceLocation location)
+    public TagKey<T> createTagKey(ResourceLocation location)
     {
         Objects.requireNonNull(location);
         return TagKey.create(this.registryKey, location);
     }
 
     /**
-     * Calls {@link #createOptionalTagKey(ResourceLocation, Set)} with the given path, using the current modid as the namespace.
+     * Calls {@link #createOptionalTagKey(ResourceLocation, Set)} with the given path, using {@linkplain #namespace the provided namespace}.
      * 
+     * @param path     The path of the TagKey.
+     * @param defaults A set of default entries that will populate the tag if it is not loaded.
      * @see #createOptionalTagKey(ResourceLocation, Set)
      */
-    public TagKey<T> createOptionalTagKey(@NotNull String path, @NotNull Set<? extends Supplier<T>> defaults)
+    public TagKey<T> createOptionalTagKey(String path, Set<? extends Supplier<T>> defaults)
     {
         Objects.requireNonNull(path);
-        return createOptionalTagKey(new ResourceLocation(this.modid, path), defaults);
+        return createOptionalTagKey(new ResourceLocation(this.namespace, path), defaults);
     }
 
     /**
-     * Creates a tag key with the provided location that will use the set of defaults if the tag is not loaded from any datapacks.
-     * Useful on the client side when a server may not provide a specific tag.
-     * To use the current modid as the namespace, use {@link #createOptionalTagKey(String, Set)}.
-     *
-     * @throws IllegalStateException If the registry name was not set.
-     * Use the factories that take {@link #create(ResourceLocation, String) a registry name} or {@link #create(IForgeRegistry, String) forge registry}.
+     * Creates a tag key with the provided location that will use the set of defaults if the tag is not loaded from any datapack. Useful on the client side when a server may not provide a specific tag.
+     * 
+     * @param location The resource location of the TagKey.
+     * @param defaults A set of default entries that will populate the tag if it is not loaded.
      * @see #createTagKey(String)
      * @see #createTagKey(ResourceLocation)
      * @see #createOptionalTagKey(String, Set)
      * @see #addOptionalTagDefaults(TagKey, Set)
      */
-    public TagKey<T> createOptionalTagKey(@NotNull ResourceLocation location, @NotNull Set<? extends Supplier<T>> defaults)
+    public TagKey<T> createOptionalTagKey(ResourceLocation location, Set<? extends Supplier<T>> defaults)
     {
         TagKey<T> tagKey = createTagKey(location);
-
         addOptionalTagDefaults(tagKey, defaults);
-
         return tagKey;
     }
 
     /**
-     * Adds defaults to an existing tag key.
-     * The set of defaults will be bound to the tag if the tag is not loaded from any datapacks.
-     * Useful on the client side when a server may not provide a specific tag.
-     *
-     * @throws IllegalStateException If the registry name was not set.
-     * Use the factories that take {@link #create(ResourceLocation, String) a registry name} or {@link #create(IForgeRegistry, String) forge registry}.
+     * Adds defaults to an existing tag key. The set of defaults will be bound to the tag if the tag is not loaded from any datapack. Useful on the client side when a server may not provide a specific tag.
+     * 
+     * @param tag      The tag for which defaults are being added.
+     * @param defaults A set of default entries that will populate the tag if it is not loaded.
      * @see #createOptionalTagKey(String, Set)
      * @see #createOptionalTagKey(ResourceLocation, Set)
      */
-    public void addOptionalTagDefaults(@NotNull TagKey<T> name, @NotNull Set<? extends Supplier<T>> defaults)
+    public void addOptionalTagDefaults(TagKey<T> tag, Set<? extends Supplier<T>> defaults)
     {
         Objects.requireNonNull(defaults);
         if (optionalTags == null)
             optionalTags = Multimaps.newSetMultimap(new IdentityHashMap<>(), HashSet::new);
 
-        optionalTags.putAll(name, defaults);
+        optionalTags.putAll(tag, defaults);
     }
 
     /**
-     * Adds our event handler to the specified event bus, this MUST be called in order for this class to function.
-     * See {@link DeferredRegister the example usage}.
+     * Adds our event handler to the specified event bus, this MUST be called in order for this class to function. See {@link DeferredRegister the example usage}.
      *
-     * @param bus The Mod Specific event bus.
+     * @param bus The Mod-Specific event bus.
      */
     public void register(IEventBus bus)
     {
         bus.addListener(this::addEntries);
-        if (this.registryFactory != null) {
+        if (this.registryFactory != null)
+        {
             bus.addListener(this::createRegistry);
         }
     }
@@ -259,15 +283,18 @@ public class DeferredRegister<T>
      * @deprecated Unused
      */
     @Deprecated(since = "1.20.1", forRemoval = true)
-    public static class EventDispatcher {
+    public static class EventDispatcher
+    {
         private final DeferredRegister<?> register;
 
-        public EventDispatcher(final DeferredRegister<?> register) {
+        public EventDispatcher(final DeferredRegister<?> register)
+        {
             this.register = register;
         }
 
         @SubscribeEvent
-        public void handleEvent(RegisterEvent event) {
+        public void handleEvent(RegisterEvent event)
+        {
             register.addEntries(event);
         }
     }
@@ -297,7 +324,8 @@ public class DeferredRegister<T>
         return this.registryKey.location();
     }
 
-    private Supplier<IForgeRegistry<T>> makeRegistry(final ResourceLocation registryName, final Supplier<RegistryBuilder<T>> sup) {
+    private Supplier<IForgeRegistry<T>> makeRegistry(final ResourceLocation registryName, final Supplier<RegistryBuilder<T>> sup)
+    {
         if (registryName == null)
             throw new IllegalStateException("Cannot create a registry without specifying a registry name");
         if (RegistryManager.ACTIVE.getRegistry(registryName) != null || this.registryFactory != null)
