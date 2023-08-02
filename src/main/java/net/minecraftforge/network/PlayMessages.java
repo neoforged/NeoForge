@@ -5,6 +5,8 @@
 
 package net.minecraftforge.network;
 
+import com.google.common.collect.Maps;
+import com.mojang.serialization.Codec;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -16,6 +18,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -25,9 +30,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LogicalSidedProvider;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.minecraftforge.registries.attachment.AttachmentType;
+import net.minecraftforge.registries.attachment.AttachmentTypeKey;
+import org.apache.logging.log4j.util.TriConsumer;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiFunction;
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class PlayMessages
@@ -321,6 +334,88 @@ public class PlayMessages
         public FriendlyByteBuf getAdditionalData()
         {
             return additionalData;
+        }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public record SyncAttachments<R>(ResourceKey<Registry<R>> registry, Supplier<Map<AttachmentType<?, R>, Map<Object, ?>>> payload)
+    {
+        public void encode(FriendlyByteBuf buf)
+        {
+            buf.writeResourceKey(registry);
+            writeMap(buf, payload.get(), (buf1, key) -> buf1.writeResourceLocation(key.key().getId()), (buf1, key, objectMap) -> {
+                buf1.writeMap(objectMap, (buf2, attachKey) -> {
+                    if (attachKey instanceof ResourceKey<?> res) {
+                        buf2.writeUtf(res.location().toString());
+                    } else {
+                        buf2.writeUtf("#" + ((TagKey) attachKey).location());
+                    }
+                }, (buf2, value) -> buf2.writeJsonWithCodec((Codec) key.networkCodec(), value));
+            });
+        }
+
+        private static <K, V> void writeMap(FriendlyByteBuf buf, Map<K, V> pMap, FriendlyByteBuf.Writer<K> pKeyWriter, TriConsumer<FriendlyByteBuf, K, V> pValueWriter) {
+            buf.writeVarInt(pMap.size());
+            pMap.forEach((key, value) -> {
+                pKeyWriter.accept(buf, key);
+                pValueWriter.accept(buf, key, value);
+            });
+        }
+
+        public static SyncAttachments<?> decode(FriendlyByteBuf buf) {
+            final var key = buf.readResourceKey(BuiltInRegistries.REGISTRY.key());
+            final FriendlyByteBuf newBuf = new FriendlyByteBuf(Unpooled.copiedBuffer(buf));
+            return new SyncAttachments(
+                    key,
+                    () -> decode((ResourceKey)key, newBuf)
+            );
+        }
+
+        private static <R> Map<AttachmentType<?, R>, Map<Object, ?>> decode(ResourceKey<Registry<R>> registryKey, FriendlyByteBuf buf) {
+            final ClientLevel level = Minecraft.getInstance().level;
+            final Registry<R> registry = level.registryAccess().registryOrThrow(registryKey);
+            return readMap(buf, Maps::newHashMapWithExpectedSize, buf1 -> registry.getAttachmentHolder().getAttachmentTypes().get(AttachmentTypeKey.get(buf1.readResourceLocation())), (buf1, key) -> buf1.readMap(
+                    buf2 -> {
+                        final String rkey = buf1.readUtf();
+                        return rkey.startsWith("#") ? TagKey.create(registryKey, new ResourceLocation(rkey.substring(1))) : ResourceKey.create(registryKey, new ResourceLocation(rkey));
+                    },
+                    buf2 -> buf2.readJsonWithCodec(key.networkCodec())
+            ));
+        }
+
+        private static <K, V, M extends Map<K, V>> M readMap(FriendlyByteBuf buf, IntFunction<M> pMapFactory, FriendlyByteBuf.Reader<K> pKeyReader, BiFunction<FriendlyByteBuf, K, V> pValueReader) {
+            int i = buf.readVarInt();
+            M m = pMapFactory.apply(i);
+
+            for(int j = 0; j < i; ++j) {
+                K k = pKeyReader.apply(buf);
+                V v = pValueReader.apply(buf, k);
+                m.put(k, v);
+            }
+
+            return m;
+        }
+
+        public static <R> void handle(SyncAttachments<R> msg, Supplier<NetworkEvent.Context> ctx)
+        {
+            ctx.get().enqueueWork(() -> {
+                final ClientLevel level = Minecraft.getInstance().level;
+                final Registry<R> registry = level.registryAccess().registryOrThrow(msg.registry);
+                final Map<AttachmentTypeKey<?>, Map<Object, ?>> attachments = new HashMap<>();
+                msg.payload.get().forEach((t, v) -> attachments.put(t.key(), v));
+                attachments.keySet().removeIf(key -> {
+                   final var onClientAttachment = registry.getAttachmentHolder().getAttachmentTypes().get(key);
+                   if (onClientAttachment == null) {
+                       return true; // If it's null, it means it's not forcibly synced, so clients don't HAVE to have the data. otherwise they wouldn't have been able to connect
+                   }
+                   if (onClientAttachment.forciblySynced()) {
+                       throw new IllegalStateException("Forcibly synced attachment " + onClientAttachment.key().getId() + " on registry " + registry.key() + " is present on the client, but not on the server!");
+                   }
+                   return false;
+                });
+                registry.getAttachmentHolder().bindAttachments(attachments);
+            });
+            ctx.get().setPacketHandled(true);
         }
     }
 }

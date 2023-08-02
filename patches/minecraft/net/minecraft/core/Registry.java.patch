@@ -1,0 +1,13 @@
+--- a/net/minecraft/core/Registry.java
++++ b/net/minecraft/core/Registry.java
+@@ -181,6 +_,10 @@
+ 
+    void m_203652_(Map<TagKey<T>, List<Holder<T>>> p_205997_);
+ 
++   default net.minecraftforge.registries.attachment.AttachmentHolder<T> getAttachmentHolder() {
++      throw new IllegalStateException("This registry does not support attachments!");
++   }
++
+    default IdMap<Holder<T>> m_206115_() {
+       return new IdMap<Holder<T>>() {
+          public int m_7447_(Holder<T> p_259992_) {

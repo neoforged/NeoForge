@@ -1,0 +1,38 @@
+{
+  "replace": false,
+  "valuesHolderSet": [
+    {
+      "objects": ["minecraft:tuff", "calcite"],
+      "value": {
+        "effect": "speed",
+        "amplifier": 2,
+        "duration": 59
+      }
+    }
+  ],
+  "values": {
+    "minecraft:acacia_fence": {
+      "duration": 6,
+      "effect": "minecraft:nausea"
+    },
+    "minecraft:cactus": {
+      "amplifier": 3,
+      "duration": 10,
+      "effect": "minecraft:resistance",
+      "forge:conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "not_a_mod"
+        }
+      ]
+    },
+    "minecraft:crafting_table": {
+      "duration": 90,
+      "effect": "minecraft:blindness"
+    },
+    "#minecraft:planks": {
+      "effect": "glowing",
+      "duration": 50
+    }
+  }
+}

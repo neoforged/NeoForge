@@ -57,6 +57,11 @@ import net.minecraftforge.fml.StartupMessageManager;
 import net.minecraftforge.fml.util.EnhancedRuntimeException;
 import net.minecraftforge.fml.util.thread.EffectiveSide;
 import net.minecraftforge.registries.ForgeRegistries.Keys;
+import net.minecraftforge.registries.attachment.AttachmentHolder;
+import net.minecraftforge.registries.attachment.AttachmentLoader;
+import net.minecraftforge.registries.attachment.AttachmentType;
+import net.minecraftforge.registries.attachment.AttachmentTypeKey;
+import net.minecraftforge.registries.attachment.RegisterAttachmentTypeEvent;
 import net.minecraftforge.registries.holdersets.HolderSetType;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -364,6 +369,8 @@ public class GameData
             SpawnPlacements.fireSpawnPlacementEvent();
             CreativeModeTabRegistry.sortTabs();
         }
+
+        AttachmentHolder.init();
     }
 
     //Lets us clear the map so we can rebuild it.
@@ -791,5 +798,12 @@ public class GameData
             prefix = oldPrefix;
         }
         return new ResourceLocation(prefix, name);
+    }
+
+    public static Map<ResourceKey<Registry<?>>, Map<AttachmentTypeKey<?>, AttachmentType<?, ?>>> gatherAttachmentTypes()
+    {
+        final Map<ResourceKey<Registry<?>>, Map<AttachmentTypeKey<?>, AttachmentType<?, ?>>> values = new HashMap<>();
+        ModLoader.get().postEventWrapContainerInModOrder(new RegisterAttachmentTypeEvent(values));
+        return values;
     }
 }

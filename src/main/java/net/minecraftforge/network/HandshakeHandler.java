@@ -25,6 +25,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.DataPackRegistriesHooks;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
+import net.minecraftforge.registries.attachment.AttachmentHolder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -191,6 +192,7 @@ public class HandshakeHandler
             c.get().getNetworkManager().disconnect(Component.literal("Connection closed - mismatched mod channel list"));
             return;
         }
+
         // Validate synced custom datapack registries, client cannot be missing any present on the server.
         List<String> missingDataPackRegistries = new ArrayList<>();
         Set<ResourceKey<? extends Registry<?>>> clientDataPackRegistries = DataPackRegistriesHooks.getSyncedCustomRegistries();
@@ -206,6 +208,26 @@ public class HandshakeHandler
         if (!missingDataPackRegistries.isEmpty())
         {
             c.get().getNetworkManager().disconnect(Component.translatable("fml.menu.multiplayer.missingdatapackregistries", String.join(", ", missingDataPackRegistries)));
+            return;
+        }
+
+        // Validate forcibly synced registry attachments, client cannot be missing any present on the server.
+        List<String> missingAttachments = new ArrayList<>();
+        var clientAttachments = AttachmentHolder.getForciblySyncedAttachments();
+        serverModList.getAttachmentTypes().forEach((registry, types) -> {
+            var fromClient = clientAttachments.getOrDefault(registry, List.of());
+            types.forEach(type -> {
+                if (!fromClient.contains(type))
+                {
+                    ResourceLocation regKey = registry.location();
+                    LOGGER.error(FMLHSMARKER, "Missing required attachment type for registry {}: {}", regKey, type.getId());
+                    missingAttachments.add(regKey + " / " + type);
+                }
+            });
+        });
+        if (!missingAttachments.isEmpty())
+        {
+            c.get().getNetworkManager().disconnect(Component.translatable("fml.menu.multiplayer.missingregistryattachments", String.join(", ", missingDataPackRegistries)));
             return;
         }
         NetworkConstants.handshakeChannel.reply(new HandshakeMessages.C2SModListReply(), c.get());

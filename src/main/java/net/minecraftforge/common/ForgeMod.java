@@ -5,50 +5,77 @@
 
 package net.minecraftforge.common;
 
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
+import net.minecraft.commands.Commands;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryCodecs;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.commands.Commands;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.GenerationStep.Decoration;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.item.Items;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.ExtraCodecs;
-import net.minecraft.core.RegistryCodecs;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.common.crafting.PartialNBTIngredient;
+import net.minecraftforge.common.crafting.CompoundIngredient;
+import net.minecraftforge.common.crafting.ConditionalRecipe;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.DifferenceIngredient;
 import net.minecraftforge.common.crafting.IntersectionIngredient;
+import net.minecraftforge.common.crafting.PartialNBTIngredient;
+import net.minecraftforge.common.crafting.StrictNBTIngredient;
+import net.minecraftforge.common.crafting.VanillaIngredientSerializer;
+import net.minecraftforge.common.crafting.conditions.AndCondition;
+import net.minecraftforge.common.crafting.conditions.FalseCondition;
+import net.minecraftforge.common.crafting.conditions.ItemExistsCondition;
+import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
+import net.minecraftforge.common.crafting.conditions.NotCondition;
+import net.minecraftforge.common.crafting.conditions.OrCondition;
+import net.minecraftforge.common.crafting.conditions.TagEmptyCondition;
+import net.minecraftforge.common.crafting.conditions.TrueCondition;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.ForgeBiomeTagsProvider;
+import net.minecraftforge.common.data.ForgeBlockTagsProvider;
+import net.minecraftforge.common.data.ForgeEntityTypeTagsProvider;
 import net.minecraftforge.common.data.ForgeFluidTagsProvider;
+import net.minecraftforge.common.data.ForgeItemTagsProvider;
+import net.minecraftforge.common.data.ForgeLootTableProvider;
+import net.minecraftforge.common.data.ForgeRecipeProvider;
 import net.minecraftforge.common.data.ForgeSpriteSourceProvider;
 import net.minecraftforge.common.data.VanillaSoundDefinitionsProvider;
 import net.minecraftforge.common.extensions.IForgeEntity;
@@ -63,24 +90,45 @@ import net.minecraftforge.common.world.ForgeBiomeModifiers.RemoveSpawnsBiomeModi
 import net.minecraftforge.common.world.NoneBiomeModifier;
 import net.minecraftforge.common.world.NoneStructureModifier;
 import net.minecraftforge.common.world.StructureModifier;
+import net.minecraftforge.data.event.GatherDataEvent;
+import net.minecraftforge.event.OnDatapackSyncEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
-import net.minecraftforge.fml.*;
+import net.minecraftforge.fml.CrashReportCallables;
+import net.minecraftforge.fml.IExtensionPoint;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.StartupMessageManager;
+import net.minecraftforge.fml.VersionChecker;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.*;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forge.snapshots.ForgeSnapshotsMod;
-import net.minecraftforge.registries.*;
+import net.minecraftforge.network.NetworkConstants;
+import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.filters.VanillaPacketSplitter;
+import net.minecraftforge.registries.DataPackRegistryEvent;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeDeferredRegistriesSetup;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistryInternal;
+import net.minecraftforge.registries.IdMappingEvent;
+import net.minecraftforge.registries.MissingMappingsEvent;
+import net.minecraftforge.registries.RegisterEvent;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.attachment.AttachmentTypeKey;
+import net.minecraftforge.registries.attachment.RegisterAttachmentTypeEvent;
 import net.minecraftforge.registries.holdersets.AndHolderSet;
 import net.minecraftforge.registries.holdersets.AnyHolderSet;
 import net.minecraftforge.registries.holdersets.HolderSetType;
 import net.minecraftforge.registries.holdersets.NotHolderSet;
 import net.minecraftforge.registries.holdersets.OrHolderSet;
-import net.minecraftforge.network.NetworkConstants;
-import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.network.filters.VanillaPacketSplitter;
 import net.minecraftforge.server.command.EnumArgument;
 import net.minecraftforge.server.command.ModIdArgument;
 import net.minecraftforge.server.permission.events.PermissionGatherEvent;
@@ -88,45 +136,24 @@ import net.minecraftforge.server.permission.nodes.PermissionNode;
 import net.minecraftforge.server.permission.nodes.PermissionTypes;
 import net.minecraftforge.versions.forge.ForgeVersion;
 import net.minecraftforge.versions.mcp.MCPVersion;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import net.minecraft.data.DataGenerator;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.crafting.CompoundIngredient;
-import net.minecraftforge.common.crafting.ConditionalRecipe;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.StrictNBTIngredient;
-import net.minecraftforge.common.crafting.VanillaIngredientSerializer;
-import net.minecraftforge.common.crafting.conditions.AndCondition;
-import net.minecraftforge.common.crafting.conditions.FalseCondition;
-import net.minecraftforge.common.crafting.conditions.ItemExistsCondition;
-import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
-import net.minecraftforge.common.crafting.conditions.NotCondition;
-import net.minecraftforge.common.crafting.conditions.OrCondition;
-import net.minecraftforge.common.crafting.conditions.TagEmptyCondition;
-import net.minecraftforge.common.crafting.conditions.TrueCondition;
-import net.minecraftforge.common.data.ForgeBlockTagsProvider;
-import net.minecraftforge.common.data.ForgeEntityTypeTagsProvider;
-import net.minecraftforge.common.data.ForgeItemTagsProvider;
-import net.minecraftforge.common.data.ForgeLootTableProvider;
-import net.minecraftforge.common.data.ForgeRecipeProvider;
-import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-
-import com.mojang.datafixers.util.Either;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Mod("forge")
 public class ForgeMod
@@ -400,6 +427,24 @@ public class ForgeMod
     public static final RegistryObject<Fluid> MILK = RegistryObject.create(new ResourceLocation("milk"), ForgeRegistries.FLUIDS);
     public static final RegistryObject<Fluid> FLOWING_MILK = RegistryObject.create(new ResourceLocation("flowing_milk"), ForgeRegistries.FLUIDS);
 
+    public static final Map<ToolAction, AttachmentTypeKey<ToolTransformationResult>> TOOL_MODIFICATIONS = Stream.of(
+            ToolActions.AXE_STRIP, ToolActions.AXE_SCRAPE, ToolActions.AXE_WAX_OFF, ToolActions.SHOVEL_FLATTEN, ToolActions.HOE_TILL
+    ).collect(Collectors.toUnmodifiableMap(Function.identity(), action -> AttachmentTypeKey.get(new ResourceLocation("forge:tool_modification/" + action.name()))));
+
+    public record ToolTransformationResult(BlockState state, boolean copyProperties) {
+        private static final Codec<BlockState> SIMPLE_STATE = ResourceLocation.CODEC
+                .xmap(rl -> BuiltInRegistries.BLOCK.get(rl).defaultBlockState(), state -> BuiltInRegistries.BLOCK.getKey(state.getBlock()));
+        public static final Codec<ToolTransformationResult> CODEC = Codec.either(
+                SIMPLE_STATE.flatXmap(state -> DataResult.success(new ToolTransformationResult(state, false)), in -> DataResult.<BlockState>error(() -> "Unable to serialize ToolTransformationResult to simple value.")),
+                RecordCodecBuilder.<ToolTransformationResult>create(in -> in.group(
+                        Codec.either(SIMPLE_STATE, BlockState.CODEC).xmap(either -> either.map(s -> s, s -> s), Either::right).fieldOf("state").forGetter(ToolTransformationResult::state),
+                        Codec.BOOL.optionalFieldOf("copyProperties", false).forGetter(ToolTransformationResult::copyProperties)
+                ).apply(in, ToolTransformationResult::new))
+        ).xmap(either -> either.map(s -> s, s -> s), Either::right);
+    }
+
+    public static final AttachmentTypeKey<FoodProperties> FOOD_PROPERTIES = AttachmentTypeKey.get(new ResourceLocation("forge:food_properties"));
+
     private static ForgeMod INSTANCE;
     public static ForgeMod getInstance()
     {
@@ -471,6 +516,40 @@ public class ForgeMod
         // TODO: Remove when addAlias becomes proper API, as this should be done in the DR's above.
         addAlias(ForgeRegistries.ATTRIBUTES, new ResourceLocation("forge", "reach_distance"), new ResourceLocation("forge", "block_reach"));
         addAlias(ForgeRegistries.ATTRIBUTES, new ResourceLocation("forge", "attack_range"), new ResourceLocation("forge", "entity_reach"));
+
+        MinecraftForge.EVENT_BUS.addListener((final OnDatapackSyncEvent event) -> {
+            final PacketDistributor.PacketTarget target;
+            if (event.getPlayer() == null)
+            {
+                target = PacketDistributor.ALL.noArg();
+            } else
+            {
+                target = PacketDistributor.PLAYER.with(event::getPlayer);
+            }
+            NetworkHooks.syncRegAttachments(target, event.getPlayerList().getServer().overworld().registryAccess());
+        });
+        modEventBus.addListener((final RegisterAttachmentTypeEvent event) -> {
+            TOOL_MODIFICATIONS.forEach((action, type) ->
+                    event.register(Registries.BLOCK, type, builder -> builder.withAttachmentCodec(ToolTransformationResult.CODEC)
+                            .withNetworkCodec(ToolTransformationResult.CODEC).setOptionallySynced()));
+
+            final Codec<FoodProperties> foodPropertiesCodec = RecordCodecBuilder.create(in -> in.group(
+                    Codec.INT.optionalFieldOf("nutrition", 0).forGetter(FoodProperties::getNutrition),
+                    Codec.FLOAT.optionalFieldOf("saturationModifier", 0f).forGetter(FoodProperties::getSaturationModifier),
+                    Codec.BOOL.optionalFieldOf("fastFood", false).forGetter(FoodProperties::isFastFood),
+                    Codec.BOOL.optionalFieldOf("canAlwaysEat", false).forGetter(FoodProperties::canAlwaysEat),
+                    Codec.BOOL.optionalFieldOf("meat", false).forGetter(FoodProperties::isMeat)
+            ).apply(in, (nutrition, saturation, fastFood, canAlwaysEat, meat) -> {
+                final var builder = new FoodProperties.Builder()
+                        .nutrition(nutrition)
+                        .saturationMod(saturation);
+                if (fastFood) builder.fast();
+                if (canAlwaysEat) builder.alwaysEat();
+                if (meat) builder.meat();
+                return builder.build();
+            }));
+            event.register(Registries.ITEM, FOOD_PROPERTIES, builder -> builder.withNetworkCodec(foodPropertiesCodec).withAttachmentCodec(foodPropertiesCodec));
+        });
     }
 
     public void preInit(FMLCommonSetupEvent evt)

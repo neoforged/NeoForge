@@ -5,6 +5,9 @@
 
 package net.minecraftforge.network;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,12 +18,18 @@ import java.util.stream.Collectors;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.resources.ResourceKey;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.fml.util.thread.EffectiveSide;
 import net.minecraftforge.network.ConnectionData.ModMismatchData;
 import net.minecraftforge.network.filters.NetworkFilters;
+import net.minecraftforge.network.filters.VanillaPacketSplitter;
+import net.minecraftforge.registries.attachment.AttachmentType;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +37,6 @@ import org.apache.logging.log4j.Logger;
 import io.netty.buffer.Unpooled;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.network.protocol.Packet;
@@ -241,5 +249,33 @@ public class NetworkHooks
     public static MCRegisterPacketHandler.ChannelList getChannelList(Connection mgr)
     {
         return mgr.channel().attr(NetworkConstants.FML_MC_REGISTRY).get();
+    }
+
+    public static void syncRegAttachments(PacketDistributor.PacketTarget target, RegistryAccess registryAccess)
+    {
+        registryAccess.registries().forEach(entry ->
+        {
+            final Object packet = regSyncPacket(entry);
+            if (packet != null) {
+                final List<Packet<?>> out = new ArrayList<>();
+                VanillaPacketSplitter.appendPackets(
+                        ConnectionProtocol.PLAY, PacketFlow.CLIENTBOUND, NetworkConstants.playChannel.toVanillaPacket(packet, NetworkDirection.PLAY_TO_CLIENT), out
+                );
+                out.forEach(target::send);
+            }
+        });
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static <R> @Nullable Object regSyncPacket(RegistryAccess.RegistryEntry<R> entry)
+    {
+        final Map<AttachmentType<?, R>, Map<Object, ?>> payload = new HashMap<>();
+        entry.value().getAttachmentHolder().getAttachments().forEach((key, values) -> {
+            final var type = entry.value().getAttachmentHolder().getAttachmentTypes().get(key);
+            if (type.networkCodec() != null) {
+                payload.put(type, values);
+            }
+        });
+        return payload.isEmpty() ? null : new PlayMessages.SyncAttachments<>((ResourceKey)entry.key(), () -> payload);
     }
 }

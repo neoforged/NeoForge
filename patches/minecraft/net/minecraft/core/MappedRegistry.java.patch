@@ -1,5 +1,44 @@
 --- a/net/minecraft/core/MappedRegistry.java
 +++ b/net/minecraft/core/MappedRegistry.java
+@@ -51,6 +_,7 @@
+    @Nullable
+    private List<Holder.Reference<T>> f_211051_;
+    private int f_122678_;
++   private final net.minecraftforge.registries.attachment.AttachmentHolder<T> attachments;
+    private final HolderLookup.RegistryLookup<T> f_256971_ = new HolderLookup.RegistryLookup<T>() {
+       public ResourceKey<? extends Registry<? extends T>> m_254879_() {
+          return MappedRegistry.this.f_256817_;
+@@ -75,6 +_,22 @@
+       public Stream<HolderSet.Named<T>> m_214063_() {
+          return MappedRegistry.this.m_203612_().map(Pair::getSecond);
+       }
++
++      @Override
++      public <A> @org.jetbrains.annotations.Nullable A getAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key, Holder.Reference<T> holder) {
++         return getAttachmentMap(key).get(holder.m_205785_());
++      }
++      @Override
++      public <A> @org.jetbrains.annotations.Nullable A getTagAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key, HolderSet.Named<T> tag) {
++         return getAttachmentMap(key).get(tag.m_205839_());
++      }
++      private <A> Map<Object, A> getAttachmentMap(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key) {
++         final var map = attachments.getAttachments().get(key);
++         if (map == null) {
++            throw new IllegalArgumentException("Registry " + MappedRegistry.this.f_256817_ + " does not support attachments of type " + key.getId());
++         }
++         return (Map<Object, A>)map;
++      }
+    };
+ 
+    public MappedRegistry(ResourceKey<? extends Registry<T>> p_249899_, Lifecycle p_252249_) {
+@@ -90,6 +_,7 @@
+       if (p_251014_) {
+          this.f_244282_ = new IdentityHashMap<>();
+       }
++      this.attachments = new net.minecraftforge.registries.attachment.AttachmentHolder<>(f_256817_);
+ 
+    }
+ 
 @@ -121,7 +_,16 @@
        }
     }
@@ -47,7 +86,7 @@
           List<ResourceLocation> list = this.f_205842_.entrySet().stream().filter((p_211055_) -> {
              return !p_211055_.getValue().m_203633_();
           }).map((p_211794_) -> {
-@@ -321,7 +_,8 @@
+@@ -321,12 +_,18 @@
                    throw new IllegalStateException("Some intrusive holders were not registered: " + this.f_244282_.values());
                 }
  
@@ -57,3 +96,13 @@
              }
  
              return this;
+          }
+       }
++   }
++
++   @Override
++   public net.minecraftforge.registries.attachment.AttachmentHolder<T> getAttachmentHolder() {
++      return attachments;
+    }
+ 
+    public Holder.Reference<T> m_203693_(T p_205915_) {

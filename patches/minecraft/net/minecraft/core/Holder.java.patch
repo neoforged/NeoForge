@@ -5,7 +5,7 @@
  import net.minecraft.tags.TagKey;
  
 -public interface Holder<T> {
-+public interface Holder<T> extends java.util.function.Supplier<T>, net.minecraftforge.registries.tags.IReverseTag<T> {
++public interface Holder<T> extends java.util.function.Supplier<T>, net.minecraftforge.registries.tags.IReverseTag<T>, net.minecraftforge.registries.attachment.IWithAttachments<T> {
 +   @Override
 +   default boolean containsTag(TagKey<T> key) {
 +      return this.m_203656_(key);
@@ -24,8 +24,15 @@
     T m_203334_();
  
     boolean m_203633_();
-@@ -193,6 +_,10 @@
+@@ -191,8 +_,17 @@
+          this.f_205749_ = Set.copyOf(p_205770_);
+       }
  
++      @Override
++      public <A> @Nullable A getAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key) {
++         return ((HolderLookup.RegistryLookup<T>) f_254697_).getAttachment(key, this);
++      }
++
        public Stream<TagKey<T>> m_203616_() {
           return this.f_205749_.stream();
 +      }

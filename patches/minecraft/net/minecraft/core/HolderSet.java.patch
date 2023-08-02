@@ -5,17 +5,22 @@
  import org.jetbrains.annotations.VisibleForTesting;
  
 -public interface HolderSet<T> extends Iterable<Holder<T>> {
-+public interface HolderSet<T> extends Iterable<Holder<T>>, net.minecraftforge.common.extensions.IForgeHolderSet<T> {
++public interface HolderSet<T> extends Iterable<Holder<T>>, net.minecraftforge.common.extensions.IForgeHolderSet<T>, net.minecraftforge.registries.attachment.IWithAttachments<T> {
     Stream<Holder<T>> m_203614_();
  
     int m_203632_();
-@@ -133,6 +_,9 @@
+@@ -133,6 +_,14 @@
  
        public void m_205835_(List<Holder<T>> p_205836_) {
           this.f_205830_ = List.copyOf(p_205836_);
 +         for (Runnable runnable : this.invalidationCallbacks) {
 +            runnable.run(); // FORGE: invalidate listeners when tags rebind
 +         }
++      }
++
++      @Override
++      public <A> @Nullable A getAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key) {
++         return ((HolderLookup.RegistryLookup<T>) f_254711_).getTagAttachment(key, this);
        }
  
        public TagKey<T> m_205839_() {

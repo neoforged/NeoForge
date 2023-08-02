@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.function.IntSupplier;
 import java.util.stream.Collectors;
 
+import net.minecraftforge.registries.attachment.AttachmentHolder;
+import net.minecraftforge.registries.attachment.AttachmentTypeKey;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Maps;
@@ -56,6 +58,7 @@ public class HandshakeMessages
         private Map<ResourceLocation, String> channels;
         private List<ResourceLocation> registries;
         private final List<ResourceKey<? extends Registry<?>>> dataPackRegistries;
+        private final Map<ResourceKey<? extends Registry<?>>, List<AttachmentTypeKey<?>>> attachmentTypes;
 
         public S2CModList()
         {
@@ -63,14 +66,16 @@ public class HandshakeMessages
             this.channels = NetworkRegistry.buildChannelVersions();
             this.registries = RegistryManager.getRegistryNamesForSyncToClient();
             this.dataPackRegistries = List.copyOf(DataPackRegistriesHooks.getSyncedCustomRegistries());
+            this.attachmentTypes = AttachmentHolder.getForciblySyncedAttachments();
         }
 
-        private S2CModList(List<String> mods, Map<ResourceLocation, String> channels, List<ResourceLocation> registries, List<ResourceKey<? extends Registry<?>>> dataPackRegistries)
+        private S2CModList(List<String> mods, Map<ResourceLocation, String> channels, List<ResourceLocation> registries, List<ResourceKey<? extends Registry<?>>> dataPackRegistries, Map<ResourceKey<? extends Registry<?>>, List<AttachmentTypeKey<?>>> attachmentTypes)
         {
             this.mods = mods;
             this.channels = channels;
             this.registries = registries;
             this.dataPackRegistries = dataPackRegistries;
+            this.attachmentTypes = attachmentTypes;
         }
 
         public static S2CModList decode(FriendlyByteBuf input)
@@ -91,7 +96,11 @@ public class HandshakeMessages
                 registries.add(input.readResourceLocation());
 
             List<ResourceKey<? extends Registry<?>>> dataPackRegistries = input.readCollection(ArrayList::new, buf -> ResourceKey.createRegistryKey(buf.readResourceLocation()));
-            return new S2CModList(mods, channels, registries, dataPackRegistries);
+            Map<ResourceKey<? extends Registry<?>>, List<AttachmentTypeKey<?>>> attachmentTypes = input.readMap(
+                    b -> ResourceKey.createRegistryKey(b.readResourceLocation()),
+                    b -> b.readCollection(ArrayList::new, buf -> AttachmentTypeKey.get(buf.readResourceLocation()))
+            );
+            return new S2CModList(mods, channels, registries, dataPackRegistries, attachmentTypes);
         }
 
         public void encode(FriendlyByteBuf output)
@@ -108,8 +117,8 @@ public class HandshakeMessages
             output.writeVarInt(registries.size());
             registries.forEach(output::writeResourceLocation);
 
-            Set<ResourceKey<? extends Registry<?>>> dataPackRegistries = DataPackRegistriesHooks.getSyncedCustomRegistries();
             output.writeCollection(dataPackRegistries, (buf, key) -> buf.writeResourceLocation(key.location()));
+            output.writeMap(attachmentTypes, (b, reg) -> b.writeResourceLocation(reg.location()), (b, keys) -> b.writeCollection(keys, (buf, val) -> buf.writeResourceLocation(val.getId())));
         }
 
         public List<String> getModList() {
@@ -129,6 +138,10 @@ public class HandshakeMessages
          */
         public List<ResourceKey<? extends Registry<?>>> getCustomDataPackRegistries() {
             return this.dataPackRegistries;
+        }
+
+        public Map<ResourceKey<? extends Registry<?>>, List<AttachmentTypeKey<?>>> getAttachmentTypes() {
+            return attachmentTypes;
         }
     }
 

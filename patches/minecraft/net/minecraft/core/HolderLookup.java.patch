@@ -1,0 +1,51 @@
+--- a/net/minecraft/core/HolderLookup.java
++++ b/net/minecraft/core/HolderLookup.java
+@@ -40,6 +_,14 @@
+       };
+    }
+ 
++   default <A> @org.jetbrains.annotations.Nullable A getAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key, Holder.Reference<T> holder) {
++      return null;
++   }
++
++   default <A> @org.jetbrains.annotations.Nullable A getTagAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key, HolderSet.Named<T> tag) {
++      return null;
++   }
++
+    public static class Delegate<T> implements HolderLookup<T> {
+       protected final HolderLookup<T> f_254653_;
+ 
+@@ -62,6 +_,16 @@
+       public Stream<HolderSet.Named<T>> m_214063_() {
+          return this.f_254653_.m_214063_();
+       }
++
++      @Override
++      public <A> @org.jetbrains.annotations.Nullable A getAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key, Holder.Reference<T> holder) {
++         return this.f_254653_.getAttachment(key, holder);
++      }
++
++      @Override
++      public <A> @org.jetbrains.annotations.Nullable A getTagAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key, HolderSet.Named<T> tag) {
++         return this.f_254653_.getTagAttachment(key, tag);
++      }
+    }
+ 
+    public interface Provider {
+@@ -131,6 +_,16 @@
+ 
+          public Stream<HolderSet.Named<T>> m_214063_() {
+             return this.m_254893_().m_214063_();
++         }
++
++         @Override
++         public <A> @org.jetbrains.annotations.Nullable A getAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key, Holder.Reference<T> holder) {
++            return this.m_254893_().getAttachment(key, holder);
++         }
++
++         @Override
++         public <A> @org.jetbrains.annotations.Nullable A getTagAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key, HolderSet.Named<T> tag) {
++            return this.m_254893_().getTagAttachment(key, tag);
+          }
+       }
+    }
