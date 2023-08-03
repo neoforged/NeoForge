@@ -68,7 +68,7 @@ ext {
     SLF4J_API_VERSION = '1.8.0-beta4'
     APACHE_MAVEN_ARTIFACT_VERSION = '3.8.5'
     JARJAR_VERSION = '0.3.19'
-    FANCY_MOD_LOADER_VERSION = '47.1.43'
+    FANCY_MOD_LOADER_VERSION = '47.1.41'
 
     // These versions should be kept in sync with the version manifest JSON
     // To use a version newer than the version manifest JSON, the dependency must be added to the installer configuration
@@ -370,11 +370,6 @@ project(':forge') {
         moduleonly "cpw.mods:bootstraplauncher:${BOOTSTRAPLAUNCHER_VERSION}"
         moduleonly "net.minecraftforge:JarJarFileSystems:${JARJAR_VERSION}"
 
-        installer "net.neoforged.fancymodloader:core:${FANCY_MOD_LOADER_VERSION}"
-        installer "net.neoforged.fancymodloader:events:${FANCY_MOD_LOADER_VERSION}"
-        installer "net.neoforged.fancymodloader:language-java:${FANCY_MOD_LOADER_VERSION}"
-        installer "net.neoforged.fancymodloader:language-lowcode:${FANCY_MOD_LOADER_VERSION}"
-        installer "net.neoforged.fancymodloader:language-minecraft:${FANCY_MOD_LOADER_VERSION}"
         installer "cpw.mods:securejarhandler:${SECUREJARHANDLER_VERSION}"
         installer "org.ow2.asm:asm:${ASM_VERSION}"
         installer "org.ow2.asm:asm-commons:${ASM_VERSION}"
@@ -778,11 +773,13 @@ project(':forge') {
             MC_VERSION:    MC_VERSION,
             MCP_VERSION:   MCP_VERSION,
             FORGE_GROUP:   group,
-            IGNORE_LIST: [
-                configurations.moduleonly, configurations.gameLayerLibrary, configurations.pluginLayerLibrary
-            ].collectMany { Util.getArtifacts(project, it, false).values() }
-                .collect{it.downloads.artifact.path.rsplit('/', 1)[1]}
-                .join(','),
+            IGNORE_LIST:   ['moduleonly', 'gameLayerLibrary', 'pluginLayerLibrary'].collectMany { configurations.getByName(it).files }.collect {
+                if (it.name.startsWith('events') || it.name.startsWith('core')) {
+                    it.name // These names are too generic by themselves, so let's keep the version info
+                } else {
+                    it.name.replaceAll(/([-_]([.\d]*\d+)|\.jar$)/, '')
+                }
+            }.join(','),
             PLUGIN_LAYER_LIBRARIES: project.patcher.runs.forge_client.properties['fml.pluginLayerLibraries'],
             GAME_LAYER_LIBRARIES: project.patcher.runs.forge_client.properties['fml.gameLayerLibraries'],
             MODULES: 'ALL-MODULE-PATH'
@@ -790,7 +787,8 @@ project(':forge') {
 
     task([dependsOn: rootProject.downloadServerRaw], 'makeClasspathFiles') {
         doLast {
-            def CLASS_PATH = Util.getArtifacts(project, configurations.installer, false).values().collect{"libraries/${it.downloads.artifact.path}"} +
+            def CLASS_PATH = ['installer', 'gameLayerLibrary', 'pluginLayerLibrary'].collectMany { Util.getArtifacts(project, configurations.getByName(it), false).values() }.
+                    collect{"libraries/${it.downloads.artifact.path}"} +
                     [
                             "libraries/net/minecraft/server/${MC_VERSION}-${MCP_VERSION}/server-${MC_VERSION}-${MCP_VERSION}-extra.jar"
                     ]
