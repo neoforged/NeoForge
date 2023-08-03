@@ -5,7 +5,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraftforge.registries.GameData;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -60,7 +59,7 @@ public class AttachmentHolder<T> {
     private void populateMaps() {
         this.attachmentTypes = (Map) Map.copyOf(registeredAttachmentTypes.getOrDefault(registryKey, Map.of()));
         this.attachments = attachmentTypes.keySet().stream().collect(Collectors.toMap(Function.identity(), k -> new IdentityHashMap<>(), (a, b) -> b, IdentityHashMap::new));
-        this.attachmentView = attachments.entrySet().stream().collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, m -> Collections.unmodifiableMap(m.getValue())));
+        this.attachmentView = Collections.unmodifiableMap(attachments.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, m -> Collections.unmodifiableMap(m.getValue()), (a, b) -> b, IdentityHashMap::new)));
     }
 
     private void attemptPopulate() {

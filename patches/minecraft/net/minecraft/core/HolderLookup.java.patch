@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/HolderLookup.java
 +++ b/net/minecraft/core/HolderLookup.java
-@@ -40,6 +_,14 @@
+@@ -40,6 +_,18 @@
        };
     }
  
@@ -12,10 +12,14 @@
 +      return null;
 +   }
 +
++   default Map<net.minecraftforge.registries.attachment.AttachmentTypeKey<?>, net.minecraftforge.registries.attachment.AttachmentType<?, T>> getAttachmentTypes() {
++      return Map.of();
++   }
++
     public static class Delegate<T> implements HolderLookup<T> {
        protected final HolderLookup<T> f_254653_;
  
-@@ -62,6 +_,16 @@
+@@ -62,6 +_,21 @@
        public Stream<HolderSet.Named<T>> m_214063_() {
           return this.f_254653_.m_214063_();
        }
@@ -29,10 +33,15 @@
 +      public <A> @org.jetbrains.annotations.Nullable A getTagAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key, HolderSet.Named<T> tag) {
 +         return this.f_254653_.getTagAttachment(key, tag);
 +      }
++
++      @Override
++      public Map<net.minecraftforge.registries.attachment.AttachmentTypeKey<?>, net.minecraftforge.registries.attachment.AttachmentType<?, T>> getAttachmentTypes() {
++         return this.f_254653_.getAttachmentTypes();
++      }
     }
  
     public interface Provider {
-@@ -131,6 +_,16 @@
+@@ -131,6 +_,21 @@
  
           public Stream<HolderSet.Named<T>> m_214063_() {
              return this.m_254893_().m_214063_();
@@ -46,6 +55,11 @@
 +         @Override
 +         public <A> @org.jetbrains.annotations.Nullable A getTagAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key, HolderSet.Named<T> tag) {
 +            return this.m_254893_().getTagAttachment(key, tag);
++         }
++
++         @Override
++         public Map<net.minecraftforge.registries.attachment.AttachmentTypeKey<?>, net.minecraftforge.registries.attachment.AttachmentType<?, T>> getAttachmentTypes() {
++            return this.m_254893_().getAttachmentTypes();
           }
        }
     }

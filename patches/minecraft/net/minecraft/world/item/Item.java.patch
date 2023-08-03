@@ -141,24 +141,15 @@
     }
  
     public ItemStack m_7968_() {
-@@ -334,12 +_,15 @@
-    }
- 
-    public boolean m_41472_() {
--      return this.f_41380_ != null;
-+      return m_41473_() != null;
+@@ -337,6 +_,8 @@
+       return this.f_41380_ != null;
     }
  
 +   // Use IForgeItem#getFoodProperties(ItemStack, LivingEntity) in favour of this.
 +   @Deprecated
     @Nullable
     public FoodProperties m_41473_() {
--      return this.f_41380_;
-+      var attached = f_204113_.getAttachment(net.minecraftforge.common.ForgeMod.FOOD_PROPERTIES);
-+      return attached == null ? this.f_41380_ : attached;
-    }
- 
-    public SoundEvent m_6023_() {
+       return this.f_41380_;
 @@ -366,6 +_,32 @@
        return this.f_243811_;
     }

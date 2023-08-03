@@ -427,24 +427,6 @@ public class ForgeMod
     public static final RegistryObject<Fluid> MILK = RegistryObject.create(new ResourceLocation("milk"), ForgeRegistries.FLUIDS);
     public static final RegistryObject<Fluid> FLOWING_MILK = RegistryObject.create(new ResourceLocation("flowing_milk"), ForgeRegistries.FLUIDS);
 
-    public static final Map<ToolAction, AttachmentTypeKey<ToolTransformationResult>> TOOL_MODIFICATIONS = Stream.of(
-            ToolActions.AXE_STRIP, ToolActions.AXE_SCRAPE, ToolActions.AXE_WAX_OFF, ToolActions.SHOVEL_FLATTEN, ToolActions.HOE_TILL
-    ).collect(Collectors.toUnmodifiableMap(Function.identity(), action -> AttachmentTypeKey.get(new ResourceLocation("forge:tool_modification/" + action.name()))));
-
-    public record ToolTransformationResult(BlockState state, boolean copyProperties) {
-        private static final Codec<BlockState> SIMPLE_STATE = ResourceLocation.CODEC
-                .xmap(rl -> BuiltInRegistries.BLOCK.get(rl).defaultBlockState(), state -> BuiltInRegistries.BLOCK.getKey(state.getBlock()));
-        public static final Codec<ToolTransformationResult> CODEC = Codec.either(
-                SIMPLE_STATE.flatXmap(state -> DataResult.success(new ToolTransformationResult(state, false)), in -> DataResult.<BlockState>error(() -> "Unable to serialize ToolTransformationResult to simple value.")),
-                RecordCodecBuilder.<ToolTransformationResult>create(in -> in.group(
-                        Codec.either(SIMPLE_STATE, BlockState.CODEC).xmap(either -> either.map(s -> s, s -> s), Either::right).fieldOf("state").forGetter(ToolTransformationResult::state),
-                        Codec.BOOL.optionalFieldOf("copyProperties", false).forGetter(ToolTransformationResult::copyProperties)
-                ).apply(in, ToolTransformationResult::new))
-        ).xmap(either -> either.map(s -> s, s -> s), Either::right);
-    }
-
-    public static final AttachmentTypeKey<FoodProperties> FOOD_PROPERTIES = AttachmentTypeKey.get(new ResourceLocation("forge:food_properties"));
-
     private static ForgeMod INSTANCE;
     public static ForgeMod getInstance()
     {
@@ -527,28 +509,6 @@ public class ForgeMod
                 target = PacketDistributor.PLAYER.with(event::getPlayer);
             }
             NetworkHooks.syncRegAttachments(target, event.getPlayerList().getServer().overworld().registryAccess());
-        });
-        modEventBus.addListener((final RegisterAttachmentTypeEvent event) -> {
-            TOOL_MODIFICATIONS.forEach((action, type) ->
-                    event.register(Registries.BLOCK, type, builder -> builder.withAttachmentCodec(ToolTransformationResult.CODEC)
-                            .withNetworkCodec(ToolTransformationResult.CODEC).setOptionallySynced()));
-
-            final Codec<FoodProperties> foodPropertiesCodec = RecordCodecBuilder.create(in -> in.group(
-                    Codec.INT.optionalFieldOf("nutrition", 0).forGetter(FoodProperties::getNutrition),
-                    Codec.FLOAT.optionalFieldOf("saturationModifier", 0f).forGetter(FoodProperties::getSaturationModifier),
-                    Codec.BOOL.optionalFieldOf("fastFood", false).forGetter(FoodProperties::isFastFood),
-                    Codec.BOOL.optionalFieldOf("canAlwaysEat", false).forGetter(FoodProperties::canAlwaysEat),
-                    Codec.BOOL.optionalFieldOf("meat", false).forGetter(FoodProperties::isMeat)
-            ).apply(in, (nutrition, saturation, fastFood, canAlwaysEat, meat) -> {
-                final var builder = new FoodProperties.Builder()
-                        .nutrition(nutrition)
-                        .saturationMod(saturation);
-                if (fastFood) builder.fast();
-                if (canAlwaysEat) builder.alwaysEat();
-                if (meat) builder.meat();
-                return builder.build();
-            }));
-            event.register(Registries.ITEM, FOOD_PROPERTIES, builder -> builder.withNetworkCodec(foodPropertiesCodec).withAttachmentCodec(foodPropertiesCodec));
         });
     }
 

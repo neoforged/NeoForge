@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
@@ -54,7 +53,7 @@ public final class AttachmentLoader implements PreparableReloadListener {
 
     @Override
     public CompletableFuture<Void> reload(PreparationBarrier pPreparationBarrier, ResourceManager pResourceManager, ProfilerFiller pPreparationsProfiler, ProfilerFiller pReloadProfiler, Executor pBackgroundExecutor, Executor pGameExecutor) {
-        return this.load(pResourceManager, pBackgroundExecutor)
+        return this.load(pResourceManager, pBackgroundExecutor, pPreparationsProfiler)
                 .thenCompose(pPreparationBarrier::wait)
                 .thenAcceptAsync(values -> this.results = values, pGameExecutor);
     }
@@ -127,56 +126,41 @@ public final class AttachmentLoader implements PreparableReloadListener {
         return result;
     }
 
-    private CompletableFuture<Map<ResourceKey<? extends Registry<?>>, LoadResult<?>>> load(ResourceManager manager, Executor executor) {
-        return CompletableFuture.supplyAsync(() -> load(manager, registryAccess, context), executor);
+    private CompletableFuture<Map<ResourceKey<? extends Registry<?>>, LoadResult<?>>> load(ResourceManager manager, Executor executor, ProfilerFiller profiler) {
+        return CompletableFuture.supplyAsync(() -> load(manager, profiler, registryAccess, context), executor);
     }
 
-    private static Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> load(ResourceManager manager, RegistryAccess access, ICondition.IContext context) {
+    private static Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> load(ResourceManager manager, ProfilerFiller profiler, RegistryAccess access, ICondition.IContext context) {
         final RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, access);
 
         final Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> values = new HashMap<>();
-        FileToIdConverter filetoidconverter = FileToIdConverter.json(PATH);
-        for (Map.Entry<ResourceLocation, List<Resource>> entry : filetoidconverter.listMatchingResourceStacks(manager).entrySet()) {
-            ResourceLocation key = entry.getKey();
-            ResourceLocation id = filetoidconverter.fileToId(key);
-
-            ResourceLocation attachmentId;
-            ResourceLocation registryId;
-            {
-                final String[] split = id.getPath().split("/");
-                if (split.length < 2) continue;
-                if (split.length == 2) {
-                    registryId = new ResourceLocation(split[0]);
-                    attachmentId = new ResourceLocation(id.getNamespace(), split[1]);
-                } else {
-                    registryId = new ResourceLocation(split[0], split[1]);
-                    attachmentId = new ResourceLocation(id.getNamespace(), String.join("/", Arrays.copyOfRange(split, 2, split.length)));
-
-                    if (access.registry(ResourceKey.createRegistryKey(registryId)).isEmpty()) {
-                        registryId = new ResourceLocation(ResourceLocation.DEFAULT_NAMESPACE, split[0]);
-                        attachmentId = new ResourceLocation(id.getNamespace(), String.join("/", Arrays.copyOfRange(split, 1, split.length)));
-                    }
+        access.registries().forEach(registryEntry -> {
+            final var registryKey = registryEntry.key();
+            final var registry = registryEntry.value();
+            profiler.push("registry_attachments/" + registryKey.location() + "/locating");
+            final var fileToId = FileToIdConverter.json(getAttachmentLocation(registryKey.location()));
+            for (Map.Entry<ResourceLocation, List<Resource>> entry : fileToId.listMatchingResourceStacks(manager).entrySet()) {
+                ResourceLocation key = entry.getKey();
+                final ResourceLocation attachmentId = fileToId.fileToId(key);
+                final var attachmentTypeKey = AttachmentTypeKey.get(attachmentId);
+                final var attachment = registry.getAttachmentHolder().getAttachmentTypes().get(attachmentTypeKey);
+                if (attachment == null) {
+                    // TODO - error
+                    continue;
                 }
+                profiler.popPush("registry_attachments/" + registryKey.location() + "/" + attachmentId + "/loading");
+                values.computeIfAbsent(registryKey, k -> new LoadResult<>(new HashMap<>())).results.put(attachmentTypeKey, readAttachments(
+                        ops, attachment, (ResourceKey) registryKey, entry.getValue(), context
+                ));
             }
-
-            final var attachmentTypeKey = AttachmentTypeKey.get(attachmentId);
-            final var registryKey = ResourceKey.createRegistryKey(registryId);
-            final var registry = access.registry(registryKey);
-            if (registry.isEmpty()) {
-                // TODO - error
-                continue;
-            }
-            final var attachment = registry.get().getAttachmentHolder().getAttachmentTypes().get(attachmentTypeKey);
-            if (attachment == null) {
-                // TODO - error
-                continue;
-            }
-            values.computeIfAbsent(registryKey, k -> new LoadResult<>(new HashMap<>())).results.put(attachmentTypeKey, (AttachmentLoad) readAttachments(
-                    ops, attachment, registryKey, entry.getValue(), context
-            ));
-        }
+            profiler.pop();
+        });
 
         return values;
+    }
+
+    public static String getAttachmentLocation(ResourceLocation registryId) {
+        return PATH + "/" + (registryId.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE) ? "" : registryId.getNamespace() + "/") + registryId.getPath();
     }
 
     private static <A, T> AttachmentLoad<A, T> readAttachments(RegistryOps<JsonElement> ops, AttachmentType<A, T> attachmentType, ResourceKey<Registry<T>> registryKey, List<Resource> resources, ICondition.IContext context) {
@@ -210,19 +194,17 @@ public final class AttachmentLoader implements PreparableReloadListener {
                             normal = valuesJson.getAsJsonObject().asMap();
                         }
                     }
-                    //object.get("valuesHolderSet").getAsJsonArray().forEach(el -> holderSets.add(el.getAsJsonObject()));
 
                     normal.forEach((key, value) -> {
-                        if (!shouldRegisterEntry(value, context)) return;
-                        final A attach = attachmentType.attachmentCodec().decode(ops, value).getOrThrow(false, e -> {
-                        }).getFirst();
+                        if (!shouldConsiderAttachment(value, context)) return;
+                        final A attach = attachmentType.attachmentCodec().decode(ops, value).getOrThrow(false, e -> {}).getFirst();
                         final Object attachKey = keyComputer.apply(key);
                         attachments.merge(attachKey, attach, attachmentType.valueMerger()::merge);
                     });
                     if (!holderSets.isEmpty()) {
                         final Codec<HolderSet<T>> holderSetCodec = RegistryCodecs.homogeneousList(registryKey);
                         holderSets.forEach(holderSet -> {
-                            if (!shouldRegisterEntry(holderSet, context)) return;
+                            if (!shouldConsiderAttachment(holderSet, context)) return;
                             // wrap holdersets in a supplier so we can lazily read them
                             final Supplier<HolderSet<T>> set = () -> holderSetCodec.decode(ops, holderSet.get("objects")).getOrThrow(false, e -> {}).getFirst();
                             final A attach = attachmentType.attachmentCodec().decode(ops, holderSet.get("value")).getOrThrow(false, e -> {}).getFirst();
@@ -237,7 +219,7 @@ public final class AttachmentLoader implements PreparableReloadListener {
         return new AttachmentLoad<>(attachments);
     }
 
-    private static boolean shouldRegisterEntry(JsonElement json, ICondition.IContext context) {
+    private static boolean shouldConsiderAttachment(JsonElement json, ICondition.IContext context) {
         if (!(json instanceof JsonObject obj) || !obj.has("forge:conditions"))
             return true;
 

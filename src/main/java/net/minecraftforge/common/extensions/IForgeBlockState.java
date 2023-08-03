@@ -20,7 +20,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.SignalGetter;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +28,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.IPlantable;
 
 import net.minecraft.core.Direction;
@@ -660,22 +658,8 @@ public interface IForgeBlockState
     @Nullable
     default BlockState getToolModifiedState(UseOnContext context, ToolAction toolAction, boolean simulate)
     {
-        final BlockState self = self();
-        final var attachmentType = ForgeMod.TOOL_MODIFICATIONS.get(toolAction);
-        if (attachmentType != null) {
-            final ForgeMod.ToolTransformationResult result = self.getBlock().builtInRegistryHolder().getAttachment(attachmentType);
-            if (result != null) {
-                BlockState newState = result.state();
-                if (result.copyProperties()) {
-                    for (Property property : self().getProperties()) {
-                        newState = newState.setValue(property, self.getValue(property));
-                    }
-                }
-                return newState;
-            }
-        }
-        BlockState eventState = net.minecraftforge.event.ForgeEventFactory.onToolUse(self, context, toolAction, simulate);
-        return eventState != self ? eventState : self.getBlock().getToolModifiedState(self, context, toolAction, simulate);
+        BlockState eventState = net.minecraftforge.event.ForgeEventFactory.onToolUse(self(), context, toolAction, simulate);
+        return eventState != self() ? eventState : self().getBlock().getToolModifiedState(self(), context, toolAction, simulate);
     }
 
     /**

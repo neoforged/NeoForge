@@ -8,7 +8,7 @@
     private final HolderLookup.RegistryLookup<T> f_256971_ = new HolderLookup.RegistryLookup<T>() {
        public ResourceKey<? extends Registry<? extends T>> m_254879_() {
           return MappedRegistry.this.f_256817_;
-@@ -75,6 +_,22 @@
+@@ -75,6 +_,26 @@
        public Stream<HolderSet.Named<T>> m_214063_() {
           return MappedRegistry.this.m_203612_().map(Pair::getSecond);
        }
@@ -20,6 +20,10 @@
 +      @Override
 +      public <A> @org.jetbrains.annotations.Nullable A getTagAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key, HolderSet.Named<T> tag) {
 +         return getAttachmentMap(key).get(tag.m_205839_());
++      }
++      @Override
++      public Map<net.minecraftforge.registries.attachment.AttachmentTypeKey<?>, net.minecraftforge.registries.attachment.AttachmentType<?, T>> getAttachmentTypes() {
++         return getAttachmentHolder().getAttachmentTypes();
 +      }
 +      private <A> Map<Object, A> getAttachmentMap(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key) {
 +         final var map = attachments.getAttachments().get(key);

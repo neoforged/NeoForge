@@ -1,9 +1,0 @@
-{
-  "values": {
-    "minecraft:iron_ingot": {
-      "nutrition": 10,
-      "saturationModifier": 14.0,
-      "canAlwaysEat": true
-    }
-  }
-}

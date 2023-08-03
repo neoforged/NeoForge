@@ -532,6 +532,7 @@ project(':forge') {
                             '--mod', 'biome_modifiers_test',
                             '--mod', 'structure_modifiers_test',
                             '--mod', 'custom_preset_editor_test',
+                            '--mod', 'attachment_test',
                             '--output', rootProject.file('src/generated_test/resources/'),
                             '--existing', sourceSets.main.resources.srcDirs[0],
                             '--existing', sourceSets.test.resources.srcDirs[0]
