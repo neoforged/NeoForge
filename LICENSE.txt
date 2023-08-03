@@ -1,4 +1,4 @@
-Unless noted below, Minecraft NeoForge, NeoForge Mod Loader, and all 
+Unless noted below, NeoForge, NeoForge Mod Loader, and all 
 parts herein are licensed under the terms of the LGPL 2.1 found
 here http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt and 
 copied below.
@@ -11,7 +11,7 @@ A note on authorship:
 All source artifacts are property of their original author, with
 the exclusion of the contents of the patches directory and others
 copied from it from time to time. Authorship of the contents of
-the patches directory is retained by the Minecraft NeoForge project.
+the patches directory is retained by the NeoForge project.
 This is because the patches are partially machine generated
 artifacts, and are changed heavily due to the way NeoForge works.
 Individual attribution within them is impossible.
@@ -39,11 +39,11 @@ I grant permission for some parts of FML to be redistributed outside the terms o
 the minecraft modding community. All contributions to these parts should be licensed under the same additional grant.
 
 -- Runtime patcher --
-License is granted to redistribute the runtime patcher code (src/main/java/net/minecraftneoforge/fml/common/patcher
+License is granted to redistribute the runtime patcher code (src/main/java/net/minecraftforge/fml/common/patcher
 and subdirectories) under any alternative open source license as classified by the OSI (http://opensource.org/licenses)
 
--- ASM transformers --
-License is granted to redistribute the ASM transformer code (src/main/java/net/minecraftneoforge/common/asm/ and subdirectories)
+-- Coremods --
+License is granted to redistribute the Coremod code (/src/main/resources/coremods)
 under any alternative open source license as classified by the OSI (http://opensource.org/licenses)
 
 =========================================================================
