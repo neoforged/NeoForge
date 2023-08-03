@@ -68,7 +68,7 @@ ext {
     SLF4J_API_VERSION = '1.8.0-beta4'
     APACHE_MAVEN_ARTIFACT_VERSION = '3.8.5'
     JARJAR_VERSION = '0.3.19'
-    FANCY_MOD_LOADER_VERSION = '47.1.41'
+    FANCY_MOD_LOADER_VERSION = '47.1.45'
 
     // These versions should be kept in sync with the version manifest JSON
     // To use a version newer than the version manifest JSON, the dependency must be added to the installer configuration
@@ -209,7 +209,7 @@ subprojects {
             maven gradleutils.getPublishingForgeMaven()
         }
     }
-    
+
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
         options.warnings = false // Shutup deprecated for removal warnings
@@ -268,7 +268,7 @@ project(':clean') {
             }
         }
     }
-    
+
     tasks.named('compileJava') { mustRunAfter 'extractMapped' }
 }
 
@@ -279,8 +279,8 @@ project(':forge') {
     apply plugin: 'org.parchmentmc.librarian.forgegradle'
     apply plugin: 'org.cadixdev.licenser'
 
-    applyPatches { 
-		verbose = true 
+    applyPatches {
+		verbose = true
 		//failOnError = false
 	}
 
@@ -714,8 +714,8 @@ project(':forge') {
                 it.name.replaceAll(/([-_]([.\d]*\d+)|\.jar$)/, '')
             }
         }.join(',') + ",client-extra,${project.name}-"
-        run.property 'fml.pluginLayerLibraries', configurations.pluginLayerLibrary.files.collect { it.name }.join(';')
-        run.property 'fml.gameLayerLibraries', configurations.gameLayerLibrary.files.collect { it.name }.join(';')
+        run.property 'fml.pluginLayerLibraries', configurations.pluginLayerLibrary.files.collect { it.name }.join(',')
+        run.property 'fml.gameLayerLibraries', configurations.gameLayerLibrary.files.collect { it.name }.join(',')
         // FIXME: Without this jna doesn't work at runtime. Someone figure out why please?
         run.property 'mergeModules', 'jna-5.10.0.jar,jna-platform-5.10.0.jar'
         if (userdevRuns.contains(run)) {
@@ -773,7 +773,13 @@ project(':forge') {
             MC_VERSION:    MC_VERSION,
             MCP_VERSION:   MCP_VERSION,
             FORGE_GROUP:   group,
-            IGNORE_LIST: Util.getArtifacts(project, configurations.moduleonly, false).values().collect{it.downloads.artifact.path.rsplit('/', 1)[1]}.join(','),
+            IGNORE_LIST:   ['moduleonly', 'gameLayerLibrary', 'pluginLayerLibrary'].collectMany { configurations.getByName(it).files }.collect {
+                if (it.name.startsWith('events') || it.name.startsWith('core')) {
+                    it.name // These names are too generic by themselves, so let's keep the version info
+                } else {
+                    it.name.replaceAll(/([-_]([.\d]*\d+)|\.jar$)/, '')
+                }
+            }.join(','),
             PLUGIN_LAYER_LIBRARIES: project.patcher.runs.forge_client.properties['fml.pluginLayerLibraries'],
             GAME_LAYER_LIBRARIES: project.patcher.runs.forge_client.properties['fml.gameLayerLibraries'],
             MODULES: 'ALL-MODULE-PATH'
@@ -781,9 +787,9 @@ project(':forge') {
 
     task([dependsOn: rootProject.downloadServerRaw], 'makeClasspathFiles') {
         doLast {
-            def CLASS_PATH = Util.getArtifacts(project, configurations.installer, false).values().collect{"libraries/${it.downloads.artifact.path}"} +
+            def CLASS_PATH = ['installer', 'gameLayerLibrary', 'pluginLayerLibrary'].collectMany { Util.getArtifacts(project, configurations.getByName(it), false).values() }.
+                    collect{"libraries/${it.downloads.artifact.path}"} +
                     [
-                            'libraries/' + Util.getMavenPath(project, "net.neoforged.fancymodloader:loader:${FANCY_MOD_LOADER_VERSION}"),
                             "libraries/net/minecraft/server/${MC_VERSION}-${MCP_VERSION}/server-${MC_VERSION}-${MCP_VERSION}-extra.jar"
                     ]
             def claimed = CLASS_PATH.collect{ it.rsplit('/', 2)[0] }.toSet() // Allow us to override versions
