@@ -29,6 +29,7 @@ import net.minecraft.tags.TagKey;
  * 
  * @param <T> The type of object being held by this DeferredHolder.
  */
+// TODO: (Breaking Change) - Add a second generic type for the base registry type
 public class DeferredHolder<T> implements Holder<T>
 {
     /**
@@ -279,5 +280,17 @@ public class DeferredHolder<T> implements Holder<T>
     public boolean canSerializeIn(HolderOwner<T> owner)
     {
         return isPresent() && this.holder.canSerializeIn(owner);
+    }
+
+    /**
+     * As a workaround, this method is provided to allow upcasting the generic type of this DeferredHolder to properly use the Holder methods.
+     * @param <R> The type of the registry this DeferredHolder is targeting.
+     * @return this
+     * @apiNote This method will be removed in a future release, and DeferredHolder will have two generic types.
+     */
+    @SuppressWarnings({"unchecked"})
+    public <R> Holder<R> cast()
+    {
+        return (Holder<R>) this;
     }
 }
