@@ -156,25 +156,25 @@ public class DeferredRegister<T>
     /**
      * Adds a new supplier to the list of entries to be registered, and returns a {@link DeferredHolder} pointing to the to-be-registered object.
      *
-     * @param name The path of the new entry. The namespace will be the one passed to the constructor.
+     * @param path The path of the new entry. The namespace will be {@linkplain #namespace the provided namespace}.
      * @param sup  A factory for the new entry. The factory should return a new instance on each invocation.
      * @return A DeferredHolder that will be updated with when the entries in the registry change.
      * @apiNote The return type of this method will be changed to DeferredHolder in the next breaking changes window.
      */
     @SuppressWarnings({"unchecked", "removal"}) // TODO: Remove - Update this method to return DeferredHolder in next BC cycle.
-    public <I extends T> RegistryObject<I> register(String name, Supplier<? extends I> sup)
+    public <I extends T> RegistryObject<I> register(String path, Supplier<? extends I> sup)
     {
         if (seenRegisterEvent)
             throw new IllegalStateException("Cannot register new entries to DeferredRegister after the RegisterEvent has been fired.");
-        Objects.requireNonNull(name);
+        Objects.requireNonNull(path);
         Objects.requireNonNull(sup);
-        final ResourceLocation key = new ResourceLocation(namespace, name);
+        final ResourceLocation key = new ResourceLocation(namespace, path);
 
         RegistryObject<I> ret = RegistryObject.create(key, this.registryKey, this.namespace);
 
         if (entries.putIfAbsent((RegistryObject<T>) ret, sup) != null)
         {
-            throw new IllegalArgumentException("Duplicate registration: " + name);
+            throw new IllegalArgumentException("Duplicate registration: " + path);
         }
 
         return ret;
