@@ -1313,8 +1313,6 @@ project(':forge') {
 
         options.addStringOption('Xdoclint:all,-missing', '-public')
         options {
-            stylesheetFile = new File(docsDir, 'stylesheet.css')
-
             tags = [
                 'apiNote:a:<em>API Note:</em>',
                 'implSpec:a:<em>Implementation Requirements:</em>',
