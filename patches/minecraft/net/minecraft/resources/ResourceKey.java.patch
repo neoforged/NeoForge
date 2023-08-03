@@ -9,16 +9,10 @@
     private static final ConcurrentMap<ResourceKey.InternKey, ResourceKey<?>> f_135775_ = (new MapMaker()).weakValues().makeMap();
     private final ResourceLocation f_135776_;
     private final ResourceLocation f_135777_;
-@@ -55,6 +_,19 @@
+@@ -55,6 +_,13 @@
  
     public ResourceLocation m_211136_() {
        return this.f_135776_;
-+   }
-+
-+   public boolean equals(Object o) {
-+      if (this == o) return true;
-+      if (o == null || getClass() != o.getClass()) return false;
-+      return f_135777_.equals(((ResourceKey<?>) o).f_135777_) && f_135776_.equals(((ResourceKey<?>) o).f_135776_);
 +   }
 +
 +   @Override
