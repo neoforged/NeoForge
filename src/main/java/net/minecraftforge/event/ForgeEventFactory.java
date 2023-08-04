@@ -28,6 +28,8 @@ import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.Container;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.level.LevelSimulatedReader;
@@ -111,6 +113,7 @@ import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent.AllowDespawn;
 import net.minecraftforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.minecraftforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
+import net.minecraftforge.event.entity.living.VillagerEvent;
 import net.minecraftforge.event.entity.living.ZombieEvent.SummonAidEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
@@ -975,5 +978,13 @@ public class ForgeEventFactory
     public static void onAdvancementProgressedEvent(Player player, Advancement progressed, AdvancementProgress advancementProgress, String criterion, ProgressType progressType)
     {
         MinecraftForge.EVENT_BUS.post(new AdvancementProgressEvent(player, progressed, advancementProgress, criterion, progressType));
+    }
+
+    public static VillagerProfession onVillagerProfessionChanged(Villager villager, VillagerProfession oldProfession, VillagerProfession newProfession) {
+        VillagerEvent.ChangeProfessionEvent event = new VillagerEvent.ChangeProfessionEvent(villager, oldProfession, newProfession);
+        if (MinecraftForge.EVENT_BUS.post(event)) {
+            return oldProfession;
+        }
+        return event.getNewProfession();
     }
 }
