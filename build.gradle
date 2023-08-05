@@ -68,7 +68,7 @@ ext {
     SLF4J_API_VERSION = '1.8.0-beta4'
     APACHE_MAVEN_ARTIFACT_VERSION = '3.8.5'
     JARJAR_VERSION = '0.3.19'
-    FANCY_MOD_LOADER_VERSION = '47.1.46'
+    FANCY_MOD_LOADER_VERSION = '47.1.47'
 
     // These versions should be kept in sync with the version manifest JSON
     // To use a version newer than the version manifest JSON, the dependency must be added to the installer configuration
@@ -1017,7 +1017,7 @@ project(':forge') {
             BIN_PATCHER = BINPATCH_TOOL.substring(0, BINPATCH_TOOL.length() - 1 - BINPATCH_TOOL.split(':')[3].length())
         }
         input.from applyClientBinPatches.output, applyServerBinPatches.output, genClientBinPatches.toolJar, launcherJson.output
-        icon = rootProject.file('docs/assets/shitty_neoforged_installer_icon.ico')
+        icon = rootProject.file('docs/assets/neoforged.ico')
 
         doFirst {
             def libs = libraries
@@ -1246,7 +1246,7 @@ project(':forge') {
 
     task installerJar(type: InstallerJar, dependsOn: [genClientBinPatches, genServerBinPatches, 'signUniversalJar', launcherJson]) {
         from(extraTxts)
-        from(rootProject.file('docs/assets/shitty_neoforged_logo.png')) {
+        from(rootProject.file('docs/assets/installer.png')) {
             rename { 'big_logo.png' }
         }
         from(genClientBinPatches.output) {
