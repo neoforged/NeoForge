@@ -18,9 +18,9 @@
 +         }
 +      }
 +
-+      @Override
-+      public <A> @Nullable A getAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key) {
-+         return ((HolderLookup.RegistryLookup<T>) f_254711_).getTagAttachment(key, this);
++      /** {@inheritDoc} **/ @Override
++      public <A> @Nullable A getAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> type) {
++         return ((HolderLookup.RegistryLookup<T>) f_254711_).getTagAttachment(type, this);
        }
  
        public TagKey<T> m_205839_() {

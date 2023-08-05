@@ -11,9 +11,7 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.event.IModBusEvent;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -27,11 +25,15 @@ public class RegisterAttachmentTypeEvent extends Event implements IModBusEvent
         this.values = values;
     }
 
-    public <A, T> void register(ResourceKey<Registry<T>> registryKey, AttachmentTypeKey<A> key, Consumer<AttachmentTypeBuilder<A, T>> builder)
+    public <A, T> void register(ResourceKey<Registry<T>> registryKey, AttachmentTypeKey<A> key, Consumer<AttachmentTypeBuilder<A, T>> builderConsumer)
     {
-        // TODO - checks
-        final var b = AttachmentTypeBuilder.builder(key, registryKey);
-        builder.accept(b);
-        values.computeIfAbsent((ResourceKey)registryKey, k -> new HashMap<>()).put(key, b.build());
+        final Map<AttachmentTypeKey<?>, AttachmentType<?, T>> attachmentsForRegistry = values.computeIfAbsent((ResourceKey) registryKey, k -> new HashMap<>());
+        if (attachmentsForRegistry.containsKey(key))
+        {
+            throw new UnsupportedOperationException("Attempted to override attachment type with ID '" + key + "' for registry '" + registryKey.location() + "'!");
+        }
+        final AttachmentTypeBuilder<A, T> builder = AttachmentType.builder(key, registryKey);
+        builderConsumer.accept(builder);
+        attachmentsForRegistry.put(key, builder.build());
     }
 }

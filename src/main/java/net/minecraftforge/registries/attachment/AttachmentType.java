@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.minecraftforge.registries.attachment;
 
 import com.mojang.serialization.Codec;
@@ -8,83 +13,35 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
+/**
+ * Represents the type of an arbitrary value attached to registry entries. <br>
+ * An attachment type is registered via the {@link RegisterAttachmentTypeEvent event}. <br>
+ * <strong>Note:</strong> {@linkplain net.minecraftforge.registries.IForgeRegistry Forge registries} can have attachments but <i>only</i>
+ * if they have a {@linkplain net.minecraftforge.registries.RegistryBuilder#hasWrapper() wrapper}.
+ *
+ * @param <A> the type of the attachment object
+ * @param <T> the type of the registry object to attach to
+ * @see AttachmentTypeBuilder
+ */
 public record AttachmentType<A, T>(
         AttachmentTypeKey<A> key, ResourceKey<Registry<T>> registryKey,
         Function<T, @Nullable A> defaultProvider,
-        AttachmentTypeBuilder.TagMerger<A, T> tagMerger,
-        AttachmentTypeBuilder.ValueMerger<A> valueMerger,
+        AttachmentValueMerger<A> valueMerger,
         Codec<A> attachmentCodec,
         @Nullable Codec<A> networkCodec,
         boolean forciblySynced
-) {
+)
+{
+    /**
+     * @apiNote this class should not be constructed manually, but instead via a {@link #builder(AttachmentTypeKey, ResourceKey)}  builder}.
+     */
     @ApiStatus.Internal
-    public AttachmentType {}
+    public AttachmentType
+    {
+    }
 
-    static final class Builder<A, T> implements AttachmentTypeBuilder<A, T> {
-        private final AttachmentTypeKey<A> key;
-        private final ResourceKey<Registry<T>> registryKey;
-        private Function<T, @Nullable A> defaultProvider = a -> null;
-        private Codec<A> attachmentCodec, networkCodec;
-        private TagMerger<A, T> tagMerger = (TagMerger) TagMerger.DEFAULT;
-        private ValueMerger<A> valueMerger = (ValueMerger) ValueMerger.DEFAULT;
-        private boolean forciblySynced = true;
-
-        Builder(AttachmentTypeKey<A> key, ResourceKey<Registry<T>> registryKey) {
-            this.key = key;
-            this.registryKey = registryKey;
-        }
-
-        @Override
-        public AttachmentTypeBuilder<A, T> provideDefault(Function<T, @Nullable A> provider) {
-            this.defaultProvider = provider;
-            return this;
-        }
-
-        @Override
-        public AttachmentTypeBuilder<A, T> withTagMerger(TagMerger<A, T> merger) {
-            this.tagMerger = merger;
-            return this;
-        }
-
-        public AttachmentTypeBuilder<A, T> withValueMerger(ValueMerger<A> merger) {
-            this.valueMerger = merger;
-            return this;
-        }
-
-        @Override
-        public AttachmentTypeBuilder<A, T> withAttachmentCodec(Codec<A> attachmentCodec) {
-            this.attachmentCodec = attachmentCodec;
-            return this;
-        }
-
-        @Override
-        public AttachmentTypeBuilder<A, T> withNetworkCodec(@Nullable Codec<A> networkCodec) {
-            this.networkCodec = networkCodec;
-            return this;
-        }
-
-        @Override
-        public AttachmentTypeBuilder<A, T> withMerger(ValueMerger<A> merger) {
-            this.valueMerger = merger;
-            return this;
-        }
-
-        @Override
-        public AttachmentTypeBuilder<A, T> setOptionallySynced() {
-            this.forciblySynced = false;
-            return this;
-        }
-
-        @Override
-        public AttachmentType<A, T> build() {
-            if (networkCodec == null) forciblySynced = false;
-            return new AttachmentType<>(
-                    key, registryKey, defaultProvider,
-                    tagMerger,
-                    valueMerger,
-                    attachmentCodec, networkCodec,
-                    forciblySynced
-            );
-        }
+    public static <A, T> AttachmentTypeBuilder<A, T> builder(AttachmentTypeKey<A> key, ResourceKey<Registry<T>> registryKey)
+    {
+        return new AttachmentTypeBuilder<>(key, registryKey);
     }
 }

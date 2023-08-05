@@ -492,24 +492,13 @@ public class ForgeMod
         MinecraftForge.EVENT_BUS.register(MinecraftForge.INTERNAL_HANDLER);
         MinecraftForge.EVENT_BUS.addListener(this::mappingChanged);
         MinecraftForge.EVENT_BUS.addListener(this::registerPermissionNodes);
+        MinecraftForge.EVENT_BUS.addListener(this::onDatapackSync);
 
         ForgeRegistries.ITEMS.tags().addOptionalTagDefaults(Tags.Items.ENCHANTING_FUELS, Set.of(ForgeRegistries.ITEMS.getDelegateOrThrow(Items.LAPIS_LAZULI)));
 
         // TODO: Remove when addAlias becomes proper API, as this should be done in the DR's above.
         addAlias(ForgeRegistries.ATTRIBUTES, new ResourceLocation("forge", "reach_distance"), new ResourceLocation("forge", "block_reach"));
         addAlias(ForgeRegistries.ATTRIBUTES, new ResourceLocation("forge", "attack_range"), new ResourceLocation("forge", "entity_reach"));
-
-        MinecraftForge.EVENT_BUS.addListener((final OnDatapackSyncEvent event) -> {
-            final PacketDistributor.PacketTarget target;
-            if (event.getPlayer() == null)
-            {
-                target = PacketDistributor.ALL.noArg();
-            } else
-            {
-                target = PacketDistributor.PLAYER.with(event::getPlayer);
-            }
-            NetworkHooks.syncRegAttachments(target, event.getPlayerList().getServer().overworld().registryAccess());
-        });
     }
 
     public void preInit(FMLCommonSetupEvent evt)
@@ -530,6 +519,19 @@ public class ForgeMod
     public void mappingChanged(IdMappingEvent evt)
     {
         Ingredient.invalidateAll();
+    }
+
+    public void onDatapackSync(final OnDatapackSyncEvent event)
+    {
+        final PacketDistributor.PacketTarget target;
+        if (event.getPlayer() == null)
+        {
+            target = PacketDistributor.ALL.noArg();
+        } else
+        {
+            target = PacketDistributor.PLAYER.with(event::getPlayer);
+        }
+        NetworkHooks.syncRegAttachments(target, event.getPlayerList().getServer().overworld().registryAccess());
     }
 
     public void gatherData(GatherDataEvent event)

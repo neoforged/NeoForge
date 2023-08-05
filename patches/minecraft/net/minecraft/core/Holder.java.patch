@@ -28,9 +28,9 @@
           this.f_205749_ = Set.copyOf(p_205770_);
        }
  
-+      @Override
-+      public <A> @Nullable A getAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> key) {
-+         return ((HolderLookup.RegistryLookup<T>) f_254697_).getAttachment(key, this);
++      /** {@inheritDoc} **/ @Override
++      public <A> @Nullable A getAttachment(net.minecraftforge.registries.attachment.AttachmentTypeKey<A> type) {
++         return ((HolderLookup.RegistryLookup<T>) f_254697_).getAttachment(type, this);
 +      }
 +
        public Stream<TagKey<T>> m_203616_() {

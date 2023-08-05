@@ -256,7 +256,8 @@ public class NetworkHooks
         registryAccess.registries().forEach(entry ->
         {
             final Object packet = regSyncPacket(entry);
-            if (packet != null) {
+            if (packet != null)
+            {
                 final List<Packet<?>> out = new ArrayList<>();
                 VanillaPacketSplitter.appendPackets(
                         ConnectionProtocol.PLAY, PacketFlow.CLIENTBOUND, NetworkConstants.playChannel.toVanillaPacket(packet, NetworkDirection.PLAY_TO_CLIENT), out
