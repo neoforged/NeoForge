@@ -1,4 +1,4 @@
-![NeoForged Logo](assets/NeoForged_logo.svg)
+![NeoForged Logo](assets/neoforged_logo.png)
 
 NeoForge
 =============
