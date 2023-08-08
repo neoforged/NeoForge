@@ -146,7 +146,7 @@ public class NewModelLoaderTest
 
     public void modelRegistry(ModelEvent.RegisterGeometryLoaders event)
     {
-        event.register("custom_loader", new TestLoader());
+        event.register(new ResourceLocation(MODID, "custom_loader"), new TestLoader());
     }
 
     static class TestLoader implements IGeometryLoader<TestModel>

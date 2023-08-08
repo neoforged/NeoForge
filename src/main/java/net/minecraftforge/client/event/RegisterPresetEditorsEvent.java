@@ -17,7 +17,6 @@ import net.minecraft.world.level.levelgen.presets.WorldPreset;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.event.IModBusEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -49,7 +48,7 @@ public class RegisterPresetEditorsEvent extends Event implements IModBusEvent
         PresetEditor old = this.editors.put(key, editor);
         if (old != null)
         {
-            LOGGER.debug("PresetEditor {} overridden by mod {}", key.location(), ModLoadingContext.get().getActiveNamespace());
+            LOGGER.debug("PresetEditor {} with id {} overridden by {}", old, key.location(), editor);
         }
     }
 }

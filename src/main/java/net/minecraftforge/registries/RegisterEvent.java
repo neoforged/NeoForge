@@ -122,7 +122,9 @@ public class RegisterEvent extends Event implements IModBusEvent
          *
          * @param name the name of the object to register as its key with the namespaced inferred from the active mod container
          * @param value the object value
+         * @deprecated Use {@link ResourceLocation}-based overload instead.
          */
+        @Deprecated(forRemoval = true, since = "1.20.1")
         default void register(String name, T value)
         {
             register(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name), value);

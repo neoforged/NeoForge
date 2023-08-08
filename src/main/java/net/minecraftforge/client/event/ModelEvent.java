@@ -176,11 +176,19 @@ public abstract class ModelEvent extends Event
         /**
          * Registers a new geometry loader.
          */
+        public void register(ResourceLocation name, IGeometryLoader<?> loader)
+        {
+            Preconditions.checkArgument(!loaders.containsKey(name), "Geometry loader already registered: " + name);
+            loaders.put(name, loader);
+        }
+
+        /**
+         * @deprecated Use {@link #register(ResourceLocation, IGeometryLoader)} instead.
+         */
+        @Deprecated(forRemoval = true, since = "1.20.1")
         public void register(String name, IGeometryLoader<?> loader)
         {
-            var key = new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name);
-            Preconditions.checkArgument(!loaders.containsKey(key), "Geometry loader already registered: " + key);
-            loaders.put(key, loader);
+            register(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name), loader);
         }
     }
 }

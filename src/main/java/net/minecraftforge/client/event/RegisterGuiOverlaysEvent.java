@@ -48,7 +48,7 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
      */
-    public void registerBelowAll(@NotNull String id, @NotNull IGuiOverlay overlay)
+    public void registerBelowAll(@NotNull ResourceLocation id, @NotNull IGuiOverlay overlay)
     {
         register(Ordering.BEFORE, null, id, overlay);
     }
@@ -61,7 +61,7 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
      */
-    public void registerBelow(@NotNull ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay)
+    public void registerBelow(@NotNull ResourceLocation other, @NotNull ResourceLocation id, @NotNull IGuiOverlay overlay)
     {
         register(Ordering.BEFORE, other, id, overlay);
     }
@@ -74,7 +74,7 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
      */
-    public void registerAbove(@NotNull ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay)
+    public void registerAbove(@NotNull ResourceLocation other, @NotNull ResourceLocation id, @NotNull IGuiOverlay overlay)
     {
         register(Ordering.AFTER, other, id, overlay);
     }
@@ -85,14 +85,55 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
      */
-    public void registerAboveAll(@NotNull String id, @NotNull IGuiOverlay overlay)
+    public void registerAboveAll(@NotNull ResourceLocation id, @NotNull IGuiOverlay overlay)
     {
         register(Ordering.AFTER, null, id, overlay);
     }
 
-    private void register(@NotNull Ordering ordering, @Nullable ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay)
+    /**
+     * @deprecated Use {@link #registerBelowAll(ResourceLocation, IGuiOverlay)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "1.20.1")
+    public void registerBelowAll(@NotNull String id, @NotNull IGuiOverlay overlay)
     {
-        var key = new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), id);
+        register(Ordering.BEFORE, null, mod(id), overlay);
+    }
+
+    /**
+     * @deprecated Use {@link #registerBelow(ResourceLocation, ResourceLocation, IGuiOverlay)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "1.20.1")
+    public void registerBelow(@NotNull ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay)
+    {
+        register(Ordering.BEFORE, other, mod(id), overlay);
+    }
+
+    /**
+     * @deprecated Use {@link #registerAbove(ResourceLocation, ResourceLocation, IGuiOverlay)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "1.20.1")
+    public void registerAbove(@NotNull ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay)
+    {
+        register(Ordering.AFTER, other, mod(id), overlay);
+    }
+
+    /**
+     * @deprecated Use {@link #registerAboveAll(ResourceLocation, IGuiOverlay)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "1.20.1")
+    public void registerAboveAll(@NotNull String id, @NotNull IGuiOverlay overlay)
+    {
+        register(Ordering.AFTER, null, mod(id), overlay);
+    }
+
+    @Deprecated(forRemoval = true, since = "1.20.1")
+    private static ResourceLocation mod(String namespace)
+    {
+        return new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), namespace);
+    }
+
+    private void register(@NotNull Ordering ordering, @Nullable ResourceLocation other, @NotNull ResourceLocation key, @NotNull IGuiOverlay overlay)
+    {
         Preconditions.checkArgument(!overlays.containsKey(key), "Overlay already registered: " + key);
 
         int insertPosition;

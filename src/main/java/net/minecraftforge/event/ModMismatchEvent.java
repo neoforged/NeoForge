@@ -105,12 +105,20 @@ public class ModMismatchEvent extends Event implements IModBusEvent
     }
 
     /**
-     * Marks the mod version mismatch as having been resolved safely by the current mod.
+     * Marks the mod version mismatch as having been resolved safely by a mod.
      */
+    public void markResolved(String modId, ModContainer resolvedBy)
+    {
+        resolved.putIfAbsent(modId, resolvedBy);
+    }
+
+    /**
+     * @deprecated Use {@link #markResolved(String, ModContainer)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "1.20.1")
     public void markResolved(String modId)
     {
-        final var resolvedBy = ModLoadingContext.get().getActiveContainer();
-        resolved.putIfAbsent(modId, resolvedBy);
+        markResolved(modId, ModLoadingContext.get().getActiveContainer());
     }
 
     /**

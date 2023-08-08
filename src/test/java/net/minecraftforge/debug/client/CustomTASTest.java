@@ -49,7 +49,7 @@ public class CustomTASTest
 
     private void registerTextureAtlasSpriteLoaders(RegisterTextureAtlasSpriteLoadersEvent event)
     {
-        event.register("tas_loader", new TasLoader());
+        event.register(new ResourceLocation(MOD_ID, "tas_loader"), new TasLoader());
     }
 
     private static class TasLoader implements ITextureAtlasSpriteLoader

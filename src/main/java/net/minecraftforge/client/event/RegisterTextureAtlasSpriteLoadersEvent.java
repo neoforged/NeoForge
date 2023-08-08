@@ -39,10 +39,18 @@ public class RegisterTextureAtlasSpriteLoadersEvent extends Event implements IMo
     /**
      * Registers a custom {@link ITextureAtlasSpriteLoader sprite loader}.
      */
+    public void register(ResourceLocation name, ITextureAtlasSpriteLoader loader)
+    {
+        Preconditions.checkArgument(!loaders.containsKey(name), "Sprite loader already registered: " + name);
+        loaders.put(name, loader);
+    }
+
+    /**
+     * @deprecated Use {@link #register(ResourceLocation, ITextureAtlasSpriteLoader)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "1.20.1")
     public void register(String name, ITextureAtlasSpriteLoader loader)
     {
-        var key = new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name);
-        Preconditions.checkArgument(!loaders.containsKey(key), "Sprite loader already registered: " + key);
-        loaders.put(key, loader);
+        register(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name), loader);
     }
 }

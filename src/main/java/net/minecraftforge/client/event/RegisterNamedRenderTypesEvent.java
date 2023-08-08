@@ -45,7 +45,7 @@ public class RegisterNamedRenderTypesEvent extends Event implements IModBusEvent
      * @param blockRenderType  One of the values returned by {@link RenderType#chunkBufferLayers()}
      * @param entityRenderType A {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY}
      */
-    public void register(String name, RenderType blockRenderType, RenderType entityRenderType)
+    public void register(ResourceLocation name, RenderType blockRenderType, RenderType entityRenderType)
     {
         register(name, blockRenderType, entityRenderType, entityRenderType);
     }
@@ -59,14 +59,25 @@ public class RegisterNamedRenderTypesEvent extends Event implements IModBusEvent
      * @param fabulousEntityRenderType A {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY} for use when
      *                                 "fabulous" rendering is enabled
      */
-    public void register(String name, RenderType blockRenderType, RenderType entityRenderType, RenderType fabulousEntityRenderType)
+    public void register(ResourceLocation name, RenderType blockRenderType, RenderType entityRenderType, RenderType fabulousEntityRenderType)
     {
-        var key = new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name);
-        Preconditions.checkArgument(!renderTypes.containsKey(key), "Render type already registered: " + key);
+        Preconditions.checkArgument(!renderTypes.containsKey(name), "Render type already registered: " + name);
         Preconditions.checkArgument(blockRenderType.format() == DefaultVertexFormat.BLOCK, "The block render type must use the BLOCK vertex format.");
         Preconditions.checkArgument(blockRenderType.getChunkLayerId() >= 0, "Only chunk render types can be used for block rendering. Query RenderType#chunkBufferLayers() for a list.");
         Preconditions.checkArgument(entityRenderType.format() == DefaultVertexFormat.NEW_ENTITY, "The entity render type must use the NEW_ENTITY vertex format.");
         Preconditions.checkArgument(fabulousEntityRenderType.format() == DefaultVertexFormat.NEW_ENTITY, "The fabulous entity render type must use the NEW_ENTITY vertex format.");
-        renderTypes.put(key, new RenderTypeGroup(blockRenderType, entityRenderType, fabulousEntityRenderType));
+        renderTypes.put(name, new RenderTypeGroup(blockRenderType, entityRenderType, fabulousEntityRenderType));
+    }
+
+    @Deprecated(forRemoval = true, since = "1.20.1")
+    public void register(String name, RenderType blockRenderType, RenderType entityRenderType)
+    {
+        register(name, blockRenderType, entityRenderType, entityRenderType);
+    }
+
+    @Deprecated(forRemoval = true, since = "1.20.1")
+    public void register(String name, RenderType blockRenderType, RenderType entityRenderType, RenderType fabulousEntityRenderType)
+    {
+        register(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name), blockRenderType, entityRenderType, fabulousEntityRenderType);
     }
 }
