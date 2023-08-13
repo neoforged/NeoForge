@@ -16,8 +16,16 @@
                 }
  
                 this.m_140258_(p_203002_);
-@@ -713,8 +_,14 @@
+@@ -710,11 +_,22 @@
+             levelchunk.m_62879_(() -> {
+                return ChunkLevel.m_287264_(p_140384_.m_140093_());
+             });
++            try {
++            p_140384_.currentlyLoading = levelchunk; // Forge - bypass the future chain when getChunk is called, this prevents deadlocks.
              levelchunk.m_62952_();
++            } finally {
++            p_140384_.currentlyLoading = null; // Forge - Stop bypassing the future chain.
++            }
              if (this.f_140132_.add(chunkpos.m_45588_())) {
                 levelchunk.m_62913_(true);
 +               try {
