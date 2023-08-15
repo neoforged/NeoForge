@@ -16,6 +16,14 @@
           if (this.f_101693_.f_91066_.m_231828_().m_231551_() || p_283396_) {
              p_281612_.m_280509_(p_282820_, p_283181_, p_282820_ + 32, p_283181_ + 32, -1601138544);
              int j = p_283204_ - p_282820_;
+@@ -483,6 +_,7 @@
+                this.m_170323_();
+             }
+ 
++            if (this.f_101693_.f_91080_ instanceof ProgressScreen) // Neo - fix MC-251068
+             this.f_101693_.m_91152_(this.f_101694_);
+          }, Component.m_237115_("selectWorld.deleteQuestion"), Component.m_237110_("selectWorld.deleteWarning", this.f_101695_.m_78361_()), Component.m_237115_("selectWorld.deleteButton"), CommonComponents.f_130656_));
+       }
 @@ -604,6 +_,19 @@
  
        public boolean m_214209_() {
