@@ -1,0 +1,10 @@
+--- a/net/minecraft/server/packs/resources/MultiPackResourceManager.java
++++ b/net/minecraft/server/packs/resources/MultiPackResourceManager.java
+@@ -64,6 +_,7 @@
+       try {
+          return p_215468_.m_5550_(ResourceFilterSection.f_244163_);
+       } catch (IOException ioexception) {
++         if (!net.minecraftforge.data.loading.DatagenModLoader.isRunningDataGen())// Neo: Only warn about malformed pack filters outside of datagen in case modders are replacing variables with gradle
+          f_215463_.error("Failed to get filter section from pack {}", (Object)p_215468_.m_5542_());
+          return null;
+       }
