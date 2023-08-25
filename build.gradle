@@ -317,6 +317,7 @@ project(':forge') {
     eclipse.classpath.file.whenMerged { cls -> cls.entries.removeIf { e -> e instanceof SourceFolder && e.path.startsWith('src/') && !e.path.startsWith('src/main/') } }
 
     ext {
+        FORGE_SPEC_VERSION = "47.1.3"
         SPEC_VERSION = gradleutils.gitInfo.tag
         // The new versioning sceme is <MCVersion>-<ForgeMC>.<RB>.<CommitsSinceRB>
         // ForgeMC is a unique identifier for every MC version we have supported.
@@ -482,7 +483,7 @@ project(':forge') {
             }
 
             def forgeDataArgs = [
-                    '--mod', 'forge',
+                    '--mod', 'neoforge',
                     '--all',
                     '--output', rootProject.file('src/generated/resources/'),
                     '--validate',
@@ -546,15 +547,23 @@ project(':forge') {
                 'Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                 'GitCommit': gradleutils.gitInfo.abbreviatedId,
                 'Git-Branch': gradleutils.gitInfo.branch,
-                'FML-System-Mods': 'forge'
+                'FML-System-Mods': 'neoforge'
+            ] as LinkedHashMap,
+            'net/neoforged/versions/forge/': [
+                    'Specification-Title':      'NeoForge',
+                    'Specification-Vendor':     'NeoForged Project',
+                    'Specification-Version':    SPEC_VERSION,
+                    'Implementation-Title':     project.group,
+                    'Implementation-Version':   project.version.substring(MC_VERSION.length() + 1),
+                    'Implementation-Vendor':    'NeoForged Project'
             ] as LinkedHashMap,
             'net/minecraftforge/versions/forge/': [
                 'Specification-Title':      'Forge',
                 'Specification-Vendor':     'Forge Development LLC',
-                'Specification-Version':    SPEC_VERSION,
+                'Specification-Version':    FORGE_SPEC_VERSION,
                 'Implementation-Title':     project.group,
                 'Implementation-Version':   project.version.substring(MC_VERSION.length() + 1),
-                'Implementation-Vendor':    'Forge Development LLC'
+                'Implementation-Vendor':    'NeoForged Project'
             ] as LinkedHashMap,
             'net/minecraftforge/versions/mcp/': [
                 'Specification-Title':      'Minecraft',
@@ -1023,7 +1032,7 @@ project(':forge') {
             def libs = libraries
             json = [
                 spec: 1,
-                profile: project.name,
+                profile: 'neoforge',
                 version: launcherJson.id,
                 path: null,
                 minecraft: MC_VERSION,
