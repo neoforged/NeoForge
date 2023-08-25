@@ -5,7 +5,7 @@ logoFile="neoforged_logo.png"
 license="LGPL v2.1"
 
 [[mods]]
-    modId="forge"
+    modId="neoforge"
     # We use the global forge version
     version="${global.forgeVersion}"
     updateJSONURL="https://maven.neoforged.net/releases/net/neoforged/forge/promotions_slim.json"
@@ -14,4 +14,14 @@ license="LGPL v2.1"
     authors="The NeoForged Team"
     description='''
     NeoForge, a NEW broad compatibility API.
+    '''
+
+
+[[mods]]
+modId="forge"
+# We use the global forge version
+version="47.1.3"
+displayName="Forge Compatibility"
+description='''
+    Required for compatibility with existing Forge versions
     '''

@@ -128,6 +128,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+@Deprecated(forRemoval = true) // After moving the stuff in this class over to NeoForgeMod
 @Mod("forge")
 public class ForgeMod
 {
