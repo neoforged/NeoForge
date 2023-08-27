@@ -192,11 +192,14 @@
        }
     }
  
-@@ -442,6 +_,7 @@
+@@ -442,6 +_,10 @@
        return this.m_41613_() + " " + this.m_41720_();
     }
  
-+   @Deprecated // Neo: Use IForgeItemStack#inventoryTick(Level, Entity, NonNullList, int, ResourceLocation, int)
++   /**
++    * @deprecated Use {@link net.minecraftforge.common.extensions.IForgeItemStack#inventoryTick} instead.
++    */
++   @Deprecated(since = "1.20.1")
     public void m_41666_(Level p_41667_, Entity p_41668_, int p_41669_, boolean p_41670_) {
        if (this.f_41588_ > 0) {
           --this.f_41588_;

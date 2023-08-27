@@ -72,7 +72,7 @@
        return Mth.m_14169_(f / 3.0F, 1.0F, 1.0F);
     }
  
-@@ -229,14 +_,17 @@
+@@ -229,14 +_,20 @@
     }
  
     @Nullable
@@ -86,7 +86,10 @@
        return this.f_41378_ != null;
     }
  
-+   @Deprecated // Neo: Use IForgeItem#inventoryTick(ItemStack, Level, Entity, NonNullList, int, ResourceLocation, int)
++   /**
++    * @deprecated Use {@link net.minecraftforge.common.extensions.IForgeItem#inventoryTick} instead.
++    */
++   @Deprecated(since = "1.20.1")
     public void m_6883_(ItemStack p_41404_, Level p_41405_, Entity p_41406_, int p_41407_, boolean p_41408_) {
     }
  

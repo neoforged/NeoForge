@@ -36,6 +36,9 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.context.ContextKey;
+import net.minecraftforge.items.IItemHandler;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -292,20 +295,20 @@ public interface IForgeItemStack extends ICapabilitySerializable<CompoundTag>
     }
 
     /**
-     * Called to tick armor in the armor slot. Override to do something
+     * @deprecated Use {@link #inventoryTick(Level, ContextKey.Context)}
      */
-    @Deprecated(forRemoval = true, since = "1.20.1") // Use onInventoryTick
+    @Deprecated(forRemoval = true, since = "1.20.1")
     default void onArmorTick(Level level, Player player)
     {
         self().getItem().onArmorTick(self(), level, player);
     }
 
     /**
-     * @see {@link IForgeItem#inventoryTick(ItemStack, Level, Entity, NonNullList, int, ResourceLocation, int)}
+     * @see {@link IForgeItem#inventoryTick(ItemStack, Level, ContextKey.Context)}
      */
-    default void inventoryTick(Level level, Entity entity, NonNullList<ItemStack> compartment, int slotIndex, ResourceLocation compartmentId, int selectedIndex)
+    default void inventoryTick(Level level, ContextKey.Context<?, ?> context)
     {
-    	self().getItem().inventoryTick(self(), level, entity, compartment, slotIndex, compartmentId, selectedIndex);
+    	self().getItem().inventoryTick(self(), level, context);
     }
 
 

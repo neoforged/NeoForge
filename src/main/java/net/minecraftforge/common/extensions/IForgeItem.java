@@ -43,6 +43,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
+import net.minecraftforge.common.context.ContextKey;
+import net.minecraftforge.common.context.InventoryTickContext;
+import net.minecraftforge.common.context.InventoryTickContext.VanillaCompatible;
+import net.minecraftforge.common.context.InventoryTickContext.PlayerInvContext;
 import net.minecraftforge.items.wrapper.ShulkerItemStackInvWrapper;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.jetbrains.annotations.ApiStatus;
@@ -331,8 +335,7 @@ public interface IForgeItem
     }
 
     /**
-     * Called to tick armor in the armor slot. Override to do something
-     * @deprecated Use {@link #inventoryTick(ItemStack, Level, Entity, NonNullList, int, int, ResourceLocation)}
+     * @deprecated Use {@link #inventoryTick(ItemStack, Level, ContextKey.Context)
      */
     @Deprecated(forRemoval = true, since = "1.20.1")
     default void onArmorTick(ItemStack stack, Level level, Player player)
@@ -340,46 +343,35 @@ public interface IForgeItem
     }
 
     /**
-     * Compartment ID for the player main inventory, for use in {@link #inventoryTick(ItemStack, Level, Entity, NonNullList, int, int, ResourceLocation)}
-     * @see Inventory#items
-     */
-    public static final ResourceLocation PLAYER_ITEMS = new ResourceLocation("items");
-
-    /**
-     * Compartment ID for the player armor inventory, for use in {@link #inventoryTick(ItemStack, Level, Entity, NonNullList, int, int, ResourceLocation)}
-     * @see Inventory#armor
-     */
-    public static final ResourceLocation PLAYER_ARMOR = new ResourceLocation("armor");
-
-    /**
-     * Compartment ID for the player offhand inventory, for use in {@link #inventoryTick(ItemStack, Level, Entity, NonNullList, int, int, ResourceLocation)}
-     * @see Inventory#offhand
-     */
-    public static final ResourceLocation PLAYER_OFFHAND = new ResourceLocation("offhand");
-
-    /**
      * Called when this item is ticked in an inventory.<br>
-     * This is a more contextual version of {@link Item#inventoryTick(ItemStack, Level, Entity, int, boolean)}
-     * which allows accessing the specific sub-compartment the item is in.<br>
-     * In addition, this version takes a compartment identifier, allowing for differentiation between compartments (including modded compartments).
+     * This is a more contextual version of {@link Item#inventoryTick(ItemStack, Level, Entity, int, boolean)} which allows providing arbitrary inventory-based context.
      * <p>
-     * The vanilla compartment IDs are {@link #PLAYER_ITEMS}, {@link #PLAYER_ARMOR}, and {@link #PLAYER_OFFHAND}.
+     * What context is provided is up to the caller, and is managed by the {@linkplain ContextKey context key system}.
      * <p>
-     * In vanilla, the only inventory that ticks items is the player inventory, and the compartments are "armor", "inventory", and "offhand".
+     * In vanilla, the only inventory that ticks items is the player inventory.
      * @param stack The stack being ticked.
      * @param level The level of the of the ticking inventory. May be a client level.
-     * @param entity The entity which owns the ticking inventory.
-     * @param compartment The list of items that the item being ticked lives in.
-     * @param slotIndex The slot index of where the ticked stack is in the current compartment.
-     * @param compartmentId The ID of the compartment parameter.
-     * @param selectedIndex If the compartment is {@link #PLAYER_ITEMS}, this is the index of the selected hotbar slot, otherwise -1.
+     * @param context The arbitrary context object. See {@link ContextKey}.
      * @apiNote Override-Only, call via {@link IForgeItemStack#inventoryTick}
+     * 
+     * @see {@link InventoryTickContext} for the default context object.
      */
     @ApiStatus.OverrideOnly
-    default void inventoryTick(ItemStack stack, Level level, Entity entity, NonNullList<ItemStack> compartment, int slotIndex, ResourceLocation compartmentId, int selectedIndex)
+    @SuppressWarnings({"deprecation", "removal"})
+    default void inventoryTick(ItemStack stack, Level level, ContextKey.Context<?, ?> context)
     {
+        if(context.ctx() instanceof VanillaCompatible vCtx) {
+            stack.inventoryTick(level, vCtx.getEntity(), vCtx.getSlot(), vCtx.isSelected());
+        }
+
         // Vanilla always passes the "local" slotIndex, despite it being useless without the compartment.
-        stack.inventoryTick(level, entity, slotIndex, selectedIndex == slotIndex);
+        context.ifPresent(InventoryTickContext.KEY, ctx -> {
+            // TODO: Remove in 1.20.2+
+            if(PlayerInvContext.PLAYER_ARMOR.equals(ctx.invId()))
+            {
+                stack.onArmorTick(level, ctx.player());
+            }
+        });
     }
 
     /**
