@@ -517,13 +517,33 @@
  
     }
  
-@@ -3264,6 +_,7 @@
+@@ -3264,10 +_,27 @@
        return false;
     }
  
-+   @Deprecated /** Forge: Use {@link net.minecraftforge.common.extensions.IForgeEntity#getStepHeight()} */
++   /**
++    * Gets the value of the legacy {@link #maxUpStep} field. Only used by players when the modified value causes issues.
++    * @deprecated Use {@link net.minecraftforge.common.extensions.IForgeEntity#getStepHeight()} to get the real step height value.
++    */
++   @Deprecated
     public float m_274421_() {
        return this.f_19793_;
+    }
+ 
++   /**
++    * Changes the legacy {@link #maxUpStep} field. Only used by vanilla entities to improve maintainability.
++    * <p>
++    * For your own entities, you should change the default value of {@linkplain net.minecraftforge.common.ForgeMod#STEP_HEIGHT ForgeMod#STEP_HEIGHT}
++    * during attribute creation.
++    * <p>
++    * For modifying the step height of other entities, you should use {@link net.minecraft.world.entity.ai.attributes.AttributeModifier AttributeModifiers} for
++    * {@link net.minecraftforge.common.ForgeMod#STEP_HEIGHT ForgeMod#STEP_HEIGHT}.
++    * 
++    * @deprecated Use attribute modifiers for the {@link net.minecraftforge.common.ForgeMod#STEP_HEIGHT ForgeMod#STEP_HEIGHT} attribute.
++    */
++   @Deprecated
+    public void m_274367_(float p_275672_) {
+       this.f_19793_ = p_275672_;
     }
 @@ -3319,6 +_,103 @@
     public boolean m_142265_(Level p_146843_, BlockPos p_146844_) {

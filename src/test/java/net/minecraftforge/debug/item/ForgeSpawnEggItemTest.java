@@ -70,7 +70,7 @@ public class ForgeSpawnEggItemTest
         //Remove step height attribute to validate that things are handled properly when an entity doesn't have it
         Map<Attribute, AttributeInstance> builder = ObfuscationReflectionHelper.getPrivateValue(AttributeSupplier.Builder.class, attributes, "f_2226" + "2_");
         if (builder != null) {
-            builder.remove(ForgeMod.STEP_HEIGHT_ADDITION.get());
+            builder.remove(ForgeMod.STEP_HEIGHT.get());
         }
         event.put(ENTITY.get(), attributes.build());
     }
