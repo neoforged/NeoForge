@@ -1,48 +1,40 @@
-#eclipse
-**/bin
-**/.settings
-**/.classpath
-*.project
+# gradle
 
-#In case people make their workspace in the repo
-/eclipse/
+.gradle/
+build/
+out/
+classes/
 
-#idea
-/.idea
-/*/out
-/classes
+# eclipse
+
+*.launch
+
+# idea
+
+.idea/
 *.iml
+*.ipr
+*.iws
 
-#gradle
-/build
-/.gradle
-/*/build
-/*/.gradle
+# vscode
 
-# Projects repo, either ignore it, or ignore patches.
-/projects/mcp/
-/projects/clean/
-/projects/forge/
-/projects/fmlonly/
-#/patches/*
+.settings/
+.vscode/
+bin/
+.classpath
+.project
 
-#occupational hazards
-/projects/**/build/
-/projects/**/out/
-/projects/**/run/
-/projects/**/*.launch
-/repo/
-src/generated/resources/.cache/
-src/generated_test/resources/.cache/
+# macos
 
-#Patch rejects
-#/patches-/
-#*.patch.rej
-#/projects/*/rejects/
+*.DS_Store
 
-# FML changelog
-changelog.txt
-*.py
-*.7z
-/logs/
+# fabric
 
+run/
+
+# java
+
+hs_err_*.log
+replay_*.log
+*.hprof
+*.jfr
