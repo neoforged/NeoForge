@@ -11,11 +11,31 @@ base {
 }
 
 repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
+	exclusiveContent {
+		forRepository {
+			maven {
+				name = "Modrinth"
+				url = "https://api.modrinth.com/maven"
+			}
+		}
+		filter {
+			includeGroup "maven.modrinth"
+		}
+	}
+	maven {
+		name = 'ParchmentMC'
+		url = 'https://maven.parchmentmc.org'
+	}
+	maven {
+		url = "https://mvn.devos.one/snapshots/"
+	}
+	maven {
+		url = "https://jitpack.io"
+		content {
+			includeGroup("com.github.llamalad7.mixinextras")
+			includeGroup("com.github.Chocohead")
+		}
+	}
 }
 
 loom {
@@ -33,16 +53,23 @@ loom {
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    mappings loom.layered() {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-1.20.1:2023.06.26@zip")
+    }
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	
-	// Uncomment the following line to enable the deprecated Fabric API modules. 
-	// These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.
+	modImplementation "io.github.fabricators_of_create.Porting-Lib:Porting-Lib:2.1.1127+1.20"
 
-	// modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
+
+	modRuntimeOnly "maven.modrinth:lithium:mc1.20.1-0.11.2"
+	modRuntimeOnly "maven.modrinth:sodium:mc1.20.1-0.5.0"
+	modRuntimeOnly "maven.modrinth:modmenu:7.2.1"
+	modRuntimeOnly "maven.modrinth:jei:15.2.0.23"
+	modRuntimeOnly "maven.modrinth:modernfix:5.7.2+mc1.20.1"
+	modRuntimeOnly "maven.modrinth:ferrite-core:6.0.0-fabric"
 }
 
 processResources {
