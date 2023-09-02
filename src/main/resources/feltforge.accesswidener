@@ -1,0 +1,98 @@
+accessWidener v2 named
+
+mutable field net/minecraft/client/Options keyMappings [Lnet/minecraft/client/KeyMapping;
+accessible method net/minecraft/client/renderer/entity/EntityRenderers register (Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/client/renderer/entity/EntityRendererProvider;)V
+accessible method net/minecraft/client/particle/ParticleEngine register (Lnet/minecraft/core/particles/ParticleType;Lnet/minecraft/client/particle/ParticleEngine$SpriteParticleRegistration;)V
+accessible class net/minecraft/client/particle/ParticleEngine$SpriteParticleRegistration
+accessible field net/minecraft/client/gui/Gui minecraft Lnet/minecraft/client/Minecraft;
+accessible field net/minecraft/client/gui/Gui screenWidth I
+accessible field net/minecraft/client/gui/Gui screenHeight I
+accessible field net/minecraft/client/gui/Gui random Lnet/minecraft/util/RandomSource;
+accessible field net/minecraft/client/gui/Gui tickCount I
+accessible field net/minecraft/client/gui/Gui subtitleOverlay Lnet/minecraft/client/gui/components/SubtitleOverlay;
+accessible field net/minecraft/client/gui/Gui bossOverlay Lnet/minecraft/client/gui/components/BossHealthOverlay;
+accessible field net/minecraft/client/gui/Gui scopeScale F
+accessible method net/minecraft/client/gui/Gui renderSpyglassOverlay (Lnet/minecraft/client/gui/GuiGraphics;F)V
+accessible method net/minecraft/client/gui/Gui renderTextureOverlay (Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/resources/ResourceLocation;F)V
+accessible field net/minecraft/client/gui/Gui PUMPKIN_BLUR_LOCATION Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/client/gui/Gui POWDER_SNOW_OUTLINE_LOCATION Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/client/gui/Gui GUI_ICONS_LOCATION Lnet/minecraft/resources/ResourceLocation;
+accessible method net/minecraft/client/gui/Gui renderPortalOverlay (Lnet/minecraft/client/gui/GuiGraphics;F)V
+accessible field net/minecraft/client/gui/Gui healthBlinkTime J
+accessible field net/minecraft/client/gui/Gui lastHealth I
+accessible field net/minecraft/client/gui/Gui lastHealthTime J
+accessible field net/minecraft/client/gui/Gui displayHealth I
+accessible field net/minecraft/client/gui/Gui overlayMessageTime I
+accessible field net/minecraft/client/gui/Gui animateOverlayMessageColor Z
+accessible field net/minecraft/client/gui/Gui overlayMessageString Lnet/minecraft/network/chat/Component;
+accessible method net/minecraft/client/gui/Gui drawBackdrop (Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;III)V
+accessible field net/minecraft/client/gui/Gui title Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/client/gui/Gui titleTime I
+accessible field net/minecraft/client/gui/Gui titleFadeOutTime I
+accessible field net/minecraft/client/gui/Gui titleStayTime I
+accessible field net/minecraft/client/gui/Gui titleFadeInTime I
+accessible field net/minecraft/client/gui/Gui subtitle Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/client/gui/Gui chat Lnet/minecraft/client/gui/components/ChatComponent;
+accessible field net/minecraft/client/gui/Gui tabList Lnet/minecraft/client/gui/components/PlayerTabOverlay;
+accessible field net/minecraft/client/gui/components/DebugScreenOverlay block Lnet/minecraft/world/phys/HitResult;
+accessible field net/minecraft/client/gui/components/DebugScreenOverlay liquid Lnet/minecraft/world/phys/HitResult;
+accessible method net/minecraft/client/gui/Gui renderHearts (Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/entity/player/Player;IIIIFIIIZ)V
+accessible method net/minecraft/client/gui/Gui renderVignette (Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/entity/Entity;)V
+accessible method net/minecraft/client/gui/Gui renderHotbar (FLnet/minecraft/client/gui/GuiGraphics;)V
+accessible method net/minecraft/client/gui/Gui renderCrosshair (Lnet/minecraft/client/gui/GuiGraphics;)V
+accessible method net/minecraft/client/gui/Gui renderEffects (Lnet/minecraft/client/gui/GuiGraphics;)V
+accessible method net/minecraft/client/gui/Gui displayScoreboardSidebar (Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V
+accessible field net/minecraft/client/gui/components/AbstractSliderButton SLIDER_LOCATION Lnet/minecraft/resources/ResourceLocation;
+accessible method net/minecraft/client/gui/components/AbstractSliderButton getTextureY ()I
+accessible method net/minecraft/client/gui/components/AbstractSliderButton getHandleTextureY ()I
+accessible field net/minecraft/client/multiplayer/ClientPacketListener commands Lcom/mojang/brigadier/CommandDispatcher;
+accessible method net/minecraft/client/player/LocalPlayer getPermissionLevel ()I
+accessible field net/minecraft/world/item/ItemStackLinkedSet TYPE_AND_TAG Lit/unimi/dsi/fastutil/Hash$Strategy;
+mutable field net/minecraft/client/renderer/RenderStateShard$TextureStateShard blur Z
+mutable field net/minecraft/client/renderer/RenderStateShard$TextureStateShard mipmap Z
+mutable field net/minecraft/client/renderer/RenderStateShard setupState Ljava/lang/Runnable;
+accessible class net/minecraft/data/recipes/ShapedRecipeBuilder$Result
+accessible method net/minecraft/world/level/block/FireBlock getBurnOdds (Lnet/minecraft/world/level/block/state/BlockState;)I
+accessible method net/minecraft/world/level/block/FireBlock getIgniteOdds (Lnet/minecraft/world/level/block/state/BlockState;)I
+accessible method net/minecraft/world/entity/Entity getEncodeId ()Ljava/lang/String;
+accessible method net/minecraft/world/level/material/Fluid getExplosionResistance ()F
+accessible class net/minecraft/data/tags/IntrinsicHolderTagsProvider$IntrinsicTagAppender
+accessible field net/minecraft/world/level/biome/BiomeGenerationSettings$PlainBuilder carvers Ljava/util/Map;
+accessible field net/minecraft/world/level/biome/BiomeGenerationSettings$PlainBuilder features Ljava/util/List;
+accessible method net/minecraft/world/level/biome/BiomeGenerationSettings$PlainBuilder addFeatureStepsUpTo (I)V
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder grassColorModifier Lnet/minecraft/world/level/biome/BiomeSpecialEffects$GrassColorModifier;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder fogColor Ljava/util/OptionalInt;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder waterColor Ljava/util/OptionalInt;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder waterFogColor Ljava/util/OptionalInt;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder skyColor Ljava/util/OptionalInt;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder foliageColorOverride Ljava/util/Optional;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder grassColorOverride Ljava/util/Optional;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder ambientParticle Ljava/util/Optional;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder ambientLoopSoundEvent Ljava/util/Optional;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder ambientMoodSettings Ljava/util/Optional;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder ambientAdditionsSettings Ljava/util/Optional;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder backgroundMusic Ljava/util/Optional;
+accessible class net/minecraft/world/level/biome/Biome$ClimateSettings
+accessible field net/minecraft/world/level/biome/MobSpawnSettings$Builder spawners Ljava/util/Map;
+accessible field net/minecraft/world/level/biome/MobSpawnSettings$Builder mobSpawnCosts Ljava/util/Map;
+accessible field net/minecraft/world/level/biome/MobSpawnSettings$Builder creatureGenerationProbability F
+accessible method net/minecraft/world/level/block/Block popExperience (Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;I)V
+accessible class net/minecraft/util/datafix/fixes/StructuresBecomeConfiguredFix$Conversion
+accessible method net/minecraft/world/level/block/entity/HopperBlockEntity isOnCustomCooldown ()Z
+accessible method net/minecraft/world/level/block/entity/HopperBlockEntity setCooldown (I)V
+accessible field net/minecraft/network/Connection channel Lio/netty/channel/Channel;
+accessible field net/minecraft/server/network/ServerLoginPacketListenerImpl gameProfile Lcom/mojang/authlib/GameProfile;
+accessible method net/minecraft/util/thread/BlockableEventLoop submitAsync (Ljava/lang/Runnable;)Ljava/util/concurrent/CompletableFuture;
+accessible method net/minecraft/server/level/ServerPlayer nextContainerCounter ()V
+accessible field net/minecraft/server/level/ServerPlayer containerCounter I
+accessible method net/minecraft/server/level/ServerPlayer initMenu (Lnet/minecraft/world/inventory/AbstractContainerMenu;)V
+accessible class net/minecraft/core/RegistrySynchronization$NetworkedRegistryData
+accessible method net/minecraft/core/Holder$Reference bindKey (Lnet/minecraft/resources/ResourceKey;)V
+accessible method net/minecraft/core/Holder$Reference bindValue (Ljava/lang/Object;)V
+accessible field net/minecraft/core/IdMapper tToId Lit/unimi/dsi/fastutil/objects/Object2IntMap;
+accessible field net/minecraft/core/IdMapper idToT Ljava/util/List;
+accessible field net/minecraft/core/IdMapper nextId I
+accessible field net/minecraft/core/MappedRegistry unregisteredIntrusiveHolders Ljava/util/Map;
+accessible class net/minecraft/core/Holder$Reference$Type
+accessible method net/minecraft/core/HolderSet$Named bind (Ljava/util/List;)V
+accessible method net/minecraft/core/Holder$Reference bindTags (Ljava/util/Collection;)V
