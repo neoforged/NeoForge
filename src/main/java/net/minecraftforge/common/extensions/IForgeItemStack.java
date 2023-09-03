@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.LivingEntity;
@@ -34,6 +35,8 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.event.ForgeEventFactory;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -165,34 +168,36 @@ public interface IForgeItemStack extends ICapabilitySerializable<CompoundTag>
 
     /**
      * Gets the level of the enchantment currently present on the stack. By default, returns the enchantment level present in NBT.
+     * <p>
+     * Equivalent to calling {@link EnchantmentHelper#getItemEnchantmentLevel(Enchantment, ItemStack)}
+     * Use in place of {@link EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)} for checking presence of an enchantment in logic implementing the enchantment behavior.
+     * Use {@link EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)} instead when modifying an item's enchantments.
      *
-     * Equivalent to calling {@link net.minecraft.world.item.enchantment.EnchantmentHelper#getItemEnchantmentLevel(Enchantment, ItemStack)}
-     * Use in place of {@link net.minecraft.world.item.enchantment.EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)} for checking presence of an enchantment in logic implementing the enchantment behavior.
-     * Use {@link net.minecraft.world.item.enchantment.EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)} instead when modifying an item's enchantments.
-     *
-     * @param enchantment  the enchantment being checked for
-     * @return  Level of the enchantment, or 0 if not present
+     * @param enchantment The enchantment being checked for
+     * @return The level of the enchantment, or 0 if not present.
      * @see #getAllEnchantments()
-     * @see net.minecraft.world.item.enchantment.EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)
+     * @see EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)
      */
     default int getEnchantmentLevel(Enchantment enchantment)
     {
-        return self().getItem().getEnchantmentLevel(self(), enchantment);
+        int level = self().getItem().getEnchantmentLevel(self(), enchantment);
+        return ForgeEventFactory.getEnchantmentLevelSpecific(level, self(), enchantment);
     }
 
     /**
      * Gets a map of all enchantments present on the stack. By default, returns the enchantments present in NBT, ignoring book enchantments.
-     *
-     * Use in place of {@link net.minecraft.world.item.enchantment.EnchantmentHelper#getEnchantments(ItemStack)} for checking presence of an enchantment in logic implementing the enchantment behavior.
-     * Use {@link net.minecraft.world.item.enchantment.EnchantmentHelper#getEnchantments(ItemStack)} instead when modifying an item's enchantments.
+     * <p>
+     * Use in place of {@link EnchantmentHelper#getEnchantments(ItemStack)} for checking presence of an enchantment in logic implementing the enchantment behavior.
+     * Use {@link EnchantmentHelper#getEnchantments(ItemStack)} instead when modifying an item's enchantments.
      *
      * @return  Map of all enchantments on the stack, empty if no enchantments are present
      * @see #getEnchantmentLevel(Enchantment)
-     * @see net.minecraft.world.item.enchantment.EnchantmentHelper#getEnchantments(ItemStack)
+     * @see EnchantmentHelper#getEnchantments(ItemStack)
      */
     default Map<Enchantment, Integer> getAllEnchantments()
     {
-        return self().getItem().getAllEnchantments(self());
+        Map<Enchantment, Integer> map = self().getItem().getAllEnchantments(self());
+        return ForgeEventFactory.getEnchantmentLevel(map, self());
     }
 
     /**
