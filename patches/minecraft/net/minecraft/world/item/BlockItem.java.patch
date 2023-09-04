@@ -28,6 +28,14 @@
     @Nullable
     public BlockPlaceContext m_7732_(BlockPlaceContext p_40609_) {
        return p_40609_;
+@@ -175,6 +_,7 @@
+                compoundtag1.m_128391_(compoundtag);
+                if (!compoundtag1.equals(compoundtag2)) {
+                   blockentity.m_142466_(compoundtag1);
++                  blockentity.onLoad();
+                   blockentity.m_6596_();
+                   return true;
+                }
 @@ -195,11 +_,19 @@
     }
  
