@@ -59,7 +59,7 @@
           }
  
           this.m_156406_(p_156391_);
-+         p_156391_.onLoad();
++         this.f_62776_.addFreshBlockEntities(java.util.List.of(p_156391_));
        }
  
     }
