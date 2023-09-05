@@ -25,8 +25,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Registry;
 import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.network.HandshakeMessages;
+import net.minecraftforge.network.simple.MessageFunctions;
 import net.minecraftforge.registries.ForgeRegistry.Snapshot;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -194,11 +194,11 @@ public class RegistryManager
         this.registries.clear();
     }
 
-    public static List<Pair<String, HandshakeMessages.S2CRegistry>> generateRegistryPackets(boolean isLocal)
+    public static List<MessageFunctions.LoginPacket<HandshakeMessages.S2CRegistry>> generateRegistryPackets(boolean isLocal)
     {
         return !isLocal ? ACTIVE.takeSnapshot(false).entrySet().stream().
-                map(e->Pair.of("Registry " + e.getKey(), new HandshakeMessages.S2CRegistry(e.getKey(), e.getValue()))).
-                collect(Collectors.toList()) : Collections.emptyList();
+                map(e->new MessageFunctions.LoginPacket<>("Registry " + e.getKey(), new HandshakeMessages.S2CRegistry(e.getKey(), e.getValue()))).
+                toList() : Collections.emptyList();
     }
 
     public static List<ResourceLocation> getRegistryNamesForSyncToClient()

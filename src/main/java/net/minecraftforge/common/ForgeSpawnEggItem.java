@@ -70,21 +70,21 @@ public class ForgeSpawnEggItem extends SpawnEggItem
 
     private static final DispenseItemBehavior DEFAULT_DISPENSE_BEHAVIOR = (source, stack) ->
     {
-        Direction face = source.getBlockState().getValue(DispenserBlock.FACING);
+        Direction face = source.state().getValue(DispenserBlock.FACING);
         EntityType<?> type = ((SpawnEggItem)stack.getItem()).getType(stack.getTag());
 
         try
         {
-            type.spawn(source.getLevel(), stack, null, source.getPos().relative(face), MobSpawnType.DISPENSER, face != Direction.UP, false);
+            type.spawn(source.level(), stack, null, source.pos().relative(face), MobSpawnType.DISPENSER, face != Direction.UP, false);
         }
         catch (Exception exception)
         {
-            DispenseItemBehavior.LOGGER.error("Error while dispensing spawn egg from dispenser at {}", source.getPos(), exception);
+            DispenseItemBehavior.LOGGER.error("Error while dispensing spawn egg from dispenser at {}", source.pos(), exception);
             return ItemStack.EMPTY;
         }
 
         stack.shrink(1);
-        source.getLevel().gameEvent(GameEvent.ENTITY_PLACE, source.getPos(), GameEvent.Context.of(source.getBlockState()));
+        source.level().gameEvent(GameEvent.ENTITY_PLACE, source.pos(), GameEvent.Context.of(source.state()));
         return stack;
     };
 

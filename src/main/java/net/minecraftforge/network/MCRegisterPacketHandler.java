@@ -34,7 +34,7 @@ public class MCRegisterPacketHandler
         private Set<ResourceLocation> locations = new HashSet<>();
         private Set<ResourceLocation> remoteLocations = Set.of();
 
-        public void updateFrom(final Supplier<NetworkEvent.Context> source, FriendlyByteBuf buffer, final NetworkEvent.RegistrationChangeType changeType) {
+        public void updateFrom(final NetworkEvent.Context source, FriendlyByteBuf buffer, final NetworkEvent.RegistrationChangeType changeType) {
             byte[] data = new byte[Math.max(buffer.readableBytes(), 0)];
             buffer.readBytes(data);
             Set<ResourceLocation> oldLocations = this.locations;
@@ -95,13 +95,13 @@ public class MCRegisterPacketHandler
     void registerListener(NetworkEvent evt) {
         final ChannelList channelList = getFrom(evt);
         channelList.updateFrom(evt.getSource(), evt.getPayload(), NetworkEvent.RegistrationChangeType.REGISTER);
-        evt.getSource().get().setPacketHandled(true);
+        evt.getSource().setPacketHandled(true);
     }
 
     void unregisterListener(NetworkEvent evt) {
         final ChannelList channelList = getFrom(evt);
         channelList.updateFrom(evt.getSource(), evt.getPayload(), NetworkEvent.RegistrationChangeType.UNREGISTER);
-        evt.getSource().get().setPacketHandled(true);
+        evt.getSource().setPacketHandled(true);
     }
 
     private static ChannelList getFrom(Connection manager) {
@@ -109,7 +109,7 @@ public class MCRegisterPacketHandler
     }
 
     private static ChannelList getFrom(NetworkEvent event) {
-        return fromAttr(event.getSource().get().attr(NetworkConstants.FML_MC_REGISTRY));
+        return fromAttr(event.getSource().attr(NetworkConstants.FML_MC_REGISTRY));
     }
 
     private static ChannelList fromAttr(Attribute<ChannelList> attr) {
@@ -117,10 +117,10 @@ public class MCRegisterPacketHandler
         return attr.get();
     }
 
-    public void sendRegistry(Connection manager, final NetworkDirection dir) {
+    public void sendRegistry(Connection manager, final PlayNetworkDirection dir) {
         FriendlyByteBuf pb = new FriendlyByteBuf(Unpooled.buffer());
         pb.writeBytes(getFrom(manager).toByteArray());
-        final ICustomPacket<Packet<?>> iPacketICustomPacket = dir.buildPacket(Pair.of(pb, 0), NetworkConstants.MC_REGISTER_RESOURCE);
-        manager.send(iPacketICustomPacket.getThis());
+        final Packet<?> iPacketICustomPacket = dir.buildPacket(new INetworkDirection.PacketData(pb, 0), NetworkConstants.MC_REGISTER_RESOURCE);
+        manager.send(iPacketICustomPacket);
     }
 }

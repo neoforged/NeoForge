@@ -1,0 +1,28 @@
+--- a/net/minecraft/world/level/block/Blocks.java
++++ b/net/minecraft/world/level/block/Blocks.java
+@@ -706,7 +706,7 @@
+    public static final Block RED_BED = register("red_bed", bed(DyeColor.RED));
+    public static final Block BLACK_BED = register("black_bed", bed(DyeColor.BLACK));
+    public static final Block POWERED_RAIL = register(
+-      "powered_rail", new PoweredRailBlock(BlockBehaviour.Properties.of().noCollission().strength(0.7F).sound(SoundType.METAL))
++      "powered_rail", new PoweredRailBlock(BlockBehaviour.Properties.of().noCollission().strength(0.7F).sound(SoundType.METAL), true)
+    );
+    public static final Block DETECTOR_RAIL = register(
+       "detector_rail", new DetectorRailBlock(BlockBehaviour.Properties.of().noCollission().strength(0.7F).sound(SoundType.METAL))
+@@ -7400,16 +7400,5 @@
+ 
+    public static void rebuildCache() {
+       Block.BLOCK_STATE_REGISTRY.forEach(BlockBehaviour.BlockStateBase::initCache);
+-   }
+-
+-   static {
+-      for(Block block : BuiltInRegistries.BLOCK) {
+-         for(BlockState blockstate : block.getStateDefinition().getPossibleStates()) {
+-            Block.BLOCK_STATE_REGISTRY.add(blockstate);
+-            blockstate.initCache();
+-         }
+-
+-         block.getLootTable();
+-      }
+    }
+ }

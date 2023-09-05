@@ -5,13 +5,13 @@
 
 package net.minecraftforge.common.extensions;
 
-import com.google.common.collect.Maps;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementRewards;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public interface IForgeAdvancementBuilder
@@ -31,23 +31,20 @@ public interface IForgeAdvancementBuilder
      * @return the built advancement
      * @throws IllegalStateException if the parent of the advancement is not known
      */
-    default Advancement save(Consumer<Advancement> saver, ResourceLocation id, ExistingFileHelper fileHelper)
+    default AdvancementHolder save(Consumer<AdvancementHolder> saver, ResourceLocation id, ExistingFileHelper fileHelper)
     {
-        boolean canBuild = self().canBuild((advancementId) ->
+        AdvancementHolder advancementholder = self().build(id);
+
+        Optional<ResourceLocation> parent = advancementholder.value().parent();
+        if (parent.isPresent() && !fileHelper.exists(parent.get(), PackType.SERVER_DATA, ".json", "advancements"))
         {
-            if (fileHelper.exists(advancementId, PackType.SERVER_DATA, ".json", "advancements"))
-            {
-                return new Advancement(advancementId, null, null, AdvancementRewards.EMPTY, Maps.newHashMap(), new String[0][0], false);
-            }
-            return null;
-        });
-        if (!canBuild)
-        {
-            throw new IllegalStateException("Tried to build Advancement without valid Parent!");
+            throw new IllegalStateException("The parent: '%s' of advancement '%s', has not been saved yet!".formatted(
+                    parent.orElseThrow(),
+                    id
+            ));
         }
 
-        Advancement advancement = self().build(id);
-        saver.accept(advancement);
-        return advancement;
+        saver.accept(advancementholder);
+        return advancementholder;
     }
 }

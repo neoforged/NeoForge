@@ -1,0 +1,15 @@
+--- a/net/minecraft/server/ServerAdvancementManager.java
++++ b/net/minecraft/server/ServerAdvancementManager.java
+@@ -41,7 +41,11 @@
+       p_136034_.forEach((p_300735_, p_300736_) -> {
+          try {
+             JsonObject jsonobject = GsonHelper.convertToJsonObject(p_300736_, "advancement");
+-            Advancement advancement = Advancement.fromJson(jsonobject, new DeserializationContext(p_300735_, this.lootData));
++            Advancement advancement = Advancement.fromJson(jsonobject, new DeserializationContext(p_300735_, this.lootData), registryAccess == null ? com.mojang.serialization.JsonOps.INSTANCE : net.minecraftforge.common.conditions.ConditionalOps.create(net.minecraft.resources.RegistryOps.create(com.mojang.serialization.JsonOps.INSTANCE, registryAccess), conditionContext));
++            if (advancement == null) {
++               LOGGER.debug("Skipping loading advancement {} as its conditions were not met", p_300735_);
++               return;
++            }
+             builder.put(p_300735_, new AdvancementHolder(p_300735_, advancement));
+          } catch (Exception exception) {
+             LOGGER.error("Parsing error loading custom advancement {}: {}", p_300735_, exception.getMessage());

@@ -17,6 +17,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.effect.MobEffects;
@@ -30,6 +31,7 @@ import net.minecraft.world.food.FoodData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.client.event.RenderGuiEvent;
@@ -62,12 +64,9 @@ public class ForgeGui extends Gui
 
     private Font font = null;
 
-    private final ForgeDebugScreenOverlay debugOverlay;
-
     public ForgeGui(Minecraft mc)
     {
         super(mc, mc.getItemRenderer());
-        debugOverlay = new ForgeDebugScreenOverlay(mc);
     }
 
     public Minecraft getMinecraft()
@@ -210,15 +209,15 @@ public class ForgeGui extends Gui
         {
             if (i < level)
             {
-                guiGraphics.blit(GUI_ICONS_LOCATION, left, top, 34, 9, 9, 9);
+                guiGraphics.blitSprite(ARMOR_EMPTY_SPRITE, left, top, 9, 9);
             }
             else if (i == level)
             {
-                guiGraphics.blit(GUI_ICONS_LOCATION, left, top, 25, 9, 9, 9);
+                guiGraphics.blitSprite(ARMOR_HALF_SPRITE, left, top, 9, 9);
             }
             else if (i > level)
             {
-                guiGraphics.blit(GUI_ICONS_LOCATION, left, top, 16, 9, 9, 9);
+                guiGraphics.blitSprite(ARMOR_FULL_SPRITE, left, top, 9, 9);
             }
             left += 8;
         }
@@ -253,7 +252,7 @@ public class ForgeGui extends Gui
 
             for (int i = 0; i < full + partial; ++i)
             {
-                guiGraphics.blit(GUI_ICONS_LOCATION, left - i * 8 - 9, top, (i < full ? 16 : 25), 18, 9, 9);
+                guiGraphics.blitSprite(i < full ? AIR_BURSTING_SPRITE : AIR_SPRITE, left - i * 8 - 9, top, 9, 9);
             }
             rightHeight += 10;
         }
@@ -337,27 +336,34 @@ public class ForgeGui extends Gui
             int idx = i * 2 + 1;
             int x = left - i * 8 - 9;
             int y = top;
-            int icon = 16;
-            byte background = 0;
 
+            ResourceLocation empty;
+            ResourceLocation half;
+            ResourceLocation full;
             if (minecraft.player.hasEffect(MobEffects.HUNGER))
             {
-                icon += 36;
-                background = 13;
+                empty = FOOD_EMPTY_HUNGER_SPRITE;
+                half = FOOD_HALF_HUNGER_SPRITE;
+                full = FOOD_FULL_HUNGER_SPRITE;
             }
-            if (unused) background = 1; //Probably should be a += 1 but vanilla never uses this
+            else
+            {
+                empty = FOOD_EMPTY_SPRITE;
+                half = FOOD_HALF_SPRITE;
+                full = FOOD_FULL_SPRITE;
+            }
 
             if (player.getFoodData().getSaturationLevel() <= 0.0F && tickCount % (level * 3 + 1) == 0)
             {
                 y = top + (random.nextInt(3) - 1);
             }
 
-            guiGraphics.blit(GUI_ICONS_LOCATION, x, y, 16 + background * 9, 27, 9, 9);
+            guiGraphics.blitSprite(empty, x, y, 9, 9);
 
             if (idx < level)
-                guiGraphics.blit(GUI_ICONS_LOCATION, x, y, icon + 36, 27, 9, 9);
+                guiGraphics.blitSprite(full, x, y, 9, 9);
             else if (idx == level)
-                guiGraphics.blit(GUI_ICONS_LOCATION, x, y, icon + 45, 27, 9, 9);
+                guiGraphics.blitSprite(half, x, y, 9, 9);
         }
         RenderSystem.disableBlend();
         minecraft.getProfiler().pop();
@@ -406,79 +412,6 @@ public class ForgeGui extends Gui
         RenderSystem.enableBlend();
         minecraft.getProfiler().pop();
         guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-    }
-
-    protected void renderHUDText(int width, int height, GuiGraphics guiGraphics)
-    {
-        minecraft.getProfiler().push("forgeHudText");
-        RenderSystem.defaultBlendFunc();
-
-        var listL = new ArrayList<String>();
-        var listR = new ArrayList<String>();
-
-        if (minecraft.isDemo())
-        {
-            long time = minecraft.level.getGameTime();
-            if (time >= 120500L)
-            {
-                listR.add(I18n.get("demo.demoExpired"));
-            }
-            else
-            {
-                listR.add(I18n.get("demo.remainingTime", StringUtil.formatTickDuration((int) (120500L - time))));
-            }
-        }
-
-        if (this.minecraft.options.renderDebug)
-        {
-            debugOverlay.update();
-            listL.addAll(debugOverlay.getLeft());
-            listR.addAll(debugOverlay.getRight());
-        }
-
-        var event = new CustomizeGuiOverlayEvent.DebugText(minecraft.getWindow(), guiGraphics, minecraft.getFrameTime(), listL, listR);
-        MinecraftForge.EVENT_BUS.post(event);
-
-        int top = 2;
-        for (String msg : listL)
-        {
-            if (msg != null && !msg.isEmpty())
-            {
-                guiGraphics.fill(1, top - 1, 2 + font.width(msg) + 1, top + font.lineHeight - 1, -1873784752);
-                guiGraphics.drawString(font, msg, 2, top, 14737632, false);
-            }
-            top += font.lineHeight;
-        }
-
-        top = 2;
-        for (String msg : listR)
-        {
-            if (msg != null && !msg.isEmpty())
-            {
-                int w = font.width(msg);
-                int left = width - 2 - w;
-                guiGraphics.fill(left - 1, top - 1, left + w + 1, top + font.lineHeight - 1, -1873784752);
-                guiGraphics.drawString(font, msg, left, top, 14737632, false);
-            }
-            top += font.lineHeight;
-        }
-
-        minecraft.getProfiler().pop();
-    }
-
-    protected void renderFPSGraph(GuiGraphics guiGraphics)
-    {
-        if (this.minecraft.options.renderDebug && this.minecraft.options.renderFpsChart)
-        {
-            this.debugOverlay.render(guiGraphics);
-        }
-    }
-
-    @Override
-    public void clearCache()
-    {
-        super.clearCache();
-        this.debugOverlay.clearChunkCache();
     }
 
     protected void renderRecordOverlay(int width, int height, float partialTick, GuiGraphics guiGraphics)
@@ -576,7 +509,7 @@ public class ForgeGui extends Gui
 
     protected void renderPlayerList(int width, int height, GuiGraphics guiGraphics)
     {
-        Objective scoreobjective = this.minecraft.level.getScoreboard().getDisplayObjective(0);
+        Objective scoreobjective = this.minecraft.level.getScoreboard().getDisplayObjective(DisplaySlot.LIST);
         ClientPacketListener handler = minecraft.player.connection;
 
         if (minecraft.options.keyPlayerList.isDown() && (!minecraft.isLocalServer() || handler.getOnlinePlayers().size() > 1 || scoreobjective != null))
@@ -597,7 +530,6 @@ public class ForgeGui extends Gui
         Entity tmp = player.getVehicle();
         if (!(tmp instanceof LivingEntity)) return;
 
-        boolean unused = false;
         int left_align = width / 2 + 91;
 
         minecraft.getProfiler().popPush("mountHealth");
@@ -609,11 +541,6 @@ public class ForgeGui extends Gui
 
         if (hearts > 30) hearts = 30;
 
-        final int MARGIN = 52;
-        final int BACKGROUND = MARGIN + (unused ? 1 : 0);
-        final int HALF = MARGIN + 45;
-        final int FULL = MARGIN + 36;
-
         for (int heart = 0; hearts > 0; heart += 20)
         {
             int top = height - rightHeight;
@@ -624,12 +551,12 @@ public class ForgeGui extends Gui
             for (int i = 0; i < rowCount; ++i)
             {
                 int x = left_align - i * 8 - 9;
-                guiGraphics.blit(GUI_ICONS_LOCATION, x, top, BACKGROUND, 9, 9, 9);
+                guiGraphics.blitSprite(HEART_VEHICLE_CONTAINER_SPRITE, x, top, 9, 9);
 
                 if (i * 2 + 1 + heart < health)
-                    guiGraphics.blit(GUI_ICONS_LOCATION, x, top, FULL, 9, 9, 9);
+                    guiGraphics.blitSprite(HEART_VEHICLE_FULL_SPRITE, x, top, 9, 9);
                 else if (i * 2 + 1 + heart == health)
-                    guiGraphics.blit(GUI_ICONS_LOCATION, x, top, HALF, 9, 9, 9);
+                    guiGraphics.blitSprite(HEART_VEHICLE_HALF_SPRITE, x, top, 9, 9);
             }
 
             rightHeight += 10;
@@ -647,48 +574,8 @@ public class ForgeGui extends Gui
     {
         MinecraftForge.EVENT_BUS.post(new RenderGuiOverlayEvent.Post(minecraft.getWindow(), guiGraphics, minecraft.getFrameTime(), overlay));
     }
-
-    private static class ForgeDebugScreenOverlay extends DebugScreenOverlay
-    {
-        private final Minecraft mc;
-
-        private ForgeDebugScreenOverlay(Minecraft mc)
-        {
-            super(mc);
-            this.mc = mc;
-        }
-
-        public void update()
-        {
-            Entity entity = this.mc.getCameraEntity();
-            this.block = entity.pick(rayTraceDistance, 0.0F, false);
-            this.liquid = entity.pick(rayTraceDistance, 0.0F, true);
-        }
-
-        @Override
-        protected void drawGameInformation(GuiGraphics guiGraphics)
-        {
-            // Replicate the depth test state "leak" caused by the text that is rendered here in vanilla
-            // being flushed when the graphs start drawing (PR #9539)
-            RenderSystem.disableDepthTest();
-        }
-
-        @Override
-        protected void drawSystemInformation(GuiGraphics guiGraphics) {}
-
-        private List<String> getLeft()
-        {
-            List<String> ret = this.getGameInformation();
-            ret.add("");
-            boolean flag = this.mc.getSingleplayerServer() != null;
-            ret.add("Debug: Pie [shift]: " + (this.mc.options.renderDebugCharts ? "visible" : "hidden") + (flag ? " FPS + TPS" : " FPS") + " [alt]: " + (this.mc.options.renderFpsChart ? "visible" : "hidden"));
-            ret.add("For help: press F3 + Q");
-            return ret;
-        }
-
-        private List<String> getRight()
-        {
-            return this.getSystemInformation();
-        }
+    
+    public void renderDebugScreenOverlay(GuiGraphics guiGraphics) {
+        this.getDebugOverlay().render(guiGraphics);
     }
 }

@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/LevelReader.java
++++ b/net/minecraft/world/level/LevelReader.java
+@@ -183,6 +183,10 @@
+       return this.hasChunkAt(p_46806_.getX(), p_46806_.getZ());
+    }
+ 
++   default boolean isAreaLoaded(BlockPos center, int range) {
++      return this.hasChunksAt(center.offset(-range, -range, -range), center.offset(range, range, range));
++   }
++
+    @Deprecated
+    default boolean hasChunksAt(BlockPos p_46833_, BlockPos p_46834_) {
+       return this.hasChunksAt(p_46833_.getX(), p_46833_.getY(), p_46833_.getZ(), p_46834_.getX(), p_46834_.getY(), p_46834_.getZ());

@@ -1,0 +1,56 @@
+--- a/net/minecraft/world/entity/animal/Fox.java
++++ b/net/minecraft/world/entity/animal/Fox.java
+@@ -690,13 +690,16 @@
+ 
+    @Override
+    protected void dropAllDeathLoot(DamageSource p_28536_) {
++      super.dropAllDeathLoot(p_28536_);
++   }
++   protected void dropEquipment() { // Forge: move extra drops to dropEquipment to allow them to be captured by LivingDropsEvent
++      super.dropEquipment();
+       ItemStack itemstack = this.getItemBySlot(EquipmentSlot.MAINHAND);
+       if (!itemstack.isEmpty()) {
+          this.spawnAtLocation(itemstack);
+          this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+       }
+ 
+-      super.dropAllDeathLoot(p_28536_);
+    }
+ 
+    @Override
+@@ -863,6 +866,17 @@
+       protected void breed() {
+          ServerLevel serverlevel = (ServerLevel)this.level;
+          Fox fox = (Fox)this.animal.getBreedOffspring(serverlevel, this.partner);
++         final net.minecraftforge.event.entity.living.BabyEntitySpawnEvent event = new net.minecraftforge.event.entity.living.BabyEntitySpawnEvent(animal, partner, fox);
++         final boolean cancelled = net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
++         fox = (Fox) event.getChild();
++         if (cancelled) {
++            //Reset the "inLove" state for the animals
++            this.animal.setAge(6000);
++            this.partner.setAge(6000);
++            this.animal.resetLove();
++            this.partner.resetLove();
++            return;
++         }
+          if (fox != null) {
+             ServerPlayer serverplayer = this.animal.getLoveCause();
+             ServerPlayer serverplayer1 = this.partner.getLoveCause();
+@@ -940,7 +954,7 @@
+       }
+ 
+       protected void onReachedTarget() {
+-         if (Fox.this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
++         if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(Fox.this.level(), Fox.this)) {
+             BlockState blockstate = Fox.this.level().getBlockState(this.blockPos);
+             if (blockstate.is(Blocks.SWEET_BERRY_BUSH)) {
+                this.pickSweetBerries(blockstate);
+@@ -999,7 +1013,7 @@
+ 
+       @Override
+       public boolean canUse() {
+-         return Fox.this.isInWater() && Fox.this.getFluidHeight(FluidTags.WATER) > 0.25 || Fox.this.isInLava();
++         return Fox.this.isInWater() && Fox.this.getFluidHeight(FluidTags.WATER) > 0.25D || Fox.this.isInLava() || Fox.this.isInFluidType((fluidType, height) -> Fox.this.canSwimInFluidType(fluidType) && height > 0.25D);
+       }
+    }
+ 

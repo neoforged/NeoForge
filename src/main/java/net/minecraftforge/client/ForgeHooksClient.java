@@ -215,7 +215,7 @@ public class ForgeHooksClient
 
     public static void clearGuiLayers(Minecraft minecraft)
     {
-        while(guiLayers.size() > 0)
+        while(!guiLayers.isEmpty())
             popGuiLayerInternal(minecraft);
     }
 
@@ -237,7 +237,7 @@ public class ForgeHooksClient
 
     public static void popGuiLayer(Minecraft minecraft)
     {
-        if (guiLayers.size() == 0)
+        if (guiLayers.isEmpty())
         {
             minecraft.setScreen(null);
             return;
@@ -768,7 +768,7 @@ public class ForgeHooksClient
         try
         {
             ForgeTextureMetadata forgeMeta = ForgeTextureMetadata.forResource(resource);
-            return forgeMeta.getLoader() == null ? null : forgeMeta.getLoader().loadContents(name, resource, frameSize, image, animationMeta, forgeMeta);
+            return forgeMeta.getLoader() == null ? null : forgeMeta.getLoader().loadContents(name, resource, frameSize, image, resource.metadata());
         }
         catch (IOException e)
         {
@@ -786,10 +786,12 @@ public class ForgeHooksClient
             int spriteX, int spriteY, int mipmapLevel
     )
     {
-        if (contents.forgeMeta == null || contents.forgeMeta.getLoader() == null)
-            return null;
-
-        return contents.forgeMeta.getLoader().makeSprite(atlasName, contents, atlasWidth, atlasHeight, spriteX, spriteY, mipmapLevel);
+        return contents
+                .metadata()
+                .getSection(ForgeTextureMetadata.SERIALIZER)
+                .map(ForgeTextureMetadata::getLoader)
+                .map(loader -> loader.makeSprite(atlasName, contents, atlasWidth, atlasHeight, spriteX, spriteY, mipmapLevel))
+                .orElse(null);
     }
 
 

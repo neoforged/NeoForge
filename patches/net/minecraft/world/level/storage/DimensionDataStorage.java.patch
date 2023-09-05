@@ -1,0 +1,48 @@
+--- a/net/minecraft/world/level/storage/DimensionDataStorage.java
++++ b/net/minecraft/world/level/storage/DimensionDataStorage.java
+@@ -48,16 +48,20 @@
+    @Nullable
+    public <T extends SavedData> T get(SavedData.Factory p_295091_, String p_164860_) {
+       SavedData saveddata = this.cache.get(p_164860_);
++      if (saveddata == net.minecraftforge.common.util.DummySavedData.DUMMY) return null;
+       if (saveddata == null && !this.cache.containsKey(p_164860_)) {
+          saveddata = this.readSavedData(p_295091_.deserializer(), p_295091_.type(), p_164860_);
+          this.cache.put(p_164860_, saveddata);
++      } else if (saveddata == null) {
++         this.cache.put(p_164860_, net.minecraftforge.common.util.DummySavedData.DUMMY);
++         return null;
+       }
+ 
+       return (T)saveddata;
+    }
+ 
+    @Nullable
+-   private <T extends SavedData> T readSavedData(Function<CompoundTag, T> p_164869_, DataFixTypes p_295832_, String p_164870_) {
++   private <T extends SavedData> T readSavedData(Function<CompoundTag, T> p_164869_, @Nullable DataFixTypes p_295832_, String p_164870_) {
+       try {
+          File file1 = this.getDataFile(p_164870_);
+          if (file1.exists()) {
+@@ -75,7 +79,7 @@
+       this.cache.put(p_164856_, p_164857_);
+    }
+ 
+-   public CompoundTag readTagFromDisk(String p_78159_, DataFixTypes p_295038_, int p_78160_) throws IOException {
++   public CompoundTag readTagFromDisk(String p_78159_, @Nullable DataFixTypes p_295038_, int p_78160_) throws IOException {
+       File file1 = this.getDataFile(p_78159_);
+ 
+       CompoundTag compoundtag1;
+@@ -92,8 +96,12 @@
+             }
+          }
+ 
+-         int i = NbtUtils.getDataVersion(compoundtag, 1343);
+-         compoundtag1 = p_295038_.update(this.fixerUpper, compoundtag, i, p_78160_);
++         if (p_295038_ != null) {
++            int i = NbtUtils.getDataVersion(compoundtag, 1343);
++            compoundtag1 = p_295038_.update(this.fixerUpper, compoundtag, i, p_78160_);
++         } else {
++            compoundtag1 = compoundtag;
++         }
+       }
+ 
+       return compoundtag1;

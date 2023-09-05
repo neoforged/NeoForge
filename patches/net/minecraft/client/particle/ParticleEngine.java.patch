@@ -1,0 +1,127 @@
+--- a/net/minecraft/client/particle/ParticleEngine.java
++++ b/net/minecraft/client/particle/ParticleEngine.java
+@@ -81,11 +81,11 @@
+       ParticleRenderType.CUSTOM
+    );
+    protected ClientLevel level;
+-   private final Map<ParticleRenderType, Queue<Particle>> particles = Maps.newIdentityHashMap();
++   private final Map<ParticleRenderType, Queue<Particle>> particles = Maps.newTreeMap(net.minecraftforge.client.ForgeHooksClient.makeParticleRenderTypeComparator(RENDER_ORDER));
+    private final Queue<TrackingEmitter> trackingEmitters = Queues.newArrayDeque();
+    private final TextureManager textureManager;
+    private final RandomSource random = RandomSource.create();
+-   private final Int2ObjectMap<ParticleProvider<?>> providers = new Int2ObjectOpenHashMap<>();
++   private final Map<ResourceLocation, ParticleProvider<?>> providers = new java.util.HashMap<>();
+    private final Queue<Particle> particlesToAdd = Queues.newArrayDeque();
+    private final Map<ResourceLocation, ParticleEngine.MutableSpriteSet> spriteSets = Maps.newHashMap();
+    private final TextureAtlas textureAtlas;
+@@ -202,10 +202,14 @@
+       this.register(ParticleTypes.EGG_CRACK, SuspendedTownParticle.EggCrackProvider::new);
+    }
+ 
++   /** @deprecated Register via {@link net.minecraftforge.client.event.RegisterParticleProvidersEvent} */
++   @Deprecated
+    public <T extends ParticleOptions> void register(ParticleType<T> p_107382_, ParticleProvider<T> p_107383_) {
+-      this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getId(p_107382_), p_107383_);
++      this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_107382_), p_107383_);
+    }
+ 
++   /** @deprecated Register via {@link net.minecraftforge.client.event.RegisterParticleProvidersEvent} */
++   @Deprecated
+    public <T extends ParticleOptions> void register(ParticleType<T> p_273423_, ParticleProvider.Sprite<T> p_273134_) {
+       this.register(
+          p_273423_,
+@@ -222,10 +226,12 @@
+       );
+    }
+ 
++   /** @deprecated Register via {@link net.minecraftforge.client.event.RegisterParticleProvidersEvent} */
++   @Deprecated
+    public <T extends ParticleOptions> void register(ParticleType<T> p_107379_, ParticleEngine.SpriteParticleRegistration<T> p_107380_) {
+       ParticleEngine.MutableSpriteSet particleengine$mutablespriteset = new ParticleEngine.MutableSpriteSet();
+       this.spriteSets.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_107379_), particleengine$mutablespriteset);
+-      this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getId(p_107379_), p_107380_.create(particleengine$mutablespriteset));
++      this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_107379_), p_107380_.create(particleengine$mutablespriteset));
+    }
+ 
+    @Override
+@@ -351,7 +357,7 @@
+    private <T extends ParticleOptions> Particle makeParticle(
+       T p_107396_, double p_107397_, double p_107398_, double p_107399_, double p_107400_, double p_107401_, double p_107402_
+    ) {
+-      ParticleProvider<T> particleprovider = (ParticleProvider)this.providers.get(BuiltInRegistries.PARTICLE_TYPE.getId(p_107396_.getType()));
++      ParticleProvider<T> particleprovider = (ParticleProvider<T>) this.providers.get(BuiltInRegistries.PARTICLE_TYPE.getKey(p_107396_.getType()));
+       return particleprovider == null
+          ? null
+          : particleprovider.createParticle(p_107396_, this.level, p_107397_, p_107398_, p_107399_, p_107400_, p_107401_, p_107402_);
+@@ -427,15 +433,24 @@
+       }
+    }
+ 
++   /**@deprecated Forge: use {@link #render(PoseStack, MultiBufferSource.BufferSource, LightTexture, Camera, float, net.minecraft.client.renderer.culling.Frustum)} with Frustum as additional parameter*/
++   @Deprecated
+    public void render(PoseStack p_107337_, MultiBufferSource.BufferSource p_107338_, LightTexture p_107339_, Camera p_107340_, float p_107341_) {
++       render(p_107337_, p_107338_, p_107339_, p_107340_, p_107341_, null);
++   }
++
++   public void render(PoseStack p_107337_, MultiBufferSource.BufferSource p_107338_, LightTexture p_107339_, Camera p_107340_, float p_107341_, @Nullable net.minecraft.client.renderer.culling.Frustum clippingHelper) {
+       p_107339_.turnOnLightLayer();
+       RenderSystem.enableDepthTest();
++      RenderSystem.activeTexture(org.lwjgl.opengl.GL13.GL_TEXTURE2);
++      RenderSystem.activeTexture(org.lwjgl.opengl.GL13.GL_TEXTURE0);
+       PoseStack posestack = RenderSystem.getModelViewStack();
+       posestack.pushPose();
+       posestack.mulPoseMatrix(p_107337_.last().pose());
+       RenderSystem.applyModelViewMatrix();
+ 
+-      for(ParticleRenderType particlerendertype : RENDER_ORDER) {
++      for(ParticleRenderType particlerendertype : this.particles.keySet()) { // Forge: allow custom IParticleRenderType's
++         if (particlerendertype == ParticleRenderType.NO_RENDER) continue;
+          Iterable<Particle> iterable = this.particles.get(particlerendertype);
+          if (iterable != null) {
+             RenderSystem.setShader(GameRenderer::getParticleShader);
+@@ -444,6 +459,7 @@
+             particlerendertype.begin(bufferbuilder, this.textureManager);
+ 
+             for(Particle particle : iterable) {
++               if (clippingHelper != null && particle.shouldCull() && !clippingHelper.isVisible(particle.getBoundingBox())) continue;
+                try {
+                   particle.render(bufferbuilder, p_107340_, p_107341_);
+                } catch (Throwable throwable) {
+@@ -473,7 +489,7 @@
+    }
+ 
+    public void destroy(BlockPos p_107356_, BlockState p_107357_) {
+-      if (!p_107357_.isAir() && p_107357_.shouldSpawnTerrainParticles()) {
++      if (!p_107357_.isAir() && !net.minecraftforge.client.extensions.common.IClientBlockExtensions.of(p_107357_).addDestroyEffects(p_107357_, this.level, p_107356_, this)) {
+          VoxelShape voxelshape = p_107357_.getShape(this.level, p_107356_);
+          double d0 = 0.25;
+          voxelshape.forAllBoxes(
+@@ -505,7 +521,7 @@
+                               d6 - 0.5,
+                               p_107357_,
+                               p_107356_
+-                           )
++                           ).updateSprite(p_107357_, p_107356_)
+                         );
+                      }
+                   }
+@@ -550,12 +566,18 @@
+             d0 = (double)i + aabb.maxX + 0.1F;
+          }
+ 
+-         this.add(new TerrainParticle(this.level, d0, d1, d2, 0.0, 0.0, 0.0, blockstate, p_107368_).setPower(0.2F).scale(0.6F));
++         this.add((new TerrainParticle(this.level, d0, d1, d2, 0.0D, 0.0D, 0.0D, blockstate, p_107368_).updateSprite(blockstate, p_107368_)).setPower(0.2F).scale(0.6F));
+       }
+    }
+ 
+    public String countParticles() {
+       return String.valueOf(this.particles.values().stream().mapToInt(Collection::size).sum());
++   }
++
++   public void addBlockHitEffects(BlockPos pos, net.minecraft.world.phys.BlockHitResult target) {
++      BlockState state = level.getBlockState(pos);
++      if (!net.minecraftforge.client.extensions.common.IClientBlockExtensions.of(state).addHitEffects(state, level, target, this))
++         crack(pos, target.getDirection());
+    }
+ 
+    private boolean hasSpaceInParticleLimit(ParticleGroup p_172280_) {

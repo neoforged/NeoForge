@@ -1,0 +1,66 @@
+--- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+@@ -63,6 +63,14 @@
+ 
+    @Override
+    public void tick() {
++      if (this.state == State.NEGOTIATING) {
++         // We force the state into "NEGOTIATING" which is otherwise unused. Once we're completed we move the negotiation onto "VERIFYING"
++         boolean negotiationComplete = net.minecraftforge.network.NetworkHooks.tickNegotiation(this.connection);
++         if (negotiationComplete) {
++             this.state = State.VERIFYING;
++         }
++      }
++
+       if (this.state == ServerLoginPacketListenerImpl.State.VERIFYING) {
+          this.verifyLoginAndFinishConnectionSetup(Objects.requireNonNull(this.authenticatedProfile));
+       }
+@@ -103,7 +111,8 @@
+ 
+    public String getUserName() {
+       String s = this.connection.getLoggableAddress(this.server.logIPs());
+-      return this.requestedUsername != null ? this.requestedUsername + " (" + s + ")" : s;
++      final String addressString = net.minecraftforge.network.DualStackUtils.getAddressString(this.connection.getRemoteAddress());
++      return this.authenticatedProfile != null ? this.authenticatedProfile + " (" + addressString + ")" : addressString;
+    }
+ 
+    @Override
+@@ -126,7 +135,7 @@
+ 
+    void startClientVerification(GameProfile p_295643_) {
+       this.authenticatedProfile = p_295643_;
+-      this.state = ServerLoginPacketListenerImpl.State.VERIFYING;
++      this.state = State.NEGOTIATING; //Forge: Before verification, negotiate connection properties:
+    }
+ 
+    private void verifyLoginAndFinishConnectionSetup(GameProfile p_294502_) {
+@@ -182,8 +191,7 @@
+          throw new IllegalStateException("Protocol error", cryptexception);
+       }
+ 
+-      Thread thread = new Thread("User Authenticator #" + UNIQUE_THREAD_ID.incrementAndGet()) {
+-         @Override
++      Thread thread = new Thread(net.minecraftforge.fml.util.thread.SidedThreadGroups.SERVER, "User Authenticator #" + UNIQUE_THREAD_ID.incrementAndGet()) {
+          public void run() {
+             String s1 = Objects.requireNonNull(ServerLoginPacketListenerImpl.this.requestedUsername, "Player name not initialized");
+ 
+@@ -203,7 +211,7 @@
+             } catch (AuthenticationUnavailableException authenticationunavailableexception) {
+                if (ServerLoginPacketListenerImpl.this.server.isSingleplayer()) {
+                   ServerLoginPacketListenerImpl.LOGGER.warn("Authentication servers are down but will let them in anyway!");
+-                  ServerLoginPacketListenerImpl.this.startClientVerification(ServerLoginPacketListenerImpl.createOfflineProfile(s1));
++                  ServerLoginPacketListenerImpl.this.state = ServerLoginPacketListenerImpl.State.NEGOTIATING; // FORGE: continue NEGOTIATING, we move to READY_TO_ACCEPT after Forge is ready
+                } else {
+                   ServerLoginPacketListenerImpl.this.disconnect(Component.translatable("multiplayer.disconnect.authservers_down"));
+                   ServerLoginPacketListenerImpl.LOGGER.error("Couldn't verify username because servers are unavailable");
+@@ -225,6 +233,10 @@
+ 
+    @Override
+    public void handleCustomQueryPacket(ServerboundCustomQueryAnswerPacket p_295398_) {
++      if (p_295398_.payload() instanceof net.minecraftforge.network.custom.payload.SimpleQueryPayload simpleQueryPayload && net.minecraftforge.network.NetworkHooks.onCustomQuery(p_295398_, simpleQueryPayload, connection)) {
++          return;
++      }
++
+       this.disconnect(DISCONNECT_UNEXPECTED_QUERY);
+    }
+ 

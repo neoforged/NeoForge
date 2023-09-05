@@ -5,15 +5,15 @@
 
 package net.minecraftforge.network;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.mojang.authlib.GameProfile;
-
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.core.Registry;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
-import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
@@ -21,6 +21,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.LogMessageAdapter;
 import net.minecraftforge.event.entity.player.PlayerNegotiationEvent;
 import net.minecraftforge.network.ConnectionData.ModMismatchData;
+import net.minecraftforge.network.simple.MessageFunctions;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.DataPackRegistriesHooks;
 import net.minecraftforge.registries.ForgeRegistry;
@@ -31,9 +32,13 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
-import com.google.common.collect.Maps;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -43,7 +48,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.IntSupplier;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -54,7 +58,7 @@ import java.util.stream.Collectors;
  *
  * <p>The {@link NetworkConstants#handshakeChannel} is a {@link SimpleChannel} with standard messages flowing in both directions.
  *
- * <p>The {@link #loginWrapper} transforms these messages into {@link ServerboundCustomQueryPacket}
+ * <p>The {@link #loginWrapper} transforms these messages into {@link net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket}
  * and {@link ClientboundCustomQueryPacket} compatible messages, by means of wrapping.
  *
  * <p>The handshake is ticked {@code #tickLogin(NetworkManager)} from the {@link ServerLoginPacketListenerImpl#tick()} method,
@@ -83,17 +87,14 @@ public class HandshakeHandler
 
     private static final LoginWrapper loginWrapper = new LoginWrapper();
 
-    static {
-    }
-
     /**
      * Create a new handshake instance. Called when connection is first created during the {@link ClientIntentionPacket}
      * handling.
      *
      * @param manager The impl manager for this connection
-     * @param direction The {@link NetworkDirection} for this connection: {@link NetworkDirection#LOGIN_TO_SERVER} or {@link NetworkDirection#LOGIN_TO_CLIENT}
+     * @param direction The {@link PlayNetworkDirection} for this connection: {@link LoginNetworkDirection#LOGIN_TO_SERVER} or {@link LoginNetworkDirection#LOGIN_TO_CLIENT}
      */
-    static void registerHandshake(Connection manager, NetworkDirection direction) {
+    static void registerHandshake(Connection manager, LoginNetworkDirection direction) {
         manager.channel().attr(NetworkConstants.FML_HANDSHAKE_HANDLER).compareAndSet(null, new HandshakeHandler(manager, direction));
     }
 
@@ -102,20 +103,19 @@ public class HandshakeHandler
         return networkManager.channel().attr(NetworkConstants.FML_HANDSHAKE_HANDLER).get().tickServer();
     }
 
-    private List<NetworkRegistry.LoginPayload> messageList;
+    private final List<NetworkRegistry.LoginPayload> messageList;
 
-    private List<Integer> sentMessages = new ArrayList<>();
+    private final IntArrayList sentMessages = new IntArrayList();
 
-    private final NetworkDirection direction;
+    private final LoginNetworkDirection direction;
     private final Connection manager;
     private int packetPosition;
     private Map<ResourceLocation, ForgeRegistry.Snapshot> registrySnapshots;
     private Set<ResourceLocation> registriesToReceive;
-    private Map<ResourceLocation, String> registryHashes;
     private boolean negotiationStarted = false;
     private final List<Future<Void>> pendingFutures = new ArrayList<>();
 
-    private HandshakeHandler(Connection networkManager, NetworkDirection side)
+    private HandshakeHandler(Connection networkManager, LoginNetworkDirection side)
     {
         this.direction = side;
         this.manager = networkManager;
@@ -134,11 +134,11 @@ public class HandshakeHandler
     @FunctionalInterface
     public interface HandshakeConsumer<MSG extends IntSupplier>
     {
-        void accept(HandshakeHandler handler, MSG msg, Supplier<NetworkEvent.Context> context);
+        void accept(HandshakeHandler handler, MSG msg, NetworkEvent.Context context);
     }
 
     /**
-     * Transforms a two-argument instance method reference into a {@link BiConsumer} based on the {@link #getHandshake(Supplier)} function.
+     * Transforms a two-argument instance method reference into a {@link BiConsumer} based on the {@link #getHandshake(NetworkEvent.Context)} function.
      *
      * This should only be used for login message types.
      *
@@ -146,13 +146,13 @@ public class HandshakeHandler
      * @param <MSG> message type
      * @return A {@link BiConsumer} for use in message handling
      */
-    public static <MSG extends IntSupplier> BiConsumer<MSG, Supplier<NetworkEvent.Context>> biConsumerFor(HandshakeConsumer<MSG> consumer)
+    public static <MSG extends IntSupplier> MessageFunctions.MessageConsumer<MSG> consumerFor(HandshakeConsumer<MSG> consumer)
     {
         return (m, c) -> consumer.accept(getHandshake(c), m, c);
     }
 
     /**
-     * Transforms a two-argument instance method reference into a {@link BiConsumer} {@link #biConsumerFor(HandshakeConsumer)}, first calling the {@link #handleIndexedMessage(IntSupplier, Supplier)}
+     * Transforms a two-argument instance method reference into a {@link BiConsumer} {@link #consumerFor(HandshakeConsumer)}, first calling the {@link #handleIndexedMessage(IntSupplier, NetworkEvent.Context)}
      * method to handle index tracking. Used for client to server replies.
      *
      * This should only be used for login messages.
@@ -161,10 +161,10 @@ public class HandshakeHandler
      * @param <MSG> message type
      * @return A {@link BiConsumer} for use in message handling
      */
-    public static <MSG extends IntSupplier> BiConsumer<MSG, Supplier<NetworkEvent.Context>> indexFirst(HandshakeConsumer<MSG> next)
+    public static <MSG extends IntSupplier> MessageFunctions.MessageConsumer<MSG> indexFirst(HandshakeConsumer<MSG> next)
     {
-        final BiConsumer<MSG, Supplier<NetworkEvent.Context>> loginIndexedMessageSupplierBiConsumer = biConsumerFor(HandshakeHandler::handleIndexedMessage);
-        return loginIndexedMessageSupplierBiConsumer.andThen(biConsumerFor(next));
+        final MessageFunctions.MessageConsumer<MSG> loginIndexedMessageSupplierBiConsumer = consumerFor(HandshakeHandler::handleIndexedMessage);
+        return loginIndexedMessageSupplierBiConsumer.andThen(consumerFor(next));
     }
 
     /**
@@ -173,22 +173,22 @@ public class HandshakeHandler
      * @param contextSupplier the {@link NetworkEvent.Context}
      * @return The handshake handler for the connection
      */
-    private static HandshakeHandler getHandshake(Supplier<NetworkEvent.Context> contextSupplier) {
-        return contextSupplier.get().attr(NetworkConstants.FML_HANDSHAKE_HANDLER).get();
+    private static HandshakeHandler getHandshake(NetworkEvent.Context contextSupplier) {
+        return contextSupplier.attr(NetworkConstants.FML_HANDSHAKE_HANDLER).get();
     }
 
-    void handleServerModListOnClient(HandshakeMessages.S2CModList serverModList, Supplier<NetworkEvent.Context> c)
+    void handleServerModListOnClient(HandshakeMessages.S2CModList serverModList, NetworkEvent.Context c)
     {
         LOGGER.debug(FMLHSMARKER, "Logging into server with mod list [{}]", String.join(", ", serverModList.getModList()));
         Map<ResourceLocation, String> mismatchedChannels = NetworkRegistry.validateClientChannels(serverModList.getChannels());
-        c.get().setPacketHandled(true);
+        c.setPacketHandled(true);
         //The connection data needs to be modified before a new ModMismatchData instance could be constructed
-        NetworkHooks.appendConnectionData(c.get().getNetworkManager(), serverModList.getModList().stream().collect(Collectors.toMap(Function.identity(), s -> Pair.of("", ""))), serverModList.getChannels());
+        NetworkHooks.appendConnectionData(c.getNetworkManager(), serverModList.getModList().stream().collect(Collectors.toMap(Function.identity(), s -> Pair.of("", ""))), serverModList.getChannels());
         if (!mismatchedChannels.isEmpty()) {
             LOGGER.error(FMLHSMARKER, "Terminating connection with server, mismatched mod list");
             //Populate the mod mismatch attribute with a new mismatch data instance to indicate that the disconnect happened due to a mod mismatch
-            c.get().getNetworkManager().channel().attr(NetworkConstants.FML_MOD_MISMATCH_DATA).set(ModMismatchData.channel(mismatchedChannels, NetworkHooks.getConnectionData(c.get().getNetworkManager()), true));
-            c.get().getNetworkManager().disconnect(Component.literal("Connection closed - mismatched mod channel list"));
+            c.getNetworkManager().channel().attr(NetworkConstants.FML_MOD_MISMATCH_DATA).set(ModMismatchData.channel(mismatchedChannels, NetworkHooks.getConnectionData(c.getNetworkManager()), true));
+            c.getNetworkManager().disconnect(Component.literal("Connection closed - mismatched mod channel list"));
             return;
         }
         // Validate synced custom datapack registries, client cannot be missing any present on the server.
@@ -205,27 +205,27 @@ public class HandshakeHandler
         }
         if (!missingDataPackRegistries.isEmpty())
         {
-            c.get().getNetworkManager().disconnect(Component.translatable("fml.menu.multiplayer.missingdatapackregistries", String.join(", ", missingDataPackRegistries)));
+            c.getNetworkManager().disconnect(Component.translatable("fml.menu.multiplayer.missingdatapackregistries", String.join(", ", missingDataPackRegistries)));
             return;
         }
-        NetworkConstants.handshakeChannel.reply(new HandshakeMessages.C2SModListReply(), c.get());
+        NetworkConstants.handshakeChannel.reply(new HandshakeMessages.C2SModListReply(), c);
 
         LOGGER.debug(FMLHSMARKER, "Accepted server connection");
         // Set the modded marker on the channel so we know we got packets
-        c.get().getNetworkManager().channel().attr(NetworkConstants.FML_NETVERSION).set(NetworkConstants.NETVERSION);
+        c.getNetworkManager().channel().attr(NetworkConstants.FML_NETVERSION).set(NetworkConstants.NETVERSION);
 
         this.registriesToReceive = new HashSet<>(serverModList.getRegistries());
         this.registrySnapshots = Maps.newHashMap();
         LOGGER.debug(ForgeRegistry.REGISTRIES, "Expecting {} registries: {}", ()->this.registriesToReceive.size(), ()->this.registriesToReceive);
     }
 
-    void handleModData(HandshakeMessages.S2CModData serverModData, Supplier<NetworkEvent.Context> c)
+    void handleModData(HandshakeMessages.S2CModData serverModData, NetworkEvent.Context c)
     {
-        c.get().getNetworkManager().channel().attr(NetworkConstants.FML_CONNECTION_DATA).set(new ConnectionData(serverModData.getMods(), new HashMap<>()));
-        c.get().setPacketHandled(true);
+        c.getNetworkManager().channel().attr(NetworkConstants.FML_CONNECTION_DATA).set(new ConnectionData(serverModData.getMods(), new HashMap<>()));
+        c.setPacketHandled(true);
     }
 
-    <MSG extends IntSupplier> void handleIndexedMessage(MSG message, Supplier<NetworkEvent.Context> c)
+    <MSG extends IntSupplier> void handleIndexedMessage(MSG message, NetworkEvent.Context c)
     {
         LOGGER.debug(FMLHSMARKER, "Received client indexed reply {} of type {}", message.getAsInt(), message.getClass().getName());
         boolean removed = this.sentMessages.removeIf(i-> i == message.getAsInt());
@@ -234,37 +234,37 @@ public class HandshakeHandler
         }
     }
 
-    void handleClientModListOnServer(HandshakeMessages.C2SModListReply clientModList, Supplier<NetworkEvent.Context> c)
+    void handleClientModListOnServer(HandshakeMessages.C2SModListReply clientModList, NetworkEvent.Context c)
     {
         LOGGER.debug(FMLHSMARKER, "Received client connection with modlist [{}]",  String.join(", ", clientModList.getModList()));
         Map<ResourceLocation, String> mismatchedChannels = NetworkRegistry.validateServerChannels(clientModList.getChannels());
-        c.get().getNetworkManager().channel().attr(NetworkConstants.FML_CONNECTION_DATA)
+        c.getNetworkManager().channel().attr(NetworkConstants.FML_CONNECTION_DATA)
                 .set(new ConnectionData(clientModList.getModList().stream().collect(Collectors.toMap(Function.identity(), s -> Pair.of("", ""))), clientModList.getChannels()));
-        c.get().setPacketHandled(true);
+        c.setPacketHandled(true);
         if (!mismatchedChannels.isEmpty()) {
             LOGGER.error(FMLHSMARKER, "Terminating connection with client, mismatched mod list");
-            NetworkConstants.handshakeChannel.reply(new HandshakeMessages.S2CChannelMismatchData(mismatchedChannels), c.get());
-            c.get().getNetworkManager().disconnect(Component.literal("Connection closed - mismatched mod channel list"));
+            NetworkConstants.handshakeChannel.reply(new HandshakeMessages.S2CChannelMismatchData(mismatchedChannels), c);
+            c.getNetworkManager().disconnect(Component.literal("Connection closed - mismatched mod channel list"));
             return;
         }
         LOGGER.debug(FMLHSMARKER, "Accepted client connection mod list");
     }
 
-    void handleModMismatchData(HandshakeMessages.S2CChannelMismatchData modMismatchData, Supplier<NetworkEvent.Context> c)
+    void handleModMismatchData(HandshakeMessages.S2CChannelMismatchData modMismatchData, NetworkEvent.Context c)
     {
         if (!modMismatchData.getMismatchedChannelData().isEmpty())
         {
             LOGGER.error(FMLHSMARKER, "Channels [{}] rejected their client side version number",
                     modMismatchData.getMismatchedChannelData().keySet().stream().map(Object::toString).collect(Collectors.joining(",")));
             LOGGER.error(FMLHSMARKER, "Terminating connection with server, mismatched mod list");
-            c.get().setPacketHandled(true);
+            c.setPacketHandled(true);
             //Populate the mod mismatch attribute with a new mismatch data instance to indicate that the disconnect happened due to a mod mismatch
-            c.get().getNetworkManager().channel().attr(NetworkConstants.FML_MOD_MISMATCH_DATA).set(ModMismatchData.channel(modMismatchData.getMismatchedChannelData(), NetworkHooks.getConnectionData(c.get().getNetworkManager()), false));
-            c.get().getNetworkManager().disconnect(Component.literal("Connection closed - mismatched mod channel list"));
+            c.getNetworkManager().channel().attr(NetworkConstants.FML_MOD_MISMATCH_DATA).set(ModMismatchData.channel(modMismatchData.getMismatchedChannelData(), NetworkHooks.getConnectionData(c.getNetworkManager()), false));
+            c.getNetworkManager().disconnect(Component.literal("Connection closed - mismatched mod channel list"));
         }
     }
 
-    void handleRegistryMessage(final HandshakeMessages.S2CRegistry registryPacket, final Supplier<NetworkEvent.Context> contextSupplier){
+    void handleRegistryMessage(final HandshakeMessages.S2CRegistry registryPacket, final NetworkEvent.Context contextSupplier){
         LOGGER.debug(FMLHSMARKER,"Received registry packet for {}", registryPacket.getRegistryName());
         this.registriesToReceive.remove(registryPacket.getRegistryName());
         this.registrySnapshots.put(registryPacket.getRegistryName(), registryPacket.getSnapshot());
@@ -274,20 +274,20 @@ public class HandshakeHandler
             continueHandshake = handleRegistryLoading(contextSupplier);
         }
         // The handshake reply isn't sent until we have processed the message
-        contextSupplier.get().setPacketHandled(true);
+        contextSupplier.setPacketHandled(true);
         if (!continueHandshake) {
             LOGGER.error(FMLHSMARKER, "Connection closed, not continuing handshake");
         } else {
-            NetworkConstants.handshakeChannel.reply(new HandshakeMessages.C2SAcknowledge(), contextSupplier.get());
+            NetworkConstants.handshakeChannel.reply(new HandshakeMessages.C2SAcknowledge(), contextSupplier);
         }
     }
 
-    private boolean handleRegistryLoading(final Supplier<NetworkEvent.Context> contextSupplier) {
+    private boolean handleRegistryLoading(final NetworkEvent.Context contextSupplier) {
         // We use a countdown latch to suspend the impl thread pending the client thread processing the registry data
         AtomicBoolean successfulConnection = new AtomicBoolean(false);
         AtomicReference<Multimap<ResourceLocation, ResourceLocation>> registryMismatches = new AtomicReference<>();
         CountDownLatch block = new CountDownLatch(1);
-        contextSupplier.get().enqueueWork(() -> {
+        contextSupplier.enqueueWork(() -> {
             LOGGER.debug(FMLHSMARKER, "Injecting registry snapshot from server.");
             final Multimap<ResourceLocation, ResourceLocation> missingData = GameData.injectSnapshot(registrySnapshots, false, false);
             LOGGER.debug(FMLHSMARKER, "Snapshot injected.");
@@ -310,22 +310,22 @@ public class HandshakeHandler
         } else {
             LOGGER.error(FMLHSMARKER, "Failed to load registry, closing connection.");
             //Populate the mod mismatch attribute with a new mismatch data instance to indicate that the disconnect happened due to a mod mismatch
-            this.manager.channel().attr(NetworkConstants.FML_MOD_MISMATCH_DATA).set(ModMismatchData.registry(registryMismatches.get(), NetworkHooks.getConnectionData(contextSupplier.get().getNetworkManager())));
+            this.manager.channel().attr(NetworkConstants.FML_MOD_MISMATCH_DATA).set(ModMismatchData.registry(registryMismatches.get(), NetworkHooks.getConnectionData(contextSupplier.getNetworkManager())));
             this.manager.disconnect(Component.literal("Failed to synchronize registry data from server, closing connection"));
         }
         return successfulConnection.get();
     }
 
-    void handleClientAck(final HandshakeMessages.C2SAcknowledge msg, final Supplier<NetworkEvent.Context> contextSupplier) {
+    void handleClientAck(final HandshakeMessages.C2SAcknowledge msg, final NetworkEvent.Context contextSupplier) {
         LOGGER.debug(FMLHSMARKER, "Received acknowledgement from client");
-        contextSupplier.get().setPacketHandled(true);
+        contextSupplier.setPacketHandled(true);
     }
 
-    void handleConfigSync(final HandshakeMessages.S2CConfigData msg, final Supplier<NetworkEvent.Context> contextSupplier) {
+    void handleConfigSync(final HandshakeMessages.S2CConfigData msg, final NetworkEvent.Context contextSupplier) {
         LOGGER.debug(FMLHSMARKER, "Received config sync from server");
         ConfigSync.INSTANCE.receiveSyncedConfig(msg, contextSupplier);
-        contextSupplier.get().setPacketHandled(true);
-        NetworkConstants.handshakeChannel.reply(new HandshakeMessages.C2SAcknowledge(), contextSupplier.get());
+        contextSupplier.setPacketHandled(true);
+        NetworkConstants.handshakeChannel.reply(new HandshakeMessages.C2SAcknowledge(), contextSupplier);
     }
     /**
      * FML will send packets, from Server to Client, from the messages queue until the queue is drained. Each message
@@ -341,7 +341,7 @@ public class HandshakeHandler
     public boolean tickServer()
     {
         if (!negotiationStarted) {
-            GameProfile profile = ((ServerLoginPacketListenerImpl) manager.getPacketListener()).gameProfile;
+            GameProfile profile = ((ServerLoginPacketListenerImpl) manager.getPacketListener()).authenticatedProfile;
             PlayerNegotiationEvent event = new PlayerNegotiationEvent(manager, profile, pendingFutures);
             MinecraftForge.EVENT_BUS.post(event);
             negotiationStarted = true;

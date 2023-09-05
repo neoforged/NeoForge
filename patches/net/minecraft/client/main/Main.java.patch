@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/main/Main.java
++++ b/net/minecraft/client/main/Main.java
+@@ -152,8 +152,8 @@
+       }
+ 
+       CrashReport.preload();
+-      Bootstrap.bootStrap();
+       GameLoadTimesEvent.INSTANCE.setBootstrapTime(Bootstrap.bootstrapDuration.get());
++      net.minecraftforge.fml.loading.BackgroundWaiter.runAndTick(()->Bootstrap.bootStrap(), net.minecraftforge.fml.loading.FMLLoader.progressWindowTick);
+       Bootstrap.validate();
+       Util.startTimerHackThread();
+       String s12 = optionspec25.value(optionset);

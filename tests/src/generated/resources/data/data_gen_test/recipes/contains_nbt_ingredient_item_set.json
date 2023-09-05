@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "type": "forge:partial_nbt",
+      "items": [
+        "minecraft:stone_pickaxe",
+        "minecraft:iron_pickaxe",
+        "minecraft:wooden_pickaxe"
+      ],
+      "tag": {
+        "Damage": 0,
+        "display": {
+          "Name": "{\"text\":\"Diamond Pickaxe\"}"
+        }
+      }
+    }
+  ],
+  "result": {
+    "item": "minecraft:diamond_pickaxe"
+  }
+}

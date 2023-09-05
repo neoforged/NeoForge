@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/portal/PortalShape.java
++++ b/net/minecraft/world/level/portal/PortalShape.java
+@@ -28,7 +28,7 @@
+    public static final int MAX_WIDTH = 21;
+    private static final int MIN_HEIGHT = 3;
+    public static final int MAX_HEIGHT = 21;
+-   private static final BlockBehaviour.StatePredicate FRAME = (p_77720_, p_77721_, p_77722_) -> p_77720_.is(Blocks.OBSIDIAN);
++   private static final BlockBehaviour.StatePredicate FRAME = net.minecraftforge.common.extensions.IForgeBlockState::isPortalFrame;
+    private static final float SAFE_TRAVEL_MAX_ENTITY_XY = 4.0F;
+    private static final double SAFE_TRAVEL_MAX_VERTICAL_DELTA = 1.0;
+    private final LevelAccessor level;

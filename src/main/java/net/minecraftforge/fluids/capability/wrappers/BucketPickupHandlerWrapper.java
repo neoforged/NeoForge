@@ -5,6 +5,7 @@
 
 package net.minecraftforge.fluids.capability.wrappers;
 
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.BucketPickup;
@@ -23,12 +24,14 @@ public class BucketPickupHandlerWrapper implements IFluidHandler
 {
     private static final Logger LOGGER = LogManager.getLogger();
 
+    protected final Player player;
     protected final BucketPickup bucketPickupHandler;
     protected final Level world;
     protected final BlockPos blockPos;
 
-    public BucketPickupHandlerWrapper(BucketPickup bucketPickupHandler, Level world, BlockPos blockPos)
+    public BucketPickupHandlerWrapper(Player player, BucketPickup bucketPickupHandler, Level world, BlockPos blockPos)
     {
+        this.player = player;
         this.bucketPickupHandler = bucketPickupHandler;
         this.world = world;
         this.blockPos = blockPos;
@@ -85,7 +88,7 @@ public class BucketPickupHandlerWrapper implements IFluidHandler
             {
                 if (action.execute())
                 {
-                    ItemStack itemStack = bucketPickupHandler.pickupBlock(world, blockPos, world.getBlockState(blockPos));
+                    ItemStack itemStack = bucketPickupHandler.pickupBlock(player, world, blockPos, world.getBlockState(blockPos));
                     if (itemStack != ItemStack.EMPTY && itemStack.getItem() instanceof BucketItem bucket)
                     {
                         FluidStack extracted = new FluidStack(bucket.getFluid(), FluidType.BUCKET_VOLUME);
@@ -126,7 +129,7 @@ public class BucketPickupHandlerWrapper implements IFluidHandler
                 {
                     return new FluidStack(fluidState.getType(), FluidType.BUCKET_VOLUME);
                 }
-                ItemStack itemStack = bucketPickupHandler.pickupBlock(world, blockPos, world.getBlockState(blockPos));
+                ItemStack itemStack = bucketPickupHandler.pickupBlock(player, world, blockPos, world.getBlockState(blockPos));
                 if (itemStack != ItemStack.EMPTY && itemStack.getItem() instanceof BucketItem bucket)
                 {
                     return new FluidStack(bucket.getFluid(), FluidType.BUCKET_VOLUME);

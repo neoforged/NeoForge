@@ -106,7 +106,7 @@ public class UnbakedGeometryHelper
 
         // Handle vanilla item models here, since vanilla has a shortcut for them
         if (blockModel.getRootModel() == ModelBakery.GENERATION_MARKER)
-            return ITEM_MODEL_GENERATOR.generateBlockModel(spriteGetter, blockModel).bake(modelBaker, blockModel, spriteGetter, modelState, modelLocation, guiLight3d);
+            return ITEM_MODEL_GENERATOR.generateBlockModel(spriteGetter, blockModel).bakeVanilla(modelBaker, blockModel, spriteGetter, modelState, modelLocation, guiLight3d);
 
         if (blockModel.getRootModel() == ModelBakery.BLOCK_ENTITY_MARKER)
         {

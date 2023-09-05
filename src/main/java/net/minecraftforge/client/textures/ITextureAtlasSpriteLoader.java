@@ -12,6 +12,7 @@ import net.minecraft.client.resources.metadata.animation.AnimationMetadataSectio
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceMetadata;
 import net.minecraftforge.client.event.RegisterTextureAtlasSpriteLoadersEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,8 +32,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface ITextureAtlasSpriteLoader
 {
-    SpriteContents loadContents(ResourceLocation name, Resource resource, FrameSize frameSize, NativeImage image,
-            AnimationMetadataSection animationMeta, ForgeTextureMetadata forgeMeta);
+    SpriteContents loadContents(ResourceLocation name, Resource resource, FrameSize frameSize, NativeImage image, ResourceMetadata metadata);
 
     /**
      * Creates a {@link TextureAtlasSprite} from the given {@link SpriteContents}.

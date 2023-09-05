@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/entity/Shearable.java
++++ b/net/minecraft/world/entity/Shearable.java
+@@ -2,8 +2,11 @@
+ 
+ import net.minecraft.sounds.SoundSource;
+ 
++@Deprecated // Forge: Use IForgeShearable
+ public interface Shearable {
++   @Deprecated // Forge: Use IForgeShearable
+    void shear(SoundSource p_21749_);
+ 
++   @Deprecated // Forge: Use IForgeShearable
+    boolean readyForShearing();
+ }

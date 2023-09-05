@@ -38,7 +38,7 @@ public class LoginWrapper
     private <T extends NetworkEvent> void wrapperReceived(final T packet) {
         // we don't care about channel registration change events on this channel
         if (packet instanceof NetworkEvent.ChannelRegistrationChangeEvent) return;
-        final NetworkEvent.Context wrappedContext = packet.getSource().get();
+        final NetworkEvent.Context wrappedContext = packet.getSource();
         final FriendlyByteBuf payload = packet.getPayload();
         ResourceLocation targetNetworkReceiver = NetworkConstants.FML_HANDSHAKE_RESOURCE;
         FriendlyByteBuf data = null;
@@ -53,7 +53,7 @@ public class LoginWrapper
             LOGGER.debug(HandshakeHandler.FMLHSMARKER, "Dispatching wrapped packet reply for channel {} with index {}", rl, loginSequence);
             wrappedContext.getPacketDispatcher().sendPacket(WRAPPER, this.wrapPacket(rl, buf));
         });
-        final NetworkEvent.LoginPayloadEvent loginPayloadEvent = new NetworkEvent.LoginPayloadEvent(data, () -> context, loginSequence);
+        final NetworkEvent.LoginPayloadEvent loginPayloadEvent = new NetworkEvent.LoginPayloadEvent(data, context, loginSequence);
         NetworkRegistry.findTarget(targetNetworkReceiver).ifPresent(ni -> {
             ni.dispatchLoginPacket(loginPayloadEvent);
             wrappedContext.setPacketHandled(context.getPacketHandled());
@@ -70,6 +70,6 @@ public class LoginWrapper
 
     void sendServerToClientLoginPacket(final ResourceLocation resourceLocation, final FriendlyByteBuf buffer, final int index, final Connection manager) {
         FriendlyByteBuf pb = wrapPacket(resourceLocation, buffer);
-        manager.send(NetworkDirection.LOGIN_TO_CLIENT.buildPacket(Pair.of(pb, index), WRAPPER).getThis());
+        manager.send(LoginNetworkDirection.LOGIN_TO_CLIENT.buildPacket(new INetworkDirection.PacketData(pb, index), WRAPPER));
     }
 }

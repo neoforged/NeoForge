@@ -1,0 +1,26 @@
+--- a/net/minecraft/world/level/biome/BiomeGenerationSettings.java
++++ b/net/minecraft/world/level/biome/BiomeGenerationSettings.java
+@@ -50,6 +50,7 @@
+             .apply(p_186655_, BiomeGenerationSettings::new)
+    );
+    private final Map<GenerationStep.Carving, HolderSet<ConfiguredWorldCarver<?>>> carvers;
++   private final java.util.Set<GenerationStep.Carving> carversView;
+    private final List<HolderSet<PlacedFeature>> features;
+    private final Supplier<List<ConfiguredFeature<?, ?>>> flowerFeatures;
+    private final Supplier<Set<PlacedFeature>> featureSet;
+@@ -66,10 +67,15 @@
+                .collect(ImmutableList.toImmutableList())
+       );
+       this.featureSet = Suppliers.memoize(() -> p_186651_.stream().flatMap(HolderSet::stream).map(Holder::value).collect(Collectors.toSet()));
++      this.carversView = java.util.Collections.unmodifiableSet(carvers.keySet());
+    }
+ 
+    public Iterable<Holder<ConfiguredWorldCarver<?>>> getCarvers(GenerationStep.Carving p_204188_) {
+       return Objects.requireNonNullElseGet(this.carvers.get(p_204188_), List::of);
++   }
++
++   public java.util.Set<GenerationStep.Carving> getCarvingStages() {
++       return this.carversView;
+    }
+ 
+    public List<ConfiguredFeature<?, ?>> getFlowerFeatures() {

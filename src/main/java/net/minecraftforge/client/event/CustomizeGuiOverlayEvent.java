@@ -15,6 +15,7 @@ import net.minecraftforge.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fired when an overlay is about to be rendered to the screen to allow the user to modify it.
@@ -133,11 +134,11 @@ public abstract class CustomizeGuiOverlayEvent extends Event
      */
     public static class DebugText extends CustomizeGuiOverlayEvent
     {
-        private final ArrayList<String> left;
-        private final ArrayList<String> right;
+        private final List<String> left;
+        private final List<String> right;
 
         @ApiStatus.Internal
-        public DebugText(Window window, GuiGraphics guiGraphics, float partialTick, ArrayList<String> left, ArrayList<String> right)
+        public DebugText(Window window, GuiGraphics guiGraphics, float partialTick, List<String> left, List<String> right)
         {
             super(window, guiGraphics, partialTick);
             this.left = left;
@@ -147,7 +148,7 @@ public abstract class CustomizeGuiOverlayEvent extends Event
         /**
          * @return the modifiable list of text to render on the left side
          */
-        public ArrayList<String> getLeft()
+        public List<String> getLeft()
         {
             return left;
         }
@@ -155,7 +156,7 @@ public abstract class CustomizeGuiOverlayEvent extends Event
         /**
          * @return the modifiable list of text to render on the right side
          */
-        public ArrayList<String> getRight()
+        public List<String> getRight()
         {
             return right;
         }

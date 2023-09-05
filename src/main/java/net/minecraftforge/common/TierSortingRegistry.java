@@ -33,7 +33,7 @@ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.toposort.TopologicalSort;
-import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.PlayNetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
@@ -233,7 +233,7 @@ public class TierSortingRegistry
     /*package private*/
     static void init()
     {
-        SYNC_CHANNEL.registerMessage(0, SyncPacket.class, SyncPacket::encode, TierSortingRegistry::receive, TierSortingRegistry::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        SYNC_CHANNEL.registerMessage(0, SyncPacket.class, SyncPacket::encode, TierSortingRegistry::receive, TierSortingRegistry::handle, Optional.of(PlayNetworkDirection.PLAY_TO_CLIENT));
         MinecraftForge.EVENT_BUS.addListener(TierSortingRegistry::playerLoggedIn);
         if (FMLEnvironment.dist == Dist.CLIENT) ClientEvents.init();
     }
@@ -366,10 +366,10 @@ public class TierSortingRegistry
         return new SyncPacket(list);
     }
 
-    private static void handle(SyncPacket packet, Supplier<NetworkEvent.Context> context)
+    private static void handle(SyncPacket packet, NetworkEvent.Context context)
     {
         setTierOrder(packet.tiers.stream().map(TierSortingRegistry::byName).toList());
-        context.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 
     private record SyncPacket(List<ResourceLocation> tiers)

@@ -22,6 +22,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.protocol.handshake.ClientIntent;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.RepositorySource;
@@ -51,6 +52,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
 import net.minecraft.network.protocol.login.ClientboundLoginDisconnectPacket;
+import net.minecraft.server.packs.repository.BuiltInPackSource;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -159,7 +161,7 @@ public class ServerLifecycleHooks
             return false;
         }
 
-        if (packet.getIntention() == ConnectionProtocol.LOGIN) {
+        if (packet.intention() == ClientIntent.LOGIN) {
             final ConnectionType connectionType = ConnectionType.forVersionFlag(packet.getFMLVersion());
             final int versionNumber = connectionType.getFMLVersionNumber(packet.getFMLVersion());
 
@@ -174,7 +176,7 @@ public class ServerLifecycleHooks
             }
         }
 
-        if (packet.getIntention() == ConnectionProtocol.STATUS) return true;
+        if (packet.intention() == ClientIntent.STATUS) return true;
 
         NetworkHooks.registerServerLoginChannel(manager, packet);
         return true;
@@ -182,7 +184,7 @@ public class ServerLifecycleHooks
     }
 
     private static void rejectConnection(final Connection manager, ConnectionType type, String message) {
-        manager.setProtocol(ConnectionProtocol.LOGIN);
+        manager.setClientboundProtocolAfterHandshake(ClientIntent.LOGIN);
         String ip = "local";
         if (manager.getRemoteAddress() != null)
            ip = manager.getRemoteAddress().toString();
@@ -208,7 +210,7 @@ public class ServerLifecycleHooks
             IModInfo mod = e.getKey().getModInfos().get(0);
             if (Objects.equals(mod.getModId(), "minecraft")) continue; // skip the minecraft "mod"
             final String name = "mod:" + mod.getModId();
-            final Pack modPack = Pack.readMetaAndCreate(name, Component.literal(e.getValue().packId()), false, id -> e.getValue(), PackType.SERVER_DATA, Pack.Position.BOTTOM, PackSource.DEFAULT);
+            final Pack modPack = Pack.readMetaAndCreate(name, Component.literal(e.getValue().packId()), false, BuiltInPackSource.fixedResources(e.getValue()), PackType.SERVER_DATA, Pack.Position.BOTTOM, PackSource.DEFAULT);
             if (modPack == null) {
                 // Vanilla only logs an error, instead of propagating, so handle null and warn that something went wrong
                 ModLoader.get().addWarning(new ModLoadingWarning(mod, ModLoadingStage.ERROR, "fml.modloading.brokenresources", e.getKey()));

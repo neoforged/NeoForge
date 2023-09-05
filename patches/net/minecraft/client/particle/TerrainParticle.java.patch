@@ -1,0 +1,27 @@
+--- a/net/minecraft/client/particle/TerrainParticle.java
++++ b/net/minecraft/client/particle/TerrainParticle.java
+@@ -40,7 +40,7 @@
+       this.rCol = 0.6F;
+       this.gCol = 0.6F;
+       this.bCol = 0.6F;
+-      if (!p_172458_.is(Blocks.GRASS_BLOCK)) {
++      if (net.minecraftforge.client.extensions.common.IClientBlockExtensions.of(p_172458_).areBreakingParticlesTinted(p_172458_, p_172451_, p_172459_)) {
+          int i = Minecraft.getInstance().getBlockColors().getColor(p_172458_, p_172451_, p_172459_, 0);
+          this.rCol *= (float)(i >> 16 & 0xFF) / 255.0F;
+          this.gCol *= (float)(i >> 8 & 0xFF) / 255.0F;
+@@ -97,8 +97,14 @@
+       ) {
+          BlockState blockstate = p_108304_.getState();
+          return !blockstate.isAir() && !blockstate.is(Blocks.MOVING_PISTON) && blockstate.shouldSpawnTerrainParticles()
+-            ? new TerrainParticle(p_108305_, p_108306_, p_108307_, p_108308_, p_108309_, p_108310_, p_108311_, blockstate)
++            ? new TerrainParticle(p_108305_, p_108306_, p_108307_, p_108308_, p_108309_, p_108310_, p_108311_, blockstate).updateSprite(blockstate, p_108304_.getPos())
+             : null;
+       }
++   }
++
++   public Particle updateSprite(BlockState state, BlockPos pos) { //FORGE: we cannot assume that the x y z of the particles match the block pos of the block.
++      if (pos != null) // There are cases where we are not able to obtain the correct source pos, and need to fallback to the non-model data version
++         this.setSprite(Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getTexture(state, level, pos));
++      return this;
+    }
+ }

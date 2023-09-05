@@ -9,7 +9,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectArrayMap;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.HandshakeHandler;
-import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.INetworkDirection;
+import net.minecraftforge.network.PlayNetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.NetworkInstance;
@@ -52,16 +53,16 @@ public class IndexedMessageCodec
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     class MessageHandler<MSG>
     {
-        private final Optional<BiConsumer<MSG, FriendlyByteBuf>> encoder;
-        private final Optional<Function<FriendlyByteBuf, MSG>> decoder;
+        private final Optional<MessageFunctions.MessageEncoder<MSG>> encoder;
+        private final Optional<MessageFunctions.MessageDecoder<MSG>> decoder;
         private final int index;
-        private final BiConsumer<MSG,Supplier<NetworkEvent.Context>> messageConsumer;
+        private final MessageFunctions.MessageConsumer<MSG> messageConsumer;
         private final Class<MSG> messageType;
-        private final Optional<NetworkDirection> networkDirection;
-        private Optional<BiConsumer<MSG, Integer>> loginIndexSetter;
-        private Optional<Function<MSG, Integer>> loginIndexGetter;
+        private final Optional<INetworkDirection<?>> networkDirection;
+        private Optional<MessageFunctions.LoginIndexSetter<MSG>> loginIndexSetter;
+        private Optional<MessageFunctions.LoginIndexGetter<MSG>> loginIndexGetter;
 
-        public MessageHandler(int index, Class<MSG> messageType, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer, final Optional<NetworkDirection> networkDirection)
+        public MessageHandler(int index, Class<MSG> messageType, MessageFunctions.MessageEncoder<MSG> encoder, MessageFunctions.MessageDecoder<MSG> decoder, MessageFunctions.MessageConsumer<MSG> messageConsumer, final Optional<INetworkDirection<?>> networkDirection)
         {
             this.index = index;
             this.messageType = messageType;
@@ -75,20 +76,20 @@ public class IndexedMessageCodec
             types.put(messageType, this);
         }
 
-        void setLoginIndexSetter(BiConsumer<MSG, Integer> loginIndexSetter)
+        void setLoginIndexSetter(MessageFunctions.LoginIndexSetter<MSG> loginIndexSetter)
         {
             this.loginIndexSetter = Optional.of(loginIndexSetter);
         }
 
-        Optional<BiConsumer<MSG, Integer>> getLoginIndexSetter() {
+        Optional<MessageFunctions.LoginIndexSetter<MSG>> getLoginIndexSetter() {
             return this.loginIndexSetter;
         }
 
-        void setLoginIndexGetter(Function<MSG, Integer> loginIndexGetter) {
+        void setLoginIndexGetter(MessageFunctions.LoginIndexGetter<MSG> loginIndexGetter) {
             this.loginIndexGetter = Optional.of(loginIndexGetter);
         }
 
-        public Optional<Function<MSG, Integer>> getLoginIndexGetter() {
+        public Optional<MessageFunctions.LoginIndexGetter<MSG>> getLoginIndexGetter() {
             return this.loginIndexGetter;
         }
 
@@ -102,25 +103,25 @@ public class IndexedMessageCodec
         }
     }
 
-    private static <M> void tryDecode(FriendlyByteBuf payload, Supplier<NetworkEvent.Context> context, int payloadIndex, MessageHandler<M> codec)
+    private static <M> void tryDecode(FriendlyByteBuf payload, NetworkEvent.Context context, int payloadIndex, MessageHandler<M> codec)
     {
-        codec.decoder.map(d->d.apply(payload)).
+        codec.decoder.map(d->d.decode(payload)).
                 map(p->{
                     // Only run the loginIndex function for payloadIndexed packets (login)
                     if (payloadIndex != Integer.MIN_VALUE)
                     {
-                        codec.getLoginIndexSetter().ifPresent(f-> f.accept(p, payloadIndex));
+                        codec.getLoginIndexSetter().ifPresent(f-> f.setLoginIndex(p, payloadIndex));
                     }
                     return p;
-                }).ifPresent(m->codec.messageConsumer.accept(m, context));
+                }).ifPresent(m -> codec.messageConsumer.handle(m, context));
     }
 
     private static <M> int tryEncode(FriendlyByteBuf target, M message, MessageHandler<M> codec) {
         codec.encoder.ifPresent(encoder->{
             target.writeByte(codec.index & 0xff);
-            encoder.accept(message, target);
+            encoder.encode(message, target);
         });
-        return codec.loginIndexGetter.orElse(m -> Integer.MIN_VALUE).apply(message);
+        return codec.loginIndexGetter.orElse(m -> Integer.MIN_VALUE).getLoginIndex(message);
     }
 
     public <MSG> int build(MSG message, FriendlyByteBuf target)
@@ -134,12 +135,12 @@ public class IndexedMessageCodec
         return tryEncode(target, message, messageHandler);
     }
 
-    void consume(FriendlyByteBuf payload, int payloadIndex, Supplier<NetworkEvent.Context> context) {
+    void consume(FriendlyByteBuf payload, int payloadIndex, NetworkEvent.Context context) {
         if (payload == null || !payload.isReadable()) {
             LOGGER.error(SIMPLENET, "Received empty payload on channel {}", Optional.ofNullable(networkInstance).map(NetworkInstance::getChannelName).map(Objects::toString).orElse("MISSING CHANNEL"));
-            if (!HandshakeHandler.packetNeedsResponse(context.get().getNetworkManager(), payloadIndex))
+            if (!HandshakeHandler.packetNeedsResponse(context.getNetworkManager(), payloadIndex))
             {
-                context.get().setPacketHandled(true); //don't disconnect if the corresponding S2C packet that was not recognized on the client doesn't require a proper response
+                context.setPacketHandled(true); //don't disconnect if the corresponding S2C packet that was not recognized on the client doesn't require a proper response
             }
             return;
         }
@@ -149,11 +150,11 @@ public class IndexedMessageCodec
             LOGGER.error(SIMPLENET, "Received invalid discriminator byte {} on channel {}", discriminator, Optional.ofNullable(networkInstance).map(NetworkInstance::getChannelName).map(Objects::toString).orElse("MISSING CHANNEL"));
             return;
         }
-        NetworkHooks.validatePacketDirection(context.get().getDirection(), messageHandler.networkDirection, context.get().getNetworkManager());
+        NetworkHooks.validatePacketDirection(context.getDirection(), messageHandler.networkDirection, context.getNetworkManager());
         tryDecode(payload, context, payloadIndex, messageHandler);
     }
 
-    <MSG> MessageHandler<MSG> addCodecIndex(int index, Class<MSG> messageType, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer, final Optional<NetworkDirection> networkDirection) {
+    <MSG> MessageHandler<MSG> addCodecIndex(int index, Class<MSG> messageType, MessageFunctions.MessageEncoder<MSG> encoder, MessageFunctions.MessageDecoder<MSG> decoder, MessageFunctions.MessageConsumer<MSG> messageConsumer, final Optional<INetworkDirection<?>> networkDirection) {
         return new MessageHandler<>(index, messageType, encoder, decoder, messageConsumer, networkDirection);
     }
 }

@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/entity/projectile/AbstractArrow.java
++++ b/net/minecraft/world/entity/projectile/AbstractArrow.java
+@@ -155,7 +155,7 @@
+          --this.shakeTime;
+       }
+ 
+-      if (this.isInWaterOrRain() || blockstate.is(Blocks.POWDER_SNOW)) {
++      if (this.isInWaterOrRain() || blockstate.is(Blocks.POWDER_SNOW) || this.isInFluidType((fluidType, height) -> this.canFluidExtinguish(fluidType))) {
+          this.clearFire();
+       }
+ 
+@@ -191,7 +191,9 @@
+                }
+             }
+ 
+-            if (hitresult != null && !flag) {
++            if (hitresult != null && hitresult.getType() != HitResult.Type.MISS && !flag) {
++               if (net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult))
++                  break;
+                this.onHit(hitresult);
+                this.hasImpulse = true;
+             }

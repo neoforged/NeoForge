@@ -13,6 +13,7 @@ import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +38,7 @@ public class ScreenshotEvent extends Event
     private final NativeImage image;
     private File screenshotFile;
 
+    @Nullable
     private Component resultMessage = null;
 
     @ApiStatus.Internal
@@ -81,6 +83,7 @@ public class ScreenshotEvent extends Event
     /**
      * {@return the custom cancellation message, or {@code null} if no custom message is set}
      */
+    @Nullable
     public Component getResultMessage()
     {
         return resultMessage;
@@ -92,7 +95,7 @@ public class ScreenshotEvent extends Event
      *
      * @param resultMessage the new result message
      */
-    public void setResultMessage(Component resultMessage)
+    public void setResultMessage(@Nullable Component resultMessage)
     {
         this.resultMessage = resultMessage;
     }

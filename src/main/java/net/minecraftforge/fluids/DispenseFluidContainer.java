@@ -5,11 +5,10 @@
 
 package net.minecraftforge.fluids;
 
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
-import net.minecraft.core.BlockSource;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
@@ -54,9 +53,9 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior
     @NotNull
     private ItemStack fillContainer(@NotNull BlockSource source, @NotNull ItemStack stack)
     {
-        Level level = source.getLevel();
-        Direction dispenserFacing = source.getBlockState().getValue(DispenserBlock.FACING);
-        BlockPos blockpos = source.getPos().relative(dispenserFacing);
+        Level level = source.level();
+        Direction dispenserFacing = source.state().getValue(DispenserBlock.FACING);
+        BlockPos blockpos = source.pos().relative(dispenserFacing);
 
         FluidActionResult actionResult = FluidUtil.tryPickUpFluid(stack, null, level, blockpos, dispenserFacing.getOpposite());
         ItemStack resultStack = actionResult.getResult();
@@ -70,7 +69,7 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior
         {
             return resultStack;
         }
-        else if (((DispenserBlockEntity)source.getEntity()).addItem(resultStack) < 0)
+        else if (source.blockEntity().addItem(resultStack) < 0)
         {
             this.dispenseBehavior.dispense(source, resultStack);
         }
@@ -95,9 +94,9 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior
         }
 
         FluidStack fluidStack = fluidHandler.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.EXECUTE);
-        Direction dispenserFacing = source.getBlockState().getValue(DispenserBlock.FACING);
-        BlockPos blockpos = source.getPos().relative(dispenserFacing);
-        FluidActionResult result = FluidUtil.tryPlaceFluid(null, source.getLevel(), InteractionHand.MAIN_HAND, blockpos, stack, fluidStack);
+        Direction dispenserFacing = source.state().getValue(DispenserBlock.FACING);
+        BlockPos blockpos = source.pos().relative(dispenserFacing);
+        FluidActionResult result = FluidUtil.tryPlaceFluid(null, source.level(), InteractionHand.MAIN_HAND, blockpos, stack, fluidStack);
 
         if (result.isSuccess())
         {
@@ -107,7 +106,7 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior
             {
                 return drainedStack;
             }
-            else if (!drainedStack.isEmpty() && ((DispenserBlockEntity)source.getEntity()).addItem(drainedStack) < 0)
+            else if (!drainedStack.isEmpty() && source.blockEntity().addItem(drainedStack) < 0)
             {
                 this.dispenseBehavior.dispense(source, drainedStack);
             }

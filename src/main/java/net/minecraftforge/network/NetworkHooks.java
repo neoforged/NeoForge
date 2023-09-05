@@ -28,14 +28,12 @@ import org.apache.logging.log4j.Logger;
 import io.netty.buffer.Unpooled;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
-import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
@@ -71,24 +69,39 @@ public class NetworkHooks
     public static Packet<ClientGamePacketListener> getEntitySpawningPacket(Entity entity)
     {
         // ClientboundCustomPayloadPacket is an instance of Packet<ClientGamePacketListener>
-        return (Packet<ClientGamePacketListener>) NetworkConstants.playChannel.toVanillaPacket(new PlayMessages.SpawnEntity(entity), NetworkDirection.PLAY_TO_CLIENT);
+        return (Packet<ClientGamePacketListener>) NetworkConstants.playChannel.toVanillaPacket(new PlayMessages.SpawnEntity(entity), PlayNetworkDirection.PLAY_TO_CLIENT);
     }
 
-    public static boolean onCustomPayload(final ICustomPacket<?> packet, final Connection manager) {
-        return NetworkRegistry.findTarget(packet.getName()).
-                filter(ni->validateSideForProcessing(packet, ni, manager)).
-                map(ni->ni.dispatch(packet.getDirection(), packet, manager)).orElse(Boolean.FALSE);
+    public static boolean onCustomPayload(Packet<?> packet, final IForgeCustomPacketPayload payload, final Connection manager) {
+        return NetworkRegistry.findTarget(payload.id()).
+                filter(ni->validateSideForProcessing(packet, payload, ni, manager)).
+                map(ni->ni.dispatch(payload.getDirection(packet), payload, manager)).orElse(Boolean.FALSE);
     }
 
-    private static boolean validateSideForProcessing(final ICustomPacket<?> packet, final NetworkInstance ni, final Connection manager) {
-        if (packet.getDirection().getReceptionSide() != EffectiveSide.get()) {
+
+    public static boolean onCustomQuery(Packet<?> packet, final IForgeCustomQueryPayload payload, final Connection manager) {
+        return NetworkRegistry.findTarget(payload.id()).
+                filter(ni->validateSideForProcessing(packet, payload, ni, manager)).
+                map(ni->ni.dispatch(payload.getDirection(packet), payload, manager)).orElse(Boolean.FALSE);
+    }
+
+    private static boolean validateSideForProcessing(Packet<?> packet, final IForgeCustomPacketPayload payload, final NetworkInstance ni, final Connection manager) {
+        if (payload.getDirection(packet).getReceptionSide() != EffectiveSide.get()) {
             manager.disconnect(Component.literal("Illegal packet received, terminating connection"));
             return false;
         }
         return true;
     }
 
-    public static void validatePacketDirection(final NetworkDirection packetDirection, final Optional<NetworkDirection> expectedDirection, final Connection connection) {
+    private static boolean validateSideForProcessing(Packet<?> packet, final IForgeCustomQueryPayload payload, final NetworkInstance ni, final Connection manager) {
+        if (payload.getDirection(packet).getReceptionSide() != EffectiveSide.get()) {
+            manager.disconnect(Component.literal("Illegal packet received, terminating connection"));
+            return false;
+        }
+        return true;
+    }
+
+    public static void validatePacketDirection(final INetworkDirection<?> packetDirection, final Optional<INetworkDirection<?>> expectedDirection, final Connection connection) {
         if (packetDirection != expectedDirection.orElse(packetDirection)) {
             connection.disconnect(Component.literal("Illegal packet received, terminating connection"));
             throw new IllegalStateException("Invalid packet received, aborting connection");
@@ -97,22 +110,22 @@ public class NetworkHooks
     public static void registerServerLoginChannel(Connection manager, ClientIntentionPacket packet)
     {
         manager.channel().attr(NetworkConstants.FML_NETVERSION).set(packet.getFMLVersion());
-        HandshakeHandler.registerHandshake(manager, NetworkDirection.LOGIN_TO_CLIENT);
+        HandshakeHandler.registerHandshake(manager, LoginNetworkDirection.LOGIN_TO_CLIENT);
     }
 
     public synchronized static void registerClientLoginChannel(Connection manager)
     {
         manager.channel().attr(NetworkConstants.FML_NETVERSION).set(NetworkConstants.NOVERSION);
-        HandshakeHandler.registerHandshake(manager, NetworkDirection.LOGIN_TO_SERVER);
+        HandshakeHandler.registerHandshake(manager, LoginNetworkDirection.LOGIN_TO_SERVER);
     }
 
-    public synchronized static void sendMCRegistryPackets(Connection manager, String direction) {
+    public synchronized static void sendMCRegistryPackets(Connection manager, PlayNetworkDirection direction) {
         NetworkFilters.injectIfNecessary(manager);
         final Set<ResourceLocation> resourceLocations = NetworkRegistry.buildChannelVersions().keySet().stream().
                 filter(rl -> !Objects.equals(rl.getNamespace(), "minecraft")).
                 collect(Collectors.toSet());
         MCRegisterPacketHandler.INSTANCE.addChannels(resourceLocations, manager);
-        MCRegisterPacketHandler.INSTANCE.sendRegistry(manager, NetworkDirection.valueOf(direction));
+        MCRegisterPacketHandler.INSTANCE.sendRegistry(manager, direction);
     }
 
     //TODO Dimensions..
@@ -139,7 +152,7 @@ public class NetworkHooks
         }
     }
 
-    public static boolean tickNegotiation(ServerLoginPacketListenerImpl netHandlerLoginServer, Connection networkManager, ServerPlayer player)
+    public static boolean tickNegotiation(Connection networkManager)
     {
         return HandshakeHandler.tickLogin(networkManager);
     }
@@ -206,7 +219,7 @@ public class NetworkHooks
             return;
         MenuType<?> type = c.getType();
         PlayMessages.OpenContainer msg = new PlayMessages.OpenContainer(type, openContainerId, containerSupplier.getDisplayName(), output);
-        NetworkConstants.playChannel.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+        NetworkConstants.playChannel.sendTo(msg, player.connection.connection, PlayNetworkDirection.PLAY_TO_CLIENT);
 
         player.containerMenu = c;
         player.initMenu(player.containerMenu);

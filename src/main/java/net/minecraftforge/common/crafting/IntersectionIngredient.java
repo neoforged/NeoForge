@@ -5,41 +5,46 @@
 
 package net.minecraftforge.common.crafting;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntComparators;
+import com.google.common.collect.Lists;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.common.ForgeMod;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import java.util.*;
 
 /** Ingredient that matches if all child ingredients match */
-public class IntersectionIngredient extends AbstractIngredient
+public class IntersectionIngredient extends Ingredient
 {
+    public static final Codec<IntersectionIngredient> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+            Ingredient.LIST_CODEC.fieldOf("children").forGetter(IntersectionIngredient::getChildren)
+    ).apply(builder, IntersectionIngredient::new));
+
+    public static final Codec<IntersectionIngredient> CODEC_NONEMPTY = RecordCodecBuilder.create(builder -> builder.group(
+            Ingredient.LIST_CODEC_NONEMPTY.fieldOf("children").forGetter(IntersectionIngredient::getChildren)
+    ).apply(builder, IntersectionIngredient::new));
+
     private final List<Ingredient> children;
-    private final boolean isSimple;
-    private ItemStack[] intersectedMatchingStacks = null;
-    private IntList packedMatchingStacks = null;
+
     protected IntersectionIngredient(List<Ingredient> children)
     {
-        if (children.size() < 2)
-            throw new IllegalArgumentException("Cannot create an IntersectionIngredient with one or no children");
+        super(children.stream().flatMap(ingredient -> Arrays.stream(ingredient.getValues()).map(value -> {
+            final List<Ingredient> matchers = new ArrayList<>(children);
+            matchers.remove(ingredient);
+            
+            return new IntersectionValue(value, matchers);
+        })), ForgeMod.INTERSECTION_INGREDIENT_TYPE::get);
+        
         this.children = Collections.unmodifiableList(children);
-        this.isSimple = children.stream().allMatch(Ingredient::isSimple);
     }
-
+    
+    public List<Ingredient> getChildren() {
+        return children;
+    }
+    
     /**
      * Gets an intersection ingredient
      * @param ingredients  List of ingredients to match
@@ -54,124 +59,51 @@ public class IntersectionIngredient extends AbstractIngredient
 
         return new IntersectionIngredient(Arrays.asList(ingredients));
     }
-
+    
     @Override
-    public boolean test(@Nullable ItemStack stack)
-    {
-        if (stack == null || stack.isEmpty())
-            return false;
-
-        for (Ingredient ingredient : children)
-            if (!ingredient.test(stack))
-                return false;
-
-        return true;
-    }
-
-    @Override
-    public ItemStack[] getItems()
-    {
-        if (this.intersectedMatchingStacks == null)
-        {
-            this.intersectedMatchingStacks = Arrays
-                    .stream(children.get(0).getItems())
-                    .filter(stack ->
-                        {
-                            // the first ingredient is treated as a base, filtered by the second onwards
-                            for (int i = 1; i < children.size(); i++)
-                                if (!children.get(i).test(stack))
-                                    return false;
-                            return true;
-                        })
-                    .toArray(ItemStack[]::new);
+    public ItemStack[] getItems() {
+        if (synchronizeWithContents())
+            return super.getItems();
+        
+        final List<ItemStack> list = Lists.newArrayList();
+        for (Ingredient child : children) {
+            final var stacks = child.getItems();
+            Arrays.stream(stacks).filter(this).forEach(list::add);
         }
-        return intersectedMatchingStacks;
+        
+        return list.toArray(ItemStack[]::new);
     }
-
+    
     @Override
-    public boolean isEmpty()
-    {
-        return children.stream().anyMatch(Ingredient::isEmpty);
+    public boolean test(@Nullable ItemStack p_43914_) {
+        if (synchronizeWithContents())
+            return super.test(p_43914_);
+        
+        return children.stream().allMatch(c -> c.test(p_43914_));
+    }
+    
+    @Override
+    public boolean synchronizeWithContents() {
+        return children.stream().allMatch(Ingredient::synchronizeWithContents);
     }
 
     @Override
     public boolean isSimple()
     {
-        return isSimple;
+        return false;
     }
-
-    @Override
-    protected void invalidate()
-    {
-        super.invalidate();
-        this.intersectedMatchingStacks = null;
-        this.packedMatchingStacks = null;
-    }
-
-    @Override
-    public IntList getStackingIds()
-    {
-        if (this.packedMatchingStacks == null || checkInvalidation())
-        {
-            markValid();
-            ItemStack[] matchingStacks = getItems();
-            this.packedMatchingStacks = new IntArrayList(matchingStacks.length);
-            for(ItemStack stack : matchingStacks)
-                this.packedMatchingStacks.add(StackedContents.getStackingIndex(stack));
-            this.packedMatchingStacks.sort(IntComparators.NATURAL_COMPARATOR);
-        }
-        return packedMatchingStacks;
-    }
-
-    @Override
-    public JsonElement toJson()
-    {
-        JsonObject json = new JsonObject();
-        json.addProperty("type", CraftingHelper.getID(Serializer.INSTANCE).toString());
-        JsonArray array = new JsonArray();
-        for (Ingredient ingredient : children)
-            array.add(ingredient.toJson());
-
-        json.add("children", array);
-        return json;
-    }
-
-    @Override
-    public IIngredientSerializer<IntersectionIngredient> getSerializer()
-    {
-        return Serializer.INSTANCE;
-    }
-
-    public static class Serializer implements IIngredientSerializer<IntersectionIngredient>
-    {
-        public static final IIngredientSerializer<IntersectionIngredient> INSTANCE = new Serializer();
-
+    
+    public record IntersectionValue(Value inner, List<Ingredient> other) implements Ingredient.Value {
+        
         @Override
-        public IntersectionIngredient parse(JsonObject json)
-        {
-            JsonArray children = GsonHelper.getAsJsonArray(json, "children");
-            if (children.size() < 2)
-                throw new JsonSyntaxException("Must have at least two children for an intersection ingredient");
-
-            return new IntersectionIngredient(
-                    IntStream.range(0, children.size())
-                            .mapToObj(i -> Ingredient.fromJson(children.get(i), false))
-                            .toList()
-            );
-        }
-
-        @Override
-        public IntersectionIngredient parse(FriendlyByteBuf buffer)
-        {
-            return new IntersectionIngredient(Stream.generate(() -> Ingredient.fromNetwork(buffer)).limit(buffer.readVarInt()).toList());
-        }
-
-        @Override
-        public void write(FriendlyByteBuf buffer, IntersectionIngredient intersection)
-        {
-            buffer.writeVarInt(intersection.children.size());
-            for (Ingredient ingredient : intersection.children)
-                ingredient.toNetwork(buffer);
+        public Collection<ItemStack> getItems() {
+            final Collection<ItemStack> inner = new ArrayList<>(inner().getItems());
+            
+            inner.removeIf(stack -> {
+                return !other().stream().allMatch(ingredient -> ingredient.test(stack));
+            });
+            
+            return inner;
         }
     }
 }

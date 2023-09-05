@@ -1,0 +1,44 @@
+--- a/net/minecraft/world/level/storage/PrimaryLevelData.java
++++ b/net/minecraft/world/level/storage/PrimaryLevelData.java
+@@ -83,6 +83,7 @@
+    private boolean wasModded;
+    private final Set<String> removedFeatureFlags;
+    private final TimerQueue<MinecraftServer> scheduledEvents;
++   private boolean confirmedExperimentalWarning = false;
+ 
+    private PrimaryLevelData(
+       @Nullable DataFixer p_277859_,
+@@ -233,7 +234,7 @@
+          p_251864_,
+          p_250651_,
+          p_78538_
+-      );
++      ).withConfirmedWarning(p_78538_ != Lifecycle.stable() && p_78531_.get("confirmedExperimentalSettings").asBoolean(false));
+    }
+ 
+    @Override
+@@ -307,6 +308,8 @@
+       if (this.wanderingTraderId != null) {
+          p_78547_.putUUID("WanderingTraderId", this.wanderingTraderId);
+       }
++      p_78547_.putString("forgeLifecycle", net.minecraftforge.common.ForgeHooks.encodeLifecycle(this.settings.getLifecycle()));
++      p_78547_.putBoolean("confirmedExperimentalSettings", this.confirmedExperimentalWarning);
+    }
+ 
+    private static ListTag stringCollectionToTag(Set<String> p_277880_) {
+@@ -652,6 +655,15 @@
+    @Override
+    public LevelSettings getLevelSettings() {
+       return this.settings.copy();
++   }
++
++   public boolean hasConfirmedExperimentalWarning() {
++      return this.confirmedExperimentalWarning;
++   }
++
++   public PrimaryLevelData withConfirmedWarning(boolean confirmedWarning) { // Builder-like to not patch ctor
++      this.confirmedExperimentalWarning = confirmedWarning;
++      return this;
+    }
+ 
+    @Deprecated

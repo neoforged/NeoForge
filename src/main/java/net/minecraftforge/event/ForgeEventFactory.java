@@ -15,6 +15,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.core.Holder;
@@ -966,13 +967,13 @@ public class ForgeEventFactory
     }
 
     @ApiStatus.Internal
-    public static void onAdvancementEarnedEvent(Player player, Advancement earned)
+    public static void onAdvancementEarnedEvent(Player player, AdvancementHolder earned)
     {
         MinecraftForge.EVENT_BUS.post(new AdvancementEarnEvent(player, earned));
     }
 
     @ApiStatus.Internal
-    public static void onAdvancementProgressedEvent(Player player, Advancement progressed, AdvancementProgress advancementProgress, String criterion, ProgressType progressType)
+    public static void onAdvancementProgressedEvent(Player player, AdvancementHolder progressed, AdvancementProgress advancementProgress, String criterion, ProgressType progressType)
     {
         MinecraftForge.EVENT_BUS.post(new AdvancementProgressEvent(player, progressed, advancementProgress, criterion, progressType));
     }

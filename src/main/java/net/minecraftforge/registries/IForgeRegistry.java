@@ -98,11 +98,11 @@ public interface IForgeRegistry<V> extends Iterable<V>
      * Adds an alias that maps from the name specified by <code>src</code> to the name specified by <code>dst</code>.
      * <p>
      * Any registry lookups that target the first name will resolve as the second name, if the first name is not present.
-     * 
+     *
      * @param src The source registry name to alias from.
      * @param dst The target registry name to alias to.
      */
-    public void addAlias(ResourceLocation src, ResourceLocation dst);
+    void addAlias(ResourceLocation src, ResourceLocation dst);
 
     /**
      * Callback fired when objects are added to the registry. This will fire when the registry is rebuilt

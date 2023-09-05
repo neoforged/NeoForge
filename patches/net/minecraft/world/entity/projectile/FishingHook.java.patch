@@ -1,0 +1,57 @@
+--- a/net/minecraft/world/entity/projectile/FishingHook.java
++++ b/net/minecraft/world/entity/projectile/FishingHook.java
+@@ -238,8 +238,8 @@
+    private boolean shouldStopFishing(Player p_37137_) {
+       ItemStack itemstack = p_37137_.getMainHandItem();
+       ItemStack itemstack1 = p_37137_.getOffhandItem();
+-      boolean flag = itemstack.is(Items.FISHING_ROD);
+-      boolean flag1 = itemstack1.is(Items.FISHING_ROD);
++      boolean flag = itemstack.canPerformAction(net.minecraftforge.common.ToolActions.FISHING_ROD_CAST);
++      boolean flag1 = itemstack1.canPerformAction(net.minecraftforge.common.ToolActions.FISHING_ROD_CAST);
+       if (!p_37137_.isRemoved() && p_37137_.isAlive() && (flag || flag1) && !(this.distanceToSqr(p_37137_) > 1024.0)) {
+          return false;
+       } else {
+@@ -250,7 +250,7 @@
+ 
+    private void checkCollision() {
+       HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
+-      this.onHit(hitresult);
++      if (hitresult.getType() == HitResult.Type.MISS || !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) this.onHit(hitresult);
+    }
+ 
+    @Override
+@@ -438,6 +438,7 @@
+       Player player = this.getPlayerOwner();
+       if (!this.level().isClientSide && player != null && !this.shouldStopFishing(player)) {
+          int i = 0;
++         net.minecraftforge.event.entity.player.ItemFishedEvent event = null;
+          if (this.hookedIn != null) {
+             this.pullEntity(this.hookedIn);
+             CriteriaTriggers.FISHING_ROD_HOOKED.trigger((ServerPlayer)player, p_37157_, this, Collections.emptyList());
+@@ -448,10 +449,17 @@
+                .withParameter(LootContextParams.ORIGIN, this.position())
+                .withParameter(LootContextParams.TOOL, p_37157_)
+                .withParameter(LootContextParams.THIS_ENTITY, this)
++               .withParameter(LootContextParams.KILLER_ENTITY, this.getOwner())
+                .withLuck((float)this.luck + player.getLuck())
+                .create(LootContextParamSets.FISHING);
+             LootTable loottable = this.level().getServer().getLootData().getLootTable(BuiltInLootTables.FISHING);
+             List<ItemStack> list = loottable.getRandomItems(lootparams);
++            event = new net.minecraftforge.event.entity.player.ItemFishedEvent(list, this.onGround() ? 2 : 1, this);
++            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
++            if (event.isCanceled()) {
++               this.discard();
++               return event.getRodDamage();
++            }
+             CriteriaTriggers.FISHING_ROD_HOOKED.trigger((ServerPlayer)player, p_37157_, this, list);
+ 
+             for(ItemStack itemstack : list) {
+@@ -477,7 +485,7 @@
+          }
+ 
+          this.discard();
+-         return i;
++         return event == null ? i : event.getRodDamage();
+       } else {
+          return 0;
+       }

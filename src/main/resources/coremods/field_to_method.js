@@ -8,8 +8,8 @@ function initializeCoreMod() {
                 'name': 'net.minecraft.world.level.biome.Biome' 
             },
             'transformer': function(classNode) {
-                ASMAPI.redirectFieldToMethod(classNode, ASMAPI.mapField('f_47437_'), 'getModifiedClimateSettings')
-                ASMAPI.redirectFieldToMethod(classNode, ASMAPI.mapField('f_47443_'), 'getModifiedSpecialEffects')
+                ASMAPI.redirectFieldToMethod(classNode, 'climateSettings', 'getModifiedClimateSettings')
+                ASMAPI.redirectFieldToMethod(classNode, 'specialEffects', 'getModifiedSpecialEffects')
                 return classNode;
             }
         },
@@ -19,7 +19,7 @@ function initializeCoreMod() {
                 'name': 'net.minecraft.world.level.levelgen.structure.Structure'
             },
             'transformer': function(classNode) {
-                ASMAPI.redirectFieldToMethod(classNode, ASMAPI.mapField('f_226555_'), 'getModifiedStructureSettings')
+                ASMAPI.redirectFieldToMethod(classNode, 'settings', 'getModifiedStructureSettings')
                 return classNode;
             }
         },
@@ -29,7 +29,7 @@ function initializeCoreMod() {
                 'name': 'net.minecraft.world.effect.MobEffectInstance'
             },
             'transformer': function(classNode) {
-                ASMAPI.redirectFieldToMethod(classNode, ASMAPI.mapField('f_19502_'), ASMAPI.mapMethod('m_19544_')) // potion
+                ASMAPI.redirectFieldToMethod(classNode, 'effect', 'getEffect') // potion
                 return classNode;
             }
         },
@@ -39,7 +39,7 @@ function initializeCoreMod() {
                 'name': 'net.minecraft.world.level.block.LiquidBlock'
             },
             'transformer': function(classNode) {
-                ASMAPI.redirectFieldToMethod(classNode, ASMAPI.mapField('f_54689_'), 'getFluid')
+                ASMAPI.redirectFieldToMethod(classNode, 'fluid', 'getFluid')
                 return classNode;
             }
         },
@@ -49,7 +49,7 @@ function initializeCoreMod() {
                 'name': 'net.minecraft.world.item.BucketItem'
             },
             'transformer': function(classNode) {
-                ASMAPI.redirectFieldToMethod(classNode, ASMAPI.mapField('f_40687_'), 'getFluid')
+                ASMAPI.redirectFieldToMethod(classNode, 'content', 'getFluid')
                 return classNode;
             }
         },
@@ -59,8 +59,8 @@ function initializeCoreMod() {
                 'name': 'net.minecraft.world.level.block.StairBlock'
             },
             'transformer': function(classNode) {
-                ASMAPI.redirectFieldToMethod(classNode, ASMAPI.mapField('f_56858_'), 'getModelBlock')
-                ASMAPI.redirectFieldToMethod(classNode, ASMAPI.mapField('f_56859_'), 'getModelState')
+                ASMAPI.redirectFieldToMethod(classNode, 'base', 'getModelBlock')
+                ASMAPI.redirectFieldToMethod(classNode, 'baseState', 'getModelState')
                 return classNode;
             }
         },
@@ -70,7 +70,7 @@ function initializeCoreMod() {
                 'name': 'net.minecraft.world.level.block.FlowerPotBlock'
             },
             'transformer': function(classNode) {
-                ASMAPI.redirectFieldToMethod(classNode, ASMAPI.mapField('f_53525_'), ASMAPI.mapMethod('m_53560_')) // flower
+                ASMAPI.redirectFieldToMethod(classNode, 'content', 'getContent') // flower
                 return classNode;
             }
         },
@@ -80,7 +80,7 @@ function initializeCoreMod() {
                 'name': 'net.minecraft.world.item.ItemStack'
             },
             'transformer': function(classNode) {
-                ASMAPI.redirectFieldToMethod(classNode, ASMAPI.mapField('f_41589_'), ASMAPI.mapMethod('m_41720_')) // item
+                ASMAPI.redirectFieldToMethod(classNode, 'item', 'getItem') // item
                 return classNode;
             }
         }

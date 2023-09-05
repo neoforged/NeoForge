@@ -103,7 +103,9 @@ public class ExistingFileHelper {
         candidateServerResources.add(ServerPacksSource.createVanillaPackSource());
         for (Path existing : existingPacks) {
             File file = existing.toFile();
-            PackResources pack = file.isDirectory() ? new PathPackResources(file.getName(), file.toPath(), false) : new FilePackResources(file.getName(), file, false);
+            if (!file.exists())
+                continue;
+            PackResources pack = file.isDirectory() ? new PathPackResources(file.getName(), file.toPath(), false) : new FilePackResources(file.getName(), new FilePackResources.SharedZipFileAccess(file), false, "");
             candidateClientResources.add(pack);
             candidateServerResources.add(pack);
         }

@@ -1,0 +1,281 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+dynamicProject {
+    runtime("${project.minecraft_version}-${project.neoform_version}",
+            rootProject.layout.projectDirectory.dir('patches'),
+            rootProject.layout.projectDirectory.dir('rejects'))
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(project.java_version))
+    }
+}
+
+minecraft {
+    accessTransformers {
+        file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs rootProject.file('src/main/java')
+        }
+        resources {
+            srcDirs rootProject.file('src/main/resources'), rootProject.file('src/generated/resources')
+        }
+    }
+}
+
+dependencies {
+    pluginLayerLibrary "net.neoforged.fancymodloader:core:${project.fancy_mod_loader_version}"
+    pluginLayerLibrary "net.neoforged.fancymodloader:language-java:${project.fancy_mod_loader_version}"
+    pluginLayerLibrary "net.neoforged.fancymodloader:language-lowcode:${project.fancy_mod_loader_version}"
+    pluginLayerLibrary "net.neoforged.fancymodloader:language-minecraft:${project.fancy_mod_loader_version}"
+
+    gameLayerLibrary ("net.neoforged.fancymodloader:events:${project.fancy_mod_loader_version}") {
+        exclude group: 'org.slf4j'
+    }
+
+    runtimeOnly "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
+
+    moduleOnly "cpw.mods:securejarhandler:${project.securejarhandler_version}"
+    moduleOnly "org.ow2.asm:asm:${project.asm_version}"
+    moduleOnly "org.ow2.asm:asm-commons:${project.asm_version}"
+    moduleOnly "org.ow2.asm:asm-tree:${project.asm_version}"
+    moduleOnly "org.ow2.asm:asm-util:${project.asm_version}"
+    moduleOnly "org.ow2.asm:asm-analysis:${project.asm_version}"
+    moduleOnly "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
+    moduleOnly "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
+
+    installer ("net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}") {
+        exclude group: 'org.slf4j'
+    }
+    installer ("net.neoforged.fancymodloader:earlydisplay:${project.fancy_mod_loader_version}") {
+        exclude group: 'org.lwjgl'
+        exclude group: 'org.slf4j'
+    }
+    installer "cpw.mods:securejarhandler:${project.securejarhandler_version}"
+    installer "org.ow2.asm:asm:${project.asm_version}"
+    installer "org.ow2.asm:asm-commons:${project.asm_version}"
+    installer "org.ow2.asm:asm-tree:${project.asm_version}"
+    installer "org.ow2.asm:asm-util:${project.asm_version}"
+    installer "org.ow2.asm:asm-analysis:${project.asm_version}"
+    installer "net.minecraftforge:accesstransformers:${project.accesstransformers_version}"
+    installer "net.minecraftforge:eventbus:${project.eventbus_version}"
+    installer "net.minecraftforge:forgespi:${project.spi_version}"
+    installer "net.minecraftforge:coremods:${project.coremods_version}"
+    installer "cpw.mods:modlauncher:${project.modlauncher_version}"
+    installer "net.minecraftforge:unsafe:${project.unsafe_version}"
+    installer "net.minecraftforge:mergetool:${project.mergetool_version}:api"
+    installer "com.electronwill.night-config:core:${project.nightconfig_version}"
+    installer "com.electronwill.night-config:toml:${project.nightconfig_version}"
+    installer "org.apache.maven:maven-artifact:${project.apache_maven_artifact_version}"
+    installer "net.jodah:typetools:${project.typetools_version}"
+    installer "net.minecrell:terminalconsoleappender:${project.terminalconsoleappender_version}"
+    installer "org.spongepowered:mixin:${project.mixin_version}"
+    installer "org.openjdk.nashorn:nashorn-core:${project.nashorn_core_version}"
+    installer "net.neoforged:JarJarSelector:${project.jarjar_version}"
+    installer "net.neoforged:JarJarMetadata:${project.jarjar_version}"
+
+    compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
+}
+
+runTypes {
+    client {
+        singleInstance false
+        client true
+
+        arguments.addAll '--fml.forgeVersion', project.version
+        arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
+        arguments.addAll '--fml.mcVersion', project.minecraft_version
+        arguments.addAll '--fml.mcpVersion', project.neoform_version
+    }
+
+    server {
+        server true
+
+        arguments.addAll '--fml.forgeVersion', project.version
+        arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
+        arguments.addAll '--fml.mcVersion', project.minecraft_version
+        arguments.addAll '--fml.mcpVersion', project.neoform_version
+    }
+
+    gameTestServer {
+        from project.runTypes.server
+
+        gameTest true
+    }
+
+    gameTestClient {
+        from project.runTypes.client
+
+        gameTest true
+    }
+
+    data {
+        dataGenerator true
+
+        // Don't set modid here so we can reuse this runType for test datagen
+        arguments.addAll '--fml.forgeVersion', project.version
+        arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
+        arguments.addAll '--fml.mcVersion', project.minecraft_version
+        arguments.addAll '--fml.mcpVersion', project.neoform_version
+    }
+}
+
+runs {
+    client { }
+    server { }
+    "GameTest Server" {
+        configure project.runTypes.gameTestServer
+    }
+    "GameTest Client" {
+        configure project.runTypes.gameTestClient
+    }
+    "Data" {
+        configure project.runTypes.data
+
+        programArguments.addAll '--mod', 'forge'
+
+        modSources.add project.sourceSets.main
+
+        idea {
+            primarySourceSet project.sourceSets.main
+        }
+    }
+}
+
+runs.configureEach { it ->
+    final File gameDir = project.file("run/${it.name}") as File
+    gameDir.mkdirs();
+
+    it.workingDirectory.set gameDir
+    it.programArguments.addAll '--gameDir', "\"${gameDir.absolutePath}\""
+}
+
+launcherProfile {
+    arguments {
+        game '--fml.forgeVersion'
+        game project.version
+        game '--fml.fmlVersion'
+        game project.fancy_mod_loader_version
+        game '--fml.mcVersion'
+        game project.minecraft_version
+        game '--fml.mcpVersion'
+        game project.neoform_version
+    }
+}
+
+userdevProfile {
+    runTypes.configureEach {
+        argument '--fml.forgeVersion'
+        argument project.version
+        argument '--fml.fmlVersion'
+        argument project.fancy_mod_loader_version
+        argument '--fml.mcVersion'
+        argument project.minecraft_version
+        argument '--fml.mcpVersion'
+        argument project.neoform_version
+    }
+}
+
+tasks.withType(Javadoc.class).configureEach {
+    options.tags = [
+            'apiNote:a:<em>API Note:</em>',
+            'implSpec:a:<em>Implementation Requirements:</em>',
+            'implNote:a:<em>Implementation Note:</em>'
+    ]
+    options.addStringOption('Xdoclint:all,-missing', '-public')
+}
+
+tasks.withType(GenerateModuleMetadata).configureEach { enabled = false }
+
+configurations {
+    forValidation {
+        canBeConsumed = true
+        canBeResolved = false
+        attributes {
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
+            attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements, LibraryElements.JAR))
+        }
+
+        extendsFrom api, runtimeOnly
+    }
+}
+
+artifacts {
+    forValidation(jar.archiveFile) {
+        builtBy(jar)
+    }
+}
+
+minecraft {
+    modIdentifier 'minecraft'
+}
+
+publishing {
+    publications.create('NeoForge', MavenPublication) {
+        groupId = project.group
+        artifactId = project.name
+        version = project.version
+
+        from components.java
+
+        artifacts = []
+
+        artifact (signUniversalJar.output) {
+            classifier 'universal'
+        }
+        artifact (signInstallerJar.output) {
+            classifier 'installer'
+        }
+        artifact (userdevJar) {
+            classifier 'userdev'
+        }
+        artifact (sourcesJar) {
+            classifier 'sources'
+        }
+
+        versionMapping {
+            usage('java-api') {
+                fromResolutionOf('runtimeClasspath')
+            }
+            usage('java-runtime') {
+                fromResolutionResult()
+            }
+        }
+
+        pom {
+            name = project.name
+            description = 'Modifactions to Minecraft to enable mod developers.'
+            url = 'https://github.com/NeoForged/NeoForge'
+
+            scm {
+                url = 'https://github.com/NeoForged/NeoForge'
+                connection = 'scm:git:git://github.com/NeoForged/NeoForge.git'
+                developerConnection = 'scm:git:git@github.com:NeoForged/NeoForge.git'
+            }
+
+            issueManagement {
+                system = 'github'
+                url = 'https://github.com/NeoForged/NeoForge/issues'
+            }
+
+            licenses {
+                license {
+                    name = 'LGPL 2.1'
+                    url = 'https://github.com/NeoForged/NeoForge/blob/1.13-pre/LICENSE.txt'
+                    distribution = 'repo'
+                }
+            }
+        }
+    }
+}

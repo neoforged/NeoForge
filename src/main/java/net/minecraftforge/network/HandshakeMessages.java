@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.IModInfo;
+import net.minecraftforge.network.simple.SimpleLoginMessage;
 import net.minecraftforge.registries.DataPackRegistriesHooks;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
@@ -30,21 +31,16 @@ import org.jetbrains.annotations.Nullable;
 
 public class HandshakeMessages
 {
-    static class LoginIndexedMessage implements IntSupplier
+    static abstract class LoginIndexedMessage implements SimpleLoginMessage
     {
         private int loginIndex;
 
-        void setLoginIndex(final int loginIndex) {
+        public void setLoginIndex(final int loginIndex) {
             this.loginIndex = loginIndex;
         }
 
-        int getLoginIndex() {
+        public int getLoginIndex() {
             return loginIndex;
-        }
-
-        @Override
-        public int getAsInt() {
-            return getLoginIndex();
         }
     }
     /**
@@ -94,6 +90,7 @@ public class HandshakeMessages
             return new S2CModList(mods, channels, registries, dataPackRegistries);
         }
 
+        @Override
         public void encode(FriendlyByteBuf output)
         {
             output.writeVarInt(mods.size());
@@ -156,6 +153,7 @@ public class HandshakeMessages
             return new S2CModData(mods);
         }
 
+        @Override
         public void encode(FriendlyByteBuf output)
         {
             output.writeMap(mods, (o, s) -> o.writeUtf(s, 0x100), (o, p) -> {
@@ -210,6 +208,7 @@ public class HandshakeMessages
             return new C2SModListReply(mods, channels, registries);
         }
 
+        @Override
         public void encode(FriendlyByteBuf output)
         {
             output.writeVarInt(mods.size());
@@ -242,6 +241,7 @@ public class HandshakeMessages
     }
 
     public static class C2SAcknowledge extends LoginIndexedMessage {
+        @Override
         public void encode(FriendlyByteBuf buf) {
 
         }
@@ -252,16 +252,17 @@ public class HandshakeMessages
     }
 
     public static class S2CRegistry extends LoginIndexedMessage {
-        private ResourceLocation registryName;
+        private final ResourceLocation registryName;
         @Nullable
-        private ForgeRegistry.Snapshot snapshot;
+        private final ForgeRegistry.Snapshot snapshot;
 
         public S2CRegistry(final ResourceLocation name, @Nullable ForgeRegistry.Snapshot snapshot) {
             this.registryName = name;
             this.snapshot = snapshot;
         }
 
-        void encode(final FriendlyByteBuf buffer) {
+        @Override
+        public void encode(final FriendlyByteBuf buffer) {
             buffer.writeResourceLocation(registryName);
             buffer.writeBoolean(hasSnapshot());
             if (hasSnapshot())
@@ -300,7 +301,8 @@ public class HandshakeMessages
             this.fileData = configFileData;
         }
 
-        void encode(final FriendlyByteBuf buffer) {
+        @Override
+        public void encode(final FriendlyByteBuf buffer) {
             buffer.writeUtf(this.fileName);
             buffer.writeByteArray(this.fileData);
         }

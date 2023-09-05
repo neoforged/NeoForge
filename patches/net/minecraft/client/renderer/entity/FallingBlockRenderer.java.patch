@@ -1,0 +1,22 @@
+--- a/net/minecraft/client/renderer/entity/FallingBlockRenderer.java
++++ b/net/minecraft/client/renderer/entity/FallingBlockRenderer.java
+@@ -34,6 +34,8 @@
+             p_114637_.pushPose();
+             BlockPos blockpos = BlockPos.containing(p_114634_.getX(), p_114634_.getBoundingBox().maxY, p_114634_.getZ());
+             p_114637_.translate(-0.5, 0.0, -0.5);
++            var model = this.dispatcher.getBlockModel(blockstate);
++            for (var renderType : model.getRenderTypes(blockstate, RandomSource.create(blockstate.getSeed(p_114634_.getStartPos())), net.minecraftforge.client.model.data.ModelData.EMPTY))
+             this.dispatcher
+                .getModelRenderer()
+                .tesselateBlock(
+@@ -46,7 +48,9 @@
+                   false,
+                   RandomSource.create(),
+                   blockstate.getSeed(p_114634_.getStartPos()),
+-                  OverlayTexture.NO_OVERLAY
++                  OverlayTexture.NO_OVERLAY,
++                  net.minecraftforge.client.model.data.ModelData.EMPTY,
++                  renderType
+                );
+             p_114637_.popPose();
+             super.render(p_114634_, p_114635_, p_114636_, p_114637_, p_114638_, p_114639_);

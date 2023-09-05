@@ -14,9 +14,10 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.network.*;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.*;
+import net.minecraftforge.network.custom.payload.SimplePayload;
 import net.minecraftforge.network.event.EventNetworkChannel;
 
 import org.apache.logging.log4j.LogManager;
@@ -86,7 +87,7 @@ public class VanillaPacketSplitter
                         {
                             partPrefix = Unpooled.buffer(5);
                             partPrefix.writeByte(STATE_FIRST);
-                            new FriendlyByteBuf(partPrefix).writeVarInt(protocol.getPacketId(direction, packet));
+                            new FriendlyByteBuf(partPrefix).writeVarInt(protocol.codec(direction).packetId(packet));
                         }
                         else
                         {
@@ -99,7 +100,7 @@ public class VanillaPacketSplitter
                                 buf.retainedSlice(buf.readerIndex(), partSize)
                         );
                         buf.skipBytes(partSize);
-                        out.add(new ClientboundCustomPayloadPacket(CHANNEL, new FriendlyByteBuf(partBuf)));
+                        out.add(new ClientboundCustomPayloadPacket(SimplePayload.outbound(new FriendlyByteBuf(partBuf), protocol.codec(direction).packetId(packet), CHANNEL)));
                     }
                     // we retained all the slices, so we do not need this one anymore
                     buf.release();
@@ -117,8 +118,8 @@ public class VanillaPacketSplitter
 
     private static void onClientPacket(NetworkEvent.ServerCustomPayloadEvent event)
     {
-        NetworkEvent.Context ctx = event.getSource().get();
-        PacketFlow direction = ctx.getDirection() == NetworkDirection.PLAY_TO_CLIENT ? PacketFlow.CLIENTBOUND : PacketFlow.SERVERBOUND;
+        NetworkEvent.Context ctx = event.getSource();
+        PacketFlow direction = ctx.getDirection() == PlayNetworkDirection.PLAY_TO_CLIENT ? PacketFlow.CLIENTBOUND : PacketFlow.SERVERBOUND;
         ConnectionProtocol protocol = ConnectionProtocol.PLAY;
 
         ctx.setPacketHandled(true);
@@ -140,7 +141,7 @@ public class VanillaPacketSplitter
         {
             FriendlyByteBuf full = new FriendlyByteBuf(Unpooled.wrappedBuffer(receivedBuffers.toArray(new FriendlyByteBuf[0])));
             int packetId = full.readVarInt();
-            Packet<?> packet = protocol.createPacket(direction, packetId, full);
+            Packet<?> packet = protocol.codec(direction).createPacket(packetId, full);
             if (packet == null)
             {
                 LOGGER.error("Received invalid packet ID {} in forge:split", packetId);
@@ -149,7 +150,7 @@ public class VanillaPacketSplitter
             {
                 receivedBuffers.clear();
                 full.release();
-                ctx.enqueueWork(() -> genericsFtw(packet, event.getSource().get().getNetworkManager().getPacketListener()));
+                ctx.enqueueWork(() -> genericsFtw(packet, event.getSource().getNetworkManager().getPacketListener()));
             }
         }
     }

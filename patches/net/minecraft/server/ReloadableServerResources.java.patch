@@ -1,0 +1,60 @@
+--- a/net/minecraft/server/ReloadableServerResources.java
++++ b/net/minecraft/server/ReloadableServerResources.java
+@@ -44,6 +44,9 @@
+       this.commands = new Commands(p_206858_, this.commandBuildContext);
+       this.commandBuildContext.missingTagAccessPolicy(CommandBuildContext.MissingTagAccessPolicy.CREATE_NEW);
+       this.functionLibrary = new ServerFunctionLibrary(p_206859_, this.commands.getDispatcher());
++      // Neo: Create context object and inject it into listeners that need it
++      this.registryAccess = p_206857_;
++      this.context = new net.minecraftforge.common.conditions.ConditionContext(this.tagManager);
+    }
+ 
+    public ServerFunctionLibrary getFunctionLibrary() {
+@@ -80,9 +83,12 @@
+       Executor p_249601_
+    ) {
+       ReloadableServerResources reloadableserverresources = new ReloadableServerResources(p_251163_, p_250212_, p_249301_, p_251126_);
+-      return SimpleReloadInstance.create(
+-            p_248588_, reloadableserverresources.listeners(), p_249136_, p_249601_, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()
+-         )
++      List<PreparableReloadListener> listeners = new java.util.ArrayList<>(reloadableserverresources.listeners());
++      listeners.addAll(net.minecraftforge.event.ForgeEventFactory.onResourceReload(reloadableserverresources, p_251163_));
++      listeners.forEach(rl -> {
++         if (rl instanceof net.minecraftforge.resource.ContextAwareReloadListener srl) srl.injectContext(reloadableserverresources.context, reloadableserverresources.registryAccess);
++      });
++      return SimpleReloadInstance.create(p_248588_, listeners, p_249136_, p_249601_, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled())
+          .done()
+          .whenComplete(
+             (p_255534_, p_255535_) -> reloadableserverresources.commandBuildContext.missingTagAccessPolicy(CommandBuildContext.MissingTagAccessPolicy.FAIL)
+@@ -93,6 +99,7 @@
+    public void updateRegistryTags(RegistryAccess p_206869_) {
+       this.tagManager.getResult().forEach(p_214315_ -> updateRegistryTags(p_206869_, p_214315_));
+       Blocks.rebuildCache();
++      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.TagsUpdatedEvent(p_206869_, false, false));
+    }
+ 
+    private static <T> void updateRegistryTags(RegistryAccess p_206871_, TagManager.LoadResult<T> p_206872_) {
+@@ -106,5 +113,23 @@
+             )
+          );
+       p_206871_.registryOrThrow(resourcekey).bindTags(map);
++   }
++
++   private final net.minecraftforge.common.conditions.ICondition.IContext context;
++   private final net.minecraft.core.RegistryAccess registryAccess;
++
++   /**
++    * Exposes the current condition context for usage in other reload listeners.<br>
++    * This is not useful outside the reloading stage.
++    * @return The condition context for the currently active reload.
++    */
++   public net.minecraftforge.common.conditions.ICondition.IContext getConditionContext() {
++      return this.context;
++   }
++   /**
++    * {@return the registry access for the currently active reload}
++    */
++   public net.minecraft.core.RegistryAccess getRegistryAccess() {
++      return this.registryAccess;
+    }
+ }

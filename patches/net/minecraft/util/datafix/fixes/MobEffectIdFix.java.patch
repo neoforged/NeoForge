@@ -1,0 +1,29 @@
+--- a/net/minecraft/util/datafix/fixes/MobEffectIdFix.java
++++ b/net/minecraft/util/datafix/fixes/MobEffectIdFix.java
+@@ -88,8 +88,16 @@
+       return updateMobEffectIdField(p_299001_, p_298420_, p_299001_, p_299179_);
+    }
+ 
++   private static <T> Dynamic<T> updateMobEffectIdFieldConsideringForge(Dynamic<T> p_298948_, String p_299234_, Dynamic<T> p_298832_, String p_298487_, String forgeFieldId) {
++      final var forgeField = p_298948_.get(forgeFieldId).result();
++      if (forgeField.isPresent()) {
++         return setFieldIfPresent((p_298948_ == p_298832_ ? p_298948_.remove(forgeFieldId) : p_298832_), p_298487_, forgeField);
++      }
++      return updateMobEffectIdField(p_298948_, p_299234_, p_298832_, p_298487_);
++   }
++
+    private static <T> Dynamic<T> updateMobEffectInstance(Dynamic<T> p_298320_) {
+-      p_298320_ = updateMobEffectIdField(p_298320_, "Id", "id");
++      p_298320_ = updateMobEffectIdFieldConsideringForge(p_298320_, "Id", p_298320_, "id", "forge:id");
+       p_298320_ = renameField(p_298320_, "Ambient", "ambient");
+       p_298320_ = renameField(p_298320_, "Amplifier", "amplifier");
+       p_298320_ = renameField(p_298320_, "Duration", "duration");
+@@ -109,7 +117,7 @@
+    }
+ 
+    private static <T> Dynamic<T> updateSuspiciousStewEntry(Dynamic<T> p_298902_, Dynamic<T> p_299113_) {
+-      p_299113_ = updateMobEffectIdField(p_298902_, "EffectId", p_299113_, "id");
++      p_299113_ = updateMobEffectIdFieldConsideringForge(p_298902_, "EffectId", p_299113_, "id", "forge:effect_id");
+       Optional<Dynamic<T>> optional = p_298902_.get("EffectDuration").result();
+       return replaceField(p_299113_, "EffectDuration", "duration", optional);
+    }

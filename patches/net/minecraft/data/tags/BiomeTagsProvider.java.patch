@@ -1,0 +1,16 @@
+--- a/net/minecraft/data/tags/BiomeTagsProvider.java
++++ b/net/minecraft/data/tags/BiomeTagsProvider.java
+@@ -10,8 +10,13 @@
+ import net.minecraft.world.level.biome.MultiNoiseBiomeSourceParameterList;
+ 
+ public class BiomeTagsProvider extends TagsProvider<Biome> {
++   /** @deprecated Forge: Use the {@linkplain #BiomeTagsProvider(PackOutput, CompletableFuture, String, net.minecraftforge.common.data.ExistingFileHelper) mod id variant} */
++   @Deprecated
+    public BiomeTagsProvider(PackOutput p_255800_, CompletableFuture<HolderLookup.Provider> p_256205_) {
+       super(p_255800_, Registries.BIOME, p_256205_);
++   }
++   public BiomeTagsProvider(PackOutput p_255800_, CompletableFuture<HolderLookup.Provider> p_256205_, String modId, @org.jetbrains.annotations.Nullable net.minecraftforge.common.data.ExistingFileHelper existingFileHelper) {
++      super(p_255800_, Registries.BIOME, p_256205_, modId, existingFileHelper);
+    }
+ 
+    @Override

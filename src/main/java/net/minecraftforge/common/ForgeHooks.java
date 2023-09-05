@@ -403,12 +403,12 @@ public class ForgeHooks
     @NotNull
     public static ChatDecorator getServerChatSubmittedDecorator()
     {
-        return (sender, message) -> CompletableFuture.supplyAsync(() -> {
+        return (sender, message) -> {
             if (sender == null)
                 return message; // Vanilla should never get here with the patches we use, but let's be safe with dumb mods
 
             return onServerChatSubmittedEvent(sender, getRawText(message), message);
-        });
+        };
     }
 
     static final Pattern URL_PATTERN = Pattern.compile(
@@ -1493,10 +1493,10 @@ public class ForgeHooks
 
     public static void writeTypedPackFormats(JsonObject json, PackMetadataSection section)
     {
-        int packFormat = section.getPackFormat();
+        int packFormat = section.packFormat();
         for (PackType packType : PackType.values())
         {
-            int format = section.getPackFormat(packType);
+            int format = section.packFormat(packType);
             if (format != packFormat)
             {
                 json.addProperty(makePackFormatKey(packType), format);

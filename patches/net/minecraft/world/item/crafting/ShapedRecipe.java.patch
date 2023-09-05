@@ -1,0 +1,77 @@
+--- a/net/minecraft/world/item/crafting/ShapedRecipe.java
++++ b/net/minecraft/world/item/crafting/ShapedRecipe.java
+@@ -18,7 +18,20 @@
+ import net.minecraft.world.level.Level;
+ import org.apache.commons.lang3.NotImplementedException;
+ 
+-public class ShapedRecipe implements CraftingRecipe {
++public class ShapedRecipe implements CraftingRecipe, net.minecraftforge.common.crafting.IShapedRecipe<net.minecraft.world.inventory.CraftingContainer> {
++   static int MAX_WIDTH = 3;
++   static int MAX_HEIGHT = 3;
++   /**
++    * Expand the max width and height allowed in the deserializer.
++    * This should be called by modders who add custom crafting tables that are larger than the vanilla 3x3.
++    * @param width your max recipe width
++    * @param height your max recipe height
++    */
++   public static void setCraftingSize(int width, int height) {
++      if (MAX_WIDTH < width) MAX_WIDTH = width;
++      if (MAX_HEIGHT < height) MAX_HEIGHT = height;
++   }
++
+    final int width;
+    final int height;
+    final NonNullList<Ingredient> recipeItems;
+@@ -125,10 +138,20 @@
+       return this.width;
+    }
+ 
++   @Override
++   public int getRecipeWidth() {
++      return getWidth();
++   }
++
+    public int getHeight() {
+       return this.height;
+    }
+ 
++   @Override
++   public int getRecipeHeight() {
++      return getHeight();
++   }
++
+    @VisibleForTesting
+    static String[] shrink(List<String> p_301102_) {
+       int i = Integer.MAX_VALUE;
+@@ -168,7 +191,7 @@
+    @Override
+    public boolean isIncomplete() {
+       NonNullList<Ingredient> nonnulllist = this.getIngredients();
+-      return nonnulllist.isEmpty() || nonnulllist.stream().filter(p_151277_ -> !p_151277_.isEmpty()).anyMatch(p_151273_ -> p_151273_.getItems().length == 0);
++      return nonnulllist.isEmpty() || nonnulllist.stream().filter(p_151277_ -> !p_151277_.isEmpty()).anyMatch(net.minecraftforge.common.ForgeHooks::hasNoElements);
+    }
+ 
+    private static int firstNonSpace(String p_44185_) {
+@@ -192,17 +215,18 @@
+    }
+ 
+    public static class Serializer implements RecipeSerializer<ShapedRecipe> {
++      private static final net.minecraft.resources.ResourceLocation NAME = new net.minecraft.resources.ResourceLocation("minecraft", "crafting_shaped");
+       static final Codec<List<String>> PATTERN_CODEC = Codec.STRING.listOf().flatXmap(p_300940_ -> {
+-         if (p_300940_.size() > 3) {
+-            return DataResult.error(() -> "Invalid pattern: too many rows, 3 is maximum");
++         if (p_300940_.size() > MAX_HEIGHT) {
++            return DataResult.error(() -> "Invalid pattern: too many rows, %s is maximum".formatted(MAX_HEIGHT));
+          } else if (p_300940_.isEmpty()) {
+             return DataResult.error(() -> "Invalid pattern: empty pattern not allowed");
+          } else {
+             int i = p_300940_.get(0).length();
+ 
+             for(String s : p_300940_) {
+-               if (s.length() > 3) {
+-                  return DataResult.error(() -> "Invalid pattern: too many columns, 3 is maximum");
++               if (s.length() > MAX_WIDTH) {
++                  return DataResult.error(() -> "Invalid pattern: too many columns, %s is maximum".formatted(MAX_WIDTH));
+                }
+ 
+                if (i != s.length()) {

@@ -62,10 +62,17 @@ public class NetworkInstance
         this.networkEventBus.unregister(object);
     }
 
-    boolean dispatch(final NetworkDirection side, final ICustomPacket<?> packet, final Connection manager)
+    boolean dispatch(final PlayNetworkDirection side, final IForgeCustomPacketPayload packet, final Connection manager)
     {
-        final NetworkEvent.Context context = new NetworkEvent.Context(manager, side, packet.getIndex());
-        this.networkEventBus.post(side.getEvent(packet, () -> context));
+        final NetworkEvent.Context context = new NetworkEvent.Context(manager, side, packet.packetIndex());
+        this.networkEventBus.post(side.getEvent(packet, context));
+        return context.getPacketHandled();
+    }
+
+    boolean dispatch(final LoginNetworkDirection side, final IForgeCustomQueryPayload packet, final Connection manager)
+    {
+        final NetworkEvent.Context context = new NetworkEvent.Context(manager, side, packet.packetIndex());
+        this.networkEventBus.post(side.getEvent(packet, context));
         return context.getPacketHandled();
     }
 

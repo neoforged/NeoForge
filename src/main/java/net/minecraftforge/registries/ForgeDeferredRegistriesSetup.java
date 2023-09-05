@@ -24,6 +24,9 @@ public class ForgeDeferredRegistriesSetup
             setup = true;
         }
 
+        ForgeRegistries.DEFERRED_INGREDIENT_TYPES.register(modEventBus);
+        ForgeRegistries.DEFERRED_CONDITION_CODECS.register(modEventBus);
+        ForgeRegistries.DEFERRED_ITEM_PREDICATE_SERIALIZERS.register(modEventBus);
         ForgeRegistries.DEFERRED_ENTITY_DATA_SERIALIZERS.register(modEventBus);
         ForgeRegistries.DEFERRED_GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         ForgeRegistries.DEFERRED_BIOME_MODIFIER_SERIALIZERS.register(modEventBus);

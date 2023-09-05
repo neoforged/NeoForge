@@ -137,28 +137,29 @@ public interface IForgeGuiGraphics
         self().blit(texture, x, y, boundsWidth, boundsHeight, 0.0f,0.0f, rectWidth, rectHeight, rectWidth, rectHeight);
     }
 
+    // TODO: 1.20.2: do we need to fix these or can we just remove them?
     /**
      * Version of {@link GuiGraphics#blitNineSliced(ResourceLocation, int, int, int, int, int, int, int, int, int)} that supports specifying the texture's size.
      */
-    default void blitNineSlicedSized(ResourceLocation texture, int x, int y, int width, int height, int sliceSize, int uWidth, int vHeight, int uOffset, int vOffset,
+    /*default void blitNineSlicedSized(ResourceLocation texture, int x, int y, int width, int height, int sliceSize, int uWidth, int vHeight, int uOffset, int vOffset,
           int textureWidth, int textureHeight)
     {
         blitNineSlicedSized(texture, x, y, width, height, sliceSize, sliceSize, uWidth, vHeight, uOffset, vOffset, textureWidth, textureHeight);
-    }
+    }*/
 
     /**
      * Version of {@link GuiGraphics#blitNineSliced(ResourceLocation, int, int, int, int, int, int, int, int, int, int)} that supports specifying the texture's size.
      */
-    default void blitNineSlicedSized(ResourceLocation texture, int x, int y, int width, int height, int sliceWidth, int sliceHeight, int uWidth, int vHeight,
+    /*default void blitNineSlicedSized(ResourceLocation texture, int x, int y, int width, int height, int sliceWidth, int sliceHeight, int uWidth, int vHeight,
           int uOffset, int vOffset, int textureWidth, int textureHeight)
     {
         blitNineSlicedSized(texture, x, y, width, height, sliceWidth, sliceHeight, sliceWidth, sliceHeight, uWidth, vHeight, uOffset, vOffset, textureWidth, textureHeight);
-    }
+    }*/
 
     /**
      * Version of {@link GuiGraphics#blitNineSliced(ResourceLocation, int, int, int, int, int, int, int, int, int, int, int, int)} that supports specifying the texture's size.
      */
-    default void blitNineSlicedSized(ResourceLocation texture, int x, int y, int width, int height, int cornerWidth, int cornerHeight, int edgeWidth, int edgeHeight,
+    /*default void blitNineSlicedSized(ResourceLocation texture, int x, int y, int width, int height, int cornerWidth, int cornerHeight, int edgeWidth, int edgeHeight,
           int uWidth, int vHeight, int uOffset, int vOffset, int textureWidth, int textureHeight)
     {
         cornerWidth = Math.min(cornerWidth, width / 2);
@@ -194,5 +195,5 @@ public interface IForgeGuiGraphics
             self.blitRepeating(texture, x + cornerWidth, y + cornerHeight, width - edgeWidth - cornerWidth, height - edgeHeight - cornerHeight, uOffset + cornerWidth, vOffset + cornerHeight, uWidth - edgeWidth - cornerWidth, vHeight - edgeHeight - cornerHeight, textureWidth, textureHeight);
             self.blitRepeating(texture, x + width - edgeWidth, y + cornerHeight, cornerWidth, height - edgeHeight - cornerHeight, uOffset + uWidth - edgeWidth, vOffset + cornerHeight, edgeWidth, vHeight - edgeHeight - cornerHeight, textureWidth, textureHeight);
         }
-    }
+    }*/
 }

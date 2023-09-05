@@ -6,9 +6,8 @@
 package net.minecraftforge.common.loot;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
@@ -25,8 +24,12 @@ import java.util.Set;
  */
 public class CanToolPerformAction implements LootItemCondition {
 
-    public static final LootItemConditionType LOOT_CONDITION_TYPE = new LootItemConditionType(new CanToolPerformAction.Serializer());
-
+    public static Codec<CanToolPerformAction> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+          ToolAction.CODEC.fieldOf("action").forGetter(action -> action.action)
+    ).apply(builder, CanToolPerformAction::new));
+    
+    public static final LootItemConditionType LOOT_CONDITION_TYPE = new LootItemConditionType(CODEC);
+    
     final ToolAction action;
 
     public CanToolPerformAction(ToolAction action) {
@@ -51,16 +54,4 @@ public class CanToolPerformAction implements LootItemCondition {
     public static LootItemCondition.Builder canToolPerformAction(ToolAction action) {
         return () -> new CanToolPerformAction(action);
     }
-
-    public static class Serializer implements net.minecraft.world.level.storage.loot.Serializer<CanToolPerformAction> {
-        public void serialize(JsonObject json, CanToolPerformAction itemCondition, @NotNull JsonSerializationContext context) {
-            json.addProperty("action", itemCondition.action.name());
-        }
-
-        @NotNull
-        public CanToolPerformAction deserialize(JsonObject json, @NotNull JsonDeserializationContext context) {
-            return new CanToolPerformAction(ToolAction.get(json.get("action").getAsString()));
-        }
-    }
-
 }

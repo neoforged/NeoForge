@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/projectile/ThrowableProjectile.java
++++ b/net/minecraft/world/entity/projectile/ThrowableProjectile.java
+@@ -60,7 +60,7 @@
+          }
+       }
+ 
+-      if (hitresult.getType() != HitResult.Type.MISS && !flag) {
++      if (hitresult.getType() != HitResult.Type.MISS && !flag && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
+          this.onHit(hitresult);
+       }
+ 

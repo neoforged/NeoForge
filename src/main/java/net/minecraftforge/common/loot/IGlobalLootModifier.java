@@ -5,20 +5,20 @@
 
 package net.minecraftforge.common.loot;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.Dynamic;
-import com.mojang.serialization.JsonOps;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditions;
+import net.minecraftforge.common.conditions.ConditionalOps;
+import net.minecraftforge.common.conditions.WithConditions;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -30,43 +30,9 @@ import java.util.function.Function;
 public interface IGlobalLootModifier {
     Codec<IGlobalLootModifier> DIRECT_CODEC = ExtraCodecs.lazyInitializedCodec(() -> ForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS.get().getCodec())
             .dispatch(IGlobalLootModifier::codec, Function.identity());
+    Codec<Optional<WithConditions<IGlobalLootModifier>>> CONDITIONAL_CODEC = ConditionalOps.createConditionalCodecWithConditions(DIRECT_CODEC, "forge:conditions").codec();
 
-    Codec<LootItemCondition[]> LOOT_CONDITIONS_CODEC = Codec.PASSTHROUGH.flatXmap(
-            d ->
-            {
-                try
-                {
-                    LootItemCondition[] conditions = LootModifierManager.GSON_INSTANCE.fromJson(getJson(d), LootItemCondition[].class);
-                    return DataResult.success(conditions);
-                }
-                catch (JsonSyntaxException e)
-                {
-                    LootModifierManager.LOGGER.warn("Unable to decode loot conditions", e);
-                    return DataResult.error(e::getMessage);
-                }
-            },
-            conditions ->
-            {
-                try
-                {
-                    JsonElement element = LootModifierManager.GSON_INSTANCE.toJsonTree(conditions);
-                    return DataResult.success(new Dynamic<>(JsonOps.INSTANCE, element));
-                }
-                catch (JsonSyntaxException e)
-                {
-                    LootModifierManager.LOGGER.warn("Unable to encode loot conditions", e);
-                    return DataResult.error(e::getMessage);
-                }
-            }
-    );
-
-    @SuppressWarnings("unchecked")
-    static <U> JsonElement getJson(Dynamic<?> dynamic) {
-        Dynamic<U> typed = (Dynamic<U>) dynamic;
-        return typed.getValue() instanceof JsonElement ?
-                (JsonElement) typed.getValue() :
-                typed.getOps().convertTo(JsonOps.INSTANCE, typed.getValue());
-    }
+    Codec<LootItemCondition[]> LOOT_CONDITIONS_CODEC = LootItemConditions.CODEC.listOf().xmap(list -> list.toArray(LootItemCondition[]::new), List::of);
 
     /**
      * Applies the modifier to the list of generated loot. This function needs to be responsible for

@@ -1,0 +1,30 @@
+--- a/net/minecraft/world/entity/animal/Bee.java
++++ b/net/minecraft/world/entity/animal/Bee.java
+@@ -498,7 +498,7 @@
+          return false;
+       } else {
+          BlockEntity blockentity = this.level().getBlockEntity(this.hivePos);
+-         return blockentity != null && blockentity.getType() == BlockEntityType.BEEHIVE;
++         return blockentity instanceof BeehiveBlockEntity;
+       }
+    }
+ 
+@@ -657,8 +657,18 @@
+    }
+ 
+    @Override
++   @Deprecated // FORGE: use jumpInFluid instead
+    protected void jumpInLiquid(TagKey<Fluid> p_204061_) {
++      this.jumpInLiquidInternal();
++   }
++
++   private void jumpInLiquidInternal() {
+       this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.01, 0.0));
++   }
++
++   @Override
++   public void jumpInFluid(net.minecraftforge.fluids.FluidType type) {
++      this.jumpInLiquidInternal();
+    }
+ 
+    @Override

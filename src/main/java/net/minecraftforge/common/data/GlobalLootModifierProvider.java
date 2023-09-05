@@ -16,14 +16,18 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.common.conditions.ICondition;
+import net.minecraftforge.common.conditions.WithConditions;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -89,13 +93,26 @@ public abstract class GlobalLootModifierProvider implements DataProvider
     /**
      * Passes in the data needed to create the file without any extra objects.
      *
-     * @param modifier      The name of the modifier, which will be the file name.
-     * @param instance      The instance to serialize
+     * @param modifier   the name of the modifier, which will be the file name
+     * @param instance   the instance to serialize
+     * @param conditions a list of conditions to add to the GLM file
      */
-    public <T extends IGlobalLootModifier> void add(String modifier, T instance)
+    public <T extends IGlobalLootModifier> void add(String modifier, T instance, List<ICondition> conditions)
     {
-        JsonElement json = IGlobalLootModifier.DIRECT_CODEC.encodeStart(JsonOps.INSTANCE, instance).getOrThrow(false, s -> {});
+        JsonElement json = IGlobalLootModifier.CONDITIONAL_CODEC.encodeStart(JsonOps.INSTANCE, Optional.of(new WithConditions<>(conditions, instance))).getOrThrow(false, s -> {});
         this.toSerialize.put(modifier, json);
+    }
+
+    /**
+     * Passes in the data needed to create the file without any extra objects.
+     *
+     * @param modifier   the name of the modifier, which will be the file name
+     * @param instance   the instance to serialize
+     * @param conditions a list of conditions to add to the GLM file
+     */
+    public <T extends IGlobalLootModifier> void add(String modifier, T instance, ICondition... conditions)
+    {
+        add(modifier, instance, Arrays.asList(conditions));
     }
 
     @Override

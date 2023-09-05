@@ -1,0 +1,17 @@
+--- a/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
++++ b/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
+@@ -97,12 +97,12 @@
+             this.serverBrand = brandpayload.brand();
+             this.telemetryManager.onServerBrandReceived(brandpayload.brand());
+          } else {
+-            this.handleCustomPayload(custompacketpayload);
++            this.handleCustomPayload(p_295727_, custompacketpayload);
+          }
+       }
+    }
+ 
+-   protected abstract void handleCustomPayload(CustomPacketPayload p_295776_);
++   protected abstract void handleCustomPayload(ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295776_);
+ 
+    protected abstract RegistryAccess.Frozen registryAccess();
+ 

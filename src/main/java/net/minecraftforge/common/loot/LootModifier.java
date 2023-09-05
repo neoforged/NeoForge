@@ -5,6 +5,7 @@
 
 package net.minecraftforge.common.loot;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 import com.mojang.datafixers.Products;
@@ -48,7 +49,7 @@ public abstract class LootModifier implements IGlobalLootModifier
     protected LootModifier(LootItemCondition[] conditionsIn)
     {
         this.conditions = conditionsIn;
-        this.combinedConditions = LootItemConditions.andConditions(conditionsIn);
+        this.combinedConditions = LootItemConditions.andConditions(List.of(conditionsIn));
     }
 
     @NotNull

@@ -140,42 +140,40 @@ public class PlayMessages
             return new FriendlyByteBuf(Unpooled.buffer());
         }
 
-        public static void handle(SpawnEntity msg, Supplier<NetworkEvent.Context> ctx)
+        public static boolean handle(SpawnEntity msg, NetworkEvent.Context ctx)
         {
-            ctx.get().enqueueWork(() -> {
-                try
+            try
+            {
+                EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.byId(msg.typeId);
+                Optional<Level> world = LogicalSidedProvider.CLIENTWORLD.get(ctx.getDirection().getReceptionSide());
+                Entity e = world.map(w -> type.customClientSpawn(msg, w)).orElse(null);
+                if (e == null)
                 {
-                    EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.byId(msg.typeId);
-                    Optional<Level> world = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
-                    Entity e = world.map(w -> type.customClientSpawn(msg, w)).orElse(null);
-                    if (e == null)
-                    {
-                        return;
-                    }
-
-                    /*
-                     * Sets the postiion on the client, Mirrors what
-                     * Entity#recreateFromPacket and LivingEntity#recreateFromPacket does.
-                     */
-                    e.syncPacketPositionCodec(msg.posX, msg.posY, msg.posZ);
-                    e.absMoveTo(msg.posX, msg.posY, msg.posZ, (msg.yaw * 360) / 256.0F, (msg.pitch * 360) / 256.0F);
-                    e.setYHeadRot((msg.headYaw * 360) / 256.0F);
-                    e.setYBodyRot((msg.headYaw * 360) / 256.0F);
-
-                    e.setId(msg.entityId);
-                    e.setUUID(msg.uuid);
-                    world.filter(ClientLevel.class::isInstance).ifPresent(w -> ((ClientLevel) w).putNonPlayerEntity(msg.entityId, e));
-                    e.lerpMotion(msg.velX / 8000.0, msg.velY / 8000.0, msg.velZ / 8000.0);
-                    if (e instanceof IEntityAdditionalSpawnData entityAdditionalSpawnData)
-                    {
-                        entityAdditionalSpawnData.readSpawnData(msg.buf);
-                    }
-                } finally
-                {
-                    msg.buf.release();
+                    return true;
                 }
-            });
-            ctx.get().setPacketHandled(true);
+
+                /*
+                 * Sets the postiion on the client, Mirrors what
+                 * Entity#recreateFromPacket and LivingEntity#recreateFromPacket does.
+                 */
+                e.syncPacketPositionCodec(msg.posX, msg.posY, msg.posZ);
+                e.absMoveTo(msg.posX, msg.posY, msg.posZ, (msg.yaw * 360) / 256.0F, (msg.pitch * 360) / 256.0F);
+                e.setYHeadRot((msg.headYaw * 360) / 256.0F);
+                e.setYBodyRot((msg.headYaw * 360) / 256.0F);
+
+                e.setId(msg.entityId);
+                e.setUUID(msg.uuid);
+                world.filter(ClientLevel.class::isInstance).ifPresent(w -> ((ClientLevel) w).addEntity(e));
+                e.lerpMotion(msg.velX / 8000.0, msg.velY / 8000.0, msg.velZ / 8000.0);
+                if (e instanceof IEntityAdditionalSpawnData entityAdditionalSpawnData)
+                {
+                    entityAdditionalSpawnData.readSpawnData(msg.buf);
+                }
+            } finally
+            {
+                msg.buf.release();
+            }
+            return true;
         }
 
         public Entity getEntity()
@@ -282,25 +280,22 @@ public class PlayMessages
             return new OpenContainer(buf.readVarInt(), buf.readVarInt(), buf.readComponent(), new FriendlyByteBuf(Unpooled.wrappedBuffer(buf.readByteArray(32600))));
         }
 
-        public static void handle(OpenContainer msg, Supplier<NetworkEvent.Context> ctx)
+        public static boolean handle(OpenContainer msg, NetworkEvent.Context ctx)
         {
-            ctx.get().enqueueWork(() -> {
-                try
-                {
-                    MenuScreens.getScreenFactory(msg.getType(), Minecraft.getInstance(), msg.getWindowId(), msg.getName()).ifPresent(f -> {
-                        AbstractContainerMenu c = msg.getType().create(msg.getWindowId(), Minecraft.getInstance().player.getInventory(), msg.getAdditionalData());
+            try
+            {
+                MenuScreens.getScreenFactory(msg.getType(), Minecraft.getInstance(), msg.getWindowId(), msg.getName()).ifPresent(f -> {
+                    AbstractContainerMenu c = msg.getType().create(msg.getWindowId(), Minecraft.getInstance().player.getInventory(), msg.getAdditionalData());
 
-                        @SuppressWarnings("unchecked") Screen s = ((MenuScreens.ScreenConstructor<AbstractContainerMenu, ?>) f).create(c, Minecraft.getInstance().player.getInventory(), msg.getName());
-                        Minecraft.getInstance().player.containerMenu = ((MenuAccess<?>) s).getMenu();
-                        Minecraft.getInstance().setScreen(s);
-                    });
-                } finally
-                {
-                    msg.getAdditionalData().release();
-                }
-
-            });
-            ctx.get().setPacketHandled(true);
+                    @SuppressWarnings("unchecked") Screen s = ((MenuScreens.ScreenConstructor<AbstractContainerMenu, ?>) f).create(c, Minecraft.getInstance().player.getInventory(), msg.getName());
+                    Minecraft.getInstance().player.containerMenu = ((MenuAccess<?>) s).getMenu();
+                    Minecraft.getInstance().setScreen(s);
+                });
+            } finally
+            {
+                msg.getAdditionalData().release();
+            }
+            return true;
         }
 
         public final MenuType<?> getType()

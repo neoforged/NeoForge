@@ -1,0 +1,62 @@
+--- a/net/minecraft/client/renderer/RenderType.java
++++ b/net/minecraft/client/renderer/RenderType.java
+@@ -959,7 +959,7 @@
+    }
+ 
+    public static RenderType text(ResourceLocation p_110498_) {
+-      return TEXT.apply(p_110498_);
++      return net.minecraftforge.client.ForgeRenderTypes.getText(p_110498_);
+    }
+ 
+    public static RenderType textBackground() {
+@@ -967,19 +967,19 @@
+    }
+ 
+    public static RenderType textIntensity(ResourceLocation p_173238_) {
+-      return TEXT_INTENSITY.apply(p_173238_);
++      return net.minecraftforge.client.ForgeRenderTypes.getTextIntensity(p_173238_);
+    }
+ 
+    public static RenderType textPolygonOffset(ResourceLocation p_181445_) {
+-      return TEXT_POLYGON_OFFSET.apply(p_181445_);
++      return net.minecraftforge.client.ForgeRenderTypes.getTextPolygonOffset(p_181445_);
+    }
+ 
+    public static RenderType textIntensityPolygonOffset(ResourceLocation p_181447_) {
+-      return TEXT_INTENSITY_POLYGON_OFFSET.apply(p_181447_);
++      return net.minecraftforge.client.ForgeRenderTypes.getTextIntensityPolygonOffset(p_181447_);
+    }
+ 
+    public static RenderType textSeeThrough(ResourceLocation p_110501_) {
+-      return TEXT_SEE_THROUGH.apply(p_110501_);
++      return net.minecraftforge.client.ForgeRenderTypes.getTextSeeThrough(p_110501_);
+    }
+ 
+    public static RenderType textBackgroundSeeThrough() {
+@@ -987,7 +987,7 @@
+    }
+ 
+    public static RenderType textIntensitySeeThrough(ResourceLocation p_173241_) {
+-      return TEXT_INTENSITY_SEE_THROUGH.apply(p_173241_);
++      return net.minecraftforge.client.ForgeRenderTypes.getTextIntensitySeeThrough(p_173241_);
+    }
+ 
+    public static RenderType lightning() {
+@@ -1414,4 +1414,17 @@
+          return this.name;
+       }
+    }
++
++   // FORGE START
++   private int chunkLayerId = -1;
++   /** {@return the unique ID of this {@link RenderType} for chunk rendering purposes, or {@literal -1} if this is not a chunk {@link RenderType}} */
++   public final int getChunkLayerId() {
++      return chunkLayerId;
++   }
++   static {
++      int i = 0;
++      for (var layer : chunkBufferLayers())
++         layer.chunkLayerId = i++;
++   }
++   // FORGE END
+ }

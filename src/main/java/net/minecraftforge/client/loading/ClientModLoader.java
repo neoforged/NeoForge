@@ -15,13 +15,10 @@ import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.packs.repository.RepositorySource;
+import net.minecraft.server.packs.repository.*;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
-import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.level.DataPackConfig;
 import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.fml.*;
@@ -165,7 +162,7 @@ public class ClientModLoader
         {
             IModInfo mod = e.getKey().getModInfos().get(0);
             final String name = "mod:" + mod.getModId();
-            final Pack modPack = Pack.readMetaAndCreate(name, Component.literal(e.getValue().packId()), false, id -> e.getValue(), PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT);
+            final Pack modPack = Pack.readMetaAndCreate(name, Component.literal(e.getValue().packId()), false, BuiltInPackSource.fixedResources(e.getValue()), PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT);
             if (modPack == null) {
                 // Vanilla only logs an error, instead of propagating, so handle null and warn that something went wrong
                 ModLoader.get().addWarning(new ModLoadingWarning(mod, ModLoadingStage.ERROR, "fml.modloading.brokenresources", e.getKey()));
@@ -181,8 +178,12 @@ public class ClientModLoader
 
         // Create a resource pack merging all mod resources that should be hidden
         final Pack modResourcesPack = Pack.readMetaAndCreate("mod_resources", Component.literal("Mod Resources"), true,
-                id -> new DelegatingPackResources(id, false, new PackMetadataSection(Component.translatable("fml.resources.modresources", hiddenPacks.size()),
-                        SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES)), hiddenPacks),
+                BuiltInPackSource.fromName(
+                id -> new DelegatingPackResources(id, false,
+                      new PackMetadataSection(
+                            Component.translatable("fml.resources.modresources", hiddenPacks.size()),
+                            SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES)),
+                            hiddenPacks)),
                 PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT);
         packAcceptor.accept(modResourcesPack);
     }

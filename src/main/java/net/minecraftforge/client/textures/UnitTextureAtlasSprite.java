@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceMetadata;
 
 /**
  * A helper sprite with UVs spanning the entire texture.
@@ -25,18 +26,18 @@ public class UnitTextureAtlasSprite extends TextureAtlasSprite
 
     private UnitTextureAtlasSprite()
     {
-        super(LOCATION, new SpriteContents(LOCATION, new FrameSize(1, 1), new NativeImage(1, 1, false), AnimationMetadataSection.EMPTY, null), 1, 1, 0, 0);
+        super(LOCATION, new SpriteContents(LOCATION, new FrameSize(1, 1), new NativeImage(1, 1, false), ResourceMetadata.EMPTY), 1, 1, 0, 0);
     }
 
     @Override
-    public float getU(double u)
+    public float getU(float u)
     {
-        return (float) u / 16;
+        return u / 16;
     }
 
     @Override
-    public float getV(double v)
+    public float getV(float v)
     {
-        return (float) v / 16;
+        return v / 16;
     }
 }

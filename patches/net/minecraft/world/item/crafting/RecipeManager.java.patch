@@ -1,0 +1,52 @@
+--- a/net/minecraft/world/item/crafting/RecipeManager.java
++++ b/net/minecraft/world/item/crafting/RecipeManager.java
+@@ -54,11 +54,16 @@
+ 
+       for(Entry<ResourceLocation, JsonElement> entry : p_44037_.entrySet()) {
+          ResourceLocation resourcelocation = entry.getKey();
++         if (resourcelocation.getPath().startsWith("_")) continue; //Forge: filter anything beginning with "_" as it's used for metadata.
+ 
+          try {
+-            RecipeHolder<?> recipeholder = fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"));
+-            map.computeIfAbsent(recipeholder.value().getType(), p_44075_ -> ImmutableMap.builder()).put(resourcelocation, recipeholder);
+-            builder.put(resourcelocation, recipeholder);
++            Optional<RecipeHolder<?>> recipeHolderOptional = fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"), net.minecraftforge.common.conditions.ConditionalOps.create(net.minecraft.resources.RegistryOps.create(com.mojang.serialization.JsonOps.INSTANCE, registryAccess), conditionContext));
++            recipeHolderOptional.ifPresentOrElse(recipeholder -> {
++               map.computeIfAbsent(recipeholder.value().getType(), p_44075_ -> ImmutableMap.builder()).put(resourcelocation, recipeholder);
++               builder.put(resourcelocation, recipeholder);
++            }, () -> {
++               LOGGER.debug("Skipping loading recipe {} as it's conditions were not met", resourcelocation);
++            });
+          } catch (IllegalArgumentException | JsonParseException jsonparseexception) {
+             LOGGER.error("Parsing error loading recipe {}", resourcelocation, jsonparseexception);
+          }
+@@ -139,14 +144,22 @@
+       return this.recipes.values().stream().flatMap(p_220258_ -> p_220258_.keySet().stream());
+    }
+ 
++   /** @deprecated Forge: use {@linkplain #fromJson(ResourceLocation, JsonObject, com.mojang.serialization.DynamicOps) overload with context}. */
++   @Deprecated
+    protected static RecipeHolder<?> fromJson(ResourceLocation p_44046_, JsonObject p_44047_) {
+-      String s = GsonHelper.getAsString(p_44047_, "type");
+-      Codec<? extends Recipe<?>> codec = BuiltInRegistries.RECIPE_SERIALIZER
+-         .getOptional(new ResourceLocation(s))
+-         .orElseThrow(() -> new JsonSyntaxException("Invalid or unsupported recipe type '" + s + "'"))
+-         .codec();
+-      Recipe<?> recipe = Util.getOrThrow(codec.parse(JsonOps.INSTANCE, p_44047_), JsonParseException::new);
+-      return new RecipeHolder<>(p_44046_, recipe);
++      return fromJson(p_44046_, p_44047_, JsonOps.INSTANCE).orElseThrow();
++   }
++   
++   public static final Codec<Recipe<?>> DISPATCH_CODEC = net.minecraftforge.common.util.ForgeExtraCodecs.dispatchUnsafe(ResourceLocation.CODEC, recipe -> BuiltInRegistries.RECIPE_SERIALIZER.getKey(recipe.getSerializer()), resourceLocation -> BuiltInRegistries.RECIPE_SERIALIZER
++                .getOptional(resourceLocation)
++                .orElseThrow(() -> new JsonSyntaxException("Invalid or unsupported recipe type '%s'".formatted(resourceLocation)))
++                .codec());
++
++   public static final Codec<Optional<Recipe<?>>> CONDITIONAL_DISPATCH = net.minecraftforge.common.conditions.ConditionalOps.createConditionalCodec(DISPATCH_CODEC).codec();
++   
++   public static Optional<RecipeHolder<?>> fromJson(ResourceLocation p_44046_, JsonObject p_44047_, com.mojang.serialization.DynamicOps<com.google.gson.JsonElement> jsonElementOps) {
++      Optional<? extends Recipe<?>> recipe = net.minecraftforge.common.conditions.ICondition.getWithConditionalCodec(CONDITIONAL_DISPATCH, jsonElementOps, p_44047_);
++      return recipe.filter(r -> r != net.minecraftforge.common.crafting.CraftingHelper.EMPTY_RECIPE).map(r -> new RecipeHolder<>(p_44046_, r));
+    }
+ 
+    public void replaceRecipes(Iterable<RecipeHolder<?>> p_44025_) {

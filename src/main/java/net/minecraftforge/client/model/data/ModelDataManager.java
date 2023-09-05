@@ -7,6 +7,7 @@ package net.minecraftforge.client.model.data;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -82,6 +83,11 @@ public class ModelDataManager
         Preconditions.checkArgument(level.isClientSide, "Cannot request model data for server level");
         refreshAt(pos);
         return modelDataCache.getOrDefault(pos, Collections.emptyMap());
+    }
+
+    public Map<BlockPos, ModelData> getAt(SectionPos pos)
+    {
+        return getAt(pos.chunk());
     }
 
     @SubscribeEvent

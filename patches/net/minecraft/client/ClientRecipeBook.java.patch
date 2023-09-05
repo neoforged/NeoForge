@@ -1,0 +1,20 @@
+--- a/net/minecraft/client/ClientRecipeBook.java
++++ b/net/minecraft/client/ClientRecipeBook.java
+@@ -60,7 +60,7 @@
+          Recipe<?> recipe = recipeholder.value();
+          if (!recipe.isSpecial() && !recipe.isIncomplete()) {
+             RecipeBookCategories recipebookcategories = getCategory(recipeholder);
+-            String s = recipe.getGroup();
++            String s = recipe.getGroup().isEmpty() ? recipeholder.id().toString() : recipe.getGroup(); // FORGE: Group value defaults to the recipe's ID if the recipe's explicit group is empty.
+             if (s.isEmpty()) {
+                map.computeIfAbsent(recipebookcategories, p_90645_ -> Lists.newArrayList()).add(ImmutableList.of(recipeholder));
+             } else {
+@@ -118,6 +118,8 @@
+          } else if (recipetype == RecipeType.SMITHING) {
+             return RecipeBookCategories.SMITHING;
+          } else {
++            RecipeBookCategories categories = net.minecraftforge.client.RecipeBookManager.findCategories((RecipeType) recipetype, p_301136_);
++            if (categories != null) return categories;
+             LOGGER.warn(
+                "Unknown recipe category: {}/{}", LogUtils.defer(() -> BuiltInRegistries.RECIPE_TYPE.getKey(recipe.getType())), LogUtils.defer(p_301136_::id)
+             );

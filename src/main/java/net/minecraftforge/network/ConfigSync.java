@@ -8,6 +8,7 @@ package net.minecraftforge.network;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.config.ConfigTracker;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.network.simple.MessageFunctions;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class ConfigSync {
         this.tracker = tracker;
     }
 
-    public List<Pair<String, HandshakeMessages.S2CConfigData>> syncConfigs(boolean isLocal) {
+    public List<MessageFunctions.LoginPacket<HandshakeMessages.S2CConfigData>> syncConfigs(boolean isLocal) {
         final Map<String, byte[]> configData = tracker.configSets().get(ModConfig.Type.SERVER).stream().collect(Collectors.toMap(ModConfig::getFileName, mc -> {
             try {
                 return Files.readAllBytes(mc.getFullPath());
@@ -34,10 +35,10 @@ public class ConfigSync {
                 throw new RuntimeException(e);
             }
         }));
-        return configData.entrySet().stream().map(e->Pair.of("Config "+e.getKey(), new HandshakeMessages.S2CConfigData(e.getKey(), e.getValue()))).collect(Collectors.toList());
+        return configData.entrySet().stream().map(e-> new MessageFunctions.LoginPacket<>("Config " + e.getKey(), new HandshakeMessages.S2CConfigData(e.getKey(), e.getValue()))).toList();
     }
 
-    public void receiveSyncedConfig(final HandshakeMessages.S2CConfigData s2CConfigData, final Supplier<NetworkEvent.Context> contextSupplier) {
+    public void receiveSyncedConfig(final HandshakeMessages.S2CConfigData s2CConfigData, final NetworkEvent.Context contextSupplier) {
         if (!Minecraft.getInstance().isLocalServer()) {
             Optional.ofNullable(tracker.fileMap().get(s2CConfigData.getFileName())).ifPresent(mc-> mc.acceptSyncedConfig(s2CConfigData.getBytes()));
         }

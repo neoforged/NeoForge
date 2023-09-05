@@ -7,9 +7,12 @@ package net.minecraftforge.common.data;
 
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.packs.VanillaRecipeProvider;
@@ -25,27 +28,21 @@ import net.minecraft.world.item.crafting.Ingredient.Value;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public final class ForgeRecipeProvider extends VanillaRecipeProvider
 {
     private final Map<Item, TagKey<Item>> replacements = new HashMap<>();
     private final Set<ResourceLocation> excludes = new HashSet<>();
 
-    public ForgeRecipeProvider(PackOutput packOutput)
+    public ForgeRecipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider)
     {
-        super(packOutput);
+        super(packOutput, lookupProvider);
     }
 
     private void exclude(ItemLike item)
@@ -64,7 +61,7 @@ public final class ForgeRecipeProvider extends VanillaRecipeProvider
     }
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> consumer)
+    protected void buildRecipes(RecipeOutput recipeOutput)
     {
         replace(Items.STICK, Tags.Items.RODS_WOODEN);
         replace(Items.GOLD_INGOT, Tags.Items.INGOTS_GOLD);
@@ -98,10 +95,23 @@ public final class ForgeRecipeProvider extends VanillaRecipeProvider
         exclude(Blocks.COBBLED_DEEPSLATE_SLAB);
         exclude(Blocks.COBBLED_DEEPSLATE_WALL);
 
-        super.buildRecipes(vanilla -> {
-            FinishedRecipe modified = enhance(vanilla);
-            if (modified != null)
-                consumer.accept(modified);
+        super.buildRecipes(new RecipeOutput() {
+            @Override
+            public void accept(FinishedRecipe p_301033_) {
+                FinishedRecipe modified = enhance(p_301033_);
+                if (modified != null)
+                    recipeOutput.accept(modified);
+            }
+            
+            @Override
+            public Advancement.Builder advancement() {
+                return recipeOutput.advancement();
+            }
+            
+            @Override
+            public HolderLookup.Provider provider() {
+                return recipeOutput.provider();
+            }
         });
     }
 
@@ -118,11 +128,12 @@ public final class ForgeRecipeProvider extends VanillaRecipeProvider
     @Nullable
     private FinishedRecipe enhance(ShapelessRecipeBuilder.Result vanilla)
     {
-        List<Ingredient> ingredients = getField(ShapelessRecipeBuilder.Result.class, vanilla, 4);
+        List<Ingredient> ingredients = ObfuscationReflectionHelper.getPrivateValue(ShapelessRecipeBuilder.Result.class, vanilla, "ingredients");
+        if (ingredients == null) throw new IllegalStateException(ShapelessRecipeBuilder.Result.class.getName() + " has no field ingredients");
         boolean modified = false;
         for (int x = 0; x < ingredients.size(); x++)
         {
-            Ingredient ing = enhance(vanilla.getId(), ingredients.get(x));
+            Ingredient ing = enhance(vanilla.id(), ingredients.get(x));
             if (ing != null)
             {
                 ingredients.set(x, ing);
@@ -141,20 +152,20 @@ public final class ForgeRecipeProvider extends VanillaRecipeProvider
     }
 
     @Override
-    protected CompletableFuture<?> buildAdvancement(CachedOutput output, ResourceLocation name, Advancement.Builder builder)
-    {
+    protected CompletableFuture<?> buildAdvancement(CachedOutput p_253674_, AdvancementHolder p_301116_) {
         // NOOP - We don't replace any of the advancement things yet...
         return CompletableFuture.allOf();
     }
-
+    
     @Nullable
     private FinishedRecipe enhance(ShapedRecipeBuilder.Result vanilla)
     {
-        Map<Character, Ingredient> ingredients = getField(ShapedRecipeBuilder.Result.class, vanilla, 5);
+        Map<Character, Ingredient> ingredients = ObfuscationReflectionHelper.getPrivateValue(ShapedRecipeBuilder.Result.class, vanilla, "key");
+        if (ingredients == null) throw new IllegalStateException(ShapedRecipeBuilder.Result.class.getName() + " has no field key");
         boolean modified = false;
         for (Character x : ingredients.keySet())
         {
-            Ingredient ing = enhance(vanilla.getId(), ingredients.get(x));
+            Ingredient ing = enhance(vanilla.id(), ingredients.get(x));
             if (ing != null)
             {
                 ingredients.put(x, ing);
@@ -172,8 +183,7 @@ public final class ForgeRecipeProvider extends VanillaRecipeProvider
 
         boolean modified = false;
         List<Value> items = new ArrayList<>();
-        // This will probably crash between versions, if null fix index
-        Value[] vanillaItems = getField(Ingredient.class, vanilla, 2);
+        Value[] vanillaItems = vanilla.getValues();
         for (Value entry : vanillaItems)
         {
             if (entry instanceof ItemValue)
@@ -192,20 +202,5 @@ public final class ForgeRecipeProvider extends VanillaRecipeProvider
                 items.add(entry);
         }
         return modified ? Ingredient.fromValues(items.stream()) : null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T, R> R getField(Class<T> clz, T inst, int index)
-    {
-        Field fld = clz.getDeclaredFields()[index];
-        fld.setAccessible(true);
-        try
-        {
-            return (R) fld.get(inst);
-        }
-        catch (IllegalArgumentException | IllegalAccessException e)
-        {
-            throw new RuntimeException(e);
-        }
     }
 }

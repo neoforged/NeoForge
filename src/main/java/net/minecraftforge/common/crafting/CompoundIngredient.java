@@ -5,119 +5,82 @@
 
 package net.minecraftforge.common.crafting;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-
+import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntComparators;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.util.ForgeExtraCodecs;
+import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** Ingredient that matches if any of the child ingredients match */
-public class CompoundIngredient extends AbstractIngredient
+public class CompoundIngredient extends Ingredient
 {
-    private List<Ingredient> children;
-    private ItemStack[] stacks;
-    private IntList itemIds;
+    public static final Codec<CompoundIngredient> CODEC = ForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC, "children", "ingredients").xmap(CompoundIngredient::new, CompoundIngredient::getChildren).codec();
+    public static final Codec<CompoundIngredient> DIRECT_CODEC = Ingredient.LIST_CODEC.xmap(CompoundIngredient::new, CompoundIngredient::getChildren);
+    public static final Codec<CompoundIngredient> CODEC_NONEMPTY = ForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC_NONEMPTY, "children", "ingredients").xmap(CompoundIngredient::new, CompoundIngredient::getChildren).codec();
+    public static final Codec<CompoundIngredient> DIRECT_CODEC_NONEMPTY = Ingredient.LIST_CODEC_NONEMPTY.xmap(CompoundIngredient::new, CompoundIngredient::getChildren);
+
+    private final List<Ingredient> children;
     private final boolean isSimple;
+    private final boolean synchronizeWithContents;
 
     protected CompoundIngredient(List<Ingredient> children)
     {
+        super(children.stream().map(Value::new), ForgeMod.COMPOUND_INGREDIENT_TYPE::get);
         this.children = Collections.unmodifiableList(children);
         this.isSimple = children.stream().allMatch(Ingredient::isSimple);
+        this.synchronizeWithContents = children.stream().anyMatch(Ingredient::synchronizeWithContents);
     }
 
     /** Creates a compound ingredient from the given list of ingredients */
     public static Ingredient of(Ingredient... children)
     {
-        // if 0 or 1 ingredient, can save effort
         if (children.length == 0)
-            throw new IllegalArgumentException("Cannot create a compound ingredient with no children, use Ingredient.of() to create an empty ingredient");
+            return of();
         if (children.length == 1)
             return children[0];
 
-        // need to merge vanilla ingredients, as otherwise the JSON produced by this ingredient could be invalid
-        List<Ingredient> vanillaIngredients = new ArrayList<>();
-        List<Ingredient> allIngredients = new ArrayList<>();
-        for (Ingredient child : children) {
-            if (child.getSerializer() == VanillaIngredientSerializer.INSTANCE)
-                vanillaIngredients.add(child);
-            else
-                allIngredients.add(child);
-        }
-        if (!vanillaIngredients.isEmpty())
-            allIngredients.add(merge(vanillaIngredients));
-        if (allIngredients.size() == 1)
-            return allIngredients.get(0);
-        return new CompoundIngredient(allIngredients);
+        return new CompoundIngredient(List.of(children));
     }
-
+    
     @Override
-    @NotNull
-    public ItemStack[] getItems()
-    {
-        if (stacks == null)
-        {
-            List<ItemStack> tmp = Lists.newArrayList();
-            for (Ingredient child : children)
-                Collections.addAll(tmp, child.getItems());
-            stacks = tmp.toArray(new ItemStack[tmp.size()]);
-
-        }
-        return stacks;
+    public ItemStack[] getItems() {
+        if (synchronizeWithContents())
+            return super.getItems();
+        
+        return children.stream().map(Ingredient::getItems).flatMap(Arrays::stream).toArray(ItemStack[]::new);
     }
-
+    
     @Override
-    @NotNull
-    public IntList getStackingIds()
-    {
-        boolean childrenNeedInvalidation = false;
-        for (Ingredient child : children)
-        {
-            childrenNeedInvalidation |= child.checkInvalidation();
-        }
-        if (childrenNeedInvalidation || this.itemIds == null || checkInvalidation())
-        {
-            this.markValid();
-            this.itemIds = new IntArrayList();
-            for (Ingredient child : children)
-                this.itemIds.addAll(child.getStackingIds());
-            this.itemIds.sort(IntComparators.NATURAL_COMPARATOR);
-        }
-
-        return this.itemIds;
+    public boolean test(@Nullable ItemStack p_43914_) {
+        if (synchronizeWithContents())
+            return super.test(p_43914_);
+        
+        return children.stream().anyMatch(i -> i.test(p_43914_));
     }
-
+    
     @Override
-    public boolean test(@Nullable ItemStack target)
-    {
-        if (target == null)
-            return false;
-
-        return children.stream().anyMatch(c -> c.test(target));
+    public IntList getStackingIds() {
+        if (synchronizeWithContents())
+            return super.getStackingIds();
+        
+        final var list = new IntArrayList();
+        children.stream().map(Ingredient::getStackingIds).forEach(list::addAll);
+        list.sort(IntComparators.NATURAL_COMPARATOR);
+        return list;
     }
-
-    @Override
-    protected void invalidate()
-    {
-        this.itemIds = null;
-        this.stacks = null;
-    }
-
+    
     @Override
     public boolean isSimple()
     {
@@ -125,60 +88,20 @@ public class CompoundIngredient extends AbstractIngredient
     }
 
     @Override
-    public IIngredientSerializer<? extends Ingredient> getSerializer()
-    {
-        return Serializer.INSTANCE;
+    public boolean synchronizeWithContents() {
+        return synchronizeWithContents;
     }
 
     @NotNull
-    public Collection<Ingredient> getChildren()
+    public List<Ingredient> getChildren()
     {
         return this.children;
     }
-
-    @Override
-    public JsonElement toJson()
-    {
-       if (this.children.size() == 1)
-       {
-          return this.children.get(0).toJson();
-       }
-       else
-       {
-          JsonArray json = new JsonArray();
-          this.children.stream().forEach(e -> json.add(e.toJson()));
-          return json;
-       }
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return children.stream().allMatch(Ingredient::isEmpty);
-    }
-
-    public static class Serializer implements IIngredientSerializer<CompoundIngredient>
-    {
-        public static final Serializer INSTANCE = new Serializer();
-
+    
+    private record Value(Ingredient inner) implements Ingredient.Value {
         @Override
-        public CompoundIngredient parse(FriendlyByteBuf buffer)
-        {
-            return new CompoundIngredient(Stream.generate(() -> Ingredient.fromNetwork(buffer)).limit(buffer.readVarInt()).collect(Collectors.toList()));
+        public Collection<ItemStack> getItems() {
+            return List.of(inner.getItems());
         }
-
-        @Override
-        public CompoundIngredient parse(JsonObject json)
-        {
-            throw new JsonSyntaxException("CompoundIngredient should not be directly referenced in json, just use an array of ingredients.");
-        }
-
-        @Override
-        public void write(FriendlyByteBuf buffer, CompoundIngredient ingredient)
-        {
-            buffer.writeVarInt(ingredient.children.size());
-            ingredient.children.forEach(c -> c.toNetwork(buffer));
-        }
-
     }
 }

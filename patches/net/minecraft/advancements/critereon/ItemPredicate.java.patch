@@ -1,0 +1,86 @@
+--- a/net/minecraft/advancements/critereon/ItemPredicate.java
++++ b/net/minecraft/advancements/critereon/ItemPredicate.java
+@@ -36,13 +36,14 @@
+    List<EnchantmentPredicate> enchantments,
+    List<EnchantmentPredicate> storedEnchantments,
+    Optional<Holder<Potion>> potion,
+-   Optional<NbtPredicate> nbt
++   Optional<NbtPredicate> nbt,
++   Optional<net.minecraftforge.common.advancements.critereon.ICustomItemPredicate> customLogic
+ ) {
+    private static final Codec<HolderSet<Item>> ITEMS_CODEC = BuiltInRegistries.ITEM
+       .holderByNameCodec()
+       .listOf()
+       .xmap(HolderSet::direct, p_297903_ -> p_297903_.stream().toList());
+-   public static final Codec<ItemPredicate> CODEC = RecordCodecBuilder.create(
++   public static final Codec<ItemPredicate> VANILLA_CODEC = RecordCodecBuilder.create(
+       p_297904_ -> p_297904_.group(
+                ExtraCodecs.strictOptionalField(TagKey.codec(Registries.ITEM), "tag").forGetter(ItemPredicate::tag),
+                ExtraCodecs.strictOptionalField(ITEMS_CODEC, "items").forGetter(ItemPredicate::items),
+@@ -56,8 +57,42 @@
+             )
+             .apply(p_297904_, ItemPredicate::new)
+    );
++   public static Codec<ItemPredicate> CODEC = ExtraCodecs.<net.minecraftforge.common.advancements.critereon.ICustomItemPredicate, ItemPredicate>either(
++           // Use dispatchUnsafe to always inline the dispatched type parameters into the root ingredient object, next to the "type"
++           net.minecraftforge.common.util.ForgeExtraCodecs.dispatchUnsafe(
++                   ExtraCodecs.lazyInitializedCodec(() -> net.minecraftforge.registries.ForgeRegistries.ITEM_PREDICATE_SERIALIZERS.get().getCodec()),
++                   net.minecraftforge.common.advancements.critereon.ICustomItemPredicate::codec,
++                   java.util.function.Function.identity()),
++           VANILLA_CODEC
++      ).xmap(either -> either.map(ItemPredicate::new, p -> p), predicate -> {
++         // Serialize using dispatch codec if custom logic is present, otherwise use vanilla codec
++         if (predicate.customLogic.isPresent()) {
++            return com.mojang.datafixers.util.Either.left(predicate.customLogic.get());
++         } else {
++            return com.mojang.datafixers.util.Either.right(predicate);
++         }
++      });
++   
++   public ItemPredicate(Optional<TagKey<Item>> tag, Optional<HolderSet<Item>> items, MinMaxBounds.Ints count, MinMaxBounds.Ints durability, List<EnchantmentPredicate> enchantments, List<EnchantmentPredicate> storedEnchantments, Optional<Holder<Potion>> potion, Optional<NbtPredicate> nbt) {
++      this(tag, items, count, durability, enchantments, storedEnchantments, potion, nbt, Optional.empty());
++   }
++   
++   public ItemPredicate(net.minecraftforge.common.advancements.critereon.ICustomItemPredicate customLogic) {
++      this(Optional.empty(), Optional.empty(), MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY, List.of(), List.of(), Optional.empty(), Optional.empty(), Optional.of(customLogic));
++   }
++   
++   public Codec<ItemPredicate> codec() {
++      return VANILLA_CODEC;
++   }
+ 
++   public boolean test(ItemStack itemStack) {
++      return matches(itemStack);
++   }
++   
+    public boolean matches(ItemStack p_45050_) {
++      if (this.customLogic.isPresent()) {
++         return this.customLogic.get().test(p_45050_);
++      }
+       if (this.tag.isPresent() && !p_45050_.is(this.tag.get())) {
+          return false;
+       } else if (this.items.isPresent() && !p_45050_.is(this.items.get())) {
+@@ -72,7 +107,7 @@
+          return false;
+       } else {
+          if (!this.enchantments.isEmpty()) {
+-            Map<Enchantment, Integer> map = EnchantmentHelper.deserializeEnchantments(p_45050_.getEnchantmentTags());
++            Map<Enchantment, Integer> map = p_45050_.getAllEnchantments();
+ 
+             for(EnchantmentPredicate enchantmentpredicate : this.enchantments) {
+                if (!enchantmentpredicate.containedIn(map)) {
+@@ -105,10 +140,14 @@
+       return Util.getOrThrow(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
+    }
+ 
++   /** @deprecated Use {@link ItemPredicate#serializeToJsonArray} instead. */
++   @Deprecated
+    public static JsonElement serializeToJsonArray(List<ItemPredicate> p_298555_) {
+       return Util.getOrThrow(CODEC.listOf().encodeStart(JsonOps.INSTANCE, p_298555_), IllegalStateException::new);
+    }
+ 
++   /** @deprecated Use {@link ItemPredicate#fromJsonArray} instead. */
++   @Deprecated
+    public static List<ItemPredicate> fromJsonArray(@Nullable JsonElement p_45056_) {
+       return p_45056_ != null && !p_45056_.isJsonNull()
+          ? Util.getOrThrow(CODEC.listOf().parse(JsonOps.INSTANCE, p_45056_), JsonParseException::new)

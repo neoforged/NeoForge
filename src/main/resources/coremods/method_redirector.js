@@ -32,7 +32,7 @@ function search(className, node, replacements) {
 var replacements = [
     {
         'opcode': Opcodes.INVOKEVIRTUAL,
-        'name': ASMAPI.mapMethod('m_6518_'),
+        'name': 'finalizeSpawn',
         'desc': '(Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/world/DifficultyInstance;Lnet/minecraft/world/entity/MobSpawnType;Lnet/minecraft/world/entity/SpawnGroupData;Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/world/entity/SpawnGroupData;',
         'targets': 'coremods/finalize_spawn_targets.json',
         'factory': finalizeSpawnNode

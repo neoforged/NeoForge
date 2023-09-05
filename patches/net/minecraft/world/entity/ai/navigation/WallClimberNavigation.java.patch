@@ -1,0 +1,17 @@
+--- a/net/minecraft/world/entity/ai/navigation/WallClimberNavigation.java
++++ b/net/minecraft/world/entity/ai/navigation/WallClimberNavigation.java
+@@ -45,11 +45,12 @@
+          super.tick();
+       } else {
+          if (this.pathToPosition != null) {
+-            if (!this.pathToPosition.closerToCenterThan(this.mob.position(), (double)this.mob.getBbWidth())
++            // FORGE: Fix MC-94054
++            if (!this.pathToPosition.closerToCenterThan(this.mob.position(), Math.max((double)this.mob.getBbWidth(), 1.0D))
+                && (
+                   !(this.mob.getY() > (double)this.pathToPosition.getY())
+                      || !BlockPos.containing((double)this.pathToPosition.getX(), this.mob.getY(), (double)this.pathToPosition.getZ())
+-                        .closerToCenterThan(this.mob.position(), (double)this.mob.getBbWidth())
++                        .closerToCenterThan(this.mob.position(), Math.max((double)this.mob.getBbWidth(), 1.0D))
+                )) {
+                this.mob
+                   .getMoveControl()

@@ -1,0 +1,32 @@
+--- a/net/minecraft/tags/TagFile.java
++++ b/net/minecraft/tags/TagFile.java
+@@ -5,12 +5,21 @@
+ import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+ import java.util.List;
+ 
+-public record TagFile(List<TagEntry> entries, boolean replace) {
+-   public static final Codec<TagFile> CODEC = RecordCodecBuilder.create(
+-      p_215967_ -> p_215967_.group(
+-               TagEntry.CODEC.listOf().fieldOf("values").forGetter(TagFile::entries),
+-               Codec.BOOL.optionalFieldOf("replace", Boolean.valueOf(false)).forGetter(TagFile::replace)
+-            )
+-            .apply(p_215967_, TagFile::new)
+-   );
++public record TagFile(List<TagEntry> entries, boolean replace, List<TagEntry> remove) {
++    public static final Codec<TagFile> CODEC = RecordCodecBuilder.create(
++            p_215967_ -> p_215967_.group(
++                            TagEntry.CODEC.listOf().fieldOf("values").forGetter(TagFile::entries),
++                            Codec.BOOL.optionalFieldOf("replace", Boolean.valueOf(false)).forGetter(TagFile::replace),
++                            TagEntry.CODEC.listOf().optionalFieldOf("remove", List.of()).forGetter(TagFile::remove)
++                    )
++                    .apply(p_215967_, TagFile::new)
++    );
++   
++   /**
++    * @deprecated Forge: Use {@link TagFile#TagFile(List, boolean, List)} which has support for remove entries.
++    */
++   @Deprecated
++   public TagFile(List<TagEntry> entries, boolean replace) {
++      this(entries, replace, List.of());
++   }
+ }

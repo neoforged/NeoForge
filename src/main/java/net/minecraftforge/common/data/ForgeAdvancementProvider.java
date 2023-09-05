@@ -6,6 +6,7 @@
 package net.minecraftforge.common.data;
 
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.advancements.AdvancementProvider;
@@ -52,7 +53,7 @@ public class ForgeAdvancementProvider extends AdvancementProvider
          * @param saver a consumer used to write advancements to a file
          * @param existingFileHelper a helper used to find whether a file exists
          */
-        void generate(HolderLookup.Provider registries, Consumer<Advancement> saver, ExistingFileHelper existingFileHelper);
+        void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper);
 
         /**
          * Creates an {@link AdvancementSubProvider} from this generator.

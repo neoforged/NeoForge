@@ -6,8 +6,6 @@
 package net.minecraftforge.common.util;
 
 import com.mojang.authlib.GameProfile;
-import java.util.Set;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.network.Connection;
 import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.chat.ChatType;
@@ -15,7 +13,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
+import net.minecraft.network.protocol.common.ServerboundClientInformationPacket;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ServerboundKeepAlivePacket;
+import net.minecraft.network.protocol.common.ServerboundResourcePackPacket;
 import net.minecraft.network.protocol.game.ServerboundAcceptTeleportationPacket;
 import net.minecraft.network.protocol.game.ServerboundBlockEntityTagQuery;
 import net.minecraft.network.protocol.game.ServerboundChangeDifficultyPacket;
@@ -24,17 +25,14 @@ import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
 import net.minecraft.network.protocol.game.ServerboundChatPacket;
 import net.minecraft.network.protocol.game.ServerboundChatSessionUpdatePacket;
 import net.minecraft.network.protocol.game.ServerboundClientCommandPacket;
-import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
 import net.minecraft.network.protocol.game.ServerboundCommandSuggestionPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerButtonClickPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
-import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
 import net.minecraft.network.protocol.game.ServerboundEntityTagQuery;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.network.protocol.game.ServerboundJigsawGeneratePacket;
-import net.minecraft.network.protocol.game.ServerboundKeepAlivePacket;
 import net.minecraft.network.protocol.game.ServerboundLockDifficultyPacket;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
 import net.minecraft.network.protocol.game.ServerboundMoveVehiclePacket;
@@ -48,7 +46,6 @@ import net.minecraft.network.protocol.game.ServerboundPlayerInputPacket;
 import net.minecraft.network.protocol.game.ServerboundRecipeBookChangeSettingsPacket;
 import net.minecraft.network.protocol.game.ServerboundRecipeBookSeenRecipePacket;
 import net.minecraft.network.protocol.game.ServerboundRenameItemPacket;
-import net.minecraft.network.protocol.game.ServerboundResourcePackPacket;
 import net.minecraft.network.protocol.game.ServerboundSeenAdvancementsPacket;
 import net.minecraft.network.protocol.game.ServerboundSelectTradePacket;
 import net.minecraft.network.protocol.game.ServerboundSetBeaconPacket;
@@ -64,8 +61,10 @@ import net.minecraft.network.protocol.game.ServerboundTeleportToEntityPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemPacket;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.stats.Stat;
 import net.minecraft.world.damagesource.DamageSource;
@@ -74,6 +73,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Set;
+
 /**
  * A basic fake server player implementation that can be used to simulate player actions.
  */
@@ -81,7 +83,7 @@ public class FakePlayer extends ServerPlayer
 {
     public FakePlayer(ServerLevel level, GameProfile name)
     {
-        super(level.getServer(), level, name);
+        super(level.getServer(), level, name, ClientInformation.createDefault());
         this.connection = new FakePlayerNetHandler(level.getServer(), this);
     }
 
@@ -91,7 +93,9 @@ public class FakePlayer extends ServerPlayer
     @Override public boolean canHarmPlayer(Player player) { return false; }
     @Override public void die(DamageSource source) { }
     @Override public void tick() { }
-    @Override public void updateOptions(ServerboundClientInformationPacket packet) { }
+    @Override
+    public void updateOptions(ClientInformation p_301998_) {
+    }
     @Override @Nullable public MinecraftServer getServer() { return ServerLifecycleHooks.getCurrentServer(); }
 
     @ParametersAreNonnullByDefault
@@ -99,7 +103,7 @@ public class FakePlayer extends ServerPlayer
         private static final Connection DUMMY_CONNECTION = new Connection(PacketFlow.CLIENTBOUND);
 
         public FakePlayerNetHandler(MinecraftServer server, ServerPlayer player) {
-            super(server, DUMMY_CONNECTION, player);
+            super(server, DUMMY_CONNECTION, player, CommonListenerCookie.createInitial(player.getGameProfile()));
         }
 
         @Override public void tick() { }
@@ -130,7 +134,8 @@ public class FakePlayer extends ServerPlayer
         @Override public void handleUseItemOn(ServerboundUseItemOnPacket packet) { }
         @Override public void handleUseItem(ServerboundUseItemPacket packet) { }
         @Override public void handleTeleportToEntityPacket(ServerboundTeleportToEntityPacket packet) { }
-        @Override public void handleResourcePackResponse(ServerboundResourcePackPacket packet) { }
+        @Override
+        public void handleResourcePackResponse(ServerboundResourcePackPacket p_295695_) { }
         @Override public void handlePaddleBoat(ServerboundPaddleBoatPacket packet) { }
         @Override public void onDisconnect(Component message) { }
         @Override public void send(Packet<?> packet) { }
@@ -147,10 +152,13 @@ public class FakePlayer extends ServerPlayer
         @Override public void handleContainerButtonClick(ServerboundContainerButtonClickPacket packet) { }
         @Override public void handleSetCreativeModeSlot(ServerboundSetCreativeModeSlotPacket packet) { }
         @Override public void handleSignUpdate(ServerboundSignUpdatePacket packet) { }
-        @Override public void handleKeepAlive(ServerboundKeepAlivePacket packet) { }
+        @Override
+        public void handleKeepAlive(ServerboundKeepAlivePacket p_294627_) { }
+        @Override
+        public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) { }
+        @Override
+        public void handleClientInformation(ServerboundClientInformationPacket p_301979_) { }
         @Override public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket packet) { }
-        @Override public void handleClientInformation(ServerboundClientInformationPacket packet) { }
-        @Override public void handleCustomPayload(ServerboundCustomPayloadPacket packet) { }
         @Override public void handleChangeDifficulty(ServerboundChangeDifficultyPacket packet) { }
         @Override public void handleLockDifficulty(ServerboundLockDifficultyPacket packet) { }
         @Override public void teleport(double x, double y, double z, float yaw, float pitch, Set<RelativeMovement> relativeSet) { }

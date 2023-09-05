@@ -204,7 +204,7 @@ public interface IForgeEntity extends ICapabilitySerializable<CompoundTag>
     /**
      * @return Return the height in blocks the Entity can step up without needing to jump
      * This is the sum of vanilla's {@link Entity#maxUpStep()} method and the current value
-     * of the {@link net.minecraftforge.common.ForgeMod#STEP_HEIGHT_ADDITION} attribute
+     * of the {@link net.minecraftforge.common.ForgeMod#STEP_HEIGHT} attribute
      * (if this Entity is a {@link LivingEntity} and has the attribute), clamped at 0.
      */
     default float getStepHeight()

@@ -1,0 +1,68 @@
+--- a/net/minecraft/world/level/block/entity/BlockEntity.java
++++ b/net/minecraft/world/level/block/entity/BlockEntity.java
+@@ -15,7 +15,7 @@
+ import net.minecraft.world.level.block.state.BlockState;
+ import org.slf4j.Logger;
+ 
+-public abstract class BlockEntity {
++public abstract class BlockEntity extends net.minecraftforge.common.capabilities.CapabilityProvider<BlockEntity> implements net.minecraftforge.common.extensions.IForgeBlockEntity {
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private final BlockEntityType<?> type;
+    @Nullable
+@@ -23,11 +23,14 @@
+    protected final BlockPos worldPosition;
+    protected boolean remove;
+    private BlockState blockState;
++   private CompoundTag customPersistentData;
+ 
+    public BlockEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
++      super(BlockEntity.class);
+       this.type = p_155228_;
+       this.worldPosition = p_155229_.immutable();
+       this.blockState = p_155230_;
++      this.gatherCapabilities();
+    }
+ 
+    public static BlockPos getPosFromTag(CompoundTag p_187473_) {
+@@ -48,9 +51,13 @@
+    }
+ 
+    public void load(CompoundTag p_155245_) {
++      if (p_155245_.contains("ForgeData")) this.customPersistentData = p_155245_.getCompound("ForgeData");
++      if (getCapabilities() != null && p_155245_.contains("ForgeCaps")) deserializeCaps(p_155245_.getCompound("ForgeCaps"));
+    }
+ 
+    protected void saveAdditional(CompoundTag p_187471_) {
++      if (this.customPersistentData != null) p_187471_.put("ForgeData", this.customPersistentData.copy());
++      if (getCapabilities() != null) p_187471_.put("ForgeCaps", serializeCaps());
+    }
+ 
+    public final CompoundTag saveWithFullMetadata() {
+@@ -161,6 +168,13 @@
+ 
+    public void setRemoved() {
+       this.remove = true;
++      this.invalidateCaps();
++      requestModelDataUpdate();
++   }
++
++   @Override
++   public void onChunkUnloaded() {
++      this.invalidateCaps();
+    }
+ 
+    public void clearRemoved() {
+@@ -185,6 +199,13 @@
+ 
+    public BlockEntityType<?> getType() {
+       return this.type;
++   }
++
++   @Override
++   public CompoundTag getPersistentData() {
++      if (this.customPersistentData == null)
++         this.customPersistentData = new CompoundTag();
++      return this.customPersistentData;
+    }
+ 
+    @Deprecated

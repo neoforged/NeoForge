@@ -7,23 +7,24 @@ package net.minecraftforge.common.crafting;
 
 import java.util.stream.Stream;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.Nullable;
+import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.util.ForgeExtraCodecs;
 
 /** Ingredient that matches the given stack, performing an exact NBT match. Use {@link PartialNBTIngredient} if you need partial match. */
-public class StrictNBTIngredient extends AbstractIngredient
+public class StrictNBTIngredient extends Ingredient
 {
-    private final ItemStack stack;
+    public static final Codec<StrictNBTIngredient> CODEC = ForgeExtraCodecs.mapWithAlternative(
+        ((MapCodec.MapCodecCodec<ItemStack>)ItemStack.CODEC).codec(),
+        ItemStack.CODEC.fieldOf("stack")
+    ).xmap(StrictNBTIngredient::new, StrictNBTIngredient::getStack).codec();
+    
     protected StrictNBTIngredient(ItemStack stack)
     {
-        super(Stream.of(new Ingredient.ItemValue(stack)));
-        this.stack = stack;
+        super(Stream.of(new Ingredient.ItemValue(stack, StrictNBTIngredient::compareStacksWithNbt)), ForgeMod.STRICT_NBT_INGREDIENT_TYPE::get);
     }
 
     /** Creates a new ingredient matching the given stack and tag */
@@ -31,57 +32,30 @@ public class StrictNBTIngredient extends AbstractIngredient
     {
         return new StrictNBTIngredient(stack);
     }
+    
+    public ItemStack getStack() {
+        return getItems()[0]; // This is safe to do, since we always pass in a single
+    }
+    
+    @Override
+    protected boolean areStacksEqual(ItemStack left, ItemStack right) {
+        return compareStacksWithNbt(left, right);
+    }
+    
+    private static boolean compareStacksWithNbt(ItemStack left, ItemStack right) {
+        return left.getItem() == right.getItem()
+                     && left.getDamageValue() == right.getDamageValue()
+                     && left.areShareTagsEqual(right);
+    }
 
     @Override
-    public boolean test(@Nullable ItemStack input)
-    {
-        if (input == null)
-            return false;
-        //Can't use areItemStacksEqualUsingNBTShareTag because it compares stack size as well
-        return this.stack.getItem() == input.getItem() && this.stack.getDamageValue() == input.getDamageValue() && this.stack.areShareTagsEqual(input);
+    public boolean synchronizeWithContents() {
+        return false;
     }
 
     @Override
     public boolean isSimple()
     {
         return false;
-    }
-
-    @Override
-    public IIngredientSerializer<? extends Ingredient> getSerializer()
-    {
-        return Serializer.INSTANCE;
-    }
-
-    @Override
-    public JsonElement toJson()
-    {
-        JsonObject json = new JsonObject();
-        json.addProperty("type", CraftingHelper.getID(Serializer.INSTANCE).toString());
-        json.addProperty("item", ForgeRegistries.ITEMS.getKey(stack.getItem()).toString());
-        json.addProperty("count", stack.getCount());
-        if (stack.hasTag())
-            json.addProperty("nbt", stack.getTag().toString());
-        return json;
-    }
-
-    public static class Serializer implements IIngredientSerializer<StrictNBTIngredient>
-    {
-        public static final Serializer INSTANCE = new Serializer();
-
-        @Override
-        public StrictNBTIngredient parse(FriendlyByteBuf buffer) {
-            return new StrictNBTIngredient(buffer.readItem());
-        }
-
-        @Override
-        public StrictNBTIngredient parse(JsonObject json) {
-            return new StrictNBTIngredient(CraftingHelper.getItemStack(json, true));
-        }
-
-        @Override
-        public void write(FriendlyByteBuf buffer, StrictNBTIngredient ingredient) {
-            buffer.writeItem(ingredient.stack);
-        }
     }
 }

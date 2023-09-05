@@ -10,12 +10,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
-import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.INetworkDirection;
+import net.minecraftforge.network.PlayNetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkInstance;
 import net.minecraftforge.network.PacketDistributor;
-import org.apache.commons.lang3.tuple.Pair;
 
+import net.minecraftforge.network.simple.MessageFunctions.*;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.*;
 
@@ -25,8 +28,8 @@ public class SimpleChannel
     private final NetworkInstance instance;
     private final IndexedMessageCodec indexedCodec;
     private final Optional<Consumer<NetworkEvent.ChannelRegistrationChangeEvent>> registryChangeConsumer;
-    private List<Function<Boolean, ? extends List<? extends Pair<String,?>>>> loginPackets;
-    private Map<Class<?>, Boolean> packetsNeedResponse;
+    private record LoginPacketEntry(LoginPacketGenerator<?> generator, boolean needsResponse) {}
+    private final List<LoginPacketEntry> loginPackets = new ArrayList<>();
 
     public SimpleChannel(NetworkInstance instance) {
         this(instance, Optional.empty());
@@ -35,8 +38,6 @@ public class SimpleChannel
     private SimpleChannel(NetworkInstance instance, Optional<Consumer<NetworkEvent.ChannelRegistrationChangeEvent>> registryChangeNotify) {
         this.instance = instance;
         this.indexedCodec = new IndexedMessageCodec(instance);
-        this.loginPackets = new ArrayList<>();
-        this.packetsNeedResponse = new HashMap<>();
         instance.addListener(this::networkEventListener);
         instance.addGatherListener(this::networkLoginGather);
         this.registryChangeConsumer = registryChangeNotify;
@@ -47,13 +48,11 @@ public class SimpleChannel
     }
 
     private void networkLoginGather(final NetworkEvent.GatherLoginPayloadsEvent gatherEvent) {
-        loginPackets.forEach(packetGenerator->{
-            packetGenerator.apply(gatherEvent.isLocal()).forEach(p->{
-                FriendlyByteBuf pb = new FriendlyByteBuf(Unpooled.buffer());
-                this.indexedCodec.build(p.getRight(), pb);
-                gatherEvent.add(pb, this.instance.getChannelName(), p.getLeft(), packetsNeedResponse.getOrDefault(p.getRight().getClass(), true));
-            });
-        });
+        loginPackets.forEach(packetGenerator-> packetGenerator.generator.generate(gatherEvent.isLocal()).forEach(p->{
+            FriendlyByteBuf pb = new FriendlyByteBuf(Unpooled.buffer());
+            this.indexedCodec.build(p.msg(), pb);
+            gatherEvent.add(pb, this.instance.getChannelName(), p.context(), packetGenerator.needsResponse);
+        }));
     }
     private void networkEventListener(final NetworkEvent networkEvent)
     {
@@ -68,26 +67,26 @@ public class SimpleChannel
         return this.indexedCodec.build(message, target);
     }
 
-    public <MSG> IndexedMessageCodec.MessageHandler<MSG> registerMessage(int index, Class<MSG> messageType, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {
+    public <MSG> IndexedMessageCodec.MessageHandler<MSG> registerMessage(int index, Class<MSG> messageType, MessageFunctions.MessageEncoder<MSG> encoder, MessageFunctions.MessageDecoder<MSG> decoder, MessageFunctions.MessageConsumer<MSG> messageConsumer) {
         return registerMessage(index, messageType, encoder, decoder, messageConsumer, Optional.empty());
     }
 
-    public <MSG> IndexedMessageCodec.MessageHandler<MSG> registerMessage(int index, Class<MSG> messageType, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer, final Optional<NetworkDirection> networkDirection) {
+    public <MSG> IndexedMessageCodec.MessageHandler<MSG> registerMessage(int index, Class<MSG> messageType, MessageFunctions.MessageEncoder<MSG> encoder, MessageFunctions.MessageDecoder<MSG> decoder, MessageFunctions.MessageConsumer<MSG> messageConsumer, final Optional<INetworkDirection<?>> networkDirection) {
         return this.indexedCodec.addCodecIndex(index, messageType, encoder, decoder, messageConsumer, networkDirection);
     }
 
-    private <MSG> Pair<FriendlyByteBuf,Integer> toBuffer(MSG msg) {
+    private <MSG> INetworkDirection.PacketData toBuffer(MSG msg) {
         final FriendlyByteBuf bufIn = new FriendlyByteBuf(Unpooled.buffer());
         int index = encodeMessage(msg, bufIn);
-        return Pair.of(bufIn, index);
+        return new INetworkDirection.PacketData(bufIn, index);
     }
 
     public <MSG> void sendToServer(MSG message)
     {
-        sendTo(message, Minecraft.getInstance().getConnection().getConnection(), NetworkDirection.PLAY_TO_SERVER);
+        sendTo(message, Minecraft.getInstance().getConnection().getConnection(), PlayNetworkDirection.PLAY_TO_SERVER);
     }
 
-    public <MSG> void sendTo(MSG message, Connection manager, NetworkDirection direction)
+    public <MSG> void sendTo(MSG message, Connection manager, PlayNetworkDirection direction)
     {
         manager.send(toVanillaPacket(message, direction));
     }
@@ -107,18 +106,18 @@ public class SimpleChannel
         target.send(toVanillaPacket(message, target.getDirection()));
     }
 
-    public <MSG> Packet<?> toVanillaPacket(MSG message, NetworkDirection direction)
+    public <MSG> Packet<?> toVanillaPacket(MSG message, PlayNetworkDirection direction)
     {
-        return direction.buildPacket(toBuffer(message), instance.getChannelName()).getThis();
+        return direction.buildPacket(toBuffer(message), instance.getChannelName());
     }
 
     public <MSG> void reply(MSG msgToReply, NetworkEvent.Context context)
     {
-        context.getPacketDispatcher().sendPacket(instance.getChannelName(), toBuffer(msgToReply).getLeft());
+        context.getPacketDispatcher().sendPacket(instance.getChannelName(), toBuffer(msgToReply).buffer());
     }
 
     /**
-     * Returns true if the channel is present in the given connection.
+     * {@return {@code true} if the channel is present in the given connection}
      */
     public boolean isRemotePresent(Connection manager) {
         return instance.isRemotePresent(manager);
@@ -146,29 +145,87 @@ public class SimpleChannel
      * @param <M> Type of type
      * @return a MessageBuilder
      */
-    public <M> MessageBuilder<M> messageBuilder(final Class<M> type, int id, NetworkDirection direction) {
+    public <M> MessageBuilder<M> messageBuilder(final Class<M> type, int id, INetworkDirection<?> direction) {
         return MessageBuilder.forType(this, type, id, direction);
+    }
+
+    /**
+     * Build a new MessageBuilder for a message that implements {@link SimpleMessage}. This will automatically set the
+     * {@link MessageBuilder#encoder(MessageEncoder) encoder} and the handler.
+     * @param type the type of message
+     * @param id the id in the indexed codec
+     * @param <M> the type of the message
+     * @return a MessageBuilder
+     */
+    public <M extends SimpleMessage> MessageBuilder<M> simpleMessageBuilder(final Class<M> type, int id) {
+        return simpleMessageBuilder(type, id, null);
+    }
+
+    /**
+     * Build a new MessageBuilder for a message that implements {@link SimpleMessage}. This will automatically set the
+     * {@link MessageBuilder#encoder(MessageEncoder) encoder} and the handler.
+     * @param type the type of message
+     * @param id the id in the indexed codec
+     * @param direction a impl direction which will be asserted before any processing of this message occurs. Use to
+     *                  enforce strict sided handling to prevent spoofing.
+     * @param <M> the type of the message
+     * @return a MessageBuilder
+     */
+    public <M extends SimpleMessage> MessageBuilder<M> simpleMessageBuilder(final Class<M> type, int id, INetworkDirection<?> direction) {
+        return messageBuilder(type, id, direction)
+                .consumerNetworkThread((msg, context) -> {
+                    msg.handleNetworkThread(context);
+                    context.enqueueWork(() -> msg.handleMainThread(context));
+                })
+                .encoder(SimpleMessage::encode);
+    }
+
+    /**
+     * Build a new MessageBuilder for a login message that implements {@link SimpleLoginMessage}. This will automatically set the
+     * {@link MessageBuilder#encoder(MessageEncoder) encoder}, the handler and the {@link MessageBuilder#loginIndex(LoginIndexGetter, LoginIndexSetter) login index setter and getter}.
+     * @param type the type of message
+     * @param id the id in the indexed codec
+     * @param <M> the type of the message
+     * @return a MessageBuilder
+     */
+    public <M extends SimpleLoginMessage> MessageBuilder<M> simpleLoginMessageBuilder(final Class<M> type, int id) {
+        return simpleLoginMessageBuilder(type, id, null);
+    }
+
+    /**
+     * Build a new MessageBuilder for a login message that implements {@link SimpleLoginMessage}. This will automatically set the
+     * {@link MessageBuilder#encoder(MessageEncoder) encoder}, the handler and the {@link MessageBuilder#loginIndex(LoginIndexGetter, LoginIndexSetter) login index setter and getter}.
+     * @param type the type of message
+     * @param id the id in the indexed codec
+     * @param direction a impl direction which will be asserted before any processing of this message occurs. Use to
+     *                  enforce strict sided handling to prevent spoofing.
+     * @param <M> the type of the message
+     * @return a MessageBuilder
+     */
+    public <M extends SimpleLoginMessage> MessageBuilder<M> simpleLoginMessageBuilder(final Class<M> type, int id, INetworkDirection<?> direction) {
+        return simpleMessageBuilder(type, id, direction)
+                .loginIndex(SimpleLoginMessage::getLoginIndex, SimpleLoginMessage::setLoginIndex);
     }
 
     public static class MessageBuilder<MSG>  {
         private SimpleChannel channel;
         private Class<MSG> type;
         private int id;
-        private BiConsumer<MSG, FriendlyByteBuf> encoder;
-        private Function<FriendlyByteBuf, MSG> decoder;
-        private BiConsumer<MSG, Supplier<NetworkEvent.Context>> consumer;
-        private Function<MSG, Integer> loginIndexGetter;
-        private BiConsumer<MSG, Integer> loginIndexSetter;
-        private Function<Boolean, List<Pair<String, MSG>>> loginPacketGenerators;
-        private Optional<NetworkDirection> networkDirection;
+        private MessageEncoder<MSG> encoder;
+        private MessageDecoder<MSG> decoder;
+        private MessageConsumer<MSG> consumer;
+        private LoginIndexGetter<MSG> loginIndexGetter;
+        private LoginIndexSetter<MSG> loginIndexSetter;
+        private LoginPacketGenerator<MSG> loginPacketGenerators;
+        private Optional<INetworkDirection<?>> networkDirection;
         private boolean needsResponse = true;
 
-        private static <MSG> MessageBuilder<MSG> forType(final SimpleChannel channel, final Class<MSG> type, int id, NetworkDirection networkDirection) {
+        private static <MSG> MessageBuilder<MSG> forType(final SimpleChannel channel, final Class<MSG> type, int id, INetworkDirection<?> playNetworkDirection) {
             MessageBuilder<MSG> builder = new MessageBuilder<>();
             builder.channel = channel;
             builder.id = id;
             builder.type = type;
-            builder.networkDirection = Optional.ofNullable(networkDirection);
+            builder.networkDirection = Optional.ofNullable(playNetworkDirection);
             return builder;
         }
 
@@ -185,7 +242,7 @@ public class SimpleChannel
          * @param encoder The message encoder.
          * @return This message builder, for chaining.
          */
-        public MessageBuilder<MSG> encoder(BiConsumer<MSG, FriendlyByteBuf> encoder) {
+        public MessageBuilder<MSG> encoder(MessageEncoder<MSG> encoder) {
             this.encoder = encoder;
             return this;
         }
@@ -194,34 +251,33 @@ public class SimpleChannel
          * Set the message decoder, which reads the message from a {@link FriendlyByteBuf}.
          * <p>
          * The decoder is called when the message is received on the network thread. The decoder should not attempt to
-         * access or mutate any game state, deferring that until the {@linkplain #consumer(ToBooleanBiFunction) the
+         * access or mutate any game state, deferring that until the {@linkplain #consumerMainThread(MessageConsumer)} the
          * message is handled}.
          *
          * @param decoder The message decoder.
          * @return The message builder, for chaining.
          */
-        public MessageBuilder<MSG> decoder(Function<FriendlyByteBuf, MSG> decoder) {
+        public MessageBuilder<MSG> decoder(MessageDecoder<MSG> decoder) {
             this.decoder = decoder;
             return this;
         }
 
-        public MessageBuilder<MSG> loginIndex(Function<MSG, Integer> loginIndexGetter, BiConsumer<MSG, Integer> loginIndexSetter) {
+        public MessageBuilder<MSG> loginIndex(LoginIndexGetter<MSG> loginIndexGetter, LoginIndexSetter<MSG> loginIndexSetter) {
             this.loginIndexGetter = loginIndexGetter;
             this.loginIndexSetter = loginIndexSetter;
             return this;
         }
 
-        public MessageBuilder<MSG> buildLoginPacketList(Function<Boolean, List<Pair<String,MSG>>> loginPacketGenerators) {
+        public MessageBuilder<MSG> buildLoginPacketList(LoginPacketGenerator<MSG> loginPacketGenerators) {
             this.loginPacketGenerators = loginPacketGenerators;
             return this;
         }
 
-        public MessageBuilder<MSG> markAsLoginPacket()
-        {
+        public MessageBuilder<MSG> markAsLoginPacket() {
             this.loginPacketGenerators = (isLocal) -> {
                 try {
-                    return Collections.singletonList(Pair.of(type.getName(), type.newInstance()));
-                } catch (InstantiationException | IllegalAccessException e) {
+                    return Collections.singletonList(new LoginPacket<>(type.getName(), type.getConstructor().newInstance()));
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     throw new RuntimeException("Inaccessible no-arg constructor for message "+type.getName(), e);
                 }
             };
@@ -231,8 +287,7 @@ public class SimpleChannel
         /**
          * Marks this packet as not needing a response when sent to the client
          */
-        public MessageBuilder<MSG> noResponse()
-        {
+        public MessageBuilder<MSG> noResponse() {
             this.needsResponse = false;
             return this;
         }
@@ -243,14 +298,17 @@ public class SimpleChannel
          * <p>
          * The consumer is called on the network thread, and so should not interact with most game state by default.
          * {@link NetworkEvent.Context#enqueueWork(Runnable)} can be used to handle the message on the main server or
-         * client thread. Alternatively one can use {@link #consumerMainThread(BiConsumer)} to run the handler on the
+         * client thread. Alternatively one can use {@link #consumerMainThread(MessageConsumer)} to run the handler on the
          * main thread.
+         * <p>
+         * The packet is marked as {@link NetworkEvent.Context#setPacketHandled(boolean) handled}. You may manually revert that state if you wish to, but generally
+         * you do not want to, as a packet that is not handled will continue to try to find handlers.
          *
          * @param consumer The message consumer.
          * @return The message builder, for chaining.
-         * @see #consumerMainThread(BiConsumer)
+         * @see #consumerMainThread(MessageConsumer) 
          */
-        public MessageBuilder<MSG> consumerNetworkThread(BiConsumer<MSG, Supplier<NetworkEvent.Context>> consumer) {
+        public MessageBuilder<MSG> consumerNetworkThread(MessageConsumer<MSG> consumer) {
             this.consumer = consumer;
             return this;
         }
@@ -259,42 +317,28 @@ public class SimpleChannel
          * Set the message consumer, which is called once a message has been decoded. This accepts the decoded message
          * object and the message's context.
          * <p>
-         * Unlike {@link #consumerNetworkThread(BiConsumer)}, the consumer is called on the main thread, and so can
+         * Unlike {@link #consumerNetworkThread(MessageConsumer)}, the consumer is called on the main thread, and so can
          * interact with most game state by default.
+         * <p>
+         * The packet is marked as {@link NetworkEvent.Context#setPacketHandled(boolean) handled}. You may manually revert that state if you wish to, but generally
+         * you do not want to, as a packet that is not handled will continue to try to find handlers.
          *
          * @param consumer The message consumer.
          * @return The message builder, for chaining.
-         * @see #consumerNetworkThread(BiConsumer)
+         * @see #consumerNetworkThread(MessageConsumer) 
          */
-        public MessageBuilder<MSG> consumerMainThread(BiConsumer<MSG, Supplier<NetworkEvent.Context>> consumer) {
-            this.consumer = (msg, context) -> {
-                var ctx = context.get();
-                ctx.enqueueWork(() -> consumer.accept(msg, context));
-                ctx.setPacketHandled(true);
-            };
-            return this;
-        }
-
-        public interface ToBooleanBiFunction<T, U> {
-            boolean applyAsBool(T first, U second);
-        }
-
-        /**
-         * Function returning a boolean "packet handled" indication, for simpler channel building.
-         * @param handler a handler
-         * @return this
-         * @see #consumerNetworkThread(BiConsumer)
-         */
-        public MessageBuilder<MSG> consumerNetworkThread(ToBooleanBiFunction<MSG, Supplier<NetworkEvent.Context>> handler) {
-            this.consumer = (msg, ctx) -> {
-                boolean handled = handler.applyAsBool(msg, ctx);
-                ctx.get().setPacketHandled(handled);
-            };
+        public MessageBuilder<MSG> consumerMainThread(MessageConsumer<MSG> consumer) {
+            this.consumer = (msg, context) -> context.enqueueWork(() -> consumer.handle(msg, context));
             return this;
         }
 
         public void add() {
-            final IndexedMessageCodec.MessageHandler<MSG> message = this.channel.registerMessage(this.id, this.type, this.encoder, this.decoder, this.consumer, this.networkDirection);
+            Objects.requireNonNull(this.consumer, () -> "Message of type " + this.type.getName() + " is missing a handler!");
+
+            final IndexedMessageCodec.MessageHandler<MSG> message = this.channel.registerMessage(this.id, this.type, this.encoder, this.decoder, (msg, context) -> {
+                context.setPacketHandled(true); // Mark as handled by default, people can mark it as not handled manually
+                this.consumer.handle(msg, context);
+            }, this.networkDirection);
             if (this.loginIndexSetter != null) {
                 message.setLoginIndexSetter(this.loginIndexSetter);
             }
@@ -305,9 +349,8 @@ public class SimpleChannel
                 message.setLoginIndexGetter(this.loginIndexGetter);
             }
             if (this.loginPacketGenerators != null) {
-                this.channel.loginPackets.add(this.loginPacketGenerators);
+                this.channel.loginPackets.add(new LoginPacketEntry(this.loginPacketGenerators, this.needsResponse));
             }
-            this.channel.packetsNeedResponse.put(this.type, this.needsResponse);
         }
     }
 }

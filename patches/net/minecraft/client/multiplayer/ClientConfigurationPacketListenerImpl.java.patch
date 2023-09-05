@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
++++ b/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
+@@ -44,11 +44,15 @@
+    }
+ 
+    @Override
+-   protected void handleCustomPayload(CustomPacketPayload p_295411_) {
+-      this.handleUnknownCustomPayload(p_295411_);
++   protected void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295411_) {
++      this.handleUnknownCustomPayload(p_295727_, p_295411_);
+    }
+ 
+-   private void handleUnknownCustomPayload(CustomPacketPayload p_296412_) {
++   private void handleUnknownCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_296412_) {
++      if (p_296412_ instanceof net.minecraftforge.network.custom.payload.SimplePayload simplePayload && net.minecraftforge.network.NetworkHooks.onCustomPayload(p_295727_, simplePayload, connection)) {
++         return;
++      }
++      
+       LOGGER.warn("Unknown custom packet payload: {}", p_296412_.id());
+    }
+ 

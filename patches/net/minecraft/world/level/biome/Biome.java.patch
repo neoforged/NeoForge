@@ -1,0 +1,74 @@
+--- a/net/minecraft/world/level/biome/Biome.java
++++ b/net/minecraft/world/level/biome/Biome.java
+@@ -35,8 +35,8 @@
+ public final class Biome {
+    public static final Codec<Biome> DIRECT_CODEC = RecordCodecBuilder.create(
+       p_220544_ -> p_220544_.group(
+-               Biome.ClimateSettings.CODEC.forGetter(p_151717_ -> p_151717_.climateSettings),
+-               BiomeSpecialEffects.CODEC.fieldOf("effects").forGetter(p_220550_ -> p_220550_.specialEffects),
++               Biome.ClimateSettings.CODEC.forGetter(p_151717_ -> p_151717_.modifiableBiomeInfo().getOriginalBiomeInfo().climateSettings()), // FORGE: Patch codec to ignore field redirect coremods.
++               BiomeSpecialEffects.CODEC.fieldOf("effects").forGetter(p_220550_ -> p_220550_.modifiableBiomeInfo().getOriginalBiomeInfo().effects()), // FORGE: Patch codec to ignore field redirect coremods.
+                BiomeGenerationSettings.CODEC.forGetter(p_220548_ -> p_220548_.generationSettings),
+                MobSpawnSettings.CODEC.forGetter(p_220546_ -> p_220546_.mobSettings)
+             )
+@@ -79,6 +79,7 @@
+       this.generationSettings = p_220532_;
+       this.mobSettings = p_220533_;
+       this.specialEffects = p_220531_;
++      this.modifiableBiomeInfo = new net.minecraftforge.common.world.ModifiableBiomeInfo(new net.minecraftforge.common.world.ModifiableBiomeInfo.BiomeInfo(p_220530_, p_220531_, p_220532_, p_220533_)); // FORGE: cache original biome info on construction so we can bypass our field read coremods where necessary
+    }
+ 
+    public int getSkyColor() {
+@@ -86,7 +87,7 @@
+    }
+ 
+    public MobSpawnSettings getMobSettings() {
+-      return this.mobSettings;
++      return this.modifiableBiomeInfo().get().mobSpawnSettings();
+    }
+ 
+    public boolean hasPrecipitation() {
+@@ -191,7 +192,7 @@
+    }
+ 
+    public BiomeGenerationSettings getGenerationSettings() {
+-      return this.generationSettings;
++      return this.modifiableBiomeInfo().get().generationSettings();
+    }
+ 
+    public int getFogColor() {
+@@ -403,4 +404,34 @@
+          return this.name;
+       }
+    }
++
++   // FORGE START
++
++   private final net.minecraftforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo;
++
++   /**
++    * {@return Cache of original biome data and biome data modified by biome modifiers}
++    * Modified biome data is set by server after datapacks and serverconfigs load.
++    * Climate and effects field reads are coremodded to redirect to this.
++    **/
++   public net.minecraftforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo()
++   {
++       return this.modifiableBiomeInfo;
++   }
++
++   /**
++    * {@return The biome's climate settings, with modifications if called after modifiers are applied in server init.}
++    */
++   public ClimateSettings getModifiedClimateSettings() {
++      return this.modifiableBiomeInfo().get().climateSettings();
++   }
++
++   /**
++    * {@return The biome's client effects, with modifications if called after modifiers are applied in server init.}
++    */
++   public BiomeSpecialEffects getModifiedSpecialEffects() {
++      return this.modifiableBiomeInfo().get().effects();
++   }
++
++   // FORGE END
+ }

@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.RecipeBookCategories;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.client.event.RegisterRecipeBookCategoriesEvent;
 import net.minecraftforge.fml.ModLoader;
@@ -32,14 +33,14 @@ public final class RecipeBookManager
     // Not using ConcurrentHashMap here because it's slower for lookups, so we only use it during init
     private static final Map<RecipeBookCategories, List<RecipeBookCategories>> AGGREGATE_CATEGORIES = new HashMap<>();
     private static final Map<RecipeBookType, List<RecipeBookCategories>> TYPE_CATEGORIES = new HashMap<>();
-    private static final Map<RecipeType<?>, Function<Recipe<?>, RecipeBookCategories>> RECIPE_CATEGORY_LOOKUPS = new HashMap<>();
+    private static final Map<RecipeType<?>, Function<RecipeHolder<?>, RecipeBookCategories>> RECIPE_CATEGORY_LOOKUPS = new HashMap<>();
     private static final Map<RecipeBookCategories, List<RecipeBookCategories>> AGGREGATE_CATEGORIES_VIEW = Collections.unmodifiableMap(AGGREGATE_CATEGORIES);
 
     /**
      * Finds the category the specified recipe should display in, or null if none.
      */
     @Nullable
-    public static <T extends Recipe<?>> RecipeBookCategories findCategories(RecipeType<T> type, T recipe)
+    public static <T extends Recipe<?>> RecipeBookCategories findCategories(RecipeType<T> type, RecipeHolder<T> recipe)
     {
         var lookup = RECIPE_CATEGORY_LOOKUPS.get(type);
         return lookup != null ? lookup.apply(recipe) : null;
@@ -69,7 +70,7 @@ public final class RecipeBookManager
         ));
 
         var typeCategories = new HashMap<RecipeBookType, ImmutableList<RecipeBookCategories>>();
-        var recipeCategoryLookups = new HashMap<RecipeType<?>, Function<Recipe<?>, RecipeBookCategories>>();
+        var recipeCategoryLookups = new HashMap<RecipeType<?>, Function<RecipeHolder<?>, RecipeBookCategories>>();
         var event = new RegisterRecipeBookCategoriesEvent(aggregateCategories, typeCategories, recipeCategoryLookups);
         ModLoader.get().postEventWrapContainerInModOrder(event);
         AGGREGATE_CATEGORIES.putAll(aggregateCategories);

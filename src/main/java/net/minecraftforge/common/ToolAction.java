@@ -5,16 +5,21 @@
 
 package net.minecraftforge.common;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@SuppressWarnings("ClassCanBeRecord")
 public final class ToolAction
 {
     private static final Map<String, ToolAction> actions = new ConcurrentHashMap<>();
 
+    public static Codec<ToolAction> CODEC = Codec.STRING.xmap(ToolAction::get, ToolAction::name);
+    
     /**
      * Returns all registered actions.
      * This collection can be kept around, and will update itself in response to changes to the map.

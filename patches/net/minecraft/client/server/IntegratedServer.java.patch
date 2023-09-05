@@ -1,0 +1,24 @@
+--- a/net/minecraft/client/server/IntegratedServer.java
++++ b/net/minecraft/client/server/IntegratedServer.java
+@@ -69,11 +69,12 @@
+       this.setPvpAllowed(true);
+       this.setFlightAllowed(true);
+       this.initializeKeyPair();
++      if (!net.minecraftforge.server.ServerLifecycleHooks.handleServerAboutToStart(this)) return false;
+       this.loadLevel();
+       GameProfile gameprofile = this.getSingleplayerProfile();
+       String s = this.getWorldData().getLevelName();
+       this.setMotd(gameprofile != null ? gameprofile.getName() + " - " + s : s);
+-      return true;
++      return net.minecraftforge.server.ServerLifecycleHooks.handleServerStarting(this);
+    }
+ 
+    @Override
+@@ -212,6 +213,7 @@
+ 
+    @Override
+    public void halt(boolean p_120053_) {
++      if (isRunning())
+       this.executeBlocking(() -> {
+          for(ServerPlayer serverplayer : Lists.newArrayList(this.getPlayerList().getPlayers())) {
+             if (!serverplayer.getUUID().equals(this.uuid)) {

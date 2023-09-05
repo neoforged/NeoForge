@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/storage/LevelSummary.java
++++ b/net/minecraft/world/level/storage/LevelSummary.java
+@@ -198,6 +198,10 @@
+       }
+    }
+ 
++   public boolean isLifecycleExperimental() {
++      return this.settings.getLifecycle().equals(com.mojang.serialization.Lifecycle.experimental());
++   }
++
+    public static class SymlinkLevelSummary extends LevelSummary {
+       public SymlinkLevelSummary(String p_289942_, Path p_289953_) {
+          super(null, null, p_289942_, false, false, false, p_289953_);

@@ -6,7 +6,6 @@
 package net.minecraftforge.common;
 
 import net.minecraft.DetectedVersion;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
@@ -29,6 +28,7 @@ import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.biome.Biome;
@@ -44,9 +44,16 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.common.crafting.PartialNBTIngredient;
-import net.minecraftforge.common.crafting.DifferenceIngredient;
-import net.minecraftforge.common.crafting.IntersectionIngredient;
+import net.minecraftforge.common.conditions.AndCondition;
+import net.minecraftforge.common.conditions.FalseCondition;
+import net.minecraftforge.common.conditions.ICondition;
+import net.minecraftforge.common.conditions.ItemExistsCondition;
+import net.minecraftforge.common.conditions.ModLoadedCondition;
+import net.minecraftforge.common.conditions.NotCondition;
+import net.minecraftforge.common.conditions.OrCondition;
+import net.minecraftforge.common.conditions.TagEmptyCondition;
+import net.minecraftforge.common.conditions.TrueCondition;
+import net.minecraftforge.common.crafting.*;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.ForgeBiomeTagsProvider;
 import net.minecraftforge.common.data.ForgeFluidTagsProvider;
@@ -95,19 +102,6 @@ import org.apache.logging.log4j.Logger;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.crafting.CompoundIngredient;
-import net.minecraftforge.common.crafting.ConditionalRecipe;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.StrictNBTIngredient;
-import net.minecraftforge.common.crafting.VanillaIngredientSerializer;
-import net.minecraftforge.common.crafting.conditions.AndCondition;
-import net.minecraftforge.common.crafting.conditions.FalseCondition;
-import net.minecraftforge.common.crafting.conditions.ItemExistsCondition;
-import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
-import net.minecraftforge.common.crafting.conditions.NotCondition;
-import net.minecraftforge.common.crafting.conditions.OrCondition;
-import net.minecraftforge.common.crafting.conditions.TagEmptyCondition;
-import net.minecraftforge.common.crafting.conditions.TrueCondition;
 import net.minecraftforge.common.data.ForgeBlockTagsProvider;
 import net.minecraftforge.common.data.ForgeEntityTypeTagsProvider;
 import net.minecraftforge.common.data.ForgeItemTagsProvider;
@@ -175,12 +169,6 @@ public class ForgeMod
      */
     public static final RegistryObject<Attribute> STEP_HEIGHT = ATTRIBUTES.register("step_height", () -> new RangedAttribute("forge.step_height", 0.0D, -512.0D, 512.0D).setSyncable(true));
 
-    /**
-     * @deprecated Use {@link #STEP_HEIGHT}
-     */
-    @Deprecated(forRemoval = true, since = "1.20.1")
-    public static final RegistryObject<Attribute> STEP_HEIGHT_ADDITION = STEP_HEIGHT;
-    
     /**
      * Noop biome modifier. Can be used in a biome modifier json with "type": "forge:none".
      */
@@ -260,6 +248,30 @@ public class ForgeMod
      * Can be used in a holderset object with {@code { "type": "forge:not", "value": holderset }}</p>
      */
     public static final RegistryObject<HolderSetType> NOT_HOLDER_SET = HOLDER_SET_TYPES.register("not", () -> NotHolderSet::codec);
+    
+    private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(ForgeRegistries.Keys.INGREDIENT_TYPES, "forge");
+    
+    public static final RegistryObject<IngredientType<CompoundIngredient>> COMPOUND_INGREDIENT_TYPE = INGREDIENT_TYPES.register("compound", () -> new IngredientType<>(CompoundIngredient.CODEC, CompoundIngredient.CODEC_NONEMPTY));
+    public static final RegistryObject<IngredientType<StrictNBTIngredient>> STRICT_NBT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("nbt", () -> new IngredientType<>(StrictNBTIngredient.CODEC));
+    public static final RegistryObject<IngredientType<PartialNBTIngredient>> PARTIAL_NBT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("partial_nbt", () -> new IngredientType<>(PartialNBTIngredient.CODEC, PartialNBTIngredient.CODEC_NONEMPTY));
+    public static final RegistryObject<IngredientType<DifferenceIngredient>> DIFFERENCE_INGREDIENT_TYPE = INGREDIENT_TYPES.register("difference", () -> new IngredientType<>(DifferenceIngredient.CODEC, DifferenceIngredient.CODEC_NONEMPTY));
+    public static final RegistryObject<IngredientType<IntersectionIngredient>> INTERSECTION_INGREDIENT_TYPE = INGREDIENT_TYPES.register("intersection", () -> new IngredientType<>(IntersectionIngredient.CODEC, IntersectionIngredient.CODEC_NONEMPTY));
+    
+    private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, "forge");
+    public static final RegistryObject<RecipeSerializer<?>> CONDITIONAL_RECIPE = RECIPE_SERIALIZERS.register("conditional", ConditionalRecipe::new);
+
+    private static final DeferredRegister<Codec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(ForgeRegistries.Keys.CONDITION_SERIALIZERS, "forge");
+    public static final RegistryObject<Codec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
+    public static final RegistryObject<Codec<FalseCondition>> FALSE_CONDITION = CONDITION_CODECS.register("false", () -> FalseCondition.CODEC);
+    public static final RegistryObject<Codec<ItemExistsCondition>> ITEM_EXISTS_CONDITION = CONDITION_CODECS.register("item_exists", () -> ItemExistsCondition.CODEC);
+    public static final RegistryObject<Codec<ModLoadedCondition>> MOD_LOADED_CONDITION = CONDITION_CODECS.register("mod_loaded", () -> ModLoadedCondition.CODEC);
+    public static final RegistryObject<Codec<NotCondition>> NOT_CONDITION = CONDITION_CODECS.register("not", () -> NotCondition.CODEC);
+    public static final RegistryObject<Codec<OrCondition>> OR_CONDITION = CONDITION_CODECS.register("or", () -> OrCondition.CODEC);
+    public static final RegistryObject<Codec<TagEmptyCondition>> TAG_EMPTY_CONDITION = CONDITION_CODECS.register("tag_empty", () -> TagEmptyCondition.CODEC);
+    public static final RegistryObject<Codec<TrueCondition>> TRUE_CONDITION = CONDITION_CODECS.register("true", () -> TrueCondition.CODEC);
+    private static final DeferredRegister<IngredientType<?>> VANILLA_INGREDIENT_TYPES = DeferredRegister.create(ForgeRegistries.Keys.INGREDIENT_TYPES, "minecraft");
+    
+    public static final RegistryObject<IngredientType<Ingredient>> VANILLA_INGREDIENT_TYPE = VANILLA_INGREDIENT_TYPES.register("item", () -> new IngredientType<>(Ingredient.VANILLA_CODEC, Ingredient.VANILLA_CODEC_NONEMPTY));
 
     private static final DeferredRegister<FluidType> VANILLA_FLUID_TYPES = DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, "minecraft");
 
@@ -448,7 +460,6 @@ public class ForgeMod
         modEventBus.addListener(this::loadComplete);
         modEventBus.addListener(this::registerFluids);
         modEventBus.addListener(this::registerVanillaDisplayContexts);
-        modEventBus.addListener(this::registerRecipeSerializers);
         modEventBus.addListener(this::registerLootData);
         modEventBus.register(this);
         ATTRIBUTES.register(modEventBus);
@@ -457,6 +468,10 @@ public class ForgeMod
         STRUCTURE_MODIFIER_SERIALIZERS.register(modEventBus);
         HOLDER_SET_TYPES.register(modEventBus);
         VANILLA_FLUID_TYPES.register(modEventBus);
+        VANILLA_INGREDIENT_TYPES.register(modEventBus);
+        INGREDIENT_TYPES.register(modEventBus);
+        CONDITION_CODECS.register(modEventBus);
+        RECIPE_SERIALIZERS.register(modEventBus);
         MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
         MinecraftForge.EVENT_BUS.addListener(this::missingSoundMapping);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ForgeConfig.clientSpec);
@@ -470,18 +485,9 @@ public class ForgeMod
 
         MinecraftForge.EVENT_BUS.addListener(VillagerTradingManager::loadTrades);
         MinecraftForge.EVENT_BUS.register(MinecraftForge.INTERNAL_HANDLER);
-        MinecraftForge.EVENT_BUS.addListener(this::mappingChanged);
         MinecraftForge.EVENT_BUS.addListener(this::registerPermissionNodes);
 
         ForgeRegistries.ITEMS.tags().addOptionalTagDefaults(Tags.Items.ENCHANTING_FUELS, Set.of(ForgeRegistries.ITEMS.getDelegateOrThrow(Items.LAPIS_LAZULI)));
-
-        // TODO: Remove 1.20.2.
-        if ("1.20.1".equals(SharedConstants.getCurrentVersion().getName()))
-        {
-            ForgeRegistries.ATTRIBUTES.addAlias(new ResourceLocation("forge", "reach_distance"), new ResourceLocation("forge", "block_reach"));
-            ForgeRegistries.ATTRIBUTES.addAlias(new ResourceLocation("forge", "attack_range"), new ResourceLocation("forge", "entity_reach"));
-            ForgeRegistries.ATTRIBUTES.addAlias(new ResourceLocation("forge", "step_height_addition"), new ResourceLocation("forge", "step_height"));
-        }
     }
 
     public void preInit(FMLCommonSetupEvent evt)
@@ -499,11 +505,6 @@ public class ForgeMod
         WorldWorkerManager.clear();
     }
 
-    public void mappingChanged(IdMappingEvent evt)
-    {
-        Ingredient.invalidateAll();
-    }
-
     public void gatherData(GatherDataEvent event)
     {
         DataGenerator gen = event.getGenerator();
@@ -515,19 +516,20 @@ public class ForgeMod
                 .add(PackMetadataSection.TYPE, new PackMetadataSection(
                         Component.translatable("pack.forge.description"),
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
-                        Arrays.stream(PackType.values()).collect(Collectors.toMap(Function.identity(), DetectedVersion.BUILT_IN::getPackVersion))
-                ))
+                        Optional.empty(),
+                        Optional.of(new PackMetadataSection.ForgeData(Optional.of(Arrays.stream(PackType.values()).collect(Collectors.toMap(Function.identity(), DetectedVersion.BUILT_IN::getPackVersion))))
+                )))
         );
         ForgeBlockTagsProvider blockTags = new ForgeBlockTagsProvider(packOutput, lookupProvider, existingFileHelper);
         gen.addProvider(event.includeServer(), blockTags);
         gen.addProvider(event.includeServer(), new ForgeItemTagsProvider(packOutput, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
         gen.addProvider(event.includeServer(), new ForgeEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new ForgeFluidTagsProvider(packOutput, lookupProvider, existingFileHelper));
-        gen.addProvider(event.includeServer(), new ForgeRecipeProvider(packOutput));
+        gen.addProvider(event.includeServer(), new ForgeRecipeProvider(packOutput, lookupProvider));
         gen.addProvider(event.includeServer(), new ForgeLootTableProvider(packOutput));
         gen.addProvider(event.includeServer(), new ForgeBiomeTagsProvider(packOutput, lookupProvider, existingFileHelper));
 
-        gen.addProvider(event.includeClient(), new ForgeSpriteSourceProvider(packOutput, existingFileHelper));
+        gen.addProvider(event.includeClient(), new ForgeSpriteSourceProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeClient(), new VanillaSoundDefinitionsProvider(packOutput, existingFileHelper));
     }
 
@@ -616,30 +618,6 @@ public class ForgeMod
             Arrays.stream(ItemDisplayContext.values())
                     .filter(Predicate.not(ItemDisplayContext::isModded))
                     .forEach(ctx -> forgeRegistry.register(ctx.getId(), new ResourceLocation("minecraft", ctx.getSerializedName()), ctx));
-        }
-    }
-
-    public void registerRecipeSerializers(RegisterEvent event)
-    {
-        if (event.getRegistryKey().equals(ForgeRegistries.Keys.RECIPE_SERIALIZERS))
-        {
-            CraftingHelper.register(AndCondition.Serializer.INSTANCE);
-            CraftingHelper.register(FalseCondition.Serializer.INSTANCE);
-            CraftingHelper.register(ItemExistsCondition.Serializer.INSTANCE);
-            CraftingHelper.register(ModLoadedCondition.Serializer.INSTANCE);
-            CraftingHelper.register(NotCondition.Serializer.INSTANCE);
-            CraftingHelper.register(OrCondition.Serializer.INSTANCE);
-            CraftingHelper.register(TrueCondition.Serializer.INSTANCE);
-            CraftingHelper.register(TagEmptyCondition.Serializer.INSTANCE);
-
-            CraftingHelper.register(new ResourceLocation("forge", "compound"), CompoundIngredient.Serializer.INSTANCE);
-            CraftingHelper.register(new ResourceLocation("forge", "nbt"), StrictNBTIngredient.Serializer.INSTANCE);
-            CraftingHelper.register(new ResourceLocation("forge", "partial_nbt"), PartialNBTIngredient.Serializer.INSTANCE);
-            CraftingHelper.register(new ResourceLocation("forge", "difference"), DifferenceIngredient.Serializer.INSTANCE);
-            CraftingHelper.register(new ResourceLocation("forge", "intersection"), IntersectionIngredient.Serializer.INSTANCE);
-            CraftingHelper.register(new ResourceLocation("minecraft", "item"), VanillaIngredientSerializer.INSTANCE);
-
-            event.register(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new ResourceLocation("forge", "conditional"), ConditionalRecipe.Serializer::new);
         }
     }
 

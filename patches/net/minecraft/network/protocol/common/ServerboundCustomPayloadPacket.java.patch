@@ -1,0 +1,21 @@
+--- a/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
++++ b/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
+@@ -23,14 +23,13 @@
+ 
+    private static CustomPacketPayload readPayload(ResourceLocation p_294367_, FriendlyByteBuf p_294321_) {
+       FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = KNOWN_TYPES.get(p_294367_);
+-      return (CustomPacketPayload)(reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_));
++      return reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_);
+    }
+ 
+-   private static DiscardedPayload readUnknownPayload(ResourceLocation p_294973_, FriendlyByteBuf p_296037_) {
++   private static net.minecraftforge.network.custom.payload.SimplePayload readUnknownPayload(ResourceLocation p_294973_, FriendlyByteBuf p_296037_) {
+       int i = p_296037_.readableBytes();
+-      if (i >= 0 && i <= 32767) {
+-         p_296037_.skipBytes(i);
+-         return new DiscardedPayload(p_294973_);
++      if (i >= 0 && i <= MAX_PAYLOAD_SIZE) {
++         return net.minecraftforge.network.custom.payload.SimplePayload.inbound(p_296037_, p_294973_);
+       } else {
+          throw new IllegalArgumentException("Payload may not be larger than 32767 bytes");
+       }

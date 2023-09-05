@@ -31,7 +31,7 @@ public interface IForgeKeyMapping
         return keyCode != InputConstants.UNKNOWN && keyCode.equals(getKey()) && getKeyConflictContext().isActive() && getKeyModifier().isActive(getKeyConflictContext());
     }
 
-    default void setToDefault()
+    public default void setToDefault()
     {
         setKeyModifierAndCode(getDefaultKeyModifier(), self().getDefaultKey());
     }

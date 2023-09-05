@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.client.RecipeBookCategories;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
@@ -33,13 +34,13 @@ public class RegisterRecipeBookCategoriesEvent extends Event implements IModBusE
 {
     private final Map<RecipeBookCategories, ImmutableList<RecipeBookCategories>> aggregateCategories;
     private final Map<RecipeBookType, ImmutableList<RecipeBookCategories>> typeCategories;
-    private final Map<RecipeType<?>, Function<Recipe<?>, RecipeBookCategories>> recipeCategoryLookups;
+    private final Map<RecipeType<?>, Function<RecipeHolder<?>, RecipeBookCategories>> recipeCategoryLookups;
 
     @ApiStatus.Internal
     public RegisterRecipeBookCategoriesEvent(
             Map<RecipeBookCategories, ImmutableList<RecipeBookCategories>> aggregateCategories,
             Map<RecipeBookType, ImmutableList<RecipeBookCategories>> typeCategories,
-            Map<RecipeType<?>, Function<Recipe<?>, RecipeBookCategories>> recipeCategoryLookups)
+            Map<RecipeType<?>, Function<RecipeHolder<?>, RecipeBookCategories>> recipeCategoryLookups)
     {
         this.aggregateCategories = aggregateCategories;
         this.typeCategories = typeCategories;
@@ -65,7 +66,7 @@ public class RegisterRecipeBookCategoriesEvent extends Event implements IModBusE
     /**
      * Registers a category lookup for a certain recipe type.
      */
-    public void registerRecipeCategoryFinder(RecipeType<?> type, Function<Recipe<?>, RecipeBookCategories> lookup)
+    public void registerRecipeCategoryFinder(RecipeType<?> type, Function<RecipeHolder<?>, RecipeBookCategories> lookup)
     {
         recipeCategoryLookups.put(type, lookup);
     }

@@ -1,0 +1,29 @@
+--- a/net/minecraft/client/renderer/block/model/FaceBakery.java
++++ b/net/minecraft/client/renderer/block/model/FaceBakery.java
+@@ -59,7 +59,14 @@
+          this.recalculateWinding(aint, direction);
+       }
+ 
+-      return new BakedQuad(aint, p_111603_.tintIndex, direction, p_111604_, p_111608_);
++      net.minecraftforge.client.ForgeHooksClient.fillNormal(aint, direction);
++      var data = p_111603_.getFaceData();
++      var quad = new BakedQuad(aint, p_111603_.tintIndex, direction, p_111604_, p_111608_, data.ambientOcclusion());
++      if (!net.minecraftforge.client.model.ForgeFaceData.DEFAULT.equals(data)) {
++         net.minecraftforge.client.model.QuadTransformers.applyingLightmap(data.blockLight(), data.skyLight()).processInPlace(quad);
++         net.minecraftforge.client.model.QuadTransformers.applyingColor(data.color()).processInPlace(quad);
++      }
++      return quad;
+    }
+ 
+    public static BlockFaceUV recomputeUVs(BlockFaceUV p_111582_, Direction p_111583_, Transformation p_111584_, ResourceLocation p_111585_) {
+@@ -154,8 +161,8 @@
+       p_111615_[i + 1] = Float.floatToRawIntBits(p_254291_.y());
+       p_111615_[i + 2] = Float.floatToRawIntBits(p_254291_.z());
+       p_111615_[i + 3] = -1;
+-      p_111615_[i + 4] = Float.floatToRawIntBits(p_111618_.getU(p_111619_.getU(p_111616_) / 16.0F));
+-      p_111615_[i + 4 + 1] = Float.floatToRawIntBits(p_111618_.getV(p_111619_.getV(p_111616_) / 16.0F));
++      p_111615_[i + 4] = Float.floatToRawIntBits(p_111618_.getU(p_111619_.getU(p_111616_) / 16.0F * .999F + p_111619_.getU((p_111616_ + 2) % 4) / 16.0F * .001F));
++      p_111615_[i + 4 + 1] = Float.floatToRawIntBits(p_111618_.getV(p_111619_.getV(p_111616_) / 16.0F * .999F + p_111619_.getV((p_111616_ + 2) % 4) / 16.0F * .001F));
+    }
+ 
+    private void applyElementRotation(Vector3f p_254412_, @Nullable BlockElementRotation p_254150_) {

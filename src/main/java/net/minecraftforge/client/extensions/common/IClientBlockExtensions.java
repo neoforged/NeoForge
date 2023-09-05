@@ -74,7 +74,7 @@ public interface IClientBlockExtensions
      */
     default boolean addDestroyEffects(BlockState state, Level Level, BlockPos pos, ParticleEngine manager)
     {
-        return !state.shouldSpawnParticlesOnBreak();
+        return !state.shouldSpawnTerrainParticles();
     }
 
     /**

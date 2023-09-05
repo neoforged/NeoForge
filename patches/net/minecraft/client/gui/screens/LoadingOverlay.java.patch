@@ -1,0 +1,18 @@
+--- a/net/minecraft/client/gui/screens/LoadingOverlay.java
++++ b/net/minecraft/client/gui/screens/LoadingOverlay.java
+@@ -133,6 +133,7 @@
+       }
+ 
+       if (this.fadeOutStart == -1L && this.reload.isDone() && (!this.fadeIn || f1 >= 2.0F)) {
++         this.fadeOutStart = Util.getMillis(); // Moved up to guard against inf loops caused by callback
+          try {
+             this.reload.checkExceptions();
+             this.onFinish.accept(Optional.empty());
+@@ -140,7 +141,6 @@
+             this.onFinish.accept(Optional.of(throwable));
+          }
+ 
+-         this.fadeOutStart = Util.getMillis();
+          if (this.minecraft.screen != null) {
+             this.minecraft.screen.init(this.minecraft, p_281839_.guiWidth(), p_281839_.guiHeight());
+          }

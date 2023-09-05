@@ -1,0 +1,30 @@
+--- a/net/minecraft/world/item/Items.java
++++ b/net/minecraft/world/item/Items.java
+@@ -1601,11 +1601,23 @@
+    }
+ 
+    public static Item registerBlock(Block p_252092_, Block... p_248886_) {
+-      BlockItem blockitem = new BlockItem(p_252092_, new Item.Properties());
++      BlockItem blockitem = new BlockItem(p_252092_, new Item.Properties()) {
++         @Override
++         public void registerBlocks(java.util.Map<Block, Item> map, Item self) {
++            super.registerBlocks(map, self);
++            for (Block b : p_248886_) {
++               map.put(b, self);
++            }
++         }
+ 
+-      for(Block block : p_248886_) {
+-         Item.BY_BLOCK.put(block, blockitem);
+-      }
++         @Override
++         public void removeFromBlockToItemMap(java.util.Map<Block, Item> map, Item self) {
++            super.removeFromBlockToItemMap(map, self);
++            for (Block b : p_248886_) {
++               map.remove(b);
++            }
++         }
++      };
+ 
+       return registerBlock(blockitem);
+    }

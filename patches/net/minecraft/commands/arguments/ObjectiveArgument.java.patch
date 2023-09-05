@@ -1,0 +1,20 @@
+--- a/net/minecraft/commands/arguments/ObjectiveArgument.java
++++ b/net/minecraft/commands/arguments/ObjectiveArgument.java
+@@ -31,7 +31,7 @@
+ 
+    public static Objective getObjective(CommandContext<CommandSourceStack> p_101961_, String p_101962_) throws CommandSyntaxException {
+       String s = p_101961_.getArgument(p_101962_, String.class);
+-      Scoreboard scoreboard = p_101961_.getSource().getServer().getScoreboard();
++      Scoreboard scoreboard = p_101961_.getSource().getScoreboard();
+       Objective objective = scoreboard.getObjective(s);
+       if (objective == null) {
+          throw ERROR_OBJECTIVE_NOT_FOUND.create(s);
+@@ -57,7 +57,7 @@
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> p_101974_, SuggestionsBuilder p_101975_) {
+       S s = p_101974_.getSource();
+       if (s instanceof CommandSourceStack commandsourcestack) {
+-         return SharedSuggestionProvider.suggest(commandsourcestack.getServer().getScoreboard().getObjectiveNames(), p_101975_);
++         return SharedSuggestionProvider.suggest(commandsourcestack.getScoreboard().getObjectiveNames(), p_101975_);
+       } else {
+          return s instanceof SharedSuggestionProvider sharedsuggestionprovider ? sharedsuggestionprovider.customSuggestion(p_101974_) : Suggestions.empty();
+       }

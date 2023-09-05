@@ -5,8 +5,7 @@
 
 package net.minecraftforge.client;
 
-import net.minecraft.Util;
-import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
@@ -108,9 +107,9 @@ public class ClientCommandSourceStack extends CommandSourceStack
      * {@return the advancement from the id from the client side where the advancement needs to be visible to the player}
      */
     @Override
-    public Advancement getAdvancement(ResourceLocation id)
+    public AdvancementHolder getAdvancement(ResourceLocation id)
     {
-        return Minecraft.getInstance().getConnection().getAdvancements().getAdvancements().get(id);
+        return Minecraft.getInstance().getConnection().getAdvancements().get(id);
     }
 
     /**

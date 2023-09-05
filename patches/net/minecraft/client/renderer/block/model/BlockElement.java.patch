@@ -1,0 +1,50 @@
+--- a/net/minecraft/client/renderer/block/model/BlockElement.java
++++ b/net/minecraft/client/renderer/block/model/BlockElement.java
+@@ -29,16 +29,23 @@
+    public final Map<Direction, BlockElementFace> faces;
+    public final BlockElementRotation rotation;
+    public final boolean shade;
++   private net.minecraftforge.client.model.ForgeFaceData faceData;
+ 
+    public BlockElement(
+       Vector3f p_253626_, Vector3f p_254426_, Map<Direction, BlockElementFace> p_254454_, @Nullable BlockElementRotation p_254229_, boolean p_253661_
+    ) {
++     this(p_253626_, p_254426_, p_254454_, p_254229_, p_253661_, net.minecraftforge.client.model.ForgeFaceData.DEFAULT);
++   }
++
++   public BlockElement(Vector3f p_253626_, Vector3f p_254426_, Map<Direction, BlockElementFace> p_254454_, @Nullable BlockElementRotation p_254229_, boolean p_253661_, net.minecraftforge.client.model.ForgeFaceData faceData) {
+       this.from = p_253626_;
+       this.to = p_254426_;
+       this.faces = p_254454_;
+       this.rotation = p_254229_;
+       this.shade = p_253661_;
+       this.fillUvs();
++      this.setFaceData(faceData);
++      this.faces.values().forEach(face -> face.parent = this);
+    }
+ 
+    private void fillUvs() {
+@@ -80,7 +87,8 @@
+             throw new JsonParseException("Expected shade to be a Boolean");
+          } else {
+             boolean flag = GsonHelper.getAsBoolean(jsonobject, "shade", true);
+-            return new BlockElement(vector3f, vector3f1, map, blockelementrotation, flag);
++            var faceData = net.minecraftforge.client.model.ForgeFaceData.read(jsonobject.get("forge_data"), net.minecraftforge.client.model.ForgeFaceData.DEFAULT);
++            return new BlockElement(vector3f, vector3f1, map, blockelementrotation, flag, faceData);
+          }
+       }
+ 
+@@ -191,5 +199,13 @@
+             return new Vector3f(afloat[0], afloat[1], afloat[2]);
+          }
+       }
++   }
++
++   public net.minecraftforge.client.model.ForgeFaceData getFaceData() {
++      return this.faceData;
++   }
++
++   public void setFaceData(net.minecraftforge.client.model.ForgeFaceData faceData) {
++      this.faceData = java.util.Objects.requireNonNull(faceData);
+    }
+ }

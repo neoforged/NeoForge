@@ -33,6 +33,7 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry>
         super(parent.getMinecraftInstance(), listWidth, parent.height, top, bottom, parent.getFontRenderer().lineHeight * 2 + 8);
         this.parent = parent;
         this.listWidth = listWidth;
+        this.setRenderBackground(false);
         this.refreshList();
     }
 
@@ -54,9 +55,9 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry>
     }
 
     @Override
-    protected void renderBackground(GuiGraphics guiGraphics)
-    {
-        this.parent.renderBackground(guiGraphics);
+    public void render(GuiGraphics p_282708_, int p_283242_, int p_282891_, float p_283683_) {
+        this.parent.renderBackground(p_282708_, p_283242_, p_282891_, p_283683_);
+        super.render(p_282708_, p_283242_, p_282891_, p_283683_);
     }
 
     public class ModEntry extends ObjectSelectionList.Entry<ModEntry> {

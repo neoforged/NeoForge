@@ -13,6 +13,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.PlayerRideableJumping;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
@@ -158,11 +159,10 @@ public enum VanillaGuiOverlay
     POTION_ICONS("potion_icons", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
         gui.renderEffects(guiGraphics);
     }),
-    DEBUG_TEXT("debug_text", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        gui.renderHUDText(screenWidth, screenHeight, guiGraphics);
-    }),
-    FPS_GRAPH("fps_graph", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        gui.renderFPSGraph(guiGraphics);
+    DEBUG_SCREEN("debug_screen", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
+        if (gui.getDebugOverlay().showDebugScreen()) {
+           gui.renderDebugScreenOverlay(guiGraphics);
+        }
     }),
     RECORD_OVERLAY("record_overlay", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
         if (!gui.getMinecraft().options.hideGui)
@@ -189,10 +189,10 @@ public enum VanillaGuiOverlay
         PlayerTeam scoreplayerteam = scoreboard.getPlayersTeam(gui.getMinecraft().player.getScoreboardName());
         if (scoreplayerteam != null)
         {
-            int slot = scoreplayerteam.getColor().getId();
-            if (slot >= 0) objective = scoreboard.getDisplayObjective(3 + slot);
+            DisplaySlot displayslot = DisplaySlot.teamColorToSlot(scoreplayerteam.getColor());
+            if (displayslot != null) objective = scoreboard.getDisplayObjective(displayslot);
         }
-        Objective scoreobjective1 = objective != null ? objective : scoreboard.getDisplayObjective(1);
+        Objective scoreobjective1 = objective != null ? objective : scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
         if (scoreobjective1 != null)
         {
             gui.displayScoreboardSidebar(guiGraphics, scoreobjective1);

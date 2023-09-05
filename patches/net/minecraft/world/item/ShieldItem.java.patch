@@ -1,0 +1,16 @@
+--- a/net/minecraft/world/item/ShieldItem.java
++++ b/net/minecraft/world/item/ShieldItem.java
+@@ -59,6 +59,13 @@
+       return compoundtag != null ? DyeColor.byId(compoundtag.getInt("Base")) : DyeColor.WHITE;
+    }
+ 
++   /* ******************** FORGE START ******************** */
++
++   @Override
++   public boolean canPerformAction(ItemStack stack, net.minecraftforge.common.ToolAction toolAction) {
++      return net.minecraftforge.common.ToolActions.DEFAULT_SHIELD_ACTIONS.contains(toolAction);
++   }
++
+    @Override
+    public EquipmentSlot getEquipmentSlot() {
+       return EquipmentSlot.OFFHAND;

@@ -3,6 +3,12 @@
     "description": {
       "translate": "pack.forge.description"
     },
-    "pack_format": 15
+    "forge": {
+      "versions": {
+        "client_resources": 18,
+        "server_data": 18
+      }
+    },
+    "pack_format": 18
   }
 }

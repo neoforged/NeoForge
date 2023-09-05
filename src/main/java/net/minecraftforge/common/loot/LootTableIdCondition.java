@@ -5,20 +5,20 @@
 
 package net.minecraftforge.common.loot;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import net.minecraft.world.level.storage.loot.Serializer;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 
 public class LootTableIdCondition implements LootItemCondition
 {
+    public static final Codec<LootTableIdCondition> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+           ResourceLocation.CODEC.fieldOf("loot_table_id").forGetter(idCondition -> idCondition.targetLootTableId)
+    ).apply(builder, LootTableIdCondition::new));
     // TODO Forge Registry at some point?
-    public static final LootItemConditionType LOOT_TABLE_ID = new LootItemConditionType(new LootTableIdCondition.Serializer());
+    public static final LootItemConditionType LOOT_TABLE_ID = new LootItemConditionType(CODEC);
     public static final ResourceLocation UNKNOWN_LOOT_TABLE = new ResourceLocation("forge", "unknown_loot_table");
 
     private final ResourceLocation targetLootTableId;
@@ -59,21 +59,6 @@ public class LootTableIdCondition implements LootItemCondition
         public LootItemCondition build()
         {
             return new LootTableIdCondition(this.targetLootTableId);
-        }
-    }
-
-    public static class Serializer implements net.minecraft.world.level.storage.loot.Serializer<LootTableIdCondition>
-    {
-        @Override
-        public void serialize(JsonObject object, LootTableIdCondition instance, JsonSerializationContext ctx)
-        {
-            object.addProperty("loot_table_id", instance.targetLootTableId.toString());
-        }
-
-        @Override
-        public LootTableIdCondition deserialize(JsonObject object, JsonDeserializationContext ctx)
-        {
-            return new LootTableIdCondition(new ResourceLocation(GsonHelper.getAsString(object, "loot_table_id")));
         }
     }
 }

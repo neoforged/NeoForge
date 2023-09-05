@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/PumpkinBlock.java
++++ b/net/minecraft/world/level/block/PumpkinBlock.java
+@@ -25,7 +25,7 @@
+    @Override
+    public InteractionResult use(BlockState p_55289_, Level p_55290_, BlockPos p_55291_, Player p_55292_, InteractionHand p_55293_, BlockHitResult p_55294_) {
+       ItemStack itemstack = p_55292_.getItemInHand(p_55293_);
+-      if (itemstack.is(Items.SHEARS)) {
++      if (itemstack.canPerformAction(net.minecraftforge.common.ToolActions.SHEARS_CARVE)) {
+          if (!p_55290_.isClientSide) {
+             Direction direction = p_55294_.getDirection();
+             Direction direction1 = direction.getAxis() == Direction.Axis.Y ? p_55292_.getDirection().getOpposite() : direction;
