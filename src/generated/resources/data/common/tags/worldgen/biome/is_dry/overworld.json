@@ -1,0 +1,29 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_dry/overworld",
+      "required": false
+    },
+    "minecraft:desert",
+    {
+      "id": "#forge:is_dry/overworld",
+      "required": false
+    },
+    "minecraft:badlands",
+    {
+      "id": "#forge:is_dry/overworld",
+      "required": false
+    },
+    "minecraft:wooded_badlands",
+    {
+      "id": "#forge:is_dry/overworld",
+      "required": false
+    },
+    "minecraft:windswept_savanna",
+    {
+      "id": "#forge:is_dry/overworld",
+      "required": false
+    },
+    "minecraft:eroded_badlands"
+  ]
+}

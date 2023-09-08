@@ -1,0 +1,13 @@
+{
+  "values": [
+    "#common:is_dense/overworld",
+    {
+      "id": "#common:is_dense/nether",
+      "required": false
+    },
+    {
+      "id": "#common:is_dense/end",
+      "required": false
+    }
+  ]
+}

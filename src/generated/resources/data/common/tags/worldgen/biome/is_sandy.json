@@ -1,0 +1,24 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_sandy",
+      "required": false
+    },
+    "minecraft:desert",
+    {
+      "id": "#forge:is_sandy",
+      "required": false
+    },
+    "minecraft:beach",
+    {
+      "id": "#forge:is_sandy",
+      "required": false
+    },
+    "minecraft:badlands",
+    {
+      "id": "#forge:is_sandy",
+      "required": false
+    },
+    "minecraft:wooded_badlands"
+  ]
+}

@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": {
-      "tag": "forge:ingots/gold"
+      "tag": "common:ingots/gold"
     },
     "X": {
       "item": "minecraft:apple"

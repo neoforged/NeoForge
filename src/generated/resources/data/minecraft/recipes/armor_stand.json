@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "/": {
-      "tag": "forge:rods/wooden"
+      "tag": "common:rods/wooden"
     },
     "_": {
       "item": "minecraft:smooth_stone_slab"

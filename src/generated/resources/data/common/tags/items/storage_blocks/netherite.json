@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:storage_blocks/netherite",
+      "required": false
+    },
+    "minecraft:netherite_block"
+  ]
+}

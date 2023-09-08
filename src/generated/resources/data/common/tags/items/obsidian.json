@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:obsidian",
+      "required": false
+    },
+    "minecraft:obsidian"
+  ]
+}

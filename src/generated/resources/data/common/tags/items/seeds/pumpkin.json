@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:seeds/pumpkin",
+      "required": false
+    },
+    "minecraft:pumpkin_seeds"
+  ]
+}

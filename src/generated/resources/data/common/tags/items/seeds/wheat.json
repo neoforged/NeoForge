@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:seeds/wheat",
+      "required": false
+    },
+    "minecraft:wheat_seeds"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:shears",
+      "required": false
+    },
+    "minecraft:shears"
+  ]
+}

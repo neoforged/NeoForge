@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:ores/netherite_scrap",
+      "required": false
+    },
+    "minecraft:ancient_debris"
+  ]
+}

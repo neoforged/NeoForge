@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_wasteland",
+      "required": false
+    },
+    "minecraft:snowy_plains"
+  ]
+}

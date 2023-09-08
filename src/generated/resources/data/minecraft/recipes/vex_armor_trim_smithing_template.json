@@ -3,10 +3,10 @@
   "category": "misc",
   "key": {
     "#": {
-      "tag": "forge:gems/diamond"
+      "tag": "common:gems/diamond"
     },
     "C": {
-      "tag": "forge:cobblestone/normal"
+      "tag": "common:cobblestone/normal"
     },
     "S": {
       "item": "minecraft:vex_armor_trim_smithing_template"

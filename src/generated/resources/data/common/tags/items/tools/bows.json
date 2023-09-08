@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:tools/bows",
+      "required": false
+    },
+    "minecraft:bow"
+  ]
+}

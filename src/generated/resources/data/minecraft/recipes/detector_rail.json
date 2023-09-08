@@ -9,7 +9,7 @@
       "item": "minecraft:redstone"
     },
     "X": {
-      "tag": "forge:ingots/iron"
+      "tag": "common:ingots/iron"
     }
   },
   "pattern": [

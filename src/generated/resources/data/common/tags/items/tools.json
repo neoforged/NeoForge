@@ -1,0 +1,18 @@
+{
+  "values": [
+    {
+      "id": "#forge:tools",
+      "required": false
+    },
+    "#minecraft:swords",
+    "#minecraft:axes",
+    "#minecraft:pickaxes",
+    "#minecraft:shovels",
+    "#minecraft:hoes",
+    "#common:tools/shields",
+    "#common:tools/bows",
+    "#common:tools/crossbows",
+    "#common:tools/fishing_rods",
+    "#common:tools/tridents"
+  ]
+}

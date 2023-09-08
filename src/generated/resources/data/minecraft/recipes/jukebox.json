@@ -6,7 +6,7 @@
       "tag": "minecraft:planks"
     },
     "X": {
-      "tag": "forge:gems/diamond"
+      "tag": "common:gems/diamond"
     }
   },
   "pattern": [

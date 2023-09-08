@@ -1,0 +1,19 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_plateau",
+      "required": false
+    },
+    "minecraft:savanna_plateau",
+    {
+      "id": "#forge:is_plateau",
+      "required": false
+    },
+    "minecraft:wooded_badlands",
+    {
+      "id": "#forge:is_plateau",
+      "required": false
+    },
+    "minecraft:meadow"
+  ]
+}

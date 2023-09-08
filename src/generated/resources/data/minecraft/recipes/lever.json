@@ -3,10 +3,10 @@
   "category": "redstone",
   "key": {
     "#": {
-      "tag": "forge:cobblestone/normal"
+      "tag": "common:cobblestone/normal"
     },
     "X": {
-      "tag": "forge:rods/wooden"
+      "tag": "common:rods/wooden"
     }
   },
   "pattern": [

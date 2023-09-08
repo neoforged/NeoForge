@@ -1,0 +1,19 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_cave",
+      "required": false
+    },
+    "minecraft:lush_caves",
+    {
+      "id": "#forge:is_cave",
+      "required": false
+    },
+    "minecraft:dripstone_caves",
+    {
+      "id": "#forge:is_cave",
+      "required": false
+    },
+    "minecraft:deep_dark"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:storage_blocks/raw_iron",
+      "required": false
+    },
+    "minecraft:raw_iron_block"
+  ]
+}

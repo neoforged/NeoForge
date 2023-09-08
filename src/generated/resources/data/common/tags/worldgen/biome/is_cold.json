@@ -1,0 +1,10 @@
+{
+  "values": [
+    "#common:is_cold/overworld",
+    {
+      "id": "#common:is_cold/nether",
+      "required": false
+    },
+    "#common:is_cold/end"
+  ]
+}

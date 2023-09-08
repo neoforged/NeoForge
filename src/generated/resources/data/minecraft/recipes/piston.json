@@ -3,7 +3,7 @@
   "category": "redstone",
   "key": {
     "#": {
-      "tag": "forge:cobblestone/normal"
+      "tag": "common:cobblestone/normal"
     },
     "R": {
       "item": "minecraft:redstone"
@@ -12,7 +12,7 @@
       "tag": "minecraft:planks"
     },
     "X": {
-      "tag": "forge:ingots/iron"
+      "tag": "common:ingots/iron"
     }
   },
   "pattern": [

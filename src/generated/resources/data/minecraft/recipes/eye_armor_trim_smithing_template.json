@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": {
-      "tag": "forge:gems/diamond"
+      "tag": "common:gems/diamond"
     },
     "C": {
       "item": "minecraft:end_stone"

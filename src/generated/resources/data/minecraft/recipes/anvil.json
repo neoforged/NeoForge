@@ -6,7 +6,7 @@
       "item": "minecraft:iron_block"
     },
     "i": {
-      "tag": "forge:ingots/iron"
+      "tag": "common:ingots/iron"
     }
   },
   "pattern": [

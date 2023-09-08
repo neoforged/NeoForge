@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:gravel",
+      "required": false
+    },
+    "minecraft:gravel"
+  ]
+}

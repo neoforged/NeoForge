@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:leather",
+      "required": false
+    },
+    "minecraft:leather"
+  ]
+}

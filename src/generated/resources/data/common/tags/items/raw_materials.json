@@ -1,0 +1,11 @@
+{
+  "values": [
+    {
+      "id": "#forge:raw_materials",
+      "required": false
+    },
+    "#common:raw_materials/copper",
+    "#common:raw_materials/gold",
+    "#common:raw_materials/iron"
+  ]
+}

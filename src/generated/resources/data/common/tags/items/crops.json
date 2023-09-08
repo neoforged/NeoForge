@@ -1,0 +1,13 @@
+{
+  "values": [
+    {
+      "id": "#forge:crops",
+      "required": false
+    },
+    "#common:crops/beetroot",
+    "#common:crops/carrot",
+    "#common:crops/nether_wart",
+    "#common:crops/potato",
+    "#common:crops/wheat"
+  ]
+}

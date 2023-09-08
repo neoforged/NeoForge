@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:ores/redstone",
+      "required": false
+    },
+    "#minecraft:redstone_ores"
+  ]
+}

@@ -7,7 +7,7 @@
       "item": "minecraft:dark_oak_planks"
     },
     "X": {
-      "tag": "forge:rods/wooden"
+      "tag": "common:rods/wooden"
     }
   },
   "pattern": [

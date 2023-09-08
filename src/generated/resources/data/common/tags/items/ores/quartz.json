@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:ores/quartz",
+      "required": false
+    },
+    "minecraft:nether_quartz_ore"
+  ]
+}

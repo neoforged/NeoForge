@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_desert",
+      "required": false
+    },
+    "minecraft:desert"
+  ]
+}

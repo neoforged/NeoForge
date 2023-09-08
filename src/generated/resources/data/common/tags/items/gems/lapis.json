@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:gems/lapis",
+      "required": false
+    },
+    "minecraft:lapis_lazuli"
+  ]
+}

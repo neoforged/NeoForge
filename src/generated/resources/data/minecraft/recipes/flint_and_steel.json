@@ -3,7 +3,7 @@
   "category": "equipment",
   "ingredients": [
     {
-      "tag": "forge:ingots/iron"
+      "tag": "common:ingots/iron"
     },
     {
       "item": "minecraft:flint"

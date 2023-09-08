@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "#": {
-      "tag": "forge:ingots/iron"
+      "tag": "common:ingots/iron"
     }
   },
   "pattern": [

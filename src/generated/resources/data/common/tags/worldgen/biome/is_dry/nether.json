@@ -1,0 +1,29 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_dry/nether",
+      "required": false
+    },
+    "minecraft:nether_wastes",
+    {
+      "id": "#forge:is_dry/nether",
+      "required": false
+    },
+    "minecraft:soul_sand_valley",
+    {
+      "id": "#forge:is_dry/nether",
+      "required": false
+    },
+    "minecraft:crimson_forest",
+    {
+      "id": "#forge:is_dry/nether",
+      "required": false
+    },
+    "minecraft:warped_forest",
+    {
+      "id": "#forge:is_dry/nether",
+      "required": false
+    },
+    "minecraft:basalt_deltas"
+  ]
+}

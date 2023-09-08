@@ -1,0 +1,22 @@
+{
+  "values": [
+    {
+      "id": "#forge:storage_blocks",
+      "required": false
+    },
+    "#common:storage_blocks/amethyst",
+    "#common:storage_blocks/coal",
+    "#common:storage_blocks/copper",
+    "#common:storage_blocks/diamond",
+    "#common:storage_blocks/emerald",
+    "#common:storage_blocks/gold",
+    "#common:storage_blocks/iron",
+    "#common:storage_blocks/lapis",
+    "#common:storage_blocks/quartz",
+    "#common:storage_blocks/raw_copper",
+    "#common:storage_blocks/raw_gold",
+    "#common:storage_blocks/raw_iron",
+    "#common:storage_blocks/redstone",
+    "#common:storage_blocks/netherite"
+  ]
+}

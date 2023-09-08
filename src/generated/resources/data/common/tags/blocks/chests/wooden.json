@@ -1,0 +1,10 @@
+{
+  "values": [
+    {
+      "id": "#forge:chests/wooden",
+      "required": false
+    },
+    "minecraft:chest",
+    "minecraft:trapped_chest"
+  ]
+}

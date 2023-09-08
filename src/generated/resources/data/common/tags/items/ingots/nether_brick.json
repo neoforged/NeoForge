@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:ingots/nether_brick",
+      "required": false
+    },
+    "minecraft:nether_brick"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_lush",
+      "required": false
+    },
+    "minecraft:lush_caves"
+  ]
+}

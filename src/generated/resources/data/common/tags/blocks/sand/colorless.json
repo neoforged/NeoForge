@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:sand/colorless",
+      "required": false
+    },
+    "minecraft:sand"
+  ]
+}

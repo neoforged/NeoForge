@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:glass/brown",
+      "required": false
+    },
+    "minecraft:brown_stained_glass"
+  ]
+}

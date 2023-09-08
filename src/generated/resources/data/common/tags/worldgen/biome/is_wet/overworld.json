@@ -1,0 +1,39 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_wet/overworld",
+      "required": false
+    },
+    "minecraft:swamp",
+    {
+      "id": "#forge:is_wet/overworld",
+      "required": false
+    },
+    "minecraft:jungle",
+    {
+      "id": "#forge:is_wet/overworld",
+      "required": false
+    },
+    "minecraft:sparse_jungle",
+    {
+      "id": "#forge:is_wet/overworld",
+      "required": false
+    },
+    "minecraft:beach",
+    {
+      "id": "#forge:is_wet/overworld",
+      "required": false
+    },
+    "minecraft:bamboo_jungle",
+    {
+      "id": "#forge:is_wet/overworld",
+      "required": false
+    },
+    "minecraft:lush_caves",
+    {
+      "id": "#forge:is_wet/overworld",
+      "required": false
+    },
+    "minecraft:mangrove_swamp"
+  ]
+}

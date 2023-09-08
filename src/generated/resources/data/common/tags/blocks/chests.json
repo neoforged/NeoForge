@@ -1,0 +1,11 @@
+{
+  "values": [
+    {
+      "id": "#forge:chests",
+      "required": false
+    },
+    "#common:chests/ender",
+    "#common:chests/trapped",
+    "#common:chests/wooden"
+  ]
+}

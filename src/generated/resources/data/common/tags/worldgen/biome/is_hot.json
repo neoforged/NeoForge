@@ -1,0 +1,10 @@
+{
+  "values": [
+    "#common:is_hot/overworld",
+    "#common:is_hot/nether",
+    {
+      "id": "#common:is_hot/end",
+      "required": false
+    }
+  ]
+}

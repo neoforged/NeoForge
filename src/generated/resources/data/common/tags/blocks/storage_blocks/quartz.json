@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:storage_blocks/quartz",
+      "required": false
+    },
+    "minecraft:quartz_block"
+  ]
+}

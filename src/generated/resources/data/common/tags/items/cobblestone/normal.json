@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:cobblestone/normal",
+      "required": false
+    },
+    "minecraft:cobblestone"
+  ]
+}

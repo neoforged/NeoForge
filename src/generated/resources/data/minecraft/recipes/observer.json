@@ -3,7 +3,7 @@
   "category": "redstone",
   "key": {
     "#": {
-      "tag": "forge:cobblestone/normal"
+      "tag": "common:cobblestone/normal"
     },
     "Q": {
       "item": "minecraft:quartz"

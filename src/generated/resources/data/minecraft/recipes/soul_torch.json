@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": {
-      "tag": "forge:rods/wooden"
+      "tag": "common:rods/wooden"
     },
     "S": {
       "tag": "minecraft:soul_fire_base_blocks"

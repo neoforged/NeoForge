@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:glass/colorless",
+      "required": false
+    },
+    "minecraft:glass"
+  ]
+}

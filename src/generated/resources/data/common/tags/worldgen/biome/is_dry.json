@@ -1,0 +1,7 @@
+{
+  "values": [
+    "#common:is_dry/overworld",
+    "#common:is_dry/nether",
+    "#common:is_dry/end"
+  ]
+}

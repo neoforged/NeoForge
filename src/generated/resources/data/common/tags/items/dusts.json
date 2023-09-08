@@ -1,0 +1,11 @@
+{
+  "values": [
+    {
+      "id": "#forge:dusts",
+      "required": false
+    },
+    "#common:dusts/glowstone",
+    "#common:dusts/prismarine",
+    "#common:dusts/redstone"
+  ]
+}

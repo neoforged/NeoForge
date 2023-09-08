@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_void",
+      "required": false
+    },
+    "minecraft:the_void"
+  ]
+}

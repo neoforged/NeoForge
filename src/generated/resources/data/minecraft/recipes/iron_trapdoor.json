@@ -3,7 +3,7 @@
   "category": "redstone",
   "key": {
     "#": {
-      "tag": "forge:ingots/iron"
+      "tag": "common:ingots/iron"
     }
   },
   "pattern": [

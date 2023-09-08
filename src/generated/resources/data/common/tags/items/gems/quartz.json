@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:gems/quartz",
+      "required": false
+    },
+    "minecraft:quartz"
+  ]
+}

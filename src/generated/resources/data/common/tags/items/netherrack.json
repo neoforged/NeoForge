@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:netherrack",
+      "required": false
+    },
+    "minecraft:netherrack"
+  ]
+}

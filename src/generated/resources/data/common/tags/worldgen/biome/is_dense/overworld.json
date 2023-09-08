@@ -1,0 +1,24 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_dense/overworld",
+      "required": false
+    },
+    "minecraft:jungle",
+    {
+      "id": "#forge:is_dense/overworld",
+      "required": false
+    },
+    "minecraft:dark_forest",
+    {
+      "id": "#forge:is_dense/overworld",
+      "required": false
+    },
+    "minecraft:old_growth_birch_forest",
+    {
+      "id": "#forge:is_dense/overworld",
+      "required": false
+    },
+    "minecraft:old_growth_spruce_taiga"
+  ]
+}

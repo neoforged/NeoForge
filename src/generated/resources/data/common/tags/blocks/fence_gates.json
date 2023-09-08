@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:fence_gates",
+      "required": false
+    },
+    "#common:fence_gates/wooden"
+  ]
+}

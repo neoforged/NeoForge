@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:ores/gold",
+      "required": false
+    },
+    "#minecraft:gold_ores"
+  ]
+}

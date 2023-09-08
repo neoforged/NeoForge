@@ -1,0 +1,79 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_cold/overworld",
+      "required": false
+    },
+    "minecraft:taiga",
+    {
+      "id": "#forge:is_cold/overworld",
+      "required": false
+    },
+    "minecraft:frozen_ocean",
+    {
+      "id": "#forge:is_cold/overworld",
+      "required": false
+    },
+    "minecraft:frozen_river",
+    {
+      "id": "#forge:is_cold/overworld",
+      "required": false
+    },
+    "minecraft:snowy_plains",
+    {
+      "id": "#forge:is_cold/overworld",
+      "required": false
+    },
+    "minecraft:snowy_beach",
+    {
+      "id": "#forge:is_cold/overworld",
+      "required": false
+    },
+    "minecraft:snowy_taiga",
+    {
+      "id": "#forge:is_cold/overworld",
+      "required": false
+    },
+    "minecraft:old_growth_pine_taiga",
+    {
+      "id": "#forge:is_cold/overworld",
+      "required": false
+    },
+    "minecraft:grove",
+    {
+      "id": "#forge:is_cold/overworld",
+      "required": false
+    },
+    "minecraft:snowy_slopes",
+    {
+      "id": "#forge:is_cold/overworld",
+      "required": false
+    },
+    "minecraft:jagged_peaks",
+    {
+      "id": "#forge:is_cold/overworld",
+      "required": false
+    },
+    "minecraft:frozen_peaks",
+    {
+      "id": "#forge:is_cold/overworld",
+      "required": false
+    },
+    "minecraft:cold_ocean",
+    {
+      "id": "#forge:is_cold/overworld",
+      "required": false
+    },
+    "minecraft:deep_cold_ocean",
+    {
+      "id": "#forge:is_cold/overworld",
+      "required": false
+    },
+    "minecraft:deep_frozen_ocean",
+    {
+      "id": "#forge:is_cold/overworld",
+      "required": false
+    },
+    "minecraft:ice_spikes"
+  ]
+}

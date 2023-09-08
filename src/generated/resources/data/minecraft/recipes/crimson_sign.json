@@ -7,7 +7,7 @@
       "item": "minecraft:crimson_planks"
     },
     "X": {
-      "tag": "forge:rods/wooden"
+      "tag": "common:rods/wooden"
     }
   },
   "pattern": [

@@ -1,0 +1,29 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_dry/end",
+      "required": false
+    },
+    "minecraft:the_end",
+    {
+      "id": "#forge:is_dry/end",
+      "required": false
+    },
+    "minecraft:small_end_islands",
+    {
+      "id": "#forge:is_dry/end",
+      "required": false
+    },
+    "minecraft:end_midlands",
+    {
+      "id": "#forge:is_dry/end",
+      "required": false
+    },
+    "minecraft:end_highlands",
+    {
+      "id": "#forge:is_dry/end",
+      "required": false
+    },
+    "minecraft:end_barrens"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:dusts/glowstone",
+      "required": false
+    },
+    "minecraft:glowstone_dust"
+  ]
+}

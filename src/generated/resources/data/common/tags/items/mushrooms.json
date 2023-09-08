@@ -1,0 +1,10 @@
+{
+  "values": [
+    {
+      "id": "#forge:mushrooms",
+      "required": false
+    },
+    "minecraft:brown_mushroom",
+    "minecraft:red_mushroom"
+  ]
+}

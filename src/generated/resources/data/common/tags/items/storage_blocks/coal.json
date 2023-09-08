@@ -1,0 +1,9 @@
+{
+  "values": [
+    {
+      "id": "#forge:storage_blocks/coal",
+      "required": false
+    },
+    "minecraft:coal_block"
+  ]
+}
