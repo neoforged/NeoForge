@@ -553,6 +553,7 @@ public class Tags
         public static final TagKey<Biome> IS_RARE = tag("is_rare");
         public static final TagKey<Biome> IS_PLATEAU = tag("is_plateau");
         public static final TagKey<Biome> IS_MODIFIED = tag("is_modified");
+        public static final TagKey<Biome> IS_FLORAL = tag("is_floral");
 
         public static final TagKey<Biome> IS_WATER = tag("is_water");
         public static final TagKey<Biome> IS_DESERT = tag("is_desert");

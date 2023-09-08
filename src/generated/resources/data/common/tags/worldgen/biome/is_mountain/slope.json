@@ -5,6 +5,7 @@
     "minecraft:meadow",
     "minecraft:grove",
     "minecraft:snowy_slopes",
+    "minecraft:cherry_grove",
     {
       "id": "#forge:is_slope",
       "required": false

@@ -51,7 +51,7 @@ public final class ForgeBiomeTagsProvider extends BiomeTagsProvider
         tag(Biomes.SAVANNA_PLATEAU, Tags.Biomes.IS_HOT_OVERWORLD, Tags.Biomes.IS_SPARSE_OVERWORLD, Tags.Biomes.IS_RARE, Tags.Biomes.IS_MOUNTAIN_SLOPE, Tags.Biomes.IS_PLATEAU);
         tag(Biomes.BADLANDS, Tags.Biomes.IS_SANDY, Tags.Biomes.IS_DRY_OVERWORLD);
         tag(Biomes.WOODED_BADLANDS, Tags.Biomes.IS_SANDY, Tags.Biomes.IS_DRY_OVERWORLD, Tags.Biomes.IS_SPARSE_OVERWORLD, Tags.Biomes.IS_MOUNTAIN_SLOPE, Tags.Biomes.IS_PLATEAU);
-        tag(Biomes.MEADOW, Tags.Biomes.IS_PLAINS, Tags.Biomes.IS_PLATEAU, Tags.Biomes.IS_MOUNTAIN_SLOPE);
+        tag(Biomes.MEADOW, Tags.Biomes.IS_PLAINS, Tags.Biomes.IS_PLATEAU, Tags.Biomes.IS_MOUNTAIN_SLOPE, Tags.Biomes.IS_FLORAL);
         tag(Biomes.GROVE, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_CONIFEROUS, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_MOUNTAIN_SLOPE);
         tag(Biomes.SNOWY_SLOPES, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_SPARSE_OVERWORLD, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_MOUNTAIN_SLOPE);
         tag(Biomes.JAGGED_PEAKS, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_SPARSE_OVERWORLD, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_MOUNTAIN_PEAK);
@@ -66,7 +66,7 @@ public final class ForgeBiomeTagsProvider extends BiomeTagsProvider
         tag(Biomes.DEEP_COLD_OCEAN, Tags.Biomes.IS_COLD_OVERWORLD);
         tag(Biomes.DEEP_FROZEN_OCEAN, Tags.Biomes.IS_COLD_OVERWORLD);
         tag(Biomes.THE_VOID, Tags.Biomes.IS_VOID);
-        tag(Biomes.SUNFLOWER_PLAINS, Tags.Biomes.IS_PLAINS, Tags.Biomes.IS_RARE);
+        tag(Biomes.SUNFLOWER_PLAINS, Tags.Biomes.IS_PLAINS, Tags.Biomes.IS_RARE, Tags.Biomes.IS_FLORAL);
         tag(Biomes.WINDSWEPT_GRAVELLY_HILLS, Tags.Biomes.IS_SPARSE_OVERWORLD, Tags.Biomes.IS_RARE);
         tag(Biomes.FLOWER_FOREST, Tags.Biomes.IS_RARE);
         tag(Biomes.ICE_SPIKES, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_RARE);
@@ -83,6 +83,7 @@ public final class ForgeBiomeTagsProvider extends BiomeTagsProvider
         tag(Biomes.BASALT_DELTAS, Tags.Biomes.IS_HOT_NETHER, Tags.Biomes.IS_DRY_NETHER);
         tag(Biomes.MANGROVE_SWAMP, Tags.Biomes.IS_WET_OVERWORLD, Tags.Biomes.IS_HOT_OVERWORLD, Tags.Biomes.IS_SWAMP);
         tag(Biomes.DEEP_DARK, Tags.Biomes.IS_CAVE, Tags.Biomes.IS_RARE, Tags.Biomes.IS_SPOOKY);
+        tag(Biomes.CHERRY_GROVE, Tags.Biomes.IS_PLATEAU, Tags.Biomes.IS_MOUNTAIN_SLOPE, Tags.Biomes.IS_FLORAL);
 
         tag(Tags.Biomes.IS_HOT).addTag(Tags.Biomes.IS_HOT_OVERWORLD).addTag(Tags.Biomes.IS_HOT_NETHER).addOptionalTag(Tags.Biomes.IS_HOT_END.location());
         tag(Tags.Biomes.IS_COLD).addTag(Tags.Biomes.IS_COLD_OVERWORLD).addOptionalTag(Tags.Biomes.IS_COLD_NETHER.location()).addTag(Tags.Biomes.IS_COLD_END);
@@ -133,6 +134,7 @@ public final class ForgeBiomeTagsProvider extends BiomeTagsProvider
         tagWithOptionalLegacy(Tags.Biomes.IS_RARE);
         tagWithOptionalLegacy(Tags.Biomes.IS_PLATEAU);
         tagWithOptionalLegacy(Tags.Biomes.IS_MODIFIED);
+        tagWithOptionalLegacy(Tags.Biomes.IS_FLORAL);
         tagWithOptionalLegacy(Tags.Biomes.IS_WATER);
         tagWithOptionalLegacy(Tags.Biomes.IS_DESERT);
         tagWithOptionalLegacy(Tags.Biomes.IS_PLAINS);

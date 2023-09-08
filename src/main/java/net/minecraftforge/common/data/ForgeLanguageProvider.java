@@ -273,6 +273,7 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Biomes.IS_RARE, "Rare");
         add(Tags.Biomes.IS_PLATEAU, "Plateau");
         add(Tags.Biomes.IS_MODIFIED, "Modified");
+        add(Tags.Biomes.IS_FLORAL, "Floral");
 
         add(Tags.Biomes.IS_WATER, "Water");
         add(Tags.Biomes.IS_DESERT, "Desert");

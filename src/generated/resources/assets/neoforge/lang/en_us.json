@@ -295,6 +295,7 @@
   "tag.worldgen/biome.is_dry/end": "Dry End",
   "tag.worldgen/biome.is_dry/nether": "Dry Nether",
   "tag.worldgen/biome.is_dry/overworld": "Dry Overworld",
+  "tag.worldgen/biome.is_floral": "Floral",
   "tag.worldgen/biome.is_hot": "Hot",
   "tag.worldgen/biome.is_hot/end": "Hot End",
   "tag.worldgen/biome.is_hot/nether": "Hot Nether",
