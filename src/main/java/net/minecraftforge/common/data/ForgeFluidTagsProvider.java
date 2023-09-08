@@ -8,6 +8,10 @@ package net.minecraftforge.common.data;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.FluidTagsProvider;
+import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.Tags.Fluids;
 
@@ -17,18 +21,25 @@ public final class ForgeFluidTagsProvider extends FluidTagsProvider
 {
     public ForgeFluidTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper)
     {
-        super(output, lookupProvider, "forge", existingFileHelper);
+        super(output, lookupProvider, "neoforge", existingFileHelper);
     }
 
     @Override
     public void addTags(HolderLookup.Provider lookupProvider)
     {
-        tag(Fluids.MILK).addOptional(ForgeMod.MILK.getId()).addOptional(ForgeMod.FLOWING_MILK.getId());
+        tagWithOptionalLegacy(Fluids.MILK).addOptional(ForgeMod.MILK.getId()).addOptional(ForgeMod.FLOWING_MILK.getId());
+    }
+
+    private IntrinsicHolderTagsProvider.IntrinsicTagAppender<Fluid> tagWithOptionalLegacy(TagKey<Fluid> tag)
+    {
+        IntrinsicHolderTagsProvider.IntrinsicTagAppender<Fluid> tagAppender = tag(tag);
+        tagAppender.addOptionalTag(new ResourceLocation("forge", tag.location().getPath()));
+        return tagAppender;
     }
 
     @Override
     public String getName()
     {
-        return "Forge Fluid Tags";
+        return "Neoforge Fluid Tags";
     }
 }

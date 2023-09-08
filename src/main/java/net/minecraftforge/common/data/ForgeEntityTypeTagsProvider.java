@@ -8,6 +8,9 @@ package net.minecraftforge.common.data;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
+import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.Tags;
 
@@ -18,18 +21,25 @@ public class ForgeEntityTypeTagsProvider extends EntityTypeTagsProvider
 
     public ForgeEntityTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper)
     {
-        super(output, lookupProvider, "forge", existingFileHelper);
+        super(output, lookupProvider, "neoforge", existingFileHelper);
     }
 
     @Override
     public void addTags(HolderLookup.Provider lookupProvider)
     {
-        tag(Tags.EntityTypes.BOSSES).add(EntityType.ENDER_DRAGON, EntityType.WITHER);
+        tagWithOptionalLegacy(Tags.EntityTypes.BOSSES).add(EntityType.ENDER_DRAGON, EntityType.WITHER);
+    }
+
+    private IntrinsicHolderTagsProvider.IntrinsicTagAppender<EntityType<?>> tagWithOptionalLegacy(TagKey<EntityType<?>> tag)
+    {
+        IntrinsicHolderTagsProvider.IntrinsicTagAppender<EntityType<?>> tagAppender = tag(tag);
+        tagAppender.addOptionalTag(new ResourceLocation("forge", tag.location().getPath()));
+        return tagAppender;
     }
 
     @Override
     public String getName()
     {
-        return "Forge EntityType Tags";
+        return "Neoforge EntityType Tags";
     }
 }

@@ -50,6 +50,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.ForgeBiomeTagsProvider;
 import net.minecraftforge.common.data.ForgeFluidTagsProvider;
 import net.minecraftforge.common.data.ForgeSpriteSourceProvider;
+import net.minecraftforge.common.data.ForgeLanguageProvider;
 import net.minecraftforge.common.data.VanillaSoundDefinitionsProvider;
 import net.minecraftforge.common.extensions.IForgeEntity;
 import net.minecraftforge.common.extensions.IForgePlayer;
@@ -518,6 +519,7 @@ public class ForgeMod
 
         gen.addProvider(event.includeClient(), new ForgeSpriteSourceProvider(packOutput, existingFileHelper));
         gen.addProvider(event.includeClient(), new VanillaSoundDefinitionsProvider(packOutput, existingFileHelper));
+        gen.addProvider(event.includeClient(), new ForgeLanguageProvider(packOutput));
     }
 
     public void missingSoundMapping(MissingMappingsEvent event)

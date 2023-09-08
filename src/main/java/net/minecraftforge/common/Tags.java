@@ -177,7 +177,7 @@ public class Tags
 
         private static TagKey<Block> tag(String name)
         {
-            return BlockTags.create(new ResourceLocation("forge", name));
+            return BlockTags.create(new ResourceLocation("common", name));
         }
     }
 
@@ -189,7 +189,7 @@ public class Tags
 
         private static TagKey<EntityType<?>> tag(String name)
         {
-            return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("forge", name));
+            return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("common", name));
         }
     }
 
@@ -484,7 +484,7 @@ public class Tags
 
         private static TagKey<Item> tag(String name)
         {
-            return ItemTags.create(new ResourceLocation("forge", name));
+            return ItemTags.create(new ResourceLocation("common", name));
         }
     }
 
@@ -503,7 +503,7 @@ public class Tags
 
         private static TagKey<Fluid> tag(String name)
         {
-            return FluidTags.create(new ResourceLocation("forge", name));
+            return FluidTags.create(new ResourceLocation("common", name));
         }
     }
 
@@ -567,7 +567,7 @@ public class Tags
 
         private static TagKey<Biome> tag(String name)
         {
-            return TagKey.create(Registries.BIOME, new ResourceLocation("forge", name));
+            return TagKey.create(Registries.BIOME, new ResourceLocation("common", name));
         }
     }
 }
