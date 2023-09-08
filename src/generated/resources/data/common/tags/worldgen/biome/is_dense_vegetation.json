@@ -1,12 +1,12 @@
 {
   "values": [
-    "#common:is_dense/overworld",
+    "#common:is_dense_vegetation/overworld",
     {
-      "id": "#common:is_dense/nether",
+      "id": "#common:is_dense_vegetation/nether",
       "required": false
     },
     {
-      "id": "#common:is_dense/end",
+      "id": "#common:is_dense_vegetation/end",
       "required": false
     },
     {

@@ -525,14 +525,14 @@ public class Tags
         public static final TagKey<Biome> IS_COLD_NETHER = tag("is_cold/nether");
         public static final TagKey<Biome> IS_COLD_END = tag("is_cold/end");
 
-        public static final TagKey<Biome> IS_SPARSE = tag("is_sparse");
-        public static final TagKey<Biome> IS_SPARSE_OVERWORLD = tag("is_sparse/overworld");
-        public static final TagKey<Biome> IS_SPARSE_NETHER = tag("is_sparse/nether");
-        public static final TagKey<Biome> IS_SPARSE_END = tag("is_sparse/end");
-        public static final TagKey<Biome> IS_DENSE = tag("is_dense");
-        public static final TagKey<Biome> IS_DENSE_OVERWORLD = tag("is_dense/overworld");
-        public static final TagKey<Biome> IS_DENSE_NETHER = tag("is_dense/nether");
-        public static final TagKey<Biome> IS_DENSE_END = tag("is_dense/end");
+        public static final TagKey<Biome> IS_SPARSE_VEGETATION = tag("is_sparse_vegetation");
+        public static final TagKey<Biome> IS_SPARSE_VEGETATION_OVERWORLD = tag("is_sparse_vegetation/overworld");
+        public static final TagKey<Biome> IS_SPARSE_VEGETATION_NETHER = tag("is_sparse_vegetation/nether");
+        public static final TagKey<Biome> IS_SPARSE_VEGETATION_END = tag("is_sparse_vegetation/end");
+        public static final TagKey<Biome> IS_DENSE_VEGETATION = tag("is_dense_vegetation");
+        public static final TagKey<Biome> IS_DENSE_VEGETATION_OVERWORLD = tag("is_dense_vegetation/overworld");
+        public static final TagKey<Biome> IS_DENSE_VEGETATION_NETHER = tag("is_dense_vegetation/nether");
+        public static final TagKey<Biome> IS_DENSE_VEGETATION_END = tag("is_dense_vegetation/end");
 
         public static final TagKey<Biome> IS_WET = tag("is_wet");
         public static final TagKey<Biome> IS_WET_OVERWORLD = tag("is_wet/overworld");

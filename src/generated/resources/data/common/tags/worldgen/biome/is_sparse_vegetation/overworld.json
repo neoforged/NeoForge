@@ -12,6 +12,10 @@
     "minecraft:eroded_badlands",
     "minecraft:dripstone_caves",
     {
+      "id": "#forge:is_sparse_vegetation/overworld",
+      "required": false
+    },
+    {
       "id": "#forge:is_sparse/overworld",
       "required": false
     }
