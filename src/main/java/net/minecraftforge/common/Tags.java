@@ -500,6 +500,10 @@ public class Tags
          * Holds all fluids that are gaseous at room temperature.
          */
         public static final TagKey<Fluid> GASEOUS = tag("gaseous");
+        /**
+         * Holds all fluids related to honey.
+         */
+        public static final TagKey<Fluid> HONEY = tag("honey");
 
         private static TagKey<Fluid> tag(String name)
         {
