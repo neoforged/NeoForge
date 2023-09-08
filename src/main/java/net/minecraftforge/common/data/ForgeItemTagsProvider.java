@@ -170,7 +170,7 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.ARMORS_BOOTS).add(Items.LEATHER_BOOTS, Items.CHAINMAIL_BOOTS, Items.IRON_BOOTS, Items.GOLDEN_BOOTS, Items.DIAMOND_BOOTS, Items.NETHERITE_BOOTS);
         tag(Tags.Items.ARMORS).addTags(Tags.Items.ARMORS_HELMETS, Tags.Items.ARMORS_CHESTPLATES, Tags.Items.ARMORS_LEGGINGS, Tags.Items.ARMORS_BOOTS);
 
-        // Backwards compat with pre-1.21 tags
+        // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
         tagWithOptionalLegacy(Tags.Items.BONES);
         tagWithOptionalLegacy(Tags.Items.CROPS);

@@ -27,7 +27,7 @@ public class ForgeEntityTypeTagsProvider extends EntityTypeTagsProvider
     {
         tag(Tags.EntityTypes.BOSSES).add(EntityType.ENDER_DRAGON, EntityType.WITHER);
 
-        // Backwards compat with pre-1.21 tags
+        // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
         tag(Tags.EntityTypes.BOSSES).addOptional(new ResourceLocation("forge", "bosses"));
     }

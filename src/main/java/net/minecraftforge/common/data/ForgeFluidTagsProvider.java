@@ -31,7 +31,7 @@ public final class ForgeFluidTagsProvider extends FluidTagsProvider
         tag(Fluids.GASEOUS);
         tag(Fluids.HONEY);
 
-        // Backwards compat with pre-1.21 tags
+        // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
         tagWithOptionalLegacy(Fluids.MILK);
         tagWithOptionalLegacy(Fluids.GASEOUS);

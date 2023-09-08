@@ -106,7 +106,7 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(STORAGE_BLOCKS_REDSTONE).add(Blocks.REDSTONE_BLOCK);
         tag(STORAGE_BLOCKS_NETHERITE).add(Blocks.NETHERITE_BLOCK);
 
-        // Backwards compat with pre-1.21 tags
+        // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
         tagWithOptionalLegacy(BARRELS);
         tagWithOptionalLegacy(BARRELS_WOODEN);

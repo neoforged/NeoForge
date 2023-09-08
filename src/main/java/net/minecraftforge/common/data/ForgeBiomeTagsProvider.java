@@ -96,7 +96,7 @@ public final class ForgeBiomeTagsProvider extends BiomeTagsProvider
         tag(Tags.Biomes.IS_WATER).addTag(BiomeTags.IS_OCEAN).addTag(BiomeTags.IS_RIVER);
         tag(Tags.Biomes.IS_UNDERGROUND).addTag(Tags.Biomes.IS_CAVE);
 
-        // Backwards compat with pre-1.21 tags
+        // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
         tag(Tags.Biomes.IS_MOUNTAIN_SLOPE).addOptionalTag(new ResourceLocation("forge", "is_slope"));
         tag(Tags.Biomes.IS_MOUNTAIN_PEAK).addOptionalTag(new ResourceLocation("forge", "is_peak"));
