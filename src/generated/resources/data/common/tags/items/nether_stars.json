@@ -1,9 +1,9 @@
 {
   "values": [
+    "minecraft:nether_star",
     {
       "id": "#forge:nether_stars",
       "required": false
-    },
-    "minecraft:nether_star"
+    }
   ]
 }

@@ -1,9 +1,9 @@
 {
   "values": [
+    "minecraft:lime_stained_glass",
     {
       "id": "#forge:glass/lime",
       "required": false
-    },
-    "minecraft:lime_stained_glass"
+    }
   ]
 }

@@ -1,9 +1,9 @@
 {
   "values": [
+    "minecraft:brick",
     {
       "id": "#forge:ingots/brick",
       "required": false
-    },
-    "minecraft:brick"
+    }
   ]
 }

@@ -1,9 +1,9 @@
 {
   "values": [
+    "minecraft:barrel",
     {
       "id": "#forge:barrels/wooden",
       "required": false
-    },
-    "minecraft:barrel"
+    }
   ]
 }

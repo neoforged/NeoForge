@@ -1,9 +1,9 @@
 {
   "values": [
+    "minecraft:blue_stained_glass",
     {
       "id": "#forge:glass/blue",
       "required": false
-    },
-    "minecraft:blue_stained_glass"
+    }
   ]
 }

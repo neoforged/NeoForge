@@ -1,9 +1,9 @@
 {
   "values": [
+    "minecraft:iron_block",
     {
       "id": "#forge:storage_blocks/iron",
       "required": false
-    },
-    "minecraft:iron_block"
+    }
   ]
 }

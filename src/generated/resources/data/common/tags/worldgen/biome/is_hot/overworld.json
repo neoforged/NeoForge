@@ -1,59 +1,19 @@
 {
   "values": [
-    {
-      "id": "#forge:is_hot/overworld",
-      "required": false
-    },
     "minecraft:desert",
-    {
-      "id": "#forge:is_hot/overworld",
-      "required": false
-    },
     "minecraft:jungle",
-    {
-      "id": "#forge:is_hot/overworld",
-      "required": false
-    },
     "minecraft:sparse_jungle",
-    {
-      "id": "#forge:is_hot/overworld",
-      "required": false
-    },
     "minecraft:savanna",
-    {
-      "id": "#forge:is_hot/overworld",
-      "required": false
-    },
     "minecraft:savanna_plateau",
-    {
-      "id": "#forge:is_hot/overworld",
-      "required": false
-    },
     "minecraft:stony_peaks",
-    {
-      "id": "#forge:is_hot/overworld",
-      "required": false
-    },
     "minecraft:warm_ocean",
-    {
-      "id": "#forge:is_hot/overworld",
-      "required": false
-    },
     "minecraft:windswept_savanna",
-    {
-      "id": "#forge:is_hot/overworld",
-      "required": false
-    },
     "minecraft:eroded_badlands",
-    {
-      "id": "#forge:is_hot/overworld",
-      "required": false
-    },
     "minecraft:bamboo_jungle",
+    "minecraft:mangrove_swamp",
     {
       "id": "#forge:is_hot/overworld",
       "required": false
-    },
-    "minecraft:mangrove_swamp"
+    }
   ]
 }

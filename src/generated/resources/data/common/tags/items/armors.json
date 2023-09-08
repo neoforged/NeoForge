@@ -1,12 +1,12 @@
 {
   "values": [
-    {
-      "id": "#forge:armors",
-      "required": false
-    },
     "#common:armors/helmets",
     "#common:armors/chestplates",
     "#common:armors/leggings",
-    "#common:armors/boots"
+    "#common:armors/boots",
+    {
+      "id": "#forge:armors",
+      "required": false
+    }
   ]
 }

@@ -565,8 +565,8 @@ public class Tags
         public static final TagKey<Biome> IS_UNDERGROUND = tag("is_underground");
 
         public static final TagKey<Biome> IS_CAVE = tag("is_cave");
-        public static final TagKey<Biome> IS_PEAK = tag("is_peak");
-        public static final TagKey<Biome> IS_SLOPE = tag("is_slope");
+        public static final TagKey<Biome> IS_MOUNTAIN_PEAK = tag("is_mountain/peak");
+        public static final TagKey<Biome> IS_MOUNTAIN_SLOPE = tag("is_mountain/slope");
         public static final TagKey<Biome> IS_MOUNTAIN = tag("is_mountain");
 
         private static TagKey<Biome> tag(String name)

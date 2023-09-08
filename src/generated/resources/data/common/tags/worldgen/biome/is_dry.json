@@ -2,6 +2,10 @@
   "values": [
     "#common:is_dry/overworld",
     "#common:is_dry/nether",
-    "#common:is_dry/end"
+    "#common:is_dry/end",
+    {
+      "id": "#forge:is_dry",
+      "required": false
+    }
   ]
 }

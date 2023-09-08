@@ -1,14 +1,14 @@
 {
   "values": [
-    {
-      "id": "#forge:ingots",
-      "required": false
-    },
     "#common:ingots/brick",
     "#common:ingots/copper",
     "#common:ingots/gold",
     "#common:ingots/iron",
     "#common:ingots/netherite",
-    "#common:ingots/nether_brick"
+    "#common:ingots/nether_brick",
+    {
+      "id": "#forge:ingots",
+      "required": false
+    }
   ]
 }

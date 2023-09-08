@@ -1,9 +1,5 @@
 {
   "values": [
-    {
-      "id": "#forge:tools",
-      "required": false
-    },
     "#minecraft:swords",
     "#minecraft:axes",
     "#minecraft:pickaxes",
@@ -13,6 +9,10 @@
     "#common:tools/bows",
     "#common:tools/crossbows",
     "#common:tools/fishing_rods",
-    "#common:tools/tridents"
+    "#common:tools/tridents",
+    {
+      "id": "#forge:tools",
+      "required": false
+    }
   ]
 }

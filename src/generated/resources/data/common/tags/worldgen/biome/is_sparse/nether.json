@@ -1,0 +1,8 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_sparse/nether",
+      "required": false
+    }
+  ]
+}

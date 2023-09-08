@@ -1,29 +1,13 @@
 {
   "values": [
-    {
-      "id": "#forge:is_hot/nether",
-      "required": false
-    },
     "minecraft:nether_wastes",
-    {
-      "id": "#forge:is_hot/nether",
-      "required": false
-    },
     "minecraft:soul_sand_valley",
-    {
-      "id": "#forge:is_hot/nether",
-      "required": false
-    },
     "minecraft:crimson_forest",
-    {
-      "id": "#forge:is_hot/nether",
-      "required": false
-    },
     "minecraft:warped_forest",
+    "minecraft:basalt_deltas",
     {
       "id": "#forge:is_hot/nether",
       "required": false
-    },
-    "minecraft:basalt_deltas"
+    }
   ]
 }

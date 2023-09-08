@@ -1,9 +1,5 @@
 {
   "values": [
-    {
-      "id": "#forge:storage_blocks",
-      "required": false
-    },
     "#common:storage_blocks/amethyst",
     "#common:storage_blocks/coal",
     "#common:storage_blocks/copper",
@@ -17,6 +13,10 @@
     "#common:storage_blocks/raw_gold",
     "#common:storage_blocks/raw_iron",
     "#common:storage_blocks/redstone",
-    "#common:storage_blocks/netherite"
+    "#common:storage_blocks/netherite",
+    {
+      "id": "#forge:storage_blocks",
+      "required": false
+    }
   ]
 }

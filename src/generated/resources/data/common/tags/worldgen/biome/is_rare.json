@@ -1,69 +1,21 @@
 {
   "values": [
-    {
-      "id": "#forge:is_rare",
-      "required": false
-    },
     "minecraft:mushroom_fields",
-    {
-      "id": "#forge:is_rare",
-      "required": false
-    },
     "minecraft:sparse_jungle",
-    {
-      "id": "#forge:is_rare",
-      "required": false
-    },
     "minecraft:savanna_plateau",
-    {
-      "id": "#forge:is_rare",
-      "required": false
-    },
     "minecraft:sunflower_plains",
-    {
-      "id": "#forge:is_rare",
-      "required": false
-    },
     "minecraft:windswept_gravelly_hills",
-    {
-      "id": "#forge:is_rare",
-      "required": false
-    },
     "minecraft:flower_forest",
-    {
-      "id": "#forge:is_rare",
-      "required": false
-    },
     "minecraft:ice_spikes",
-    {
-      "id": "#forge:is_rare",
-      "required": false
-    },
     "minecraft:old_growth_birch_forest",
-    {
-      "id": "#forge:is_rare",
-      "required": false
-    },
     "minecraft:old_growth_spruce_taiga",
-    {
-      "id": "#forge:is_rare",
-      "required": false
-    },
     "minecraft:windswept_savanna",
-    {
-      "id": "#forge:is_rare",
-      "required": false
-    },
     "minecraft:eroded_badlands",
-    {
-      "id": "#forge:is_rare",
-      "required": false
-    },
     "minecraft:bamboo_jungle",
+    "minecraft:deep_dark",
     {
       "id": "#forge:is_rare",
       "required": false
-    },
-    "minecraft:deep_dark"
+    }
   ]
 }

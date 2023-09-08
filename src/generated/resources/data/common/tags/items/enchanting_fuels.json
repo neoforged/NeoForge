@@ -1,9 +1,5 @@
 {
   "values": [
-    {
-      "id": "#forge:enchanting_fuels",
-      "required": false
-    },
     "#common:gems/lapis"
   ]
 }

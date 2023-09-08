@@ -1,9 +1,5 @@
 {
   "values": [
-    {
-      "id": "#forge:glass/silica",
-      "required": false
-    },
     "minecraft:glass",
     "minecraft:black_stained_glass",
     "minecraft:blue_stained_glass",
@@ -20,6 +16,10 @@
     "minecraft:purple_stained_glass",
     "minecraft:red_stained_glass",
     "minecraft:white_stained_glass",
-    "minecraft:yellow_stained_glass"
+    "minecraft:yellow_stained_glass",
+    {
+      "id": "#forge:glass/silica",
+      "required": false
+    }
   ]
 }

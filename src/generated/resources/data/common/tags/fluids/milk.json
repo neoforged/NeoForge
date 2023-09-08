@@ -1,15 +1,15 @@
 {
   "values": [
     {
-      "id": "#forge:milk",
-      "required": false
-    },
-    {
       "id": "minecraft:milk",
       "required": false
     },
     {
       "id": "minecraft:flowing_milk",
+      "required": false
+    },
+    {
+      "id": "#forge:milk",
       "required": false
     }
   ]

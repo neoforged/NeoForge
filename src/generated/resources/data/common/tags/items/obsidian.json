@@ -4,6 +4,10 @@
       "id": "#forge:obsidian",
       "required": false
     },
-    "minecraft:obsidian"
+    "minecraft:obsidian",
+    {
+      "id": "#forge:obsidian",
+      "required": false
+    }
   ]
 }

@@ -1,9 +1,9 @@
 {
   "values": [
+    "minecraft:shield",
     {
       "id": "#forge:tools/shields",
       "required": false
-    },
-    "minecraft:shield"
+    }
   ]
 }

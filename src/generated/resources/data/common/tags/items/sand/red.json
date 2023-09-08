@@ -1,9 +1,9 @@
 {
   "values": [
+    "minecraft:red_sand",
     {
       "id": "#forge:sand/red",
       "required": false
-    },
-    "minecraft:red_sand"
+    }
   ]
 }

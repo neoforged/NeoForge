@@ -27,7 +27,15 @@ public final class ForgeFluidTagsProvider extends FluidTagsProvider
     @Override
     public void addTags(HolderLookup.Provider lookupProvider)
     {
-        tagWithOptionalLegacy(Fluids.MILK).addOptional(ForgeMod.MILK.getId()).addOptional(ForgeMod.FLOWING_MILK.getId());
+        tag(Fluids.MILK).addOptional(ForgeMod.MILK.getId()).addOptional(ForgeMod.FLOWING_MILK.getId());
+        tag(Fluids.GASEOUS);
+        tag(Fluids.HONEY);
+
+        // Backwards compat with pre-1.21 tags
+        // TODO: Remove backwards compat tag entries in 1.22
+        tagWithOptionalLegacy(Fluids.MILK);
+        tagWithOptionalLegacy(Fluids.GASEOUS);
+        tagWithOptionalLegacy(Fluids.HONEY);
     }
 
     private IntrinsicHolderTagsProvider.IntrinsicTagAppender<Fluid> tagWithOptionalLegacy(TagKey<Fluid> tag)

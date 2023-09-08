@@ -1,9 +1,5 @@
 {
   "values": [
-    {
-      "id": "#forge:ores",
-      "required": false
-    },
     "#common:ores/coal",
     "#common:ores/copper",
     "#common:ores/diamond",
@@ -13,6 +9,10 @@
     "#common:ores/lapis",
     "#common:ores/redstone",
     "#common:ores/quartz",
-    "#common:ores/netherite_scrap"
+    "#common:ores/netherite_scrap",
+    {
+      "id": "#forge:ores",
+      "required": false
+    }
   ]
 }

@@ -1,24 +1,12 @@
 {
   "values": [
-    {
-      "id": "#forge:is_coniferous",
-      "required": false
-    },
     "minecraft:taiga",
-    {
-      "id": "#forge:is_coniferous",
-      "required": false
-    },
     "minecraft:snowy_taiga",
-    {
-      "id": "#forge:is_coniferous",
-      "required": false
-    },
     "minecraft:old_growth_pine_taiga",
+    "minecraft:grove",
     {
       "id": "#forge:is_coniferous",
       "required": false
-    },
-    "minecraft:grove"
+    }
   ]
 }

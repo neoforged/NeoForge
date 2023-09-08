@@ -1,0 +1,8 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_dense/nether",
+      "required": false
+    }
+  ]
+}

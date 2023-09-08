@@ -8,6 +8,10 @@
     {
       "id": "#common:is_dense/end",
       "required": false
+    },
+    {
+      "id": "#forge:is_dense",
+      "required": false
     }
   ]
 }

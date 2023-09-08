@@ -8,6 +8,10 @@
     {
       "id": "#common:is_sparse/end",
       "required": false
+    },
+    {
+      "id": "#forge:is_sparse",
+      "required": false
     }
   ]
 }

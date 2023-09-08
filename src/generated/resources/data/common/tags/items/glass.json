@@ -1,11 +1,11 @@
 {
   "values": [
+    "#common:glass/colorless",
+    "#common:stained_glass",
+    "#common:glass/tinted",
     {
       "id": "#forge:glass",
       "required": false
-    },
-    "#common:glass/colorless",
-    "#common:stained_glass",
-    "#common:glass/tinted"
+    }
   ]
 }

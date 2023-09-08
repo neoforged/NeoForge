@@ -5,6 +5,10 @@
       "id": "#common:is_cold/nether",
       "required": false
     },
-    "#common:is_cold/end"
+    "#common:is_cold/end",
+    {
+      "id": "#forge:is_cold",
+      "required": false
+    }
   ]
 }

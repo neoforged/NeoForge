@@ -285,8 +285,8 @@ public final class ForgeLanguageProvider extends LanguageProvider
 
         add(Tags.Biomes.IS_UNDERGROUND, "Underground");
         add(Tags.Biomes.IS_CAVE, "Cave");
-        add(Tags.Biomes.IS_PEAK, "Peak");
-        add(Tags.Biomes.IS_SLOPE, "Slope");
+        add(Tags.Biomes.IS_MOUNTAIN_PEAK, "Peak");
+        add(Tags.Biomes.IS_MOUNTAIN_SLOPE, "Slope");
         add(Tags.Biomes.IS_MOUNTAIN, "Mountain");
     }
 

@@ -1,6 +1,10 @@
 {
   "values": [
     "#minecraft:is_ocean",
-    "#minecraft:is_river"
+    "#minecraft:is_river",
+    {
+      "id": "#forge:is_water",
+      "required": false
+    }
   ]
 }

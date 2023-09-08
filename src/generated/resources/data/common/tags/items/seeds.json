@@ -1,12 +1,12 @@
 {
   "values": [
-    {
-      "id": "#forge:seeds",
-      "required": false
-    },
     "#common:seeds/beetroot",
     "#common:seeds/melon",
     "#common:seeds/pumpkin",
-    "#common:seeds/wheat"
+    "#common:seeds/wheat",
+    {
+      "id": "#forge:seeds",
+      "required": false
+    }
   ]
 }

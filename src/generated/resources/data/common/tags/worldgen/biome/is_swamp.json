@@ -1,14 +1,10 @@
 {
   "values": [
-    {
-      "id": "#forge:is_swamp",
-      "required": false
-    },
     "minecraft:swamp",
+    "minecraft:mangrove_swamp",
     {
       "id": "#forge:is_swamp",
       "required": false
-    },
-    "minecraft:mangrove_swamp"
+    }
   ]
 }

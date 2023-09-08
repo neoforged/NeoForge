@@ -1,9 +1,9 @@
 {
   "values": [
+    "minecraft:magenta_stained_glass",
     {
       "id": "#forge:glass/magenta",
       "required": false
-    },
-    "minecraft:magenta_stained_glass"
+    }
   ]
 }

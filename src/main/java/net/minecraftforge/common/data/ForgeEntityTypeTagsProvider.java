@@ -8,9 +8,7 @@ package net.minecraftforge.common.data;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
-import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.Tags;
 
@@ -27,14 +25,11 @@ public class ForgeEntityTypeTagsProvider extends EntityTypeTagsProvider
     @Override
     public void addTags(HolderLookup.Provider lookupProvider)
     {
-        tagWithOptionalLegacy(Tags.EntityTypes.BOSSES).add(EntityType.ENDER_DRAGON, EntityType.WITHER);
-    }
+        tag(Tags.EntityTypes.BOSSES).add(EntityType.ENDER_DRAGON, EntityType.WITHER);
 
-    private IntrinsicHolderTagsProvider.IntrinsicTagAppender<EntityType<?>> tagWithOptionalLegacy(TagKey<EntityType<?>> tag)
-    {
-        IntrinsicHolderTagsProvider.IntrinsicTagAppender<EntityType<?>> tagAppender = tag(tag);
-        tagAppender.addOptionalTag(new ResourceLocation("forge", tag.location().getPath()));
-        return tagAppender;
+        // Backwards compat with pre-1.21 tags
+        // TODO: Remove backwards compat tag entries in 1.22
+        tag(Tags.EntityTypes.BOSSES).addOptional(new ResourceLocation("forge", "bosses"));
     }
 
     @Override

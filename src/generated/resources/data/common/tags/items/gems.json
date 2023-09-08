@@ -1,14 +1,14 @@
 {
   "values": [
-    {
-      "id": "#forge:gems",
-      "required": false
-    },
     "#common:gems/amethyst",
     "#common:gems/diamond",
     "#common:gems/emerald",
     "#common:gems/lapis",
     "#common:gems/prismarine",
-    "#common:gems/quartz"
+    "#common:gems/quartz",
+    {
+      "id": "#forge:gems",
+      "required": false
+    }
   ]
 }

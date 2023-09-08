@@ -1,9 +1,5 @@
 {
   "values": [
-    {
-      "id": "#forge:sandstone",
-      "required": false
-    },
     "minecraft:sandstone",
     "minecraft:cut_sandstone",
     "minecraft:chiseled_sandstone",
@@ -11,6 +7,10 @@
     "minecraft:red_sandstone",
     "minecraft:cut_red_sandstone",
     "minecraft:chiseled_red_sandstone",
-    "minecraft:smooth_red_sandstone"
+    "minecraft:smooth_red_sandstone",
+    {
+      "id": "#forge:sandstone",
+      "required": false
+    }
   ]
 }

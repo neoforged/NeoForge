@@ -1,9 +1,5 @@
 {
   "values": [
-    {
-      "id": "#forge:ore_rates/singular",
-      "required": false
-    },
     "minecraft:ancient_debris",
     "minecraft:coal_ore",
     "minecraft:deepslate_coal_ore",
@@ -15,6 +11,10 @@
     "minecraft:emerald_ore",
     "minecraft:gold_ore",
     "minecraft:iron_ore",
-    "minecraft:nether_quartz_ore"
+    "minecraft:nether_quartz_ore",
+    {
+      "id": "#forge:ore_rates/singular",
+      "required": false
+    }
   ]
 }

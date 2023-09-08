@@ -1,9 +1,9 @@
 {
   "values": [
+    "minecraft:glass_pane",
     {
       "id": "#forge:glass_panes/colorless",
       "required": false
-    },
-    "minecraft:glass_pane"
+    }
   ]
 }

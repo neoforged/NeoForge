@@ -1,9 +1,9 @@
 {
   "values": [
+    "minecraft:feather",
     {
       "id": "#forge:feathers",
       "required": false
-    },
-    "minecraft:feather"
+    }
   ]
 }

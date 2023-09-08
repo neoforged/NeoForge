@@ -1,9 +1,9 @@
 {
   "values": [
+    "minecraft:red_stained_glass_pane",
     {
       "id": "#forge:glass_panes/red",
       "required": false
-    },
-    "minecraft:red_stained_glass_pane"
+    }
   ]
 }

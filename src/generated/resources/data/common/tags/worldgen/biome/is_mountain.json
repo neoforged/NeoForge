@@ -1,6 +1,10 @@
 {
   "values": [
-    "#common:is_peak",
-    "#common:is_slope"
+    "#common:is_mountain/peak",
+    "#common:is_mountain/slope",
+    {
+      "id": "#forge:is_mountain",
+      "required": false
+    }
   ]
 }
