@@ -83,7 +83,7 @@ public class ForgeConfig {
                     .defineEnum("logUntranslatedItemTagWarnings", TagConventionLogWarning.LOG_WARNING_MODES.DEV_SHORT);
 
             logLegacyTagWarnings = builder
-                    .comment("A config option mainly for developers. Logs out modded tags that are using using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.")
+                    .comment("A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.")
                     .translation("forge.configgui.logLegacyTagWarnings")
                     .defineEnum("logLegacyTagWarnings", TagConventionLogWarning.LOG_WARNING_MODES.DEV_SHORT);
 
