@@ -17,7 +17,7 @@
     "minecraft:white_stained_glass_pane",
     "minecraft:yellow_stained_glass_pane",
     {
-      "id": "#forge:stained_glass_panes",
+      "id": "forge:stained_glass_panes",
       "required": false
     },
     {

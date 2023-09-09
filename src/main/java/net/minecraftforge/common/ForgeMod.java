@@ -48,6 +48,7 @@ import net.minecraftforge.common.crafting.DifferenceIngredient;
 import net.minecraftforge.common.crafting.IntersectionIngredient;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.ForgeBiomeTagsProvider;
+import net.minecraftforge.common.data.ForgeBlockEntityTypeTagsProvider;
 import net.minecraftforge.common.data.ForgeFluidTagsProvider;
 import net.minecraftforge.common.data.ForgeSpriteSourceProvider;
 import net.minecraftforge.common.data.ForgeLanguageProvider;
@@ -511,6 +512,7 @@ public class ForgeMod
         ForgeBlockTagsProvider blockTags = new ForgeBlockTagsProvider(packOutput, lookupProvider, existingFileHelper);
         gen.addProvider(event.includeServer(), blockTags);
         gen.addProvider(event.includeServer(), new ForgeItemTagsProvider(packOutput, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
+        gen.addProvider(event.includeServer(), new ForgeBlockEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new ForgeEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new ForgeFluidTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new ForgeRecipeProvider(packOutput));

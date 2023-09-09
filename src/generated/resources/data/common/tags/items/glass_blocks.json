@@ -1,8 +1,8 @@
 {
   "values": [
-    "#common:glass_blocks/colorless",
-    "#common:stained_glass_blocks",
-    "#common:glass_blocks/tinted",
+    "#common:glass/blocks_colorless",
+    "#common:glass/stained_blocks",
+    "#common:glass/blocks_tinted",
     {
       "id": "forge:glass",
       "required": false

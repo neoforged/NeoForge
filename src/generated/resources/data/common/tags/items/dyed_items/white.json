@@ -2,6 +2,7 @@
   "values": [
     "minecraft:white_banner",
     "minecraft:white_bed",
+    "minecraft:white_candle",
     "minecraft:white_carpet",
     "minecraft:white_concrete",
     "minecraft:white_concrete_powder",
@@ -9,7 +10,6 @@
     "minecraft:white_shulker_box",
     "minecraft:white_stained_glass",
     "minecraft:white_stained_glass_pane",
-    "minecraft:white_candle",
     "minecraft:white_terracotta",
     "minecraft:white_wool",
     {

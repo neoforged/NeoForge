@@ -2,6 +2,7 @@
   "values": [
     "minecraft:pink_banner",
     "minecraft:pink_bed",
+    "minecraft:pink_candle",
     "minecraft:pink_carpet",
     "minecraft:pink_concrete",
     "minecraft:pink_concrete_powder",
@@ -9,7 +10,6 @@
     "minecraft:pink_shulker_box",
     "minecraft:pink_stained_glass",
     "minecraft:pink_stained_glass_pane",
-    "minecraft:pink_candle",
     "minecraft:pink_terracotta",
     "minecraft:pink_wool",
     {

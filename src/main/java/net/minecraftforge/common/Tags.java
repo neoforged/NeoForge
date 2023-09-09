@@ -16,6 +16,8 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Fluid;
 
 public class Tags
@@ -23,6 +25,7 @@ public class Tags
     public static void init ()
     {
         Blocks.init();
+        BlockEntityTypes.init();
         EntityTypes.init();
         Items.init();
         Fluids.init();
@@ -36,10 +39,13 @@ public class Tags
         public static final TagKey<Block> BARRELS = tag("barrels");
         public static final TagKey<Block> BARRELS_WOODEN = tag("barrels/wooden");
         public static final TagKey<Block> BOOKSHELVES = tag("bookshelves");
+        public static final TagKey<Block> BUDDING_BLOCKS = tag("budding_blocks");
+        public static final TagKey<Block> BUDS = tag("buds");
         public static final TagKey<Block> CHESTS = tag("chests");
         public static final TagKey<Block> CHESTS_ENDER = tag("chests/ender");
         public static final TagKey<Block> CHESTS_TRAPPED = tag("chests/trapped");
         public static final TagKey<Block> CHESTS_WOODEN = tag("chests/wooden");
+        public static final TagKey<Block> CLUSTERS = tag("clusters");
         public static final TagKey<Block> COBBLESTONE = tag("cobblestone");
         public static final TagKey<Block> COBBLESTONE_NORMAL = tag("cobblestone/normal");
         public static final TagKey<Block> COBBLESTONE_INFESTED = tag("cobblestone/infested");
@@ -71,15 +77,18 @@ public class Tags
         public static final TagKey<Block> FENCES_WOODEN = tag("fences/wooden");
 
         public static final TagKey<Block> GLASS_BLOCKS = tag("glass_blocks");
-        public static final TagKey<Block> GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
+        public static final TagKey<Block> GLASS_BLOCKS_COLORLESS = tag("glass/blocks_colorless");
         /**
          * Glass which is made from sand and only minor additional ingredients like dyes
          */
-        public static final TagKey<Block> GLASS_BLOCKS_CHEAP = tag("glass_blocks/cheap");
-        public static final TagKey<Block> GLASS_BLOCKS_TINTED = tag("glass_blocks/tinted");
+        public static final TagKey<Block> GLASS_BLOCKS_CHEAP = tag("glass/blocks_cheap");
+        public static final TagKey<Block> GLASS_BLOCKS_TINTED = tag("glass/blocks_tinted");
 
         public static final TagKey<Block> GLASS_PANES = tag("glass_panes");
-        public static final TagKey<Block> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
+        public static final TagKey<Block> GLASS_PANES_COLORLESS = tag("glass/panes_colorless");
+
+        public static final TagKey<Block> GLASS_STAINED_BLOCKS = tag("glass/stained_blocks");
+        public static final TagKey<Block> GLASS_STAINED_PANES = tag("glass/stained_panes");
 
         public static final TagKey<Block> GRAVEL = tag("gravel");
         public static final TagKey<Block> NETHERRACK = tag("netherrack");
@@ -131,14 +140,27 @@ public class Tags
          * Ores in stone (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_STONE}) which could logically use stone as recipe input or output
          */
         public static final TagKey<Block> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
+        /**
+         * Blocks should be included in this tag if their movement can cause serious issues such as world corruption
+         * upon being moved, such as chunk loaders or pipes,
+         * for mods that move blocks but do not respect {@link BlockBehaviour.BlockStateBase#getPistonPushReaction}.
+         */
+        public static final TagKey<Block> RELOCATION_NOT_SUPPORTED = tag("relocation_not_supported");
 
         public static final TagKey<Block> SAND = tag("sand");
         public static final TagKey<Block> SAND_COLORLESS = tag("sand/colorless");
         public static final TagKey<Block> SAND_RED = tag("sand/red");
 
-        public static final TagKey<Block> SANDSTONE = tag("sandstone");
-        public static final TagKey<Block> STAINED_GLASS_BLOCKS = tag("stained_glass_blocks");
-        public static final TagKey<Block> STAINED_GLASS_PANES = tag("stained_glass_panes");
+        public static final TagKey<Block> SANDSTONE_BLOCKS = tag("sandstone/blocks");
+        public static final TagKey<Block> SANDSTONE_SLABS = tag("sandstone/slabs");
+        public static final TagKey<Block> SANDSTONE_STAIRS = tag("sandstone/stairs");
+        public static final TagKey<Block> SANDSTONE_RED_BLOCKS = tag("sandstone/red_blocks");
+        public static final TagKey<Block> SANDSTONE_RED_SLABS = tag("sandstone/red_slabs");
+        public static final TagKey<Block> SANDSTONE_RED_STAIRS = tag("sandstone/red_stairs");
+        public static final TagKey<Block> SANDSTONE_UNCOLORED_BLOCKS = tag("sandstone/uncolored_blocks");
+        public static final TagKey<Block> SANDSTONE_UNCOLORED_SLABS = tag("sandstone/uncolored_slabs");
+        public static final TagKey<Block> SANDSTONE_UNCOLORED_STAIRS = tag("sandstone/uncolored_stairs");
+
         public static final TagKey<Block> STONE = tag("stone");
         public static final TagKey<Block> STORAGE_BLOCKS = tag("storage_blocks");
         public static final TagKey<Block> STORAGE_BLOCKS_AMETHYST = tag("storage_blocks/amethyst");
@@ -160,13 +182,25 @@ public class Tags
         public static final TagKey<Block> NEEDS_GOLD_TOOL = tag("needs_gold_tool");
         public static final TagKey<Block> NEEDS_NETHERITE_TOOL = tag("needs_netherite_tool");
 
-        public static final TagKey<Block> BUDDING_BLOCKS = tag("budding_blocks");
-        public static final TagKey<Block> BUDS = tag("buds");
-        public static final TagKey<Block> CLUSTERS = tag("clusters");
-
         private static TagKey<Block> tag(String name)
         {
             return BlockTags.create(new ResourceLocation("common", name));
+        }
+    }
+
+    public static class BlockEntityTypes
+    {
+        private static void init() {}
+
+        /**
+         * Blocks should be included in this tag if their movement can cause serious issues such as world corruption
+         * upon being moved, such as chunk loaders or pipes, for mods that move block entities.
+         */
+        public static final TagKey<BlockEntityType<?>> RELOCATION_NOT_SUPPORTED = tag("relocation_not_supported");
+
+        private static TagKey<BlockEntityType<?>> tag(String name)
+        {
+            return TagKey.create(Registries.BLOCK_ENTITY_TYPE, new ResourceLocation("common", name));
         }
     }
 
@@ -272,15 +306,18 @@ public class Tags
         public static final TagKey<Item> GEMS_QUARTZ = tag("gems/quartz");
 
         public static final TagKey<Item> GLASS_BLOCKS = tag("glass_blocks");
-        public static final TagKey<Item> GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
+        public static final TagKey<Item> GLASS_BLOCKS_COLORLESS = tag("glass/blocks_colorless");
         /**
          * Glass which is made from sand and only minor additional ingredients like dyes
          */
-        public static final TagKey<Item> GLASS_BLOCKS_CHEAP = tag("glass_blocks/cheap");
-        public static final TagKey<Item> GLASS_BLOCKS_TINTED = tag("glass_blocks/tinted");
+        public static final TagKey<Item> GLASS_BLOCKS_CHEAP = tag("glass/blocks_cheap");
+        public static final TagKey<Item> GLASS_BLOCKS_TINTED = tag("glass/blocks_tinted");
 
         public static final TagKey<Item> GLASS_PANES = tag("glass_panes");
-        public static final TagKey<Item> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
+        public static final TagKey<Item> GLASS_PANES_COLORLESS = tag("glass/panes_colorless");
+
+        public static final TagKey<Item> GLASS_STAINED_BLOCKS = tag("glass/stained_blocks");
+        public static final TagKey<Item> GLASS_STAINED_PANES = tag("glass/stained_panes");
 
         public static final TagKey<Item> GRAVEL = tag("gravel");
         public static final TagKey<Item> GUNPOWDER = tag("gunpowder");
@@ -347,6 +384,10 @@ public class Tags
          * Ores in stone (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_STONE}) which could logically use stone as recipe input or output
          */
         public static final TagKey<Item> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
+        public static final TagKey<Item> RAW_BLOCKS = tag("raw_blocks");
+        public static final TagKey<Item> RAW_BLOCKS_COPPER = tag("raw_blocks/copper");
+        public static final TagKey<Item> RAW_BLOCKS_GOLD = tag("raw_blocks/gold");
+        public static final TagKey<Item> RAW_BLOCKS_IRON = tag("raw_blocks/iron");
         public static final TagKey<Item> RAW_MATERIALS = tag("raw_materials");
         public static final TagKey<Item> RAW_MATERIALS_COPPER = tag("raw_materials/copper");
         public static final TagKey<Item> RAW_MATERIALS_GOLD = tag("raw_materials/gold");
@@ -359,16 +400,22 @@ public class Tags
         public static final TagKey<Item> SAND_COLORLESS = tag("sand/colorless");
         public static final TagKey<Item> SAND_RED = tag("sand/red");
 
-        public static final TagKey<Item> SANDSTONE = tag("sandstone");
+        public static final TagKey<Item> SANDSTONE_BLOCKS = tag("sandstone/blocks");
+        public static final TagKey<Item> SANDSTONE_SLABS = tag("sandstone/slabs");
+        public static final TagKey<Item> SANDSTONE_STAIRS = tag("sandstone/stairs");
+        public static final TagKey<Item> SANDSTONE_RED_BLOCKS = tag("sandstone/red_blocks");
+        public static final TagKey<Item> SANDSTONE_RED_SLABS = tag("sandstone/red_slabs");
+        public static final TagKey<Item> SANDSTONE_RED_STAIRS = tag("sandstone/red_stairs");
+        public static final TagKey<Item> SANDSTONE_UNCOLORED_BLOCKS = tag("sandstone/uncolored_blocks");
+        public static final TagKey<Item> SANDSTONE_UNCOLORED_SLABS = tag("sandstone/uncolored_slabs");
+        public static final TagKey<Item> SANDSTONE_UNCOLORED_STAIRS = tag("sandstone/uncolored_stairs");
+
         public static final TagKey<Item> SEEDS = tag("seeds");
         public static final TagKey<Item> SEEDS_BEETROOT = tag("seeds/beetroot");
         public static final TagKey<Item> SEEDS_MELON = tag("seeds/melon");
         public static final TagKey<Item> SEEDS_PUMPKIN = tag("seeds/pumpkin");
         public static final TagKey<Item> SEEDS_WHEAT = tag("seeds/wheat");
-        public static final TagKey<Item> SHEARS = tag("shears");
         public static final TagKey<Item> SLIMEBALLS = tag("slimeballs");
-        public static final TagKey<Item> STAINED_GLASS_BLOCKS = tag("stained_glass_blocks");
-        public static final TagKey<Item> STAINED_GLASS_PANES = tag("stained_glass_panes");
         public static final TagKey<Item> STONE = tag("stone");
         public static final TagKey<Item> STORAGE_BLOCKS = tag("storage_blocks");
         public static final TagKey<Item> STORAGE_BLOCKS_AMETHYST = tag("storage_blocks/amethyst");
@@ -432,14 +479,23 @@ public class Tags
          */
         public static final TagKey<Item> TOOLS_FISHING_RODS = tag("tools/fishing_rods");
         /**
-         * A tag containing all existing tridents.
+         * A tag containing all existing shears.
          *
          * Note: This tag is not an alternative or a substitute to {@link net.minecraftforge.common.ToolActions}.
          *
          * @see net.minecraftforge.common.ToolAction
          * @see net.minecraftforge.common.ToolActions
          */
-        public static final TagKey<Item> TOOLS_TRIDENTS = tag("tools/tridents");
+        public static final TagKey<Item> TOOLS_SHEARS = tag("tools/shears");
+        /**
+         * A tag containing all existing tridents or spears. (Essentially throwable weapons)
+         *
+         * Note: This tag is not an alternative or a substitute to {@link net.minecraftforge.common.ToolActions}.
+         *
+         * @see net.minecraftforge.common.ToolAction
+         * @see net.minecraftforge.common.ToolActions
+         */
+        public static final TagKey<Item> TOOLS_SPEARS = tag("tools/spears");
         /**
          * A tag containing all existing armors.
          */

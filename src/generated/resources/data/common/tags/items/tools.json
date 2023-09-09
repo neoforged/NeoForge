@@ -9,7 +9,8 @@
     "#common:tools/bows",
     "#common:tools/crossbows",
     "#common:tools/fishing_rods",
-    "#common:tools/tridents",
+    "#common:tools/spears",
+    "#common:tools/shears",
     {
       "id": "#forge:tools",
       "required": false

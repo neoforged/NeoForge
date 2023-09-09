@@ -78,10 +78,19 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.ORES_IN_GROUND_DEEPSLATE, "Deepslate Ores In Ground");
         add(Tags.Blocks.ORES_IN_GROUND_NETHERRACK, "Netherrack Ores In Ground");
         add(Tags.Blocks.ORES_IN_GROUND_STONE, "Stone Ores In Ground");
+        add(Tags.Blocks.RELOCATION_NOT_SUPPORTED, "Relocation Not Supported");
         add(Tags.Blocks.SAND, "Sand");
         add(Tags.Blocks.SAND_COLORLESS, "Colorless Sand");
         add(Tags.Blocks.SAND_RED, "Red Sand");
-        add(Tags.Blocks.SANDSTONE, "Sandstone");
+        add(Tags.Blocks.SANDSTONE_BLOCKS, "Sandstone Blocks");
+        add(Tags.Blocks.SANDSTONE_SLABS, "Sandstone Slabs");
+        add(Tags.Blocks.SANDSTONE_STAIRS, "Sandstone Stairs");
+        add(Tags.Blocks.SANDSTONE_RED_BLOCKS, "Red Sandstone Blocks");
+        add(Tags.Blocks.SANDSTONE_RED_SLABS, "Red Sandstone Slabs");
+        add(Tags.Blocks.SANDSTONE_RED_STAIRS, "Red Sandstone Stairs");
+        add(Tags.Blocks.SANDSTONE_UNCOLORED_BLOCKS, "Uncolored Sandstone Blocks");
+        add(Tags.Blocks.SANDSTONE_UNCOLORED_SLABS, "Uncolored Sandstone Slabs");
+        add(Tags.Blocks.SANDSTONE_UNCOLORED_STAIRS, "Uncolored Sandstone Stairs");
         add(Tags.Blocks.STONE, "Stone");
         add(Tags.Blocks.STORAGE_BLOCKS, "Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_AMETHYST, "Amethyst Storage Blocks");
@@ -98,6 +107,10 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.STORAGE_BLOCKS_RAW_IRON, "Raw Iron Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_REDSTONE, "Redstone Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_NETHERITE, "Netherite Storage Blocks");
+
+        // Block Entities Types
+
+        add(Tags.BlockEntityTypes.RELOCATION_NOT_SUPPORTED, "Relocation Not Supported");
 
         // Items
 
@@ -151,6 +164,8 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.GLASS_BLOCKS_TINTED, "Tinted Glass Blocks");
         add(Tags.Items.GLASS_BLOCKS_CHEAP, "Cheap Glass Blocks");
         add(Tags.Items.GLASS_PANES, "Glass Panes");
+        add(Tags.Items.GLASS_STAINED_BLOCKS, "Stained Glass");
+        add(Tags.Items.GLASS_STAINED_PANES, "Stained Glass Panes");
         add(Tags.Items.GRAVEL, "Gravel");
         add(Tags.Items.GUNPOWDER, "Gunpowder");
         add(Tags.Items.HEADS, "Heads");
@@ -189,6 +204,10 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.ORES_IN_GROUND_DEEPSLATE, "Deepslate Ores In Ground");
         add(Tags.Items.ORES_IN_GROUND_NETHERRACK, "Netherrack Ores In Ground");
         add(Tags.Items.ORES_IN_GROUND_STONE, "Stone Ores In Ground");
+        add(Tags.Items.RAW_BLOCKS, "Raw Blocks");
+        add(Tags.Items.RAW_BLOCKS_COPPER, "Copper Raw Blocks");
+        add(Tags.Items.RAW_BLOCKS_GOLD, "Gold Raw Blocks");
+        add(Tags.Items.RAW_BLOCKS_IRON, "Iron Raw Blocks");
         add(Tags.Items.RAW_MATERIALS, "Raw Materials");
         add(Tags.Items.RAW_MATERIALS_COPPER, "Copper Raw Materials");
         add(Tags.Items.RAW_MATERIALS_GOLD, "Gold Raw Materials");
@@ -199,16 +218,21 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.SAND, "Sand");
         add(Tags.Items.SAND_COLORLESS, "Colorless Sand");
         add(Tags.Items.SAND_RED, "Red Sand");
-        add(Tags.Items.SANDSTONE, "Sandstone");
+        add(Tags.Items.SANDSTONE_BLOCKS, "Sandstone Blocks");
+        add(Tags.Items.SANDSTONE_SLABS, "Sandstone Slabs");
+        add(Tags.Items.SANDSTONE_STAIRS, "Sandstone Stairs");
+        add(Tags.Items.SANDSTONE_RED_BLOCKS, "Red Sandstone Blocks");
+        add(Tags.Items.SANDSTONE_RED_SLABS, "Red Sandstone Slabs");
+        add(Tags.Items.SANDSTONE_RED_STAIRS, "Red Sandstone Stairs");
+        add(Tags.Items.SANDSTONE_UNCOLORED_BLOCKS, "Uncolored Sandstone Blocks");
+        add(Tags.Items.SANDSTONE_UNCOLORED_SLABS, "Uncolored Sandstone Slabs");
+        add(Tags.Items.SANDSTONE_UNCOLORED_STAIRS, "Uncolored Sandstone Stairs");
         add(Tags.Items.SEEDS, "Seeds");
         add(Tags.Items.SEEDS_BEETROOT, "Beetroot Seeds");
         add(Tags.Items.SEEDS_MELON, "Melon Seeds");
         add(Tags.Items.SEEDS_PUMPKIN, "Pumpkin Seeds");
         add(Tags.Items.SEEDS_WHEAT, "Wheat Seeds");
-        add(Tags.Items.SHEARS, "Shears");
         add(Tags.Items.SLIMEBALLS, "Slimeballs");
-        add(Tags.Items.STAINED_GLASS_BLOCKS, "Stained Glass");
-        add(Tags.Items.STAINED_GLASS_PANES, "Stained Glass Panes");
         add(Tags.Items.STONE, "Stone");
         add(Tags.Items.STORAGE_BLOCKS, "Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_AMETHYST, "Amethyst Storage Blocks");
@@ -226,16 +250,17 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.STORAGE_BLOCKS_RAW_IRON, "Raw Iron Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_NETHERITE, "Netherite Storage Blocks");
         add(Tags.Items.STRING, "String");
-        add(Tags.Items.TOOLS_SHIELDS, "Shields Tools");
-        add(Tags.Items.TOOLS_BOWS, "Bows Tools");
-        add(Tags.Items.TOOLS_CROSSBOWS, "Crossbows Tools");
-        add(Tags.Items.TOOLS_FISHING_RODS, "Fishing Rods Tools");
-        add(Tags.Items.TOOLS_TRIDENTS, "Tridents Tools");
+        add(Tags.Items.TOOLS_SHEARS, "Shears");
+        add(Tags.Items.TOOLS_SHIELDS, "Shields");
+        add(Tags.Items.TOOLS_BOWS, "Bows");
+        add(Tags.Items.TOOLS_CROSSBOWS, "Crossbows");
+        add(Tags.Items.TOOLS_FISHING_RODS, "Fishing Rods");
+        add(Tags.Items.TOOLS_SPEARS, "Spears");
         add(Tags.Items.TOOLS, "Tools");
-        add(Tags.Items.ARMORS_HELMETS, "Helmets Armors");
-        add(Tags.Items.ARMORS_CHESTPLATES, "Chestplates Armors");
-        add(Tags.Items.ARMORS_LEGGINGS, "Leggings Armors");
-        add(Tags.Items.ARMORS_BOOTS, "Boots Armors");
+        add(Tags.Items.ARMORS_HELMETS, "Helmets");
+        add(Tags.Items.ARMORS_CHESTPLATES, "Chestplates");
+        add(Tags.Items.ARMORS_LEGGINGS, "Leggings");
+        add(Tags.Items.ARMORS_BOOTS, "Boots");
         add(Tags.Items.ARMORS, "Armors");
 
         // Fluids

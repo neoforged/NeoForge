@@ -49,6 +49,7 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(COBBLESTONE_DEEPSLATE).add(Blocks.COBBLED_DEEPSLATE);
         addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_banner");
         addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_bed");
+        addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_candle");
         addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_carpet");
         addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_concrete");
         addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_concrete_powder");
@@ -56,7 +57,6 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_shulker_box");
         addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_stained_glass");
         addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_stained_glass_pane");
-        addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_candle");
         addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_terracotta");
         addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_wool");
         tag(END_STONES).add(Blocks.END_STONE);
@@ -66,13 +66,13 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(FENCES).addTags(FENCES_NETHER_BRICK, FENCES_WOODEN);
         tag(FENCES_NETHER_BRICK).add(Blocks.NETHER_BRICK_FENCE);
         tag(FENCES_WOODEN).addTag(BlockTags.WOODEN_FENCES);
-        tag(STAINED_GLASS_BLOCKS).add(Blocks.BLACK_STAINED_GLASS, Blocks.BLUE_STAINED_GLASS, Blocks.BROWN_STAINED_GLASS, Blocks.CYAN_STAINED_GLASS, Blocks.GRAY_STAINED_GLASS, Blocks.GREEN_STAINED_GLASS, Blocks.LIGHT_BLUE_STAINED_GLASS, Blocks.LIGHT_GRAY_STAINED_GLASS, Blocks.LIME_STAINED_GLASS, Blocks.MAGENTA_STAINED_GLASS, Blocks.ORANGE_STAINED_GLASS, Blocks.PINK_STAINED_GLASS, Blocks.PURPLE_STAINED_GLASS, Blocks.RED_STAINED_GLASS, Blocks.WHITE_STAINED_GLASS, Blocks.YELLOW_STAINED_GLASS);
-        tag(GLASS_BLOCKS).addTags(GLASS_BLOCKS_COLORLESS, STAINED_GLASS_BLOCKS, GLASS_BLOCKS_TINTED);
+        tag(GLASS_STAINED_BLOCKS).add(Blocks.BLACK_STAINED_GLASS, Blocks.BLUE_STAINED_GLASS, Blocks.BROWN_STAINED_GLASS, Blocks.CYAN_STAINED_GLASS, Blocks.GRAY_STAINED_GLASS, Blocks.GREEN_STAINED_GLASS, Blocks.LIGHT_BLUE_STAINED_GLASS, Blocks.LIGHT_GRAY_STAINED_GLASS, Blocks.LIME_STAINED_GLASS, Blocks.MAGENTA_STAINED_GLASS, Blocks.ORANGE_STAINED_GLASS, Blocks.PINK_STAINED_GLASS, Blocks.PURPLE_STAINED_GLASS, Blocks.RED_STAINED_GLASS, Blocks.WHITE_STAINED_GLASS, Blocks.YELLOW_STAINED_GLASS);
+        tag(GLASS_BLOCKS).addTags(GLASS_BLOCKS_COLORLESS, GLASS_STAINED_BLOCKS, GLASS_BLOCKS_TINTED);
         tag(GLASS_BLOCKS_COLORLESS).add(Blocks.GLASS);
         tag(GLASS_BLOCKS_CHEAP).add(Blocks.GLASS, Blocks.BLACK_STAINED_GLASS, Blocks.BLUE_STAINED_GLASS, Blocks.BROWN_STAINED_GLASS, Blocks.CYAN_STAINED_GLASS, Blocks.GRAY_STAINED_GLASS, Blocks.GREEN_STAINED_GLASS, Blocks.LIGHT_BLUE_STAINED_GLASS, Blocks.LIGHT_GRAY_STAINED_GLASS, Blocks.LIME_STAINED_GLASS, Blocks.MAGENTA_STAINED_GLASS, Blocks.ORANGE_STAINED_GLASS, Blocks.PINK_STAINED_GLASS, Blocks.PURPLE_STAINED_GLASS, Blocks.RED_STAINED_GLASS, Blocks.WHITE_STAINED_GLASS, Blocks.YELLOW_STAINED_GLASS);
         tag(GLASS_BLOCKS_TINTED).add(Blocks.TINTED_GLASS);
-        tag(STAINED_GLASS_PANES).add(Blocks.BLACK_STAINED_GLASS_PANE, Blocks.BLUE_STAINED_GLASS_PANE, Blocks.BROWN_STAINED_GLASS_PANE, Blocks.CYAN_STAINED_GLASS_PANE, Blocks.GRAY_STAINED_GLASS_PANE, Blocks.GREEN_STAINED_GLASS_PANE, Blocks.LIGHT_BLUE_STAINED_GLASS_PANE, Blocks.LIGHT_GRAY_STAINED_GLASS_PANE, Blocks.LIME_STAINED_GLASS_PANE, Blocks.MAGENTA_STAINED_GLASS_PANE, Blocks.ORANGE_STAINED_GLASS_PANE, Blocks.PINK_STAINED_GLASS_PANE, Blocks.PURPLE_STAINED_GLASS_PANE, Blocks.RED_STAINED_GLASS_PANE, Blocks.WHITE_STAINED_GLASS_PANE, Blocks.YELLOW_STAINED_GLASS_PANE);
-        tag(GLASS_PANES).addTags(GLASS_PANES_COLORLESS, STAINED_GLASS_PANES);
+        tag(GLASS_STAINED_PANES).add(Blocks.BLACK_STAINED_GLASS_PANE, Blocks.BLUE_STAINED_GLASS_PANE, Blocks.BROWN_STAINED_GLASS_PANE, Blocks.CYAN_STAINED_GLASS_PANE, Blocks.GRAY_STAINED_GLASS_PANE, Blocks.GREEN_STAINED_GLASS_PANE, Blocks.LIGHT_BLUE_STAINED_GLASS_PANE, Blocks.LIGHT_GRAY_STAINED_GLASS_PANE, Blocks.LIME_STAINED_GLASS_PANE, Blocks.MAGENTA_STAINED_GLASS_PANE, Blocks.ORANGE_STAINED_GLASS_PANE, Blocks.PINK_STAINED_GLASS_PANE, Blocks.PURPLE_STAINED_GLASS_PANE, Blocks.RED_STAINED_GLASS_PANE, Blocks.WHITE_STAINED_GLASS_PANE, Blocks.YELLOW_STAINED_GLASS_PANE);
+        tag(GLASS_PANES).addTags(GLASS_PANES_COLORLESS, GLASS_STAINED_PANES);
         tag(GLASS_PANES_COLORLESS).add(Blocks.GLASS_PANE);
         tag(GRAVEL).add(Blocks.GRAVEL);
         tag(NETHERRACK).add(Blocks.NETHERRACK);
@@ -98,9 +98,20 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(ORES_IN_GROUND_NETHERRACK).add(Blocks.NETHER_GOLD_ORE, Blocks.NETHER_QUARTZ_ORE);
         tag(ORES_IN_GROUND_STONE).add(Blocks.COAL_ORE, Blocks.COPPER_ORE, Blocks.DIAMOND_ORE, Blocks.EMERALD_ORE, Blocks.GOLD_ORE, Blocks.IRON_ORE, Blocks.LAPIS_ORE, Blocks.REDSTONE_ORE);
         tag(SAND).addTags(SAND_COLORLESS, SAND_RED);
+        tag(RELOCATION_NOT_SUPPORTED);
         tag(SAND_COLORLESS).add(Blocks.SAND);
         tag(SAND_RED).add(Blocks.RED_SAND);
-        tag(SANDSTONE).add(Blocks.SANDSTONE, Blocks.CUT_SANDSTONE, Blocks.CHISELED_SANDSTONE, Blocks.SMOOTH_SANDSTONE, Blocks.RED_SANDSTONE, Blocks.CUT_RED_SANDSTONE, Blocks.CHISELED_RED_SANDSTONE, Blocks.SMOOTH_RED_SANDSTONE);
+
+        tag(SANDSTONE_RED_BLOCKS).add(Blocks.RED_SANDSTONE, Blocks.CUT_RED_SANDSTONE, Blocks.CHISELED_RED_SANDSTONE, Blocks.SMOOTH_RED_SANDSTONE);
+        tag(SANDSTONE_UNCOLORED_BLOCKS).add(Blocks.SANDSTONE, Blocks.CUT_SANDSTONE, Blocks.CHISELED_SANDSTONE, Blocks.SMOOTH_SANDSTONE);
+        tag(SANDSTONE_BLOCKS).addTags(SANDSTONE_RED_BLOCKS, SANDSTONE_UNCOLORED_BLOCKS);
+        tag(SANDSTONE_RED_SLABS).add(Blocks.RED_SANDSTONE_SLAB, Blocks.CUT_RED_SANDSTONE_SLAB, Blocks.SMOOTH_RED_SANDSTONE_SLAB);
+        tag(SANDSTONE_UNCOLORED_SLABS).add(Blocks.SANDSTONE_SLAB, Blocks.CUT_SANDSTONE_SLAB, Blocks.SMOOTH_SANDSTONE_SLAB);
+        tag(SANDSTONE_SLABS).addTags(SANDSTONE_RED_SLABS, SANDSTONE_UNCOLORED_SLABS);
+        tag(SANDSTONE_RED_STAIRS).add(Blocks.RED_SANDSTONE_STAIRS, Blocks.SMOOTH_RED_SANDSTONE_STAIRS);
+        tag(SANDSTONE_UNCOLORED_STAIRS).add(Blocks.SANDSTONE_STAIRS, Blocks.SMOOTH_SANDSTONE_STAIRS);
+        tag(SANDSTONE_STAIRS).addTags(SANDSTONE_RED_STAIRS, SANDSTONE_UNCOLORED_STAIRS);
+
         tag(STONE).add(Blocks.ANDESITE, Blocks.DIORITE, Blocks.GRANITE, Blocks.INFESTED_STONE, Blocks.STONE, Blocks.POLISHED_ANDESITE, Blocks.POLISHED_DIORITE, Blocks.POLISHED_GRANITE, Blocks.DEEPSLATE, Blocks.POLISHED_DEEPSLATE, Blocks.INFESTED_DEEPSLATE, Blocks.TUFF);
         tag(STORAGE_BLOCKS).addTags(STORAGE_BLOCKS_AMETHYST, STORAGE_BLOCKS_COAL, STORAGE_BLOCKS_COPPER, STORAGE_BLOCKS_DIAMOND, STORAGE_BLOCKS_EMERALD, STORAGE_BLOCKS_GOLD, STORAGE_BLOCKS_IRON, STORAGE_BLOCKS_LAPIS, STORAGE_BLOCKS_QUARTZ, STORAGE_BLOCKS_RAW_COPPER, STORAGE_BLOCKS_RAW_GOLD, STORAGE_BLOCKS_RAW_IRON, STORAGE_BLOCKS_REDSTONE, STORAGE_BLOCKS_NETHERITE);
         tag(STORAGE_BLOCKS_AMETHYST).add(Blocks.AMETHYST_BLOCK);
@@ -195,7 +206,7 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
                 .addOptional(new ResourceLocation("forge", "stained_glass/yellow"));
         tag(GLASS_BLOCKS)
                 .addOptional(new ResourceLocation("forge", "glass"));
-        tag(STAINED_GLASS_BLOCKS)
+        tag(GLASS_STAINED_BLOCKS)
                 .addOptional(new ResourceLocation("forge", "glass/black"))
                 .addOptional(new ResourceLocation("forge", "glass/blue"))
                 .addOptional(new ResourceLocation("forge", "glass/brown"))
@@ -216,7 +227,8 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(GLASS_BLOCKS_COLORLESS).addOptional(new ResourceLocation("forge", "glass_colorless"));
         tag(GLASS_BLOCKS_CHEAP).addOptional(new ResourceLocation("forge", "glass_silica"));
         tag(GLASS_BLOCKS_TINTED).addOptional(new ResourceLocation("forge", "glass_tinted"));
-        tagWithOptionalLegacy(STAINED_GLASS_PANES)
+        tag(GLASS_STAINED_PANES)
+                .addOptional(new ResourceLocation("forge", "stained_glass_panes"))
                 .addOptional(new ResourceLocation("forge", "glass_panes/black"))
                 .addOptional(new ResourceLocation("forge", "glass_panes/blue"))
                 .addOptional(new ResourceLocation("forge", "glass_panes/brown"))
@@ -234,7 +246,8 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
                 .addOptional(new ResourceLocation("forge", "glass_panes/red"))
                 .addOptional(new ResourceLocation("forge", "glass_panes/white"))
                 .addOptional(new ResourceLocation("forge", "glass_panes/yellow"));
-        tagWithOptionalLegacy(GLASS_PANES_COLORLESS);
+        tag(GLASS_PANES_COLORLESS)
+                .addOptional(new ResourceLocation("forge", "glass_panes_colorless"));
         tagWithOptionalLegacy(GRAVEL);
         tagWithOptionalLegacy(NETHERRACK);
         tagWithOptionalLegacy(OBSIDIAN);
@@ -261,7 +274,6 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tagWithOptionalLegacy(SAND);
         tagWithOptionalLegacy(SAND_COLORLESS);
         tagWithOptionalLegacy(SAND_RED);
-        tagWithOptionalLegacy(SANDSTONE);
         tagWithOptionalLegacy(STONE);
         tagWithOptionalLegacy(STORAGE_BLOCKS);
         tagWithOptionalLegacy(STORAGE_BLOCKS_AMETHYST);
@@ -278,6 +290,10 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tagWithOptionalLegacy(STORAGE_BLOCKS_RAW_IRON);
         tagWithOptionalLegacy(STORAGE_BLOCKS_REDSTONE);
         tagWithOptionalLegacy(STORAGE_BLOCKS_NETHERITE);
+        tag(Tags.Blocks.RELOCATION_NOT_SUPPORTED)
+                .addOptionalTag(new ResourceLocation("forge", "relocation_not_supported"))
+                .addOptionalTag(new ResourceLocation("forge", "immovable"));
+        tag(Tags.Blocks.SANDSTONE_BLOCKS).addOptionalTag(new ResourceLocation("forge", "sandstone"));
     }
 
     private IntrinsicHolderTagsProvider.IntrinsicTagAppender<Block> tagWithOptionalLegacy(TagKey<Block> tag)

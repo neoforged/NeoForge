@@ -1,6 +1,6 @@
 {
   "values": [
-    "#common:glass_panes/colorless",
-    "#common:stained_glass_panes"
+    "#common:glass/panes_colorless",
+    "#common:glass/stained_panes"
   ]
 }
