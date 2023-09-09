@@ -121,12 +121,12 @@ public abstract class LanguageProvider implements DataProvider {
         add(key.get(), name);
     }
 
-    public void add(TagKey<?> key, String name) {
+    public void add(TagKey<?> tagKey, String name) {
         String tagTranslationkey =
                 "tag." +
-                key.registry().location().getPath().replace("/", ".") +
+                tagKey.registry().location().getPath().replace("/", ".") +
                 "." +
-                key.location().getPath().replace("/", ".");
+                tagKey.location().toString().replace("/", ".").replace(":", ".");
         add(tagTranslationkey, name);
     }
 
