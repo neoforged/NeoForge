@@ -1,9 +1,0 @@
-{
-  "values": [
-    "minecraft:purple_stained_glass_pane",
-    {
-      "id": "#forge:glass_panes/purple",
-      "required": false
-    }
-  ]
-}

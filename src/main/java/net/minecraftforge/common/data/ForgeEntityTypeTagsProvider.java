@@ -26,10 +26,14 @@ public class ForgeEntityTypeTagsProvider extends EntityTypeTagsProvider
     public void addTags(HolderLookup.Provider lookupProvider)
     {
         tag(Tags.EntityTypes.BOSSES).add(EntityType.ENDER_DRAGON, EntityType.WITHER);
+        tag(Tags.EntityTypes.MINECARTS).add(EntityType.MINECART, EntityType.CHEST_MINECART, EntityType.FURNACE_MINECART, EntityType.HOPPER_MINECART, EntityType.SPAWNER_MINECART, EntityType.TNT_MINECART, EntityType.COMMAND_BLOCK_MINECART);
+        tag(Tags.EntityTypes.BOATS).add(EntityType.BOAT, EntityType.CHEST_BOAT);
 
         // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
         tag(Tags.EntityTypes.BOSSES).addOptional(new ResourceLocation("forge", "bosses"));
+        tag(Tags.EntityTypes.MINECARTS).addOptional(new ResourceLocation("forge", "minecarts"));
+        tag(Tags.EntityTypes.BOATS).addOptional(new ResourceLocation("forge", "boats"));
     }
 
     @Override

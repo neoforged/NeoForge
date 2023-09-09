@@ -53,6 +53,12 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.CROPS_NETHER_WART).add(Items.NETHER_WART);
         tag(Tags.Items.CROPS_POTATO).add(Items.POTATO);
         tag(Tags.Items.CROPS_WHEAT).add(Items.WHEAT);
+        copyColored(Tags.Blocks.DYED_BLOCKS, Tags.Items.DYED_ITEMS);
+        tag(Tags.Items.DYED_ITEMS).addTags(Tags.Items.DYED_ITEMS_BLACK, Tags.Items.DYED_ITEMS_BLUE, Tags.Items.DYED_ITEMS_BROWN,
+                Tags.Items.DYED_ITEMS_CYAN, Tags.Items.DYED_ITEMS_GRAY, Tags.Items.DYED_ITEMS_GREEN, Tags.Items.DYED_ITEMS_LIGHT_BLUE,
+                Tags.Items.DYED_ITEMS_LIGHT_GRAY, Tags.Items.DYED_ITEMS_LIME, Tags.Items.DYED_ITEMS_MAGENTA, Tags.Items.DYED_ITEMS_ORANGE,
+                Tags.Items.DYED_ITEMS_PINK, Tags.Items.DYED_ITEMS_PURPLE, Tags.Items.DYED_ITEMS_RED, Tags.Items.DYED_ITEMS_WHITE,
+                Tags.Items.DYED_ITEMS_YELLOW);
         tag(Tags.Items.DUSTS).addTags(Tags.Items.DUSTS_GLOWSTONE, Tags.Items.DUSTS_PRISMARINE, Tags.Items.DUSTS_REDSTONE);
         tag(Tags.Items.DUSTS_GLOWSTONE).add(Items.GLOWSTONE_DUST);
         tag(Tags.Items.DUSTS_PRISMARINE).add(Items.PRISMARINE_SHARD);
@@ -75,12 +81,14 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.GEMS_LAPIS).add(Items.LAPIS_LAZULI);
         tag(Tags.Items.GEMS_PRISMARINE).add(Items.PRISMARINE_CRYSTALS);
         tag(Tags.Items.GEMS_QUARTZ).add(Items.QUARTZ);
-        copy(Tags.Blocks.GLASS, Tags.Items.GLASS);
-        copy(Tags.Blocks.GLASS_TINTED, Tags.Items.GLASS_TINTED);
-        copy(Tags.Blocks.GLASS_SILICA, Tags.Items.GLASS_SILICA);
-        copyColored(Tags.Blocks.GLASS, Tags.Items.GLASS);
+        copy(Tags.Blocks.STAINED_GLASS_BLOCKS, Tags.Items.STAINED_GLASS_BLOCKS);
+        copy(Tags.Blocks.GLASS_BLOCKS, Tags.Items.GLASS_BLOCKS);
+        copy(Tags.Blocks.GLASS_BLOCKS_COLORLESS, Tags.Items.GLASS_BLOCKS_COLORLESS);
+        copy(Tags.Blocks.GLASS_BLOCKS_TINTED, Tags.Items.GLASS_BLOCKS_TINTED);
+        copy(Tags.Blocks.GLASS_BLOCKS_CHEAP, Tags.Items.GLASS_BLOCKS_CHEAP);
+        copy(Tags.Blocks.STAINED_GLASS_PANES, Tags.Items.STAINED_GLASS_PANES);
         copy(Tags.Blocks.GLASS_PANES, Tags.Items.GLASS_PANES);
-        copyColored(Tags.Blocks.GLASS_PANES, Tags.Items.GLASS_PANES);
+        copy(Tags.Blocks.GLASS_PANES_COLORLESS, Tags.Items.GLASS_PANES_COLORLESS);
         copy(Tags.Blocks.GRAVEL, Tags.Items.GRAVEL);
         tag(Tags.Items.GUNPOWDER).add(Items.GUNPOWDER);
         tag(Tags.Items.HEADS).add(Items.CREEPER_HEAD, Items.DRAGON_HEAD, Items.PLAYER_HEAD, Items.SKELETON_SKULL, Items.WITHER_SKELETON_SKULL, Items.ZOMBIE_HEAD);
@@ -137,7 +145,7 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.SEEDS_WHEAT).add(Items.WHEAT_SEEDS);
         tag(Tags.Items.SHEARS).add(Items.SHEARS);
         tag(Tags.Items.SLIMEBALLS).add(Items.SLIME_BALL);
-        copy(Tags.Blocks.STAINED_GLASS, Tags.Items.STAINED_GLASS);
+        copy(Tags.Blocks.STAINED_GLASS_BLOCKS, Tags.Items.STAINED_GLASS_BLOCKS);
         copy(Tags.Blocks.STAINED_GLASS_PANES, Tags.Items.STAINED_GLASS_PANES);
         copy(Tags.Blocks.STONE, Tags.Items.STONE);
         copy(Tags.Blocks.STORAGE_BLOCKS, Tags.Items.STORAGE_BLOCKS);
@@ -169,6 +177,9 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.ARMORS_LEGGINGS).add(Items.LEATHER_LEGGINGS, Items.CHAINMAIL_LEGGINGS, Items.IRON_LEGGINGS, Items.GOLDEN_LEGGINGS, Items.DIAMOND_LEGGINGS, Items.NETHERITE_LEGGINGS);
         tag(Tags.Items.ARMORS_BOOTS).add(Items.LEATHER_BOOTS, Items.CHAINMAIL_BOOTS, Items.IRON_BOOTS, Items.GOLDEN_BOOTS, Items.DIAMOND_BOOTS, Items.NETHERITE_BOOTS);
         tag(Tags.Items.ARMORS).addTags(Tags.Items.ARMORS_HELMETS, Tags.Items.ARMORS_CHESTPLATES, Tags.Items.ARMORS_LEGGINGS, Tags.Items.ARMORS_BOOTS);
+        copy(Tags.Blocks.BUDDING_BLOCKS, Tags.Items.BUDDING_BLOCKS);
+        copy(Tags.Blocks.BUDS, Tags.Items.BUDS);
+        copy(Tags.Blocks.CLUSTERS, Tags.Items.CLUSTERS);
 
         // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
@@ -263,7 +274,7 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
             TagKey<Item> tag = getForgeItemTag(prefix + color.getName());
             Item item = ForgeRegistries.ITEMS.getValue(key);
             if (item == null || item  == Items.AIR)
-                throw new IllegalStateException("Unknown vanilla item: " + key.toString());
+                throw new IllegalStateException("Unknown vanilla item: " + key);
             tag(tag).add(item);
             consumer.accept(tag);
         }
@@ -273,13 +284,12 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
     {
         String blockPre = blockGroup.location().getPath().toUpperCase(Locale.ENGLISH) + '_';
         String itemPre = itemGroup.location().getPath().toUpperCase(Locale.ENGLISH) + '_';
-        for (DyeColor color  : DyeColor.values())
+        for (DyeColor color : DyeColor.values())
         {
             TagKey<Block> from = getForgeBlockTag(blockPre + color.getName());
             TagKey<Item> to = getForgeItemTag(itemPre + color.getName());
             copy(from, to);
         }
-        copy(getForgeBlockTag(blockPre + "colorless"), getForgeItemTag(itemPre + "colorless"));
     }
 
     @SuppressWarnings("unchecked")

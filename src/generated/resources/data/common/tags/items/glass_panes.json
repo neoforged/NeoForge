@@ -1,10 +1,6 @@
 {
   "values": [
     "#common:glass_panes/colorless",
-    "#common:stained_glass_panes",
-    {
-      "id": "#forge:glass_panes",
-      "required": false
-    }
+    "#common:stained_glass_panes"
   ]
 }

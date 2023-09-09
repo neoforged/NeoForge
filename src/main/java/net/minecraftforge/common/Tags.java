@@ -45,6 +45,23 @@ public class Tags
         public static final TagKey<Block> COBBLESTONE_INFESTED = tag("cobblestone/infested");
         public static final TagKey<Block> COBBLESTONE_MOSSY = tag("cobblestone/mossy");
         public static final TagKey<Block> COBBLESTONE_DEEPSLATE = tag("cobblestone/deepslate");
+        public static final TagKey<Block> DYED_BLOCKS = tag("dyed_blocks");
+        public static final TagKey<Block> DYED_BLOCKS_BLACK = tag("dyed_blocks/black");
+        public static final TagKey<Block> DYED_BLOCKS_BLUE = tag("dyed_blocks/blue");
+        public static final TagKey<Block> DYED_BLOCKS_BROWN = tag("dyed_blocks/brown");
+        public static final TagKey<Block> DYED_BLOCKS_CYAN = tag("dyed_blocks/cyan");
+        public static final TagKey<Block> DYED_BLOCKS_GRAY = tag("dyed_blocks/gray");
+        public static final TagKey<Block> DYED_BLOCKS_GREEN = tag("dyed_blocks/green");
+        public static final TagKey<Block> DYED_BLOCKS_LIGHT_BLUE = tag("dyed_blocks/light_blue");
+        public static final TagKey<Block> DYED_BLOCKS_LIGHT_GRAY = tag("dyed_blocks/light_gray");
+        public static final TagKey<Block> DYED_BLOCKS_LIME = tag("dyed_blocks/lime");
+        public static final TagKey<Block> DYED_BLOCKS_MAGENTA = tag("dyed_blocks/magenta");
+        public static final TagKey<Block> DYED_BLOCKS_ORANGE = tag("dyed_blocks/orange");
+        public static final TagKey<Block> DYED_BLOCKS_PINK = tag("dyed_blocks/pink");
+        public static final TagKey<Block> DYED_BLOCKS_PURPLE = tag("dyed_blocks/purple");
+        public static final TagKey<Block> DYED_BLOCKS_RED = tag("dyed_blocks/red");
+        public static final TagKey<Block> DYED_BLOCKS_WHITE = tag("dyed_blocks/white");
+        public static final TagKey<Block> DYED_BLOCKS_YELLOW = tag("dyed_blocks/yellow");
         public static final TagKey<Block> END_STONES = tag("end_stones");
         public static final TagKey<Block> ENDERMAN_PLACE_ON_BLACKLIST = tag("enderman_place_on_blacklist");
         public static final TagKey<Block> FENCE_GATES = tag("fence_gates");
@@ -53,48 +70,16 @@ public class Tags
         public static final TagKey<Block> FENCES_NETHER_BRICK = tag("fences/nether_brick");
         public static final TagKey<Block> FENCES_WOODEN = tag("fences/wooden");
 
-        public static final TagKey<Block> GLASS = tag("glass");
-        public static final TagKey<Block> GLASS_BLACK = tag("glass/black");
-        public static final TagKey<Block> GLASS_BLUE = tag("glass/blue");
-        public static final TagKey<Block> GLASS_BROWN = tag("glass/brown");
-        public static final TagKey<Block> GLASS_COLORLESS = tag("glass/colorless");
-        public static final TagKey<Block> GLASS_CYAN = tag("glass/cyan");
-        public static final TagKey<Block> GLASS_GRAY = tag("glass/gray");
-        public static final TagKey<Block> GLASS_GREEN = tag("glass/green");
-        public static final TagKey<Block> GLASS_LIGHT_BLUE = tag("glass/light_blue");
-        public static final TagKey<Block> GLASS_LIGHT_GRAY = tag("glass/light_gray");
-        public static final TagKey<Block> GLASS_LIME = tag("glass/lime");
-        public static final TagKey<Block> GLASS_MAGENTA = tag("glass/magenta");
-        public static final TagKey<Block> GLASS_ORANGE = tag("glass/orange");
-        public static final TagKey<Block> GLASS_PINK = tag("glass/pink");
-        public static final TagKey<Block> GLASS_PURPLE = tag("glass/purple");
-        public static final TagKey<Block> GLASS_RED = tag("glass/red");
+        public static final TagKey<Block> GLASS_BLOCKS = tag("glass_blocks");
+        public static final TagKey<Block> GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
         /**
          * Glass which is made from sand and only minor additional ingredients like dyes
          */
-        public static final TagKey<Block> GLASS_SILICA = tag("glass/silica");
-        public static final TagKey<Block> GLASS_TINTED = tag("glass/tinted");
-        public static final TagKey<Block> GLASS_WHITE = tag("glass/white");
-        public static final TagKey<Block> GLASS_YELLOW = tag("glass/yellow");
+        public static final TagKey<Block> GLASS_BLOCKS_CHEAP = tag("glass_blocks/cheap");
+        public static final TagKey<Block> GLASS_BLOCKS_TINTED = tag("glass_blocks/tinted");
 
         public static final TagKey<Block> GLASS_PANES = tag("glass_panes");
-        public static final TagKey<Block> GLASS_PANES_BLACK = tag("glass_panes/black");
-        public static final TagKey<Block> GLASS_PANES_BLUE = tag("glass_panes/blue");
-        public static final TagKey<Block> GLASS_PANES_BROWN = tag("glass_panes/brown");
         public static final TagKey<Block> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
-        public static final TagKey<Block> GLASS_PANES_CYAN = tag("glass_panes/cyan");
-        public static final TagKey<Block> GLASS_PANES_GRAY = tag("glass_panes/gray");
-        public static final TagKey<Block> GLASS_PANES_GREEN = tag("glass_panes/green");
-        public static final TagKey<Block> GLASS_PANES_LIGHT_BLUE = tag("glass_panes/light_blue");
-        public static final TagKey<Block> GLASS_PANES_LIGHT_GRAY = tag("glass_panes/light_gray");
-        public static final TagKey<Block> GLASS_PANES_LIME = tag("glass_panes/lime");
-        public static final TagKey<Block> GLASS_PANES_MAGENTA = tag("glass_panes/magenta");
-        public static final TagKey<Block> GLASS_PANES_ORANGE = tag("glass_panes/orange");
-        public static final TagKey<Block> GLASS_PANES_PINK = tag("glass_panes/pink");
-        public static final TagKey<Block> GLASS_PANES_PURPLE = tag("glass_panes/purple");
-        public static final TagKey<Block> GLASS_PANES_RED = tag("glass_panes/red");
-        public static final TagKey<Block> GLASS_PANES_WHITE = tag("glass_panes/white");
-        public static final TagKey<Block> GLASS_PANES_YELLOW = tag("glass_panes/yellow");
 
         public static final TagKey<Block> GRAVEL = tag("gravel");
         public static final TagKey<Block> NETHERRACK = tag("netherrack");
@@ -152,7 +137,7 @@ public class Tags
         public static final TagKey<Block> SAND_RED = tag("sand/red");
 
         public static final TagKey<Block> SANDSTONE = tag("sandstone");
-        public static final TagKey<Block> STAINED_GLASS = tag("stained_glass");
+        public static final TagKey<Block> STAINED_GLASS_BLOCKS = tag("stained_glass_blocks");
         public static final TagKey<Block> STAINED_GLASS_PANES = tag("stained_glass_panes");
         public static final TagKey<Block> STONE = tag("stone");
         public static final TagKey<Block> STORAGE_BLOCKS = tag("storage_blocks");
@@ -175,6 +160,10 @@ public class Tags
         public static final TagKey<Block> NEEDS_GOLD_TOOL = tag("needs_gold_tool");
         public static final TagKey<Block> NEEDS_NETHERITE_TOOL = tag("needs_netherite_tool");
 
+        public static final TagKey<Block> BUDDING_BLOCKS = tag("budding_blocks");
+        public static final TagKey<Block> BUDS = tag("buds");
+        public static final TagKey<Block> CLUSTERS = tag("clusters");
+
         private static TagKey<Block> tag(String name)
         {
             return BlockTags.create(new ResourceLocation("common", name));
@@ -186,6 +175,8 @@ public class Tags
         private static void init() {}
 
         public static final TagKey<EntityType<?>> BOSSES = tag("bosses");
+        public static final TagKey<EntityType<?>> MINECARTS = tag("minecarts");
+        public static final TagKey<EntityType<?>> BOATS = tag("boats");
 
         private static TagKey<EntityType<?>> tag(String name)
         {
@@ -201,6 +192,8 @@ public class Tags
         public static final TagKey<Item> BARRELS_WOODEN = tag("barrels/wooden");
         public static final TagKey<Item> BONES = tag("bones");
         public static final TagKey<Item> BOOKSHELVES = tag("bookshelves");
+        public static final TagKey<Item> BUDDING_BLOCKS = tag("budding_blocks");
+        public static final TagKey<Item> BUDS = tag("buds");
         public static final TagKey<Item> CHESTS = tag("chests");
         public static final TagKey<Item> CHESTS_ENDER = tag("chests/ender");
         public static final TagKey<Item> CHESTS_TRAPPED = tag("chests/trapped");
@@ -210,12 +203,30 @@ public class Tags
         public static final TagKey<Item> COBBLESTONE_INFESTED = tag("cobblestone/infested");
         public static final TagKey<Item> COBBLESTONE_MOSSY = tag("cobblestone/mossy");
         public static final TagKey<Item> COBBLESTONE_DEEPSLATE = tag("cobblestone/deepslate");
+        public static final TagKey<Item> CLUSTERS = tag("clusters");
         public static final TagKey<Item> CROPS = tag("crops");
         public static final TagKey<Item> CROPS_BEETROOT = tag("crops/beetroot");
         public static final TagKey<Item> CROPS_CARROT = tag("crops/carrot");
         public static final TagKey<Item> CROPS_NETHER_WART = tag("crops/nether_wart");
         public static final TagKey<Item> CROPS_POTATO = tag("crops/potato");
         public static final TagKey<Item> CROPS_WHEAT = tag("crops/wheat");
+        public static final TagKey<Item> DYED_ITEMS = tag("dyed_items");
+        public static final TagKey<Item> DYED_ITEMS_BLACK = tag("dyed_items/black");
+        public static final TagKey<Item> DYED_ITEMS_BLUE = tag("dyed_items/blue");
+        public static final TagKey<Item> DYED_ITEMS_BROWN = tag("dyed_items/brown");
+        public static final TagKey<Item> DYED_ITEMS_CYAN = tag("dyed_items/cyan");
+        public static final TagKey<Item> DYED_ITEMS_GRAY = tag("dyed_items/gray");
+        public static final TagKey<Item> DYED_ITEMS_GREEN = tag("dyed_items/green");
+        public static final TagKey<Item> DYED_ITEMS_LIGHT_BLUE = tag("dyed_items/light_blue");
+        public static final TagKey<Item> DYED_ITEMS_LIGHT_GRAY = tag("dyed_items/light_gray");
+        public static final TagKey<Item> DYED_ITEMS_LIME = tag("dyed_items/lime");
+        public static final TagKey<Item> DYED_ITEMS_MAGENTA = tag("dyed_items/magenta");
+        public static final TagKey<Item> DYED_ITEMS_ORANGE = tag("dyed_items/orange");
+        public static final TagKey<Item> DYED_ITEMS_PINK = tag("dyed_items/pink");
+        public static final TagKey<Item> DYED_ITEMS_PURPLE = tag("dyed_items/purple");
+        public static final TagKey<Item> DYED_ITEMS_RED = tag("dyed_items/red");
+        public static final TagKey<Item> DYED_ITEMS_WHITE = tag("dyed_items/white");
+        public static final TagKey<Item> DYED_ITEMS_YELLOW = tag("dyed_items/yellow");
         public static final TagKey<Item> DUSTS = tag("dusts");
         public static final TagKey<Item> DUSTS_PRISMARINE = tag("dusts/prismarine");
         public static final TagKey<Item> DUSTS_REDSTONE = tag("dusts/redstone");
@@ -260,48 +271,16 @@ public class Tags
         public static final TagKey<Item> GEMS_PRISMARINE = tag("gems/prismarine");
         public static final TagKey<Item> GEMS_QUARTZ = tag("gems/quartz");
 
-        public static final TagKey<Item> GLASS = tag("glass");
-        public static final TagKey<Item> GLASS_BLACK = tag("glass/black");
-        public static final TagKey<Item> GLASS_BLUE = tag("glass/blue");
-        public static final TagKey<Item> GLASS_BROWN = tag("glass/brown");
-        public static final TagKey<Item> GLASS_COLORLESS = tag("glass/colorless");
-        public static final TagKey<Item> GLASS_CYAN = tag("glass/cyan");
-        public static final TagKey<Item> GLASS_GRAY = tag("glass/gray");
-        public static final TagKey<Item> GLASS_GREEN = tag("glass/green");
-        public static final TagKey<Item> GLASS_LIGHT_BLUE = tag("glass/light_blue");
-        public static final TagKey<Item> GLASS_LIGHT_GRAY = tag("glass/light_gray");
-        public static final TagKey<Item> GLASS_LIME = tag("glass/lime");
-        public static final TagKey<Item> GLASS_MAGENTA = tag("glass/magenta");
-        public static final TagKey<Item> GLASS_ORANGE = tag("glass/orange");
-        public static final TagKey<Item> GLASS_PINK = tag("glass/pink");
-        public static final TagKey<Item> GLASS_PURPLE = tag("glass/purple");
-        public static final TagKey<Item> GLASS_RED = tag("glass/red");
+        public static final TagKey<Item> GLASS_BLOCKS = tag("glass_blocks");
+        public static final TagKey<Item> GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
         /**
          * Glass which is made from sand and only minor additional ingredients like dyes
          */
-        public static final TagKey<Item> GLASS_SILICA = tag("glass/silica");
-        public static final TagKey<Item> GLASS_TINTED = tag("glass/tinted");
-        public static final TagKey<Item> GLASS_WHITE = tag("glass/white");
-        public static final TagKey<Item> GLASS_YELLOW = tag("glass/yellow");
+        public static final TagKey<Item> GLASS_BLOCKS_CHEAP = tag("glass_blocks/cheap");
+        public static final TagKey<Item> GLASS_BLOCKS_TINTED = tag("glass_blocks/tinted");
 
         public static final TagKey<Item> GLASS_PANES = tag("glass_panes");
-        public static final TagKey<Item> GLASS_PANES_BLACK = tag("glass_panes/black");
-        public static final TagKey<Item> GLASS_PANES_BLUE = tag("glass_panes/blue");
-        public static final TagKey<Item> GLASS_PANES_BROWN = tag("glass_panes/brown");
         public static final TagKey<Item> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
-        public static final TagKey<Item> GLASS_PANES_CYAN = tag("glass_panes/cyan");
-        public static final TagKey<Item> GLASS_PANES_GRAY = tag("glass_panes/gray");
-        public static final TagKey<Item> GLASS_PANES_GREEN = tag("glass_panes/green");
-        public static final TagKey<Item> GLASS_PANES_LIGHT_BLUE = tag("glass_panes/light_blue");
-        public static final TagKey<Item> GLASS_PANES_LIGHT_GRAY = tag("glass_panes/light_gray");
-        public static final TagKey<Item> GLASS_PANES_LIME = tag("glass_panes/lime");
-        public static final TagKey<Item> GLASS_PANES_MAGENTA = tag("glass_panes/magenta");
-        public static final TagKey<Item> GLASS_PANES_ORANGE = tag("glass_panes/orange");
-        public static final TagKey<Item> GLASS_PANES_PINK = tag("glass_panes/pink");
-        public static final TagKey<Item> GLASS_PANES_PURPLE = tag("glass_panes/purple");
-        public static final TagKey<Item> GLASS_PANES_RED = tag("glass_panes/red");
-        public static final TagKey<Item> GLASS_PANES_WHITE = tag("glass_panes/white");
-        public static final TagKey<Item> GLASS_PANES_YELLOW = tag("glass_panes/yellow");
 
         public static final TagKey<Item> GRAVEL = tag("gravel");
         public static final TagKey<Item> GUNPOWDER = tag("gunpowder");
@@ -388,7 +367,7 @@ public class Tags
         public static final TagKey<Item> SEEDS_WHEAT = tag("seeds/wheat");
         public static final TagKey<Item> SHEARS = tag("shears");
         public static final TagKey<Item> SLIMEBALLS = tag("slimeballs");
-        public static final TagKey<Item> STAINED_GLASS = tag("stained_glass");
+        public static final TagKey<Item> STAINED_GLASS_BLOCKS = tag("stained_glass_blocks");
         public static final TagKey<Item> STAINED_GLASS_PANES = tag("stained_glass_panes");
         public static final TagKey<Item> STONE = tag("stone");
         public static final TagKey<Item> STORAGE_BLOCKS = tag("storage_blocks");

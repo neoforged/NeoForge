@@ -1,9 +1,0 @@
-{
-  "values": [
-    "minecraft:black_stained_glass",
-    {
-      "id": "#forge:glass/black",
-      "required": false
-    }
-  ]
-}

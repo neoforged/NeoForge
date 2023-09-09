@@ -28,15 +28,20 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.BARRELS, "Barrels");
         add(Tags.Blocks.BARRELS_WOODEN, "Wooden Barrels");
         add(Tags.Blocks.BOOKSHELVES, "Bookshelves");
+        add(Tags.Blocks.BUDDING_BLOCKS, "Budding Blocks");
+        add(Tags.Blocks.BUDS, "Buds");
         add(Tags.Blocks.CHESTS, "Chests");
         add(Tags.Blocks.CHESTS_ENDER, "Ender Chests");
         add(Tags.Blocks.CHESTS_TRAPPED, "Trapped Chests");
         add(Tags.Blocks.CHESTS_WOODEN, "Wooden Chests");
+        add(Tags.Blocks.CLUSTERS, "Clusters");
         add(Tags.Blocks.COBBLESTONE, "Cobblestone");
         add(Tags.Blocks.COBBLESTONE_NORMAL, "Normal Cobblestone");
         add(Tags.Blocks.COBBLESTONE_INFESTED, "Infested Cobblestone");
         add(Tags.Blocks.COBBLESTONE_MOSSY, "Mossy Cobblestone");
         add(Tags.Blocks.COBBLESTONE_DEEPSLATE, "Deepslate Cobblestone");
+        add(Tags.Blocks.DYED_BLOCKS, "Dyed Blocks");
+        addColored(Tags.Blocks.DYED_BLOCKS, "{color} Dyed Blocks");
         add(Tags.Blocks.END_STONES, "End Stones");
         add(Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST, "Enderman Place On Blacklist");
         add(Tags.Blocks.FENCE_GATES, "Fence Gates");
@@ -44,14 +49,12 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.FENCES, "Fences");
         add(Tags.Blocks.FENCES_NETHER_BRICK, "Fences Nether Brick");
         add(Tags.Blocks.FENCES_WOODEN, "Wooden Fences");
-        add(Tags.Blocks.GLASS, "Glass");
-        add(Tags.Blocks.GLASS_COLORLESS, "Colorless Glass");
-        add(Tags.Blocks.GLASS_SILICA, "Silica Glass");
-        add(Tags.Blocks.GLASS_TINTED, "Tinted Glass");
-        addColored(Tags.Blocks.STAINED_GLASS, "{color} Stained Glass");
+        add(Tags.Blocks.GLASS_BLOCKS, "Glass Blocks");
+        add(Tags.Blocks.GLASS_BLOCKS_COLORLESS, "Colorless Glass Blocks");
+        add(Tags.Blocks.GLASS_BLOCKS_CHEAP, "Silica Glass Blocks");
+        add(Tags.Blocks.GLASS_BLOCKS_TINTED, "Tinted Glass Blocks");
         add(Tags.Blocks.GLASS_PANES, "Glass Panes");
         add(Tags.Blocks.GLASS_PANES_COLORLESS, "Colorless Glass Panes");
-        addColored(Tags.Blocks.STAINED_GLASS_PANES, "{color} Stained Glass Panes");
         add(Tags.Blocks.GRAVEL, "Gravel");
         add(Tags.Blocks.NETHERRACK, "Netherrack");
         add(Tags.Blocks.OBSIDIAN, "Obsidian");
@@ -102,10 +105,13 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.BARRELS_WOODEN, "Wooden Barrels");
         add(Tags.Items.BONES, "Bones");
         add(Tags.Items.BOOKSHELVES, "Bookshelves");
+        add(Tags.Items.BUDDING_BLOCKS, "Budding Blocks");
+        add(Tags.Items.BUDS, "Buds");
         add(Tags.Items.CHESTS, "Chests");
         add(Tags.Items.CHESTS_ENDER, "Ender Chests");
         add(Tags.Items.CHESTS_TRAPPED, "Trapped Chests");
         add(Tags.Items.CHESTS_WOODEN, "Wooden Chests");
+        add(Tags.Items.CLUSTERS, "Clusters");
         add(Tags.Items.COBBLESTONE, "Cobblestone");
         add(Tags.Items.COBBLESTONE_NORMAL, "Normal Cobblestone");
         add(Tags.Items.COBBLESTONE_INFESTED, "Infested Cobblestone");
@@ -114,6 +120,8 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.CROPS, "Crops");
         add(Tags.Items.CROPS_BEETROOT, "Beetroot Crops");
         add(Tags.Items.CROPS_CARROT, "Carrot Crops");
+        add(Tags.Items.DYED_ITEMS, "Dyed Items");
+        addColored(Tags.Items.DYED_ITEMS, "{color} Dyed Items");
         add(Tags.Items.CROPS_NETHER_WART, "Nether Wart Crops");
         add(Tags.Items.CROPS_POTATO, "Potato Crops");
         add(Tags.Items.CROPS_WHEAT, "Wheat Crops");
@@ -139,12 +147,10 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.GEMS_LAPIS, "Lapis Gems");
         add(Tags.Items.GEMS_PRISMARINE, "Prismarine Gems");
         add(Tags.Items.GEMS_QUARTZ, "Quartz Gems");
-        add(Tags.Items.GLASS, "Glass");
-        add(Tags.Items.GLASS_TINTED, "Tinted Glass");
-        add(Tags.Items.GLASS_SILICA, "Silica Glass");
-        addColored(Tags.Blocks.GLASS, "{color} Glass");
+        add(Tags.Items.GLASS_BLOCKS, "Glass Blocks");
+        add(Tags.Items.GLASS_BLOCKS_TINTED, "Tinted Glass Blocks");
+        add(Tags.Items.GLASS_BLOCKS_CHEAP, "Cheap Glass Blocks");
         add(Tags.Items.GLASS_PANES, "Glass Panes");
-        addColored(Tags.Blocks.GLASS_PANES, "{color} Glass Panes");
         add(Tags.Items.GRAVEL, "Gravel");
         add(Tags.Items.GUNPOWDER, "Gunpowder");
         add(Tags.Items.HEADS, "Heads");
@@ -201,7 +207,7 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.SEEDS_WHEAT, "Wheat Seeds");
         add(Tags.Items.SHEARS, "Shears");
         add(Tags.Items.SLIMEBALLS, "Slimeballs");
-        add(Tags.Items.STAINED_GLASS, "Stained Glass");
+        add(Tags.Items.STAINED_GLASS_BLOCKS, "Stained Glass");
         add(Tags.Items.STAINED_GLASS_PANES, "Stained Glass Panes");
         add(Tags.Items.STONE, "Stone");
         add(Tags.Items.STORAGE_BLOCKS, "Storage Blocks");
@@ -237,6 +243,8 @@ public final class ForgeLanguageProvider extends LanguageProvider
 
         // Entities
         add(Tags.EntityTypes.BOSSES, "Bosses");
+        add(Tags.EntityTypes.MINECARTS, "Minecarts");
+        add(Tags.EntityTypes.BOATS, "Boats");
 
         // Biomes
         add(Tags.Biomes.IS_HOT, "Hot");
