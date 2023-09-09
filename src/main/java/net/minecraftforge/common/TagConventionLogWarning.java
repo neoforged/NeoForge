@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.minecraftforge.common;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -48,11 +53,11 @@ public final class TagConventionLogWarning
         {
             // We have to wait for server start to read the server config.
             LOG_WARNING_MODES untranslatedTagWarningMode = ForgeConfig.SERVER.logUntranslatedItemTagWarnings.get();
-            if (FMLEnvironment.dist == Dist.CLIENT && !untranslatedTagWarningMode.equals(LOG_WARNING_MODES.SILENCED))
+            if (FMLEnvironment.dist == Dist.CLIENT && untranslatedTagWarningMode != LOG_WARNING_MODES.SILENCED)
             {
                 boolean isConfigSetToDev =
-                        untranslatedTagWarningMode.equals(LOG_WARNING_MODES.DEV_SHORT) ||
-                        untranslatedTagWarningMode.equals(LOG_WARNING_MODES.DEV_VERBOSE);
+                        untranslatedTagWarningMode == LOG_WARNING_MODES.DEV_SHORT ||
+                        untranslatedTagWarningMode == LOG_WARNING_MODES.DEV_VERBOSE;
 
                 if (!FMLLoader.isProduction() == isConfigSetToDev)
                 {
@@ -83,8 +88,8 @@ public final class TagConventionLogWarning
 
                         // Print out all untranslated tags when desired.
                         boolean isConfigSetToVerbose =
-                                untranslatedTagWarningMode.equals(LOG_WARNING_MODES.DEV_VERBOSE) ||
-                                untranslatedTagWarningMode.equals(LOG_WARNING_MODES.PROD_VERBOSE);
+                                untranslatedTagWarningMode == LOG_WARNING_MODES.DEV_VERBOSE ||
+                                untranslatedTagWarningMode == LOG_WARNING_MODES.PROD_VERBOSE;
 
                         if (isConfigSetToVerbose)
                         {
@@ -110,11 +115,11 @@ public final class TagConventionLogWarning
         {
             // We have to wait for server start to read the server config.
             LOG_WARNING_MODES legacyTagWarningMode = ForgeConfig.SERVER.logLegacyTagWarnings.get();
-            if (FMLEnvironment.dist == Dist.CLIENT && !legacyTagWarningMode.equals(LOG_WARNING_MODES.SILENCED))
+            if (FMLEnvironment.dist == Dist.CLIENT && legacyTagWarningMode != LOG_WARNING_MODES.SILENCED)
             {
                 boolean isConfigSetToDev =
-                        legacyTagWarningMode.equals(LOG_WARNING_MODES.DEV_SHORT) ||
-                        legacyTagWarningMode.equals(LOG_WARNING_MODES.DEV_VERBOSE);
+                        legacyTagWarningMode == LOG_WARNING_MODES.DEV_SHORT ||
+                        legacyTagWarningMode == LOG_WARNING_MODES.DEV_VERBOSE;
 
                 if (!FMLLoader.isProduction() == isConfigSetToDev)
                 {
@@ -148,8 +153,8 @@ public final class TagConventionLogWarning
 
                         // Print out all legacy tags when desired.
                         boolean isConfigSetToVerbose =
-                                legacyTagWarningMode.equals(LOG_WARNING_MODES.DEV_VERBOSE) ||
-                                legacyTagWarningMode.equals(LOG_WARNING_MODES.PROD_VERBOSE);
+                                legacyTagWarningMode == LOG_WARNING_MODES.DEV_VERBOSE ||
+                                legacyTagWarningMode == LOG_WARNING_MODES.PROD_VERBOSE;
 
                         if (isConfigSetToVerbose)
                         {
