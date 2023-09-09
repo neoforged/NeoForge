@@ -142,6 +142,7 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.DUSTS_GLOWSTONE, "Glowstone Dusts");
         add(Tags.Items.DUSTS_PRISMARINE, "Prismarine Dusts");
         add(Tags.Items.DUSTS_REDSTONE, "Redstone Dusts");
+        add(Tags.Items.DYES, "Dyes");
         addColored(Tags.Items.DYES, "{color} Dyes");
         add(Tags.Items.EGGS, "Eggs");
         add(Tags.Items.ENCHANTING_FUELS, "Enchanting Fuels");
@@ -163,7 +164,9 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.GLASS_BLOCKS, "Glass Blocks");
         add(Tags.Items.GLASS_BLOCKS_TINTED, "Tinted Glass Blocks");
         add(Tags.Items.GLASS_BLOCKS_CHEAP, "Cheap Glass Blocks");
+        add(Tags.Items.GLASS_BLOCKS_COLORLESS, "Colorless Glass Blocks");
         add(Tags.Items.GLASS_PANES, "Glass Panes");
+        add(Tags.Items.GLASS_PANES_COLORLESS, "Colorless Glass Panes");
         add(Tags.Items.GLASS_STAINED_BLOCKS, "Stained Glass");
         add(Tags.Items.GLASS_STAINED_PANES, "Stained Glass Panes");
         add(Tags.Items.GRAVEL, "Gravel");

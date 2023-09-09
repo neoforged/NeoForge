@@ -610,4 +610,16 @@ public class Tags
             return TagKey.create(Registries.BIOME, new ResourceLocation("common", name));
         }
     }
+
+    /**
+     * Use this to get a TagKey's translation key safely on any side.
+     * @return the translation key for a TagKey.
+     */
+    public static String getTagTranslationKey(TagKey<?> tagKey)
+    {
+        return "tag." +
+                tagKey.registry().location().getPath().replace("/", ".") +
+                "." +
+                tagKey.location().toString().replace("/", ".").replace(":", ".");
+    }
 }

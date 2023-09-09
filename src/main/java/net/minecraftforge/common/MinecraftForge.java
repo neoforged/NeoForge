@@ -10,6 +10,7 @@ import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.eventbus.api.BusBuilder;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.network.DualStackUtils;
 import net.minecraftforge.versions.forge.ForgeVersion;
 import org.apache.logging.log4j.LogManager;
@@ -44,6 +45,7 @@ public class MinecraftForge
        TierSortingRegistry.init();
        if (FMLEnvironment.dist == Dist.CLIENT) ClientCommandHandler.init();
        DualStackUtils.initialise();
+       TagConventionLogWarning.init();
    }
 
 /*
