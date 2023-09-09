@@ -21,7 +21,7 @@ public final class TagConventionLogWarning
 {
     private TagConventionLogWarning() {}
 
-    enum LOG_WARNING_MODES
+    protected enum LOG_WARNING_MODES
     {
         SILENCED,
         DEV_SHORT,
