@@ -46,6 +46,7 @@ public class MinecraftForge
        if (FMLEnvironment.dist == Dist.CLIENT) ClientCommandHandler.init();
        DualStackUtils.initialise();
        TagConventionLogWarning.init();
+       if (FMLEnvironment.dist == Dist.CLIENT) TagConventionLogWarningClient.init();
    }
 
 /*
