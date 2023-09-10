@@ -47,18 +47,20 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(COBBLESTONE_INFESTED).add(Blocks.INFESTED_COBBLESTONE);
         tag(COBBLESTONE_MOSSY).add(Blocks.MOSSY_COBBLESTONE);
         tag(COBBLESTONE_DEEPSLATE).add(Blocks.COBBLED_DEEPSLATE);
-        addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_banner");
-        addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_bed");
-        addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_candle");
-        addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_carpet");
-        addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_concrete");
-        addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_concrete_powder");
-        addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_glazed_terracotta");
-        addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_shulker_box");
-        addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_stained_glass");
-        addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_stained_glass_pane");
-        addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_terracotta");
-        addColored(tag(DYED_BLOCKS)::add, DYED_BLOCKS, "{color}_wool");
+        addColored(DYED_BLOCKS, "{color}_banner");
+        addColored(DYED_BLOCKS, "{color}_bed");
+        addColored(DYED_BLOCKS, "{color}_candle");
+        addColored(DYED_BLOCKS, "{color}_carpet");
+        addColored(DYED_BLOCKS, "{color}_concrete");
+        addColored(DYED_BLOCKS, "{color}_concrete_powder");
+        addColored(DYED_BLOCKS, "{color}_glazed_terracotta");
+        addColored(DYED_BLOCKS, "{color}_shulker_box");
+        addColored(DYED_BLOCKS, "{color}_stained_glass");
+        addColored(DYED_BLOCKS, "{color}_stained_glass_pane");
+        addColored(DYED_BLOCKS, "{color}_terracotta");
+        addColored(DYED_BLOCKS, "{color}_wall_banner");
+        addColored(DYED_BLOCKS, "{color}_wool");
+        addColoredTags(tag(DYED_BLOCKS)::addTag, DYED_BLOCKS);
         tag(END_STONES).add(Blocks.END_STONE);
         tag(ENDERMAN_PLACE_ON_BLACKLIST);
         tag(FENCE_GATES).addTags(FENCE_GATES_WOODEN);
@@ -303,7 +305,7 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         return tagAppender;
     }
 
-    private void addColored(Consumer<Block> consumer, TagKey<Block> group, String pattern)
+    private void addColored(TagKey<Block> group, String pattern)
     {
         String prefix = group.location().getPath().toUpperCase(Locale.ENGLISH) + '_';
         for (DyeColor color  : DyeColor.values())
@@ -314,7 +316,16 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
             if (block == null || block == Blocks.AIR)
                 throw new IllegalStateException("Unknown vanilla block: " + key);
             tag(tag).add(block);
-            consumer.accept(block);
+        }
+    }
+
+    private void addColoredTags(Consumer<TagKey<Block>> consumer, TagKey<Block> group)
+    {
+        String prefix = group.location().getPath().toUpperCase(Locale.ENGLISH) + '_';
+        for (DyeColor color  : DyeColor.values())
+        {
+            TagKey<Block> tag = getForgeTag(prefix + color.getName());
+            consumer.accept(tag);
         }
     }
 
