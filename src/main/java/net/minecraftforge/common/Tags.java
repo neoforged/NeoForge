@@ -618,9 +618,23 @@ public class Tags
      */
     public static String getTagTranslationKey(TagKey<?> tagKey)
     {
-        return "tag." +
-                tagKey.registry().location().getPath().replace("/", ".") +
-                "." +
-                tagKey.location().toString().replace("/", ".").replace(":", ".");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("tag.");
+
+        ResourceLocation registryIdentifier = tagKey.registry().location();
+        ResourceLocation tagIdentifier = tagKey.location();
+
+        if (registryIdentifier.getNamespace().equals("minecraft")) {
+            stringBuilder.append(registryIdentifier.getNamespace())
+                    .append(".");
+        }
+
+        stringBuilder.append(registryIdentifier.getPath().replace("/", "."))
+                .append(".")
+                .append(tagIdentifier.getNamespace())
+                .append(".")
+                .append(tagIdentifier.getPath().replace("/", ".").replace(":", "."));
+
+        return stringBuilder.toString();
     }
 }
