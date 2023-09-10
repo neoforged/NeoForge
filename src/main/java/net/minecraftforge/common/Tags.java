@@ -211,7 +211,7 @@ public class Tags
         public static final TagKey<EntityType<?>> BOSSES = tag("bosses");
         public static final TagKey<EntityType<?>> MINECARTS = tag("minecarts");
         public static final TagKey<EntityType<?>> BOATS = tag("boats");
-        public static final TagKey<EntityType<?>> CAPTURING_NOT_SUPPORTED  = tag("capturing_not_supported");
+        public static final TagKey<EntityType<?>> CAPTURING_NOT_SUPPORTED = tag("capturing_not_supported");
 
         private static TagKey<EntityType<?>> tag(String name)
         {
