@@ -273,6 +273,7 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.EntityTypes.BOSSES, "Bosses");
         add(Tags.EntityTypes.MINECARTS, "Minecarts");
         add(Tags.EntityTypes.BOATS, "Boats");
+        add(Tags.EntityTypes.CAPTURING_NOT_SUPPORTED, "Capturing Not Supported");
 
         // Biomes
         add(Tags.Biomes.IS_HOT, "Hot");
