@@ -161,7 +161,7 @@ public final class TagConventionLogWarning
                             stringBuilder.append("\nLegacy tags:");
                             for (TagKey<?> tagKey : legacyTags)
                             {
-                                stringBuilder.append("\n     ").append(tagKey.location());
+                                stringBuilder.append("\n     ").append(tagKey);
                             }
                         }
 
