@@ -52,7 +52,7 @@ public final class TagConventionLogWarning
         forgeBus.addListener((ServerStartingEvent serverStartingEvent) ->
         {
             // We have to wait for server start to read the server config.
-            LOG_WARNING_MODES untranslatedTagWarningMode = ForgeConfig.SERVER.logUntranslatedItemTagWarnings.get();
+            LOG_WARNING_MODES untranslatedTagWarningMode = ForgeConfig.COMMON.logUntranslatedItemTagWarnings.get();
             if (FMLEnvironment.dist == Dist.CLIENT && untranslatedTagWarningMode != LOG_WARNING_MODES.SILENCED)
             {
                 boolean isConfigSetToDev =
@@ -83,7 +83,7 @@ public final class TagConventionLogWarning
                         StringBuilder stringBuilder = new StringBuilder();
                         stringBuilder.append("""
                             \n   Dev warning - Untranslated Item Tags detected. Please translate your item tags so other mods such as recipe viewers can properly display your tag's name.
-                               You can disable this message in Neoforge's server config by setting logUntranslatedItemTagWarnings to "SILENCED" or see individual tags with "DEV_VERBOSE".
+                               You can disable this message in Neoforge's common config by setting logUntranslatedItemTagWarnings to "SILENCED" or see individual tags with "DEV_VERBOSE".
                             """);
 
                         // Print out all untranslated tags when desired.
@@ -114,7 +114,7 @@ public final class TagConventionLogWarning
         forgeBus.addListener((ServerStartingEvent serverStartingEvent) ->
         {
             // We have to wait for server start to read the server config.
-            LOG_WARNING_MODES legacyTagWarningMode = ForgeConfig.SERVER.logLegacyTagWarnings.get();
+            LOG_WARNING_MODES legacyTagWarningMode = ForgeConfig.COMMON.logLegacyTagWarnings.get();
             if (FMLEnvironment.dist == Dist.CLIENT && legacyTagWarningMode != LOG_WARNING_MODES.SILENCED)
             {
                 boolean isConfigSetToDev =
@@ -148,7 +148,7 @@ public final class TagConventionLogWarning
                         stringBuilder.append("""
                             \n   Dev warning - Legacy Tags detected. Please migrate your 'forge' namespace tags to 'common' namespace! See net.minecraftforge.common.Tags.java for all tags.
                                NOTE: Many tags have been moved around or renamed. Some new ones were added so please review the new tags. And make sure you follow tag conventions for new tags!
-                               You can disable this message in Neoforge's server config by setting logLegacyTagWarnings to "SILENCED" or see individual tags with "DEV_VERBOSE".
+                               You can disable this message in Neoforge's common config by setting logLegacyTagWarnings to "SILENCED" or see individual tags with "DEV_VERBOSE".
                             """);
 
                         // Print out all legacy tags when desired.

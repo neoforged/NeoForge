@@ -30,9 +30,6 @@ public class ForgeConfig {
 
         public final BooleanValue advertiseDedicatedServerToLan;
 
-        public final ForgeConfigSpec.EnumValue<TagConventionLogWarning.LOG_WARNING_MODES> logUntranslatedItemTagWarnings;
-        public final ForgeConfigSpec.EnumValue<TagConventionLogWarning.LOG_WARNING_MODES> logLegacyTagWarnings;
-
         Server(ForgeConfigSpec.Builder builder) {
             builder.comment("Server configuration settings")
                    .push("server");
@@ -77,16 +74,6 @@ public class ForgeConfig {
                     .translation("forge.configgui.advertiseDedicatedServerToLan")
                     .define("advertiseDedicatedServerToLan", true);
 
-            logUntranslatedItemTagWarnings = builder
-                    .comment("A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Defaults to DEV_SHORT.")
-                    .translation("forge.configgui.logUntranslatedItemTagWarnings")
-                    .defineEnum("logUntranslatedItemTagWarnings", TagConventionLogWarning.LOG_WARNING_MODES.DEV_SHORT);
-
-            logLegacyTagWarnings = builder
-                    .comment("A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.")
-                    .translation("forge.configgui.logLegacyTagWarnings")
-                    .defineEnum("logLegacyTagWarnings", TagConventionLogWarning.LOG_WARNING_MODES.DEV_SHORT);
-
             builder.pop();
         }
     }
@@ -96,9 +83,22 @@ public class ForgeConfig {
      */
     public static class Common {
 
+        public final ForgeConfigSpec.EnumValue<TagConventionLogWarning.LOG_WARNING_MODES> logUntranslatedItemTagWarnings;
+        public final ForgeConfigSpec.EnumValue<TagConventionLogWarning.LOG_WARNING_MODES> logLegacyTagWarnings;
+
         Common(ForgeConfigSpec.Builder builder) {
-            builder.comment("[DEPRECATED / NO EFFECT]: General configuration settings")
+            builder.comment("General configuration settings")
                     .push("general");
+
+            logUntranslatedItemTagWarnings = builder
+                    .comment("A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Defaults to DEV_SHORT.")
+                    .translation("forge.configgui.logUntranslatedItemTagWarnings")
+                    .defineEnum("logUntranslatedItemTagWarnings", TagConventionLogWarning.LOG_WARNING_MODES.DEV_SHORT);
+
+            logLegacyTagWarnings = builder
+                    .comment("A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.")
+                    .translation("forge.configgui.logLegacyTagWarnings")
+                    .defineEnum("logLegacyTagWarnings", TagConventionLogWarning.LOG_WARNING_MODES.DEV_SHORT);
 
             builder.pop();
         }
