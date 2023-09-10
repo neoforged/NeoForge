@@ -14,6 +14,9 @@
 	"license": "",
 	"icon": "assets/modid/icon.png",
 	"environment": "*",
+	"mixins": [
+		"neoforge.mixins.json"
+	],
 	"accessWidener" : "feltforge.accesswidener",
 	"depends": {
 		"fabricloader": ">=0.14.21",

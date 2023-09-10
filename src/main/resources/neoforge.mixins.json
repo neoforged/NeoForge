@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "net.feltmc.neoforge.patches.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "BufferBuilderMixin",
+    "GlStateManagerMixin",
+    "PoseStackMixin",
+    "RenderTargetMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

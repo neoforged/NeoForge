@@ -80,7 +80,6 @@ accessible method net/minecraft/world/level/block/Block popExperience (Lnet/mine
 accessible class net/minecraft/util/datafix/fixes/StructuresBecomeConfiguredFix$Conversion
 accessible method net/minecraft/world/level/block/entity/HopperBlockEntity isOnCustomCooldown ()Z
 accessible method net/minecraft/world/level/block/entity/HopperBlockEntity setCooldown (I)V
-accessible field net/minecraft/network/Connection channel Lio/netty/channel/Channel;
 accessible field net/minecraft/server/network/ServerLoginPacketListenerImpl gameProfile Lcom/mojang/authlib/GameProfile;
 accessible method net/minecraft/util/thread/BlockableEventLoop submitAsync (Ljava/lang/Runnable;)Ljava/util/concurrent/CompletableFuture;
 accessible method net/minecraft/server/level/ServerPlayer nextContainerCounter ()V

@@ -12,6 +12,9 @@ base {
 
 repositories {
 	maven {
+		url = "https://repo.repsy.io/mvn/distant/feltmc/"
+	}
+	maven {
 		name = 'forge'
 		url = 'https://maven.neoforged.net/releases'
 	}
@@ -51,13 +54,16 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.layered() {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.20.1:2023.06.26@zip")
+        //parchment("org.parchmentmc.data:parchment-1.20.1:2023.06.26@zip")
     }
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modImplementation "io.github.fabricators_of_create.Porting-Lib:Porting-Lib:2.1.1127+1.20"
+	include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.2.0-rc.2")))
+	modImplementation(include("io.github.feltmc:feltasm-fabric:0.2.2"))
+	annotationProcessor("io.github.feltmc:feltasm-common:0.2.2")
+	//modImplementation "io.github.fabricators_of_create.Porting-Lib:Porting-Lib:2.1.1127+1.20"
 	// THIS IS FOR ERROR CHECKING NONE OF THESE WILL WORK UNMODIFIED
 	implementation "net.neoforged.fancymodloader:core:47.1.47"
 	implementation "net.neoforged.fancymodloader:loader:47.1.47"
@@ -72,7 +78,7 @@ dependencies {
 
 
 	modRuntimeOnly "maven.modrinth:lithium:mc1.20.1-0.11.2"
-	modRuntimeOnly "maven.modrinth:sodium:mc1.20.1-0.5.0"
+	//modRuntimeOnly "maven.modrinth:sodium:mc1.20.1-0.5.0"
 	modRuntimeOnly "maven.modrinth:modmenu:7.2.1"
 	modRuntimeOnly "maven.modrinth:jei:15.2.0.23"
 	modRuntimeOnly "maven.modrinth:modernfix:5.7.2+mc1.20.1"
