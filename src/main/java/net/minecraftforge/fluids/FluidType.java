@@ -227,7 +227,7 @@ public class FluidType
 
     /**
      * Returns the Pointed Dripstone drip information of the fluid.
-     * <p> Note that this CAN be null!
+     *
      * @return the Pointed Dripstone drip information of the fluid
      */
     @Nullable
