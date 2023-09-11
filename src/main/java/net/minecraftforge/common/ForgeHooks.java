@@ -60,6 +60,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
@@ -939,6 +940,19 @@ public class ForgeHooks
         if (ForgeMod.MILK.filter(milk -> milk == fluid).isPresent() || ForgeMod.FLOWING_MILK.filter(milk -> milk == fluid).isPresent())
             return ForgeMod.MILK_TYPE.get();
         throw new RuntimeException("Mod fluids must override getFluidType.");
+    }
+
+    public static boolean handleDripInfo(Fluid fluid, Level level, BlockPos pos) {
+        if (fluid.isSource(fluid.defaultFluidState()) && fluid.getFluidType().getDripInfo() != null) {
+            BlockState cauldronBlock = fluid.getFluidType().getDripInfo().cauldron().defaultBlockState();
+            level.setBlockAndUpdate(pos, cauldronBlock);
+            level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(cauldronBlock));
+            if (fluid.getFluidType().getSound(SoundActions.CAULDRON_DRIP) != null) {
+                level.playSound(null, pos, fluid.getFluidType().getSound(SoundActions.CAULDRON_DRIP), SoundSource.BLOCKS, 2.0F, level.getRandom().nextFloat() * 0.1F + 0.9F);
+            }
+            return true;
+        }
+        return false;
     }
 
     public static TagKey<Block> getTagFromVanillaTier(Tiers tier)
