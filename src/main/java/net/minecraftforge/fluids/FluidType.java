@@ -1193,7 +1193,7 @@ public class FluidType
      * @param dripParticle the particle that spawns randomly from the tip of the Pointed Dripstone when this fluid is above it
      * @param cauldron the block the Pointed Dripstone should replace an empty cauldron with when it successfully tries to fill the cauldron
      */
-    public record DripstoneDripInfo(float chance, ParticleOptions dripParticle, Block cauldron)
+    public record DripstoneDripInfo(float chance, @Nullable ParticleOptions dripParticle, Block cauldron)
     {
     }
 }
