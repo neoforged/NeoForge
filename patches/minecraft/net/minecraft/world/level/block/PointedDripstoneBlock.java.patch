@@ -33,12 +33,13 @@
     }
  
     @Nullable
-@@ -377,7 +_,7 @@
+@@ -377,7 +_,8 @@
        double d2 = (double)((float)(p_154073_.m_123342_() + 1) - 0.6875F) - 0.0625D;
        double d3 = (double)p_154073_.m_123343_() + 0.5D + vec3.f_82481_;
        Fluid fluid = m_154052_(p_154072_, p_154075_);
 -      ParticleOptions particleoptions = fluid.m_205067_(FluidTags.f_13132_) ? ParticleTypes.f_175822_ : ParticleTypes.f_175824_;
-+      ParticleOptions particleoptions = fluid.getFluidType().getDripInfo() != null && fluid.getFluidType().getDripInfo().dripParticle() != null ? fluid.getFluidType().getDripInfo().dripParticle() : ParticleTypes.f_175824_;
++      ParticleOptions particleoptions = fluid.getFluidType().getDripInfo() != null ? fluid.getFluidType().getDripInfo().dripParticle() : ParticleTypes.f_175824_;
++      if (particleoptions != null)
        p_154072_.m_7106_(particleoptions, d1, d2, d3, 0.0D, 0.0D, 0.0D);
     }
  
