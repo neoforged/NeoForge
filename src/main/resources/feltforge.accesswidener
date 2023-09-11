@@ -48,6 +48,10 @@ accessible method net/minecraft/client/gui/components/AbstractSliderButton getHa
 accessible field net/minecraft/client/multiplayer/ClientPacketListener commands Lcom/mojang/brigadier/CommandDispatcher;
 accessible method net/minecraft/client/player/LocalPlayer getPermissionLevel ()I
 accessible field net/minecraft/world/item/ItemStackLinkedSet TYPE_AND_TAG Lit/unimi/dsi/fastutil/Hash$Strategy;
+accessible class net/minecraft/client/renderer/RenderStateShard$TextureStateShard
+accessible field net/minecraft/client/renderer/RenderStateShard$TextureStateShard blur Z
+accessible field net/minecraft/client/renderer/RenderStateShard$TextureStateShard mipmap Z
+accessible field net/minecraft/client/renderer/RenderStateShard setupState Ljava/lang/Runnable;
 mutable field net/minecraft/client/renderer/RenderStateShard$TextureStateShard blur Z
 mutable field net/minecraft/client/renderer/RenderStateShard$TextureStateShard mipmap Z
 mutable field net/minecraft/client/renderer/RenderStateShard setupState Ljava/lang/Runnable;
@@ -95,3 +99,25 @@ accessible field net/minecraft/core/MappedRegistry unregisteredIntrusiveHolders 
 accessible class net/minecraft/core/Holder$Reference$Type
 accessible method net/minecraft/core/HolderSet$Named bind (Ljava/util/List;)V
 accessible method net/minecraft/core/Holder$Reference bindTags (Ljava/util/Collection;)V
+accessible class net/minecraft/client/Options$FieldAccess
+accessible field net/minecraft/client/gui/screens/Screen renderables Ljava/util/List;
+accessible class net/minecraft/world/item/crafting/Ingredient$ItemValue
+accessible class net/minecraft/world/item/crafting/Ingredient$TagValue
+accessible class net/minecraft/world/item/crafting/Ingredient$Value
+accessible method net/minecraft/world/item/crafting/Ingredient fromValues (Ljava/util/stream/Stream;)Lnet/minecraft/world/item/crafting/Ingredient;
+#TODO felt this access widener screws with errors for some reason
+#extendable class net/minecraft/world/item/crafting/Ingredient
+accessible method net/minecraft/world/item/crafting/Ingredient <init> (Ljava/util/stream/Stream;)V
+accessible method net/minecraft/server/packs/repository/ServerPacksSource createVanillaPackSource ()Lnet/minecraft/server/packs/VanillaPackResources;
+accessible method net/minecraft/client/resources/ClientPackSource createVanillaPackSource (Ljava/nio/file/Path;)Lnet/minecraft/server/packs/VanillaPackResources;
+accessible field net/minecraft/server/network/ServerGamePacketListenerImpl connection Lnet/minecraft/network/Connection;
+accessible method net/minecraft/client/Minecraft createSearchTrees ()V
+extendable class net/minecraft/client/renderer/block/model/BlockElement$Deserializer
+extendable class net/minecraft/client/renderer/block/model/BlockElementFace$Deserializer
+extendable class net/minecraft/client/renderer/block/model/BlockFaceUV$Deserializer
+extendable class net/minecraft/client/renderer/block/model/ItemTransform$Deserializer
+extendable class net/minecraft/client/renderer/block/model/ItemTransforms$Deserializer
+extendable class net/minecraft/client/renderer/block/model/ItemOverride$Deserializer
+accessible class net/minecraft/util/ExtraCodecs$EitherCodec
+accessible field net/minecraft/client/renderer/block/model/BlockModel parent Lnet/minecraft/client/renderer/block/model/BlockModel;
+accessible field net/minecraft/world/inventory/AnvilMenu repairItemCountCost I

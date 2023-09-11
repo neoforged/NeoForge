@@ -23,7 +23,7 @@ public abstract class RenderTargetMixin implements RenderTargetInterface {
 
     @WrapOperation(
             method = "createBuffers",
-            at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_texImage2D (IIIIIIIILjava/nio/IntBuffer;)V", ordinal = 0)
+            at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_texImage2D (IIIIIIIILjava/nio/IntBuffer;)V", ordinal = 0, remap = false)
     )
     private void createBuffersMixin0(RenderTarget instance, boolean flag, Operation<Integer> original) {
         if (!stencilEnabled) {
@@ -35,7 +35,7 @@ public abstract class RenderTargetMixin implements RenderTargetInterface {
 
     @WrapOperation(
             method = "createBuffers",
-            at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_glFramebufferTexture2D(IIIII)V", ordinal = 1)
+            at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_glFramebufferTexture2D(IIIII)V", ordinal = 1, remap = false)
     )
     private void createBuffersMixin1(RenderTarget instance, boolean flag, Operation<Integer> original) {
         if (!stencilEnabled) {

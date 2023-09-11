@@ -17,7 +17,7 @@ public class GlStateManagerMixin {
     private static float lastBrightnessY = 0.0f;
 
 
-    @Inject(method = "_texParameter(IIF)V", at = @At("TAIL"))
+    @Inject(method = "_texParameter(IIF)V", at = @At("TAIL"), remap = false)
     private static void texParamMixin(CallbackInfo info, @Local(ordinal = 1) int x, @Local float y) {
         lastBrightnessX = x;
         lastBrightnessY = y;

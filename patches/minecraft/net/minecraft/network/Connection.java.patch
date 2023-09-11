@@ -50,10 +50,6 @@
        return this.f_129477_;
 +   }
 +
-+   public Channel channel() {
-+      return this.f_129468_;
-+   }
-+
 +   public PacketFlow getDirection() {
 +      return this.f_129466_;
     }

@@ -141,7 +141,7 @@ public final class ForgeRecipeProvider extends VanillaRecipeProvider
     }
 
     @Override
-    protected CompletableFuture<?> buildAdvancement(CachedOutput output, ResourceLocation name, Advancement.Builder builder)
+    public CompletableFuture<?> buildAdvancement(CachedOutput output, ResourceLocation name, Advancement.Builder builder)
     {
         // NOOP - We don't replace any of the advancement things yet...
         return CompletableFuture.allOf();
