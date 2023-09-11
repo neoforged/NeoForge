@@ -1,0 +1,24 @@
+--- a/net/minecraft/world/level/block/CauldronBlock.java
++++ b/net/minecraft/world/level/block/CauldronBlock.java
+@@ -51,16 +_,13 @@
+    }
+ 
+    protected void m_142310_(BlockState p_152940_, Level p_152941_, BlockPos p_152942_, Fluid p_152943_) {
+-      if (p_152943_ == Fluids.f_76193_) {
+-         BlockState blockstate = Blocks.f_152476_.m_49966_();
++      if (p_152943_.getFluidType().getDripInfo() != null) {
++         BlockState blockstate = p_152943_.getFluidType().getDripInfo().cauldron().m_49966_();
+          p_152941_.m_46597_(p_152942_, blockstate);
+          p_152941_.m_220407_(GameEvent.f_157792_, p_152942_, GameEvent.Context.m_223722_(blockstate));
+-         p_152941_.m_46796_(1047, p_152942_, 0);
+-      } else if (p_152943_ == Fluids.f_76195_) {
+-         BlockState blockstate1 = Blocks.f_152477_.m_49966_();
+-         p_152941_.m_46597_(p_152942_, blockstate1);
+-         p_152941_.m_220407_(GameEvent.f_157792_, p_152942_, GameEvent.Context.m_223722_(blockstate1));
+-         p_152941_.m_46796_(1046, p_152942_, 0);
++         if (p_152943_.getFluidType().getDripInfo().fillSound() != null) {
++            p_152941_.m_5594_(null, p_152942_, p_152943_.getFluidType().getDripInfo().fillSound(), net.minecraft.sounds.SoundSource.BLOCKS, 2.0F, p_152941_.f_46441_.m_188501_() * 0.1F + 0.9F);
++         }
+       }
+ 
+    }

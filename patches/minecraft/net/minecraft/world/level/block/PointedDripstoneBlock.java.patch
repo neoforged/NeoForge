@@ -1,0 +1,54 @@
+--- a/net/minecraft/world/level/block/PointedDripstoneBlock.java
++++ b/net/minecraft/world/level/block/PointedDripstoneBlock.java
+@@ -162,23 +_,12 @@
+ 
+    @VisibleForTesting
+    public static void m_221859_(BlockState p_221860_, ServerLevel p_221861_, BlockPos p_221862_, float p_221863_) {
+-      if (!(p_221863_ > 0.17578125F) || !(p_221863_ > 0.05859375F)) {
+          if (m_154203_(p_221860_, p_221861_, p_221862_)) {
+             Optional<PointedDripstoneBlock.FluidInfo> optional = m_154181_(p_221861_, p_221862_, p_221860_);
+             if (!optional.isEmpty()) {
+                Fluid fluid = (optional.get()).f_221893_;
+-               float f;
+-               if (fluid == Fluids.f_76193_) {
+-                  f = 0.17578125F;
+-               } else {
+-                  if (fluid != Fluids.f_76195_) {
+-                     return;
+-                  }
+-
+-                  f = 0.05859375F;
+-               }
+-
+-               if (!(p_221863_ >= f)) {
++               net.minecraftforge.fluids.FluidType.DripstoneDripInfo dripInfo = fluid.getFluidType().getDripInfo();
++               if (dripInfo != null && !(p_221863_ >= dripInfo.chance())) {
+                   BlockPos blockpos = m_154130_(p_221860_, p_221861_, p_221862_, 11, false);
+                   if (blockpos != null) {
+                      if ((optional.get()).f_221894_.m_60713_(Blocks.f_220864_) && fluid == Fluids.f_76193_) {
+@@ -201,7 +_,6 @@
+                }
+             }
+          }
+-      }
+    }
+ 
+    @Nullable
+@@ -377,7 +_,7 @@
+       double d2 = (double)((float)(p_154073_.m_123342_() + 1) - 0.6875F) - 0.0625D;
+       double d3 = (double)p_154073_.m_123343_() + 0.5D + vec3.f_82481_;
+       Fluid fluid = m_154052_(p_154072_, p_154075_);
+-      ParticleOptions particleoptions = fluid.m_205067_(FluidTags.f_13132_) ? ParticleTypes.f_175822_ : ParticleTypes.f_175824_;
++      ParticleOptions particleoptions = fluid.getFluidType().getDripInfo() != null ? fluid.getFluidType().getDripInfo().dripParticle() : ParticleTypes.f_175824_;
+       p_154072_.m_7106_(particleoptions, d1, d2, d3, 0.0D, 0.0D, 0.0D);
+    }
+ 
+@@ -535,7 +_,7 @@
+    }
+ 
+    private static boolean m_154158_(Fluid p_154159_) {
+-      return p_154159_ == Fluids.f_76195_ || p_154159_ == Fluids.f_76193_;
++      return p_154159_.getFluidType().getDripInfo() != null;
+    }
+ 
+    private static boolean m_154140_(BlockState p_154141_, BlockState p_154142_) {
