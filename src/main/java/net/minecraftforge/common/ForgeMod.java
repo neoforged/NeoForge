@@ -288,9 +288,8 @@ public class ForgeMod
                     .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL)
                     .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY)
                     .sound(SoundActions.FLUID_VAPORIZE, SoundEvents.FIRE_EXTINGUISH)
-                    .sound(SoundActions.CAULDRON_DRIP, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON)
                     .canHydrate(true)
-                    .addDripstoneDripping(0.17578125F, ParticleTypes.DRIPPING_DRIPSTONE_WATER, Blocks.WATER_CAULDRON))
+                    .addDripstoneDripping(0.17578125F, ParticleTypes.DRIPPING_DRIPSTONE_WATER, Blocks.WATER_CAULDRON, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON))
             {
                 @Override
                 public @Nullable BlockPathTypes getBlockPathType(FluidState state, BlockGetter level, BlockPos pos, @Nullable Mob mob, boolean canFluidLog)
@@ -356,12 +355,11 @@ public class ForgeMod
                     .adjacentPathType(null)
                     .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL_LAVA)
                     .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY_LAVA)
-                    .sound(SoundActions.CAULDRON_DRIP, SoundEvents.POINTED_DRIPSTONE_DRIP_LAVA_INTO_CAULDRON)
                     .lightLevel(15)
                     .density(3000)
                     .viscosity(6000)
                     .temperature(1300)
-                    .addDripstoneDripping(0.05859375F, ParticleTypes.DRIPPING_DRIPSTONE_LAVA, Blocks.LAVA_CAULDRON))
+                    .addDripstoneDripping(0.05859375F, ParticleTypes.DRIPPING_DRIPSTONE_LAVA, Blocks.LAVA_CAULDRON, SoundEvents.POINTED_DRIPSTONE_DRIP_LAVA_INTO_CAULDRON))
             {
                 @Override
                 public double motionScale(Entity entity)

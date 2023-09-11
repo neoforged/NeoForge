@@ -1177,10 +1177,15 @@ public class FluidType
          * @param chance the chance that the cauldron below will be filled every time the Pointed Dripstone is randomly ticked
          * @param dripParticle the particle that spawns randomly from the tip of the Pointed Dripstone when this fluid is above it
          * @param cauldron the block the Pointed Dripstone should replace an empty cauldron with when it successfully tries to fill the cauldron
+         * @param fillSound the sound that plays when the Pointed Dripstone successfully tries to fill an empty cauldron. If null, no sound will play. Note that if your block class does not extend {@link CauldronBlock}, this sound will not play regardless.
          * @return the property holder instance
          */
-        public Properties addDripstoneDripping(float chance, ParticleOptions dripParticle, Block cauldron)
+        public Properties addDripstoneDripping(float chance, ParticleOptions dripParticle, Block cauldron, @Nullable SoundEvent fillSound)
         {
+            if (fillSound != null)
+            {
+                this.sounds.put(SoundActions.CAULDRON_DRIP, fillSound);
+            }
             this.dripInfo = new DripstoneDripInfo(chance, dripParticle, cauldron);
             return this;
         }
