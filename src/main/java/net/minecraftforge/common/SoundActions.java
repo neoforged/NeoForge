@@ -29,4 +29,9 @@ public final class SoundActions
      * When the fluid is being vaporized.
      */
     public static final SoundAction FLUID_VAPORIZE = SoundAction.get("fluid_vaporize");
+
+    /**
+     * When a Pointed Dripstone drips this fluid into an empty cauldron.
+     */
+    public static final SoundAction CAULDRON_DRIP = SoundAction.get("cauldron_drip");
 }

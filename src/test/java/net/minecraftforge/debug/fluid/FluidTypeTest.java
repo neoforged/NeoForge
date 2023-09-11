@@ -28,6 +28,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.SoundActions;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fluids.FluidInteractionRegistry;
@@ -82,7 +83,7 @@ public class FluidTypeTest
     }
 
     private static final RegistryObject<FluidType> TEST_FLUID_TYPE = FLUID_TYPES.register("test_fluid", () ->
-            new FluidType(FluidType.Properties.create().supportsBoating(true).canHydrate(true).addDripstoneDripping(0.25F, ParticleTypes.SCULK_SOUL, Blocks.POWDER_SNOW_CAULDRON, SoundEvents.END_PORTAL_SPAWN))
+            new FluidType(FluidType.Properties.create().supportsBoating(true).canHydrate(true).sound(SoundActions.CAULDRON_DRIP, SoundEvents.END_PORTAL_SPAWN).addDripstoneDripping(0.25F, ParticleTypes.SCULK_SOUL, Blocks.POWDER_SNOW_CAULDRON))
             {
                 @Override
                 public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer)
