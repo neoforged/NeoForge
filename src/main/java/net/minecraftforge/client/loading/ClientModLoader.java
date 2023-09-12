@@ -9,10 +9,12 @@ package net.minecraftforge.client.loading;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.repository.RepositorySource;
@@ -179,11 +181,12 @@ public class ClientModLoader
             }
         }
 
-        // Create a resource pack merging all mod resources that should be hidden
-        final Pack modResourcesPack = Pack.readMetaAndCreate("mod_resources", Component.literal("Mod Resources"), true,
+        final Pack modMarkerPack = Pack.readMetaAndCreate("mod_resources_marker", Component.literal("Mod Resources"), true,
                 id -> new DelegatingPackResources(id, false, new PackMetadataSection(Component.translatable("fml.resources.modresources", hiddenPacks.size()),
-                        SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES)), hiddenPacks),
-                PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT);
-        packAcceptor.accept(modResourcesPack);
+                        SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES)), List.of()),
+                        PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT, hiddenPacks.stream().map(packResources ->
+                        Pack.readMetaAndCreate("mod_resources/"+packResources.packId(), Component.literal("Mod Resources: "+packResources.packId()), true,
+                                id -> packResources, PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT)).collect(Collectors.toList()));
+        packAcceptor.accept(modMarkerPack);
     }
 }

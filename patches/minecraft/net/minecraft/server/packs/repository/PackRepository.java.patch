@@ -9,6 +9,23 @@
     }
  
     public void m_10506_() {
+@@ -73,11 +_,14 @@
+    }
+ 
+    private List<Pack> m_10517_(Collection<String> p_10518_) {
+-      List<Pack> list = this.m_10520_(p_10518_).collect(Collectors.toList());
++      List<Pack> list = this.m_10520_(p_10518_).flatMap(p -> Stream.concat(Stream.of(p), p.getChildren().stream())).collect(Collectors.toList());
+ 
+       for(Pack pack : this.f_10498_.values()) {
+          if (pack.m_10449_() && !list.contains(pack)) {
+-            pack.m_10451_().m_10470_(list, pack, Functions.identity(), false);
++            int i = pack.m_10451_().m_10470_(list, pack, Functions.identity(), false);
++            for (int j = 0; j < pack.getChildren().size(); j++) {
++               list.add(i + j + 1, pack.getChildren().get(j));
++            }
+          }
+       }
+ 
 @@ -111,6 +_,10 @@
     @Nullable
     public Pack m_10507_(String p_10508_) {
