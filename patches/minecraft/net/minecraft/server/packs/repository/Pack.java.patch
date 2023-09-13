@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/packs/repository/Pack.java
 +++ b/net/minecraft/server/packs/repository/Pack.java
-@@ -27,29 +_,47 @@
+@@ -27,6 +_,8 @@
     private final Pack.Position f_10406_;
     private final boolean f_10407_;
     private final boolean f_10408_;
@@ -9,60 +9,36 @@
     private final PackSource f_10409_;
  
     @Nullable
--   public static Pack m_245429_(String p_249649_, Component p_248632_, boolean p_251594_, Pack.ResourcesSupplier p_252210_, PackType p_250595_, Pack.Position p_248706_, PackSource p_251233_) {
--      Pack.Info pack$info = m_246334_(p_249649_, p_252210_);
--      return pack$info != null ? m_245512_(p_249649_, p_248632_, p_251594_, p_252210_, pack$info, p_250595_, p_248706_, false, p_251233_) : null;
-+   public static Pack readMetaAndCreate(String pId, Component pTitle, boolean pRequired, Pack.ResourcesSupplier pResources, PackType pPackType, Pack.Position pDefaultPosition, PackSource pPackSource, List<Pack> children) {
-+      Pack.Info pack$info = m_246334_(pId, pResources);
-+      return pack$info != null ? create(pId, pTitle, pRequired, pResources, pack$info, pPackType, pDefaultPosition, false, pPackSource, children) : null;
+@@ -36,10 +_,25 @@
+    }
+ 
+    public static Pack m_245512_(String p_252257_, Component p_248717_, boolean p_248811_, Pack.ResourcesSupplier p_248969_, Pack.Info p_251314_, PackType p_250264_, Pack.Position p_252110_, boolean p_250237_, PackSource p_248524_) {
+-      return new Pack(p_252257_, p_248811_, p_248969_, p_248717_, p_251314_, p_251314_.m_246438_(p_250264_), p_252110_, p_250237_, p_248524_);
+-   }
+-
+-   private Pack(String p_252218_, boolean p_248829_, Pack.ResourcesSupplier p_249377_, Component p_251718_, Pack.Info p_250162_, PackCompatibility p_250361_, Pack.Position p_251298_, boolean p_249753_, PackSource p_251608_) {
++      return new Pack(p_252257_, p_248811_, p_248969_, p_248717_, p_251314_, p_251314_.m_246438_(p_250264_), p_252110_, p_250237_, p_248524_, java.util.Collections.emptyList());
 +   }
 +
-+   public static Pack create(String pId, Component pTitle, boolean pRequired, Pack.ResourcesSupplier pResources, Pack.Info pInfo, PackType pPackType, Pack.Position pDefaultPosition, boolean pFixedPosition, PackSource pPackSource, List<Pack> children) {
-+      return new Pack(pId, pRequired, pResources, pTitle, pInfo, pInfo.m_246438_(pPackType), pDefaultPosition, pFixedPosition, pPackSource, children);
++   public Pack withChildren(List<Pack> children) {
++      com.google.common.collect.ImmutableList.Builder<Pack> builder = com.google.common.collect.ImmutableList.builderWithExpectedSize(children.size() + this.children.size());
++      builder.addAll(this.children);
++      builder.addAll(children);
++      // data and asset formats passed in pack info here are irrelevant, as they are not used in Pack constructor
++      return new Pack(this.f_10401_, this.f_10407_, this.f_244124_, this.f_10403_, new Pack.Info(this.f_10404_, 0, 0, this.f_244623_, this.hidden), this.f_10405_, this.f_10406_, this.f_10408_, this.f_10409_, builder.build());
 +   }
 +
-+   private Pack(String pId, boolean pRequired, Pack.ResourcesSupplier pResources, Component pTitle, Pack.Info pInfo, PackCompatibility pCompatibility, Pack.Position pDefaultPosition, boolean pFixedPosition, PackSource pPackSource, List<Pack> children) {
-+      this.f_10401_ = pId;
-+      this.f_244124_ = pResources;
-+      this.f_10403_ = pTitle;
-+      this.f_10404_ = pInfo.f_244592_();
-+      this.f_10405_ = pCompatibility;
-+      this.f_244623_ = pInfo.f_244041_();
-+      this.f_10407_ = pRequired;
-+      this.f_10406_ = pDefaultPosition;
-+      this.f_10408_ = pFixedPosition;
-+      this.f_10409_ = pPackSource;
-+      this.hidden = pInfo.hidden();
++   private Pack(String p_252218_, boolean p_248829_, Pack.ResourcesSupplier p_249377_, Component p_251718_, Pack.Info p_250162_, PackCompatibility p_250361_, Pack.Position p_251298_, boolean p_249753_, PackSource p_251608_, List<Pack> children) {
 +      for (Pack child : children) {
 +         if (!child.isHidden()) {
 +            throw new IllegalArgumentException("Child pack must be hidden");
 +         }
 +      }
++      this.hidden = p_250162_.hidden();
 +      this.children = children;
-    }
- 
-    public static Pack m_245512_(String p_252257_, Component p_248717_, boolean p_248811_, Pack.ResourcesSupplier p_248969_, Pack.Info p_251314_, PackType p_250264_, Pack.Position p_252110_, boolean p_250237_, PackSource p_248524_) {
--      return new Pack(p_252257_, p_248811_, p_248969_, p_248717_, p_251314_, p_251314_.m_246438_(p_250264_), p_252110_, p_250237_, p_248524_);
-+      return create(p_252257_, p_248717_, p_248811_, p_248969_, p_251314_, p_250264_, p_252110_, p_250237_, p_248524_, java.util.Collections.emptyList());
-    }
- 
--   private Pack(String p_252218_, boolean p_248829_, Pack.ResourcesSupplier p_249377_, Component p_251718_, Pack.Info p_250162_, PackCompatibility p_250361_, Pack.Position p_251298_, boolean p_249753_, PackSource p_251608_) {
--      this.f_10401_ = p_252218_;
--      this.f_244124_ = p_249377_;
--      this.f_10403_ = p_251718_;
--      this.f_10404_ = p_250162_.f_244592_();
--      this.f_10405_ = p_250361_;
--      this.f_244623_ = p_250162_.f_244041_();
--      this.f_10407_ = p_248829_;
--      this.f_10406_ = p_251298_;
--      this.f_10408_ = p_249753_;
--      this.f_10409_ = p_251608_;
-+   @Nullable
-+   public static Pack m_245429_(String p_249649_, Component p_248632_, boolean p_251594_, Pack.ResourcesSupplier p_252210_, PackType p_250595_, Pack.Position p_248706_, PackSource p_251233_) {
-+      return readMetaAndCreate(p_249649_, p_248632_, p_251594_, p_252210_, p_250595_, p_248706_, p_251233_, java.util.Collections.emptyList());
-    }
- 
-    @Nullable
+       this.f_10401_ = p_252218_;
+       this.f_244124_ = p_249377_;
+       this.f_10403_ = p_251718_;
 @@ -62,7 +_,8 @@
           } else {
              FeatureFlagsMetadataSection featureflagsmetadatasection = packresources.m_5550_(FeatureFlagsMetadataSection.f_244642_);

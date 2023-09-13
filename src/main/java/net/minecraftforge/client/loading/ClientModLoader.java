@@ -184,9 +184,9 @@ public class ClientModLoader
         final Pack modMarkerPack = Pack.readMetaAndCreate("mod_resources_marker", Component.literal("Mod Resources"), true,
                 id -> new DelegatingPackResources(id, false, new PackMetadataSection(Component.translatable("fml.resources.modresources", hiddenPacks.size()),
                         SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES)), List.of()),
-                        PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT, hiddenPacks.stream().map(packResources ->
-                        Pack.readMetaAndCreate("mod_resources/"+packResources.packId(), Component.literal("Mod Resources: "+packResources.packId()), true,
-                                id -> packResources, PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT)).collect(Collectors.toList()));
+                        PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT).withChildren(hiddenPacks.stream().map(packResources ->
+                Pack.readMetaAndCreate("mod_resources/"+packResources.packId(), Component.literal("Mod Resources: "+packResources.packId()), true,
+                        id -> packResources, PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT)).toList());
         packAcceptor.accept(modMarkerPack);
     }
 }
