@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.repository.RepositorySource;
@@ -46,7 +45,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeConfig;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.client.gui.LoadingErrorScreen;
-import net.minecraftforge.resource.DelegatingPackResources;
+import net.minecraftforge.resource.EmptyPackResources;
 import net.minecraftforge.resource.ResourcePackLoader;
 import net.minecraftforge.server.LanguageHook;
 import net.minecraftforge.forgespi.language.IModInfo;
@@ -182,8 +181,8 @@ public class ClientModLoader
         }
 
         final Pack modMarkerPack = Pack.readMetaAndCreate("mod_resources_marker", Component.literal("Mod Resources"), true,
-                id -> new DelegatingPackResources(id, false, new PackMetadataSection(Component.translatable("fml.resources.modresources", hiddenPacks.size()),
-                        SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES)), List.of()),
+                id -> new EmptyPackResources(id, false, new PackMetadataSection(Component.translatable("fml.resources.modresources", hiddenPacks.size()),
+                        SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES))),
                         PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT).withChildren(hiddenPacks.stream().map(packResources ->
                 Pack.readMetaAndCreate("mod_resources/"+packResources.packId(), Component.literal("Mod Resources: "+packResources.packId()), true,
                         id -> packResources, PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT)).toList());
