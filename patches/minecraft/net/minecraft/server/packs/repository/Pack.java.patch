@@ -9,15 +9,11 @@
     private final PackSource f_10409_;
  
     @Nullable
-@@ -36,10 +_,25 @@
+@@ -40,6 +_,25 @@
     }
  
-    public static Pack m_245512_(String p_252257_, Component p_248717_, boolean p_248811_, Pack.ResourcesSupplier p_248969_, Pack.Info p_251314_, PackType p_250264_, Pack.Position p_252110_, boolean p_250237_, PackSource p_248524_) {
--      return new Pack(p_252257_, p_248811_, p_248969_, p_248717_, p_251314_, p_251314_.m_246438_(p_250264_), p_252110_, p_250237_, p_248524_);
--   }
--
--   private Pack(String p_252218_, boolean p_248829_, Pack.ResourcesSupplier p_249377_, Component p_251718_, Pack.Info p_250162_, PackCompatibility p_250361_, Pack.Position p_251298_, boolean p_249753_, PackSource p_251608_) {
-+      return new Pack(p_252257_, p_248811_, p_248969_, p_248717_, p_251314_, p_251314_.m_246438_(p_250264_), p_252110_, p_250237_, p_248524_, java.util.Collections.emptyList());
+    private Pack(String p_252218_, boolean p_248829_, Pack.ResourcesSupplier p_249377_, Component p_251718_, Pack.Info p_250162_, PackCompatibility p_250361_, Pack.Position p_251298_, boolean p_249753_, PackSource p_251608_) {
++      this(p_252218_, p_248829_, p_249377_, p_251718_, p_250162_, p_250361_, p_251298_, p_249753_, p_251608_, java.util.Collections.emptyList());
 +   }
 +
 +   public Pack withChildren(List<Pack> children) {
