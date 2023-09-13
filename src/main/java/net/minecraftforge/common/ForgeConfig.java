@@ -91,9 +91,9 @@ public class ForgeConfig {
                     .push("general");
 
             logUntranslatedItemTagWarnings = builder
-                    .comment("A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Defaults to DEV_SHORT.")
+                    .comment("A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Format desired is tag.item.<namespace>.<path> for the translation key. Defaults to SILENCED.")
                     .translation("forge.configgui.logUntranslatedItemTagWarnings")
-                    .defineEnum("logUntranslatedItemTagWarnings", TagConventionLogWarning.LOG_WARNING_MODES.DEV_SHORT);
+                    .defineEnum("logUntranslatedItemTagWarnings", TagConventionLogWarning.LOG_WARNING_MODES.SILENCED);
 
             logLegacyTagWarnings = builder
                     .comment("A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.")
