@@ -161,7 +161,7 @@ public class ClientModLoader
     }
 
     private static void clientPackFinder(Map<IModFile, ? extends PathPackResources> modResourcePacks, Consumer<Pack> packAcceptor) {
-        var hiddenPacks = new ArrayList<PathPackResources>();
+        var hiddenPacks = new ArrayList<Pack>();
         for (Entry<IModFile, ? extends PathPackResources> e : modResourcePacks.entrySet())
         {
             IModInfo mod = e.getKey().getModInfos().get(0);
@@ -176,18 +176,14 @@ public class ClientModLoader
             if (mod.getOwningFile().showAsResourcePack()) {
                 packAcceptor.accept(modPack);
             } else {
-                hiddenPacks.add(e.getValue());
+                hiddenPacks.add(modPack);
             }
         }
-
-        final List<Pack> modChildPacks = hiddenPacks.stream().map(packResources ->
-                Pack.readMetaAndCreate("mod_resources/"+packResources.packId(), Component.literal("Mod Resources: "+packResources.packId()), true,
-                        id -> packResources, PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT)).toList();
 
         final Pack modMarkerPack = Pack.readMetaAndCreate("mod_resources_marker", Component.literal("Mod Resources"), true,
                 id -> new EmptyPackResources(id, false, new PackMetadataSection(Component.translatable("fml.resources.modresources", hiddenPacks.size()),
                         SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES))),
-                        PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT).withChildren(modChildPacks);
+                        PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT).withChildren(hiddenPacks);
 
         packAcceptor.accept(modMarkerPack);
     }
