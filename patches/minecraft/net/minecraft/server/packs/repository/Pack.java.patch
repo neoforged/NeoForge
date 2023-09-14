@@ -9,29 +9,38 @@
     private final PackSource f_10409_;
  
     @Nullable
-@@ -40,6 +_,25 @@
+@@ -40,6 +_,34 @@
     }
  
     private Pack(String p_252218_, boolean p_248829_, Pack.ResourcesSupplier p_249377_, Component p_251718_, Pack.Info p_250162_, PackCompatibility p_250361_, Pack.Position p_251298_, boolean p_249753_, PackSource p_251608_) {
 +      this(p_252218_, p_248829_, p_249377_, p_251718_, p_250162_, p_250361_, p_251298_, p_249753_, p_251608_, java.util.Collections.emptyList());
 +   }
 +
++   /**
++    * @return a new pack with the provided children in place of any children this pack currently has
++    */
 +   public Pack withChildren(List<Pack> children) {
-+      com.google.common.collect.ImmutableList.Builder<Pack> builder = com.google.common.collect.ImmutableList.builderWithExpectedSize(children.size() + this.children.size());
-+      builder.addAll(this.children);
-+      builder.addAll(children);
 +      // data and asset formats passed in pack info here are irrelevant, as they are not used in Pack constructor
-+      return new Pack(this.f_10401_, this.f_10407_, this.f_244124_, this.f_10403_, new Pack.Info(this.f_10404_, 0, 0, this.f_244623_, this.hidden), this.f_10405_, this.f_10406_, this.f_10408_, this.f_10409_, builder.build());
++      return new Pack(this.f_10401_, this.f_10407_, this.f_244124_, this.f_10403_, new Pack.Info(this.f_10404_, 0, 0, this.f_244623_, this.hidden), this.f_10405_, this.f_10406_, this.f_10408_, this.f_10409_, children);
 +   }
 +
 +   private Pack(String p_252218_, boolean p_248829_, Pack.ResourcesSupplier p_249377_, Component p_251718_, Pack.Info p_250162_, PackCompatibility p_250361_, Pack.Position p_251298_, boolean p_249753_, PackSource p_251608_, List<Pack> children) {
-+      for (Pack child : children) {
-+         if (!child.isHidden()) {
-+            throw new IllegalArgumentException("Child pack must be hidden");
++      List<Pack> flattenedChildren = new java.util.ArrayList<>();
++      List<Pack> remainingChildren = children;
++      // recursively flatten children
++      while (!remainingChildren.isEmpty()) {
++         List<Pack> oldChildren = remainingChildren;
++         remainingChildren = new java.util.ArrayList<>();
++         for (Pack child : oldChildren) {
++            if (!child.isHidden()) {
++               throw new IllegalArgumentException("Child pack "+ child.m_10446_() +" must be hidden");
++            }
++            flattenedChildren.add(child.withChildren(java.util.Collections.emptyList()));
++            remainingChildren.addAll(child.getChildren());
 +         }
 +      }
 +      this.hidden = p_250162_.hidden();
-+      this.children = children;
++      this.children = java.util.Collections.unmodifiableList(flattenedChildren);
        this.f_10401_ = p_252218_;
        this.f_244124_ = p_249377_;
        this.f_10403_ = p_251718_;

@@ -9,7 +9,7 @@
     }
  
     public void m_10506_() {
-@@ -73,11 +_,14 @@
+@@ -73,11 +_,12 @@
     }
  
     private List<Pack> m_10517_(Collection<String> p_10518_) {
@@ -20,9 +20,7 @@
           if (pack.m_10449_() && !list.contains(pack)) {
 -            pack.m_10451_().m_10470_(list, pack, Functions.identity(), false);
 +            int i = pack.m_10451_().m_10470_(list, pack, Functions.identity(), false);
-+            for (int j = 0; j < pack.getChildren().size(); j++) {
-+               list.add(i + j + 1, pack.getChildren().get(j));
-+            }
++            list.addAll(i + 1, pack.getChildren());
           }
        }
  

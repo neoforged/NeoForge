@@ -180,12 +180,15 @@ public class ClientModLoader
             }
         }
 
+        final List<Pack> modChildPacks = hiddenPacks.stream().map(packResources ->
+                Pack.readMetaAndCreate("mod_resources/"+packResources.packId(), Component.literal("Mod Resources: "+packResources.packId()), true,
+                        id -> packResources, PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT)).toList();
+
         final Pack modMarkerPack = Pack.readMetaAndCreate("mod_resources_marker", Component.literal("Mod Resources"), true,
                 id -> new EmptyPackResources(id, false, new PackMetadataSection(Component.translatable("fml.resources.modresources", hiddenPacks.size()),
                         SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES))),
-                        PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT).withChildren(hiddenPacks.stream().map(packResources ->
-                Pack.readMetaAndCreate("mod_resources/"+packResources.packId(), Component.literal("Mod Resources: "+packResources.packId()), true,
-                        id -> packResources, PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT)).toList());
+                        PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT).withChildren(modChildPacks);
+
         packAcceptor.accept(modMarkerPack);
     }
 }

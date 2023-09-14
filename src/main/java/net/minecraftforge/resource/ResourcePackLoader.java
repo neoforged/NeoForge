@@ -54,7 +54,7 @@ public class ResourcePackLoader {
     public static PathPackResources createPackForMod(IModFileInfo mf)
     {
         String name = mf.getFile().getFileName();
-        return new PathPackResources(name.isEmpty() ? "unnamed" : name, true, mf.getFile().getFilePath())
+        return new PathPackResources(name.isEmpty() ? "[unnamed]" : name, true, mf.getFile().getFilePath())
         {
             private final IModFile modFile = mf.getFile();
 
@@ -67,7 +67,7 @@ public class ResourcePackLoader {
 
             @Override
             public boolean isHidden() {
-                return true;
+                return !mf.showAsResourcePack();
             }
         };
     }
