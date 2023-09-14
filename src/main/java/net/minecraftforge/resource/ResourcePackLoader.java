@@ -65,7 +65,7 @@ public class ResourcePackLoader {
                 continue;
             }
             LOGGER.debug(Logging.CORE, "Generating PackInfo named {} for mod file {}", name, e.getKey().getFilePath());
-            if ((packType == PackType.CLIENT_RESOURCES && mod.getOwningFile().showAsResourcePack()) || mod.getOwningFile().showAsDataPack()) {
+            if ((packType == PackType.CLIENT_RESOURCES && mod.getOwningFile().showAsResourcePack()) || (packType == PackType.SERVER_DATA && mod.getOwningFile().showAsDataPack())) {
                 packAcceptor.accept(modPack);
             } else {
                 hiddenPacks.add(modPack);
@@ -109,7 +109,7 @@ public class ResourcePackLoader {
 
             @Override
             public boolean isHidden() {
-                return (packType == PackType.CLIENT_RESOURCES && !mf.showAsResourcePack()) || !mf.showAsDataPack();
+                return (packType == PackType.CLIENT_RESOURCES && !mf.showAsResourcePack()) || (packType == PackType.SERVER_DATA && !mf.showAsDataPack());
             }
         };
     }
