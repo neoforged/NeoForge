@@ -183,7 +183,7 @@
     }
  
     public static WorldDataConfiguration m_246048_(PackRepository p_248681_, DataPackConfig p_248920_, boolean p_249869_, FeatureFlagSet p_251243_) {
-+      net.minecraftforge.resource.ResourcePackLoader.loadResourcePacks(p_248681_, net.minecraftforge.server.ServerLifecycleHooks::buildPackFinder);
++      net.minecraftforge.resource.ResourcePackLoader.loadResourcePacks(p_248681_, map -> net.minecraftforge.resource.ResourcePackLoader.buildPackFinder(map, PackType.SERVER_DATA), PackType.SERVER_DATA);
        p_248681_.m_10506_();
 +      DataPackConfig.f_45842_.addModPacks(net.minecraftforge.common.ForgeHooks.getModPacks());
 +      p_248920_.addModPacks(net.minecraftforge.common.ForgeHooks.getModPacks());

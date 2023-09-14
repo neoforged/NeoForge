@@ -32,7 +32,7 @@
        if (path != null) {
           if (this.f_100832_ == null) {
              this.f_100832_ = ServerPacksSource.m_245786_(path);
-+            net.minecraftforge.resource.ResourcePackLoader.loadResourcePacks(this.f_100832_, net.minecraftforge.server.ServerLifecycleHooks::buildPackFinder);
++            net.minecraftforge.resource.ResourcePackLoader.loadResourcePacks(this.f_100832_, map -> net.minecraftforge.resource.ResourcePackLoader.buildPackFinder(map, net.minecraft.server.packs.PackType.SERVER_DATA), net.minecraft.server.packs.PackType.SERVER_DATA);
              this.f_100832_.m_10506_();
           }
  

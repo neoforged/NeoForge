@@ -1,0 +1,20 @@
+--- a/net/minecraft/server/commands/DataPackCommand.java
++++ b/net/minecraft/server/commands/DataPackCommand.java
+@@ -35,7 +_,7 @@
+       return Component.m_237110_("commands.datapack.enable.failed.no_flags", p_248117_, p_248118_);
+    });
+    private static final SuggestionProvider<CommandSourceStack> f_136803_ = (p_136848_, p_136849_) -> {
+-      return SharedSuggestionProvider.m_82981_(p_136848_.getSource().m_81377_().m_129891_().m_10523_().stream().map(StringArgumentType::escapeIfRequired), p_136849_);
++      return SharedSuggestionProvider.m_82981_(p_136848_.getSource().m_81377_().m_129891_().m_10524_().stream().filter(p->!p.isHidden()).map(Pack::m_10446_).map(StringArgumentType::escapeIfRequired), p_136849_);
+    };
+    private static final SuggestionProvider<CommandSourceStack> f_136804_ = (p_248113_, p_248114_) -> {
+       PackRepository packrepository = p_248113_.getSource().m_81377_().m_129891_();
+@@ -135,7 +_,7 @@
+    private static int m_136865_(CommandSourceStack p_136866_) {
+       PackRepository packrepository = p_136866_.m_81377_().m_129891_();
+       packrepository.m_10506_();
+-      Collection<? extends Pack> collection = packrepository.m_10524_();
++      Collection<? extends Pack> collection = packrepository.m_10524_().stream().filter(p->!p.isHidden()).toList();
+       if (collection.isEmpty()) {
+          p_136866_.m_288197_(() -> {
+             return Component.m_237115_("commands.datapack.list.enabled.none");

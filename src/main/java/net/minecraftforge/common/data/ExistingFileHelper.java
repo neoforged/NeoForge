@@ -110,9 +110,8 @@ public class ExistingFileHelper {
         for (String existingMod : existingMods) {
             IModFileInfo modFileInfo = ModList.get().getModFileById(existingMod);
             if (modFileInfo != null) {
-                PackResources pack = ResourcePackLoader.createPackForMod(modFileInfo);
-                candidateClientResources.add(pack);
-                candidateServerResources.add(pack);
+                candidateClientResources.add(ResourcePackLoader.createPackForMod(modFileInfo, PackType.CLIENT_RESOURCES));
+                candidateServerResources.add(ResourcePackLoader.createPackForMod(modFileInfo, PackType.SERVER_DATA));
             }
         }
 
