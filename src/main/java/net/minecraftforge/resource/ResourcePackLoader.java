@@ -65,8 +65,7 @@ public class ResourcePackLoader {
                 continue;
             }
             LOGGER.debug(Logging.CORE, "Generating PackInfo named {} for mod file {}", name, e.getKey().getFilePath());
-            // TODO: make different option for data pack hiding! Would require forgespi change
-            if (mod.getOwningFile().showAsResourcePack()) {
+            if ((packType == PackType.CLIENT_RESOURCES && mod.getOwningFile().showAsResourcePack()) || mod.getOwningFile().showAsDataPack()) {
                 packAcceptor.accept(modPack);
             } else {
                 hiddenPacks.add(modPack);
@@ -110,8 +109,7 @@ public class ResourcePackLoader {
 
             @Override
             public boolean isHidden() {
-                // TODO: use different flags per pack type
-                return !mf.showAsResourcePack();
+                return (packType == PackType.CLIENT_RESOURCES && !mf.showAsResourcePack()) || !mf.showAsDataPack();
             }
         };
     }
