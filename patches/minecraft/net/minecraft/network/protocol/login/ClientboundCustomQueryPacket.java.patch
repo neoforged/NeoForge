@@ -3,9 +3,7 @@
 @@ -4,7 +_,7 @@
  import net.minecraft.network.protocol.Packet;
  import net.minecraft.resources.ResourceLocation;
- 
--public class ClientboundCustomQueryPacket implements Packet<ClientLoginPacketListener> {
-+public class ClientboundCustomQueryPacket implements Packet<ClientLoginPacketListener>, net.minecraftforge.network.ICustomPacket<ClientboundCustomQueryPacket> {
+
     private static final int f_179804_ = 1048576;
     private final int f_134745_;
     private final ResourceLocation f_134746_;
@@ -22,8 +20,4 @@
     public FriendlyByteBuf m_179812_() {
        return this.f_134747_;
     }
-+
-+   @Override public int getIndex() { return m_134755_(); }
-+   @Override public ResourceLocation getName() { return m_179811_(); }
-+   @org.jetbrains.annotations.Nullable @Override public FriendlyByteBuf getInternalData() { return m_179812_(); }
  }

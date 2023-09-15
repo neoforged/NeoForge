@@ -26,5 +26,39 @@
 	},
 	"suggests": {
 		"another-mod": "*"
+	},
+	"custom": {
+		"loom:injected_interfaces": {
+			"net/minecraft/class_350": [
+				"net/feltmc/neoforge/patches/interfaces/AbstractSelectionListInterface"
+			],
+			"net/minecraft/class_287": [
+				"net/feltmc/neoforge/patches/interfaces/BufferBuilderInterface"
+			],
+			"net/minecraft/class_2535": [
+				"net/feltmc/neoforge/patches/interfaces/ConnectionInterface"
+			],
+			"net/minecraft/class_4587": [
+				"net/minecraftforge/client/extensions/IForgePoseStack"
+			],
+			"net/minecraft/class_6885": [
+				"net/minecraftforge/common/extensions/IForgeHolderSet"
+			],
+			"net/minecraft/class_276": [
+				"net/feltmc/neoforge/patches/interfaces/RenderTargetInterface"
+			],
+			"net/minecraft/class_2658": [
+				"net/minecraftforge/network/ICustomPacket"
+			],
+			"net/minecraft/class_2899": [
+				"net/minecraftforge/network/ICustomPacket"
+			],
+			"net/minecraft/class_2817": [
+				"net/minecraftforge/network/ICustomPacket"
+			],
+			"net/minecraft/class_2913": [
+				"net/minecraftforge/network/ICustomPacket"
+			]
+		}
 	}
 }

@@ -5,9 +5,15 @@
   "mixins": [
     "AbstractSelectionListMixin",
     "BufferBuilderMixin",
+    "ClientboundCustomPayloadPacketMixin",
+    "ClientboundCustomQueryPacketMixin",
+    "ConnectionMixin",
     "GlStateManagerMixin",
+    "HolderSetMixin",
     "PoseStackMixin",
-    "RenderTargetMixin"
+    "RenderTargetMixin",
+    "ServerboundCustomPayloadPacketMixin",
+    "ServerboundCustomQueryPacketMixin"
   ],
   "injectors": {
     "defaultRequire": 1

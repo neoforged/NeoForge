@@ -3,9 +3,7 @@
 @@ -4,7 +_,7 @@
  import net.minecraft.network.protocol.Packet;
  import net.minecraft.resources.ResourceLocation;
- 
--public class ClientboundCustomPayloadPacket implements Packet<ClientGamePacketListener> {
-+public class ClientboundCustomPayloadPacket implements Packet<ClientGamePacketListener>, net.minecraftforge.network.ICustomPacket<ClientboundCustomPayloadPacket> {
+
     private static final int f_178834_ = 1048576;
     public static final ResourceLocation f_132012_ = new ResourceLocation("brand");
     public static final ResourceLocation f_132013_ = new ResourceLocation("debug/path");
@@ -48,8 +46,4 @@
     public FriendlyByteBuf m_132045_() {
        return new FriendlyByteBuf(this.f_132030_.copy());
     }
-+
-+   @Override public int getIndex() { return Integer.MAX_VALUE; }
-+   @Override public ResourceLocation getName() { return m_132042_(); }
-+   @Override public FriendlyByteBuf getInternalData() { return m_132045_(); }
  }
