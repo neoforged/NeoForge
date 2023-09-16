@@ -27,6 +27,7 @@ plugins {
     id 'net.minecraftforge.gradleutils' version '[2.0.13,)'
     id 'eclipse'
     id 'de.undercouch.download' version '5.4.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.0' apply false
     id 'net.neoforged.gradle.patcher' version '[6.0.12,6.2)' apply false
     id 'net.neoforged.gradle.mcp' version '[6.0.12,6.2)' apply false
     id 'org.parchmentmc.librarian.forgegradle' version '1.+' apply false
@@ -65,6 +66,7 @@ ext {
     JLINE_VERSION = '3.12.+'
     NIGHTCONFIG_VERSION = '3.6.4'
     JETBRAINS_ANNOTATIONS_VERSION = '23.0.0'
+    KOTLIN_VERSION = '1.9.0'
     SLF4J_API_VERSION = '1.8.0-beta4'
     APACHE_MAVEN_ARTIFACT_VERSION = '3.8.5'
     JARJAR_VERSION = '0.3.19'
@@ -278,6 +280,7 @@ project(':forge') {
     apply plugin: 'net.neoforged.gradle.patcher'
     apply plugin: 'org.parchmentmc.librarian.forgegradle'
     apply plugin: 'org.cadixdev.licenser'
+    apply plugin: 'org.jetbrains.kotlin.jvm'
 
     applyPatches {
 		verbose = true
@@ -302,7 +305,8 @@ project(':forge') {
         test {
             java {
                 srcDirs = [
-                    "$rootDir/src/test/java"
+                    "$rootDir/src/test/java",
+                    "$rootDir/src/test/kotlin"
                 ]
             }
             resources {
@@ -386,6 +390,9 @@ project(':forge') {
         installer "net.minecraftforge:mergetool:${MERGETOOL_VERSION}:api"
         installer "com.electronwill.night-config:core:${NIGHTCONFIG_VERSION}"
         installer "com.electronwill.night-config:toml:${NIGHTCONFIG_VERSION}"
+        installer "org.jetbrains.kotlin:kotlin-stdlib:${KOTLIN_VERSION}"
+        installer "org.jetbrains.kotlin:kotlin-stdlib-common:${KOTLIN_VERSION}"
+        installer "org.jetbrains.kotlin:kotlin-reflect:${KOTLIN_VERSION}"
         installer "org.apache.maven:maven-artifact:${APACHE_MAVEN_ARTIFACT_VERSION}"
         installer 'net.jodah:typetools:0.6.3'
         installer "net.minecrell:terminalconsoleappender:${TERMINALCONSOLEAPPENDER_VERSION}"
@@ -403,6 +410,8 @@ project(':forge') {
         installer 'org.lwjgl:lwjgl-stb:3.2.2'
         */
     }
+
+    compileKotlin.kotlinOptions.jvmTarget = '17'
 
     patcher {
         excs.from file("$rootDir/src/main/resources/forge.exc")
@@ -1269,6 +1278,7 @@ project(':forge') {
             }
             test {
                 files.from files("$rootDir/src/test/java")
+                files.from files("$rootDir/src/test/kotlin")
             }
         }
 
