@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import io.github.feltmc.feltasm.asm.CreateStatic;
 
+@SuppressWarnings("MissingUnique")
 @Mixin(GlStateManager.class)
 public class GlStateManagerMixin {
     //TODO felt-asm inject these

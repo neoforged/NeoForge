@@ -58,6 +58,15 @@
 			],
 			"net/minecraft/class_2913": [
 				"net/minecraftforge/network/ICustomPacket"
+			],
+			"net/minecraft/class_2370": [
+				"net/feltmc/neoforge/patches/interfaces/MappedRegistryInterface"
+			],
+			"net/minecraft/class_6880": [
+				"net/feltmc/neoforge/patches/interfaces/HolderInterface"
+			],
+			"net/minecraft/class_6880$class_6883": [
+				"net/feltmc/neoforge/patches/interfaces/Holder$ReferenceInterface"
 			]
 		}
 	}
