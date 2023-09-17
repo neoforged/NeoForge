@@ -58,6 +58,18 @@
 			],
 			"net/minecraft/class_2913": [
 				"net/minecraftforge/network/ICustomPacket"
+			],
+			"net/minecraft/class_1087": [
+				"net/minecraftforge/client/extensions/IForgeBakedModel"
+			],
+			"net/minecraft/class_3611": [
+				"net/minecraftforge/common/extensions/IForgeFluid"
+			],
+			"net/minecraft/class_2680": [
+				"net/minecraftforge/common/extensions/IForgeBlockState"
+			],
+			"net/minecraft/class_7877": [
+				"net/feltmc/neoforge/patches/interfaces/RegistrySetBuilderInterface"
 			]
 		}
 	}

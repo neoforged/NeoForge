@@ -106,7 +106,8 @@ accessible class net/minecraft/world/item/crafting/Ingredient$TagValue
 accessible class net/minecraft/world/item/crafting/Ingredient$Value
 accessible method net/minecraft/world/item/crafting/Ingredient fromValues (Ljava/util/stream/Stream;)Lnet/minecraft/world/item/crafting/Ingredient;
 #TODO felt this access widener screws with errors for some reason
-#extendable class net/minecraft/world/item/crafting/Ingredient
+#Fixed it self somehow? leaving comment here just in case we have oddities again
+extendable class net/minecraft/world/item/crafting/Ingredient
 accessible method net/minecraft/world/item/crafting/Ingredient <init> (Ljava/util/stream/Stream;)V
 accessible method net/minecraft/server/packs/repository/ServerPacksSource createVanillaPackSource ()Lnet/minecraft/server/packs/VanillaPackResources;
 accessible method net/minecraft/client/resources/ClientPackSource createVanillaPackSource (Ljava/nio/file/Path;)Lnet/minecraft/server/packs/VanillaPackResources;
@@ -116,8 +117,15 @@ extendable class net/minecraft/client/renderer/block/model/BlockElement$Deserial
 extendable class net/minecraft/client/renderer/block/model/BlockElementFace$Deserializer
 extendable class net/minecraft/client/renderer/block/model/BlockFaceUV$Deserializer
 extendable class net/minecraft/client/renderer/block/model/ItemTransform$Deserializer
+accessible field net/minecraft/client/renderer/block/model/ItemTransform$Deserializer DEFAULT_ROTATION Lorg/joml/Vector3f;
+accessible field net/minecraft/client/renderer/block/model/ItemTransform$Deserializer DEFAULT_TRANSLATION Lorg/joml/Vector3f;
+accessible field net/minecraft/client/renderer/block/model/ItemTransform$Deserializer DEFAULT_SCALE Lorg/joml/Vector3f;
 extendable class net/minecraft/client/renderer/block/model/ItemTransforms$Deserializer
 extendable class net/minecraft/client/renderer/block/model/ItemOverride$Deserializer
 accessible class net/minecraft/util/ExtraCodecs$EitherCodec
 accessible field net/minecraft/client/renderer/block/model/BlockModel parent Lnet/minecraft/client/renderer/block/model/BlockModel;
 accessible field net/minecraft/world/inventory/AnvilMenu repairItemCountCost I
+accessible method net/minecraft/server/level/ServerLevel getEntities ()Lnet/minecraft/world/level/entity/LevelEntityGetter;
+accessible class net/minecraft/core/RegistrySetBuilder$RegistryStub
+accessible field net/minecraft/core/RegistrySetBuilder entries Ljava/util/List;
+
