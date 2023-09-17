@@ -70,6 +70,15 @@
 			],
 			"net/minecraft/class_7877": [
 				"net/feltmc/neoforge/patches/interfaces/RegistrySetBuilderInterface"
+			],
+			"net/minecraft/class_2370": [
+				"net/feltmc/neoforge/patches/interfaces/MappedRegistryInterface"
+			],
+			"net/minecraft/class_6880": [
+				"net/feltmc/neoforge/patches/interfaces/HolderInterface"
+			],
+			"net/minecraft/class_6880$class_6883": [
+				"net/feltmc/neoforge/patches/interfaces/Holder$ReferenceInterface"
 			]
 		}
 	}
