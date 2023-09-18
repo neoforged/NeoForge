@@ -1,18 +1,26 @@
 {
 	"schemaVersion": 1,
-	"id": "modid",
+	"id": "feltforge",
 	"version": "${version}",
-	"name": "Example mod",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "FeltForge",
+	"description": "NeoForge on Fabric",
 	"authors": [
-		"Me!"
+		"FeltMC",
+		"NeoForge",
+		"MinecraftForge"
+	],
+	"contributors": [
+		"unixsupremacist",
+		"Nolij",
+		"PseudoDistant",
+		"Trinsdar"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://feltmc.net/",
+		"sources": "https://github.com/FeltMC/NeoForge"
 	},
-	"license": "",
-	"icon": "assets/modid/icon.png",
+	"license": "LGPL",
+	"icon": "assets/feltforge/icon.png",
 	"environment": "*",
 	"mixins": [
 		"neoforge.mixins.json"
