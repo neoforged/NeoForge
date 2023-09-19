@@ -6,15 +6,21 @@
     "BlockStateMixin",
     "ClientboundCustomPayloadPacketMixin",
     "ClientboundCustomQueryPacketMixin",
+    "ClientIntentionPacketMixin",
     "ConnectionMixin",
+    "DataGeneratorMixin",
+    "DataPackConfigMixin",
     "FluidMixin",
     "Holder$ReferenceMixin",
     "HolderMixin",
     "HolderSetMixin",
     "MappedRegistryMixin",
+    "PackRepositoryMixin",
     "RegistrySetBuilderMixin",
+    "ResourceLocationMixin",
     "ServerboundCustomPayloadPacketMixin",
     "ServerboundCustomQueryPacketMixin",
+    "TransformationMixin",
     "VanillaRegistriesMixin"
   ],
   "injectors": {
@@ -26,6 +32,7 @@
     "BufferBuilderMixin",
     "GlStateManagerMixin",
     "PoseStackMixin",
-    "RenderTargetMixin"
+    "RenderTargetMixin",
+    "RenderTypeMixin"
   ]
 }

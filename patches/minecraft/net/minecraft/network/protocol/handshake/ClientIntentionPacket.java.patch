@@ -4,7 +4,6 @@
     private final String f_134721_;
     private final int f_134722_;
     private final ConnectionProtocol f_134723_;
-+   private String fmlVersion = net.minecraftforge.network.NetworkConstants.NETVERSION;
  
     public ClientIntentionPacket(String p_134726_, int p_134727_, ConnectionProtocol p_134728_) {
        this.f_134720_ = SharedConstants.m_183709_().m_132495_();
@@ -31,9 +30,5 @@
  
     public int m_179803_() {
        return this.f_134722_;
-+   }
-+
-+   public String getFMLVersion() {
-+      return this.fmlVersion;
     }
  }

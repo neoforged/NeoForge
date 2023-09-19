@@ -128,4 +128,4 @@ accessible field net/minecraft/world/inventory/AnvilMenu repairItemCountCost I
 accessible method net/minecraft/server/level/ServerLevel getEntities ()Lnet/minecraft/world/level/entity/LevelEntityGetter;
 accessible class net/minecraft/core/RegistrySetBuilder$RegistryStub
 accessible field net/minecraft/core/RegistrySetBuilder entries Ljava/util/List;
-
+accessible method net/minecraft/client/renderer/block/model/BlockModel bakeFace (Lnet/minecraft/client/renderer/block/model/BlockElement;Lnet/minecraft/client/renderer/block/model/BlockElementFace;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;Lnet/minecraft/core/Direction;Lnet/minecraft/client/resources/model/ModelState;Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/renderer/block/model/BakedQuad;

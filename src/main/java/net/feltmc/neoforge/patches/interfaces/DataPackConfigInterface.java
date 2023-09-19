@@ -1,10 +1,11 @@
 package net.feltmc.neoforge.patches.interfaces;
 
-import io.netty.channel.Channel;
 import net.feltmc.neoforge.FeltVars;
 
-public interface ConnectionInterface {
-    default public Channel channel() {
+import java.util.List;
+
+public interface DataPackConfigInterface {
+    default void addModPacks(List<String> modPacks) {
         throw new RuntimeException(FeltVars.mixinOverrideException);
     }
 }

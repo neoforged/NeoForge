@@ -1,9 +1,11 @@
 package net.feltmc.neoforge.patches.interfaces;
 
+import net.feltmc.neoforge.FeltVars;
+
 import java.nio.ByteBuffer;
 
 public interface BufferBuilderInterface {
     default public void putBulkData(ByteBuffer buffer) {
-        //TODO add error
+        throw new RuntimeException(FeltVars.mixinOverrideException);
     }
 }

@@ -87,6 +87,27 @@
 			],
 			"net/minecraft/class_6880$class_6883": [
 				"net/feltmc/neoforge/patches/interfaces/Holder$ReferenceInterface"
+			],
+			"net/minecraft/class_2960": [
+				"net/feltmc/neoforge/patches/interfaces/ResourceLocationInterface"
+			],
+			"net/minecraft/class_1921": [
+				"net/feltmc/neoforge/patches/interfaces/RenderTypeInterface"
+			],
+			"net/minecraft/class_2403": [
+				"net/feltmc/neoforge/patches/interfaces/DataGeneratorInterface"
+			],
+			"net/minecraft/class_2889": [
+				"net/feltmc/neoforge/patches/interfaces/ClientIntentionPacketInterface"
+			],
+			"net/minecraft/class_5359": [
+				"net/feltmc/neoforge/patches/interfaces/DataPackConfigInterface"
+			],
+			"net/minecraft/class_3283": [
+				"net/feltmc/neoforge/patches/interfaces/PackRepositoryInterface"
+			],
+			"net/minecraft/class_4590": [
+				"net/minecraftforge/common/extensions/IForgeTransformation"
 			]
 		}
 	}

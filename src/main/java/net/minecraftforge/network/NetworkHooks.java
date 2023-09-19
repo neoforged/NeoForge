@@ -96,7 +96,7 @@ public class NetworkHooks
     }
     public static void registerServerLoginChannel(Connection manager, ClientIntentionPacket packet)
     {
-        manager.channel().attr(NetworkConstants.FML_NETVERSION).set(packet.getFMLVersion());
+        manager.channel().attr(NetworkConstants.FML_NETVERSION).set(packet .getFMLVersion());
         HandshakeHandler.registerHandshake(manager, NetworkDirection.LOGIN_TO_CLIENT);
     }
 

@@ -1,14 +1,15 @@
 package net.feltmc.neoforge.patches.interfaces;
 
+import net.feltmc.neoforge.FeltVars;
+
 public interface RenderTargetInterface {
     public boolean stencilEnabled = false;
 
     default public void enableStencil() {
-        //TODO log error
+        throw new RuntimeException(FeltVars.mixinOverrideException);
     }
 
     default public boolean isStencilEnabled() {
-        //TODO log error
-        return false;
+        throw new RuntimeException(FeltVars.mixinOverrideException);
     }
 }
