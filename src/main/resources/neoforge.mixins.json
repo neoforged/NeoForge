@@ -11,6 +11,7 @@
     "DataGeneratorMixin",
     "DataPackConfigMixin",
     "FluidMixin",
+    "FluidStateMixin",
     "Holder$ReferenceMixin",
     "HolderMixin",
     "HolderSetMixin",
@@ -33,6 +34,7 @@
     "GlStateManagerMixin",
     "PoseStackMixin",
     "RenderTargetMixin",
-    "RenderTypeMixin"
+    "RenderTypeMixin",
+    "VertexConsumerMixin"
   ]
 }

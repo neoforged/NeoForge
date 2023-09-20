@@ -10,7 +10,7 @@
 		"MinecraftForge"
 	],
 	"contributors": [
-		"unixsupremacist",
+		"unix-supremacist",
 		"Nolij",
 		"PseudoDistant",
 		"Trinsdar"
@@ -108,6 +108,12 @@
 			],
 			"net/minecraft/class_4590": [
 				"net/minecraftforge/common/extensions/IForgeTransformation"
+			],
+			"net/minecraft/class_4588": [
+				"net/minecraftforge/client/extensions/IForgeVertexConsumer"
+			],
+			"net/minecraft/class_3610": [
+				"net/minecraftforge/common/extensions/IForgeFluidState"
 			]
 		}
 	}

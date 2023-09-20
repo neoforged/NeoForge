@@ -4,8 +4,6 @@
  import org.lwjgl.system.MemoryStack;
  
  @OnlyIn(Dist.CLIENT)
--public interface VertexConsumer {
-+public interface VertexConsumer extends net.minecraftforge.client.extensions.IForgeVertexConsumer {
     VertexConsumer m_5483_(double p_85945_, double p_85946_, double p_85947_);
  
     VertexConsumer m_6122_(int p_85973_, int p_85974_, int p_85975_, int p_85976_);

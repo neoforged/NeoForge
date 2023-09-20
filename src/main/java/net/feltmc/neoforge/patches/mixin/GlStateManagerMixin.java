@@ -11,7 +11,6 @@ import io.github.feltmc.feltasm.asm.CreateStatic;
 @SuppressWarnings("MissingUnique")
 @Mixin(GlStateManager.class)
 public class GlStateManagerMixin {
-    //TODO felt-asm inject these
     @CreateStatic
     private static float lastBrightnessX = 0.0f;
     @CreateStatic
