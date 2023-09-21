@@ -114,6 +114,10 @@
 			],
 			"net/minecraft/class_3610": [
 				"net/minecraftforge/common/extensions/IForgeFluidState"
+			],
+			"net/minecraft/class_1887": [
+				"net/minecraftforge/common/extensions/IForgeEnchantment",
+				"net/feltmc/neoforge/patches/interfaces/EnchantmentInterface"
 			]
 		}
 	}

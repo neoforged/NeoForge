@@ -39,7 +39,6 @@ repositories {
 	maven {
 		url = "https://jitpack.io"
 		content {
-			includeGroup("com.github.llamalad7.mixinextras")
 			includeGroup("com.github.Chocohead")
 			includeGroup("com.github.thecatcore.CursedMixinExtensions")
 		}
@@ -67,7 +66,7 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.2.0-rc.2")))
+	include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.2.0-rc.4")))
 	include(implementation(annotationProcessor("io.github.feltmc:feltasm-fabric:0.2.2")))
 	include(implementation(annotationProcessor("com.github.thecatcore.CursedMixinExtensions:fabric:1.0.0")))
 	//modImplementation "io.github.fabricators_of_create.Porting-Lib:Porting-Lib:2.1.1127+1.20"

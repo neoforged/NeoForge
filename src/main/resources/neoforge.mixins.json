@@ -1,6 +1,7 @@
 {
   "required": true,
   "package": "net.feltmc.neoforge.patches.mixin",
+  "plugin": "net.feltmc.neoforge.patches.Plugin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "BlockStateMixin",
@@ -10,6 +11,9 @@
     "ConnectionMixin",
     "DataGeneratorMixin",
     "DataPackConfigMixin",
+    "DiggingEnchantmentMixin",
+    "EnchantmentCategoryMixin",
+    "EnchantmentMixin",
     "FluidMixin",
     "FluidStateMixin",
     "Holder$ReferenceMixin",
@@ -21,6 +25,7 @@
     "ResourceLocationMixin",
     "ServerboundCustomPayloadPacketMixin",
     "ServerboundCustomQueryPacketMixin",
+    "SharedConstantsMixin",
     "TransformationMixin",
     "VanillaRegistriesMixin"
   ],
