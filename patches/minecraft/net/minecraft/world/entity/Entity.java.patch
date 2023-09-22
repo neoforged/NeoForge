@@ -36,14 +36,13 @@
        this.f_19847_ = p_19870_;
        this.f_19853_ = p_19871_;
        this.f_19815_ = p_19870_.m_20680_();
-@@ -254,7 +_,11 @@
+@@ -254,7 +_,10 @@
        this.f_19804_.m_135372_(f_146800_, 0);
        this.m_8097_();
        this.m_6034_(0.0D, 0.0D, 0.0D);
 -      this.f_19816_ = this.m_6380_(Pose.STANDING, this.f_19815_);
-+      net.minecraftforge.event.entity.EntityEvent.Size sizeEvent = net.minecraftforge.event.ForgeEventFactory.getEntitySizeForge(this, Pose.STANDING, this.f_19815_, this.m_6380_(Pose.STANDING, this.f_19815_));
-+      this.f_19815_ = sizeEvent.getNewSize();
-+      this.f_19816_ = sizeEvent.getNewEyeHeight();
++      this.f_19815_ = this.getDimensionsForge(Pose.STANDING);
++      this.f_19816_ = this.getEyeHeightForge(Pose.STANDING, this.f_19815_);
 +      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityEvent.EntityConstructing(this));
 +      this.gatherCapabilities();
     }
@@ -147,7 +146,7 @@
        this.m_5496_(soundtype.m_56776_(), soundtype.m_56773_() * 0.15F, soundtype.m_56774_());
     }
  
-@@ -1176,19 +_,22 @@
+@@ -1176,31 +_,38 @@
  
     public void m_5844_() {
        if (this.m_6069_()) {
@@ -175,6 +174,24 @@
     }
  
     void m_20074_() {
+       Entity entity = this.m_20202_();
++      java.util.function.BooleanSupplier updateFluidHeight = () -> this.m_204031_(FluidTags.f_13131_, 0.014D);
+       if (entity instanceof Boat boat) {
+          if (!boat.m_5842_()) {
+             this.f_19798_ = false;
+-            return;
++            updateFluidHeight = () -> {
++               this.updateFluidHeightAndDoFluidPushing(state -> this.shouldUpdateFluidWhileBoating(state, boat));
++               return false;
++            };
+          }
+       }
+ 
+-      if (this.m_204031_(FluidTags.f_13131_, 0.014D)) {
++      if (updateFluidHeight.getAsBoolean()) {
+          if (!this.f_19798_ && !this.f_19803_) {
+             this.m_5841_();
+          }
 @@ -1217,6 +_,7 @@
     private void m_20323_() {
        this.f_19800_ = this.m_204029_(FluidTags.f_13131_);
@@ -373,6 +390,15 @@
           }
        } else {
           return null;
+@@ -2489,7 +_,7 @@
+    }
+ 
+    protected Vec3 m_7643_(Direction.Axis p_20045_, BlockUtil.FoundRectangle p_20046_) {
+-      return PortalShape.m_77738_(p_20046_, p_20045_, this.m_20182_(), this.m_6972_(this.m_20089_()));
++      return PortalShape.m_77738_(p_20046_, p_20045_, this.m_20182_(), this.getDimensionsForge(this.m_20089_()));
+    }
+ 
+    protected Optional<BlockUtil.FoundRectangle> m_183318_(ServerLevel p_185935_, BlockPos p_185936_, boolean p_185937_, WorldBorder p_185938_) {
 @@ -2557,6 +_,7 @@
        return this.f_19821_;
     }
@@ -381,15 +407,25 @@
     public boolean m_6063_() {
        return true;
     }
-@@ -2679,8 +_,10 @@
+@@ -2670,17 +_,17 @@
+    @Deprecated
+    protected void m_252801_() {
+       Pose pose = this.m_20089_();
+-      EntityDimensions entitydimensions = this.m_6972_(pose);
++      EntityDimensions entitydimensions = this.getDimensionsForge(pose);
+       this.f_19815_ = entitydimensions;
+-      this.f_19816_ = this.m_6380_(pose, entitydimensions);
++      this.f_19816_ = this.getEyeHeightForge(pose, entitydimensions);
+    }
+ 
+    public void m_6210_() {
        EntityDimensions entitydimensions = this.f_19815_;
        Pose pose = this.m_20089_();
-       EntityDimensions entitydimensions1 = this.m_6972_(pose);
-+      net.minecraftforge.event.entity.EntityEvent.Size sizeEvent = net.minecraftforge.event.ForgeEventFactory.getEntitySizeForge(this, pose, entitydimensions, entitydimensions1, this.m_6380_(pose, entitydimensions1));
-+      entitydimensions1 = sizeEvent.getNewSize();
+-      EntityDimensions entitydimensions1 = this.m_6972_(pose);
++      EntityDimensions entitydimensions1 = this.getDimensionsForge(pose);
        this.f_19815_ = entitydimensions1;
 -      this.f_19816_ = this.m_6380_(pose, entitydimensions1);
-+      this.f_19816_ = sizeEvent.getNewEyeHeight();
++      this.f_19816_ = this.getEyeHeightForge(pose, entitydimensions1);
        this.m_20090_();
        boolean flag = (double)entitydimensions1.f_20377_ <= 4.0D && (double)entitydimensions1.f_20378_ <= 4.0D;
        if (!this.m_9236_().f_46443_ && !this.f_19803_ && !this.f_19794_ && flag && (entitydimensions1.f_20377_ > entitydimensions.f_20377_ || entitydimensions1.f_20378_ > entitydimensions.f_20378_) && !(this instanceof Player)) {
@@ -404,11 +440,38 @@
           });
        }
  
-@@ -2980,9 +_,17 @@
+@@ -2720,7 +_,7 @@
+    }
+ 
+    protected AABB m_20217_(Pose p_20218_) {
+-      EntityDimensions entitydimensions = this.m_6972_(p_20218_);
++      EntityDimensions entitydimensions = this.getDimensionsForge(p_20218_);
+       float f = entitydimensions.f_20377_ / 2.0F;
+       Vec3 vec3 = new Vec3(this.m_20185_() - (double)f, this.m_20186_(), this.m_20189_() - (double)f);
+       Vec3 vec31 = new Vec3(this.m_20185_() + (double)f, this.m_20186_() + (double)entitydimensions.f_20378_, this.m_20189_() + (double)f);
+@@ -2731,12 +_,16 @@
+       this.f_19828_ = p_20012_;
+    }
+ 
++   /**
++    * @deprecated Can be overridden. Use {@link #getEyeHeightForge(Pose, EntityDimensions)} instead.
++    */
++   @Deprecated
+    protected float m_6380_(Pose p_19976_, EntityDimensions p_19977_) {
+       return p_19977_.f_20378_ * 0.85F;
+    }
+ 
+    public float m_20236_(Pose p_20237_) {
+-      return this.m_6380_(p_20237_, this.m_6972_(p_20237_));
++      return this.getEyeHeightForge(p_20237_, this.getDimensionsForge(p_20237_));
+    }
+ 
+    public final float m_20192_() {
+@@ -2980,9 +_,22 @@
        this.f_19859_ = this.m_146908_();
     }
  
-+   @Deprecated // Forge: Use no parameter version instead, only for vanilla Tags
++   @Deprecated // Forge: Use predicate version instead, only for vanilla Tags
     public boolean m_204031_(TagKey<Fluid> p_204032_, double p_204033_) {
 +      this.updateFluidHeightAndDoFluidPushing();
 +      if(p_204032_ == FluidTags.f_13131_) return this.isInFluidType(net.minecraftforge.common.ForgeMod.WATER_TYPE.get());
@@ -416,7 +479,12 @@
 +      else return false;
 +   }
 +
++   @Deprecated(forRemoval = true, since = "1.20.1")
 +   public void updateFluidHeightAndDoFluidPushing() {
++      this.updateFluidHeightAndDoFluidPushing(com.google.common.base.Predicates.alwaysTrue());
++   }
++
++   public void updateFluidHeightAndDoFluidPushing(Predicate<FluidState> shouldUpdate) {
        if (this.m_146899_()) {
 -         return false;
 +         return;
@@ -436,7 +504,7 @@
                    FluidState fluidstate = this.m_9236_().m_6425_(blockpos$mutableblockpos);
 -                  if (fluidstate.m_205070_(p_204032_)) {
 +                  net.minecraftforge.fluids.FluidType fluidType = fluidstate.getFluidType();
-+                  if (!fluidType.isAir()) {
++                  if (!fluidType.isAir() && shouldUpdate.test(fluidstate)) {
                       double d1 = (double)((float)i2 + fluidstate.m_76155_(this.m_9236_(), blockpos$mutableblockpos));
                       if (d1 >= aabb.f_82289_) {
                          flag1 = true;
@@ -509,6 +577,17 @@
        return this.f_19799_.getDouble(p_204037_);
     }
  
+@@ -3080,6 +_,10 @@
+       return new ClientboundAddEntityPacket(this);
+    }
+ 
++   /**
++    * @deprecated Can be overridden. Use {@link #getDimensionsForge(Pose)} instead.
++    */
++   @Deprecated
+    public EntityDimensions m_6972_(Pose p_19975_) {
+       return this.f_19847_.m_20680_();
+    }
 @@ -3192,6 +_,7 @@
  
           this.f_146801_.m_142044_();
@@ -525,7 +604,7 @@
     public float m_274421_() {
        return this.f_19793_;
     }
-@@ -3319,6 +_,103 @@
+@@ -3319,6 +_,111 @@
     public boolean m_142265_(Level p_146843_, BlockPos p_146844_) {
        return true;
     }
@@ -622,6 +701,14 @@
 +   @Override
 +   public net.minecraftforge.fluids.FluidType getMaxHeightFluidType() {
 +      return this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(Object2DoubleMap.Entry::getDoubleValue)).map(Object2DoubleMap.Entry::getKey).orElseGet(net.minecraftforge.common.ForgeMod.EMPTY_TYPE);
++   }
++
++   public EntityDimensions getDimensionsForge(Pose pose) {
++       EntityDimensions size = m_6972_(pose);
++       if (size == null) size = this.f_19815_; // this is called in the entity constructor so it is possible that subclasses are not initalized and dont return anything here. So use the default.
++       var evt = new net.minecraftforge.event.entity.EntityEvent.Size(this, pose, size, this.m_6380_(pose, size));
++       net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(evt);
++       return evt.getNewSize();
 +   }
 +
 +   /* ================================== Forge End =====================================*/
