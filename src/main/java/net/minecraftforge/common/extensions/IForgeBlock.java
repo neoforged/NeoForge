@@ -27,6 +27,7 @@ import net.minecraft.world.level.SignalGetter;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.MapColor;
@@ -56,6 +57,7 @@ import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.jetbrains.annotations.Nullable;
+import org.jline.utils.Log;
 
 @SuppressWarnings("deprecation")
 public interface IForgeBlock
@@ -193,6 +195,28 @@ public interface IForgeBlock
     {
         self().playerWillDestroy(level, pos, state, player);
         return level.setBlock(pos, fluid.createLegacyBlock(), level.isClientSide ? 11 : 3);
+    }
+
+    /**
+     * Called when a block is removed by {@link PushReaction#DESTROY}.  This is responsible for
+     * actually destroying the block, and the block is intact at time of call.
+     *
+     * Will only be called if {@link BlockState#getPistonPushReaction} returns {@link PushReaction#DESTROY}.
+     *
+     * Note: When used in multiplayer, this is called on both client and
+     * server sides!
+     *
+     * @param state The current state.
+     * @param level The current level
+     * @param pos Block position in level
+     * @param pushDirection The direction of block movement
+     * @param fluid The current fluid state at current position
+     */
+    default void onDestroyedByPushReaction(BlockState state, Level level, BlockPos pos, Direction pushDirection, FluidState fluid)
+    {
+        Log.debug("wow, this is overridable!");
+        level.setBlock(pos, Blocks.AIR.defaultBlockState(), level.isClientSide ? 11 : 3);
+        level.gameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(state));
     }
 
     /**
