@@ -57,7 +57,6 @@ import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.jetbrains.annotations.Nullable;
-import org.jline.utils.Log;
 
 @SuppressWarnings("deprecation")
 public interface IForgeBlock
@@ -214,7 +213,6 @@ public interface IForgeBlock
      */
     default void onDestroyedByPushReaction(BlockState state, Level level, BlockPos pos, Direction pushDirection, FluidState fluid)
     {
-        Log.debug("wow, this is overridable!");
         level.setBlock(pos, Blocks.AIR.defaultBlockState(), level.isClientSide ? 11 : 3);
         level.gameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(state));
     }
