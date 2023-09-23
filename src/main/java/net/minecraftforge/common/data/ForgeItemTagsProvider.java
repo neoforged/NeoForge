@@ -109,7 +109,7 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.MUSHROOMS).add(Items.BROWN_MUSHROOM, Items.RED_MUSHROOM);
         tag(Tags.Items.NETHER_STARS).add(Items.NETHER_STAR);
         copy(Tags.Blocks.NETHERRACK, Tags.Items.NETHERRACK);
-        tag(Tags.Items.NUGGETS).addTags(Tags.Items.NUGGETS_IRON, Tags.Items.NUGGETS_GOLD);
+        tag(Tags.Items.NUGGETS).addTags(Tags.Items.NUGGETS_GOLD, Tags.Items.NUGGETS_IRON);
         tag(Tags.Items.NUGGETS_IRON).add(Items.IRON_NUGGET);
         tag(Tags.Items.NUGGETS_GOLD).add(Items.GOLD_NUGGET);
         copy(Tags.Blocks.OBSIDIAN, Tags.Items.OBSIDIAN);
@@ -186,9 +186,9 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.TOOLS_SHEARS).add(Items.SHEARS);
         tag(Tags.Items.TOOLS_SPEARS).add(Items.TRIDENT);
         tag(Tags.Items.TOOLS)
-            .addTags(ItemTags.SWORDS, ItemTags.AXES, ItemTags.PICKAXES, ItemTags.SHOVELS, ItemTags.HOES)
-            .addTags(Tags.Items.TOOLS_SHIELDS, Tags.Items.TOOLS_BOWS, Tags.Items.TOOLS_CROSSBOWS, Tags.Items.TOOLS_FISHING_RODS, Tags.Items.TOOLS_SPEARS, Tags.Items.TOOLS_SHEARS);
-        tag(Tags.Items.ARMORS_HELMETS).add(Items.LEATHER_HELMET, Items.TURTLE_HELMET, Items.CHAINMAIL_HELMET, Items.IRON_HELMET, Items.GOLDEN_HELMET, Items.DIAMOND_HELMET, Items.NETHERITE_HELMET);
+            .addTags(ItemTags.AXES, ItemTags.HOES, ItemTags.PICKAXES, ItemTags.SHOVELS, ItemTags.SWORDS)
+            .addTags(Tags.Items.TOOLS_BOWS, Tags.Items.TOOLS_CROSSBOWS, Tags.Items.TOOLS_FISHING_RODS, Tags.Items.TOOLS_SHEARS, Tags.Items.TOOLS_SHIELDS, Tags.Items.TOOLS_SPEARS);
+        tag(Tags.Items.ARMORS_HELMETS).add(Items.LEATHER_HELMET, Items.CHAINMAIL_HELMET, Items.IRON_HELMET, Items.GOLDEN_HELMET, Items.DIAMOND_HELMET, Items.NETHERITE_HELMET, Items.TURTLE_HELMET);
         tag(Tags.Items.ARMORS_CHESTPLATES).add(Items.LEATHER_CHESTPLATE, Items.CHAINMAIL_CHESTPLATE, Items.IRON_CHESTPLATE, Items.GOLDEN_CHESTPLATE, Items.DIAMOND_CHESTPLATE, Items.NETHERITE_CHESTPLATE);
         tag(Tags.Items.ARMORS_LEGGINGS).add(Items.LEATHER_LEGGINGS, Items.CHAINMAIL_LEGGINGS, Items.IRON_LEGGINGS, Items.GOLDEN_LEGGINGS, Items.DIAMOND_LEGGINGS, Items.NETHERITE_LEGGINGS);
         tag(Tags.Items.ARMORS_BOOTS).add(Items.LEATHER_BOOTS, Items.CHAINMAIL_BOOTS, Items.IRON_BOOTS, Items.GOLDEN_BOOTS, Items.DIAMOND_BOOTS, Items.NETHERITE_BOOTS);

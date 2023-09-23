@@ -1,16 +1,16 @@
 {
   "values": [
-    "#minecraft:swords",
     "#minecraft:axes",
+    "#minecraft:hoes",
     "#minecraft:pickaxes",
     "#minecraft:shovels",
-    "#minecraft:hoes",
-    "#c:tools/shields",
+    "#minecraft:swords",
     "#c:tools/bows",
     "#c:tools/crossbows",
     "#c:tools/fishing_rods",
-    "#c:tools/spears",
     "#c:tools/shears",
+    "#c:tools/shields",
+    "#c:tools/spears",
     {
       "id": "#forge:tools",
       "required": false
