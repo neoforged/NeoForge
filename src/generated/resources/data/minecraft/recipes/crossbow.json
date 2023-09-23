@@ -12,7 +12,7 @@
       "tag": "c:ingots/iron"
     },
     "~": {
-      "tag": "c:string"
+      "tag": "c:strings"
     }
   },
   "pattern": [

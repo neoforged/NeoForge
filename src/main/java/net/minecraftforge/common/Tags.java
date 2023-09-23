@@ -469,7 +469,7 @@ public class Tags
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_GOLD = tag("storage_blocks/raw_gold");
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
         public static final TagKey<Item> STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
-        public static final TagKey<Item> STRING                  = tag("string");
+        public static final TagKey<Item> STRINGS = tag("strings");
         /**
          * A tag containing all existing tools. Do not use this tag for determining a tool's behavior.
          * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.

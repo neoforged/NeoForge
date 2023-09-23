@@ -254,7 +254,7 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.STORAGE_BLOCKS_RAW_GOLD, "Raw Gold Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_RAW_IRON, "Raw Iron Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_NETHERITE, "Netherite Storage Blocks");
-        add(Tags.Items.STRING, "String");
+        add(Tags.Items.STRINGS, "Strings");
         add(Tags.Items.TOOLS_SHEARS, "Shears");
         add(Tags.Items.TOOLS_SHIELDS, "Shields");
         add(Tags.Items.TOOLS_BOWS, "Bows");

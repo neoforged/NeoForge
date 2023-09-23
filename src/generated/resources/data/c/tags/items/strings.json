@@ -2,7 +2,7 @@
   "values": [
     "minecraft:string",
     {
-      "id": "#forge:string",
+      "id": "#forge:strings",
       "required": false
     }
   ]

@@ -78,7 +78,7 @@ public final class ForgeRecipeProvider extends VanillaRecipeProvider
         replace(Blocks.COBBLESTONE, Tags.Items.COBBLESTONE_NORMAL);
         replace(Blocks.COBBLED_DEEPSLATE, Tags.Items.COBBLESTONE_DEEPSLATE);
 
-        replace(Items.STRING, Tags.Items.STRING);
+        replace(Items.STRING, Tags.Items.STRINGS);
         exclude(getConversionRecipeName(Blocks.WHITE_WOOL, Items.STRING));
 
         exclude(Blocks.GOLD_BLOCK);

@@ -178,7 +178,7 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         copy(Tags.Blocks.STORAGE_BLOCKS_RAW_GOLD, Tags.Items.STORAGE_BLOCKS_RAW_GOLD);
         copy(Tags.Blocks.STORAGE_BLOCKS_RAW_IRON, Tags.Items.STORAGE_BLOCKS_RAW_IRON);
         copy(Tags.Blocks.STORAGE_BLOCKS_NETHERITE, Tags.Items.STORAGE_BLOCKS_NETHERITE);
-        tag(Tags.Items.STRING).add(Items.STRING);
+        tag(Tags.Items.STRINGS).add(Items.STRING);
         tag(Tags.Items.TOOLS_SHIELDS).add(Items.SHIELD);
         tag(Tags.Items.TOOLS_BOWS).add(Items.BOW);
         tag(Tags.Items.TOOLS_CROSSBOWS).add(Items.CROSSBOW);
@@ -300,7 +300,7 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tagWithOptionalLegacy(Tags.Items.SEEDS_PUMPKIN);
         tagWithOptionalLegacy(Tags.Items.SEEDS_WHEAT);
         tagWithOptionalLegacy(Tags.Items.SLIMEBALLS);
-        tagWithOptionalLegacy(Tags.Items.STRING);
+        tagWithOptionalLegacy(Tags.Items.STRINGS);
         tagWithOptionalLegacy(Tags.Items.TOOLS_SHIELDS);
         tagWithOptionalLegacy(Tags.Items.TOOLS_BOWS);
         tagWithOptionalLegacy(Tags.Items.TOOLS_CROSSBOWS);
