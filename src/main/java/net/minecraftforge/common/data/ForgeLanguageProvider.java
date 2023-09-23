@@ -40,8 +40,8 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.COBBLESTONE_INFESTED, "Infested Cobblestone");
         add(Tags.Blocks.COBBLESTONE_MOSSY, "Mossy Cobblestone");
         add(Tags.Blocks.COBBLESTONE_DEEPSLATE, "Deepslate Cobblestone");
-        add(Tags.Blocks.DYED_BLOCKS, "Dyed Blocks");
-        addColored(Tags.Blocks.DYED_BLOCKS, "{color} Dyed Blocks");
+        add(Tags.Blocks.DYED, "Dyed Blocks");
+        addColored(Tags.Blocks.DYED, "{color} Dyed Blocks");
         add(Tags.Blocks.END_STONES, "End Stones");
         add(Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST, "Enderman Place On Blacklist");
         add(Tags.Blocks.FENCE_GATES, "Fence Gates");
@@ -57,6 +57,9 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.GLASS_PANES_COLORLESS, "Colorless Glass Panes");
         add(Tags.Blocks.GRAVEL, "Gravel");
         add(Tags.Blocks.NETHERRACK, "Netherrack");
+        add(Tags.Blocks.NEEDS_WOOD_TOOL, "Needs Wooden Tools");
+        add(Tags.Blocks.NEEDS_GOLD_TOOL, "Needs Gold Tools");
+        add(Tags.Blocks.NEEDS_NETHERITE_TOOL, "Needs Netherite Tools");
         add(Tags.Blocks.OBSIDIAN, "Obsidian");
         add(Tags.Blocks.ORE_BEARING_GROUND_DEEPSLATE, "Deepslate Ore Bearing Ground");
         add(Tags.Blocks.ORE_BEARING_GROUND_NETHERRACK, "Netherrack Ore Bearing Ground");
@@ -92,6 +95,7 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.SANDSTONE_UNCOLORED_SLABS, "Uncolored Sandstone Slabs");
         add(Tags.Blocks.SANDSTONE_UNCOLORED_STAIRS, "Uncolored Sandstone Stairs");
         add(Tags.Blocks.STONE, "Stone");
+        add(Tags.Blocks.WORLDGEN_STONE, "World Generation Stone");
         add(Tags.Blocks.STORAGE_BLOCKS, "Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_AMETHYST, "Amethyst Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_COAL, "Coal Storage Blocks");
@@ -133,8 +137,8 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.CROPS, "Crops");
         add(Tags.Items.CROPS_BEETROOT, "Beetroot Crops");
         add(Tags.Items.CROPS_CARROT, "Carrot Crops");
-        add(Tags.Items.DYED_ITEMS, "Dyed Items");
-        addColored(Tags.Items.DYED_ITEMS, "{color} Dyed Items");
+        add(Tags.Items.DYED, "Dyed Items");
+        addColored(Tags.Items.DYED, "{color} Dyed Items");
         add(Tags.Items.CROPS_NETHER_WART, "Nether Wart Crops");
         add(Tags.Items.CROPS_POTATO, "Potato Crops");
         add(Tags.Items.CROPS_WHEAT, "Wheat Crops");
@@ -167,8 +171,6 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.GLASS_BLOCKS_COLORLESS, "Colorless Glass Blocks");
         add(Tags.Items.GLASS_PANES, "Glass Panes");
         add(Tags.Items.GLASS_PANES_COLORLESS, "Colorless Glass Panes");
-        add(Tags.Items.GLASS_STAINED_BLOCKS, "Stained Glass");
-        add(Tags.Items.GLASS_STAINED_PANES, "Stained Glass Panes");
         add(Tags.Items.GRAVEL, "Gravel");
         add(Tags.Items.GUNPOWDER, "Gunpowder");
         add(Tags.Items.HEADS, "Heads");

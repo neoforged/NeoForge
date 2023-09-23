@@ -36,6 +36,17 @@ public class Tags
     {
         private static void init(){}
 
+        // `neoforge` tags for functional behavior provided by Neoforge
+        public static final TagKey<Block> ENDERMAN_PLACE_ON_BLACKLIST = neoforgeTag("enderman_place_on_blacklist");
+        public static final TagKey<Block> NEEDS_WOOD_TOOL = neoforgeTag("needs_wood_tool");
+        public static final TagKey<Block> NEEDS_GOLD_TOOL = neoforgeTag("needs_gold_tool");
+        public static final TagKey<Block> NEEDS_NETHERITE_TOOL = neoforgeTag("needs_netherite_tool");
+        /**
+         * For blocks that should be recognized as stone during feature world generation.
+         */
+        public static final TagKey<Block> WORLDGEN_STONE = neoforgeTag("worldgen/stone");
+
+        // `c` tags for common conventions
         public static final TagKey<Block> BARRELS = tag("barrels");
         public static final TagKey<Block> BARRELS_WOODEN = tag("barrels/wooden");
         public static final TagKey<Block> BOOKSHELVES = tag("bookshelves");
@@ -60,25 +71,24 @@ public class Tags
         public static final TagKey<Block> COBBLESTONE_INFESTED = tag("cobblestone/infested");
         public static final TagKey<Block> COBBLESTONE_MOSSY = tag("cobblestone/mossy");
         public static final TagKey<Block> COBBLESTONE_DEEPSLATE = tag("cobblestone/deepslate");
-        public static final TagKey<Block> DYED_BLOCKS = tag("dyed_blocks");
-        public static final TagKey<Block> DYED_BLOCKS_BLACK = tag("dyed_blocks/black");
-        public static final TagKey<Block> DYED_BLOCKS_BLUE = tag("dyed_blocks/blue");
-        public static final TagKey<Block> DYED_BLOCKS_BROWN = tag("dyed_blocks/brown");
-        public static final TagKey<Block> DYED_BLOCKS_CYAN = tag("dyed_blocks/cyan");
-        public static final TagKey<Block> DYED_BLOCKS_GRAY = tag("dyed_blocks/gray");
-        public static final TagKey<Block> DYED_BLOCKS_GREEN = tag("dyed_blocks/green");
-        public static final TagKey<Block> DYED_BLOCKS_LIGHT_BLUE = tag("dyed_blocks/light_blue");
-        public static final TagKey<Block> DYED_BLOCKS_LIGHT_GRAY = tag("dyed_blocks/light_gray");
-        public static final TagKey<Block> DYED_BLOCKS_LIME = tag("dyed_blocks/lime");
-        public static final TagKey<Block> DYED_BLOCKS_MAGENTA = tag("dyed_blocks/magenta");
-        public static final TagKey<Block> DYED_BLOCKS_ORANGE = tag("dyed_blocks/orange");
-        public static final TagKey<Block> DYED_BLOCKS_PINK = tag("dyed_blocks/pink");
-        public static final TagKey<Block> DYED_BLOCKS_PURPLE = tag("dyed_blocks/purple");
-        public static final TagKey<Block> DYED_BLOCKS_RED = tag("dyed_blocks/red");
-        public static final TagKey<Block> DYED_BLOCKS_WHITE = tag("dyed_blocks/white");
-        public static final TagKey<Block> DYED_BLOCKS_YELLOW = tag("dyed_blocks/yellow");
+        public static final TagKey<Block> DYED = tag("dyed");
+        public static final TagKey<Block> DYED_BLACK = tag("dyed/black");
+        public static final TagKey<Block> DYED_BLUE = tag("dyed/blue");
+        public static final TagKey<Block> DYED_BROWN = tag("dyed/brown");
+        public static final TagKey<Block> DYED_CYAN = tag("dyed/cyan");
+        public static final TagKey<Block> DYED_GRAY = tag("dyed/gray");
+        public static final TagKey<Block> DYED_GREEN = tag("dyed/green");
+        public static final TagKey<Block> DYED_LIGHT_BLUE = tag("dyed/light_blue");
+        public static final TagKey<Block> DYED_LIGHT_GRAY = tag("dyed/light_gray");
+        public static final TagKey<Block> DYED_LIME = tag("dyed/lime");
+        public static final TagKey<Block> DYED_MAGENTA = tag("dyed/magenta");
+        public static final TagKey<Block> DYED_ORANGE = tag("dyed/orange");
+        public static final TagKey<Block> DYED_PINK = tag("dyed/pink");
+        public static final TagKey<Block> DYED_PURPLE = tag("dyed/purple");
+        public static final TagKey<Block> DYED_RED = tag("dyed/red");
+        public static final TagKey<Block> DYED_WHITE = tag("dyed/white");
+        public static final TagKey<Block> DYED_YELLOW = tag("dyed/yellow");
         public static final TagKey<Block> END_STONES = tag("end_stones");
-        public static final TagKey<Block> ENDERMAN_PLACE_ON_BLACKLIST = tag("enderman_place_on_blacklist");
         public static final TagKey<Block> FENCE_GATES = tag("fence_gates");
         public static final TagKey<Block> FENCE_GATES_WOODEN = tag("fence_gates/wooden");
         public static final TagKey<Block> FENCES = tag("fences");
@@ -86,18 +96,15 @@ public class Tags
         public static final TagKey<Block> FENCES_WOODEN = tag("fences/wooden");
 
         public static final TagKey<Block> GLASS_BLOCKS = tag("glass_blocks");
-        public static final TagKey<Block> GLASS_BLOCKS_COLORLESS = tag("glass/blocks_colorless");
+        public static final TagKey<Block> GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
         /**
          * Glass which is made from cheap resources like sand and only minor additional ingredients like dyes
          */
-        public static final TagKey<Block> GLASS_BLOCKS_CHEAP = tag("glass/blocks_cheap");
-        public static final TagKey<Block> GLASS_BLOCKS_TINTED = tag("glass/blocks_tinted");
+        public static final TagKey<Block> GLASS_BLOCKS_CHEAP = tag("glass_blocks/cheap");
+        public static final TagKey<Block> GLASS_BLOCKS_TINTED = tag("glass_blocks/tinted");
 
         public static final TagKey<Block> GLASS_PANES = tag("glass_panes");
-        public static final TagKey<Block> GLASS_PANES_COLORLESS = tag("glass/panes_colorless");
-
-        public static final TagKey<Block> GLASS_STAINED_BLOCKS = tag("glass/stained_blocks");
-        public static final TagKey<Block> GLASS_STAINED_PANES = tag("glass/stained_panes");
+        public static final TagKey<Block> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
 
         public static final TagKey<Block> GRAVEL = tag("gravel");
         public static final TagKey<Block> NETHERRACK = tag("netherrack");
@@ -189,13 +196,14 @@ public class Tags
         public static final TagKey<Block> STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
         public static final TagKey<Block> STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
 
-        public static final TagKey<Block> NEEDS_WOOD_TOOL = tag("needs_wood_tool");
-        public static final TagKey<Block> NEEDS_GOLD_TOOL = tag("needs_gold_tool");
-        public static final TagKey<Block> NEEDS_NETHERITE_TOOL = tag("needs_netherite_tool");
-
         private static TagKey<Block> tag(String name)
         {
             return BlockTags.create(new ResourceLocation("c", name));
+        }
+
+        private static TagKey<Block> neoforgeTag(String name)
+        {
+            return BlockTags.create(new ResourceLocation("neoforge", name));
         }
     }
 
@@ -242,11 +250,24 @@ public class Tags
     {
         private static void init(){}
 
+        // `neoforge` tags for functional behavior provided by Neoforge
+        /**
+         * This tag defaults to {@link net.minecraft.world.item.Items#LAPIS_LAZULI} when not present in any datapacks, including forge client on vanilla server
+         */
+        public static final TagKey<Item> ENCHANTING_FUELS = neoforgeTag("enchanting_fuels");
+
+        // `c` tags for common conventions
         public static final TagKey<Item> BARRELS = tag("barrels");
         public static final TagKey<Item> BARRELS_WOODEN = tag("barrels/wooden");
         public static final TagKey<Item> BONES = tag("bones");
         public static final TagKey<Item> BOOKSHELVES = tag("bookshelves");
+        /**
+         * For blocks that are similar to amethyst where their budding block produces buds and cluster blocks
+         */
         public static final TagKey<Item> BUDDING_BLOCKS = tag("budding_blocks");
+        /**
+         * For blocks that are similar to amethyst where they have buddings forming from budding blocks
+         */
         public static final TagKey<Item> BUDS = tag("buds");
         public static final TagKey<Item> CHESTS = tag("chests");
         public static final TagKey<Item> CHESTS_ENDER = tag("chests/ender");
@@ -257,6 +278,9 @@ public class Tags
         public static final TagKey<Item> COBBLESTONE_INFESTED = tag("cobblestone/infested");
         public static final TagKey<Item> COBBLESTONE_MOSSY = tag("cobblestone/mossy");
         public static final TagKey<Item> COBBLESTONE_DEEPSLATE = tag("cobblestone/deepslate");
+        /**
+         * For blocks that are similar to amethyst where they have clusters forming from budding blocks
+         */
         public static final TagKey<Item> CLUSTERS = tag("clusters");
         public static final TagKey<Item> CROPS = tag("crops");
         public static final TagKey<Item> CROPS_BEETROOT = tag("crops/beetroot");
@@ -264,23 +288,23 @@ public class Tags
         public static final TagKey<Item> CROPS_NETHER_WART = tag("crops/nether_wart");
         public static final TagKey<Item> CROPS_POTATO = tag("crops/potato");
         public static final TagKey<Item> CROPS_WHEAT = tag("crops/wheat");
-        public static final TagKey<Item> DYED_ITEMS = tag("dyed_items");
-        public static final TagKey<Item> DYED_ITEMS_BLACK = tag("dyed_items/black");
-        public static final TagKey<Item> DYED_ITEMS_BLUE = tag("dyed_items/blue");
-        public static final TagKey<Item> DYED_ITEMS_BROWN = tag("dyed_items/brown");
-        public static final TagKey<Item> DYED_ITEMS_CYAN = tag("dyed_items/cyan");
-        public static final TagKey<Item> DYED_ITEMS_GRAY = tag("dyed_items/gray");
-        public static final TagKey<Item> DYED_ITEMS_GREEN = tag("dyed_items/green");
-        public static final TagKey<Item> DYED_ITEMS_LIGHT_BLUE = tag("dyed_items/light_blue");
-        public static final TagKey<Item> DYED_ITEMS_LIGHT_GRAY = tag("dyed_items/light_gray");
-        public static final TagKey<Item> DYED_ITEMS_LIME = tag("dyed_items/lime");
-        public static final TagKey<Item> DYED_ITEMS_MAGENTA = tag("dyed_items/magenta");
-        public static final TagKey<Item> DYED_ITEMS_ORANGE = tag("dyed_items/orange");
-        public static final TagKey<Item> DYED_ITEMS_PINK = tag("dyed_items/pink");
-        public static final TagKey<Item> DYED_ITEMS_PURPLE = tag("dyed_items/purple");
-        public static final TagKey<Item> DYED_ITEMS_RED = tag("dyed_items/red");
-        public static final TagKey<Item> DYED_ITEMS_WHITE = tag("dyed_items/white");
-        public static final TagKey<Item> DYED_ITEMS_YELLOW = tag("dyed_items/yellow");
+        public static final TagKey<Item> DYED = tag("dyed");
+        public static final TagKey<Item> DYED_BLACK = tag("dyed/black");
+        public static final TagKey<Item> DYED_BLUE = tag("dyed/blue");
+        public static final TagKey<Item> DYED_BROWN = tag("dyed/brown");
+        public static final TagKey<Item> DYED_CYAN = tag("dyed/cyan");
+        public static final TagKey<Item> DYED_GRAY = tag("dyed/gray");
+        public static final TagKey<Item> DYED_GREEN = tag("dyed/green");
+        public static final TagKey<Item> DYED_LIGHT_BLUE = tag("dyed/light_blue");
+        public static final TagKey<Item> DYED_LIGHT_GRAY = tag("dyed/light_gray");
+        public static final TagKey<Item> DYED_LIME = tag("dyed/lime");
+        public static final TagKey<Item> DYED_MAGENTA = tag("dyed/magenta");
+        public static final TagKey<Item> DYED_ORANGE = tag("dyed/orange");
+        public static final TagKey<Item> DYED_PINK = tag("dyed/pink");
+        public static final TagKey<Item> DYED_PURPLE = tag("dyed/purple");
+        public static final TagKey<Item> DYED_RED = tag("dyed/red");
+        public static final TagKey<Item> DYED_WHITE = tag("dyed/white");
+        public static final TagKey<Item> DYED_YELLOW = tag("dyed/yellow");
         public static final TagKey<Item> DUSTS = tag("dusts");
         public static final TagKey<Item> DUSTS_PRISMARINE = tag("dusts/prismarine");
         public static final TagKey<Item> DUSTS_REDSTONE = tag("dusts/redstone");
@@ -305,10 +329,6 @@ public class Tags
         public static final TagKey<Item> DYES_WHITE = DyeColor.WHITE.getTag();
 
         public static final TagKey<Item> EGGS = tag("eggs");
-        /**
-         * This tag defaults to {@link net.minecraft.world.item.Items#LAPIS_LAZULI} when not present in any datapacks, including forge client on vanilla server
-         */
-        public static final TagKey<Item> ENCHANTING_FUELS = tag("enchanting_fuels");
         public static final TagKey<Item> END_STONES = tag("end_stones");
         public static final TagKey<Item> ENDER_PEARLS = tag("ender_pearls");
         public static final TagKey<Item> FEATHERS = tag("feathers");
@@ -326,18 +346,15 @@ public class Tags
         public static final TagKey<Item> GEMS_QUARTZ = tag("gems/quartz");
 
         public static final TagKey<Item> GLASS_BLOCKS = tag("glass_blocks");
-        public static final TagKey<Item> GLASS_BLOCKS_COLORLESS = tag("glass/blocks_colorless");
+        public static final TagKey<Item> GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
         /**
-         * Glass which is made from sand and only minor additional ingredients like dyes
+         * Glass which is made from cheap resources like sand and only minor additional ingredients like dyes
          */
-        public static final TagKey<Item> GLASS_BLOCKS_CHEAP = tag("glass/blocks_cheap");
-        public static final TagKey<Item> GLASS_BLOCKS_TINTED = tag("glass/blocks_tinted");
+        public static final TagKey<Item> GLASS_BLOCKS_CHEAP = tag("glass_blocks/cheap");
+        public static final TagKey<Item> GLASS_BLOCKS_TINTED = tag("glass_blocks/tinted");
 
         public static final TagKey<Item> GLASS_PANES = tag("glass_panes");
-        public static final TagKey<Item> GLASS_PANES_COLORLESS = tag("glass/panes_colorless");
-
-        public static final TagKey<Item> GLASS_STAINED_BLOCKS = tag("glass/stained_blocks");
-        public static final TagKey<Item> GLASS_STAINED_PANES = tag("glass/stained_panes");
+        public static final TagKey<Item> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
 
         public static final TagKey<Item> GRAVEL = tag("gravel");
         public static final TagKey<Item> GUNPOWDER = tag("gunpowder");
@@ -454,63 +471,58 @@ public class Tags
         public static final TagKey<Item> STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
         public static final TagKey<Item> STRING                  = tag("string");
         /**
-         * A tag containing all existing tools.
-         *
-         * Note: This tag is not an alternative or a substitute to {@link net.minecraftforge.common.ToolActions}.
+         * A tag containing all existing tools. Do not use this tag for determining a tool's behavior.
+         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
          *
          * @see net.minecraftforge.common.ToolAction
          * @see net.minecraftforge.common.ToolActions
          */
         public static final TagKey<Item> TOOLS = tag("tools");
         /**
-         * A tag containing all existing shields.
-         *
-         * Note: This tag is not an alternative or a substitute to {@link net.minecraftforge.common.ToolActions}.
+         * A tag containing all existing shields. Do not use this tag for determining a tool's behavior.
+         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
          *
          * @see net.minecraftforge.common.ToolAction
          * @see net.minecraftforge.common.ToolActions
          */
         public static final TagKey<Item> TOOLS_SHIELDS = tag("tools/shields");
         /**
-         * A tag containing all existing bows.
-         *
-         * Note: This tag is not an alternative or a substitute to {@link net.minecraftforge.common.ToolActions}.
+         * A tag containing all existing bows. Do not use this tag for determining a tool's behavior.
+         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
          *
          * @see net.minecraftforge.common.ToolAction
          * @see net.minecraftforge.common.ToolActions
          */
         public static final TagKey<Item> TOOLS_BOWS = tag("tools/bows");
         /**
-         * A tag containing all existing crossbows.
-         *
-         * Note: This tag is not an alternative or a substitute to {@link net.minecraftforge.common.ToolActions}.
+         * A tag containing all existing crossbows. Do not use this tag for determining a tool's behavior.
+         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
          *
          * @see net.minecraftforge.common.ToolAction
          * @see net.minecraftforge.common.ToolActions
          */
         public static final TagKey<Item> TOOLS_CROSSBOWS = tag("tools/crossbows");
         /**
-         * A tag containing all existing fishing rods.
-         *
-         * Note: This tag is not an alternative or a substitute to {@link net.minecraftforge.common.ToolActions}.
+         * A tag containing all existing fishing rods. Do not use this tag for determining a tool's behavior.
+         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
          *
          * @see net.minecraftforge.common.ToolAction
          * @see net.minecraftforge.common.ToolActions
          */
         public static final TagKey<Item> TOOLS_FISHING_RODS = tag("tools/fishing_rods");
         /**
-         * A tag containing all existing shears.
-         *
-         * Note: This tag is not an alternative or a substitute to {@link net.minecraftforge.common.ToolActions}.
+         * A tag containing all existing shears. Do not use this tag for determining a tool's behavior.
+         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
          *
          * @see net.minecraftforge.common.ToolAction
          * @see net.minecraftforge.common.ToolActions
          */
         public static final TagKey<Item> TOOLS_SHEARS = tag("tools/shears");
         /**
-         * A tag containing all existing tridents or spears. (Essentially throwable weapons)
-         *
-         * Note: This tag is not an alternative or a substitute to {@link net.minecraftforge.common.ToolActions}.
+         * A tag containing all existing throwable spears. Other throwable tools such as throwing knives or boomerangs
+         * should not be put into this tag and should be put into their own tool tags.
+         * Do not use this tag for determining a tool's behavior.
+         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
          *
          * @see net.minecraftforge.common.ToolAction
          * @see net.minecraftforge.common.ToolActions
@@ -541,6 +553,11 @@ public class Tags
         {
             return ItemTags.create(new ResourceLocation("c", name));
         }
+
+        private static TagKey<Item> neoforgeTag(String name)
+        {
+            return ItemTags.create(new ResourceLocation("neoforge", name));
+        }
     }
 
     public static class Fluids
@@ -556,7 +573,7 @@ public class Tags
          */
         public static final TagKey<Fluid> GASEOUS = tag("gaseous");
         /**
-         * Holds all fluids related to honey.
+         * Holds all fluids related to honey. (Standard unit for honey bottle is 250mb per bottle)
          */
         public static final TagKey<Fluid> HONEY = tag("honey");
 

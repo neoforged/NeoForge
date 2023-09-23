@@ -47,20 +47,20 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(COBBLESTONE_INFESTED).add(Blocks.INFESTED_COBBLESTONE);
         tag(COBBLESTONE_MOSSY).add(Blocks.MOSSY_COBBLESTONE);
         tag(COBBLESTONE_DEEPSLATE).add(Blocks.COBBLED_DEEPSLATE);
-        addColored(DYED_BLOCKS, "{color}_banner");
-        addColored(DYED_BLOCKS, "{color}_bed");
-        addColored(DYED_BLOCKS, "{color}_candle");
-        addColored(DYED_BLOCKS, "{color}_carpet");
-        addColored(DYED_BLOCKS, "{color}_concrete");
-        addColored(DYED_BLOCKS, "{color}_concrete_powder");
-        addColored(DYED_BLOCKS, "{color}_glazed_terracotta");
-        addColored(DYED_BLOCKS, "{color}_shulker_box");
-        addColored(DYED_BLOCKS, "{color}_stained_glass");
-        addColored(DYED_BLOCKS, "{color}_stained_glass_pane");
-        addColored(DYED_BLOCKS, "{color}_terracotta");
-        addColored(DYED_BLOCKS, "{color}_wall_banner");
-        addColored(DYED_BLOCKS, "{color}_wool");
-        addColoredTags(tag(DYED_BLOCKS)::addTag, DYED_BLOCKS);
+        addColored(DYED, "{color}_banner");
+        addColored(DYED, "{color}_bed");
+        addColored(DYED, "{color}_candle");
+        addColored(DYED, "{color}_carpet");
+        addColored(DYED, "{color}_concrete");
+        addColored(DYED, "{color}_concrete_powder");
+        addColored(DYED, "{color}_glazed_terracotta");
+        addColored(DYED, "{color}_shulker_box");
+        addColored(DYED, "{color}_stained_glass");
+        addColored(DYED, "{color}_stained_glass_pane");
+        addColored(DYED, "{color}_terracotta");
+        addColored(DYED, "{color}_wall_banner");
+        addColored(DYED, "{color}_wool");
+        addColoredTags(tag(DYED)::addTag, DYED);
         tag(END_STONES).add(Blocks.END_STONE);
         tag(ENDERMAN_PLACE_ON_BLACKLIST);
         tag(FENCE_GATES).addTags(FENCE_GATES_WOODEN);
@@ -68,13 +68,11 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(FENCES).addTags(FENCES_NETHER_BRICK, FENCES_WOODEN);
         tag(FENCES_NETHER_BRICK).add(Blocks.NETHER_BRICK_FENCE);
         tag(FENCES_WOODEN).addTag(BlockTags.WOODEN_FENCES);
-        tag(GLASS_STAINED_BLOCKS).add(Blocks.BLACK_STAINED_GLASS, Blocks.BLUE_STAINED_GLASS, Blocks.BROWN_STAINED_GLASS, Blocks.CYAN_STAINED_GLASS, Blocks.GRAY_STAINED_GLASS, Blocks.GREEN_STAINED_GLASS, Blocks.LIGHT_BLUE_STAINED_GLASS, Blocks.LIGHT_GRAY_STAINED_GLASS, Blocks.LIME_STAINED_GLASS, Blocks.MAGENTA_STAINED_GLASS, Blocks.ORANGE_STAINED_GLASS, Blocks.PINK_STAINED_GLASS, Blocks.PURPLE_STAINED_GLASS, Blocks.RED_STAINED_GLASS, Blocks.WHITE_STAINED_GLASS, Blocks.YELLOW_STAINED_GLASS);
-        tag(GLASS_BLOCKS).addTags(GLASS_BLOCKS_COLORLESS, GLASS_STAINED_BLOCKS, GLASS_BLOCKS_TINTED);
+        tag(GLASS_BLOCKS).addTags(GLASS_BLOCKS_COLORLESS, GLASS_BLOCKS_CHEAP, GLASS_BLOCKS_TINTED).add(Blocks.BLACK_STAINED_GLASS, Blocks.BLUE_STAINED_GLASS, Blocks.BROWN_STAINED_GLASS, Blocks.CYAN_STAINED_GLASS, Blocks.GRAY_STAINED_GLASS, Blocks.GREEN_STAINED_GLASS, Blocks.LIGHT_BLUE_STAINED_GLASS, Blocks.LIGHT_GRAY_STAINED_GLASS, Blocks.LIME_STAINED_GLASS, Blocks.MAGENTA_STAINED_GLASS, Blocks.ORANGE_STAINED_GLASS, Blocks.PINK_STAINED_GLASS, Blocks.PURPLE_STAINED_GLASS, Blocks.RED_STAINED_GLASS, Blocks.WHITE_STAINED_GLASS, Blocks.YELLOW_STAINED_GLASS);
         tag(GLASS_BLOCKS_COLORLESS).add(Blocks.GLASS);
         tag(GLASS_BLOCKS_CHEAP).add(Blocks.GLASS, Blocks.BLACK_STAINED_GLASS, Blocks.BLUE_STAINED_GLASS, Blocks.BROWN_STAINED_GLASS, Blocks.CYAN_STAINED_GLASS, Blocks.GRAY_STAINED_GLASS, Blocks.GREEN_STAINED_GLASS, Blocks.LIGHT_BLUE_STAINED_GLASS, Blocks.LIGHT_GRAY_STAINED_GLASS, Blocks.LIME_STAINED_GLASS, Blocks.MAGENTA_STAINED_GLASS, Blocks.ORANGE_STAINED_GLASS, Blocks.PINK_STAINED_GLASS, Blocks.PURPLE_STAINED_GLASS, Blocks.RED_STAINED_GLASS, Blocks.WHITE_STAINED_GLASS, Blocks.YELLOW_STAINED_GLASS);
         tag(GLASS_BLOCKS_TINTED).add(Blocks.TINTED_GLASS);
-        tag(GLASS_STAINED_PANES).add(Blocks.BLACK_STAINED_GLASS_PANE, Blocks.BLUE_STAINED_GLASS_PANE, Blocks.BROWN_STAINED_GLASS_PANE, Blocks.CYAN_STAINED_GLASS_PANE, Blocks.GRAY_STAINED_GLASS_PANE, Blocks.GREEN_STAINED_GLASS_PANE, Blocks.LIGHT_BLUE_STAINED_GLASS_PANE, Blocks.LIGHT_GRAY_STAINED_GLASS_PANE, Blocks.LIME_STAINED_GLASS_PANE, Blocks.MAGENTA_STAINED_GLASS_PANE, Blocks.ORANGE_STAINED_GLASS_PANE, Blocks.PINK_STAINED_GLASS_PANE, Blocks.PURPLE_STAINED_GLASS_PANE, Blocks.RED_STAINED_GLASS_PANE, Blocks.WHITE_STAINED_GLASS_PANE, Blocks.YELLOW_STAINED_GLASS_PANE);
-        tag(GLASS_PANES).addTags(GLASS_PANES_COLORLESS, GLASS_STAINED_PANES);
+        tag(GLASS_PANES).addTags(GLASS_PANES_COLORLESS).add(Blocks.BLACK_STAINED_GLASS_PANE, Blocks.BLUE_STAINED_GLASS_PANE, Blocks.BROWN_STAINED_GLASS_PANE, Blocks.CYAN_STAINED_GLASS_PANE, Blocks.GRAY_STAINED_GLASS_PANE, Blocks.GREEN_STAINED_GLASS_PANE, Blocks.LIGHT_BLUE_STAINED_GLASS_PANE, Blocks.LIGHT_GRAY_STAINED_GLASS_PANE, Blocks.LIME_STAINED_GLASS_PANE, Blocks.MAGENTA_STAINED_GLASS_PANE, Blocks.ORANGE_STAINED_GLASS_PANE, Blocks.PINK_STAINED_GLASS_PANE, Blocks.PURPLE_STAINED_GLASS_PANE, Blocks.RED_STAINED_GLASS_PANE, Blocks.WHITE_STAINED_GLASS_PANE, Blocks.YELLOW_STAINED_GLASS_PANE);
         tag(GLASS_PANES_COLORLESS).add(Blocks.GLASS_PANE);
         tag(GRAVEL).add(Blocks.GRAVEL);
         tag(NETHERRACK).add(Blocks.NETHERRACK);
@@ -115,6 +113,7 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(SANDSTONE_STAIRS).addTags(SANDSTONE_RED_STAIRS, SANDSTONE_UNCOLORED_STAIRS);
 
         tag(STONE).add(Blocks.ANDESITE, Blocks.DIORITE, Blocks.GRANITE, Blocks.INFESTED_STONE, Blocks.STONE, Blocks.POLISHED_ANDESITE, Blocks.POLISHED_DIORITE, Blocks.POLISHED_GRANITE, Blocks.DEEPSLATE, Blocks.POLISHED_DEEPSLATE, Blocks.INFESTED_DEEPSLATE, Blocks.TUFF);
+        tag(WORLDGEN_STONE).add(Blocks.ANDESITE, Blocks.DIORITE, Blocks.GRANITE, Blocks.INFESTED_STONE, Blocks.STONE, Blocks.POLISHED_ANDESITE, Blocks.POLISHED_DIORITE, Blocks.POLISHED_GRANITE, Blocks.DEEPSLATE, Blocks.POLISHED_DEEPSLATE, Blocks.INFESTED_DEEPSLATE, Blocks.TUFF);
         tag(STORAGE_BLOCKS).addTags(STORAGE_BLOCKS_AMETHYST, STORAGE_BLOCKS_COAL, STORAGE_BLOCKS_COPPER, STORAGE_BLOCKS_DIAMOND, STORAGE_BLOCKS_EMERALD, STORAGE_BLOCKS_GOLD, STORAGE_BLOCKS_IRON, STORAGE_BLOCKS_LAPIS, STORAGE_BLOCKS_QUARTZ, STORAGE_BLOCKS_RAW_COPPER, STORAGE_BLOCKS_RAW_GOLD, STORAGE_BLOCKS_RAW_IRON, STORAGE_BLOCKS_REDSTONE, STORAGE_BLOCKS_NETHERITE);
         tag(STORAGE_BLOCKS_AMETHYST).add(Blocks.AMETHYST_BLOCK);
         tag(STORAGE_BLOCKS_COAL).add(Blocks.COAL_BLOCK);
@@ -155,99 +154,62 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tagWithOptionalLegacy(FENCES);
         tagWithOptionalLegacy(FENCES_NETHER_BRICK);
         tagWithOptionalLegacy(FENCES_WOODEN);
-        tag(DYED_BLOCKS_BLACK)
+        tag(DYED_BLACK)
                 .addOptional(new ResourceLocation("forge", "glass/black"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/black"));
-        tag(DYED_BLOCKS_BLUE)
+        tag(DYED_BLUE)
                 .addOptional(new ResourceLocation("forge", "glass/blue"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/blue"));
-        tag(DYED_BLOCKS_BROWN)
+        tag(DYED_BROWN)
                 .addOptional(new ResourceLocation("forge", "glass/brown"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/brown"));
-        tag(DYED_BLOCKS_CYAN)
+        tag(DYED_CYAN)
                 .addOptional(new ResourceLocation("forge", "glass/cyan"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/cyan"));
-        tag(DYED_BLOCKS_GRAY)
+        tag(DYED_GRAY)
                 .addOptional(new ResourceLocation("forge", "glass/gray"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/gray"));
-        tag(DYED_BLOCKS_GREEN)
+        tag(DYED_GREEN)
                 .addOptional(new ResourceLocation("forge", "glass/green"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/green"));
-        tag(DYED_BLOCKS_LIGHT_BLUE)
+        tag(DYED_LIGHT_BLUE)
                 .addOptional(new ResourceLocation("forge", "glass/light_blue"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/light_blue"));
-        tag(DYED_BLOCKS_LIGHT_GRAY)
+        tag(DYED_LIGHT_GRAY)
                 .addOptional(new ResourceLocation("forge", "glass/light_gray"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/light_gray"));
-        tag(DYED_BLOCKS_LIME)
+        tag(DYED_LIME)
                 .addOptional(new ResourceLocation("forge", "glass/lime"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/lime"));
-        tag(DYED_BLOCKS_MAGENTA)
+        tag(DYED_MAGENTA)
                 .addOptional(new ResourceLocation("forge", "glass/magenta"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/magenta"));
-        tag(DYED_BLOCKS_MAGENTA)
+        tag(DYED_MAGENTA)
                 .addOptional(new ResourceLocation("forge", "glass/magenta"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/magenta"));
-        tag(DYED_BLOCKS_ORANGE)
+        tag(DYED_ORANGE)
                 .addOptional(new ResourceLocation("forge", "glass/orange"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/orange"));
-        tag(DYED_BLOCKS_PINK)
+        tag(DYED_PINK)
                 .addOptional(new ResourceLocation("forge", "glass/pink"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/pink"));
-        tag(DYED_BLOCKS_PURPLE)
+        tag(DYED_PURPLE)
                 .addOptional(new ResourceLocation("forge", "glass/purple"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/purple"));
-        tag(DYED_BLOCKS_RED)
+        tag(DYED_RED)
                 .addOptional(new ResourceLocation("forge", "glass/red"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/red"));
-        tag(DYED_BLOCKS_WHITE)
+        tag(DYED_WHITE)
                 .addOptional(new ResourceLocation("forge", "glass/white"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/white"));
-        tag(DYED_BLOCKS_YELLOW)
+        tag(DYED_YELLOW)
                 .addOptional(new ResourceLocation("forge", "glass/yellow"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/yellow"));
         tag(GLASS_BLOCKS)
                 .addOptional(new ResourceLocation("forge", "glass"));
-        tag(GLASS_STAINED_BLOCKS)
-                .addOptional(new ResourceLocation("forge", "glass/black"))
-                .addOptional(new ResourceLocation("forge", "glass/blue"))
-                .addOptional(new ResourceLocation("forge", "glass/brown"))
-                .addOptional(new ResourceLocation("forge", "glass/cyan"))
-                .addOptional(new ResourceLocation("forge", "glass/gray"))
-                .addOptional(new ResourceLocation("forge", "glass/green"))
-                .addOptional(new ResourceLocation("forge", "glass/light_blue"))
-                .addOptional(new ResourceLocation("forge", "glass/light_gray"))
-                .addOptional(new ResourceLocation("forge", "glass/lime"))
-                .addOptional(new ResourceLocation("forge", "glass/magenta"))
-                .addOptional(new ResourceLocation("forge", "glass/magenta"))
-                .addOptional(new ResourceLocation("forge", "glass/orange"))
-                .addOptional(new ResourceLocation("forge", "glass/pink"))
-                .addOptional(new ResourceLocation("forge", "glass/purple"))
-                .addOptional(new ResourceLocation("forge", "glass/red"))
-                .addOptional(new ResourceLocation("forge", "glass/white"))
-                .addOptional(new ResourceLocation("forge", "glass/yellow"));
         tag(GLASS_BLOCKS_COLORLESS).addOptional(new ResourceLocation("forge", "glass_colorless"));
         tag(GLASS_BLOCKS_CHEAP).addOptional(new ResourceLocation("forge", "glass_silica"));
         tag(GLASS_BLOCKS_TINTED).addOptional(new ResourceLocation("forge", "glass_tinted"));
-        tag(GLASS_STAINED_PANES)
-                .addOptional(new ResourceLocation("forge", "stained_glass_panes"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/black"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/blue"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/brown"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/cyan"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/gray"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/green"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/light_blue"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/light_gray"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/lime"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/magenta"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/magenta"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/orange"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/pink"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/purple"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/red"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/white"))
-                .addOptional(new ResourceLocation("forge", "glass_panes/yellow"));
         tag(GLASS_PANES_COLORLESS)
                 .addOptional(new ResourceLocation("forge", "glass_panes_colorless"));
         tagWithOptionalLegacy(GRAVEL);

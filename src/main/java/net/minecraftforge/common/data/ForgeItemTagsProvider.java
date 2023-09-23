@@ -23,15 +23,6 @@ import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-import static net.minecraftforge.common.Tags.Blocks.*;
-import static net.minecraftforge.common.Tags.Blocks.DYED_BLOCKS_MAGENTA;
-import static net.minecraftforge.common.Tags.Blocks.DYED_BLOCKS_ORANGE;
-import static net.minecraftforge.common.Tags.Blocks.DYED_BLOCKS_PINK;
-import static net.minecraftforge.common.Tags.Blocks.DYED_BLOCKS_PURPLE;
-import static net.minecraftforge.common.Tags.Blocks.DYED_BLOCKS_RED;
-import static net.minecraftforge.common.Tags.Blocks.DYED_BLOCKS_WHITE;
-import static net.minecraftforge.common.Tags.Blocks.DYED_BLOCKS_YELLOW;
-
 public final class ForgeItemTagsProvider extends ItemTagsProvider
 {
     public ForgeItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagProvider, ExistingFileHelper existingFileHelper)
@@ -62,19 +53,19 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.CROPS_NETHER_WART).add(Items.NETHER_WART);
         tag(Tags.Items.CROPS_POTATO).add(Items.POTATO);
         tag(Tags.Items.CROPS_WHEAT).add(Items.WHEAT);
-        addColored(Tags.Items.DYED_ITEMS, "{color}_banner");
-        addColored(Tags.Items.DYED_ITEMS, "{color}_bed");
-        addColored(Tags.Items.DYED_ITEMS, "{color}_candle");
-        addColored(Tags.Items.DYED_ITEMS, "{color}_carpet");
-        addColored(Tags.Items.DYED_ITEMS, "{color}_concrete");
-        addColored(Tags.Items.DYED_ITEMS, "{color}_concrete_powder");
-        addColored(Tags.Items.DYED_ITEMS, "{color}_glazed_terracotta");
-        addColored(Tags.Items.DYED_ITEMS, "{color}_shulker_box");
-        addColored(Tags.Items.DYED_ITEMS, "{color}_stained_glass");
-        addColored(Tags.Items.DYED_ITEMS, "{color}_stained_glass_pane");
-        addColored(Tags.Items.DYED_ITEMS, "{color}_terracotta");
-        addColored(Tags.Items.DYED_ITEMS, "{color}_wool");
-        addColoredTags(tag(Tags.Items.DYED_ITEMS)::addTags, Tags.Items.DYED_ITEMS);
+        addColored(Tags.Items.DYED, "{color}_banner");
+        addColored(Tags.Items.DYED, "{color}_bed");
+        addColored(Tags.Items.DYED, "{color}_candle");
+        addColored(Tags.Items.DYED, "{color}_carpet");
+        addColored(Tags.Items.DYED, "{color}_concrete");
+        addColored(Tags.Items.DYED, "{color}_concrete_powder");
+        addColored(Tags.Items.DYED, "{color}_glazed_terracotta");
+        addColored(Tags.Items.DYED, "{color}_shulker_box");
+        addColored(Tags.Items.DYED, "{color}_stained_glass");
+        addColored(Tags.Items.DYED, "{color}_stained_glass_pane");
+        addColored(Tags.Items.DYED, "{color}_terracotta");
+        addColored(Tags.Items.DYED, "{color}_wool");
+        addColoredTags(tag(Tags.Items.DYED)::addTags, Tags.Items.DYED);
         tag(Tags.Items.DUSTS).addTags(Tags.Items.DUSTS_GLOWSTONE, Tags.Items.DUSTS_PRISMARINE, Tags.Items.DUSTS_REDSTONE);
         tag(Tags.Items.DUSTS_GLOWSTONE).add(Items.GLOWSTONE_DUST);
         tag(Tags.Items.DUSTS_PRISMARINE).add(Items.PRISMARINE_SHARD);
@@ -98,12 +89,10 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.GEMS_LAPIS).add(Items.LAPIS_LAZULI);
         tag(Tags.Items.GEMS_PRISMARINE).add(Items.PRISMARINE_CRYSTALS);
         tag(Tags.Items.GEMS_QUARTZ).add(Items.QUARTZ);
-        copy(Tags.Blocks.GLASS_STAINED_BLOCKS, Tags.Items.GLASS_STAINED_BLOCKS);
         copy(Tags.Blocks.GLASS_BLOCKS, Tags.Items.GLASS_BLOCKS);
         copy(Tags.Blocks.GLASS_BLOCKS_COLORLESS, Tags.Items.GLASS_BLOCKS_COLORLESS);
         copy(Tags.Blocks.GLASS_BLOCKS_TINTED, Tags.Items.GLASS_BLOCKS_TINTED);
         copy(Tags.Blocks.GLASS_BLOCKS_CHEAP, Tags.Items.GLASS_BLOCKS_CHEAP);
-        copy(Tags.Blocks.GLASS_STAINED_PANES, Tags.Items.GLASS_STAINED_PANES);
         copy(Tags.Blocks.GLASS_PANES, Tags.Items.GLASS_PANES);
         copy(Tags.Blocks.GLASS_PANES_COLORLESS, Tags.Items.GLASS_PANES_COLORLESS);
         copy(Tags.Blocks.GRAVEL, Tags.Items.GRAVEL);
@@ -173,8 +162,6 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.SEEDS_PUMPKIN).add(Items.PUMPKIN_SEEDS);
         tag(Tags.Items.SEEDS_WHEAT).add(Items.WHEAT_SEEDS);
         tag(Tags.Items.SLIMEBALLS).add(Items.SLIME_BALL);
-        copy(Tags.Blocks.GLASS_STAINED_BLOCKS, Tags.Items.GLASS_STAINED_BLOCKS);
-        copy(Tags.Blocks.GLASS_STAINED_PANES, Tags.Items.GLASS_STAINED_PANES);
         copy(Tags.Blocks.STONE, Tags.Items.STONE);
         copy(Tags.Blocks.STORAGE_BLOCKS, Tags.Items.STORAGE_BLOCKS);
         copy(Tags.Blocks.STORAGE_BLOCKS_AMETHYST, Tags.Items.STORAGE_BLOCKS_AMETHYST);
@@ -224,55 +211,55 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tagWithOptionalLegacy(Tags.Items.DUSTS_PRISMARINE);
         tagWithOptionalLegacy(Tags.Items.DUSTS_REDSTONE);
         tagColoredWithOptionalLegacy(Tags.Items.DYES);
-        tag(Tags.Items.DYED_ITEMS_BLACK)
+        tag(Tags.Items.DYED_BLACK)
                 .addOptional(new ResourceLocation("forge", "glass/black"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/black"));
-        tag(Tags.Items.DYED_ITEMS_BLUE)
+        tag(Tags.Items.DYED_BLUE)
                 .addOptional(new ResourceLocation("forge", "glass/blue"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/blue"));
-        tag(Tags.Items.DYED_ITEMS_BROWN)
+        tag(Tags.Items.DYED_BROWN)
                 .addOptional(new ResourceLocation("forge", "glass/brown"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/brown"));
-        tag(Tags.Items.DYED_ITEMS_CYAN)
+        tag(Tags.Items.DYED_CYAN)
                 .addOptional(new ResourceLocation("forge", "glass/cyan"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/cyan"));
-        tag(Tags.Items.DYED_ITEMS_GRAY)
+        tag(Tags.Items.DYED_GRAY)
                 .addOptional(new ResourceLocation("forge", "glass/gray"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/gray"));
-        tag(Tags.Items.DYED_ITEMS_GREEN)
+        tag(Tags.Items.DYED_GREEN)
                 .addOptional(new ResourceLocation("forge", "glass/green"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/green"));
-        tag(Tags.Items.DYED_ITEMS_LIGHT_BLUE)
+        tag(Tags.Items.DYED_LIGHT_BLUE)
                 .addOptional(new ResourceLocation("forge", "glass/light_blue"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/light_blue"));
-        tag(Tags.Items.DYED_ITEMS_LIGHT_GRAY)
+        tag(Tags.Items.DYED_LIGHT_GRAY)
                 .addOptional(new ResourceLocation("forge", "glass/light_gray"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/light_gray"));
-        tag(Tags.Items.DYED_ITEMS_LIME)
+        tag(Tags.Items.DYED_LIME)
                 .addOptional(new ResourceLocation("forge", "glass/lime"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/lime"));
-        tag(Tags.Items.DYED_ITEMS_MAGENTA)
+        tag(Tags.Items.DYED_MAGENTA)
                 .addOptional(new ResourceLocation("forge", "glass/magenta"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/magenta"));
-        tag(Tags.Items.DYED_ITEMS_MAGENTA)
+        tag(Tags.Items.DYED_MAGENTA)
                 .addOptional(new ResourceLocation("forge", "glass/magenta"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/magenta"));
-        tag(Tags.Items.DYED_ITEMS_ORANGE)
+        tag(Tags.Items.DYED_ORANGE)
                 .addOptional(new ResourceLocation("forge", "glass/orange"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/orange"));
-        tag(Tags.Items.DYED_ITEMS_PINK)
+        tag(Tags.Items.DYED_PINK)
                 .addOptional(new ResourceLocation("forge", "glass/pink"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/pink"));
-        tag(Tags.Items.DYED_ITEMS_PURPLE)
+        tag(Tags.Items.DYED_PURPLE)
                 .addOptional(new ResourceLocation("forge", "glass/purple"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/purple"));
-        tag(Tags.Items.DYED_ITEMS_RED)
+        tag(Tags.Items.DYED_RED)
                 .addOptional(new ResourceLocation("forge", "glass/red"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/red"));
-        tag(Tags.Items.DYED_ITEMS_WHITE)
+        tag(Tags.Items.DYED_WHITE)
                 .addOptional(new ResourceLocation("forge", "glass/white"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/white"));
-        tag(Tags.Items.DYED_ITEMS_YELLOW)
+        tag(Tags.Items.DYED_YELLOW)
                 .addOptional(new ResourceLocation("forge", "glass/yellow"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/yellow"));
         tagWithOptionalLegacy(Tags.Items.ENDER_PEARLS);
