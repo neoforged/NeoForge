@@ -215,6 +215,12 @@ public class Tags
         public static final TagKey<EntityType<?>> BOSSES = tag("bosses");
         public static final TagKey<EntityType<?>> MINECARTS = tag("minecarts");
         public static final TagKey<EntityType<?>> BOATS = tag("boats");
+
+        /**
+         * Entities should be included in this tag if they are not allowed to be picked up by items or grabbed in a way
+         * that a player can easily move the entity to anywhere they want. Ideal for special entities that should not
+         * be able to be put into a mob jar for example.
+         */
         public static final TagKey<EntityType<?>> CAPTURING_NOT_SUPPORTED = tag("capturing_not_supported");
 
         private static TagKey<EntityType<?>> tag(String name)
