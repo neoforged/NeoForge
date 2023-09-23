@@ -142,8 +142,10 @@ public class Tags
         public static final TagKey<Block> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
         /**
          * Blocks should be included in this tag if their movement can cause serious issues such as world corruption
-         * upon being moved, such as chunk loaders or pipes,
-         * for mods that move blocks but do not respect {@link BlockBehaviour.BlockStateBase#getPistonPushReaction}.
+         * upon being moved, such as chunk loaders or pipes, for mods that move blocks but do not respect
+         * {@link BlockBehaviour.BlockStateBase#getPistonPushReaction}.
+         * <p>
+         * See also the equivalent block entity type tag: {@link Tags.BlockEntityTypes#RELOCATION_NOT_SUPPORTED}
          */
         public static final TagKey<Block> RELOCATION_NOT_SUPPORTED = tag("relocation_not_supported");
 
@@ -195,6 +197,8 @@ public class Tags
         /**
          * Blocks should be included in this tag if their movement can cause serious issues such as world corruption
          * upon being moved, such as chunk loaders or pipes, for mods that move block entities.
+         * <p>
+         * See also the equivalent block tag: {@link Tags.Blocks#RELOCATION_NOT_SUPPORTED}
          */
         public static final TagKey<BlockEntityType<?>> RELOCATION_NOT_SUPPORTED = tag("relocation_not_supported");
 
