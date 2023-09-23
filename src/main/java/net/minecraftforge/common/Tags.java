@@ -39,12 +39,21 @@ public class Tags
         public static final TagKey<Block> BARRELS = tag("barrels");
         public static final TagKey<Block> BARRELS_WOODEN = tag("barrels/wooden");
         public static final TagKey<Block> BOOKSHELVES = tag("bookshelves");
+        /**
+         * For blocks that are similar to amethyst where their budding block produces buds and cluster blocks
+         */
         public static final TagKey<Block> BUDDING_BLOCKS = tag("budding_blocks");
+        /**
+         * For blocks that are similar to amethyst where they have buddings forming from budding blocks
+         */
         public static final TagKey<Block> BUDS = tag("buds");
         public static final TagKey<Block> CHESTS = tag("chests");
         public static final TagKey<Block> CHESTS_ENDER = tag("chests/ender");
         public static final TagKey<Block> CHESTS_TRAPPED = tag("chests/trapped");
         public static final TagKey<Block> CHESTS_WOODEN = tag("chests/wooden");
+        /**
+         * For blocks that are similar to amethyst where they have clusters forming from budding blocks
+         */
         public static final TagKey<Block> CLUSTERS = tag("clusters");
         public static final TagKey<Block> COBBLESTONE = tag("cobblestone");
         public static final TagKey<Block> COBBLESTONE_NORMAL = tag("cobblestone/normal");
@@ -79,7 +88,7 @@ public class Tags
         public static final TagKey<Block> GLASS_BLOCKS = tag("glass_blocks");
         public static final TagKey<Block> GLASS_BLOCKS_COLORLESS = tag("glass/blocks_colorless");
         /**
-         * Glass which is made from sand and only minor additional ingredients like dyes
+         * Glass which is made from cheap resources like sand and only minor additional ingredients like dyes
          */
         public static final TagKey<Block> GLASS_BLOCKS_CHEAP = tag("glass/blocks_cheap");
         public static final TagKey<Block> GLASS_BLOCKS_TINTED = tag("glass/blocks_tinted");
