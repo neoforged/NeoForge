@@ -3,7 +3,7 @@
   "category": "redstone",
   "key": {
     "#": {
-      "tag": "common:cobblestone/normal"
+      "tag": "c:cobblestone/normal"
     },
     "R": {
       "item": "minecraft:redstone"

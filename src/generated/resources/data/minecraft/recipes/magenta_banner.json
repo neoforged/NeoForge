@@ -7,7 +7,7 @@
       "item": "minecraft:magenta_wool"
     },
     "|": {
-      "tag": "common:rods/wooden"
+      "tag": "c:rods/wooden"
     }
   },
   "pattern": [

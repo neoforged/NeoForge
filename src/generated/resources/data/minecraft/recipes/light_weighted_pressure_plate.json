@@ -3,7 +3,7 @@
   "category": "redstone",
   "key": {
     "#": {
-      "tag": "common:ingots/gold"
+      "tag": "c:ingots/gold"
     }
   },
   "pattern": [

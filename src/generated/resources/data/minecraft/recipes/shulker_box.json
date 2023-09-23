@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": {
-      "tag": "common:chests/wooden"
+      "tag": "c:chests/wooden"
     },
     "-": {
       "item": "minecraft:shulker_shell"

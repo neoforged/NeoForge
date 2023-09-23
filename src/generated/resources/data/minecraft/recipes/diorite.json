@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "C": {
-      "tag": "common:cobblestone/normal"
+      "tag": "c:cobblestone/normal"
     },
     "Q": {
       "item": "minecraft:quartz"

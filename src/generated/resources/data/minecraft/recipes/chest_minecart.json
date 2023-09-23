@@ -3,7 +3,7 @@
   "category": "misc",
   "ingredients": [
     {
-      "tag": "common:chests/wooden"
+      "tag": "c:chests/wooden"
     },
     {
       "item": "minecraft:minecart"

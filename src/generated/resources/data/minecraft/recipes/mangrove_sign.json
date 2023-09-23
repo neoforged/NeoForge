@@ -7,7 +7,7 @@
       "item": "minecraft:mangrove_planks"
     },
     "X": {
-      "tag": "common:rods/wooden"
+      "tag": "c:rods/wooden"
     }
   },
   "pattern": [

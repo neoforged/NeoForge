@@ -3,10 +3,10 @@
   "category": "equipment",
   "key": {
     "#": {
-      "tag": "common:rods/wooden"
+      "tag": "c:rods/wooden"
     },
     "X": {
-      "tag": "common:ingots/gold"
+      "tag": "c:ingots/gold"
     }
   },
   "pattern": [

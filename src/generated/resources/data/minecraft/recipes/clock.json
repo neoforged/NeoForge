@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "#": {
-      "tag": "common:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     "X": {
       "item": "minecraft:redstone"

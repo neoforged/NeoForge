@@ -78,8 +78,9 @@ public final class TagConventionLogWarning
                     {
                         StringBuilder stringBuilder = new StringBuilder();
                         stringBuilder.append("""
-                            \n   Dev warning - Legacy Tags detected. Please migrate your 'forge' namespace tags to 'common' namespace! See net.minecraftforge.common.Tags.java for all tags.
-                               NOTE: Many tags have been moved around or renamed. Some new ones were added so please review the new tags. And make sure you follow tag conventions for new tags!
+                            \n   Dev warning - Legacy Tags detected. Please migrate your 'forge' namespace tags to 'c' namespace! See net.minecraftforge.common.Tags.java for all tags.
+                               NOTE: Many tags have been moved around or renamed. Some new ones were added so please review the new tags.
+                                And make sure you follow tag conventions for new tags! The convention is `c` with generally plural named folders and tag files. (Adjective folder names tend to be singular)
                                You can disable this message in Neoforge's common config by setting logLegacyTagWarnings to "SILENCED" or see individual tags with "DEV_VERBOSE".
                             """);
 

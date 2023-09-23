@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "S": {
-      "tag": "common:cobblestone/deepslate"
+      "tag": "c:cobblestone/deepslate"
     }
   },
   "pattern": [

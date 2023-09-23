@@ -3,10 +3,10 @@
   "category": "misc",
   "key": {
     "#": {
-      "tag": "common:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     "C": {
-      "tag": "common:cobblestone/deepslate"
+      "tag": "c:cobblestone/deepslate"
     },
     "S": {
       "item": "minecraft:ward_armor_trim_smithing_template"

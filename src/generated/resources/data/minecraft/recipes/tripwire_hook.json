@@ -6,10 +6,10 @@
       "tag": "minecraft:planks"
     },
     "I": {
-      "tag": "common:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "S": {
-      "tag": "common:rods/wooden"
+      "tag": "c:rods/wooden"
     }
   },
   "pattern": [

@@ -3,10 +3,10 @@
   "category": "equipment",
   "key": {
     "#": {
-      "tag": "common:ingots/copper"
+      "tag": "c:ingots/copper"
     },
     "I": {
-      "tag": "common:rods/wooden"
+      "tag": "c:rods/wooden"
     },
     "X": {
       "item": "minecraft:feather"

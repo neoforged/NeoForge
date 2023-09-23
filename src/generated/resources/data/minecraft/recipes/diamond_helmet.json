@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "X": {
-      "tag": "common:gems/diamond"
+      "tag": "c:gems/diamond"
     }
   },
   "pattern": [

@@ -4,7 +4,7 @@
   "group": "mossy_cobblestone",
   "ingredients": [
     {
-      "tag": "common:cobblestone/normal"
+      "tag": "c:cobblestone/normal"
     },
     {
       "item": "minecraft:vine"
