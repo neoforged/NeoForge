@@ -44,7 +44,7 @@ public class Tags
         /**
          * For blocks that should be recognized as stone during feature world generation.
          */
-        public static final TagKey<Block> WORLDGEN_STONE = neoforgeTag("worldgen/stone");
+        public static final TagKey<Block> WORLDGEN_STONES = neoforgeTag("worldgen/stones");
 
         // `c` tags for common conventions
         public static final TagKey<Block> BARRELS = tag("barrels");
@@ -66,11 +66,11 @@ public class Tags
          * For blocks that are similar to amethyst where they have clusters forming from budding blocks
          */
         public static final TagKey<Block> CLUSTERS = tag("clusters");
-        public static final TagKey<Block> COBBLESTONE = tag("cobblestone");
-        public static final TagKey<Block> COBBLESTONE_NORMAL = tag("cobblestone/normal");
-        public static final TagKey<Block> COBBLESTONE_INFESTED = tag("cobblestone/infested");
-        public static final TagKey<Block> COBBLESTONE_MOSSY = tag("cobblestone/mossy");
-        public static final TagKey<Block> COBBLESTONE_DEEPSLATE = tag("cobblestone/deepslate");
+        public static final TagKey<Block> COBBLESTONES = tag("cobblestones");
+        public static final TagKey<Block> COBBLESTONES_NORMAL = tag("cobblestones/normal");
+        public static final TagKey<Block> COBBLESTONES_INFESTED = tag("cobblestones/infested");
+        public static final TagKey<Block> COBBLESTONES_MOSSY = tag("cobblestones/mossy");
+        public static final TagKey<Block> COBBLESTONES_DEEPSLATE = tag("cobblestones/deepslate");
         public static final TagKey<Block> DYED = tag("dyed");
         public static final TagKey<Block> DYED_BLACK = tag("dyed/black");
         public static final TagKey<Block> DYED_BLUE = tag("dyed/blue");
@@ -179,7 +179,7 @@ public class Tags
         public static final TagKey<Block> SANDSTONE_UNCOLORED_SLABS = tag("sandstone/uncolored_slabs");
         public static final TagKey<Block> SANDSTONE_UNCOLORED_STAIRS = tag("sandstone/uncolored_stairs");
 
-        public static final TagKey<Block> STONE = tag("stone");
+        public static final TagKey<Block> STONES = tag("stones");
         public static final TagKey<Block> STORAGE_BLOCKS = tag("storage_blocks");
         public static final TagKey<Block> STORAGE_BLOCKS_AMETHYST = tag("storage_blocks/amethyst");
         public static final TagKey<Block> STORAGE_BLOCKS_COAL = tag("storage_blocks/coal");
@@ -273,11 +273,11 @@ public class Tags
         public static final TagKey<Item> CHESTS_ENDER = tag("chests/ender");
         public static final TagKey<Item> CHESTS_TRAPPED = tag("chests/trapped");
         public static final TagKey<Item> CHESTS_WOODEN = tag("chests/wooden");
-        public static final TagKey<Item> COBBLESTONE = tag("cobblestone");
-        public static final TagKey<Item> COBBLESTONE_NORMAL = tag("cobblestone/normal");
-        public static final TagKey<Item> COBBLESTONE_INFESTED = tag("cobblestone/infested");
-        public static final TagKey<Item> COBBLESTONE_MOSSY = tag("cobblestone/mossy");
-        public static final TagKey<Item> COBBLESTONE_DEEPSLATE = tag("cobblestone/deepslate");
+        public static final TagKey<Item> COBBLESTONES = tag("cobblestones");
+        public static final TagKey<Item> COBBLESTONES_NORMAL = tag("cobblestones/normal");
+        public static final TagKey<Item> COBBLESTONES_INFESTED = tag("cobblestones/infested");
+        public static final TagKey<Item> COBBLESTONES_MOSSY = tag("cobblestones/mossy");
+        public static final TagKey<Item> COBBLESTONES_DEEPSLATE = tag("cobblestones/deepslate");
         /**
          * For blocks that are similar to amethyst where they have clusters forming from budding blocks
          */
@@ -453,7 +453,7 @@ public class Tags
         public static final TagKey<Item> SEEDS_PUMPKIN = tag("seeds/pumpkin");
         public static final TagKey<Item> SEEDS_WHEAT = tag("seeds/wheat");
         public static final TagKey<Item> SLIMEBALLS = tag("slimeballs");
-        public static final TagKey<Item> STONE = tag("stone");
+        public static final TagKey<Item> STONES = tag("stones");
         public static final TagKey<Item> STORAGE_BLOCKS = tag("storage_blocks");
         public static final TagKey<Item> STORAGE_BLOCKS_AMETHYST = tag("storage_blocks/amethyst");
         public static final TagKey<Item> STORAGE_BLOCKS_COAL = tag("storage_blocks/coal");

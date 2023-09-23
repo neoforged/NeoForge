@@ -42,11 +42,11 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         copy(Tags.Blocks.CHESTS_ENDER, Tags.Items.CHESTS_ENDER);
         copy(Tags.Blocks.CHESTS_TRAPPED, Tags.Items.CHESTS_TRAPPED);
         copy(Tags.Blocks.CHESTS_WOODEN, Tags.Items.CHESTS_WOODEN);
-        copy(Tags.Blocks.COBBLESTONE, Tags.Items.COBBLESTONE);
-        copy(Tags.Blocks.COBBLESTONE_NORMAL, Tags.Items.COBBLESTONE_NORMAL);
-        copy(Tags.Blocks.COBBLESTONE_INFESTED, Tags.Items.COBBLESTONE_INFESTED);
-        copy(Tags.Blocks.COBBLESTONE_MOSSY, Tags.Items.COBBLESTONE_MOSSY);
-        copy(Tags.Blocks.COBBLESTONE_DEEPSLATE, Tags.Items.COBBLESTONE_DEEPSLATE);
+        copy(Tags.Blocks.COBBLESTONES, Tags.Items.COBBLESTONES);
+        copy(Tags.Blocks.COBBLESTONES_NORMAL, Tags.Items.COBBLESTONES_NORMAL);
+        copy(Tags.Blocks.COBBLESTONES_INFESTED, Tags.Items.COBBLESTONES_INFESTED);
+        copy(Tags.Blocks.COBBLESTONES_MOSSY, Tags.Items.COBBLESTONES_MOSSY);
+        copy(Tags.Blocks.COBBLESTONES_DEEPSLATE, Tags.Items.COBBLESTONES_DEEPSLATE);
         tag(Tags.Items.CROPS).addTags(Tags.Items.CROPS_BEETROOT, Tags.Items.CROPS_CARROT, Tags.Items.CROPS_NETHER_WART, Tags.Items.CROPS_POTATO, Tags.Items.CROPS_WHEAT);
         tag(Tags.Items.CROPS_BEETROOT).add(Items.BEETROOT);
         tag(Tags.Items.CROPS_CARROT).add(Items.CARROT);
@@ -162,7 +162,7 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.SEEDS_PUMPKIN).add(Items.PUMPKIN_SEEDS);
         tag(Tags.Items.SEEDS_WHEAT).add(Items.WHEAT_SEEDS);
         tag(Tags.Items.SLIMEBALLS).add(Items.SLIME_BALL);
-        copy(Tags.Blocks.STONE, Tags.Items.STONE);
+        copy(Tags.Blocks.STONES, Tags.Items.STONES);
         copy(Tags.Blocks.STORAGE_BLOCKS, Tags.Items.STORAGE_BLOCKS);
         copy(Tags.Blocks.STORAGE_BLOCKS_AMETHYST, Tags.Items.STORAGE_BLOCKS_AMETHYST);
         copy(Tags.Blocks.STORAGE_BLOCKS_COAL, Tags.Items.STORAGE_BLOCKS_COAL);

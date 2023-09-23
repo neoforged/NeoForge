@@ -2,7 +2,7 @@
   "values": [
     "minecraft:cobblestone",
     {
-      "id": "#forge:cobblestone/normal",
+      "id": "forge:cobblestone/normal",
       "required": false
     }
   ]

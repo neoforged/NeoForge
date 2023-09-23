@@ -611,7 +611,7 @@ public class DataGeneratorTest
             tag(BlockTags.create(new ResourceLocation(MODID, "test")))
                 .add(Blocks.DIAMOND_BLOCK)
                 .addTag(BlockTags.STONE_BRICKS)
-                .addTag(net.minecraftforge.common.Tags.Blocks.COBBLESTONE)
+                .addTag(net.minecraftforge.common.Tags.Blocks.COBBLESTONES)
                 .addOptional(new ResourceLocation("chisel", "marble/raw"))
                 .addOptionalTag(new ResourceLocation("forge", "storage_blocks/ruby"));
 

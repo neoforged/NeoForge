@@ -9,7 +9,7 @@
     "minecraft:infested_deepslate",
     "minecraft:tuff",
     {
-      "id": "#forge:stone",
+      "id": "#forge:stones",
       "required": false
     }
   ]

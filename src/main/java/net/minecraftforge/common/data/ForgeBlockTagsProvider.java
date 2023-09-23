@@ -42,11 +42,11 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(CHESTS_ENDER).add(Blocks.ENDER_CHEST);
         tag(CHESTS_TRAPPED).add(Blocks.TRAPPED_CHEST);
         tag(CHESTS_WOODEN).add(Blocks.CHEST, Blocks.TRAPPED_CHEST);
-        tag(COBBLESTONE).addTags(COBBLESTONE_NORMAL, COBBLESTONE_INFESTED, COBBLESTONE_MOSSY, COBBLESTONE_DEEPSLATE);
-        tag(COBBLESTONE_NORMAL).add(Blocks.COBBLESTONE);
-        tag(COBBLESTONE_INFESTED).add(Blocks.INFESTED_COBBLESTONE);
-        tag(COBBLESTONE_MOSSY).add(Blocks.MOSSY_COBBLESTONE);
-        tag(COBBLESTONE_DEEPSLATE).add(Blocks.COBBLED_DEEPSLATE);
+        tag(COBBLESTONES).addTags(COBBLESTONES_NORMAL, COBBLESTONES_INFESTED, COBBLESTONES_MOSSY, COBBLESTONES_DEEPSLATE);
+        tag(COBBLESTONES_NORMAL).add(Blocks.COBBLESTONE);
+        tag(COBBLESTONES_INFESTED).add(Blocks.INFESTED_COBBLESTONE);
+        tag(COBBLESTONES_MOSSY).add(Blocks.MOSSY_COBBLESTONE);
+        tag(COBBLESTONES_DEEPSLATE).add(Blocks.COBBLED_DEEPSLATE);
         addColored(DYED, "{color}_banner");
         addColored(DYED, "{color}_bed");
         addColored(DYED, "{color}_candle");
@@ -112,8 +112,8 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(SANDSTONE_UNCOLORED_STAIRS).add(Blocks.SANDSTONE_STAIRS, Blocks.SMOOTH_SANDSTONE_STAIRS);
         tag(SANDSTONE_STAIRS).addTags(SANDSTONE_RED_STAIRS, SANDSTONE_UNCOLORED_STAIRS);
 
-        tag(STONE).add(Blocks.ANDESITE, Blocks.DIORITE, Blocks.GRANITE, Blocks.INFESTED_STONE, Blocks.STONE, Blocks.DEEPSLATE, Blocks.INFESTED_DEEPSLATE, Blocks.TUFF);
-        tag(WORLDGEN_STONE).add(Blocks.ANDESITE, Blocks.DIORITE, Blocks.GRANITE, Blocks.INFESTED_STONE, Blocks.STONE, Blocks.DEEPSLATE, Blocks.INFESTED_DEEPSLATE, Blocks.TUFF);
+        tag(STONES).add(Blocks.ANDESITE, Blocks.DIORITE, Blocks.GRANITE, Blocks.INFESTED_STONE, Blocks.STONE, Blocks.DEEPSLATE, Blocks.INFESTED_DEEPSLATE, Blocks.TUFF);
+        tag(WORLDGEN_STONES).add(Blocks.ANDESITE, Blocks.DIORITE, Blocks.GRANITE, Blocks.INFESTED_STONE, Blocks.STONE, Blocks.DEEPSLATE, Blocks.INFESTED_DEEPSLATE, Blocks.TUFF);
         tag(STORAGE_BLOCKS).addTags(STORAGE_BLOCKS_AMETHYST, STORAGE_BLOCKS_COAL, STORAGE_BLOCKS_COPPER, STORAGE_BLOCKS_DIAMOND, STORAGE_BLOCKS_EMERALD, STORAGE_BLOCKS_GOLD, STORAGE_BLOCKS_IRON, STORAGE_BLOCKS_LAPIS, STORAGE_BLOCKS_QUARTZ, STORAGE_BLOCKS_RAW_COPPER, STORAGE_BLOCKS_RAW_GOLD, STORAGE_BLOCKS_RAW_IRON, STORAGE_BLOCKS_REDSTONE, STORAGE_BLOCKS_NETHERITE);
         tag(STORAGE_BLOCKS_AMETHYST).add(Blocks.AMETHYST_BLOCK);
         tag(STORAGE_BLOCKS_COAL).add(Blocks.COAL_BLOCK);
@@ -142,11 +142,16 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tagWithOptionalLegacy(CHESTS_ENDER);
         tagWithOptionalLegacy(CHESTS_TRAPPED);
         tagWithOptionalLegacy(CHESTS_WOODEN);
-        tagWithOptionalLegacy(COBBLESTONE);
-        tagWithOptionalLegacy(COBBLESTONE_NORMAL);
-        tagWithOptionalLegacy(COBBLESTONE_INFESTED);
-        tagWithOptionalLegacy(COBBLESTONE_MOSSY);
-        tagWithOptionalLegacy(COBBLESTONE_DEEPSLATE);
+        tag(COBBLESTONES)
+                .addOptional(new ResourceLocation("forge", "cobblestone"));
+        tag(COBBLESTONES_NORMAL)
+                .addOptional(new ResourceLocation("forge", "cobblestone/normal"));
+        tag(COBBLESTONES_INFESTED)
+                .addOptional(new ResourceLocation("forge", "cobblestone/infested"));
+        tag(COBBLESTONES_MOSSY)
+                .addOptional(new ResourceLocation("forge", "cobblestone/mossy"));
+        tag(COBBLESTONES_DEEPSLATE)
+                .addOptional(new ResourceLocation("forge", "cobblestone/deepslate"));
         tagWithOptionalLegacy(END_STONES);
         tagWithOptionalLegacy(ENDERMAN_PLACE_ON_BLACKLIST);
         tagWithOptionalLegacy(FENCE_GATES);
@@ -238,7 +243,7 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tagWithOptionalLegacy(SAND);
         tagWithOptionalLegacy(SAND_COLORLESS);
         tagWithOptionalLegacy(SAND_RED);
-        tagWithOptionalLegacy(STONE);
+        tagWithOptionalLegacy(STONES);
         tagWithOptionalLegacy(STORAGE_BLOCKS);
         tagWithOptionalLegacy(STORAGE_BLOCKS_AMETHYST);
         tagWithOptionalLegacy(STORAGE_BLOCKS_COAL);
