@@ -212,7 +212,7 @@ public interface IForgeEntity extends ICapabilitySerializable<CompoundTag>
         float vanillaStep = self().maxUpStep();
         if (self() instanceof LivingEntity living)
         {
-            AttributeInstance stepHeightAttribute = living.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
+            AttributeInstance stepHeightAttribute = living.getAttribute(ForgeMod.STEP_HEIGHT.get());
             if (stepHeightAttribute != null)
             {
                 return (float) Math.max(0, vanillaStep + stepHeightAttribute.getValue());

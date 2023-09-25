@@ -6,6 +6,7 @@
 package net.minecraftforge.common;
 
 import net.minecraft.DetectedVersion;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
@@ -172,8 +173,14 @@ public class ForgeMod
      * Step Height Addition modifies the amount of blocks an entity may walk up without jumping.
      * @see IForgeEntity#getStepHeight()
      */
-    public static final RegistryObject<Attribute> STEP_HEIGHT_ADDITION = ATTRIBUTES.register("step_height_addition", () -> new RangedAttribute("forge.step_height", 0.0D, -512.0D, 512.0D).setSyncable(true));
+    public static final RegistryObject<Attribute> STEP_HEIGHT = ATTRIBUTES.register("step_height", () -> new RangedAttribute("forge.step_height", 0.0D, -512.0D, 512.0D).setSyncable(true));
 
+    /**
+     * @deprecated Use {@link #STEP_HEIGHT}
+     */
+    @Deprecated(forRemoval = true, since = "1.20.1")
+    public static final RegistryObject<Attribute> STEP_HEIGHT_ADDITION = STEP_HEIGHT;
+    
     /**
      * Noop biome modifier. Can be used in a biome modifier json with "type": "forge:none".
      */
@@ -468,9 +475,13 @@ public class ForgeMod
 
         ForgeRegistries.ITEMS.tags().addOptionalTagDefaults(Tags.Items.ENCHANTING_FUELS, Set.of(ForgeRegistries.ITEMS.getDelegateOrThrow(Items.LAPIS_LAZULI)));
 
-        // TODO: Remove when addAlias becomes proper API, as this should be done in the DR's above.
-        addAlias(ForgeRegistries.ATTRIBUTES, new ResourceLocation("forge", "reach_distance"), new ResourceLocation("forge", "block_reach"));
-        addAlias(ForgeRegistries.ATTRIBUTES, new ResourceLocation("forge", "attack_range"), new ResourceLocation("forge", "entity_reach"));
+        // TODO: Remove 1.20.2.
+        if ("1.20.1".equals(SharedConstants.getCurrentVersion().getName()))
+        {
+            ForgeRegistries.ATTRIBUTES.addAlias(new ResourceLocation("forge", "reach_distance"), new ResourceLocation("forge", "block_reach"));
+            ForgeRegistries.ATTRIBUTES.addAlias(new ResourceLocation("forge", "attack_range"), new ResourceLocation("forge", "entity_reach"));
+            ForgeRegistries.ATTRIBUTES.addAlias(new ResourceLocation("forge", "step_height_addition"), new ResourceLocation("forge", "step_height"));
+        }
     }
 
     public void preInit(FMLCommonSetupEvent evt)
@@ -647,15 +658,5 @@ public class ForgeMod
     public void registerPermissionNodes(PermissionGatherEvent.Nodes event)
     {
         event.addNodes(USE_SELECTORS_PERMISSION);
-    }
-
-    /**
-     * TODO: Remove when {@link ForgeRegistry#addAlias(ResourceLocation, ResourceLocation)} is elevated to {@link IForgeRegistry}.
-     */
-    @Deprecated(forRemoval = true, since = "1.20")
-    private static <T> void addAlias(IForgeRegistry<T> registry, ResourceLocation from, ResourceLocation to)
-    {
-        ForgeRegistry<T> fReg = (ForgeRegistry<T>) registry;
-        fReg.addAlias(from, to);
     }
 }

@@ -477,14 +477,7 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
         return ret;
     }
 
-    /**
-     * Adds an alias that maps from the name specified by <code>src</code> to the name specified by <code>dst</code>.<p>
-     * Any registry lookups that target the first name will resolve as the second name, if the first name is not present.
-     * @param src The source registry name to alias from.
-     * @param dst The target registry name to alias to.
-     *
-     * TODO: Add as public API in IForgeRegistry and DeferredRegister.
-     */
+    @Override
     public void addAlias(ResourceLocation src, ResourceLocation dst)
     {
         if (this.isLocked())

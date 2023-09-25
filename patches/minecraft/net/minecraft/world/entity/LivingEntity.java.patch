@@ -21,7 +21,7 @@
  
     public static AttributeSupplier.Builder m_21183_() {
 -      return AttributeSupplier.m_22244_().m_22266_(Attributes.f_22276_).m_22266_(Attributes.f_22278_).m_22266_(Attributes.f_22279_).m_22266_(Attributes.f_22284_).m_22266_(Attributes.f_22285_);
-+      return AttributeSupplier.m_22244_().m_22266_(Attributes.f_22276_).m_22266_(Attributes.f_22278_).m_22266_(Attributes.f_22279_).m_22266_(Attributes.f_22284_).m_22266_(Attributes.f_22285_).m_22266_(net.minecraftforge.common.ForgeMod.SWIM_SPEED.get()).m_22266_(net.minecraftforge.common.ForgeMod.NAMETAG_DISTANCE.get()).m_22266_(net.minecraftforge.common.ForgeMod.ENTITY_GRAVITY.get()).m_22266_(net.minecraftforge.common.ForgeMod.STEP_HEIGHT_ADDITION.get());
++      return AttributeSupplier.m_22244_().m_22266_(Attributes.f_22276_).m_22266_(Attributes.f_22278_).m_22266_(Attributes.f_22279_).m_22266_(Attributes.f_22284_).m_22266_(Attributes.f_22285_).m_22266_(net.minecraftforge.common.ForgeMod.SWIM_SPEED.get()).m_22266_(net.minecraftforge.common.ForgeMod.NAMETAG_DISTANCE.get()).m_22266_(net.minecraftforge.common.ForgeMod.ENTITY_GRAVITY.get()).m_22266_(net.minecraftforge.common.ForgeMod.STEP_HEIGHT.get());
     }
  
     protected void m_7840_(double p_20990_, boolean p_20991_, BlockState p_20992_, BlockPos p_20993_) {
@@ -749,3 +749,15 @@
        Equipable equipable = Equipable.m_269088_(p_147234_);
        return equipable != null ? equipable.m_40402_() : EquipmentSlot.MAINHAND;
     }
+@@ -3327,6 +_,11 @@
+       return this.m_21205_().m_41720_() instanceof AxeItem;
+    }
+ 
++   /**
++    * Gets the value of the legacy {@link #maxUpStep} field.
++    * @deprecated Use {@link net.minecraftforge.common.extensions.IForgeEntity#getStepHeight()} to get the real step height value.
++    */
++   @Deprecated
+    public float m_274421_() {
+       float f = super.m_274421_();
+       return this.m_6688_() instanceof Player ? Math.max(f, 1.0F) : f;
