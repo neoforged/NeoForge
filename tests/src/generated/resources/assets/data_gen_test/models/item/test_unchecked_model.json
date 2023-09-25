@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/netherite_boots",
+    "layer1": "minecraft:trims/item/boots_trim_amethyst"
+  }
+}

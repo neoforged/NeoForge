@@ -149,6 +149,50 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
     }
 
     /**
+     * Set the texture for a given dictionary key. <br>
+     * This method won't check if a texture actually exists, allowing for data generation of models using dynamically generated textures such as armor trims.
+     *
+     * @param key     the texture key
+     * @param texture the texture, can be another key e.g. {@code "#all"}
+     * @return this builder
+     * @throws NullPointerException  if {@code key} is {@code null}
+     * @throws NullPointerException  if {@code texture} is {@code null}
+     */
+    public T uncheckedTexture(String key, String texture) {
+        Preconditions.checkNotNull(key, "Key must not be null");
+        Preconditions.checkNotNull(texture, "Texture must not be null");
+        if (texture.charAt(0) == '#') {
+            this.textures.put(key, texture);
+            return self();
+        } else {
+            ResourceLocation asLoc;
+            if (texture.contains(":")) {
+                asLoc = new ResourceLocation(texture);
+            } else {
+                asLoc = new ResourceLocation(getLocation().getNamespace(), texture);
+            }
+            return uncheckedTexture(key, asLoc);
+        }
+    }
+
+    /**
+     * Set the texture for a given dictionary key. <br>
+     * This method won't check if a texture actually exists, allowing for data generation of models using dynamically generated textures such as armor trims.
+     *
+     * @param key     the texture key
+     * @param texture the texture
+     * @return this builder
+     * @throws NullPointerException  if {@code key} is {@code null}
+     * @throws NullPointerException  if {@code texture} is {@code null}
+     */
+    public T uncheckedTexture(String key, ResourceLocation texture) {
+        Preconditions.checkNotNull(key, "Key must not be null");
+        Preconditions.checkNotNull(texture, "Texture must not be null");
+        this.textures.put(key, texture.toString());
+        return self();
+    }
+
+    /**
      * Set the render type for this model.
      *
      * @param renderType the render type. Must be registered via
