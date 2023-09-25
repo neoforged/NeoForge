@@ -525,7 +525,7 @@ public class DataGeneratorTest {
             getBuilder("test_unchecked_model")
                     .parent(new UncheckedModelFile("item/generated"))
                     .texture("layer0", mcLoc("item/netherite_boots"))
-                    .uncheckedTexture("layer1", mcLoc("trims/item/boots_trim_amethyst"));
+                    .texture("layer1", mcLoc("trims/item/boots_trim_amethyst"));
 
             getBuilder("test_block_model")
                     .parent(getExistingFile(mcLoc("block/block")))
