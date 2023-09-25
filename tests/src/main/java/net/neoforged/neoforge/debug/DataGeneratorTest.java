@@ -522,10 +522,10 @@ public class DataGeneratorTest {
                     .parent(new UncheckedModelFile("item/generated"))
                     .texture("layer0", mcLoc("block/stone"));
 
-            getBuilder("test_unchecked_model")
+            getBuilder("test_runtime_texture_model")
                     .parent(new UncheckedModelFile("item/generated"))
                     .texture("layer0", mcLoc("item/netherite_boots"))
-                    .texture("layer1", mcLoc("trims/item/boots_trim_amethyst"));
+                    .texture("layer1", mcLoc("trims/items/boots_trim_amethyst"));
 
             getBuilder("test_block_model")
                     .parent(getExistingFile(mcLoc("block/block")))
@@ -554,7 +554,7 @@ public class DataGeneratorTest {
                     .texture("layer0", mcLoc("item/fishing_rod_cast"));
         }
 
-        private static final Set<String> IGNORED_MODELS = ImmutableSet.of("test_generated_model", "test_unchecked_model", "test_block_model",
+        private static final Set<String> IGNORED_MODELS = ImmutableSet.of("test_generated_model", "test_runtime_texture_model", "test_block_model",
                 "fishing_rod", "fishing_rod_cast" // Vanilla doesn't generate these yet, so they don't match due to having the minecraft domain
         );
 
