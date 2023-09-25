@@ -30,10 +30,10 @@ public class ItemModelBuilder extends ModelBuilder<ItemModelBuilder> {
         super(outputLocation, existingFileHelper);
         //add vanilla armor trims to the existing file helper
         for (ResourceKey<TrimMaterial> trim : VANILLA_TRIM_MATERIALS) {
-            this.existingFileHelper.trackGenerated(new ResourceLocation("trims/itemboots_trim_" + trim.location().getPath()), ModelProvider.TEXTURE);
-            this.existingFileHelper.trackGenerated(new ResourceLocation("trims/itemchestplate_trim_" + trim.location().getPath()), ModelProvider.TEXTURE);
-            this.existingFileHelper.trackGenerated(new ResourceLocation("trims/itemhelmet_trim_" + trim.location().getPath()), ModelProvider.TEXTURE);
-            this.existingFileHelper.trackGenerated(new ResourceLocation("trims/itemleggings_trim_" + trim.location().getPath()), ModelProvider.TEXTURE);
+            this.existingFileHelper.trackGenerated(new ResourceLocation("trims/item/boots_trim_" + trim.location().getPath()), ModelProvider.TEXTURE);
+            this.existingFileHelper.trackGenerated(new ResourceLocation("trims/item/chestplate_trim_" + trim.location().getPath()), ModelProvider.TEXTURE);
+            this.existingFileHelper.trackGenerated(new ResourceLocation("trims/item/helmet_trim_" + trim.location().getPath()), ModelProvider.TEXTURE);
+            this.existingFileHelper.trackGenerated(new ResourceLocation("trims/item/leggings_trim_" + trim.location().getPath()), ModelProvider.TEXTURE);
         }
     }
 
