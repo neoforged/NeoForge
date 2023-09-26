@@ -9,6 +9,14 @@
           if (this.m_6162_()) {
              this.m_35518_();
              return InteractionResult.m_19078_(this.m_9236_().f_46443_);
+@@ -513,6 +_,7 @@
+ 
+    public void m_34375_(VillagerData p_35437_) {
+       VillagerData villagerdata = this.m_7141_();
++      if (villagerdata.m_35571_() != p_35437_.m_35571_()) p_35437_ = p_35437_.m_35565_(net.minecraftforge.event.ForgeEventFactory.onVillagerProfessionChanged(this, villagerdata.m_35571_(), p_35437_.m_35571_()));
+       if (villagerdata.m_35571_() != p_35437_.m_35571_()) {
+          this.f_35261_ = null;
+       }
 @@ -669,7 +_,8 @@
     }
  
