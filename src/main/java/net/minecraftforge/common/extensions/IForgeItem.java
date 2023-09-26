@@ -37,12 +37,19 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
+import net.minecraftforge.common.context.ContextKey;
+import net.minecraftforge.common.context.InventoryTickContext;
+import net.minecraftforge.common.context.InventoryTickContext.VanillaCompatible;
+import net.minecraftforge.common.context.InventoryTickContext.PlayerInvContext;
 import net.minecraftforge.items.wrapper.ShulkerItemStackInvWrapper;
 import net.minecraftforge.registries.IForgeRegistry;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -328,10 +335,43 @@ public interface IForgeItem
     }
 
     /**
-     * Called to tick armor in the armor slot. Override to do something
+     * @deprecated Use {@link #inventoryTick(ItemStack, Level, ContextKey.Context)
      */
+    @Deprecated(forRemoval = true, since = "1.20.1")
     default void onArmorTick(ItemStack stack, Level level, Player player)
     {
+    }
+
+    /**
+     * Called when this item is ticked in an inventory.<br>
+     * This is a more contextual version of {@link Item#inventoryTick(ItemStack, Level, Entity, int, boolean)} which allows providing arbitrary inventory-based context.
+     * <p>
+     * What context is provided is up to the caller, and is managed by the {@linkplain ContextKey context key system}.
+     * <p>
+     * In vanilla, the only inventory that ticks items is the player inventory.
+     * @param stack The stack being ticked.
+     * @param level The level of the of the ticking inventory. May be a client level.
+     * @param context The arbitrary context object. See {@link ContextKey}.
+     * @apiNote Override-Only, call via {@link IForgeItemStack#inventoryTick}
+     * 
+     * @see {@link InventoryTickContext} for the default context object.
+     */
+    @ApiStatus.OverrideOnly
+    @SuppressWarnings({"deprecation", "removal"})
+    default void inventoryTick(ItemStack stack, Level level, ContextKey.Context<?, ?> context)
+    {
+        if(context.ctx() instanceof VanillaCompatible vCtx) {
+            stack.inventoryTick(level, vCtx.getEntity(), vCtx.getSlot(), vCtx.isSelected());
+        }
+
+        // Vanilla always passes the "local" slotIndex, despite it being useless without the compartment.
+        context.ifPresent(InventoryTickContext.KEY, ctx -> {
+            // TODO: Remove in 1.20.2+
+            if(PlayerInvContext.PLAYER_ARMOR.equals(ctx.invId()))
+            {
+                stack.onArmorTick(level, ctx.player());
+            }
+        });
     }
 
     /**

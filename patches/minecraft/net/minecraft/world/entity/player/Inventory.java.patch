@@ -19,15 +19,19 @@
           if (p_36049_.m_41782_()) {
              itemstack.m_41751_(p_36049_.m_41783_().m_6426_());
           }
-@@ -229,7 +_,7 @@
+@@ -223,9 +_,11 @@
+ 
+    public void m_36068_() {
+       for(NonNullList<ItemStack> nonnulllist : this.f_35979_) {
++         var id = net.minecraftforge.common.context.InventoryTickContext.PlayerInvContext.getCompartmentId(this, nonnulllist);
+          for(int i = 0; i < nonnulllist.size(); ++i) {
+             if (!nonnulllist.get(i).m_41619_()) {
+-               nonnulllist.get(i).m_41666_(this.f_35978_.m_9236_(), this.f_35978_, i, this.f_35977_ == i);
++               var ctx = net.minecraftforge.common.context.InventoryTickContext.PlayerInvContext.create(this, nonnulllist, id, i, this.f_35977_);
++               nonnulllist.get(i).inventoryTick(this.f_35978_.m_9236_(), ctx);
              }
           }
        }
--
-+      f_35975_.forEach(e -> e.onArmorTick(f_35978_.m_9236_(), f_35978_));
-    }
- 
-    public boolean m_36054_(ItemStack p_36055_) {
 @@ -277,6 +_,8 @@
           } catch (Throwable throwable) {
              CrashReport crashreport = CrashReport.m_127521_(throwable, "Adding item to inventory");

@@ -29,11 +29,16 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.context.ContextKey;
+import net.minecraftforge.items.IItemHandler;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -290,12 +295,22 @@ public interface IForgeItemStack extends ICapabilitySerializable<CompoundTag>
     }
 
     /**
-     * Called to tick armor in the armor slot. Override to do something
+     * @deprecated Use {@link #inventoryTick(Level, ContextKey.Context)}
      */
+    @Deprecated(forRemoval = true, since = "1.20.1")
     default void onArmorTick(Level level, Player player)
     {
         self().getItem().onArmorTick(self(), level, player);
     }
+
+    /**
+     * @see {@link IForgeItem#inventoryTick(ItemStack, Level, ContextKey.Context)}
+     */
+    default void inventoryTick(Level level, ContextKey.Context<?, ?> context)
+    {
+    	self().getItem().inventoryTick(self(), level, context);
+    }
+
 
     /**
      * Called every tick from {@code Horse#playGallopSound(SoundEvent)} on the item in the
