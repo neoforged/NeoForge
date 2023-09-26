@@ -24,6 +24,16 @@
        return true;
     }
  
+@@ -288,8 +_,7 @@
+             BlockState blockstate1 = p_60182_.m_8055_(blockpos2);
+             BlockEntity blockentity = blockstate1.m_155947_() ? p_60182_.m_7702_(blockpos2) : null;
+             m_49892_(blockstate1, p_60182_, blockpos2, blockentity);
+-            p_60182_.m_7731_(blockpos2, Blocks.f_50016_.m_49966_(), 18);
+-            p_60182_.m_220407_(GameEvent.f_157794_, blockpos2, GameEvent.Context.m_223722_(blockstate1));
++            blockstate1.onDestroyedByPushReaction(blockstate1, p_60182_, blockpos2, direction, p_60182_.m_6425_(blockpos2));
+             if (!blockstate1.m_204336_(BlockTags.f_13076_)) {
+                p_60182_.m_142052_(blockpos2, blockstate1);
+             }
 @@ -354,6 +_,10 @@
  
     public BlockState m_6843_(BlockState p_60215_, Rotation p_60216_) {

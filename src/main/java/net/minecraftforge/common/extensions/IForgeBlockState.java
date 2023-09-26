@@ -23,6 +23,7 @@ import net.minecraft.world.level.SignalGetter;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.HitResult;
@@ -127,6 +128,26 @@ public interface IForgeBlockState
     default boolean onDestroyedByPlayer(Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid)
     {
         return self().getBlock().onDestroyedByPlayer(self(), level, pos, player, willHarvest, fluid);
+    }
+
+    /**
+     * Called when a block is removed by {@link PushReaction#DESTROY}.  This is responsible for
+     * actually destroying the block, and the block is intact at time of call.
+     *
+     * Will only be called if {@link BlockState#getPistonPushReaction} returns {@link PushReaction#DESTROY}.
+     *
+     * Note: When used in multiplayer, this is called on both client and
+     * server sides!
+     *
+     * @param state The current state.
+     * @param level The current level
+     * @param pos Block position in level
+     * @param pushDirection The direction of block movement
+     * @param fluid The current fluid state at current position
+     */
+    default void onDestroyedByPushReaction(BlockState state, Level level, BlockPos pos, Direction pushDirection, FluidState fluid)
+    {
+        self().getBlock().onDestroyedByPushReaction(self(), level, pos, pushDirection, fluid);
     }
 
     /**
