@@ -57,7 +57,7 @@ our opencollective.*
 [Contributing]: ./CONTRIBUTING.md
 [CLA]: https://cla-assistant.io/MinecraftForge/MinecraftForge
 
-[Download]: https://maven.neoforged.net/releases/net/neoforged/forge/
+[Download]: https://maven.neoforged.net/#/releases/net/neoforged/forge/
 
 [Discord]: https://discord.neoforged.net/
 
