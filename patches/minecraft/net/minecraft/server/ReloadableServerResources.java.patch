@@ -13,43 +13,47 @@
     private final ServerFunctionLibrary f_206854_;
  
     public ReloadableServerResources(RegistryAccess.Frozen p_206857_, FeatureFlagSet p_250695_, Commands.CommandSelection p_206858_, int p_206859_) {
-@@ -41,6 +_,10 @@
+@@ -41,6 +_,11 @@
        this.f_206847_ = new Commands(p_206858_, this.f_214300_);
        this.f_214300_.m_254905_(CommandBuildContext.MissingTagAccessPolicy.CREATE_NEW);
        this.f_206854_ = new ServerFunctionLibrary(p_206859_, this.f_206847_.m_82094_());
 +      // Forge: Create context object and pass it to the recipe manager.
 +      this.context = new net.minecraftforge.common.crafting.conditions.ConditionContext(this.f_206849_);
++      this.attachmentLoader = new net.minecraftforge.registries.attachment.AttachmentLoader(p_206857_, context);
 +      this.f_206848_ = new RecipeManager(context);
 +      this.f_206853_ = new ServerAdvancementManager(this.f_278467_, context);
     }
  
     public ServerFunctionLibrary m_206860_() {
-@@ -69,7 +_,9 @@
+@@ -69,7 +_,10 @@
  
     public static CompletableFuture<ReloadableServerResources> m_247740_(ResourceManager p_248588_, RegistryAccess.Frozen p_251163_, FeatureFlagSet p_250212_, Commands.CommandSelection p_249301_, int p_251126_, Executor p_249136_, Executor p_249601_) {
        ReloadableServerResources reloadableserverresources = new ReloadableServerResources(p_251163_, p_250212_, p_249301_, p_251126_);
 -      return SimpleReloadInstance.m_203834_(p_248588_, reloadableserverresources.m_206890_(), p_249136_, p_249601_, f_206846_, f_206845_.isDebugEnabled()).m_7237_().whenComplete((p_255534_, p_255535_) -> {
 +      List<PreparableReloadListener> listeners = new java.util.ArrayList<>(reloadableserverresources.m_206890_());
++      listeners.add(reloadableserverresources.attachmentLoader);
 +      listeners.addAll(net.minecraftforge.event.ForgeEventFactory.onResourceReload(reloadableserverresources, p_251163_));
 +      return SimpleReloadInstance.m_203834_(p_248588_, listeners, p_249136_, p_249601_, f_206846_, f_206845_.isDebugEnabled()).m_7237_().whenComplete((p_214309_, p_214310_) -> {
           reloadableserverresources.f_214300_.m_254905_(CommandBuildContext.MissingTagAccessPolicy.FAIL);
        }).thenApply((p_214306_) -> {
           return reloadableserverresources;
-@@ -81,6 +_,7 @@
+@@ -81,6 +_,8 @@
           m_206870_(p_206869_, p_214315_);
        });
        Blocks.m_50758_();
++      attachmentLoader.apply();
 +      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.TagsUpdatedEvent(p_206869_, false, false));
     }
  
     private static <T> void m_206870_(RegistryAccess p_206871_, TagManager.LoadResult<T> p_206872_) {
-@@ -91,5 +_,16 @@
+@@ -91,5 +_,17 @@
           return List.copyOf(p_214312_.getValue());
        }));
        p_206871_.m_175515_(resourcekey).m_203652_(map);
 +   }
 +
 +   private final net.minecraftforge.common.crafting.conditions.ICondition.IContext context;
++   private final net.minecraftforge.registries.attachment.AttachmentLoader attachmentLoader;
 +
 +   /**
 +    * Exposes the current condition context for usage in other reload listeners.<br>

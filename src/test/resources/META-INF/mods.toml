@@ -56,6 +56,8 @@ modId="neighbor_notify_event_test"
 [[mods]]
 modId="block_place_event_test"
 [[mods]]
+modId="attachment_test"
+[[mods]]
 modId="slipperiness_test"
 [[mods]]
 modId="vanilla_game_event_test"

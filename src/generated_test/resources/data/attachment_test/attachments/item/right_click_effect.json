@@ -1,0 +1,44 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "objects": "minecraft:andesite",
+      "value": {
+        "duration": 25,
+        "effect": "minecraft:bad_omen"
+      }
+    },
+    {
+      "objects": "#minecraft:anvil",
+      "value": {
+        "amplifier": 3,
+        "duration": 1,
+        "effect": "minecraft:instant_damage"
+      }
+    },
+    {
+      "objects": {
+        "type": "forge:and",
+        "values": [
+          {
+            "type": "forge:or",
+            "values": [
+              [
+                "minecraft:allay_spawn_egg",
+                "minecraft:bamboo_raft"
+              ]
+            ]
+          },
+          {
+            "type": "forge:not",
+            "value": "minecraft:bamboo_raft"
+          }
+        ]
+      },
+      "value": {
+        "duration": 1000,
+        "effect": "minecraft:invisibility"
+      }
+    }
+  ]
+}
