@@ -97,18 +97,22 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.STONES, "Stones");
         add(Tags.Blocks.WORLDGEN_STONES, "World Generation Stones");
         add(Tags.Blocks.STORAGE_BLOCKS, "Storage Blocks");
+        add(Tags.Blocks.STORAGE_BLOCKS_BONE, "Bone Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_COAL, "Coal Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_COPPER, "Copper Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_DIAMOND, "Diamond Storage Blocks");
+        add(Tags.Blocks.STORAGE_BLOCKS_DRIED_KELP, "Dried Kelp Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_EMERALD, "Emerald Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_GOLD, "Gold Storage Blocks");
+        add(Tags.Blocks.STORAGE_BLOCKS_HAY, "Hay Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_IRON, "Iron Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_LAPIS, "Lapis Storage Blocks");
+        add(Tags.Blocks.STORAGE_BLOCKS_NETHERITE, "Netherite Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_RAW_COPPER, "Raw Copper Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_RAW_GOLD, "Raw Gold Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_RAW_IRON, "Raw Iron Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_REDSTONE, "Redstone Storage Blocks");
-        add(Tags.Blocks.STORAGE_BLOCKS_NETHERITE, "Netherite Storage Blocks");
+        add(Tags.Blocks.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
 
         // Block Entities Types
 
@@ -238,18 +242,22 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.SLIMEBALLS, "Slimeballs");
         add(Tags.Items.STONES, "Stones");
         add(Tags.Items.STORAGE_BLOCKS, "Storage Blocks");
+        add(Tags.Items.STORAGE_BLOCKS_BONE, "Bone Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_COAL, "Coal Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_COPPER, "Copper Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_DIAMOND, "Diamond Storage Blocks");
+        add(Tags.Items.STORAGE_BLOCKS_DRIED_KELP, "Dried Kelp Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_EMERALD, "Emerald Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_GOLD, "Gold Storage Blocks");
+        add(Tags.Items.STORAGE_BLOCKS_HAY, "Hay Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_IRON, "Iron Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_LAPIS, "Lapis Storage Blocks");
-        add(Tags.Items.STORAGE_BLOCKS_REDSTONE, "Redstone Storage Blocks");
+        add(Tags.Items.STORAGE_BLOCKS_NETHERITE, "Netherite Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_RAW_COPPER, "Raw Copper Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_RAW_GOLD, "Raw Gold Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_RAW_IRON, "Raw Iron Storage Blocks");
-        add(Tags.Items.STORAGE_BLOCKS_NETHERITE, "Netherite Storage Blocks");
+        add(Tags.Items.STORAGE_BLOCKS_REDSTONE, "Redstone Storage Blocks");
+        add(Tags.Items.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
         add(Tags.Items.STRINGS, "Strings");
         add(Tags.Items.TOOLS_SHEARS, "Shears");
         add(Tags.Items.TOOLS_SHIELDS, "Shields");
