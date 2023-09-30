@@ -430,8 +430,15 @@ public class Tags
         public static final TagKey<Item> RAW_MATERIALS_COPPER = tag("raw_materials/copper");
         public static final TagKey<Item> RAW_MATERIALS_GOLD = tag("raw_materials/gold");
         public static final TagKey<Item> RAW_MATERIALS_IRON = tag("raw_materials/iron");
+        /**
+         * For rod-like materials to be used in recipes.
+         */
         public static final TagKey<Item> RODS = tag("rods");
         public static final TagKey<Item> RODS_BLAZE = tag("rods/blaze");
+        /**
+         * For stick-like materials to be used in recipes.
+         * One example is a mod adds stick variants such as Spruce Sticks but would like stick recipes to be able to use it.
+         */
         public static final TagKey<Item> RODS_WOODEN = tag("rods/wooden");
 
         public static final TagKey<Item> SAND = tag("sand");
