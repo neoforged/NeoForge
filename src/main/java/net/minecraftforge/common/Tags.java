@@ -107,8 +107,6 @@ public class Tags
         public static final TagKey<Block> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
 
         public static final TagKey<Block> GRAVEL = tag("gravel");
-        public static final TagKey<Block> MATERIALS_AMETHYST = tag("materials/amethyst");
-        public static final TagKey<Block> MATERIALS_QUARTZ = tag("materials/quartz");
         public static final TagKey<Block> NETHERRACK = tag("netherrack");
         public static final TagKey<Block> OBSIDIAN = tag("obsidian");
         /**

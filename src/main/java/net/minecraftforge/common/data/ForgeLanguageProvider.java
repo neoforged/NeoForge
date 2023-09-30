@@ -56,8 +56,6 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.GLASS_PANES, "Glass Panes");
         add(Tags.Blocks.GLASS_PANES_COLORLESS, "Colorless Glass Panes");
         add(Tags.Blocks.GRAVEL, "Gravel");
-        add(Tags.Blocks.MATERIALS_AMETHYST, "Amethyst Materials");
-        add(Tags.Blocks.MATERIALS_QUARTZ, "Quartz Materials");
         add(Tags.Blocks.NETHERRACK, "Netherrack");
         add(Tags.Blocks.NEEDS_WOOD_TOOL, "Needs Wooden Tools");
         add(Tags.Blocks.NEEDS_GOLD_TOOL, "Needs Gold Tools");
