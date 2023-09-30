@@ -280,6 +280,14 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.EntityTypes.BOATS, "Boats");
         add(Tags.EntityTypes.CAPTURING_NOT_SUPPORTED, "Capturing Not Supported");
 
+        // Enchantments
+        add(Tags.Enchantments.INCREASE_BLOCK_DROPS, "Increase Block Drops");
+        add(Tags.Enchantments.INCREASE_ENTITY_DROPS, "Increase Entity Drops");
+        add(Tags.Enchantments.WEAPON_DAMAGE_ENHANCEMENT, "Weapon Damage Enhancement");
+        add(Tags.Enchantments.ENTITY_SPEED_ENHANCEMENT, "Entity Speed Enhancement");
+        add(Tags.Enchantments.ENTITY_AUXILIARY_MOVEMENT_ENHANCEMENT, "Entity Auxiliary Movement Enhancement");
+        add(Tags.Enchantments.ENTITY_DEFENSE_ENHANCEMENT, "Entity Defense Enhancement");
+
         // Biomes
         add(Tags.Biomes.IS_HOT, "Hot");
         add(Tags.Biomes.IS_HOT_OVERWORLD, "Hot Overworld");

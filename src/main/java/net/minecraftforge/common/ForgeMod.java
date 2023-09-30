@@ -49,6 +49,7 @@ import net.minecraftforge.common.crafting.IntersectionIngredient;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.ForgeBiomeTagsProvider;
 import net.minecraftforge.common.data.ForgeBlockEntityTypeTagsProvider;
+import net.minecraftforge.common.data.ForgeEnchantmentTagsProvider;
 import net.minecraftforge.common.data.ForgeFluidTagsProvider;
 import net.minecraftforge.common.data.ForgeSpriteSourceProvider;
 import net.minecraftforge.common.data.ForgeLanguageProvider;
@@ -515,6 +516,7 @@ public class ForgeMod
         gen.addProvider(event.includeServer(), new ForgeBlockEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new ForgeEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new ForgeFluidTagsProvider(packOutput, lookupProvider, existingFileHelper));
+        gen.addProvider(event.includeServer(), new ForgeEnchantmentTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new ForgeRecipeProvider(packOutput));
         gen.addProvider(event.includeServer(), new ForgeLootTableProvider(packOutput));
         gen.addProvider(event.includeServer(), new ForgeBiomeTagsProvider(packOutput, lookupProvider, existingFileHelper));
