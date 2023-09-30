@@ -580,6 +580,28 @@ public class Tags
          * Holds all fluids related to honey. (Standard unit for honey bottle is 250mb per bottle)
          */
         public static final TagKey<Fluid> HONEY = tag("honey");
+        /**
+         * Holds all fluids related to potions. The effects of the potion fluid should be read from NBT.
+         * (Standard unit for potions is 250mb per bottle)
+         */
+        public static final TagKey<Fluid> POTION = tag("potion");
+        /**
+         * Holds all fluids related to Suspicious Stew. The effects of the suspicious stew fluid should be read from NBT.
+         * (Standard unit for suspicious stew is 250mb per bowl)
+         */
+        public static final TagKey<Fluid> SUSPICIOUS_STEW = tag("suspicious_stew");
+        /**
+         * Holds all fluids related to Mushroom Stew. (Standard unit for mushroom stew is 250mb per bowl)
+         */
+        public static final TagKey<Fluid> MUSHROOM_STEW = tag("mushroom_stew");
+        /**
+         * Holds all fluids related to Rabbit Stew. (Standard unit for rabbit stew is 250mb per bowl)
+         */
+        public static final TagKey<Fluid> RABBIT_STEW = tag("rabbit_stew");
+        /**
+         * Holds all fluids related to Beetroot Soup. (Standard unit for beetroot soup is 250mb per bowl)
+         */
+        public static final TagKey<Fluid> BEETROOT_SOUP = tag("beetroot_soup");
 
         private static TagKey<Fluid> tag(String name)
         {

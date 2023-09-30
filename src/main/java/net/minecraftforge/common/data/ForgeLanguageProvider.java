@@ -268,6 +268,13 @@ public final class ForgeLanguageProvider extends LanguageProvider
 
         // Fluids
         add(Tags.Fluids.MILK, "Milk");
+        add(Tags.Fluids.GASEOUS, "Gaseous");
+        add(Tags.Fluids.HONEY, "Honey");
+        add(Tags.Fluids.POTION, "Potion");
+        add(Tags.Fluids.SUSPICIOUS_STEW, "Suspicious Stew");
+        add(Tags.Fluids.MUSHROOM_STEW, "Mushroom Stew");
+        add(Tags.Fluids.RABBIT_STEW, "Rabbit Stew");
+        add(Tags.Fluids.BEETROOT_SOUP, "Beetroot Soup");
 
         // Entities
         add(Tags.EntityTypes.BOSSES, "Bosses");
