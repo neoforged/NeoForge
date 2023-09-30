@@ -1,6 +1,5 @@
 {
   "values": [
-    "#c:storage_blocks/amethyst",
     "#c:storage_blocks/coal",
     "#c:storage_blocks/copper",
     "#c:storage_blocks/diamond",
@@ -8,7 +7,6 @@
     "#c:storage_blocks/gold",
     "#c:storage_blocks/iron",
     "#c:storage_blocks/lapis",
-    "#c:storage_blocks/quartz",
     "#c:storage_blocks/raw_copper",
     "#c:storage_blocks/raw_gold",
     "#c:storage_blocks/raw_iron",

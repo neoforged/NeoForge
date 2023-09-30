@@ -1,9 +1,0 @@
-{
-  "values": [
-    "minecraft:amethyst_block",
-    {
-      "id": "#forge:storage_blocks/amethyst",
-      "required": false
-    }
-  ]
-}
