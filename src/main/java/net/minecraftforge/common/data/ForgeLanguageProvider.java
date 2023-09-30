@@ -56,6 +56,8 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.GLASS_PANES, "Glass Panes");
         add(Tags.Blocks.GLASS_PANES_COLORLESS, "Colorless Glass Panes");
         add(Tags.Blocks.GRAVEL, "Gravel");
+        add(Tags.Blocks.MATERIALS_AMETHYST, "Amethyst Materials");
+        add(Tags.Blocks.MATERIALS_QUARTZ, "Quartz Materials");
         add(Tags.Blocks.NETHERRACK, "Netherrack");
         add(Tags.Blocks.NEEDS_WOOD_TOOL, "Needs Wooden Tools");
         add(Tags.Blocks.NEEDS_GOLD_TOOL, "Needs Gold Tools");
@@ -97,7 +99,6 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.STONES, "Stones");
         add(Tags.Blocks.WORLDGEN_STONES, "World Generation Stones");
         add(Tags.Blocks.STORAGE_BLOCKS, "Storage Blocks");
-        add(Tags.Blocks.STORAGE_BLOCKS_AMETHYST, "Amethyst Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_COAL, "Coal Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_COPPER, "Copper Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_DIAMOND, "Diamond Storage Blocks");
@@ -105,7 +106,6 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.STORAGE_BLOCKS_GOLD, "Gold Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_IRON, "Iron Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_LAPIS, "Lapis Storage Blocks");
-        add(Tags.Blocks.STORAGE_BLOCKS_QUARTZ, "Quartz Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_RAW_COPPER, "Raw Copper Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_RAW_GOLD, "Raw Gold Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_RAW_IRON, "Raw Iron Storage Blocks");
@@ -240,7 +240,6 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.SLIMEBALLS, "Slimeballs");
         add(Tags.Items.STONES, "Stones");
         add(Tags.Items.STORAGE_BLOCKS, "Storage Blocks");
-        add(Tags.Items.STORAGE_BLOCKS_AMETHYST, "Amethyst Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_COAL, "Coal Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_COPPER, "Copper Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_DIAMOND, "Diamond Storage Blocks");
@@ -248,7 +247,6 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.STORAGE_BLOCKS_GOLD, "Gold Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_IRON, "Iron Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_LAPIS, "Lapis Storage Blocks");
-        add(Tags.Items.STORAGE_BLOCKS_QUARTZ, "Quartz Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_REDSTONE, "Redstone Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_RAW_COPPER, "Raw Copper Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_RAW_GOLD, "Raw Gold Storage Blocks");

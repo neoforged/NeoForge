@@ -75,6 +75,8 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(GLASS_PANES).addTags(GLASS_PANES_COLORLESS).add(Blocks.WHITE_STAINED_GLASS_PANE, Blocks.ORANGE_STAINED_GLASS_PANE, Blocks.MAGENTA_STAINED_GLASS_PANE, Blocks.LIGHT_BLUE_STAINED_GLASS_PANE, Blocks.YELLOW_STAINED_GLASS_PANE, Blocks.LIME_STAINED_GLASS_PANE, Blocks.PINK_STAINED_GLASS_PANE, Blocks.GRAY_STAINED_GLASS_PANE, Blocks.LIGHT_GRAY_STAINED_GLASS_PANE, Blocks.CYAN_STAINED_GLASS_PANE, Blocks.PURPLE_STAINED_GLASS_PANE, Blocks.BLUE_STAINED_GLASS_PANE, Blocks.BROWN_STAINED_GLASS_PANE, Blocks.GREEN_STAINED_GLASS_PANE, Blocks.GREEN_STAINED_GLASS_PANE, Blocks.RED_STAINED_GLASS_PANE, Blocks.BLACK_STAINED_GLASS_PANE);
         tag(GLASS_PANES_COLORLESS).add(Blocks.GLASS_PANE);
         tag(GRAVEL).add(Blocks.GRAVEL);
+        tag(MATERIALS_AMETHYST).add(Blocks.AMETHYST_BLOCK, Blocks.BUDDING_AMETHYST);
+        tag(MATERIALS_QUARTZ).add(Blocks.QUARTZ_BLOCK, Blocks.QUARTZ_BRICKS, Blocks.QUARTZ_PILLAR, Blocks.QUARTZ_SLAB, Blocks.QUARTZ_STAIRS, Blocks.SMOOTH_QUARTZ, Blocks.SMOOTH_QUARTZ_SLAB, Blocks.SMOOTH_QUARTZ_STAIRS, Blocks.CHISELED_QUARTZ_BLOCK);
         tag(NETHERRACK).add(Blocks.NETHERRACK);
         tag(OBSIDIAN).add(Blocks.OBSIDIAN);
         tag(ORE_BEARING_GROUND_DEEPSLATE).add(Blocks.DEEPSLATE);
@@ -114,8 +116,7 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
 
         tag(STONES).add(Blocks.ANDESITE, Blocks.DIORITE, Blocks.GRANITE, Blocks.INFESTED_STONE, Blocks.STONE, Blocks.DEEPSLATE, Blocks.INFESTED_DEEPSLATE, Blocks.TUFF);
         tag(WORLDGEN_STONES).add(Blocks.ANDESITE, Blocks.DIORITE, Blocks.GRANITE, Blocks.INFESTED_STONE, Blocks.STONE, Blocks.DEEPSLATE, Blocks.INFESTED_DEEPSLATE, Blocks.TUFF);
-        tag(STORAGE_BLOCKS).addTags(STORAGE_BLOCKS_AMETHYST, STORAGE_BLOCKS_COAL, STORAGE_BLOCKS_COPPER, STORAGE_BLOCKS_DIAMOND, STORAGE_BLOCKS_EMERALD, STORAGE_BLOCKS_GOLD, STORAGE_BLOCKS_IRON, STORAGE_BLOCKS_LAPIS, STORAGE_BLOCKS_QUARTZ, STORAGE_BLOCKS_RAW_COPPER, STORAGE_BLOCKS_RAW_GOLD, STORAGE_BLOCKS_RAW_IRON, STORAGE_BLOCKS_REDSTONE, STORAGE_BLOCKS_NETHERITE);
-        tag(STORAGE_BLOCKS_AMETHYST).add(Blocks.AMETHYST_BLOCK);
+        tag(STORAGE_BLOCKS).addTags(STORAGE_BLOCKS_COAL, STORAGE_BLOCKS_COPPER, STORAGE_BLOCKS_DIAMOND, STORAGE_BLOCKS_EMERALD, STORAGE_BLOCKS_GOLD, STORAGE_BLOCKS_IRON, STORAGE_BLOCKS_LAPIS, STORAGE_BLOCKS_RAW_COPPER, STORAGE_BLOCKS_RAW_GOLD, STORAGE_BLOCKS_RAW_IRON, STORAGE_BLOCKS_REDSTONE, STORAGE_BLOCKS_NETHERITE);
         tag(STORAGE_BLOCKS_COAL).add(Blocks.COAL_BLOCK);
         tag(STORAGE_BLOCKS_COPPER).add(Blocks.COPPER_BLOCK);
         tag(STORAGE_BLOCKS_DIAMOND).add(Blocks.DIAMOND_BLOCK);
@@ -123,7 +124,6 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(STORAGE_BLOCKS_GOLD).add(Blocks.GOLD_BLOCK);
         tag(STORAGE_BLOCKS_IRON).add(Blocks.IRON_BLOCK);
         tag(STORAGE_BLOCKS_LAPIS).add(Blocks.LAPIS_BLOCK);
-        tag(STORAGE_BLOCKS_QUARTZ).add(Blocks.QUARTZ_BLOCK);
         tag(STORAGE_BLOCKS_RAW_COPPER).add(Blocks.RAW_COPPER_BLOCK);
         tag(STORAGE_BLOCKS_RAW_GOLD).add(Blocks.RAW_GOLD_BLOCK);
         tag(STORAGE_BLOCKS_RAW_IRON).add(Blocks.RAW_IRON_BLOCK);
@@ -218,6 +218,10 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(GLASS_PANES_COLORLESS)
                 .addOptional(new ResourceLocation("forge", "glass_panes_colorless"));
         tagWithOptionalLegacy(GRAVEL);
+        tag(MATERIALS_AMETHYST)
+                .addOptional(new ResourceLocation("forge", "storage_blocks/amethyst"));
+        tag(MATERIALS_QUARTZ)
+                .addOptional(new ResourceLocation("forge", "storage_blocks/quartz"));
         tagWithOptionalLegacy(NETHERRACK);
         tagWithOptionalLegacy(OBSIDIAN);
         tagWithOptionalLegacy(ORE_BEARING_GROUND_DEEPSLATE);
@@ -245,7 +249,6 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tagWithOptionalLegacy(SAND_RED);
         tagWithOptionalLegacy(STONES);
         tagWithOptionalLegacy(STORAGE_BLOCKS);
-        tagWithOptionalLegacy(STORAGE_BLOCKS_AMETHYST);
         tagWithOptionalLegacy(STORAGE_BLOCKS_COAL);
         tagWithOptionalLegacy(STORAGE_BLOCKS_COPPER);
         tagWithOptionalLegacy(STORAGE_BLOCKS_DIAMOND);
@@ -253,7 +256,6 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tagWithOptionalLegacy(STORAGE_BLOCKS_GOLD);
         tagWithOptionalLegacy(STORAGE_BLOCKS_IRON);
         tagWithOptionalLegacy(STORAGE_BLOCKS_LAPIS);
-        tagWithOptionalLegacy(STORAGE_BLOCKS_QUARTZ);
         tagWithOptionalLegacy(STORAGE_BLOCKS_RAW_COPPER);
         tagWithOptionalLegacy(STORAGE_BLOCKS_RAW_GOLD);
         tagWithOptionalLegacy(STORAGE_BLOCKS_RAW_IRON);

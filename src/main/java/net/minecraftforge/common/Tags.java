@@ -107,6 +107,8 @@ public class Tags
         public static final TagKey<Block> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
 
         public static final TagKey<Block> GRAVEL = tag("gravel");
+        public static final TagKey<Block> MATERIALS_AMETHYST = tag("materials/amethyst");
+        public static final TagKey<Block> MATERIALS_QUARTZ = tag("materials/quartz");
         public static final TagKey<Block> NETHERRACK = tag("netherrack");
         public static final TagKey<Block> OBSIDIAN = tag("obsidian");
         /**
@@ -184,7 +186,6 @@ public class Tags
          */
         public static final TagKey<Block> STONES = tag("stones");
         public static final TagKey<Block> STORAGE_BLOCKS = tag("storage_blocks");
-        public static final TagKey<Block> STORAGE_BLOCKS_AMETHYST = tag("storage_blocks/amethyst");
         public static final TagKey<Block> STORAGE_BLOCKS_COAL = tag("storage_blocks/coal");
         public static final TagKey<Block> STORAGE_BLOCKS_COPPER = tag("storage_blocks/copper");
         public static final TagKey<Block> STORAGE_BLOCKS_DIAMOND = tag("storage_blocks/diamond");
@@ -193,7 +194,6 @@ public class Tags
         public static final TagKey<Block> STORAGE_BLOCKS_IRON = tag("storage_blocks/iron");
         public static final TagKey<Block> STORAGE_BLOCKS_LAPIS = tag("storage_blocks/lapis");
         public static final TagKey<Block> STORAGE_BLOCKS_NETHERITE = tag("storage_blocks/netherite");
-        public static final TagKey<Block> STORAGE_BLOCKS_QUARTZ = tag("storage_blocks/quartz");
         public static final TagKey<Block> STORAGE_BLOCKS_RAW_COPPER = tag("storage_blocks/raw_copper");
         public static final TagKey<Block> STORAGE_BLOCKS_RAW_GOLD = tag("storage_blocks/raw_gold");
         public static final TagKey<Block> STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
@@ -461,7 +461,6 @@ public class Tags
          */
         public static final TagKey<Item> STONES = tag("stones");
         public static final TagKey<Item> STORAGE_BLOCKS = tag("storage_blocks");
-        public static final TagKey<Item> STORAGE_BLOCKS_AMETHYST = tag("storage_blocks/amethyst");
         public static final TagKey<Item> STORAGE_BLOCKS_COAL = tag("storage_blocks/coal");
         public static final TagKey<Item> STORAGE_BLOCKS_COPPER = tag("storage_blocks/copper");
         public static final TagKey<Item> STORAGE_BLOCKS_DIAMOND = tag("storage_blocks/diamond");
@@ -470,7 +469,6 @@ public class Tags
         public static final TagKey<Item> STORAGE_BLOCKS_IRON = tag("storage_blocks/iron");
         public static final TagKey<Item> STORAGE_BLOCKS_LAPIS = tag("storage_blocks/lapis");
         public static final TagKey<Item> STORAGE_BLOCKS_NETHERITE = tag("storage_blocks/netherite");
-        public static final TagKey<Item> STORAGE_BLOCKS_QUARTZ = tag("storage_blocks/quartz");
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_COPPER = tag("storage_blocks/raw_copper");
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_GOLD = tag("storage_blocks/raw_gold");
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
