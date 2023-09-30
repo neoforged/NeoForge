@@ -1,4 +1,4 @@
-Getting Support Surrounding Forge
+Getting Support Surrounding NeoForge
 =================================
 
 **If you do not want to read the following wall of text, no matter its relevance for helping get your issue resolved quickly, please refer to the [Forge Forums][Bug-Reports] for support.**

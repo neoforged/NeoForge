@@ -55,7 +55,7 @@ free to use and modify. However, it costs money to run such a large project as t
 our opencollective.*
 
 [Contributing]: ./CONTRIBUTING.md
-[CLA]: https://cla-assistant.io/MinecraftForge/MinecraftForge
+[CLA]: https://cla-assistant.io/NeoForged/NeoForge
 
 [Download]: https://maven.neoforged.net/#/releases/net/neoforged/forge/
 
