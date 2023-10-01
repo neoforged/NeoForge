@@ -114,10 +114,6 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.STORAGE_BLOCKS_REDSTONE, "Redstone Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
 
-        // Block Entities Types
-
-        add(Tags.BlockEntityTypes.RELOCATION_NOT_SUPPORTED, "Relocation Not Supported");
-
         // Items
 
         add(Tags.Items.BARRELS, "Barrels");

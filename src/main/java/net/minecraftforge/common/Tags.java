@@ -17,7 +17,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Fluid;
 
@@ -26,7 +25,6 @@ public class Tags
     public static void init ()
     {
         Blocks.init();
-        BlockEntityTypes.init();
         EntityTypes.init();
         Items.init();
         Fluids.init();
@@ -158,11 +156,10 @@ public class Tags
          */
         public static final TagKey<Block> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
         /**
-         * Blocks should be included in this tag if their movement can cause serious issues such as world corruption
-         * upon being moved, such as chunk loaders or pipes, for mods that move blocks but do not respect
+         * Blocks should be included in this tag if their movement/relocation can cause serious issues such
+         * as world corruption upon being moved or for balance reason where the block should not be able to be relocated.
+         * Example: Chunk loaders or pipes where other mods that move blocks do not respect
          * {@link BlockBehaviour.BlockStateBase#getPistonPushReaction}.
-         * <p>
-         * See also the equivalent block entity type tag: {@link Tags.BlockEntityTypes#RELOCATION_NOT_SUPPORTED}
          */
         public static final TagKey<Block> RELOCATION_NOT_SUPPORTED = tag("relocation_not_supported");
 
@@ -210,24 +207,6 @@ public class Tags
         private static TagKey<Block> neoforgeTag(String name)
         {
             return BlockTags.create(new ResourceLocation("neoforge", name));
-        }
-    }
-
-    public static class BlockEntityTypes
-    {
-        private static void init() {}
-
-        /**
-         * Blocks should be included in this tag if their movement can cause serious issues such as world corruption
-         * upon being moved, such as chunk loaders or pipes, for mods that move block entities.
-         * <p>
-         * See also the equivalent block tag: {@link Tags.Blocks#RELOCATION_NOT_SUPPORTED}
-         */
-        public static final TagKey<BlockEntityType<?>> RELOCATION_NOT_SUPPORTED = tag("relocation_not_supported");
-
-        private static TagKey<BlockEntityType<?>> tag(String name)
-        {
-            return TagKey.create(Registries.BLOCK_ENTITY_TYPE, new ResourceLocation("c", name));
         }
     }
 
@@ -537,7 +516,7 @@ public class Tags
          */
         public static final TagKey<Item> TOOLS_SHEARS = tag("tools/shears");
         /**
-         * A tag containing all existing throwable spears. Other throwable tools such as throwing knives or boomerangs
+         * A tag containing all existing spears. Other tools such as throwing knives or boomerangs
          * should not be put into this tag and should be put into their own tool tags.
          * Do not use this tag for determining a tool's behavior.
          * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
