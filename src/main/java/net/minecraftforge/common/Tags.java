@@ -70,6 +70,11 @@ public class Tags
         public static final TagKey<Block> COBBLESTONES_INFESTED = tag("cobblestones/infested");
         public static final TagKey<Block> COBBLESTONES_MOSSY = tag("cobblestones/mossy");
         public static final TagKey<Block> COBBLESTONES_DEEPSLATE = tag("cobblestones/deepslate");
+
+        /**
+         * Tag that holds all blocks that can be dyed a specific color.
+         * (Does not include color blending blocks that would behave similar to leather armor item)
+         */
         public static final TagKey<Block> DYED = tag("dyed");
         public static final TagKey<Block> DYED_BLACK = tag("dyed/black");
         public static final TagKey<Block> DYED_BLUE = tag("dyed/blue");
@@ -273,6 +278,20 @@ public class Tags
         public static final TagKey<Item> CROPS_NETHER_WART = tag("crops/nether_wart");
         public static final TagKey<Item> CROPS_POTATO = tag("crops/potato");
         public static final TagKey<Item> CROPS_WHEAT = tag("crops/wheat");
+        public static final TagKey<Item> DUSTS = tag("dusts");
+        public static final TagKey<Item> DUSTS_PRISMARINE = tag("dusts/prismarine");
+        public static final TagKey<Item> DUSTS_REDSTONE = tag("dusts/redstone");
+        public static final TagKey<Item> DUSTS_GLOWSTONE = tag("dusts/glowstone");
+
+        /**
+         * Tag that holds all blocks and items that can be dyed a specific color.
+         * (Does not include color blending items like leather armor)
+         * <p></p>
+         * Note: Use custom ingredients in recipes to do tag intersections and/or tag exclusions
+         * to make more powerful recipes utilizing multiple tags such as dyed tags for an ingredient.
+         * See {@link net.minecraftforge.common.crafting.AbstractIngredient} children classes for various
+         * custom ingredients available that can also be used in data generation.
+         */
         public static final TagKey<Item> DYED = tag("dyed");
         public static final TagKey<Item> DYED_BLACK = tag("dyed/black");
         public static final TagKey<Item> DYED_BLUE = tag("dyed/blue");
@@ -290,10 +309,6 @@ public class Tags
         public static final TagKey<Item> DYED_RED = tag("dyed/red");
         public static final TagKey<Item> DYED_WHITE = tag("dyed/white");
         public static final TagKey<Item> DYED_YELLOW = tag("dyed/yellow");
-        public static final TagKey<Item> DUSTS = tag("dusts");
-        public static final TagKey<Item> DUSTS_PRISMARINE = tag("dusts/prismarine");
-        public static final TagKey<Item> DUSTS_REDSTONE = tag("dusts/redstone");
-        public static final TagKey<Item> DUSTS_GLOWSTONE = tag("dusts/glowstone");
 
         public static final TagKey<Item> DYES = tag("dyes");
         public static final TagKey<Item> DYES_BLACK = DyeColor.BLACK.getTag();
