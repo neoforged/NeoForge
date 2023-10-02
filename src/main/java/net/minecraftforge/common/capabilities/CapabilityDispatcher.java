@@ -39,6 +39,8 @@ public final class CapabilityDispatcher implements INBTSerializable<CompoundTag>
     private ICapabilityProvider[] caps;
     private INBTSerializable<Tag>[] writers;
     private String[] names;
+    private ISyncCapability<ICapabilityProvider>[] syncs;
+    private String[] syncNames;
     private final List<Runnable> listeners;
 
     public CapabilityDispatcher(Map<ResourceLocation, ICapabilityProvider> list, List<Runnable> listeners)
@@ -52,6 +54,8 @@ public final class CapabilityDispatcher implements INBTSerializable<CompoundTag>
         List<ICapabilityProvider> lstCaps = Lists.newArrayList();
         List<INBTSerializable<Tag>> lstWriters = Lists.newArrayList();
         List<String> lstNames = Lists.newArrayList();
+        List<ISyncCapability<ICapabilityProvider>> lstSyncs = Lists.newArrayList();
+        List<String> lstSyncNames = Lists.newArrayList();
         this.listeners = listeners;
 
         if (parent != null) // Parents go first!
@@ -73,11 +77,18 @@ public final class CapabilityDispatcher implements INBTSerializable<CompoundTag>
                 lstWriters.add((INBTSerializable<Tag>)prov);
                 lstNames.add(entry.getKey().toString());
             }
+            else if (prov instanceof ICapabilityProvider)
+            {
+                lstSyncs.add((ISyncCapability<ICapabilityProvider>) prov);
+                lstSyncNames.add(entry.getKey().toString());
+            }
         }
 
         caps = lstCaps.toArray(new ICapabilityProvider[lstCaps.size()]);
         writers = lstWriters.toArray(new INBTSerializable[lstWriters.size()]);
         names = lstNames.toArray(new String[lstNames.size()]);
+        syncs = lstSyncs.toArray(new ISyncCapability[lstSyncs.size()]);
+        syncNames = lstSyncNames.toArray(new String[lstSyncNames.size()]);
     }
 
 
@@ -125,6 +136,27 @@ public final class CapabilityDispatcher implements INBTSerializable<CompoundTag>
             if (nbt.contains(names[x]))
             {
                 writers[x].deserializeNBT(nbt.get(names[x]));
+            }
+        }
+    }
+
+    public void writeSyncTag(CompoundTag tag, ICapabilityProvider owner)
+    {
+        for (int i = 0; i < syncs.length; i++)
+        {
+            CompoundTag capSyncTag = new CompoundTag();
+            syncs[i].writeSyncTag(tag, owner);
+            tag.put(syncNames[i], capSyncTag);
+        }
+    }
+
+    public void readSyncTag(CompoundTag tag)
+    {
+        for (int i = 0; i < syncs.length; i++)
+        {
+            if (tag.contains(syncNames[i]))
+            {
+                syncs[i].readSyncTag(tag);
             }
         }
     }

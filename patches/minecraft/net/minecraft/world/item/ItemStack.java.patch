@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public final class ItemStack {
-+public final class ItemStack extends net.minecraftforge.common.capabilities.CapabilityProvider<ItemStack> implements net.minecraftforge.common.extensions.IForgeItemStack {
++public final class ItemStack extends net.minecraftforge.common.capabilities.CapabilityProvider<ItemStack> implements net.minecraftforge.common.extensions.IForgeItemStack, net.minecraftforge.common.capabilities.ISyncCapabilityProvider<ItemStack> {
     public static final Codec<ItemStack> f_41582_ = RecordCodecBuilder.create((p_258963_) -> {
        return p_258963_.group(BuiltInRegistries.f_257033_.m_194605_().fieldOf("id").forGetter(ItemStack::m_41720_), Codec.INT.fieldOf("Count").forGetter(ItemStack::m_41613_), CompoundTag.f_128325_.optionalFieldOf("tag").forGetter((p_281115_) -> {
           return Optional.ofNullable(p_281115_.m_41783_());
@@ -248,7 +248,7 @@
              return p_220170_.m_131144_(new HoverEvent(HoverEvent.Action.f_130832_, new HoverEvent.ItemStackInfo(this)));
           });
        }
-@@ -935,12 +_,31 @@
+@@ -935,6 +_,8 @@
        this.m_41720_().m_5929_(p_41732_, p_41733_, this, p_41734_);
     }
  
@@ -257,11 +257,10 @@
     public void m_150924_(ItemEntity p_150925_) {
        this.m_41720_().m_142023_(p_150925_);
     }
- 
-    public boolean m_41614_() {
+@@ -943,12 +_,41 @@
        return this.m_41720_().m_41472_();
-+   }
-+
+    }
+ 
 +   // FORGE START
 +   public void deserializeNBT(CompoundTag nbt) {
 +      final ItemStack itemStack = ItemStack.m_41712_(nbt);
@@ -277,6 +276,26 @@
 +         this.gatherCapabilities(() -> f_41589_.initCapabilities(this, this.capNBT));
 +         if (this.capNBT != null) deserializeCaps(this.capNBT);
 +      }
++   }
++
+    public SoundEvent m_41615_() {
+       return this.m_41720_().m_6023_();
     }
  
-    public SoundEvent m_41615_() {
+    public SoundEvent m_41616_() {
+       return this.m_41720_().m_6061_();
++   }
++
++   @Override
++   public void writeAllSyncCapabilityData(CompoundTag tag, ItemStack owner) {
++      net.minecraftforge.common.capabilities.CapabilityDispatcher capabilities = getCapabilities();
++      if (capabilities != null) capabilities.writeSyncTag(tag, owner);
++   }
++
++   @Override
++   public void readAllSyncCapabilityData(CompoundTag tag) {
++      net.minecraftforge.common.capabilities.CapabilityDispatcher capabilities = getCapabilities();
++      if (capabilities != null) capabilities.readSyncTag(tag);
+    }
+ 
+    public static enum TooltipPart {

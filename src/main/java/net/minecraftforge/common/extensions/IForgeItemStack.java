@@ -33,7 +33,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.capabilities.ISyncCapability;
+import net.minecraftforge.common.capabilities.ISyncCapabilityProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -375,7 +378,14 @@ public interface IForgeItemStack extends ICapabilitySerializable<CompoundTag>
     @Nullable
     default CompoundTag getShareTag()
     {
-        return self().getItem().getShareTag(self());
+        CompoundTag shareTag = self().getItem().getShareTag(self());
+
+        CompoundTag capsSyncTag = new CompoundTag();
+        self().writeAllSyncCapabilityData(capsSyncTag,self());
+        if (shareTag == null) shareTag = new CompoundTag();
+        shareTag.put("ForgeSyncCaps", capsSyncTag);
+
+        return shareTag;
     }
 
     /**
@@ -387,6 +397,8 @@ public interface IForgeItemStack extends ICapabilitySerializable<CompoundTag>
     default void readShareTag(@Nullable CompoundTag nbt)
     {
         self().getItem().readShareTag(self(), nbt);
+
+        if (nbt != null && nbt.contains("ForgeSyncCaps")) self().readShareTag(nbt.getCompound("ForgeSyncCaps"));
     }
 
     /**
