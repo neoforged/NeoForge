@@ -25,9 +25,6 @@ public class NeoForgeConfig {
 
         public final BooleanValue fullBoundingBoxLadders;
 
-        public final DoubleValue zombieBaseSummonChance;
-        public final DoubleValue zombieBabyChance;
-
         public final ConfigValue<String> permissionHandler;
 
         public final BooleanValue advertiseDedicatedServerToLan;
@@ -53,18 +50,6 @@ public class NeoForgeConfig {
                     .translation("neoforge.configgui.fullBoundingBoxLadders")
                     .worldRestart()
                     .define("fullBoundingBoxLadders", false);
-
-            zombieBaseSummonChance = builder
-                    .comment("Base zombie summoning spawn chance. Allows changing the bonus zombie summoning mechanic.")
-                    .translation("neoforge.configgui.zombieBaseSummonChance")
-                    .worldRestart()
-                    .defineInRange("zombieBaseSummonChance", 0.1D, 0.0D, 1.0D);
-
-            zombieBabyChance = builder
-                    .comment("Chance that a zombie (or subclass) is a baby. Allows changing the zombie spawning mechanic.")
-                    .translation("neoforge.configgui.zombieBabyChance")
-                    .worldRestart()
-                    .defineInRange("zombieBabyChance", 0.05D, 0.0D, 1.0D);
 
             permissionHandler = builder
                     .comment("The permission handler used by the server. Defaults to neoforge:default_handler if no such handler with that name is registered.")
