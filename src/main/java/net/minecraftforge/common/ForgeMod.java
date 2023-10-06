@@ -536,7 +536,7 @@ public class ForgeMod
         if (event.getKey() != ForgeRegistries.Keys.SOUND_EVENTS)
             return;
 
-        //Removed in 1.15, see https://minecraft.gamepedia.com/Parrot#History
+        //Removed in 1.15, see https://minecraft.wiki/w/Parrot#History
         List<String> removedSounds = Arrays.asList("entity.parrot.imitate.panda", "entity.parrot.imitate.zombie_pigman", "entity.parrot.imitate.enderman", "entity.parrot.imitate.polar_bear", "entity.parrot.imitate.wolf");
         for (MissingMappingsEvent.Mapping<SoundEvent> mapping : event.getAllMappings(ForgeRegistries.Keys.SOUND_EVENTS))
         {
