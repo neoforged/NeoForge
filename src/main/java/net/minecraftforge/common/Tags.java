@@ -590,6 +590,7 @@ public class Tags
         public static final TagKey<Fluid> HONEY = tag("honey");
         /**
          * Holds all fluids related to potions. The effects of the potion fluid should be read from NBT.
+         * See {@link net.minecraft.world.item.alchemy.PotionUtils} class for how to read the effect and color from the fluid NBT.
          * (Standard unit for potions is 250mb per bottle)
          */
         public static final TagKey<Fluid> POTION = tag("potion");
