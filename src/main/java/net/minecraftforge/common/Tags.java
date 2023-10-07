@@ -187,14 +187,13 @@ public class Tags
          */
         public static final TagKey<Block> STONES = tag("stones");
         public static final TagKey<Block> STORAGE_BLOCKS = tag("storage_blocks");
-        public static final TagKey<Block> STORAGE_BLOCKS_BONE = tag("storage_blocks/bone");
+        public static final TagKey<Block> STORAGE_BLOCKS_BONEMEAL = tag("storage_blocks/bonemeal");
         public static final TagKey<Block> STORAGE_BLOCKS_COAL = tag("storage_blocks/coal");
         public static final TagKey<Block> STORAGE_BLOCKS_COPPER = tag("storage_blocks/copper");
         public static final TagKey<Block> STORAGE_BLOCKS_DIAMOND = tag("storage_blocks/diamond");
         public static final TagKey<Block> STORAGE_BLOCKS_DRIED_KELP = tag("storage_blocks/dried_kelp");
         public static final TagKey<Block> STORAGE_BLOCKS_EMERALD = tag("storage_blocks/emerald");
         public static final TagKey<Block> STORAGE_BLOCKS_GOLD = tag("storage_blocks/gold");
-        public static final TagKey<Block> STORAGE_BLOCKS_HAY = tag("storage_blocks/hay");
         public static final TagKey<Block> STORAGE_BLOCKS_IRON = tag("storage_blocks/iron");
         public static final TagKey<Block> STORAGE_BLOCKS_LAPIS = tag("storage_blocks/lapis");
         public static final TagKey<Block> STORAGE_BLOCKS_NETHERITE = tag("storage_blocks/netherite");
@@ -203,6 +202,7 @@ public class Tags
         public static final TagKey<Block> STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
         public static final TagKey<Block> STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
         public static final TagKey<Block> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
+        public static final TagKey<Block> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
 
         private static TagKey<Block> tag(String name)
         {
@@ -465,14 +465,13 @@ public class Tags
          */
         public static final TagKey<Item> STONES = tag("stones");
         public static final TagKey<Item> STORAGE_BLOCKS = tag("storage_blocks");
-        public static final TagKey<Item> STORAGE_BLOCKS_BONE = tag("storage_blocks/bone");
+        public static final TagKey<Item> STORAGE_BLOCKS_BONEMEAL = tag("storage_blocks/bonemeal");
         public static final TagKey<Item> STORAGE_BLOCKS_COAL = tag("storage_blocks/coal");
         public static final TagKey<Item> STORAGE_BLOCKS_COPPER = tag("storage_blocks/copper");
         public static final TagKey<Item> STORAGE_BLOCKS_DIAMOND = tag("storage_blocks/diamond");
         public static final TagKey<Item> STORAGE_BLOCKS_DRIED_KELP = tag("storage_blocks/dried_kelp");
         public static final TagKey<Item> STORAGE_BLOCKS_EMERALD = tag("storage_blocks/emerald");
         public static final TagKey<Item> STORAGE_BLOCKS_GOLD = tag("storage_blocks/gold");
-        public static final TagKey<Item> STORAGE_BLOCKS_HAY = tag("storage_blocks/hay");
         public static final TagKey<Item> STORAGE_BLOCKS_IRON = tag("storage_blocks/iron");
         public static final TagKey<Item> STORAGE_BLOCKS_LAPIS = tag("storage_blocks/lapis");
         public static final TagKey<Item> STORAGE_BLOCKS_NETHERITE = tag("storage_blocks/netherite");
@@ -481,6 +480,7 @@ public class Tags
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
         public static final TagKey<Item> STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
         public static final TagKey<Item> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
+        public static final TagKey<Item> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
         public static final TagKey<Item> STRINGS = tag("strings");
         /**
          * A tag containing all existing tools. Do not use this tag for determining a tool's behavior.
