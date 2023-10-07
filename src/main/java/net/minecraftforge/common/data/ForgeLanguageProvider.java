@@ -238,7 +238,7 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.SLIMEBALLS, "Slimeballs");
         add(Tags.Items.STONES, "Stones");
         add(Tags.Items.STORAGE_BLOCKS, "Storage Blocks");
-        add(Tags.Items.STORAGE_BLOCKS_BONEMEAL, "Bonemal Storage Blocks");
+        add(Tags.Items.STORAGE_BLOCKS_BONEMEAL, "Bonemeal Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_COAL, "Coal Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_COPPER, "Copper Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_DIAMOND, "Diamond Storage Blocks");
