@@ -186,6 +186,13 @@ public class Tags
          * Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
          */
         public static final TagKey<Block> STONES = tag("stones");
+        /**
+         * A storage block is generally a block that has a recipe to craft a bulk of 1 kind of resource to a block
+         * and has a mirror recipe to reverse the crafting with no loss in resources.
+         * <p></p>
+         * Honey Block is special in that the reversing recipe is not a perfect mirror of the crafting recipe
+         * and so, it is considered a special case and not given a storage block tag.
+         */
         public static final TagKey<Block> STORAGE_BLOCKS = tag("storage_blocks");
         public static final TagKey<Block> STORAGE_BLOCKS_BONEMEAL = tag("storage_blocks/bonemeal");
         public static final TagKey<Block> STORAGE_BLOCKS_COAL = tag("storage_blocks/coal");
@@ -464,6 +471,13 @@ public class Tags
          * Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
          */
         public static final TagKey<Item> STONES = tag("stones");
+        /**
+         * A storage block is generally a block that has a recipe to craft a bulk of 1 kind of resource to a block
+         * and has a mirror recipe to reverse the crafting with no loss in resources.
+         * <p></p>
+         * Honey Block is special in that the reversing recipe is not a perfect mirror of the crafting recipe
+         * and so, it is considered a special case and not given a storage block tag.
+         */
         public static final TagKey<Item> STORAGE_BLOCKS = tag("storage_blocks");
         public static final TagKey<Item> STORAGE_BLOCKS_BONEMEAL = tag("storage_blocks/bonemeal");
         public static final TagKey<Item> STORAGE_BLOCKS_COAL = tag("storage_blocks/coal");
