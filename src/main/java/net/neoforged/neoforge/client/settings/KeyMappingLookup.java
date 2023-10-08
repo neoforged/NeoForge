@@ -60,13 +60,27 @@ public class KeyMappingLookup {
      */
     public List<KeyMapping> getAll(InputConstants.Key keyCode) {
         List<KeyMapping> matchingBindings = new ArrayList<KeyMapping>();
-        for (Map<InputConstants.Key, Collection<KeyMapping>> bindingsMap : map.values()) {
-            Collection<KeyMapping> bindings = bindingsMap.get(keyCode);
-            if (bindings != null) {
-                matchingBindings.addAll(bindings);
-            }
+        KeyModifier activeModifier = KeyModifier.getActiveModifier();
+        // Apply active modifier only if the pressed key is not the modifier itself
+        // Otherwise, look for key bindings without modifiers
+        if (activeModifier == KeyModifier.NONE || activeModifier.matches(keyCode) || !findKeybinds(matchingBindings, keyCode, activeModifier)) {
+            findKeybinds(matchingBindings, keyCode, KeyModifier.NONE);
         }
         return matchingBindings;
+    }
+
+    private boolean findKeybinds(List<KeyMapping> matchingBindings, InputConstants.Key keyCode, KeyModifier modifier) {
+        boolean found = false;
+        Collection<KeyMapping> modifierBindings = map.get(modifier).get(keyCode);
+        if (modifierBindings != null) {
+            for (KeyMapping binding : modifierBindings) {
+                if (binding.isActiveAndMatches(keyCode)) {
+                    matchingBindings.add(binding);
+                    found = true;
+                }
+            }
+        }
+        return found;
     }
 
     public void put(InputConstants.Key keyCode, KeyMapping keyBinding) {
