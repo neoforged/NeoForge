@@ -194,7 +194,7 @@ public class Tags
          * and so, it is considered a special case and not given a storage block tag.
          */
         public static final TagKey<Block> STORAGE_BLOCKS = tag("storage_blocks");
-        public static final TagKey<Block> STORAGE_BLOCKS_BONEMEAL = tag("storage_blocks/bonemeal");
+        public static final TagKey<Block> STORAGE_BLOCKS_BONE_MEAL = tag("storage_blocks/bone_meal");
         public static final TagKey<Block> STORAGE_BLOCKS_COAL = tag("storage_blocks/coal");
         public static final TagKey<Block> STORAGE_BLOCKS_COPPER = tag("storage_blocks/copper");
         public static final TagKey<Block> STORAGE_BLOCKS_DIAMOND = tag("storage_blocks/diamond");
@@ -479,7 +479,7 @@ public class Tags
          * and so, it is considered a special case and not given a storage block tag.
          */
         public static final TagKey<Item> STORAGE_BLOCKS = tag("storage_blocks");
-        public static final TagKey<Item> STORAGE_BLOCKS_BONEMEAL = tag("storage_blocks/bonemeal");
+        public static final TagKey<Item> STORAGE_BLOCKS_BONE_MEAL = tag("storage_blocks/bone_meal");
         public static final TagKey<Item> STORAGE_BLOCKS_COAL = tag("storage_blocks/coal");
         public static final TagKey<Item> STORAGE_BLOCKS_COPPER = tag("storage_blocks/copper");
         public static final TagKey<Item> STORAGE_BLOCKS_DIAMOND = tag("storage_blocks/diamond");

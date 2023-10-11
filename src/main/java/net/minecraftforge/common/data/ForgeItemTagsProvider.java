@@ -164,7 +164,7 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.SLIMEBALLS).add(Items.SLIME_BALL);
         copy(Tags.Blocks.STONES, Tags.Items.STONES);
         copy(Tags.Blocks.STORAGE_BLOCKS, Tags.Items.STORAGE_BLOCKS);
-        copy(Tags.Blocks.STORAGE_BLOCKS_BONEMEAL, Tags.Items.STORAGE_BLOCKS_BONEMEAL);
+        copy(Tags.Blocks.STORAGE_BLOCKS_BONE_MEAL, Tags.Items.STORAGE_BLOCKS_BONE_MEAL);
         copy(Tags.Blocks.STORAGE_BLOCKS_COAL, Tags.Items.STORAGE_BLOCKS_COAL);
         copy(Tags.Blocks.STORAGE_BLOCKS_COPPER, Tags.Items.STORAGE_BLOCKS_COPPER);
         copy(Tags.Blocks.STORAGE_BLOCKS_DIAMOND, Tags.Items.STORAGE_BLOCKS_DIAMOND);
