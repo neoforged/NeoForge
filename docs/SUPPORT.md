@@ -85,7 +85,7 @@ A lot of mods also use GitHub or other source management systems and their integ
 
  - **CurseForge:** Many mods are hosted on the [CurseForge platform](https://minecraft.curseforge.com) nowadays. Chances are you already downloaded them from there or as a part of a modpack hosted there. Projects may specify an issue reporting link on their own page, so simply look for it on the mod's project page and you should be directed to the preferred means of error reporting.
  - **Modrinth:** Some modders use [Modrinth](https://modrinth.com/mods) to host their mods, but be mindful that not all mods on this platform are for the Forge modloader.
- - **Searching for a repository directly:** You may need to try and find a repository directly on source control sites. The most common ones are [GitHub](https://github.com), [GitLab](https://gitlab.com), and [BitBucket](https://bitbucket.org). Both come with search capabilities, so simply try to search for the mod's name.
+ - **Searching for a repository directly:** You may need to try and find a repository directly on source control sites. The most common ones are [GitHub](https://github.com), [GitLab](https://gitlab.com), and [BitBucket](https://bitbucket.org). All of the three come with search capabilities, so simply try to search for the mod's name.
 
 ### Vanilla Support
 
