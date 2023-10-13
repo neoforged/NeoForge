@@ -4,6 +4,7 @@ NeoForge
 =============
 [![Discord](https://img.shields.io/discord/313125603924639766.svg?color=%237289da&label=Discord&logo=discord&logoColor=%237289da)][Discord] 
 
+**English** | [简体中文](./zh-CN/README.md)
 
 Forge is a free, open-source modding API all of your favourite mods use!
 
