@@ -14,7 +14,7 @@ assignees: ''
 
 **Minecraft Version:** {Minecraft version}
 
-**Forge Version:** {Forge version. *Version number, not latest/rb*}
+**NeoForge Version:** {NeoForge version. *Version number, not latest/rb*}
 
 **Logs:** {Link(s) to GitHub Gist with full latest.log and/or crash report}
 
