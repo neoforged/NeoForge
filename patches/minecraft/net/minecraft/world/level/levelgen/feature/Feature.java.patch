@@ -5,7 +5,7 @@
  
     protected static boolean m_159747_(BlockState p_159748_) {
 -      return p_159748_.m_204336_(BlockTags.f_13061_);
-+      return p_159748_.m_204336_(net.minecraftforge.common.Tags.Blocks.STONE);
++      return p_159748_.m_204336_(net.minecraftforge.common.Tags.Blocks.WORLDGEN_STONES);
     }
  
     public static boolean m_159759_(BlockState p_159760_) {
