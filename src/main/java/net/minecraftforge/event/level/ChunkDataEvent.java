@@ -14,8 +14,7 @@ import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.storage.ChunkSerializer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 /**
  * ChunkDataEvent is fired when an event involving chunk data occurs.<br>
@@ -26,7 +25,7 @@ import net.minecraftforge.eventbus.api.Event;
  * <br>
  * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.<br>
  **/
-public class ChunkDataEvent extends ChunkEvent
+public abstract class ChunkDataEvent extends ChunkEvent
 {
     private final CompoundTag data;
 
@@ -52,7 +51,7 @@ public class ChunkDataEvent extends ChunkEvent
      * This event is fired during chunk loading in
      * {@link ChunkSerializer#read(ServerLevel, PoiManager, ChunkPos, CompoundTag)} which means it is async, so be careful.<br>
      * <br>
-     * This event is not {@link Cancelable}.<br>
+     * This event is not {@link ICancellableEvent}.<br>
      * <br>
      * This event does not have a result. {@link HasResult} <br>
      * <br>
@@ -79,7 +78,7 @@ public class ChunkDataEvent extends ChunkEvent
      * This event is fired during chunk saving in
      * {@code ChunkMap#save(ChunkAccess)}. <br>
      * <br>
-     * This event is not {@link Cancelable}.<br>
+     * This event is not {@link ICancellableEvent}.<br>
      * <br>
      * This event does not have a result. {@link HasResult} <br>
      * <br>

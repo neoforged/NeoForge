@@ -26,14 +26,14 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.common.util.BlockSnapshot;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 import com.google.common.collect.ImmutableList;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockEvent extends Event
+public abstract class BlockEvent extends Event
 {
     private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("forge.debugBlockEvent", "false"));
 
@@ -66,8 +66,7 @@ public class BlockEvent extends Event
      * Event that is fired when an Block is about to be broken by a player
      * Canceling this event will prevent the Block from being broken.
      */
-    @Cancelable
-    public static class BreakEvent extends BlockEvent
+    public static class BreakEvent extends BlockEvent implements ICancellableEvent
     {
         /** Reference to the Player who broke the block. If no player is available, use a EntityFakePlayer */
         private final Player player;
@@ -121,8 +120,7 @@ public class BlockEvent extends Event
      *
      * If a Block Place event is cancelled, the block will not be placed.
      */
-    @Cancelable
-    public static class EntityPlaceEvent extends BlockEvent
+    public static class EntityPlaceEvent extends BlockEvent implements ICancellableEvent
     {
         private final Entity entity;
         private final BlockSnapshot blockSnapshot;
@@ -157,8 +155,7 @@ public class BlockEvent extends Event
      * the placed block would exist if the placement only affected a single
      * block.
      */
-    @Cancelable
-    public static class EntityMultiPlaceEvent extends EntityPlaceEvent
+    public static class EntityMultiPlaceEvent extends EntityPlaceEvent implements ICancellableEvent
     {
         private final List<BlockSnapshot> blockSnapshots;
 
@@ -188,8 +185,7 @@ public class BlockEvent extends Event
      * a way for mods to detect physics updates, in the same way a BUD switch
      * does. This event is only called on the server.
      */
-    @Cancelable
-    public static class NeighborNotifyEvent extends BlockEvent
+    public static class NeighborNotifyEvent extends BlockEvent implements ICancellableEvent
     {
         private final EnumSet<Direction> notifiedSides;
         private final boolean forceRedstoneUpdate;
@@ -265,8 +261,7 @@ public class BlockEvent extends Event
      * {@link #getState()} will return the block that was originally going to be placed.
      * {@link #getPos()} will return the position of the block to be changed.
      */
-    @Cancelable
-    public static class FluidPlaceBlockEvent extends BlockEvent
+    public static class FluidPlaceBlockEvent extends BlockEvent implements ICancellableEvent
     {
         private final BlockPos liquidPos;
         private BlockState newState;
@@ -314,7 +309,7 @@ public class BlockEvent extends Event
      * Fired when a crop block grows.  See subevents.
      *
      */
-    public static class CropGrowEvent extends BlockEvent
+    public static abstract class CropGrowEvent extends BlockEvent
     {
         public CropGrowEvent(Level level, BlockPos pos, BlockState state)
         {
@@ -329,7 +324,7 @@ public class BlockEvent extends Event
          * {@link Result#ALLOW} will force the plant to advance a growth stage.<br>
          * {@link Result#DENY} will prevent the plant from advancing a growth stage.<br>
          * <br>
-         * This event is not {@link Cancelable}.<br>
+         * This event is not {@link ICancellableEvent}.<br>
          * <br>
          */
         @HasResult
@@ -346,7 +341,7 @@ public class BlockEvent extends Event
          * in vanilla) have successfully grown. The block's original state is available,
          * in addition to its new state.<br>
          * <br>
-         * This event is not {@link Cancelable}.<br>
+         * This event is not {@link ICancellableEvent}.<br>
          * <br>
          * This event does not have a result. {@link HasResult}<br>
          */
@@ -368,10 +363,9 @@ public class BlockEvent extends Event
 
     /**
      * Fired when when farmland gets trampled
-     * This event is {@link Cancelable}
+     * This event is {@link ICancellableEvent}
      */
-    @Cancelable
-    public static class FarmlandTrampleEvent extends BlockEvent
+    public static class FarmlandTrampleEvent extends BlockEvent implements ICancellableEvent
     {
 
         private final Entity entity;
@@ -399,8 +393,7 @@ public class BlockEvent extends Event
      *
      * If cancelled, the portal will not be spawned.
      */
-    @Cancelable
-    public static class PortalSpawnEvent extends BlockEvent
+    public static class PortalSpawnEvent extends BlockEvent implements ICancellableEvent
     {
         private final PortalShape size;
 
@@ -423,11 +416,10 @@ public class BlockEvent extends Event
      * <p>
      * Care must be taken to ensure level-modifying events are only performed if {@link #isSimulated()} returns {@code false}.
      * <p>
-     * This event is {@link Cancelable}. If canceled, this will prevent the tool
+     * This event is {@link ICancellableEvent}. If canceled, this will prevent the tool
      * from changing the block's state.
      */
-    @Cancelable
-    public static class BlockToolModificationEvent extends BlockEvent
+    public static class BlockToolModificationEvent extends BlockEvent implements ICancellableEvent
     {
         private final UseOnContext context;
         private final ToolAction toolAction;

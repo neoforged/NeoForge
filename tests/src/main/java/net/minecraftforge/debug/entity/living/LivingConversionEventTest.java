@@ -11,7 +11,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingConversionEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 @Mod("living_conversion_event_test")
 public class LivingConversionEventTest

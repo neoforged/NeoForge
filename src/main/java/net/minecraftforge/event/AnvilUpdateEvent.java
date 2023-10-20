@@ -8,8 +8,8 @@ package net.minecraftforge.event;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -20,8 +20,7 @@ import org.jetbrains.annotations.Nullable;
  * If the event is not canceled, but the output is not empty, it will set the output and not run vanilla behavior. <br>
  * if the output is empty, and the event is not canceled, vanilla behavior will execute. <br>
  */
-@Cancelable
-public class AnvilUpdateEvent extends Event
+public class AnvilUpdateEvent extends Event implements ICancellableEvent
 {
 
     private final ItemStack left;

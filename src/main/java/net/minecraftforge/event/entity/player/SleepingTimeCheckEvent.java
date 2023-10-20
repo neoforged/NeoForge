@@ -8,7 +8,7 @@ package net.minecraftforge.event.entity.player;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.eventbus.api.Event.HasResult;
+import net.neoforged.bus.api.Event.HasResult;
 
 import java.util.Optional;
 

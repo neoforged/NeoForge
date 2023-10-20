@@ -8,24 +8,24 @@ package net.minecraftforge.event.level;
 import java.util.List;
 
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /** ExplosionEvent triggers when an explosion happens in the level.<br>
  * <br>
  * ExplosionEvent.Start is fired before the explosion actually occurs.<br>
  * ExplosionEvent.Detonate is fired once the explosion has a list of affected blocks and entities.<br>
  * <br>
- * ExplosionEvent.Start is {@link Cancelable}.<br>
+ * ExplosionEvent.Start is {@link ICancellableEvent}.<br>
  * ExplosionEvent.Detonate can modify the affected blocks and entities.<br>
  * Children do not use {@link HasResult}.<br>
  * Children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.<br>
  */
-public class ExplosionEvent extends Event
+public abstract class ExplosionEvent extends Event
 {
     private final Level level;
     private final Explosion explosion;
@@ -48,12 +48,11 @@ public class ExplosionEvent extends Event
 
     /** ExplosionEvent.Start is fired before the explosion actually occurs.  Canceling this event will stop the explosion.<br>
      * <br>
-     * This event is {@link Cancelable}.<br>
+     * This event is {@link ICancellableEvent}.<br>
      * This event does not use {@link HasResult}.<br>
      * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
      */
-    @Cancelable
-    public static class Start extends ExplosionEvent
+    public static class Start extends ExplosionEvent implements ICancellableEvent
     {
         public Start(Level level, Explosion explosion)
         {
@@ -63,7 +62,7 @@ public class ExplosionEvent extends Event
 
     /** ExplosionEvent.Detonate is fired once the explosion has a list of affected blocks and entities.  These lists can be modified to change the outcome.<br>
      * <br>
-     * This event is not {@link Cancelable}.<br>
+     * This event is not {@link ICancellableEvent}.<br>
      * This event does not use {@link HasResult}.<br>
      * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
      */

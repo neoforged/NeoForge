@@ -14,8 +14,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.event.IModBusEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 

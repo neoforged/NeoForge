@@ -19,7 +19,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
  * {@link #original} contains the original ItemStack before the item was destroyed. <br>
  * (@link #hand) contains the hand that the current item was held in.<br>
  * <br>
- * This event is not {@link Cancelable}.<br>
+ * This event is not {@link ICancellableEvent}.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>

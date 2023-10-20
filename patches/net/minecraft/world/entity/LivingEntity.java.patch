@@ -88,7 +88,7 @@
              MobEffectInstance mobeffectinstance = this.activeEffects.get(mobeffect);
              if (!mobeffectinstance.tick(this, () -> this.onEffectUpdated(mobeffectinstance, true, null))) {
 -               if (!this.level().isClientSide) {
-+               if (!this.level().isClientSide && !net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Expired(this, mobeffectinstance))) {
++               if (!this.level().isClientSide && !net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Expired(this, mobeffectinstance)).isCanceled()) {
                    iterator.remove();
                    this.onEffectRemoved(mobeffectinstance);
                 }
@@ -120,7 +120,7 @@
           for(flag = false; iterator.hasNext(); flag = true) {
 -            this.onEffectRemoved(iterator.next());
 +            MobEffectInstance effect = iterator.next();
-+            if(net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Remove(this, effect))) continue;
++            if(net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Remove(this, effect)).isCanceled()) continue;
 +            this.onEffectRemoved(effect);
              iterator.remove();
           }
@@ -139,7 +139,7 @@
     public boolean canBeAffected(MobEffectInstance p_21197_) {
 +      net.minecraftforge.event.entity.living.MobEffectEvent.Applicable event = new net.minecraftforge.event.entity.living.MobEffectEvent.Applicable(this, p_21197_);
 +      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
-+      if (event.getResult() != net.minecraftforge.eventbus.api.Event.Result.DEFAULT) return event.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW;
++      if (event.getResult() != net.neoforged.bus.api.Event.Result.DEFAULT) return event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW;
        if (this.getMobType() == MobType.UNDEAD) {
           MobEffect mobeffect = p_21197_.getEffect();
           if (mobeffect == MobEffects.REGENERATION || mobeffect == MobEffects.POISON) {
@@ -147,7 +147,7 @@
     }
  
     public boolean removeEffect(MobEffect p_21196_) {
-+      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Remove(this, p_21196_))) return false;
++      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Remove(this, p_21196_)).isCanceled()) return false;
        MobEffectInstance mobeffectinstance = this.removeEffectNoUpdate(p_21196_);
        if (mobeffectinstance != null) {
           this.onEffectRemoved(mobeffectinstance);
@@ -713,7 +713,7 @@
 +      Iterator<MobEffectInstance> itr = this.activeEffects.values().iterator();
 +      while (itr.hasNext()) {
 +         MobEffectInstance effect = itr.next();
-+         if (effect.isCurativeItem(curativeItem) && !net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Remove(this, effect))) {
++         if (effect.isCurativeItem(curativeItem) && !net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Remove(this, effect)).isCanceled()) {
 +            this.onEffectRemoved(effect);
 +            itr.remove();
 +            ret = true;

@@ -23,16 +23,16 @@ import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraftforge.common.ForgeInternalHandler;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 
 /**
  * This event is fired whenever an event involving a {@link LevelAccessor} occurs.
  * <p>
  * All children of this event are fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}.
  */
-public class LevelEvent extends Event
+public abstract class LevelEvent extends Event
 {
     private final LevelAccessor level;
 
@@ -54,7 +54,7 @@ public class LevelEvent extends Event
      * This event is fired whenever a level loads in ClientLevel's constructor and
      * {@literal MinecraftServer#createLevels(ChunkProgressListener)}.
      * <p>
-     * This event is not {@linkplain Cancelable cancellable} and does not {@linkplain HasResult have a result}.
+     * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
      * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
      * on both logical sides.
@@ -72,7 +72,7 @@ public class LevelEvent extends Event
      * {@link Minecraft#clearLevel(Screen)}, and
      * {@link ForgeInternalHandler#onDimensionUnload(Unload)}.
      * <p>
-     * This event is not {@linkplain Cancelable cancellable} and does not {@linkplain HasResult have a result}.
+     * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
      * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
      * on both logical sides.
@@ -87,7 +87,7 @@ public class LevelEvent extends Event
      * This event is fired when a level is saved in
      * {@link ServerLevel#save(ProgressListener, boolean, boolean)}.
      * <p>
-     * This event is not {@linkplain Cancelable cancellable} and does not {@linkplain HasResult have a result}.
+     * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
      * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
      * only on the {@linkplain LogicalSide#SERVER logical server}.
@@ -101,7 +101,7 @@ public class LevelEvent extends Event
      * This event fires whenever a {@link ServerLevel} is initialized for the first time
      * and a spawn position needs to be chosen.
      * <p>
-     * This event is {@linkplain Cancelable cancellable} and does not {@linkplain HasResult have a result}.
+     * This event is {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * If the event is canceled, the vanilla logic to choose a spawn position will be skipped.
      * <p>
      * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
@@ -109,8 +109,7 @@ public class LevelEvent extends Event
      *
      * @see ServerLevelData#isInitialized()
      */
-    @Cancelable
-    public static class CreateSpawnPosition extends LevelEvent
+    public static class CreateSpawnPosition extends LevelEvent implements ICancellableEvent
     {
         private final ServerLevelData settings;
 
@@ -134,11 +133,10 @@ public class LevelEvent extends Event
      * The event is called in {@link net.minecraft.world.level.NaturalSpawner#mobsAt(ServerLevel,
      * StructureManager, ChunkGenerator, MobCategory, RandomSource, BlockPos)}.</p>
      * 
-     * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * Canceling the event will result in an empty list, meaning no entity will be spawned.</p>
      */
-    @Cancelable
-    public static class PotentialSpawns extends LevelEvent
+    public static class PotentialSpawns extends LevelEvent implements ICancellableEvent
     {
         private final MobCategory mobcategory;
         private final BlockPos pos;

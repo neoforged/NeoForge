@@ -10,8 +10,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 
 /**
  * This event is fired whenever an {@link Entity} joins a {@link Level}.
@@ -21,14 +21,13 @@ import net.minecraftforge.fml.LogicalSide;
  * <strong>Note:</strong> This event may be called before the underlying {@link LevelChunk} is promoted to {@link ChunkStatus#FULL}.
  * You will cause chunk loading deadlocks if you do not delay your world interactions.
  * <p>
- * This event is {@linkplain Cancelable cancellable} and does not {@linkplain HasResult have a result}.
+ * This event is {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
  * If the event is canceled, the entity will not be added to the level.
  * <p>
  * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
  * on both logical sides.
  **/
-@Cancelable
-public class EntityJoinLevelEvent extends EntityEvent
+public class EntityJoinLevelEvent extends EntityEvent implements ICancellableEvent
 {
     private final Level level;
     private final boolean loadedFromDisk;

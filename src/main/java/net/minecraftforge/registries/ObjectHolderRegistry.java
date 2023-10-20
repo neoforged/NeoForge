@@ -17,9 +17,9 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.forgespi.language.ModFileScanData;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforgespi.language.ModFileScanData;
 
 import com.google.common.collect.Maps;
 

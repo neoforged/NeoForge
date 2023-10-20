@@ -9,15 +9,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.eventbus.api.Cancelable;
 
 import com.google.common.base.Preconditions;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * Base class for Noteblock Events
  *
  */
-public class NoteBlockEvent extends BlockEvent
+public abstract class NoteBlockEvent extends BlockEvent
 {
     private int noteId;
 
@@ -70,8 +70,7 @@ public class NoteBlockEvent extends BlockEvent
      * Fired when a Noteblock plays it's note. You can override the note and instrument
      * Canceling this event will stop the note from playing.
      */
-    @Cancelable
-    public static class Play extends NoteBlockEvent
+    public static class Play extends NoteBlockEvent implements ICancellableEvent
     {
         private NoteBlockInstrument instrument;
 
@@ -96,8 +95,7 @@ public class NoteBlockEvent extends BlockEvent
      * Fired when a Noteblock is changed. You can adjust the note it will change to via {@link #setNote(Note, Octave)}.
      * Canceling this event will not change the note and also stop the Noteblock from playing it's note.
      */
-    @Cancelable
-    public static class Change extends NoteBlockEvent
+    public static class Change extends NoteBlockEvent implements ICancellableEvent
     {
         private final Note oldNote;
         private final Octave oldOctave;

@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.BlockEvent.BlockToolModificationEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 @Mod("tool_interact_test")
 public class ToolInteractTest

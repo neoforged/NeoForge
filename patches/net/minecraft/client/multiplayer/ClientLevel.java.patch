@@ -42,7 +42,7 @@
     }
  
     public void addEntity(Entity p_104741_) {
-+      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinLevelEvent(p_104741_, this))) return;
++      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinLevelEvent(p_104741_, this)).isCanceled()) return;
        this.removeEntity(p_104741_.getId(), Entity.RemovalReason.DISCARDED);
        this.entityStorage.addEntity(p_104741_);
 +      p_104741_.onAddedToWorld();

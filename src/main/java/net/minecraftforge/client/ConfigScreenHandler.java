@@ -7,9 +7,9 @@ package net.minecraftforge.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.IExtensionPoint;
-import net.minecraftforge.forgespi.language.IModInfo;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.IExtensionPoint;
+import net.neoforged.neoforgespi.language.IModInfo;
 
 import java.util.Optional;
 import java.util.function.BiFunction;

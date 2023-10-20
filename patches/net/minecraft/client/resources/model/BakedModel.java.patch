@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/resources/model/BakedModel.java
 +++ b/net/minecraft/client/resources/model/BakedModel.java
 @@ -13,7 +13,9 @@
- import net.minecraftforge.api.distmarker.OnlyIn;
+ import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
 -public interface BakedModel {

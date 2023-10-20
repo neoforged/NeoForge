@@ -12,15 +12,14 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.RegistryDataLoader;
 import net.minecraft.resources.ResourceKey;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.event.IModBusEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-public class DataPackRegistryEvent extends Event implements IModBusEvent
+public abstract class DataPackRegistryEvent extends Event implements IModBusEvent
 {
     @ApiStatus.Internal
     public DataPackRegistryEvent() {}
@@ -31,7 +30,7 @@ public class DataPackRegistryEvent extends Event implements IModBusEvent
      * <p>
      * Data JSONs will be loaded from {@code data/<datapack_namespace>/modid/registryname/}, where {@code modid} is the namespace of the registry key.
      * <p>
-     * This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     * This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * <p>
      * This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
      * on both {@linkplain LogicalSide logical sides}.

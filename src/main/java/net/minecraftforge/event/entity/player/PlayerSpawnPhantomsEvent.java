@@ -8,7 +8,7 @@ package net.minecraftforge.event.entity.player;
 import net.minecraft.world.level.levelgen.PhantomSpawner;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.NotNull;
 
 /**

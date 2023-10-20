@@ -5,9 +5,9 @@
 
 package net.minecraftforge.common.capabilities;
 
-import net.minecraftforge.fml.Logging;
-import net.minecraftforge.fml.ModLoader;
-import net.minecraftforge.forgespi.language.ModFileScanData;
+import net.neoforged.fml.Logging;
+import net.neoforged.fml.ModLoader;
+import net.neoforged.neoforgespi.language.ModFileScanData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Type;

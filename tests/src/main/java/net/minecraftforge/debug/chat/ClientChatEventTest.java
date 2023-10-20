@@ -6,8 +6,8 @@
 package net.minecraftforge.debug.chat;
 
 import net.minecraftforge.client.event.ClientChatEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
 
 @Mod("client_chat_event_test")
 @Mod.EventBusSubscriber

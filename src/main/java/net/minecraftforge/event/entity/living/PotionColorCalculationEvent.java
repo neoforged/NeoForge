@@ -10,12 +10,11 @@ import java.util.Collections;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
 
 /**
  * Fires after Potion Color Calculation.
  * 
- * this event is not {@link Cancelable}
+ * this event is not {@link ICancellableEvent}
  * 
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  */

@@ -11,11 +11,10 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.util.MutableHashedLinkedMap;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.event.IModBusEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Supplier;
@@ -24,7 +23,7 @@ import java.util.function.Supplier;
  * Fired when the contents of a specific creative mode tab are being populated.
  * This event may be fired multiple times if the operator status of the local player or enabled feature flags changes.
  * <p>
- * This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+ * This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  * <p>
  * This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.

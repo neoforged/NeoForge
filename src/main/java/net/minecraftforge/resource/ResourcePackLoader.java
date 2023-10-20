@@ -24,9 +24,9 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.forgespi.language.IModFileInfo;
-import net.minecraftforge.forgespi.locating.IModFile;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforgespi.language.IModFileInfo;
+import net.neoforged.neoforgespi.locating.IModFile;
 import org.jetbrains.annotations.NotNull;
 
 public class ResourcePackLoader {

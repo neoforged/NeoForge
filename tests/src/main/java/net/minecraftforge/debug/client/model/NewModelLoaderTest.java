@@ -40,11 +40,11 @@ import net.minecraftforge.client.model.geometry.SimpleUnbakedGeometry;
 import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.neoforged.bus.api.IEventBus;
 import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 

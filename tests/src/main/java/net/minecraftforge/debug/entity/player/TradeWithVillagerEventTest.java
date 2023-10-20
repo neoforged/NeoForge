@@ -7,8 +7,8 @@ package net.minecraftforge.debug.entity.player;
 
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.event.entity.player.TradeWithVillagerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
 
 

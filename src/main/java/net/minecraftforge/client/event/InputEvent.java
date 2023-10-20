@@ -9,9 +9,9 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.world.InteractionHand;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.glfw.GLFW;
 
@@ -96,7 +96,7 @@ public abstract class InputEvent extends Event
         /**
          * Fired when a mouse button is pressed/released, <b>before</b> being processed by vanilla.
          *
-         * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+         * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
          * If the event is cancelled, then the mouse event will not be processed by vanilla (e.g. keymappings and screens) </p>
          *
          * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
@@ -104,8 +104,7 @@ public abstract class InputEvent extends Event
          *
          * @see <a href="https://www.glfw.org/docs/latest/input_guide.html#input_mouse_button" target="_top">the online GLFW documentation</a>
          */
-        @Cancelable
-        public static class Pre extends MouseButton
+        public static class Pre extends MouseButton implements ICancellableEvent
         {
             @ApiStatus.Internal
             public Pre(int button, int action, int modifiers)
@@ -117,7 +116,7 @@ public abstract class InputEvent extends Event
         /**
          * Fired when a mouse button is pressed/released, <b>after</b> processing.
          *
-         * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+         * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
          *
          * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -138,7 +137,7 @@ public abstract class InputEvent extends Event
      * Fired when a mouse scroll wheel is used outside of a screen and a player is loaded, <b>before</b> being
      * processed by vanilla.
      *
-     * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * If the event is cancelled, then the mouse scroll event will not be processed further.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
@@ -146,8 +145,7 @@ public abstract class InputEvent extends Event
      *
      * @see <a href="https://www.glfw.org/docs/latest/input_guide.html#input_mouse_button" target="_top">the online GLFW documentation</a>
      */
-    @Cancelable
-    public static class MouseScrollingEvent extends InputEvent
+    public static class MouseScrollingEvent extends InputEvent implements ICancellableEvent
     {
         private final double scrollDelta;
         private final double mouseX;
@@ -219,7 +217,7 @@ public abstract class InputEvent extends Event
     /**
      * Fired when a keyboard key input occurs, such as pressing, releasing, or repeating a key.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -305,15 +303,14 @@ public abstract class InputEvent extends Event
      *     <li><b>Attack</b> - defaults to <em>right mouse click</em></li>
      * </ul>
      *
-     * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * If this event is cancelled, then the keymapping's action is not processed further, and the hand will be swung
      * according to {@link #shouldSwingHand()}.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    @Cancelable
-    public static class InteractionKeyMappingTriggered extends InputEvent
+    public static class InteractionKeyMappingTriggered extends InputEvent implements ICancellableEvent
     {
         private final int button;
         private final KeyMapping keyMapping;

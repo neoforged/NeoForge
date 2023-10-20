@@ -19,7 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraftforge.debug.client.TestScreen;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;

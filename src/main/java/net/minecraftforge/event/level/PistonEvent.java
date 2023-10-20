@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.piston.PistonStructureResolver;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -85,8 +85,7 @@ public abstract class PistonEvent extends BlockEvent
     /**
      * Fires before the piston has updated block states. Cancellation prevents movement.
      */
-    @Cancelable
-    public static class Pre extends PistonEvent
+    public static class Pre extends PistonEvent implements ICancellableEvent
     {
 
         public Pre(Level world, BlockPos pos, Direction direction, PistonMoveType moveType)

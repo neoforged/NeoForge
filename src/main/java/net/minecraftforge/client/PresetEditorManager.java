@@ -15,7 +15,7 @@ import net.minecraft.client.gui.screens.worldselection.PresetEditor;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.levelgen.presets.WorldPreset;
 import net.minecraftforge.client.event.RegisterPresetEditorsEvent;
-import net.minecraftforge.fml.ModLoader;
+import net.neoforged.fml.ModLoader;
 
 public final class PresetEditorManager
 {

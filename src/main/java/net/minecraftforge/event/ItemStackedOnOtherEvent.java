@@ -12,9 +12,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 
 import org.jetbrains.annotations.ApiStatus;
 
@@ -29,12 +29,11 @@ import org.jetbrains.annotations.ApiStatus;
  *  This event (and items stacking on others in general) is fired on both {@linkplain LogicalSide sides}, but only on {@linkplain LogicalSide#CLIENT the client} in the creative menu.
  *  Practically, that means that listeners of this event should require the player to be in survival mode if using capabilities that are not synced.
  *  <p>
- *  This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+ *  This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  *  If the event is cancelled, the container's logic halts, the carried item and the slot will not be swapped, and handling is assumed to have been done by the mod.
  *  This also means that the two vanilla checks described above will not be called.
  */
-@Cancelable
-public class ItemStackedOnOtherEvent extends Event
+public class ItemStackedOnOtherEvent extends Event implements ICancellableEvent
 {
     private final ItemStack carriedItem;
     private final ItemStack stackedOnItem;

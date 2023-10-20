@@ -10,20 +10,19 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 
 /**
  * Fired when an Entity attempts to use a totem to prevent its death.
  *
- * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+ * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  * If this event is cancelled, the totem will not prevent the entity's death.</p>
  *
  * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS Forge event bus},
  * only on the {@linkplain LogicalSide#SERVER logical server}.</p>
  */
-@Cancelable
-public class LivingUseTotemEvent extends LivingEvent
+public class LivingUseTotemEvent extends LivingEvent implements ICancellableEvent
 {
     private final DamageSource source;
     private final ItemStack totem;

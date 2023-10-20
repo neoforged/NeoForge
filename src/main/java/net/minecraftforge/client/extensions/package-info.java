@@ -4,7 +4,7 @@
  */
 
 /**
- * Extension interfaces for {@link net.minecraftforge.api.distmarker.Dist#CLIENT client}-only classes.
+ * Extension interfaces for {@link net.neoforged.api.distmarker.Dist#CLIENT client}-only classes.
  *
  * <p>Extension interfaces allow the convenient addition of methods to the target class, as the target class is patched
  * to implement the interface. Because of this, these interfaces must only be implemented by the target classes, and must

@@ -15,7 +15,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.common.ForgeI18n;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 import net.minecraftforge.forge.snapshots.ForgeSnapshotsMod;
 import net.minecraftforge.versions.forge.ForgeVersion;
 import net.minecraftforge.versions.mcp.MCPVersion;

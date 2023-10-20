@@ -12,6 +12,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -19,9 +20,12 @@ import org.jetbrains.annotations.NotNull;
  * This event is fired whenever a player begins using a bow in
  * {@link BowItem#use(Level, Player, InteractionHand)}.<br>
  * <br>
+ * This event is {@link ICancellableEvent}.
+ * Cancelling the event causes the action to fail with {@link net.minecraft.world.InteractionResult#FAIL}.
+ * <p>
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
-public class ArrowNockEvent extends PlayerEvent
+public class ArrowNockEvent extends PlayerEvent implements ICancellableEvent
 {
     private final ItemStack bow;
     private final InteractionHand hand;

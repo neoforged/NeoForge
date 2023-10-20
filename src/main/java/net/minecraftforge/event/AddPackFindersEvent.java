@@ -8,8 +8,8 @@ package net.minecraftforge.event;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.RepositorySource;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.event.IModBusEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.event.IModBusEvent;
 
 import java.util.function.Consumer;
 

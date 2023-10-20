@@ -5,12 +5,12 @@
 
 package net.minecraftforge.debug.client.rendering;
 
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLLoader;
 import org.apache.logging.log4j.LogManager;
 
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 @Mod("render_level_stages_test")
 public class RenderLevelStagesTest

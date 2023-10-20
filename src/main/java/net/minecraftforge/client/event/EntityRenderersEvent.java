@@ -30,11 +30,10 @@ import net.minecraft.world.level.block.SkullBlock.Type;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.event.IModBusEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,7 +62,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
     /**
      * Fired for registering layer definitions at the appropriate time.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -95,7 +94,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      * For registering entity renderer layers to existing entity renderers (whether vanilla or registered through this
      * event), listen for the {@link AddLayers} event instead.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -134,7 +133,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      * Fired for registering entity renderer layers at the appropriate time, after the entity and player renderers maps
      * have been created.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -215,7 +214,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
     /**
      * Fired for registering additional {@linkplain net.minecraft.client.model.SkullModelBase skull models} at the appropriate time.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>

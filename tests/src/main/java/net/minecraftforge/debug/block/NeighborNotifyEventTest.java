@@ -7,8 +7,8 @@ package net.minecraftforge.debug.block;
 
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.event.level.BlockEvent.NeighborNotifyEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -7,9 +7,9 @@ package net.minecraftforge.common;
 
 import com.google.common.base.CharMatcher;
 import net.minecraftforge.common.util.MavenVersionStringHelper;
-import net.minecraftforge.fml.Logging;
-import net.minecraftforge.fml.loading.StringUtils;
-import net.minecraftforge.forgespi.language.IModInfo;
+import net.neoforged.fml.Logging;
+import net.neoforged.fml.loading.StringUtils;
+import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.commons.lang3.text.ExtendedMessageFormat;
 import org.apache.commons.lang3.text.FormatFactory;
 import org.apache.logging.log4j.LogManager;

@@ -11,15 +11,15 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Fired before a hand is rendered in the first person view.
  *
- * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+ * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  * If this event is cancelled, then the hand will not be rendered.</p>
  *
  * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
@@ -27,8 +27,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @see RenderArmEvent
  */
-@Cancelable
-public class RenderHandEvent extends Event
+public class RenderHandEvent extends Event implements ICancellableEvent
 {
     private final InteractionHand hand;
     private final PoseStack poseStack;

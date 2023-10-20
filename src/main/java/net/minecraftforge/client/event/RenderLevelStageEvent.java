@@ -21,18 +21,17 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.ForgeRenderTypes;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.event.IModBusEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.joml.Matrix4f;
 
 /**
  * Fires at various times during LevelRenderer.renderLevel.
  * Check {@link #getStage} to render during the appropriate time for your use case.
  *
- * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}. </p>
+ * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}. </p>
  *
  * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}. </p>
@@ -129,7 +128,7 @@ public class RenderLevelStageEvent extends Event
      * Use to create a custom {@linkplain RenderLevelStageEvent.Stage stages}.
      * Fired after the LevelRenderer has been created.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}. </p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}. </p>
      *
      * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}. </p>

@@ -6,7 +6,7 @@
 package net.minecraftforge.server.loading;
 
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.*;
+import net.neoforged.fml.*;
 import net.minecraftforge.logging.CrashReportExtender;
 import net.minecraftforge.common.util.LogicalSidedProvider;
 import net.minecraftforge.server.LanguageHook;

@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/RecipeBookCategories.java
 +++ b/net/minecraft/client/RecipeBookCategories.java
 @@ -12,7 +12,7 @@
- import net.minecraftforge.api.distmarker.OnlyIn;
+ import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
 -public enum RecipeBookCategories {

@@ -10,9 +10,9 @@ import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 import java.util.UUID;
 
@@ -20,7 +20,7 @@ import java.util.UUID;
  * Fired when a chat message is received on the client.
  * This can be used for filtering and detecting messages with specific words or phrases, and suppressing them.
  *
- * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+ * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  * If the event is cancelled, the message is not displayed in the chat message window.</p>
  *
  * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
@@ -28,8 +28,7 @@ import java.util.UUID;
  *
  * @see ChatType
  */
-@Cancelable
-public class ClientChatReceivedEvent extends Event
+public class ClientChatReceivedEvent extends Event implements ICancellableEvent
 {
     private Component message;
     private final ChatType.Bound boundChatType;
@@ -90,7 +89,7 @@ public class ClientChatReceivedEvent extends Event
     /**
      * Fired when a player chat message is received on the client.
      *
-     * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * If the event is cancelled, the message is not displayed in the chat message window.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
@@ -122,7 +121,7 @@ public class ClientChatReceivedEvent extends Event
     /**
      * Fired when a system chat message is received on the client.
      *
-     * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * If the event is cancelled, the message is not displayed in the chat message window or in the overlay.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},

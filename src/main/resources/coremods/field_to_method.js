@@ -1,4 +1,4 @@
-var ASMAPI = Java.type('net.minecraftforge.coremod.api.ASMAPI')
+var ASMAPI = Java.type('net.neoforged.coremod.api.ASMAPI')
 
 function initializeCoreMod() {
     return {

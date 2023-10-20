@@ -11,7 +11,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.fml.LogicalSide;
 import net.minecraftforge.network.custom.payload.SimplePayload;
 import org.apache.commons.lang3.tuple.Pair;
 

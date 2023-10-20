@@ -5,8 +5,8 @@
        GLFW.glfwWindowHint(139272, 204801);
        GLFW.glfwWindowHint(139270, 1);
 -      this.window = GLFW.glfwCreateWindow(this.width, this.height, p_85376_, this.fullscreen && monitor != null ? monitor.getMonitor() : 0L, 0L);
-+      this.window = net.minecraftforge.fml.loading.ImmediateWindowHandler.setupMinecraftWindow(()->this.width, ()->this.height, ()->p_85376_, ()->this.fullscreen && monitor != null ? monitor.getMonitor() : 0L);
-+      if (!net.minecraftforge.fml.loading.ImmediateWindowHandler.positionWindow(Optional.ofNullable(monitor), w->this.width = this.windowedWidth = w, h->this.height = this.windowedHeight = h, x->this.x = this.windowedX = x, y->this.y = this.windowedY = y)) {
++      this.window = net.neoforged.fml.loading.ImmediateWindowHandler.setupMinecraftWindow(()->this.width, ()->this.height, ()->p_85376_, ()->this.fullscreen && monitor != null ? monitor.getMonitor() : 0L);
++      if (!net.neoforged.fml.loading.ImmediateWindowHandler.positionWindow(Optional.ofNullable(monitor), w->this.width = this.windowedWidth = w, h->this.height = this.windowedHeight = h, x->this.x = this.windowedX = x, y->this.y = this.windowedY = y)) {
        if (monitor != null) {
           VideoMode videomode = monitor.getPreferredVidMode(this.fullscreen ? this.preferredFullscreenVideoMode : Optional.empty());
           this.windowedX = this.x = monitor.getX() + videomode.getWidth() / 2 - this.width / 2;
@@ -22,7 +22,7 @@
        GLFW.glfwGetFramebufferSize(this.window, aint, aint1);
        this.framebufferWidth = aint[0] > 0 ? aint[0] : 1;
        this.framebufferHeight = aint1[0] > 0 ? aint1[0] : 1;
-+      if (this.framebufferHeight == 0 || this.framebufferWidth==0) net.minecraftforge.fml.loading.ImmediateWindowHandler.updateFBSize(w->this.framebufferWidth=w, h->this.framebufferHeight=h);
++      if (this.framebufferHeight == 0 || this.framebufferWidth==0) net.neoforged.fml.loading.ImmediateWindowHandler.updateFBSize(w->this.framebufferWidth=w, h->this.framebufferHeight=h);
     }
  
     private void onResize(long p_85428_, int p_85429_, int p_85430_) {

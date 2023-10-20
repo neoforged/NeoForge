@@ -6,11 +6,11 @@
 package net.minecraftforge.debug.client.rendering;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.DeferredWorkQueue;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.DeferredWorkQueue;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod("stencil_enable_test")
 public class StencilEnableTest {

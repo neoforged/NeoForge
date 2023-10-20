@@ -18,8 +18,8 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.common.util.LogMessageAdapter;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.tags.ITagManager;
 import org.apache.commons.lang3.Validate;
 

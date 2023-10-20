@@ -6,7 +6,7 @@
 package net.minecraftforge.client;
 
 import net.minecraft.client.renderer.RenderType;
-import net.minecraftforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterNamedRenderTypesEvent;
@@ -17,8 +17,8 @@ import net.minecraftforge.client.model.EmptyModel;
 import net.minecraftforge.client.model.ItemLayerModel;
 import net.minecraftforge.client.model.SeparateTransformsModel;
 import net.minecraftforge.client.model.obj.ObjLoader;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = "forge")
 public class ClientForgeMod

@@ -20,16 +20,15 @@ import net.minecraft.world.level.levelgen.feature.treedecorators.AlterGroundDeco
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecorator;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 /**
  * This event is fired when {@link AlterGroundDecorator#placeBlockAt(TreeDecorator.Context, BlockPos)} attempts to alter a ground block when generating a feature.<br>
  * An example of this would be large spruce trees converting grass blocks into podzol.
  * <p>
- * This event is not {@linkplain Cancelable cancellable}.
+ * This event is not {@linkplain ICancellableEvent cancellable}.
  * <p>
- * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus} only on the {@linkplain net.minecraftforge.fml.LogicalSide#SERVER logical server}.
+ * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus} only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.
  * <p>
  * This event is fired on worker threads, meaning it is unsafe to access external global state.<br>
  * Doing so may induce {@link ConcurrentModificationException} or deadlocks.

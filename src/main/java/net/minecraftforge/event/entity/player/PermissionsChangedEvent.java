@@ -6,15 +6,14 @@
 package net.minecraftforge.event.entity.player;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * This event will fire when the player is opped or deopped.
  * <p>
  * This event is cancelable which will stop the op or deop from happening.
  */
-@Cancelable
-public class PermissionsChangedEvent extends PlayerEvent
+public class PermissionsChangedEvent extends PlayerEvent implements ICancellableEvent
 {
     private final int newLevel;
     private final int oldLevel;

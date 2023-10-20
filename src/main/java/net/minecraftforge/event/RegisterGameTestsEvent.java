@@ -7,8 +7,8 @@ package net.minecraftforge.event;
 
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.event.IModBusEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.event.IModBusEvent;
 import net.minecraftforge.gametest.ForgeGameTestHooks;
 
 import java.lang.reflect.Method;

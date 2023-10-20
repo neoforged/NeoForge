@@ -5,7 +5,7 @@
 
 package net.minecraftforge.registries;
 
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.neoforged.bus.api.IEventBus;
 
 public class ForgeDeferredRegistriesSetup
 {

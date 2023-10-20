@@ -22,7 +22,7 @@
     public void playerTouch(Player p_20792_) {
        if (!this.level().isClientSide) {
           if (p_20792_.takeXpDelay == 0) {
-+            if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerXpEvent.PickupXp(p_20792_, this))) return;
++            if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerXpEvent.PickupXp(p_20792_, this)).isCanceled()) return;
              p_20792_.takeXpDelay = 2;
              p_20792_.take(this, 1);
              int i = this.repairPlayerItems(p_20792_, this.value);

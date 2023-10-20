@@ -12,9 +12,9 @@ import net.minecraft.client.renderer.FogRenderer.FogMode;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.level.material.FogType;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -71,14 +71,13 @@ public abstract class ViewportEvent extends Event
     /**
      * Fired for <b>rendering</b> custom fog. The plane distances are based on the player's render distance.
      *
-     * <p>This event is {@linkplain Cancelable cancellable}, and {@linkplain HasResult has a result}. <br/>
+     * <p>This event is {@linkplain ICancellableEvent cancellable}, and {@linkplain HasResult has a result}. <br/>
      * The event must be cancelled for any changes to the plane distances to take effect.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    @Cancelable
-    public static class RenderFog extends ViewportEvent
+    public static class RenderFog extends ViewportEvent implements ICancellableEvent
     {
         private final FogMode mode;
         private final FogType type;
@@ -193,7 +192,7 @@ public abstract class ViewportEvent extends Event
     /**
      * Fired for customizing the <b>color</b> of the fog visible to the player.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -272,7 +271,7 @@ public abstract class ViewportEvent extends Event
      * Fired to allow altering the angles of the player's camera.
      * This can be used to alter the player's view for different effects, such as applying roll.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -351,7 +350,7 @@ public abstract class ViewportEvent extends Event
      * Fired for altering the raw field of view (FOV).
      * This is after the FOV settings are applied, and before modifiers such as the Nausea effect.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>

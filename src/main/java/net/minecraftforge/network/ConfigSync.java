@@ -6,8 +6,8 @@
 package net.minecraftforge.network;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.config.ConfigTracker;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.fml.config.ConfigTracker;
+import net.neoforged.fml.config.ModConfig;
 import net.minecraftforge.network.simple.MessageFunctions;
 import org.apache.commons.lang3.tuple.Pair;
 

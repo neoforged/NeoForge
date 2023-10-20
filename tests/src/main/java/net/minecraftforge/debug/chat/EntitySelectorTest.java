@@ -15,9 +15,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.command.EntitySelectorManager;
 import net.minecraftforge.common.command.IEntitySelectorType;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod("entity_selector_test")
 public class EntitySelectorTest

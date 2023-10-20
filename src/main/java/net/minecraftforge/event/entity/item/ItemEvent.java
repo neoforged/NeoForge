@@ -14,7 +14,7 @@ import net.minecraftforge.event.entity.EntityEvent;
  * additional useful data from the firing method that isn't already contained
  * within the ItemEntity instance.
  */
-public class ItemEvent extends EntityEvent
+public abstract class ItemEvent extends EntityEvent
 {
     private final ItemEntity itemEntity;
 

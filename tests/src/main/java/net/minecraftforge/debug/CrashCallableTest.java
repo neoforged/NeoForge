@@ -5,8 +5,8 @@
 
 package net.minecraftforge.debug;
 
-import net.minecraftforge.fml.CrashReportCallables;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.CrashReportCallables;
+import net.neoforged.fml.common.Mod;
 
 /**
  * Test features and guards of crash-callables.

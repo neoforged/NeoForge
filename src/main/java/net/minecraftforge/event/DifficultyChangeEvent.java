@@ -8,7 +8,7 @@ package net.minecraftforge.event;
 import net.minecraft.world.Difficulty;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 /**
  * DifficultyChangeEvent is fired when difficulty is changing. <br>

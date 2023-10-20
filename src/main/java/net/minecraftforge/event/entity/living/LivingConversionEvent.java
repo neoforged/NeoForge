@@ -7,11 +7,11 @@ package net.minecraftforge.event.entity.living;
 
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 
 import java.util.function.Consumer;
 
-public class LivingConversionEvent extends LivingEvent
+public abstract class LivingConversionEvent extends LivingEvent
 {
     public LivingConversionEvent(LivingEntity entity)
     {
@@ -26,11 +26,10 @@ public class LivingConversionEvent extends LivingEvent
      * for entities like Zombies and Hoglins. To prevent it, the conversion
      * timer needs to be changed or reset
      *
-     * This event is {@link Cancelable}
+     * This event is {@link ICancellableEvent}
      * If cancelled, the replacement will not occur
      */
-    @Cancelable
-    public static class Pre extends LivingConversionEvent
+    public static class Pre extends LivingConversionEvent implements ICancellableEvent
     {
         private final EntityType<? extends LivingEntity> outcome;
         private final Consumer<Integer> timer;

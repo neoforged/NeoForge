@@ -6,7 +6,7 @@
 package net.minecraftforge.event;
 
 import net.minecraft.core.RegistryAccess;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 /**
  * Fired when tags are updated on either server or client. This event can be used to refresh data that depends on tags.

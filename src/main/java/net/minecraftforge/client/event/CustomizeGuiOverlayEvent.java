@@ -9,9 +9,9 @@ import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
@@ -56,14 +56,13 @@ public abstract class CustomizeGuiOverlayEvent extends Event
     /**
      * Fired <b>before</b> a boss health bar is rendered to the screen.
      *
-     * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * Cancelling this event will prevent the given bar from rendering.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    @Cancelable
-    public static class BossEventProgress extends CustomizeGuiOverlayEvent
+    public static class BossEventProgress extends CustomizeGuiOverlayEvent implements ICancellableEvent
     {
         private final LerpingBossEvent bossEvent;
         private final int x;
@@ -127,7 +126,7 @@ public abstract class CustomizeGuiOverlayEvent extends Event
      * Fired <b>before</b> textual information is rendered to the debug screen.
      * This can be used to add or remove text information.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -165,7 +164,7 @@ public abstract class CustomizeGuiOverlayEvent extends Event
     /**
      * Fired <b>before</b> the chat messages overlay is rendered to the screen.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.<p/>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.<p/>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>

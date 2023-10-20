@@ -41,9 +41,9 @@ import net.minecraftforge.common.world.ForgeBiomeModifiers.AddSpawnsBiomeModifie
 import net.minecraftforge.common.world.ForgeBiomeModifiers.RemoveFeaturesBiomeModifier;
 import net.minecraftforge.common.world.ForgeBiomeModifiers.RemoveSpawnsBiomeModifier;
 import net.minecraftforge.common.world.ModifiableBiomeInfo.BiomeInfo.Builder;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

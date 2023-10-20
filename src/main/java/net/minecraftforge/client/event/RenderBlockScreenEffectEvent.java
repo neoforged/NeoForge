@@ -10,22 +10,21 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Fired before a block texture will be overlaid on the player's view.
  *
- * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+ * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  * If this event is cancelled, then the overlay will not be rendered.</p>
  *
  * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-@Cancelable
-public class RenderBlockScreenEffectEvent extends Event
+public class RenderBlockScreenEffectEvent extends Event implements ICancellableEvent
 {
     /**
      * The type of the block overlay to be rendered.

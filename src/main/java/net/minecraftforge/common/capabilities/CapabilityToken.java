@@ -5,7 +5,7 @@
 
 package net.minecraftforge.common.capabilities;
 
-import net.minecraftforge.fml.common.asm.CapabilityTokenSubclass;
+import net.neoforged.fml.common.asm.CapabilityTokenSubclass;
 
 /**
  * Inspired by {@link com.google.common.reflect.TypeToken TypeToken}, use a subclass to capture

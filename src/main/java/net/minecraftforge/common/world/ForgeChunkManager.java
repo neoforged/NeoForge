@@ -30,7 +30,7 @@ import net.minecraft.world.level.ForcedChunksSavedData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,8 +47,8 @@ public class ForgeChunkManager
     /**
      * Sets the forced chunk loading validation callback for the given mod. This allows for validating and removing no longer valid tickets on level load.
      *
-     * @apiNote This method should be called from a {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent} using one of the {@link
-     * net.minecraftforge.fml.event.lifecycle.ParallelDispatchEvent} enqueueWork methods.
+     * @apiNote This method should be called from a {@link net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent} using one of the {@link
+     * net.neoforged.fml.event.lifecycle.ParallelDispatchEvent} enqueueWork methods.
      */
     public static void setForcedChunkLoadingCallback(String modId, LoadingValidationCallback callback)
     {

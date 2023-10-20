@@ -6,7 +6,7 @@
     public void handleBlockBreakAction(BlockPos p_215120_, ServerboundPlayerActionPacket.Action p_215121_, Direction p_215122_, int p_215123_, int p_215124_) {
 -      if (this.player.getEyePosition().distanceToSqr(Vec3.atCenterOf(p_215120_)) > ServerGamePacketListenerImpl.MAX_INTERACTION_DISTANCE) {
 +      net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event = net.minecraftforge.common.ForgeHooks.onLeftClickBlock(player, p_215120_, p_215122_, p_215121_);
-+      if (event.isCanceled() || (!this.isCreative() && event.getResult() == net.minecraftforge.eventbus.api.Event.Result.DENY)) {
++      if (event.isCanceled() || (!this.isCreative() && event.getResult() == net.neoforged.bus.api.Event.Result.DENY)) {
 +         return;
 +      }
 +      if (!this.player.canReach(p_215120_, 1.5)) { // Vanilla check is eye-to-center distance < 6, so padding is 6 - 4.5 = 1.5
@@ -17,7 +17,7 @@
              float f = 1.0F;
              BlockState blockstate = this.level.getBlockState(p_215120_);
              if (!blockstate.isAir()) {
-+               if (event.getUseBlock() != net.minecraftforge.eventbus.api.Event.Result.DENY)
++               if (event.getUseBlock() != net.neoforged.bus.api.Event.Result.DENY)
                 blockstate.attack(this.level, p_215120_, this.player);
                 f = blockstate.getDestroyProgress(this.player, this.player.level(), p_215120_);
              }
@@ -107,7 +107,7 @@
           }
        } else {
 +         UseOnContext useoncontext = new UseOnContext(p_9266_, p_9269_, p_9270_);
-+         if (event.getUseItem() != net.minecraftforge.eventbus.api.Event.Result.DENY) {
++         if (event.getUseItem() != net.neoforged.bus.api.Event.Result.DENY) {
 +            InteractionResult result = p_9268_.onItemUseFirst(useoncontext);
 +            if (result != InteractionResult.PASS) return result;
 +         }
@@ -116,7 +116,7 @@
 +         boolean flag1 = (p_9266_.isSecondaryUseActive() && flag) && !(p_9266_.getMainHandItem().doesSneakBypassUse(p_9267_, blockpos, p_9266_) && p_9266_.getOffhandItem().doesSneakBypassUse(p_9267_, blockpos, p_9266_));
           ItemStack itemstack = p_9268_.copy();
 -         if (!flag1) {
-+         if (event.getUseBlock() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || (event.getUseBlock() != net.minecraftforge.eventbus.api.Event.Result.DENY && !flag1)) {
++         if (event.getUseBlock() == net.neoforged.bus.api.Event.Result.ALLOW || (event.getUseBlock() != net.neoforged.bus.api.Event.Result.DENY && !flag1)) {
              InteractionResult interactionresult = blockstate.use(p_9267_, p_9266_, p_9269_, p_9270_);
              if (interactionresult.consumesAction()) {
                 CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(p_9266_, blockpos, itemstack);
@@ -126,8 +126,8 @@
  
 -         if (!p_9268_.isEmpty() && !p_9266_.getCooldowns().isOnCooldown(p_9268_.getItem())) {
 -            UseOnContext useoncontext = new UseOnContext(p_9266_, p_9269_, p_9270_);
-+         if (event.getUseItem() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || (!p_9268_.isEmpty() && !p_9266_.getCooldowns().isOnCooldown(p_9268_.getItem()))) {
-+            if (event.getUseItem() == net.minecraftforge.eventbus.api.Event.Result.DENY) return InteractionResult.PASS;
++         if (event.getUseItem() == net.neoforged.bus.api.Event.Result.ALLOW || (!p_9268_.isEmpty() && !p_9266_.getCooldowns().isOnCooldown(p_9268_.getItem()))) {
++            if (event.getUseItem() == net.neoforged.bus.api.Event.Result.DENY) return InteractionResult.PASS;
              InteractionResult interactionresult1;
              if (this.isCreative()) {
                 int i = p_9268_.getCount();

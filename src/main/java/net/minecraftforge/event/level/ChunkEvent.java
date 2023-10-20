@@ -10,8 +10,7 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -23,7 +22,7 @@ import org.jetbrains.annotations.ApiStatus;
  * <br>
  * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.<br>
  **/
-public class ChunkEvent extends LevelEvent
+public abstract class ChunkEvent extends LevelEvent
 {
     private final ChunkAccess chunk;
 
@@ -51,7 +50,7 @@ public class ChunkEvent extends LevelEvent
      * Chunk.onChunkLoad(). <br>
      * <strong>Note:</strong> This event may be called before the underlying {@link LevelChunk} is promoted to {@link ChunkStatus#FULL}. You will cause chunk loading deadlocks if you don't delay your level interactions.<br>
      * <br>
-     * This event is not {@link Cancelable}.<br>
+     * This event is not {@link ICancellableEvent}.<br>
      * <br>
      * This event does not have a result. {@link HasResult} <br>
      * <br>
@@ -71,7 +70,7 @@ public class ChunkEvent extends LevelEvent
         /**
          * Check whether the Chunk is newly generated, and being loaded for the first time.
          *
-         * <p>Will only ever return {@code true} on the {@linkplain net.minecraftforge.fml.LogicalSide#SERVER logical server}.</p>
+         * <p>Will only ever return {@code true} on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.</p>
          *
          * @return whether the Chunk is newly generated
          */
@@ -86,7 +85,7 @@ public class ChunkEvent extends LevelEvent
      * This event is fired during chunk unloading in <br>
      * Chunk.onChunkUnload(). <br>
      * <br>
-     * This event is not {@link Cancelable}.<br>
+     * This event is not {@link ICancellableEvent}.<br>
      * <br>
      * This event does not have a result. {@link HasResult} <br>
      * <br>

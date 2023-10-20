@@ -12,10 +12,10 @@ import java.util.function.BooleanSupplier;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.LogicalSide;
 
-public class TickEvent extends Event
+public abstract class TickEvent extends Event
 {
     public enum Type {
         LEVEL, PLAYER, CLIENT, SERVER, RENDER;

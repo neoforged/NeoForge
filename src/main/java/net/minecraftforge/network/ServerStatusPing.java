@@ -12,8 +12,8 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.Util;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.IExtensionPoint;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.IExtensionPoint;
+import net.neoforged.fml.ModList;
 
 import java.util.HashMap;
 import java.util.List;

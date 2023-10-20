@@ -8,14 +8,14 @@ package net.minecraftforge.event.entity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * This event gets fired whenever a entity mounts/dismounts another entity.<br>
  * <b>entityBeingMounted can be null</b>, be sure to check for that.
  * <br>
  * <br>
- * This event is {@link net.minecraftforge.eventbus.api.Cancelable}.<br>
+ * This event is {@link net.neoforged.bus.api.ICancellableEvent}.<br>
  * If this event is canceled, the entity does not mount/dismount the other entity.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
@@ -24,8 +24,7 @@ import net.minecraftforge.eventbus.api.Cancelable;
  *
  */
 
-@Cancelable
-public class EntityMountEvent extends EntityEvent
+public class EntityMountEvent extends EntityEvent implements ICancellableEvent
 {
 
     private final Entity entityMounting;

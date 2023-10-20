@@ -5,7 +5,7 @@
 
 package net.minecraftforge.event.entity.living;
 
-import net.minecraftforge.eventbus.api.Event.HasResult;
+import net.neoforged.bus.api.Event.HasResult;
 import net.minecraft.world.entity.Mob;
 
 @HasResult

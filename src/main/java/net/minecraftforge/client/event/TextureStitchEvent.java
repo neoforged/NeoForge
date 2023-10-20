@@ -6,11 +6,10 @@
 package net.minecraftforge.client.event;
 
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.event.IModBusEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Set;
@@ -21,7 +20,7 @@ import java.util.Set;
  * @see TextureStitchEvent.Post
  * @see TextureAtlas
  */
-public class TextureStitchEvent extends Event implements IModBusEvent
+public abstract class TextureStitchEvent extends Event implements IModBusEvent
 {
     private final TextureAtlas atlas;
 
@@ -44,7 +43,7 @@ public class TextureStitchEvent extends Event implements IModBusEvent
     //  * <p>Fired <b>before</b> a texture atlas is stitched together.
     //  * This can be used to add custom sprites to be stitched into the atlas.</p>
     //  *
-    //  * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+    //  * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
     //  *
     //  * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus()} mod-specific event bus},
     //  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -77,7 +76,7 @@ public class TextureStitchEvent extends Event implements IModBusEvent
     /**
      * Fired <b>after</b> a texture atlas is stitched together and all textures therein has been loaded.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus()} mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>

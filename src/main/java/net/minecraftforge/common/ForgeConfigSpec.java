@@ -21,9 +21,9 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import net.minecraftforge.fml.Logging;
-import net.minecraftforge.fml.config.IConfigSpec;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.fml.Logging;
+import net.neoforged.fml.config.IConfigSpec;
+import net.neoforged.fml.loading.FMLEnvironment;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 

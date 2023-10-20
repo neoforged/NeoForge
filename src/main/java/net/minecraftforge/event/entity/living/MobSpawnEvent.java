@@ -5,6 +5,7 @@
 
 package net.minecraftforge.event.entity.living;
 
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,9 +27,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.LogicalSide;
 
 /**
  * This class holds all events relating to the entire flow of mob spawns.<br>
@@ -268,8 +268,7 @@ public abstract class MobSpawnEvent extends EntityEvent
      * @see ForgeEventFactory#onFinalizeSpawn
      * @apiNote Callers do not need to check if the entity's spawn was cancelled, as the spawn will be blocked by Forge.
      */
-    @Cancelable
-    public static class FinalizeSpawn extends MobSpawnEvent
+    public static class FinalizeSpawn extends MobSpawnEvent implements ICancellableEvent
     {
         private final MobSpawnType spawnType;
         @Nullable
@@ -405,7 +404,7 @@ public abstract class MobSpawnEvent extends EntityEvent
      * It fires once per tick per mob that is attempting to despawn.<br>
      * It is not fired if the mob is persistent (meaning it may not despawn).<br>
      * <p>
-     * This event is not {@linkplain Cancelable cancellable}, but does {@linkplain HasResult have a result}.
+     * This event is not {@linkplain ICancellableEvent cancellable}, but does {@linkplain HasResult have a result}.
      * {@link Result#DEFAULT} indicates that default despawn mechanics should be used.
      * {@link Result#ALLOW} indicates that the mob should forcefully despawn.
      * {@link Result#DENY} indicates that the mob should forcefully stay spawned.

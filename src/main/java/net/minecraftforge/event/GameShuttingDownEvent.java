@@ -5,7 +5,7 @@
 
 package net.minecraftforge.event;
 
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 /**
  * A simple marker event that notifies when the game is about to close.

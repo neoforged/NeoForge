@@ -6,7 +6,7 @@
 package net.minecraftforge.common.util;
 
 import net.minecraftforge.common.ForgeI18n;
-import net.minecraftforge.forgespi.locating.ForgeFeature;
+import net.neoforged.neoforgespi.locating.ForgeFeature;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.Restriction;
 import org.apache.maven.artifact.versioning.VersionRange;

@@ -30,7 +30,7 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.predicates.*;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.common.loot.CanToolPerformAction;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 
 import java.util.ArrayList;
 import java.util.List;

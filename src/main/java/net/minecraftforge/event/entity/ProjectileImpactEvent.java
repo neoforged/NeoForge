@@ -9,7 +9,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
@@ -20,8 +20,7 @@ import net.minecraftforge.eventbus.api.Cancelable;
  * This event is cancelable. When canceled, the impact will not be processed and the projectile will continue flying.
  * Killing or other handling of the entity after event cancellation is up to the modder.
  */
-@Cancelable
-public class ProjectileImpactEvent extends EntityEvent
+public class ProjectileImpactEvent extends EntityEvent implements ICancellableEvent
 {
     private final HitResult ray;
     private final Projectile projectile;

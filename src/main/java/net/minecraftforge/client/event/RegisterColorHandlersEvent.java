@@ -13,11 +13,10 @@ import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.event.IModBusEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -40,7 +39,7 @@ public abstract class RegisterColorHandlersEvent extends Event implements IModBu
     /**
      * Fired for registering block color handlers.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -83,7 +82,7 @@ public abstract class RegisterColorHandlersEvent extends Event implements IModBu
      * <p>The block colors should only be used for referencing or delegating item colors to their respective block
      * colors. Use {@link RegisterColorHandlersEvent.Block} for registering your block color handlers.</p>
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>

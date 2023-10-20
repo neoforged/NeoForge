@@ -14,7 +14,7 @@ import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent.ProgressType;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 import org.slf4j.Logger;
 

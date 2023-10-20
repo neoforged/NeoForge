@@ -13,7 +13,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.client.event.RegisterRecipeBookCategoriesEvent;
-import net.minecraftforge.fml.ModLoader;
+import net.neoforged.fml.ModLoader;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 

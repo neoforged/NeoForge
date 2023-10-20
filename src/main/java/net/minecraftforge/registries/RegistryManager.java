@@ -23,7 +23,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Registry;
-import net.minecraftforge.fml.ModLoader;
+import net.neoforged.fml.ModLoader;
 import net.minecraftforge.network.HandshakeMessages;
 import net.minecraftforge.network.simple.MessageFunctions;
 import net.minecraftforge.registries.ForgeRegistry.Snapshot;

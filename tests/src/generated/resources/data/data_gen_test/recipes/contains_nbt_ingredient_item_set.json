@@ -6,8 +6,8 @@
       "type": "forge:partial_nbt",
       "items": [
         "minecraft:stone_pickaxe",
-        "minecraft:iron_pickaxe",
-        "minecraft:wooden_pickaxe"
+        "minecraft:wooden_pickaxe",
+        "minecraft:iron_pickaxe"
       ],
       "tag": {
         "Damage": 0,

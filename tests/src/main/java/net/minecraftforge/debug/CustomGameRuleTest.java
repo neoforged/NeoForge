@@ -6,7 +6,7 @@
 package net.minecraftforge.debug;
 
 import net.minecraft.world.level.GameRules;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 /**
  * Simple test to ensure custom game rules can be registered correctly and used in game.

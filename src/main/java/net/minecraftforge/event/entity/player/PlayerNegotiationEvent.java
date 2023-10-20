@@ -8,7 +8,7 @@ package net.minecraftforge.event.entity.player;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.Connection;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

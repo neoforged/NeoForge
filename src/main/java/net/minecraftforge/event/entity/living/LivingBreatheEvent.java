@@ -8,14 +8,13 @@ package net.minecraftforge.event.entity.living;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
 
 /**
  * LivingBreatheEvent is fired whenever a living entity ticks.<br>
  * <br>
  * This event is fired via {@link ForgeHooks#onLivingBreathe(LivingEntity, int, int)}.<br>
  * <br>
- * This event is not {@link Cancelable}.<br>
+ * This event is not {@link ICancellableEvent}.<br>
  * <br>
  * This event does not have a result. {@link HasResult}
  * <br>

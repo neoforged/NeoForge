@@ -23,7 +23,7 @@
           try {
 -            return this.dispatcher.execute(p_242844_);
 +            net.minecraftforge.event.CommandEvent event = new net.minecraftforge.event.CommandEvent(p_242844_);
-+            if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) {
++            if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled()) {
 +               if (event.getException() instanceof Exception exception) {
 +                  throw exception;
 +               } else if (event.getException() != null) {

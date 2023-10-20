@@ -10,7 +10,7 @@ import java.util.List;
 import net.minecraft.world.entity.npc.VillagerTrades.ItemListing;
 import net.minecraftforge.common.BasicItemListing;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 
 /**

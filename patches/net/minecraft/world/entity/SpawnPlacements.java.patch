@@ -51,7 +51,7 @@
 +   {
 +       Map<EntityType<?>, net.minecraftforge.event.entity.SpawnPlacementRegisterEvent.MergedSpawnPredicate<?>> map = Maps.newHashMap();
 +       DATA_BY_TYPE.forEach((type, data) -> map.put(type, new net.minecraftforge.event.entity.SpawnPlacementRegisterEvent.MergedSpawnPredicate<>(data.predicate, data.placement, data.heightMap)));
-+       net.minecraftforge.fml.ModLoader.get().postEvent(new net.minecraftforge.event.entity.SpawnPlacementRegisterEvent(map));
++       net.neoforged.fml.ModLoader.get().postEvent(new net.minecraftforge.event.entity.SpawnPlacementRegisterEvent(map));
 +       map.forEach(((entityType, merged) -> DATA_BY_TYPE.put(entityType, new SpawnPlacements.Data(merged.getHeightmapType(), merged.getSpawnType(), merged.build()))));
     }
  }

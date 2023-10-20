@@ -5,10 +5,10 @@
 
 package net.minecraftforge.event.entity.player;
 
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * This event is called when a player collides with a EntityItem on the ground.
@@ -20,9 +20,8 @@ import net.minecraft.world.entity.player.Player;
  *
  *  setResult(ALLOW) is the same as the old setHandled()
  */
-@Cancelable
 @Event.HasResult
-public class EntityItemPickupEvent extends PlayerEvent
+public class EntityItemPickupEvent extends PlayerEvent implements ICancellableEvent
 {
     private final ItemEntity item;
 

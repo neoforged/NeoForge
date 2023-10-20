@@ -73,11 +73,11 @@
           this.discard();
        } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
           Entity entity = this.level().getNearestPlayer(this, -1.0);
-+         net.minecraftforge.eventbus.api.Event.Result result = net.minecraftforge.event.ForgeEventFactory.canEntityDespawn(this, (ServerLevel) this.level());
-+         if (result == net.minecraftforge.eventbus.api.Event.Result.DENY) {
++         net.neoforged.bus.api.Event.Result result = net.minecraftforge.event.ForgeEventFactory.canEntityDespawn(this, (ServerLevel) this.level());
++         if (result == net.neoforged.bus.api.Event.Result.DENY) {
 +            noActionTime = 0;
 +            entity = null;
-+         } else if (result == net.minecraftforge.eventbus.api.Event.Result.ALLOW) {
++         } else if (result == net.neoforged.bus.api.Event.Result.ALLOW) {
 +            this.discard();
 +            entity = null;
 +         }

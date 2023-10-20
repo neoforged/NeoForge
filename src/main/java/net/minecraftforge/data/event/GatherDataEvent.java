@@ -10,9 +10,9 @@ import net.minecraft.DetectedVersion;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.event.IModBusEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.event.IModBusEvent;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

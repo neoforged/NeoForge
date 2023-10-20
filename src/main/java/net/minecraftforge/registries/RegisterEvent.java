@@ -8,9 +8,9 @@ package net.minecraftforge.registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.event.IModBusEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

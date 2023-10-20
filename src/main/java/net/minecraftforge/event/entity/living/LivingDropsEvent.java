@@ -12,7 +12,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * LivingDropsEvent is fired when an Entity's death causes dropped items to appear.<br>
@@ -26,15 +26,14 @@ import net.minecraftforge.eventbus.api.Cancelable;
  * {@link #lootingLevel} contains the amount of loot that will be dropped.<br>
  * {@link #recentlyHit} determines whether the Entity doing the drop has recently been damaged.<br>
  * <br>
- * This event is {@link Cancelable}.<br>
+ * This event is {@link ICancellableEvent}.<br>
  * If this event is canceled, the Entity does not drop anything.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
-@net.minecraftforge.eventbus.api.Cancelable
-public class LivingDropsEvent extends LivingEvent
+public class LivingDropsEvent extends LivingEvent implements ICancellableEvent
 {
     private final DamageSource source;
     private final Collection<ItemEntity> drops;

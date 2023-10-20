@@ -12,7 +12,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.Event.HasResult;
+import net.neoforged.bus.api.Event.HasResult;
 
 /**
  * This event is fired when game checks, if sleeping player should be still considered "in bed".<br>

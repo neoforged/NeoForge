@@ -9,7 +9,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

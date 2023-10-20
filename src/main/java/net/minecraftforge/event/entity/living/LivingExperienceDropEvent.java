@@ -7,7 +7,7 @@ package net.minecraftforge.event.entity.living;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -15,8 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * the amount of experience points dropped or completely prevent dropping of experience
  * by canceling the event.
  */
-@Cancelable
-public class LivingExperienceDropEvent extends LivingEvent
+public class LivingExperienceDropEvent extends LivingEvent implements ICancellableEvent
 {
     @Nullable private final Player attackingPlayer;
     private final int originalExperiencePoints;

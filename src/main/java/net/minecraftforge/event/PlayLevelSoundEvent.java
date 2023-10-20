@@ -13,8 +13,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
@@ -30,15 +30,14 @@ import java.util.Objects;
  * {@link #getNewVolume()} contains the volume the sound will be played at.
  * {@link #getNewPitch()} contains the pitch the sound will be played at.
  * <p>
- * This event is {@link Cancelable cancelable}.
+ * This event is {@link ICancellableEvent cancelable}.
  * If this event is canceled, the sound is not played.
  * <p>
  * This event does not have a result.
  * <p>
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  */
-@Cancelable
-public class PlayLevelSoundEvent extends Event
+public class PlayLevelSoundEvent extends Event implements ICancellableEvent
 {
     private final Level level;
     private final float originalVolume;
@@ -155,7 +154,7 @@ public class PlayLevelSoundEvent extends Event
      * PlayLevelSoundEvent.AtEntity is fired when a sound is played on the {@link Level} at an {@link Entity Entity}'s position.
      * This event is fired from {@link Level#playSound}, {@link Level#playSeededSound}, and {@link LocalPlayer#playSound}.
      * <p>
-     * This event is {@link Cancelable cancelable}.
+     * This event is {@link ICancellableEvent cancelable}.
      * If this event is canceled, the sound is not played.
      * <p>
      * This event does not have a result.
@@ -185,7 +184,7 @@ public class PlayLevelSoundEvent extends Event
      * PlayLevelSoundEvent.AtPosition is fired when a sound is played on the {@link Level} at a specific position.
      * This event is fired from {@link Level#playSound} and {@link Level#playSeededSound}.
      * <p>
-     * This event is {@link Cancelable cancelable}.
+     * This event is {@link ICancellableEvent cancelable}.
      * If this event is canceled, the sound is not played.
      * <p>
      * This event does not have a result.

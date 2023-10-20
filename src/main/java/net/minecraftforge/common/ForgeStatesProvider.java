@@ -7,10 +7,10 @@ package net.minecraftforge.common;
 
 import java.util.List;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.fml.IModLoadingState;
-import net.minecraftforge.fml.IModStateProvider;
-import net.minecraftforge.fml.ModLoadingPhase;
-import net.minecraftforge.fml.ModLoadingState;
+import net.neoforged.fml.IModLoadingState;
+import net.neoforged.fml.IModStateProvider;
+import net.neoforged.fml.ModLoadingPhase;
+import net.neoforged.fml.ModLoadingState;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.ObjectHolderRegistry;

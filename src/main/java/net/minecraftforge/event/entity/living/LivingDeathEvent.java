@@ -9,9 +9,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * LivingDeathEvent is fired when an Entity dies. <br>
@@ -24,15 +24,14 @@ import net.minecraft.world.entity.LivingEntity;
  * <br>
  * {@link #source} contains the DamageSource that caused the entity to die. <br>
  * <br>
- * This event is {@link Cancelable}.<br>
+ * This event is {@link ICancellableEvent}.<br>
  * If this event is canceled, the Entity does not die.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
-@Cancelable
-public class LivingDeathEvent extends LivingEvent
+public class LivingDeathEvent extends LivingEvent implements ICancellableEvent
 {
     private final DamageSource source;
     public LivingDeathEvent(LivingEntity entity, DamageSource source)

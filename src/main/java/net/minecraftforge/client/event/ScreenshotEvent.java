@@ -9,9 +9,9 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Screenshot;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +21,7 @@ import java.io.IOException;
 /**
  * Fired when a screenshot is taken, but before it is written to disk.
  *
- * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+ * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  * If this event is cancelled, then the screenshot is not written to disk, and the message in the event will be posted
  * to the player's chat.</p>
  *
@@ -30,8 +30,7 @@ import java.io.IOException;
  *
  * @see Screenshot
  */
-@Cancelable
-public class ScreenshotEvent extends Event
+public class ScreenshotEvent extends Event implements ICancellableEvent
 {
     public static final Component DEFAULT_CANCEL_REASON = Component.literal("Screenshot canceled");
 

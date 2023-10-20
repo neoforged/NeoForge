@@ -354,7 +354,7 @@
  
     public void giveExperiencePoints(int p_36291_) {
 +      net.minecraftforge.event.entity.player.PlayerXpEvent.XpChange event = new net.minecraftforge.event.entity.player.PlayerXpEvent.XpChange(this, p_36291_);
-+      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return;
++      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled()) return;
 +      p_36291_ = event.getAmount();
 +
        this.increaseScore(p_36291_);
@@ -374,7 +374,7 @@
  
     public void giveExperienceLevels(int p_36276_) {
 +      net.minecraftforge.event.entity.player.PlayerXpEvent.LevelChange event = new net.minecraftforge.event.entity.player.PlayerXpEvent.LevelChange(this, p_36276_);
-+      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return;
++      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled()) return;
 +      p_36276_ = event.getLevels();
 +
        this.experienceLevel += p_36276_;

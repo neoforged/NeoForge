@@ -14,9 +14,9 @@ import net.minecraft.world.item.ItemStack;
  * {@link net.minecraft.world.item.ProjectileWeaponItem} and the item stack returned is usually the item stack of a
  * {@link net.minecraft.world.entity.projectile.Projectile}.
  * <p>
- * This event is not {@link net.minecraftforge.eventbus.api.Cancelable}.
+ * This event is not {@link net.neoforged.bus.api.ICancellableEvent}.
  * <p>
- * This event does not have a result. {@link net.minecraftforge.eventbus.api.Event.HasResult}
+ * This event does not have a result. {@link net.neoforged.bus.api.Event.HasResult}
  * <p>
  * This event is fired on the {@link net.minecraftforge.common.MinecraftForge#EVENT_BUS}.
  */

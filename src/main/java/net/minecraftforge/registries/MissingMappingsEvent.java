@@ -8,7 +8,7 @@ package net.minecraftforge.registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 import org.apache.commons.lang3.Validate;
 
 import java.util.Collection;

@@ -7,7 +7,7 @@ package net.minecraftforge.server.permission.events;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 import net.minecraftforge.server.permission.handler.DefaultPermissionHandler;
 import net.minecraftforge.server.permission.handler.IPermissionHandler;
 import net.minecraftforge.server.permission.handler.IPermissionHandlerFactory;
@@ -25,7 +25,7 @@ import java.util.function.Function;
  *
  * <p><strong>Note:</strong> All PermissionNodes that you want to use, <strong>must</strong> be registered!</p>
  */
-public class PermissionGatherEvent extends Event
+public abstract class PermissionGatherEvent extends Event
 {
 
     /**

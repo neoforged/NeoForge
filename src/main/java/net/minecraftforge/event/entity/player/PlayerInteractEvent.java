@@ -24,9 +24,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
 
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
  * All subclasses are fired on {@link MinecraftForge#EVENT_BUS}.
  * See the individual documentation on each subevent for more details.
  **/
-public class PlayerInteractEvent extends PlayerEvent
+public abstract class PlayerInteractEvent extends PlayerEvent
 {
     private final InteractionHand hand;
     private final BlockPos pos;
@@ -62,8 +62,7 @@ public class PlayerInteractEvent extends PlayerEvent
      * Let result be the return value of {@link Entity#interactAt(Player, Vec3, InteractionHand)}, or {@link #cancellationResult} if the event is cancelled.
      * If we are on the client and result is not {@link InteractionResult#SUCCESS}, the client will then try {@link EntityInteract}.
      */
-    @Cancelable
-    public static class EntityInteractSpecific extends PlayerInteractEvent
+    public static class EntityInteractSpecific extends PlayerInteractEvent implements ICancellableEvent
     {
         private final Vec3 localPos;
         private final Entity target;
@@ -105,8 +104,7 @@ public class PlayerInteractEvent extends PlayerEvent
      * or {@link #cancellationResult} if the event is cancelled.
      * If we are on the client and result is not {@link InteractionResult#SUCCESS}, the client will then try {@link RightClickItem}.
      */
-    @Cancelable
-    public static class EntityInteract extends PlayerInteractEvent
+    public static class EntityInteract extends PlayerInteractEvent implements ICancellableEvent
     {
         private final Entity target;
 
@@ -135,8 +133,7 @@ public class PlayerInteractEvent extends PlayerEvent
      * There are various results to this event, see the getters below.  <br>
      * Note that handling things differently on the client vs server may cause desynchronizations!
      */
-    @Cancelable
-    public static class RightClickBlock extends PlayerInteractEvent
+    public static class RightClickBlock extends PlayerInteractEvent implements ICancellableEvent
     {
         private Result useBlock = Result.DEFAULT;
         private Result useItem = Result.DEFAULT;
@@ -195,7 +192,7 @@ public class PlayerInteractEvent extends PlayerEvent
         @Override
         public void setCanceled(boolean canceled)
         {
-            super.setCanceled(canceled);
+            ICancellableEvent.super.setCanceled(canceled);
             if (canceled)
             {
                 useBlock = Result.DENY;
@@ -211,8 +208,7 @@ public class PlayerInteractEvent extends PlayerEvent
      * Let result be the return value of {@link Item#use(Level, Player, InteractionHand)}, or {@link #cancellationResult} if the event is cancelled.
      * If we are on the client and result is not {@link InteractionResult#SUCCESS}, the client will then continue to other hands.
      */
-    @Cancelable
-    public static class RightClickItem extends PlayerInteractEvent
+    public static class RightClickItem extends PlayerInteractEvent implements ICancellableEvent
     {
         public RightClickItem(Player player, InteractionHand hand)
         {
@@ -248,8 +244,7 @@ public class PlayerInteractEvent extends PlayerEvent
      * Also note that creative mode directly breaks the block without running any other logic.
      * Therefore, in creative mode, {@link #setUseBlock} and {@link #setUseItem} have no effect.
      */
-    @Cancelable
-    public static class LeftClickBlock extends PlayerInteractEvent
+    public static class LeftClickBlock extends PlayerInteractEvent implements ICancellableEvent
     {
         private Result useBlock = Result.DEFAULT;
         private Result useItem = Result.DEFAULT;
@@ -305,7 +300,7 @@ public class PlayerInteractEvent extends PlayerEvent
         @Override
         public void setCanceled(boolean canceled)
         {
-            super.setCanceled(canceled);
+            ICancellableEvent.super.setCanceled(canceled);
             if (canceled)
             {
                 useBlock = Result.DENY;

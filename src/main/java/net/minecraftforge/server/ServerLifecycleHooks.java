@@ -28,18 +28,18 @@ import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.common.world.StructureModifier;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.Logging;
+import net.neoforged.fml.DistExecutor;
+import net.neoforged.fml.Logging;
 import net.minecraftforge.common.util.LogicalSidedProvider;
 import net.minecraftforge.common.world.BiomeModifier;
-import net.minecraftforge.fml.ModLoader;
-import net.minecraftforge.fml.ModLoadingStage;
-import net.minecraftforge.fml.ModLoadingWarning;
+import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.ModLoadingStage;
+import net.neoforged.fml.ModLoadingWarning;
 import net.minecraftforge.network.ConnectionType;
 import net.minecraftforge.network.NetworkConstants;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.forgespi.locating.IModFile;
+import net.neoforged.neoforgespi.locating.IModFile;
 import net.minecraftforge.registries.ForgeRegistries.Keys;
 import net.minecraftforge.resource.PathPackResources;
 import net.minecraftforge.server.permission.PermissionAPI;
@@ -55,16 +55,16 @@ import net.minecraft.network.protocol.login.ClientboundLoginDisconnectPacket;
 import net.minecraft.server.packs.repository.BuiltInPackSource;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.config.ConfigTracker;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.fml.config.ConfigTracker;
+import net.neoforged.fml.config.ModConfig;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.forgespi.language.IModInfo;
+import net.neoforged.neoforgespi.language.IModInfo;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.GameData;
 import org.jetbrains.annotations.ApiStatus;
@@ -90,17 +90,17 @@ public class ServerLifecycleHooks
         return serverConfig;
     }
 
-    public static boolean handleServerAboutToStart(final MinecraftServer server)
+    public static void handleServerAboutToStart(final MinecraftServer server)
     {
         currentServer = server;
         // on the dedi server we need to force the stuff to setup properly
         LogicalSidedProvider.setServer(()->server);
         ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.SERVER, getServerConfigPath(server));
         runModifiers(server);
-        return !MinecraftForge.EVENT_BUS.post(new ServerAboutToStartEvent(server));
+        MinecraftForge.EVENT_BUS.post(new ServerAboutToStartEvent(server));
     }
 
-    public static boolean handleServerStarting(final MinecraftServer server)
+    public static void handleServerStarting(final MinecraftServer server)
     {
         DistExecutor.runWhenOn(Dist.DEDICATED_SERVER, ()->()->{
             LanguageHook.loadLanguagesOnServer(server);
@@ -109,7 +109,7 @@ public class ServerLifecycleHooks
                 net.minecraftforge.gametest.ForgeGameTestHooks.registerGametests();
         });
         PermissionAPI.initializePermissionAPI();
-        return !MinecraftForge.EVENT_BUS.post(new ServerStartingEvent(server));
+        MinecraftForge.EVENT_BUS.post(new ServerStartingEvent(server));
     }
 
     public static void handleServerStarted(final MinecraftServer server)

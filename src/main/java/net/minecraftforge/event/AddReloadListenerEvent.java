@@ -13,8 +13,8 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.conditions.ICondition;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.ModLoader;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.ModLoader;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/gui/components/AbstractWidget.java
 +++ b/net/minecraft/client/gui/components/AbstractWidget.java
 @@ -28,7 +28,7 @@
- import net.minecraftforge.api.distmarker.OnlyIn;
+ import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
 -public abstract class AbstractWidget implements Renderable, GuiEventListener, LayoutElement, NarratableEntry {

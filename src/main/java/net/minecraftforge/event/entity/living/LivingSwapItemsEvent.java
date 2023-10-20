@@ -8,10 +8,10 @@ package net.minecraftforge.event.entity.living;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.ApiStatus;
 
-public class LivingSwapItemsEvent extends LivingEvent
+public abstract class LivingSwapItemsEvent extends LivingEvent
 {
 
     @ApiStatus.Internal
@@ -24,10 +24,9 @@ public class LivingSwapItemsEvent extends LivingEvent
      * This event is fired when a living entity is about to swap the items in their main and offhand.
      * This event is executed in {@link ServerGamePacketListenerImpl#handlePlayerAction}
      *
-     * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      */
-    @Cancelable
-    public static class Hands extends LivingSwapItemsEvent
+    public static class Hands extends LivingSwapItemsEvent implements ICancellableEvent
     {
         private ItemStack toMainHand;
         private ItemStack toOffHand;

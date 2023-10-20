@@ -10,23 +10,22 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundChatPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * This event is fired whenever a {@link ServerboundChatPacket} is received from a client
  * who has submitted their chat message.
  * <p>
- * This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+ * This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  * If the event is cancelled, the message will not be sent to clients.
  * <p>
  * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#SERVER logical server}.
  **/
-@Cancelable
-public class ServerChatEvent extends Event
+public class ServerChatEvent extends Event implements ICancellableEvent
 {
     private final ServerPlayer player;
     private final String username;

@@ -5,11 +5,11 @@
 
 package net.minecraftforge.versions.forge;
 
-import net.minecraftforge.fml.Logging;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.VersionChecker;
-import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.fml.loading.JarVersionLookupHandler;
+import net.neoforged.fml.Logging;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.VersionChecker;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.JarVersionLookupHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;

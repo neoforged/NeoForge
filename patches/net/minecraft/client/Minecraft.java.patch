@@ -39,7 +39,7 @@
        this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getItemInHandRenderer(), this.resourceManager, this.renderBuffers);
        this.resourceManager.registerReloadListener(this.gameRenderer.createReloadListener());
        this.levelRenderer = new LevelRenderer(this, this.entityRenderDispatcher, this.blockEntityRenderDispatcher, this.renderBuffers);
-+      net.minecraftforge.fml.ModLoader.get().postEvent(new net.minecraftforge.client.event.RenderLevelStageEvent.RegisterStageEvent());
++      net.neoforged.fml.ModLoader.get().postEvent(new net.minecraftforge.client.event.RenderLevelStageEvent.RegisterStageEvent());
        this.resourceManager.registerReloadListener(this.levelRenderer);
 -      this.createSearchTrees();
 +      // Forge: We delay this to allow registration of modded creative mode tabs
@@ -76,7 +76,7 @@
        this.setOverlay(
 -         new LoadingOverlay(
 -            this, reloadinstance, p_299779_ -> Util.ifElse(p_299779_, p_299772_ -> this.rollbackResourcePacks(p_299772_, minecraft$gameloadcookie), () -> {
-+         net.minecraftforge.fml.loading.ImmediateWindowHandler.<LoadingOverlay>loadingOverlay(
++         net.neoforged.fml.loading.ImmediateWindowHandler.<LoadingOverlay>loadingOverlay(
 +            () -> this, () -> reloadinstance, p_299779_ -> Util.ifElse(p_299779_, p_299772_ -> this.rollbackResourcePacks(p_299772_, minecraft$gameloadcookie), () -> {
                    if (SharedConstants.IS_RUNNING_IN_IDE) {
                       this.selfTest();
@@ -217,7 +217,7 @@
 +      Screen old = this.screen;
 +      if (p_91153_ != null) {
 +         var event = new net.minecraftforge.client.event.ScreenEvent.Opening(old, p_91153_);
-+         if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return;
++         if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled()) return;
 +         p_91153_ = event.getNewScreen();
 +      }
 +

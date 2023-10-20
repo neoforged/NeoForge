@@ -7,10 +7,10 @@ package net.minecraftforge.network;
 
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.eventbus.api.BusBuilder;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.IEventListener;
+import net.neoforged.bus.api.BusBuilder;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.EventListener;
+import net.neoforged.bus.api.IEventBus;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -36,10 +36,10 @@ public class NetworkInstance
         this.networkProtocolVersion = networkProtocolVersion.get();
         this.clientAcceptedVersions = clientAcceptedVersions;
         this.serverAcceptedVersions = serverAcceptedVersions;
-        this.networkEventBus = BusBuilder.builder().setExceptionHandler(this::handleError).useModLauncher().build();
+        this.networkEventBus = BusBuilder.builder().setExceptionHandler(this::handleError).build();
     }
 
-    private void handleError(IEventBus iEventBus, Event event, IEventListener[] iEventListeners, int i, Throwable throwable)
+    private void handleError(IEventBus iEventBus, Event event, EventListener[] iEventListeners, int i, Throwable throwable)
     {
 
     }

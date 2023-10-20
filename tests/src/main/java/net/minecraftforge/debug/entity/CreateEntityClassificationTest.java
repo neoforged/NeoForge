@@ -6,7 +6,7 @@
 package net.minecraftforge.debug.entity;
 
 import net.minecraft.world.entity.MobCategory;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 @Mod("create_entity_classification_test")
 public class CreateEntityClassificationTest

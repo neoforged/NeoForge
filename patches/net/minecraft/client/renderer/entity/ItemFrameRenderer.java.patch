@@ -16,7 +16,7 @@
 +         int j = mapitemsaveddata != null ? p_115076_.getRotation() % 4 * 2 : p_115076_.getRotation();
           p_115079_.mulPose(Axis.ZP.rotationDegrees((float)j * 360.0F / 8.0F));
 -         if (optionalint.isPresent()) {
-+         if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderItemInFrameEvent(p_115076_, this, p_115079_, p_115080_, p_115081_))) {
++         if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderItemInFrameEvent(p_115076_, this, p_115079_, p_115080_, p_115081_)).isCanceled()) {
 +         if (mapitemsaveddata != null) {
              p_115079_.mulPose(Axis.ZP.rotationDegrees(180.0F));
              float f = 0.0078125F;

@@ -8,7 +8,7 @@ package net.minecraftforge.network;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.fml.LogicalSide;
 import org.apache.commons.lang3.tuple.Pair;
 
 public interface INetworkDirection<TDirection extends INetworkDirection<TDirection>> {

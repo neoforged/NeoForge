@@ -13,8 +13,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.fml.config.ConfigTracker;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.fml.config.ConfigTracker;
+import net.neoforged.fml.config.ModConfig;
 
 import java.io.File;
 

@@ -7,7 +7,7 @@ package net.minecraftforge.event;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimaps;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.EquipmentSlot;

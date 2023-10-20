@@ -10,9 +10,9 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 
 /**
  * This event is fired whenever a chunk has a watch-related action.
@@ -20,12 +20,12 @@ import net.minecraftforge.fml.LogicalSide;
  * The {@linkplain #getPlayer() player}'s level may not be the same as the {@linkplain #getLevel() level of the chunk}
  * when the player is teleporting to another dimension.
  * <p>
- * This event is not {@linkplain Cancelable cancellable} and does not {@linkplain HasResult have a result}.
+ * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
  * <p>
  * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
  * only on the {@linkplain LogicalSide#SERVER logical server}.
  **/
-public class ChunkWatchEvent extends Event
+public abstract class ChunkWatchEvent extends Event
 {
     private final ServerLevel level;
     private final ServerPlayer player;
@@ -71,7 +71,7 @@ public class ChunkWatchEvent extends Event
      * <p>
      * This event may be used to send additional chunk-related data to the client.
      * <p>
-     * This event is not {@linkplain Cancelable cancellable} and does not {@linkplain HasResult have a result}.
+     * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
      * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
      * only on the {@linkplain LogicalSide#SERVER logical server}.
@@ -98,7 +98,7 @@ public class ChunkWatchEvent extends Event
      * This event is fired when a chunk is removed from the watched chunks of an {@link ServerPlayer}
      * in {@code net.minecraft.server.level.ChunkMap#updateChunkTracking(ServerPlayer, ChunkPos, Packet[], boolean, boolean)}.
      * <p>
-     * This event is not {@linkplain Cancelable cancellable} and does not {@linkplain HasResult have a result}.
+     * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
      * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
      * only on the {@linkplain LogicalSide#SERVER logical server}.

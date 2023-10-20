@@ -9,7 +9,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -22,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  * {@link #from} contains the {@link ItemStack} that was equipped previously. <br>
  * {@link #to} contains the {@link ItemStack} that is equipped now. <br>
  * <br>
- * This event is not {@link Cancelable}. <br>
+ * This event is not {@link ICancellableEvent}. <br>
  * <br>
  * This event does not have a result. {@link HasResult} <br>
  * <br>

@@ -7,7 +7,7 @@ package net.minecraftforge.common.conditions;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 public record ModLoadedCondition(String modid) implements ICondition {
     

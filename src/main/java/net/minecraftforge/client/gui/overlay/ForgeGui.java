@@ -108,7 +108,7 @@ public class ForgeGui extends Gui
         rightHeight = 39;
         leftHeight = 39;
 
-        if (MinecraftForge.EVENT_BUS.post(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick)))
+        if (MinecraftForge.EVENT_BUS.post(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick)).isCanceled())
         {
             return;
         }
@@ -567,7 +567,7 @@ public class ForgeGui extends Gui
     //Helper macros
     private boolean pre(NamedGuiOverlay overlay, GuiGraphics guiGraphics)
     {
-        return MinecraftForge.EVENT_BUS.post(new RenderGuiOverlayEvent.Pre(minecraft.getWindow(), guiGraphics, minecraft.getFrameTime(), overlay));
+        return MinecraftForge.EVENT_BUS.post(new RenderGuiOverlayEvent.Pre(minecraft.getWindow(), guiGraphics, minecraft.getFrameTime(), overlay)).isCanceled();
     }
 
     private void post(NamedGuiOverlay overlay, GuiGraphics guiGraphics)

@@ -15,10 +15,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.fml.event.IModBusEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.fml.event.IModBusEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -36,7 +35,7 @@ import org.jetbrains.annotations.ApiStatus;
  *  AND: checked third, these predicates must all pass along with the original predicate
  *
  * <p>
- * This event is not {@linkplain Cancelable cancellable} and does not {@linkplain Event.HasResult have a result}.
+ * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain Event.HasResult have a result}.
  * <p>
  *
  *  Fired on the Mod bus {@link IModBusEvent}.<br>

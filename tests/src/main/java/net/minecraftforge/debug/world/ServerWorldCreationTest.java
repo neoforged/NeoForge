@@ -5,7 +5,7 @@
 
 package net.minecraftforge.debug.world;
 
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 /**
  * Used to test that modded dimension types and dimensions are loaded on

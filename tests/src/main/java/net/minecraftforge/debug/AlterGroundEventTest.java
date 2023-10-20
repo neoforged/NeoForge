@@ -9,8 +9,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.level.AlterGroundEvent;
 import net.minecraftforge.event.level.AlterGroundEvent.StateProvider;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 @Mod("alter_ground_event_test")
 @Mod.EventBusSubscriber

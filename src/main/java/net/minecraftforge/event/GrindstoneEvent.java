@@ -8,8 +8,8 @@ package net.minecraftforge.event;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 
 public abstract class GrindstoneEvent extends Event
 {
@@ -59,7 +59,7 @@ public abstract class GrindstoneEvent extends Event
     }
 
     /**
-     * This event is {@link Cancelable} <br>
+     * This event is {@link ICancellableEvent} <br>
      * {@link OnPlaceItem} is fired when the inputs to a grindstone are changed. <br>
      *
      * The following rules apply:
@@ -78,8 +78,7 @@ public abstract class GrindstoneEvent extends Event
      *     </ul>
      * </ul>
      */
-    @Cancelable
-    public static class OnPlaceItem extends GrindstoneEvent
+    public static class OnPlaceItem extends GrindstoneEvent implements ICancellableEvent
     {
         private ItemStack output;
 
@@ -112,14 +111,13 @@ public abstract class GrindstoneEvent extends Event
     }
 
     /**
-     * This event is {@link Cancelable} <br>
+     * This event is {@link ICancellableEvent} <br>
      * {@link OnTakeItem} is fired when the output in a grindstone are is taken. <br>
      * It is called from {@link GrindstoneMenu#GrindstoneMenu(int, Inventory)}. <br>
      * If the event is canceled, vanilla behavior will not run, and no inputs will be consumed. <br>
      * if the amount of experience is larger than or equal 0, the vanilla behavior for calculating experience will not run. <br>
      */
-    @Cancelable
-    public static class OnTakeItem extends GrindstoneEvent
+    public static class OnTakeItem extends GrindstoneEvent implements ICancellableEvent
     {
         private ItemStack newTop = ItemStack.EMPTY;
         private ItemStack newBottom = ItemStack.EMPTY;

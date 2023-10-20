@@ -13,9 +13,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -25,7 +25,6 @@ import org.jetbrains.annotations.ApiStatus;
  * @see Block
  * @see Entity
  */
-@Cancelable
 public abstract class RenderHighlightEvent extends Event
 {
     private final LevelRenderer levelRenderer;
@@ -97,14 +96,13 @@ public abstract class RenderHighlightEvent extends Event
     /**
      * Fired before a block's selection highlight is rendered.
      *
-     * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * If the event is cancelled, then the selection highlight will not be rendered.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    @Cancelable
-    public static class Block extends RenderHighlightEvent
+    public static class Block extends RenderHighlightEvent implements ICancellableEvent
     {
         @ApiStatus.Internal
         public Block(LevelRenderer levelRenderer, Camera camera, BlockHitResult target, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource)
@@ -125,7 +123,7 @@ public abstract class RenderHighlightEvent extends Event
     /**
      * Fired before an entity's selection highlight is rendered.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>

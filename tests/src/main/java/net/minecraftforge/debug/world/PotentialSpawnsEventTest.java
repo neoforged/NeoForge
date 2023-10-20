@@ -11,7 +11,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 /**
  * <p>This tests net.minecraftforge.event.world.World.LevelEvent.PotentialSpawns. If ENABLED is set to true,

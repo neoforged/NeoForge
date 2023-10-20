@@ -174,8 +174,8 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.NoteBlockEvent;
 import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoader;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModLoader;
 import net.minecraftforge.resource.ResourcePackLoader;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistry;
@@ -229,7 +229,7 @@ public class ForgeHooks
 
     public static boolean onItemStackedOn(ItemStack carriedItem, ItemStack stackedOnItem, Slot slot, ClickAction action, Player player, SlotAccess carriedSlotAccess)
     {
-        return MinecraftForge.EVENT_BUS.post(new ItemStackedOnOtherEvent(carriedItem, stackedOnItem, slot, action, player, carriedSlotAccess));
+        return MinecraftForge.EVENT_BUS.post(new ItemStackedOnOtherEvent(carriedItem, stackedOnItem, slot, action, player, carriedSlotAccess)).isCanceled();
     }
 
     public static void onDifficultyChange(Difficulty difficulty, Difficulty oldDifficulty)
@@ -247,17 +247,17 @@ public class ForgeHooks
 
     public static boolean onLivingTick(LivingEntity entity)
     {
-        return MinecraftForge.EVENT_BUS.post(new LivingTickEvent(entity));
+        return MinecraftForge.EVENT_BUS.post(new LivingTickEvent(entity)).isCanceled();
     }
 
     public static boolean onLivingAttack(LivingEntity entity, DamageSource src, float amount)
     {
-        return entity instanceof Player || !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount));
+        return entity instanceof Player || !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount)).isCanceled();
     }
 
     public static boolean onPlayerAttack(LivingEntity entity, DamageSource src, float amount)
     {
-        return !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount));
+        return !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount)).isCanceled();
     }
 
     public static LivingKnockBackEvent onLivingKnockBack(LivingEntity target, float strength, double ratioX, double ratioZ)
@@ -269,36 +269,36 @@ public class ForgeHooks
 
     public static boolean onLivingUseTotem(LivingEntity entity, DamageSource damageSource, ItemStack totem, InteractionHand hand)
     {
-        return !MinecraftForge.EVENT_BUS.post(new LivingUseTotemEvent(entity, damageSource, totem, hand));
+        return !MinecraftForge.EVENT_BUS.post(new LivingUseTotemEvent(entity, damageSource, totem, hand)).isCanceled();
     }
 
     public static float onLivingHurt(LivingEntity entity, DamageSource src, float amount)
     {
         LivingHurtEvent event = new LivingHurtEvent(entity, src, amount);
-        return (MinecraftForge.EVENT_BUS.post(event) ? 0 : event.getAmount());
+        return (MinecraftForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
     }
 
     public static float onLivingDamage(LivingEntity entity, DamageSource src, float amount)
     {
         LivingDamageEvent event = new LivingDamageEvent(entity, src, amount);
-        return (MinecraftForge.EVENT_BUS.post(event) ? 0 : event.getAmount());
+        return (MinecraftForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
     }
 
     public static boolean onLivingDeath(LivingEntity entity, DamageSource src)
     {
-        return MinecraftForge.EVENT_BUS.post(new LivingDeathEvent(entity, src));
+        return MinecraftForge.EVENT_BUS.post(new LivingDeathEvent(entity, src)).isCanceled();
     }
 
     public static boolean onLivingDrops(LivingEntity entity, DamageSource source, Collection<ItemEntity> drops, int lootingLevel, boolean recentlyHit)
     {
-        return MinecraftForge.EVENT_BUS.post(new LivingDropsEvent(entity, source, drops, lootingLevel, recentlyHit));
+        return MinecraftForge.EVENT_BUS.post(new LivingDropsEvent(entity, source, drops, lootingLevel, recentlyHit)).isCanceled();
     }
 
     @Nullable
     public static float[] onLivingFall(LivingEntity entity, float distance, float damageMultiplier)
     {
         LivingFallEvent event = new LivingFallEvent(entity, distance, damageMultiplier);
-        return (MinecraftForge.EVENT_BUS.post(event) ? null : new float[]{event.getDistance(), event.getDamageMultiplier()});
+        return (MinecraftForge.EVENT_BUS.post(event).isCanceled() ? null : new float[]{event.getDistance(), event.getDamageMultiplier()});
     }
 
     public static int getLootingLevel(Entity target, @Nullable Entity killer, @Nullable DamageSource cause)
@@ -375,7 +375,7 @@ public class ForgeHooks
             return null;
 
         ItemTossEvent event = new ItemTossEvent(ret, player);
-        if (MinecraftForge.EVENT_BUS.post(event))
+        if (MinecraftForge.EVENT_BUS.post(event).isCanceled())
             return null;
 
         if (!player.level().isClientSide)
@@ -385,7 +385,7 @@ public class ForgeHooks
 
     public static boolean onVanillaGameEvent(Level level, GameEvent vanillaEvent, Vec3 pos, GameEvent.Context context)
     {
-        return !MinecraftForge.EVENT_BUS.post(new VanillaGameEvent(level, vanillaEvent, pos, context));
+        return !MinecraftForge.EVENT_BUS.post(new VanillaGameEvent(level, vanillaEvent, pos, context)).isCanceled();
     }
 
     private static String getRawText(Component message)
@@ -397,7 +397,7 @@ public class ForgeHooks
     public static Component onServerChatSubmittedEvent(ServerPlayer player, String plain, Component decorated)
     {
         ServerChatEvent event = new ServerChatEvent(player, plain, decorated);
-        return MinecraftForge.EVENT_BUS.post(event) ? null : event.getMessage();
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
     }
 
     @NotNull
@@ -649,7 +649,7 @@ public class ForgeHooks
     public static boolean onAnvilChange(AnvilMenu container, @NotNull ItemStack left, @NotNull ItemStack right, Container outputSlot, String name, int baseCost, Player player)
     {
         AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost, player);
-        if (MinecraftForge.EVENT_BUS.post(e))
+        if (MinecraftForge.EVENT_BUS.post(e).isCanceled())
             return false;
         if (e.getOutput().isEmpty())
             return true;
@@ -670,7 +670,7 @@ public class ForgeHooks
     public static int onGrindstoneChange(@NotNull ItemStack top, @NotNull ItemStack bottom, Container outputSlot, int xp)
     {
         GrindstoneEvent.OnPlaceItem e = new GrindstoneEvent.OnPlaceItem(top, bottom, xp);
-        if (MinecraftForge.EVENT_BUS.post(e))
+        if (MinecraftForge.EVENT_BUS.post(e).isCanceled())
         {
             outputSlot.setItem(0, ItemStack.EMPTY);
             return -1;
@@ -687,7 +687,7 @@ public class ForgeHooks
         access.execute((l, p) -> {
             int xp = xpFunction.apply(l);
             GrindstoneEvent.OnTakeItem e = new GrindstoneEvent.OnTakeItem(inputSlots.getItem(0), inputSlots.getItem(1), xp);
-            if (MinecraftForge.EVENT_BUS.post(e))
+            if (MinecraftForge.EVENT_BUS.post(e).isCanceled())
             {
                 return;
             }
@@ -733,7 +733,7 @@ public class ForgeHooks
 
     public static boolean onPlayerAttackTarget(Player player, Entity target)
     {
-        if (MinecraftForge.EVENT_BUS.post(new AttackEntityEvent(player, target)))
+        if (MinecraftForge.EVENT_BUS.post(new AttackEntityEvent(player, target)).isCanceled())
             return false;
         ItemStack stack = player.getMainHandItem();
         return stack.isEmpty() || !stack.getItem().onLeftClickEntity(stack, player, target);
@@ -970,7 +970,7 @@ public class ForgeHooks
     {
         BlockEvent ev = new BlockEvent.CropGrowEvent.Pre(level, pos, state);
         MinecraftForge.EVENT_BUS.post(ev);
-        return (ev.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || (ev.getResult() == net.minecraftforge.eventbus.api.Event.Result.DEFAULT && def));
+        return (ev.getResult() == net.neoforged.bus.api.Event.Result.ALLOW || (ev.getResult() == net.neoforged.bus.api.Event.Result.DEFAULT && def));
     }
 
     public static void onCropsGrowPost(Level level, BlockPos pos, BlockState state)
@@ -983,7 +983,7 @@ public class ForgeHooks
     {
         CriticalHitEvent hitResult = new CriticalHitEvent(player, target, damageModifier, vanillaCritical);
         MinecraftForge.EVENT_BUS.post(hitResult);
-        if (hitResult.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || (vanillaCritical && hitResult.getResult() == net.minecraftforge.eventbus.api.Event.Result.DEFAULT))
+        if (hitResult.getResult() == net.neoforged.bus.api.Event.Result.ALLOW || (vanillaCritical && hitResult.getResult() == net.neoforged.bus.api.Event.Result.DEFAULT))
         {
             return hitResult;
         }
@@ -1069,7 +1069,7 @@ public class ForgeHooks
     public static int onNoteChange(Level level, BlockPos pos, BlockState state, int old, int _new)
     {
         NoteBlockEvent.Change event = new NoteBlockEvent.Change(level, pos, state, old, _new);
-        if (MinecraftForge.EVENT_BUS.post(event))
+        if (MinecraftForge.EVENT_BUS.post(event).isCanceled())
             return -1;
         return event.getVanillaNoteId();
     }
@@ -1446,7 +1446,7 @@ public class ForgeHooks
 
     public static boolean shouldSuppressEnderManAnger(EnderMan enderMan, Player player, ItemStack mask)
     {
-        return mask.isEnderMask(player, enderMan) || MinecraftForge.EVENT_BUS.post(new EnderManAngerEvent(enderMan, player));
+        return mask.isEnderMask(player, enderMan) || MinecraftForge.EVENT_BUS.post(new EnderManAngerEvent(enderMan, player)).isCanceled();
     }
 
     private static final Lazy<Map<String, StructuresBecomeConfiguredFix.Conversion>> FORGE_CONVERSION_MAP = Lazy.concurrentOf(() -> {
@@ -1603,7 +1603,7 @@ public class ForgeHooks
         if (entity.getAirSupply() <= 0)
         {
             LivingDrownEvent drownEvent = new LivingDrownEvent(entity);
-            if (!MinecraftForge.EVENT_BUS.post(drownEvent) && drownEvent.isDrowning())
+            if (!MinecraftForge.EVENT_BUS.post(drownEvent).isCanceled() && drownEvent.isDrowning())
             {
                 entity.setAirSupply(0);
                 Vec3 vec3 = entity.getDeltaMovement();

@@ -11,20 +11,19 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * LivingDrownEvent is fired whenever a living entity can't breathe and its air supply is less than or equal to zero.
  * <p>
  * This event is fired via {@link ForgeHooks#onLivingBreathe(LivingEntity, int, int)}.
  * <p>
- * This event is {@link Cancelable}. Effects of cancellation are noted in {@link #setCanceled(boolean)}.
+ * This event is {@link ICancellableEvent}. Effects of cancellation are noted in {@link #setCanceled(boolean)}.
  * <p>
  * This event does not {@linkplain HasResult have a result}.
  * This event is fired on {@link MinecraftForge#EVENT_BUS}
  **/
-@Cancelable
-public class LivingDrownEvent extends LivingEvent
+public class LivingDrownEvent extends LivingEvent implements ICancellableEvent
 {
     private boolean isDrowning;
     private float damageAmount;
@@ -135,6 +134,6 @@ public class LivingDrownEvent extends LivingEvent
     @Override
     public void setCanceled(boolean cancel)
     {
-        super.setCanceled(cancel);
+        ICancellableEvent.super.setCanceled(cancel);
     }
 }

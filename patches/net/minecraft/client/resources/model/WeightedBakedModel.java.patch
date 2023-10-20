@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/resources/model/WeightedBakedModel.java
 +++ b/net/minecraft/client/resources/model/WeightedBakedModel.java
 @@ -17,7 +17,7 @@
- import net.minecraftforge.api.distmarker.OnlyIn;
+ import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
 -public class WeightedBakedModel implements BakedModel {

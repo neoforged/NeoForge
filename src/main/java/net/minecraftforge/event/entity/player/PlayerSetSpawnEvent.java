@@ -9,15 +9,14 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.BlockPos;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * This event is fired when a player's spawn point is set or reset.<br>
  * The event can be canceled, which will prevent the spawn point from being changed.
  */
-@Cancelable
-public class PlayerSetSpawnEvent extends PlayerEvent
+public class PlayerSetSpawnEvent extends PlayerEvent implements ICancellableEvent
 {
     private final ResourceKey<Level> spawnLevel;
     private final boolean forced;

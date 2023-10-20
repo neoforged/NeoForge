@@ -8,9 +8,9 @@ package net.minecraftforge.debug.client.rendering;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraftforge.client.ForgeRenderTypes;
 import net.minecraftforge.client.event.ScreenEvent.Render;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
 
 @Mod(LinearTextTextureFilteringTest.MODID)
 @Mod.EventBusSubscriber(value = Dist.CLIENT)

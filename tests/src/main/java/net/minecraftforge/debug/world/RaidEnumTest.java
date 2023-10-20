@@ -7,7 +7,7 @@ package net.minecraftforge.debug.world;
 
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.raid.Raid;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 @Mod("raid_enum_test")
 public class RaidEnumTest 

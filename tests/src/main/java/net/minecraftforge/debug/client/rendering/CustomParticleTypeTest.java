@@ -13,10 +13,10 @@ import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 @Mod(CustomParticleTypeTest.MOD_ID)
 public class CustomParticleTypeTest

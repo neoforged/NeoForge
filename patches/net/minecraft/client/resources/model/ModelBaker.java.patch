@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/resources/model/ModelBaker.java
 +++ b/net/minecraft/client/resources/model/ModelBaker.java
 @@ -6,9 +6,13 @@
- import net.minecraftforge.api.distmarker.OnlyIn;
+ import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
 -public interface ModelBaker {

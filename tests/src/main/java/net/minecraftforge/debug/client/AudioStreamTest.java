@@ -16,8 +16,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLLoader;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
 

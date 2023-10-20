@@ -13,20 +13,19 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event.HasResult;
+import net.neoforged.bus.api.Event.HasResult;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * This event is fired whenever a sapling, fungus, mushroom or azalea grows into a tree.
  * <p>
- * This event is not {@linkplain Cancelable cancellable} but does {@linkplain HasResult have a result}.
+ * This event is not {@linkplain ICancellableEvent cancellable} but does {@linkplain HasResult have a result}.
  * {@linkplain Result#ALLOW ALLOW} and {@linkplain Result#DEFAULT DEFAULT} will allow the sapling to grow
  * using the features set on the event.
  * {@linkplain Result#DENY DENY} will prevent the sapling from growing.
  * <p>
  * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
- * only on the {@linkplain net.minecraftforge.fml.LogicalSide#SERVER logical server}.
+ * only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.
  */
 // TODO: Rename to BlockFeatureGrowEvent in 1.20
 @HasResult

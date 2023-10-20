@@ -9,8 +9,8 @@ import java.util.Objects;
 
 import org.objectweb.asm.Type;
 
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.event.IModBusEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.event.IModBusEvent;
 
 /**
  * This event fires when it is time to register your capabilities.

@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.RegisterNamedRenderTypesEvent;
-import net.minecraftforge.fml.ModLoader;
+import net.neoforged.fml.ModLoader;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;

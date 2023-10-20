@@ -12,16 +12,16 @@ import net.minecraft.client.renderer.entity.ItemFrameRenderer;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Fired before an item stack is rendered in an item frame.
  * This can be used to prevent normal rendering or add custom rendering.
  *
- * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+ * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  * If the event is cancelled, then the item stack will not be rendered</p>
  *
  * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
@@ -29,8 +29,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @see ItemFrameRenderer
  */
-@Cancelable
-public class RenderItemInFrameEvent extends Event
+public class RenderItemInFrameEvent extends Event implements ICancellableEvent
 {
     private final ItemStack itemStack;
     private final ItemFrame itemFrameEntity;

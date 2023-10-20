@@ -37,8 +37,8 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraftforge.common.ForgeI18n;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLPaths;
 import net.minecraftforge.network.ConnectionData.ModMismatchData;
 import net.minecraftforge.network.NetworkRegistry;
 

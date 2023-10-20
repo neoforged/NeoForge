@@ -20,7 +20,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.RegisterItemDecorationsEvent;
-import net.minecraftforge.fml.ModLoader;
+import net.neoforged.fml.ModLoader;
 
 @ApiStatus.Internal
 public final class ItemDecoratorHandler

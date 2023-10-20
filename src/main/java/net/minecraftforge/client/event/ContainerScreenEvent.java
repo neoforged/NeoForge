@@ -8,9 +8,8 @@ package net.minecraftforge.client.event;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -97,7 +96,7 @@ public abstract class ContainerScreenEvent extends Event
          * <p>This can be used for rendering elements that must be above other screen elements, but
          * below tooltips and the dragged stack, such as slot or item stack specific overlays.</p>
          *
-         * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+         * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
          *
          * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
@@ -115,7 +114,7 @@ public abstract class ContainerScreenEvent extends Event
          * Fired after the container screen's background layer and elements are drawn.
          * This can be used for rendering new background elements.
          *
-         * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+         * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
          *
          * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>

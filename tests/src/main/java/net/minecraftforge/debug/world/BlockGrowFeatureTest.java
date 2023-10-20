@@ -7,8 +7,8 @@ package net.minecraftforge.debug.world;
 
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraftforge.event.level.SaplingGrowTreeEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 
 @Mod("block_grow_feature_test")

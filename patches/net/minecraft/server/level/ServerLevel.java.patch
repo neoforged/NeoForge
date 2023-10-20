@@ -105,7 +105,7 @@
     }
  
     private void addPlayer(ServerPlayer p_8854_) {
-+      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinLevelEvent(p_8854_, this))) return;
++      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinLevelEvent(p_8854_, this)).isCanceled()) return;
        Entity entity = this.getEntities().get(p_8854_.getUUID());
        if (entity != null) {
           LOGGER.warn("Force-added player with duplicate UUID {}", p_8854_.getUUID());

@@ -5,9 +5,9 @@
 
 package net.minecraftforge.event.entity.item;
 
-import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * Event that is fired whenever a player tosses (Q) an item or drag-n-drops a
@@ -15,8 +15,7 @@ import net.minecraft.world.entity.player.Player;
  * stop the items from entering the world, but will not prevent them being
  * removed from the inventory - and thus removed from the system.
  */
-@Cancelable
-public class ItemTossEvent extends ItemEvent
+public class ItemTossEvent extends ItemEvent implements ICancellableEvent
 {
 
     private final Player player;

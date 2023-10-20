@@ -12,15 +12,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Fired before an entity renderer renders the nameplate of an entity.
  *
- * <p>This event is not {@linkplain Cancelable cancellable}, and  {@linkplain HasResult has a result}.</p>
+ * <p>This event is not {@linkplain ICancellableEvent cancellable}, and  {@linkplain HasResult has a result}.</p>
  * <ul>
  *     <li>{@link Result#ALLOW} - the nameplate will be forcibly rendered.</li>
  *     <li>{@link Result#DEFAULT} - the vanilla logic will be used.</li>

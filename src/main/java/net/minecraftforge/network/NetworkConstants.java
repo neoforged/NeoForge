@@ -7,8 +7,8 @@ package net.minecraftforge.network;
 
 import io.netty.util.AttributeKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.IExtensionPoint;
-import net.minecraftforge.fml.IExtensionPoint.DisplayTest;
+import net.neoforged.fml.IExtensionPoint;
+import net.neoforged.fml.IExtensionPoint.DisplayTest;
 import net.minecraftforge.network.ConnectionData.ModMismatchData;
 import net.minecraftforge.network.HandshakeMessages.S2CModList;
 import net.minecraftforge.network.event.EventNetworkChannel;

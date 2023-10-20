@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.behavior.StartAttacking;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * This event allows you to change the target an entity has. <br>
@@ -24,7 +24,7 @@ import net.minecraftforge.eventbus.api.Cancelable;
  * The return value can be affected by calling {@link #setNewTarget(LivingEntity)}.<br>
  * {@link #getTargetType()} returns the target type that caused the change of targets.<br>
  * <br>
- * This event is {@link net.minecraftforge.eventbus.api.Cancelable}.<br>
+ * This event is {@link net.neoforged.bus.api.ICancellableEvent}.<br>
  * <br>
  * If you cancel this event, the target will not be changed and it will stay the same.
  * Cancelling this event will prevent {@link LivingSetAttackTargetEvent} from being posted.<br>
@@ -33,8 +33,7 @@ import net.minecraftforge.eventbus.api.Cancelable;
  * <br>
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  */
-@Cancelable
-public class LivingChangeTargetEvent extends LivingEvent
+public class LivingChangeTargetEvent extends LivingEvent implements ICancellableEvent
 {
     private final ILivingTargetType targetType;
     private final LivingEntity originalTarget;

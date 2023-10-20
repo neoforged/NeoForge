@@ -9,9 +9,9 @@ import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -62,7 +62,7 @@ public abstract class RenderGuiOverlayEvent extends Event
     /**
      * Fired <b>before</b> a GUI overlay is rendered to the screen.
      *
-     * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * If this event is cancelled, then the overlay will not be rendered, and the corresponding {@link Post} event will
      * not be fired.</p>
      *
@@ -71,8 +71,7 @@ public abstract class RenderGuiOverlayEvent extends Event
      *
      * @see Post
      */
-    @Cancelable
-    public static class Pre extends RenderGuiOverlayEvent
+    public static class Pre extends RenderGuiOverlayEvent implements ICancellableEvent
     {
         @ApiStatus.Internal
         public Pre(Window window, GuiGraphics guiGraphics, float partialTick, NamedGuiOverlay overlay)
@@ -84,7 +83,7 @@ public abstract class RenderGuiOverlayEvent extends Event
     /**
      * Fired <b>after</b> an GUI overlay is rendered to the screen, if the corresponding {@link Pre} is not cancelled.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>

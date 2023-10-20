@@ -11,7 +11,7 @@ import com.mojang.logging.LogUtils;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AnvilUpdateEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 /**
  * This class provides a way to test the AnvilUpdateEvent. <br>

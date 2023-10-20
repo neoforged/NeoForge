@@ -8,7 +8,7 @@ package net.minecraftforge.event.entity.living;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * The ShieldBlockEvent is fired when an entity successfully blocks with a shield.<br>
@@ -17,8 +17,7 @@ import net.minecraftforge.eventbus.api.Cancelable;
  * Note: The shield item stack "should" be available from {@link LivingEntity#getUseItem()}
  * at least for players.
  */
-@Cancelable
-public class ShieldBlockEvent extends LivingEvent
+public class ShieldBlockEvent extends LivingEvent implements ICancellableEvent
 {
     private final DamageSource source;
     private final float originalBlocked;

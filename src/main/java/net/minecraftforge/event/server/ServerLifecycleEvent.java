@@ -6,9 +6,9 @@
 package net.minecraftforge.event.server;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
-public class ServerLifecycleEvent extends Event
+public abstract class ServerLifecycleEvent extends Event
 {
 
     protected final MinecraftServer server;

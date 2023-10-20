@@ -16,7 +16,7 @@
     @Override
     public boolean triggerEvent(BlockState p_55023_, Level p_55024_, BlockPos p_55025_, int p_55026_, int p_55027_) {
 +      net.minecraftforge.event.level.NoteBlockEvent.Play e = new net.minecraftforge.event.level.NoteBlockEvent.Play(p_55024_, p_55025_, p_55023_, p_55023_.getValue(NOTE), p_55023_.getValue(INSTRUMENT));
-+      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(e)) return false;
++      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(e).isCanceled()) return false;
 +      p_55023_ = p_55023_.setValue(NOTE, e.getVanillaNoteId()).setValue(INSTRUMENT, e.getInstrument());
        NoteBlockInstrument noteblockinstrument = p_55023_.getValue(INSTRUMENT);
        float f;

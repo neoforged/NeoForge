@@ -10,11 +10,11 @@ import joptsimple.internal.Strings;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.SystemReport;
-import net.minecraftforge.fml.CrashReportCallables;
-import net.minecraftforge.fml.ISystemReportExtender;
-import net.minecraftforge.fml.LoadingFailedException;
-import net.minecraftforge.forgespi.language.IModFileInfo;
-import net.minecraftforge.forgespi.language.IModInfo;
+import net.neoforged.fml.CrashReportCallables;
+import net.neoforged.fml.ISystemReportExtender;
+import net.neoforged.fml.LoadingFailedException;
+import net.neoforged.neoforgespi.language.IModFileInfo;
+import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;

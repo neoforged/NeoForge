@@ -21,7 +21,7 @@
           long i = Util.getNanos();
           SkullBlockEntity.setup(this.services, this);
           GameProfileCache.setUsesAuthentication(this.usesAuthentication());
-+         if (!net.minecraftforge.server.ServerLifecycleHooks.handleServerAboutToStart(this)) return false;
++         net.minecraftforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
           LOGGER.info("Preparing level \"{}\"", this.getLevelIdName());
           this.loadLevel();
           long j = Util.getNanos() - i;
@@ -31,21 +31,20 @@
           if (dedicatedserverproperties.announcePlayerAchievements != null) {
              this.getGameRules().getRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS).set(dedicatedserverproperties.announcePlayerAchievements, this);
           }
-@@ -200,7 +205,12 @@
+@@ -200,6 +205,12 @@
              LOGGER.info("JMX monitoring enabled");
           }
  
--         return true;
 +         if (net.minecraftforge.common.ForgeConfig.SERVER.advertiseDedicatedServerToLan.get()) {
 +            this.dediLanPinger = new net.minecraft.client.server.LanServerPinger(this.getMotd(), String.valueOf(this.getServerPort()));
 +            this.dediLanPinger.start();
 +         }
 +
-+         return net.minecraftforge.server.ServerLifecycleHooks.handleServerStarting(this);
++         net.minecraftforge.server.ServerLifecycleHooks.handleServerStarting(this);
+          return true;
        }
     }
- 
-@@ -278,6 +288,10 @@
+@@ -278,6 +289,10 @@
        if (this.queryThreadGs4 != null) {
           this.queryThreadGs4.stop();
        }
@@ -56,7 +55,7 @@
     }
  
     @Override
-@@ -531,7 +545,12 @@
+@@ -531,7 +546,12 @@
  
     @Override
     public void stopServer() {

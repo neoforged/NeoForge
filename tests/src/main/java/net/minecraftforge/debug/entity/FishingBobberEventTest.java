@@ -13,7 +13,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 @Mod("fishing_bobber_event_test")
 public class FishingBobberEventTest
@@ -24,7 +24,6 @@ public class FishingBobberEventTest
     {
         if (ENABLE)
         {
-            MinecraftForge.EVENT_BUS.register(this);
             MinecraftForge.EVENT_BUS.addListener(FishingBobberEventTest::handleImpact);
         }
     }

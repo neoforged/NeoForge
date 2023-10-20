@@ -1,4 +1,4 @@
-var ASMAPI = Java.type('net.minecraftforge.coremod.api.ASMAPI');
+var ASMAPI = Java.type('net.neoforged.coremod.api.ASMAPI');
 var Opcodes = Java.type('org.objectweb.asm.Opcodes');
 var Handle = Java.type('org.objectweb.asm.Handle');
 var MethodInsnNode = Java.type('org.objectweb.asm.tree.MethodInsnNode');

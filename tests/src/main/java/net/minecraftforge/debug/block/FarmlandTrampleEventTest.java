@@ -6,8 +6,8 @@
 package net.minecraftforge.debug.block;
 
 import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 @Mod("farmland_trample_test")
 @Mod.EventBusSubscriber

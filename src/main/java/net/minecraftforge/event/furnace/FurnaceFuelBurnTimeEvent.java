@@ -10,8 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,14 +22,13 @@ import org.jetbrains.annotations.Nullable;
  * <br>
  * This event is fired from {@link ForgeEventFactory#getItemBurnTime(ItemStack, int, RecipeType)}.<br>
  * <br>
- * This event is {@link Cancelable} to prevent later handlers from changing the value.<br>
+ * This event is {@link ICancellableEvent} to prevent later handlers from changing the value.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
-@Cancelable
-public class FurnaceFuelBurnTimeEvent extends Event
+public class FurnaceFuelBurnTimeEvent extends Event implements ICancellableEvent
 {
     @NotNull
     private final ItemStack itemStack;

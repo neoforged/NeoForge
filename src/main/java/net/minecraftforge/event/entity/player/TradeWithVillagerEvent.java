@@ -9,13 +9,12 @@ import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Fired when a player trades with an {@link AbstractVillager}.
  *
- * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain Event.HasResult have a result}.</p>
+ * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain Event.HasResult have a result}.</p>
  *
  * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#SERVER logical server}.</p>

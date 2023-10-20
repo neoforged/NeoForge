@@ -148,9 +148,9 @@ import net.minecraftforge.event.level.PistonEvent;
 import net.minecraftforge.event.level.SaplingGrowTreeEvent;
 import net.minecraftforge.event.level.SleepFinishedTimeEvent;
 import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.Event.Result;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.Event.Result;
+import net.neoforged.fml.LogicalSide;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -164,14 +164,14 @@ public class ForgeEventFactory
         BlockSnapshot snap = blockSnapshots.get(0);
         BlockState placedAgainst = snap.getLevel().getBlockState(snap.getPos().relative(direction.getOpposite()));
         EntityMultiPlaceEvent event = new EntityMultiPlaceEvent(blockSnapshots, placedAgainst, entity);
-        return MinecraftForge.EVENT_BUS.post(event);
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static boolean onBlockPlace(@Nullable Entity entity, @NotNull BlockSnapshot blockSnapshot, @NotNull Direction direction)
     {
         BlockState placedAgainst = blockSnapshot.getLevel().getBlockState(blockSnapshot.getPos().relative(direction.getOpposite()));
         EntityPlaceEvent event = new BlockEvent.EntityPlaceEvent(blockSnapshot, placedAgainst, entity);
-        return MinecraftForge.EVENT_BUS.post(event);
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static NeighborNotifyEvent onNeighborNotify(Level level, BlockPos pos, BlockState state, EnumSet<Direction> notifiedSides, boolean forceRedstoneUpdate)
@@ -191,7 +191,7 @@ public class ForgeEventFactory
     public static float getBreakSpeed(Player player, BlockState state, float original, BlockPos pos)
     {
         PlayerEvent.BreakSpeed event = new PlayerEvent.BreakSpeed(player, state, original, pos);
-        return (MinecraftForge.EVENT_BUS.post(event) ? -1 : event.getNewSpeed());
+        return (MinecraftForge.EVENT_BUS.post(event).isCanceled() ? -1 : event.getNewSpeed());
     }
 
     public static void onPlayerDestroyItem(Player player, @NotNull ItemStack stack, @Nullable InteractionHand hand)
@@ -283,7 +283,7 @@ public class ForgeEventFactory
     public static SpawnGroupData onFinalizeSpawn(Mob mob, ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag spawnTag)
     {
         var event = new MobSpawnEvent.FinalizeSpawn(mob, level, mob.getX(), mob.getY(), mob.getZ(), difficulty, spawnType, spawnData, spawnTag, null);
-        boolean cancel = MinecraftForge.EVENT_BUS.post(event);
+        boolean cancel = MinecraftForge.EVENT_BUS.post(event).isCanceled();
 
         if (!cancel)
         {
@@ -303,7 +303,7 @@ public class ForgeEventFactory
     public static MobSpawnEvent.FinalizeSpawn onFinalizeSpawnSpawner(Mob mob, ServerLevelAccessor level, DifficultyInstance difficulty, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag spawnTag, BaseSpawner spawner)
     {
         var event = new MobSpawnEvent.FinalizeSpawn(mob, level, mob.getX(), mob.getY(), mob.getZ(), difficulty, MobSpawnType.SPAWNER, spawnData, spawnTag, spawner);
-        boolean cancel = MinecraftForge.EVENT_BUS.post(event);
+        boolean cancel = MinecraftForge.EVENT_BUS.post(event).isCanceled();
         return cancel ? null : event;
     }
 
@@ -331,7 +331,7 @@ public class ForgeEventFactory
     public static int getExperienceDrop(LivingEntity entity, Player attackingPlayer, int originalExperience)
     {
        LivingExperienceDropEvent event = new LivingExperienceDropEvent(entity, attackingPlayer, originalExperience);
-       if (MinecraftForge.EVENT_BUS.post(event))
+       if (MinecraftForge.EVENT_BUS.post(event).isCanceled())
        {
            return 0;
        }
@@ -382,24 +382,24 @@ public class ForgeEventFactory
 
     public static boolean onEntityStruckByLightning(Entity entity, LightningBolt bolt)
     {
-        return MinecraftForge.EVENT_BUS.post(new EntityStruckByLightningEvent(entity, bolt));
+        return MinecraftForge.EVENT_BUS.post(new EntityStruckByLightningEvent(entity, bolt)).isCanceled();
     }
 
     public static int onItemUseStart(LivingEntity entity, ItemStack item, int duration)
     {
-        LivingEntityUseItemEvent event = new LivingEntityUseItemEvent.Start(entity, item, duration);
-        return MinecraftForge.EVENT_BUS.post(event) ? -1 : event.getDuration();
+        var event = new LivingEntityUseItemEvent.Start(entity, item, duration);
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled() ? -1 : event.getDuration();
     }
 
     public static int onItemUseTick(LivingEntity entity, ItemStack item, int duration)
     {
-        LivingEntityUseItemEvent event = new LivingEntityUseItemEvent.Tick(entity, item, duration);
-        return MinecraftForge.EVENT_BUS.post(event) ? -1 : event.getDuration();
+        var event = new LivingEntityUseItemEvent.Tick(entity, item, duration);
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled() ? -1 : event.getDuration();
     }
 
     public static boolean onUseItemStop(LivingEntity entity, ItemStack item, int duration)
     {
-        return MinecraftForge.EVENT_BUS.post(new LivingEntityUseItemEvent.Stop(entity, item, duration));
+        return MinecraftForge.EVENT_BUS.post(new LivingEntityUseItemEvent.Stop(entity, item, duration)).isCanceled();
     }
 
     public static ItemStack onItemUseFinish(LivingEntity entity, ItemStack item, int duration, ItemStack result)
@@ -438,13 +438,13 @@ public class ForgeEventFactory
     public static BlockState onToolUse(BlockState originalState, UseOnContext context, ToolAction toolAction, boolean simulate)
     {
         BlockToolModificationEvent event = new BlockToolModificationEvent(originalState, context, toolAction, simulate);
-        return MinecraftForge.EVENT_BUS.post(event) ? null : event.getFinalState();
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled() ? null : event.getFinalState();
     }
 
     public static int onApplyBonemeal(@NotNull Player player, @NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ItemStack stack)
     {
         BonemealEvent event = new BonemealEvent(player, level, pos, state, stack);
-        if (MinecraftForge.EVENT_BUS.post(event)) return -1;
+        if (MinecraftForge.EVENT_BUS.post(event).isCanceled()) return -1;
         if (event.getResult() == Result.ALLOW)
         {
             if (!level.isClientSide)
@@ -458,7 +458,7 @@ public class ForgeEventFactory
     public static InteractionResultHolder<ItemStack> onBucketUse(@NotNull Player player, @NotNull Level level, @NotNull ItemStack stack, @Nullable HitResult target)
     {
         FillBucketEvent event = new FillBucketEvent(player, stack, level, target);
-        if (MinecraftForge.EVENT_BUS.post(event)) return new InteractionResultHolder<ItemStack>(InteractionResult.FAIL, stack);
+        if (MinecraftForge.EVENT_BUS.post(event).isCanceled()) return new InteractionResultHolder<ItemStack>(InteractionResult.FAIL, stack);
 
         if (event.getResult() == Result.ALLOW)
         {
@@ -496,20 +496,20 @@ public class ForgeEventFactory
     {
         if (item.isEmpty()) return -1;
         ItemExpireEvent event = new ItemExpireEvent(entity, (item.isEmpty() ? 6000 : item.getItem().getEntityLifespan(item, entity.level())));
-        if (!MinecraftForge.EVENT_BUS.post(event)) return -1;
+        if (!MinecraftForge.EVENT_BUS.post(event).isCanceled()) return -1;
         return event.getExtraLife();
     }
 
     public static int onItemPickup(ItemEntity entityItem, Player player)
     {
-        Event event = new EntityItemPickupEvent(player, entityItem);
-        if (MinecraftForge.EVENT_BUS.post(event)) return -1;
+        var event = new EntityItemPickupEvent(player, entityItem);
+        if (MinecraftForge.EVENT_BUS.post(event).isCanceled()) return -1;
         return event.getResult() == Result.ALLOW ? 1 : 0;
     }
 
     public static boolean canMountEntity(Entity entityMounting, Entity entityBeingMounted, boolean isMounting)
     {
-        boolean isCanceled = MinecraftForge.EVENT_BUS.post(new EntityMountEvent(entityMounting, entityBeingMounted, entityMounting.level(), isMounting));
+        boolean isCanceled = MinecraftForge.EVENT_BUS.post(new EntityMountEvent(entityMounting, entityBeingMounted, entityMounting.level(), isMounting)).isCanceled();
 
         if(isCanceled)
         {
@@ -522,7 +522,7 @@ public class ForgeEventFactory
 
     public static boolean onAnimalTame(Animal animal, Player tamer)
     {
-        return MinecraftForge.EVENT_BUS.post(new AnimalTameEvent(animal, tamer));
+        return MinecraftForge.EVENT_BUS.post(new AnimalTameEvent(animal, tamer)).isCanceled();
     }
 
     public static Player.BedSleepingProblem onPlayerSleepInBed(Player player, Optional<BlockPos> pos)
@@ -544,7 +544,7 @@ public class ForgeEventFactory
 
     public static boolean onPlayerSpawnSet(Player player, ResourceKey<Level> levelKey, BlockPos pos, boolean forced)
     {
-        return MinecraftForge.EVENT_BUS.post(new PlayerSetSpawnEvent(player, levelKey, pos, forced));
+        return MinecraftForge.EVENT_BUS.post(new PlayerSetSpawnEvent(player, levelKey, pos, forced)).isCanceled();
     }
 
     public static void onPlayerClone(Player player, Player oldPlayer, boolean wasDeath)
@@ -554,7 +554,7 @@ public class ForgeEventFactory
 
     public static boolean onExplosionStart(Level level, Explosion explosion)
     {
-        return MinecraftForge.EVENT_BUS.post(new ExplosionEvent.Start(level, explosion));
+        return MinecraftForge.EVENT_BUS.post(new ExplosionEvent.Start(level, explosion)).isCanceled();
     }
 
     public static void onExplosionDetonate(Level level, Explosion explosion, List<Entity> list, double diameter)
@@ -575,13 +575,13 @@ public class ForgeEventFactory
 
     public static boolean onCreateWorldSpawn(Level level, ServerLevelData settings)
     {
-        return MinecraftForge.EVENT_BUS.post(new LevelEvent.CreateSpawnPosition(level, settings));
+        return MinecraftForge.EVENT_BUS.post(new LevelEvent.CreateSpawnPosition(level, settings)).isCanceled();
     }
 
     public static float onLivingHeal(LivingEntity entity, float amount)
     {
         LivingHealEvent event = new LivingHealEvent(entity, amount);
-        return (MinecraftForge.EVENT_BUS.post(event) ? 0 : event.getAmount());
+        return (MinecraftForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
     }
 
     public static boolean onPotionAttemptBrew(NonNullList<ItemStack> stacks)
@@ -591,7 +591,7 @@ public class ForgeEventFactory
             tmp.set(x, stacks.get(x).copy());
 
         PotionBrewEvent.Pre event = new PotionBrewEvent.Pre(tmp);
-        if (MinecraftForge.EVENT_BUS.post(event))
+        if (MinecraftForge.EVENT_BUS.post(event).isCanceled())
         {
             boolean changed = false;
             for (int x = 0; x < stacks.size(); x++)
@@ -668,7 +668,7 @@ public class ForgeEventFactory
     public static InteractionResultHolder<ItemStack> onArrowNock(ItemStack item, Level level, Player player, InteractionHand hand, boolean hasAmmo)
     {
         ArrowNockEvent event = new ArrowNockEvent(player, item, hand, level, hasAmmo);
-        if (MinecraftForge.EVENT_BUS.post(event))
+        if (MinecraftForge.EVENT_BUS.post(event).isCanceled())
             return new InteractionResultHolder<ItemStack>(InteractionResult.FAIL, item);
         return event.getAction();
     }
@@ -676,20 +676,20 @@ public class ForgeEventFactory
     public static int onArrowLoose(ItemStack stack, Level level, Player player, int charge, boolean hasAmmo)
     {
         ArrowLooseEvent event = new ArrowLooseEvent(player, stack, level, charge, hasAmmo);
-        if (MinecraftForge.EVENT_BUS.post(event))
+        if (MinecraftForge.EVENT_BUS.post(event).isCanceled())
             return -1;
         return event.getCharge();
     }
 
     public static boolean onProjectileImpact(Projectile projectile, HitResult ray)
     {
-        return MinecraftForge.EVENT_BUS.post(new ProjectileImpactEvent(projectile, ray));
+        return MinecraftForge.EVENT_BUS.post(new ProjectileImpactEvent(projectile, ray)).isCanceled();
     }
 
     public static LootTable loadLootTable(ResourceLocation name, LootTable table)
     {
         LootTableLoadEvent event = new LootTableLoadEvent(name, table);
-        if (MinecraftForge.EVENT_BUS.post(event))
+        if (MinecraftForge.EVENT_BUS.post(event).isCanceled())
             return LootTable.EMPTY;
         return event.getTable();
     }
@@ -706,7 +706,7 @@ public class ForgeEventFactory
     public static Optional<PortalShape> onTrySpawnPortal(LevelAccessor level, BlockPos pos, Optional<PortalShape> size)
     {
         if (!size.isPresent()) return size;
-        return !MinecraftForge.EVENT_BUS.post(new BlockEvent.PortalSpawnEvent(level, pos, level.getBlockState(pos), size.get())) ? size : Optional.empty();
+        return !MinecraftForge.EVENT_BUS.post(new BlockEvent.PortalSpawnEvent(level, pos, level.getBlockState(pos), size.get())).isCanceled() ? size : Optional.empty();
     }
 
     public static int onEnchantmentLevelSet(Level level, BlockPos pos, int enchantRow, int power, ItemStack itemStack, int enchantmentLevel)
@@ -718,7 +718,7 @@ public class ForgeEventFactory
 
     public static boolean onEntityDestroyBlock(LivingEntity entity, BlockPos pos, BlockState state)
     {
-        return !MinecraftForge.EVENT_BUS.post(new LivingDestroyBlockEvent(entity, pos, state));
+        return !MinecraftForge.EVENT_BUS.post(new LivingDestroyBlockEvent(entity, pos, state)).isCanceled();
     }
 
     public static boolean getMobGriefingEvent(Level level, @Nullable Entity entity)
@@ -774,12 +774,12 @@ public class ForgeEventFactory
 
     public static boolean onPistonMovePre(Level level, BlockPos pos, Direction direction, boolean extending)
     {
-        return MinecraftForge.EVENT_BUS.post(new PistonEvent.Pre(level, pos, direction, extending ? PistonEvent.PistonMoveType.EXTEND : PistonEvent.PistonMoveType.RETRACT));
+        return MinecraftForge.EVENT_BUS.post(new PistonEvent.Pre(level, pos, direction, extending ? PistonEvent.PistonMoveType.EXTEND : PistonEvent.PistonMoveType.RETRACT)).isCanceled();
     }
 
-    public static boolean onPistonMovePost(Level level, BlockPos pos, Direction direction, boolean extending)
+    public static void onPistonMovePost(Level level, BlockPos pos, Direction direction, boolean extending)
     {
-        return MinecraftForge.EVENT_BUS.post(new PistonEvent.Post(level, pos, direction, extending ? PistonEvent.PistonMoveType.EXTEND : PistonEvent.PistonMoveType.RETRACT));
+        MinecraftForge.EVENT_BUS.post(new PistonEvent.Post(level, pos, direction, extending ? PistonEvent.PistonMoveType.EXTEND : PistonEvent.PistonMoveType.RETRACT));
     }
 
     public static long onSleepFinished(ServerLevel level, long newTime, long minTime)
@@ -818,7 +818,7 @@ public class ForgeEventFactory
 
     public static boolean canLivingConvert(LivingEntity entity, EntityType<? extends LivingEntity> outcome, Consumer<Integer> timer)
     {
-        return !MinecraftForge.EVENT_BUS.post(new LivingConversionEvent.Pre(entity, outcome, timer));
+        return !MinecraftForge.EVENT_BUS.post(new LivingConversionEvent.Pre(entity, outcome, timer)).isCanceled();
     }
 
     public static void onLivingConvert(LivingEntity entity, LivingEntity outcome)
@@ -868,7 +868,7 @@ public class ForgeEventFactory
         ServerPlayer player = playerList.getPlayer(gameProfile.getId());
         if (newLevel != oldLevel && player != null)
         {
-            return MinecraftForge.EVENT_BUS.post(new PermissionsChangedEvent(player, newLevel, oldLevel));
+            return MinecraftForge.EVENT_BUS.post(new PermissionsChangedEvent(player, newLevel, oldLevel)).isCanceled();
         }
         return false;
     }
@@ -961,7 +961,7 @@ public class ForgeEventFactory
     public static WeightedRandomList<MobSpawnSettings.SpawnerData> getPotentialSpawns(LevelAccessor level, MobCategory category, BlockPos pos, WeightedRandomList<MobSpawnSettings.SpawnerData> oldList)
     {
         LevelEvent.PotentialSpawns event = new LevelEvent.PotentialSpawns(level, category, pos, oldList);
-        if (MinecraftForge.EVENT_BUS.post(event))
+        if (MinecraftForge.EVENT_BUS.post(event).isCanceled())
             return WeightedRandomList.create();
         return WeightedRandomList.create(event.getSpawnerDataList());
     }

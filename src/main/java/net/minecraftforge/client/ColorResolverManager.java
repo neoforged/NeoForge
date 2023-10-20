@@ -10,7 +10,7 @@ import net.minecraft.client.color.block.BlockTintCache;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.fml.ModLoader;
+import net.neoforged.fml.ModLoader;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;

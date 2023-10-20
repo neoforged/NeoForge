@@ -14,11 +14,11 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.common.util.TextTable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.neoforged.bus.api.IEventBus;
 import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStackSimple;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @Mod(LazyCapabilitiesOnItemsTest.MOD_ID)
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = LazyCapabilitiesOnItemsTest.MOD_ID)
 public class LazyCapabilitiesOnItemsTest
 {
     public static final String MOD_ID = "lazy_capabilities_on_items";

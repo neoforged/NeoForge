@@ -13,7 +13,7 @@
                 p_286147_ -> rendertypeGuiGhostRecipeOverlayShader = p_286147_
              )
           );
-+         net.minecraftforge.fml.ModLoader.get().postEvent(new net.minecraftforge.client.event.RegisterShadersEvent(p_250719_, list1));
++         net.neoforged.fml.ModLoader.get().postEvent(new net.minecraftforge.client.event.RegisterShadersEvent(p_250719_, list1));
        } catch (IOException ioexception) {
           list1.forEach(p_172729_ -> p_172729_.getFirst().close());
           throw new RuntimeException("could not reload shaders", ioexception);

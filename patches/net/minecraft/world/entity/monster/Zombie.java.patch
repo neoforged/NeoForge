@@ -38,14 +38,14 @@
 +         int k = Mth.floor(this.getZ());
 +
 +         net.minecraftforge.event.entity.living.ZombieEvent.SummonAidEvent event = net.minecraftforge.event.ForgeEventFactory.fireZombieSummonAid(this, level(), i, j, k, livingentity, this.getAttribute(Attributes.SPAWN_REINFORCEMENTS_CHANCE).getValue());
-+         if (event.getResult() == net.minecraftforge.eventbus.api.Event.Result.DENY) return true;
-+         if (event.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW  ||
++         if (event.getResult() == net.neoforged.bus.api.Event.Result.DENY) return true;
++         if (event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW  ||
 +                 (livingentity != null
 +                 && this.level().getDifficulty() == Difficulty.HARD
 +                 && (double)this.random.nextFloat() < this.getAttributeValue(Attributes.SPAWN_REINFORCEMENTS_CHANCE)
 +                 && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING))) {
 +
-+            Zombie zombie = event.getCustomSummonedAid() != null && event.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW ? event.getCustomSummonedAid() : EntityType.ZOMBIE.create(this.level());
++            Zombie zombie = event.getCustomSummonedAid() != null && event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW ? event.getCustomSummonedAid() : EntityType.ZOMBIE.create(this.level());
  
              for(int l = 0; l < 50; ++l) {
                 int i1 = i + Mth.nextInt(this.random, 7, 40) * Mth.nextInt(this.random, -1, 1);

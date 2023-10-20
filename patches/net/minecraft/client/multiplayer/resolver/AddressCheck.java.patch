@@ -5,7 +5,7 @@
  
     static AddressCheck createFromService() {
 -      final ImmutableList<Predicate<String>> immutablelist = Streams.stream(ServiceLoader.load(BlockListSupplier.class))
-+      final ImmutableList<Predicate<String>> immutablelist = Streams.stream(ServiceLoader.load(BlockListSupplier.class, net.minecraftforge.fml.loading.FMLLoader.class.getClassLoader()))
++      final ImmutableList<Predicate<String>> immutablelist = Streams.stream(ServiceLoader.load(BlockListSupplier.class, net.neoforged.fml.loading.FMLLoader.class.getClassLoader()))
           .map(BlockListSupplier::createBlockList)
           .filter(Objects::nonNull)
           .collect(ImmutableList.toImmutableList());

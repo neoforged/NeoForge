@@ -8,8 +8,7 @@ package net.minecraftforge.event;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.datafix.fixes.StructuresBecomeConfiguredFix;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 import java.util.Locale;
 import java.util.Map;
@@ -27,10 +26,10 @@ import com.google.common.base.Preconditions;
  * <p>This event will only fire if {@link StructuresBecomeConfiguredFix} is used, as a result of converting a
  * pre-1.18.2 world to the current version.</p>
  *
- * <p>This event is not {@linkplain Cancelable cancelable}, and does not {@linkplain HasResult have a result}.</p>
+ * <p>This event is not {@linkplain ICancellableEvent cancelable}, and does not {@linkplain HasResult have a result}.</p>
  *
  * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
- * only on the {@linkplain net.minecraftforge.fml.LogicalSide#SERVER logical server}. </p>
+ * only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}. </p>
  *
  * @see StructuresBecomeConfiguredFix
  * @see #register(String, StructuresBecomeConfiguredFix.Conversion)

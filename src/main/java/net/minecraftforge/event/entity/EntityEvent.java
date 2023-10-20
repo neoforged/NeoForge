@@ -10,19 +10,18 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.Pose;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 /**
  * EntityEvent is fired when an event involving any Entity occurs.<br>
- * If a method utilizes this {@link net.minecraftforge.eventbus.api.Event} as its parameter, the method will
+ * If a method utilizes this {@link net.neoforged.bus.api.Event} as its parameter, the method will
  * receive every child event of this class.<br>
  * <br>
  * {@link #entity} contains the entity that caused this event to occur.<br>
  * <br>
  * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.<br>
  **/
-public class EntityEvent extends Event
+public abstract class EntityEvent extends Event
 {
     private final Entity entity;
 
@@ -40,7 +39,7 @@ public class EntityEvent extends Event
      * EntityConstructing is fired when an Entity is being created. <br>
      * This event is fired within the constructor of the Entity.<br>
      * <br>
-     * This event is not {@link net.minecraftforge.eventbus.api.Cancelable}.<br>
+     * This event is not {@link net.neoforged.bus.api.ICancellableEvent}.<br>
      * <br>
      * This event does not have a result. {@link HasResult}<br>
      * <br>
@@ -60,7 +59,7 @@ public class EntityEvent extends Event
      * This event does not fire when a new entity is spawned, only when an entity moves from one section to another one.
      * Use {@link EntityJoinLevelEvent} to detect new entities joining the world.
      * <br>
-     * This event is not {@link net.minecraftforge.eventbus.api.Cancelable}.<br>
+     * This event is not {@link net.neoforged.bus.api.ICancellableEvent}.<br>
      * <br>
      * This event does not have a result. {@link HasResult}
      * <br>
@@ -131,7 +130,7 @@ public class EntityEvent extends Event
      * CAREFUL: This is also fired in the Entity constructor. Therefore the entity(subclass) might not be fully initialized. Check Entity#isAddedToWorld() or !Entity#firstUpdate.<br>
      * If you change the player's size, you probably want to set the eye height accordingly as well<br>
      * <br>
-     * This event is not {@link Cancelable}.<br>
+     * This event is not {@link ICancellableEvent}.<br>
      * <br>
      * This event does not have a result. {@link HasResult}
      * <br>

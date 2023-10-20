@@ -15,8 +15,8 @@ import net.minecraft.locale.Language;
 import net.minecraftforge.client.gui.ModListScreen;
 import net.minecraftforge.versions.forge.ForgeVersion;
 import net.minecraftforge.common.util.MavenVersionStringHelper;
-import net.minecraftforge.fml.VersionChecker;
-import net.minecraftforge.forgespi.language.IModInfo;
+import net.neoforged.fml.VersionChecker;
+import net.neoforged.neoforgespi.language.IModInfo;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 

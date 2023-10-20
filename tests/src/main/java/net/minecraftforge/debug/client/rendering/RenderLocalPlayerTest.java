@@ -8,10 +8,10 @@ package net.minecraftforge.debug.client.rendering;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.InteractionResult;
-import net.minecraftforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 @Mod(RenderLocalPlayerTest.MODID)
 @Mod.EventBusSubscriber(value = Dist.CLIENT)

@@ -10,7 +10,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.fml.VersionChecker;
+import net.neoforged.fml.VersionChecker;
 
 public class ForgeSnapshotsModClient
 {

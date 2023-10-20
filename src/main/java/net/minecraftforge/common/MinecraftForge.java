@@ -5,11 +5,12 @@
 
 package net.minecraftforge.common;
 
-import net.minecraftforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
 import net.minecraftforge.client.ClientCommandHandler;
-import net.minecraftforge.eventbus.api.BusBuilder;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.bus.api.BusBuilder;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.DualStackUtils;
 import net.minecraftforge.versions.forge.ForgeVersion;
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +28,11 @@ public class MinecraftForge
      * ORE_GEN_BUS for ore gen events
      * EVENT_BUS for everything else
      */
-    public static final IEventBus EVENT_BUS = BusBuilder.builder().startShutdown().useModLauncher().build();
+    public static final IEventBus EVENT_BUS = BusBuilder.builder().startShutdown().classChecker(eventType -> {
+        if (eventType.isAssignableFrom(IModBusEvent.class)) {
+            throw new IllegalArgumentException("IModBusEvent events are not allowed on the Forge bus! Use a mod bus instead.");
+        }
+    }).build();
 
     static final ForgeInternalHandler INTERNAL_HANDLER = new ForgeInternalHandler();
     private static final Logger LOGGER = LogManager.getLogger();

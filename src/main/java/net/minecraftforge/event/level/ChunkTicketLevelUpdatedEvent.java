@@ -8,9 +8,8 @@ package net.minecraftforge.event.level;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -24,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
  * is by first changing it from 31 to 46, and then queuing the update from 46 to 32. However, when going from 32 to 31,
  * vanilla is able to go directly.
  * <p>
- * This event is not {@linkplain Cancelable cancellable} and does not {@linkplain HasResult have a result}.
+ * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
  * <p>
  * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
  * only on the {@linkplain LogicalSide#SERVER logical server}.

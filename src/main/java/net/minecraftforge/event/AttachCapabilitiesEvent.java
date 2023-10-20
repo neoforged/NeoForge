@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.eventbus.api.GenericEvent;
+import net.neoforged.bus.api.GenericEvent;
 
 /**
  * Fired whenever an object with Capabilities support {currently TileEntity/Item/Entity)

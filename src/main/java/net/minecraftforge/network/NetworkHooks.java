@@ -18,7 +18,7 @@ import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraftforge.client.ConfigScreenHandler;
-import net.minecraftforge.fml.util.thread.EffectiveSide;
+import net.neoforged.fml.util.thread.EffectiveSide;
 import net.minecraftforge.network.ConnectionData.ModMismatchData;
 import net.minecraftforge.network.filters.NetworkFilters;
 import org.apache.commons.lang3.tuple.Pair;
@@ -38,7 +38,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
-import net.minecraftforge.fml.config.ConfigTracker;
+import net.neoforged.fml.config.ConfigTracker;
 import org.jetbrains.annotations.Nullable;
 
 public class NetworkHooks

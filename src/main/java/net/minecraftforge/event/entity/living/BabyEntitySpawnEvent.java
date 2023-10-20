@@ -12,12 +12,12 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Fox;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * BabyEntitySpawnEvent is fired just before a baby entity is about to be spawned. <br>
- * Parents will have disengaged their relationship. {@link Cancelable} <br>
+ * Parents will have disengaged their relationship. {@link ICancellableEvent} <br>
  * It is possible to change the child completely by using {@link #setChild(AgeableMob)} <br>
  * This event is fired from {@link Animal#spawnChildFromBreeding(ServerLevel, Animal)} and
  * {@link Fox#spawnChildFromBreeding(ServerLevel, Animal)} <br>
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  * {@link #causedByPlayer} contains the player responsible for the breading (if applicable).<br>
  * {@link #child} contains the child that will be spawned.<br>
  * <br>
- * This event is {@link Cancelable}.<br>
+ * This event is {@link ICancellableEvent}.<br>
  * If this event is canceled, the child Entity is not added to the world, and the parents <br>
  * will no longer attempt to mate.
  * <br>
@@ -35,8 +35,7 @@ import org.jetbrains.annotations.Nullable;
  * <br>
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
-@Cancelable
-public class BabyEntitySpawnEvent extends net.minecraftforge.eventbus.api.Event
+public class BabyEntitySpawnEvent extends net.neoforged.bus.api.Event implements ICancellableEvent
 {
     private final Mob parentA;
     private final Mob parentB;

@@ -23,7 +23,7 @@
           ServerLevel serverlevel = (ServerLevel)this.level;
           Fox fox = (Fox)this.animal.getBreedOffspring(serverlevel, this.partner);
 +         final net.minecraftforge.event.entity.living.BabyEntitySpawnEvent event = new net.minecraftforge.event.entity.living.BabyEntitySpawnEvent(animal, partner, fox);
-+         final boolean cancelled = net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
++         final boolean cancelled = net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled();
 +         fox = (Fox) event.getChild();
 +         if (cancelled) {
 +            //Reset the "inLove" state for the animals

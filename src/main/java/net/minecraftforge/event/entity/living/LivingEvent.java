@@ -8,10 +8,10 @@ package net.minecraftforge.event.entity.living;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
  * <br>
  * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.<br>
  **/
-public class LivingEvent extends EntityEvent
+public abstract class LivingEvent extends EntityEvent
 {
     private final LivingEntity livingEntity;
 
@@ -42,15 +42,14 @@ public class LivingEvent extends EntityEvent
      * <br>
      * This event is fired via the {@link ForgeHooks#onLivingTick(LivingEntity)}.<br>
      * <br>
-     * This event is {@link Cancelable}.<br>
+     * This event is {@link ICancellableEvent}.<br>
      * If this event is canceled, the Entity does not update.<br>
      * <br>
      * This event does not have a result. {@link HasResult}<br>
      * <br>
      * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
      **/
-    @Cancelable
-    public static class LivingTickEvent extends LivingEvent
+    public static class LivingTickEvent extends LivingEvent implements ICancellableEvent
     {
         public LivingTickEvent(LivingEntity e){ super(e); }
     }
@@ -63,7 +62,7 @@ public class LivingEvent extends EntityEvent
      * <br>
      * This event is fired via the {@link ForgeHooks#onLivingJump(LivingEntity)}.<br>
      * <br>
-     * This event is not {@link Cancelable}.<br>
+     * This event is not {@link ICancellableEvent}.<br>
      * <br>
      * This event does not have a result. {@link HasResult}<br>
      * <br>

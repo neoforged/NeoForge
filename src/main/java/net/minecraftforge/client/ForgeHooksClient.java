@@ -109,7 +109,7 @@ import net.minecraft.world.level.material.FogType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.ClientPlayerChangeGameTypeEvent;
@@ -151,13 +151,13 @@ import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.MutableHashedLinkedMap;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.IExtensionPoint;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoader;
-import net.minecraftforge.fml.VersionChecker;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.IExtensionPoint;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.VersionChecker;
+import net.neoforged.fml.common.Mod;
 import net.minecraftforge.forge.snapshots.ForgeSnapshotsModClient;
 import net.minecraftforge.gametest.ForgeGameTestHooks;
 import net.minecraftforge.network.NetworkConstants;
@@ -267,10 +267,11 @@ public class ForgeHooksClient
         switch (target.getType()) {
             case BLOCK:
                 if (!(target instanceof BlockHitResult blockTarget)) return false;
-                return MinecraftForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, blockTarget, partialTick, poseStack, bufferSource));
+                return MinecraftForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, blockTarget, partialTick, poseStack, bufferSource)).isCanceled();
             case ENTITY:
                 if (!(target instanceof EntityHitResult entityTarget)) return false;
-                return MinecraftForge.EVENT_BUS.post(new RenderHighlightEvent.Entity(context, camera, entityTarget, partialTick, poseStack, bufferSource));
+                MinecraftForge.EVENT_BUS.post(new RenderHighlightEvent.Entity(context, camera, entityTarget, partialTick, poseStack, bufferSource));
+                return false;
             default:
                 return false; // NO-OP - This doesn't even get called for anything other than blocks and entities
         }
@@ -294,12 +295,12 @@ public class ForgeHooksClient
 
     public static boolean renderSpecificFirstPersonHand(InteractionHand hand, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float partialTick, float interpPitch, float swingProgress, float equipProgress, ItemStack stack)
     {
-        return MinecraftForge.EVENT_BUS.post(new RenderHandEvent(hand, poseStack, bufferSource, packedLight, partialTick, interpPitch, swingProgress, equipProgress, stack));
+        return MinecraftForge.EVENT_BUS.post(new RenderHandEvent(hand, poseStack, bufferSource, packedLight, partialTick, interpPitch, swingProgress, equipProgress, stack)).isCanceled();
     }
 
     public static boolean renderSpecificFirstPersonArm(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, AbstractClientPlayer player, HumanoidArm arm)
     {
-        return MinecraftForge.EVENT_BUS.post(new RenderArmEvent(poseStack, multiBufferSource, packedLight, player, arm));
+        return MinecraftForge.EVENT_BUS.post(new RenderArmEvent(poseStack, multiBufferSource, packedLight, player, arm)).isCanceled();
     }
 
     public static void onTextureStitchedPost(TextureAtlas map)
@@ -419,7 +420,7 @@ public class ForgeHooksClient
 
     private static void drawScreenInternal(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick)
     {
-        if (!MinecraftForge.EVENT_BUS.post(new ScreenEvent.Render.Pre(screen, guiGraphics, mouseX, mouseY, partialTick)))
+        if (!MinecraftForge.EVENT_BUS.post(new ScreenEvent.Render.Pre(screen, guiGraphics, mouseX, mouseY, partialTick)).isCanceled())
             screen.renderWithTooltip(guiGraphics, mouseX, mouseY, partialTick);
         MinecraftForge.EVENT_BUS.post(new ScreenEvent.Render.Post(screen, guiGraphics, mouseX, mouseY, partialTick));
     }
@@ -447,7 +448,7 @@ public class ForgeHooksClient
             IClientFluidTypeExtensions.of(state).modifyFogRender(camera, mode, renderDistance, partialTick, nearDistance, farDistance, shape);
 
         ViewportEvent.RenderFog event = new ViewportEvent.RenderFog(mode, type, camera, partialTick, nearDistance, farDistance, shape);
-        if (MinecraftForge.EVENT_BUS.post(event))
+        if (MinecraftForge.EVENT_BUS.post(event).isCanceled())
         {
             RenderSystem.setShaderFogStart(event.getNearPlaneDistance());
             RenderSystem.setShaderFogEnd(event.getFarPlaneDistance());
@@ -608,8 +609,8 @@ public class ForgeHooksClient
 
     public static boolean onScreenMouseClickedPre(Screen guiScreen, double mouseX, double mouseY, int button)
     {
-        Event event = new ScreenEvent.MouseButtonPressed.Pre(guiScreen, mouseX, mouseY, button);
-        return MinecraftForge.EVENT_BUS.post(event);
+        var event = new ScreenEvent.MouseButtonPressed.Pre(guiScreen, mouseX, mouseY, button);
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static boolean onScreenMouseClickedPost(Screen guiScreen, double mouseX, double mouseY, int button, boolean handled)
@@ -621,8 +622,8 @@ public class ForgeHooksClient
 
     public static boolean onScreenMouseReleasedPre(Screen guiScreen, double mouseX, double mouseY, int button)
     {
-        Event event = new ScreenEvent.MouseButtonReleased.Pre(guiScreen, mouseX, mouseY, button);
-        return MinecraftForge.EVENT_BUS.post(event);
+        var event = new ScreenEvent.MouseButtonReleased.Pre(guiScreen, mouseX, mouseY, button);
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static boolean onScreenMouseReleasedPost(Screen guiScreen, double mouseX, double mouseY, int button, boolean handled)
@@ -634,8 +635,8 @@ public class ForgeHooksClient
 
     public static boolean onScreenMouseDragPre(Screen guiScreen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY)
     {
-        Event event = new ScreenEvent.MouseDragged.Pre(guiScreen, mouseX, mouseY, mouseButton, dragX, dragY);
-        return MinecraftForge.EVENT_BUS.post(event);
+        var event = new ScreenEvent.MouseDragged.Pre(guiScreen, mouseX, mouseY, mouseButton, dragX, dragY);
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static void onScreenMouseDragPost(Screen guiScreen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY)
@@ -649,8 +650,8 @@ public class ForgeHooksClient
         Window mainWindow = guiScreen.getMinecraft().getWindow();
         double mouseX = mouseHelper.xpos() * (double) mainWindow.getGuiScaledWidth() / (double) mainWindow.getScreenWidth();
         double mouseY = mouseHelper.ypos() * (double) mainWindow.getGuiScaledHeight() / (double) mainWindow.getScreenHeight();
-        Event event = new ScreenEvent.MouseScrolled.Pre(guiScreen, mouseX, mouseY, scrollDelta);
-        return MinecraftForge.EVENT_BUS.post(event);
+        var event = new ScreenEvent.MouseScrolled.Pre(guiScreen, mouseX, mouseY, scrollDelta);
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static void onScreenMouseScrollPost(MouseHandler mouseHelper, Screen guiScreen, double scrollDelta)
@@ -664,32 +665,32 @@ public class ForgeHooksClient
 
     public static boolean onScreenKeyPressedPre(Screen guiScreen, int keyCode, int scanCode, int modifiers)
     {
-        Event event = new ScreenEvent.KeyPressed.Pre(guiScreen, keyCode, scanCode, modifiers);
-        return MinecraftForge.EVENT_BUS.post(event);
+        var event = new ScreenEvent.KeyPressed.Pre(guiScreen, keyCode, scanCode, modifiers);
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static boolean onScreenKeyPressedPost(Screen guiScreen, int keyCode, int scanCode, int modifiers)
     {
-        Event event = new ScreenEvent.KeyPressed.Post(guiScreen, keyCode, scanCode, modifiers);
-        return MinecraftForge.EVENT_BUS.post(event);
+        var event = new ScreenEvent.KeyPressed.Post(guiScreen, keyCode, scanCode, modifiers);
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static boolean onScreenKeyReleasedPre(Screen guiScreen, int keyCode, int scanCode, int modifiers)
     {
-        Event event = new ScreenEvent.KeyReleased.Pre(guiScreen, keyCode, scanCode, modifiers);
-        return MinecraftForge.EVENT_BUS.post(event);
+        var event = new ScreenEvent.KeyReleased.Pre(guiScreen, keyCode, scanCode, modifiers);
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static boolean onScreenKeyReleasedPost(Screen guiScreen, int keyCode, int scanCode, int modifiers)
     {
-        Event event = new ScreenEvent.KeyReleased.Post(guiScreen, keyCode, scanCode, modifiers);
-        return MinecraftForge.EVENT_BUS.post(event);
+        var event = new ScreenEvent.KeyReleased.Post(guiScreen, keyCode, scanCode, modifiers);
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static boolean onScreenCharTypedPre(Screen guiScreen, char codePoint, int modifiers)
     {
-        Event event = new ScreenEvent.CharacterTyped.Pre(guiScreen, codePoint, modifiers);
-        return MinecraftForge.EVENT_BUS.post(event);
+        var event = new ScreenEvent.CharacterTyped.Pre(guiScreen, codePoint, modifiers);
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static void onScreenCharTypedPost(Screen guiScreen, char codePoint, int modifiers)
@@ -706,7 +707,7 @@ public class ForgeHooksClient
 
     public static boolean onMouseButtonPre(int button, int action, int mods)
     {
-        return MinecraftForge.EVENT_BUS.post(new InputEvent.MouseButton.Pre(button, action, mods));
+        return MinecraftForge.EVENT_BUS.post(new InputEvent.MouseButton.Pre(button, action, mods)).isCanceled();
     }
 
     public static void onMouseButtonPost(int button, int action, int mods)
@@ -716,8 +717,8 @@ public class ForgeHooksClient
 
     public static boolean onMouseScroll(MouseHandler mouseHelper, double scrollDelta)
     {
-        Event event = new InputEvent.MouseScrollingEvent(scrollDelta, mouseHelper.isLeftPressed(), mouseHelper.isMiddlePressed(), mouseHelper.isRightPressed(), mouseHelper.xpos(), mouseHelper.ypos());
-        return MinecraftForge.EVENT_BUS.post(event);
+        var event = new InputEvent.MouseScrollingEvent(scrollDelta, mouseHelper.isLeftPressed(), mouseHelper.isMiddlePressed(), mouseHelper.isRightPressed(), mouseHelper.xpos(), mouseHelper.ypos());
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static void onKeyInput(int key, int scanCode, int action, int modifiers)
@@ -953,14 +954,14 @@ public class ForgeHooksClient
     public static Component onClientChat(ChatType.Bound boundChatType, Component message, UUID sender)
     {
         ClientChatReceivedEvent event = new ClientChatReceivedEvent(boundChatType, message, sender);
-        return MinecraftForge.EVENT_BUS.post(event) ? null : event.getMessage();
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
     }
 
     @Nullable
     public static Component onClientPlayerChat(ChatType.Bound boundChatType, Component message, PlayerChatMessage playerChatMessage, UUID sender)
     {
         ClientChatReceivedEvent.Player event = new ClientChatReceivedEvent.Player(boundChatType, message, playerChatMessage, sender);
-        return MinecraftForge.EVENT_BUS.post(event) ? null : event.getMessage();
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
     }
 
     private static final ChatTypeDecoration SYSTEM_CHAT_TYPE_DECORATION = new ChatTypeDecoration("forge.chatType.system", List.of(ChatTypeDecoration.Parameter.CONTENT), Style.EMPTY);
@@ -971,14 +972,14 @@ public class ForgeHooksClient
     public static Component onClientSystemChat(Component message, boolean overlay)
     {
         ClientChatReceivedEvent.System event = new ClientChatReceivedEvent.System(SYSTEM_CHAT_TYPE_BOUND, message, overlay);
-        return MinecraftForge.EVENT_BUS.post(event) ? null : event.getMessage();
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
     }
 
     @NotNull
     public static String onClientSendMessage(String message)
     {
         ClientChatEvent event = new ClientChatEvent(message);
-        return MinecraftForge.EVENT_BUS.post(event) ? "" : event.getMessage();
+        return MinecraftForge.EVENT_BUS.post(event).isCanceled() ? "" : event.getMessage();
     }
 
     /**
@@ -1132,7 +1133,7 @@ public class ForgeHooksClient
 
     public static boolean onToastAdd(Toast toast)
     {
-        return MinecraftForge.EVENT_BUS.post(new ToastAddEvent(toast));
+        return MinecraftForge.EVENT_BUS.post(new ToastAddEvent(toast)).isCanceled();
     }
 
     public static boolean isBlockInSolidLayer(BlockState state)
@@ -1175,7 +1176,7 @@ public class ForgeHooksClient
 
     public static boolean renderBlockOverlay(Player player, PoseStack mat, RenderBlockScreenEffectEvent.OverlayType type, BlockState block, BlockPos pos)
     {
-        return MinecraftForge.EVENT_BUS.post(new RenderBlockScreenEffectEvent(player, mat, type, block, pos));
+        return MinecraftForge.EVENT_BUS.post(new RenderBlockScreenEffectEvent(player, mat, type, block, pos)).isCanceled();
     }
 
     public static int getMaxMipmapLevel(int width, int height)

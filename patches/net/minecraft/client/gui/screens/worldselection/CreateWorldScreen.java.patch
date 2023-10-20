@@ -4,7 +4,7 @@
     public static void openFresh(Minecraft p_232897_, @Nullable Screen p_232898_) {
        queueLoadScreen(p_232897_, PREPARING_WORLD_DATA);
        PackRepository packrepository = new PackRepository(new ServerPacksSource(p_232897_.directoryValidator()));
-+      net.minecraftforge.fml.ModLoader.get().postEvent(new net.minecraftforge.event.AddPackFindersEvent(net.minecraft.server.packs.PackType.SERVER_DATA, packrepository::addPackFinder));
++      net.neoforged.fml.ModLoader.get().postEvent(new net.minecraftforge.event.AddPackFindersEvent(net.minecraft.server.packs.PackType.SERVER_DATA, packrepository::addPackFinder));
        WorldLoader.InitConfig worldloader$initconfig = createDefaultLoadConfig(packrepository, WorldDataConfiguration.DEFAULT);
        CompletableFuture<WorldCreationContext> completablefuture = WorldLoader.load(
           worldloader$initconfig,

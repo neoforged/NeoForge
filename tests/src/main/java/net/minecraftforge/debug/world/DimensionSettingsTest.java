@@ -5,7 +5,7 @@
 
 package net.minecraftforge.debug.world;
 
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 /**
  * To see the effects of this test mod you must create a new world then teleport to the custom

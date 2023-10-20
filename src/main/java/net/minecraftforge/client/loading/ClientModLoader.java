@@ -21,12 +21,12 @@ import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.DataPackConfig;
 import net.minecraftforge.event.AddPackFindersEvent;
-import net.minecraftforge.fml.*;
-import net.minecraftforge.fml.loading.ImmediateWindowHandler;
+import net.neoforged.fml.*;
+import net.neoforged.fml.loading.ImmediateWindowHandler;
 import net.minecraftforge.internal.BrandingControl;
 import net.minecraftforge.logging.CrashReportExtender;
 import net.minecraftforge.common.util.LogicalSidedProvider;
-import net.minecraftforge.forgespi.locating.IModFile;
+import net.neoforged.neoforgespi.locating.IModFile;
 import net.minecraftforge.resource.PathPackResources;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,15 +36,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeConfig;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.client.gui.LoadingErrorScreen;
 import net.minecraftforge.resource.DelegatingPackResources;
 import net.minecraftforge.resource.ResourcePackLoader;
 import net.minecraftforge.server.LanguageHook;
-import net.minecraftforge.forgespi.language.IModInfo;
+import net.neoforged.neoforgespi.language.IModInfo;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientModLoader

@@ -15,9 +15,9 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -111,15 +111,14 @@ public abstract class RenderTooltipEvent extends Event
      * Fired when a tooltip gathers the {@link TooltipComponent}s to be rendered, before any text wrapping or processing.
      * The list of components and the maximum width of the tooltip can be modified through this event.
      *
-     * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * If this event is cancelled, then the list of components will be empty, causing the tooltip to not be rendered and
      * the corresponding {@link RenderTooltipEvent.Pre} and {@link RenderTooltipEvent.Color} to not be fired.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    @Cancelable
-    public static class GatherComponents extends Event
+    public static class GatherComponents extends Event implements ICancellableEvent
     {
         private final ItemStack itemStack;
         private final int screenWidth;
@@ -200,15 +199,14 @@ public abstract class RenderTooltipEvent extends Event
      * Fired <b>before</b> the tooltip is rendered.
      * This can be used to modify the positioning and font of the tooltip.
      *
-     * <p>This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * If this event is cancelled, then the tooltip will not be rendered and the corresponding
      * {@link RenderTooltipEvent.Color} will not be fired.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    @Cancelable
-    public static class Pre extends RenderTooltipEvent
+    public static class Pre extends RenderTooltipEvent implements ICancellableEvent
     {
         private final int screenWidth;
         private final int screenHeight;
@@ -282,7 +280,7 @@ public abstract class RenderTooltipEvent extends Event
      * Fired when the colours for the tooltip background are determined.
      * This can be used to modify the background color and the border's gradient colors.
      *
-     * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>

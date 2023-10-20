@@ -5,7 +5,7 @@
     public static <S extends MinecraftServer> S spin(Function<Thread, S> p_129873_) {
        AtomicReference<S> atomicreference = new AtomicReference<>();
 -      Thread thread = new Thread(() -> atomicreference.get().runServer(), "Server thread");
-+      Thread thread = new Thread(net.minecraftforge.fml.util.thread.SidedThreadGroups.SERVER, () -> atomicreference.get().runServer(), "Server thread");
++      Thread thread = new Thread(net.neoforged.fml.util.thread.SidedThreadGroups.SERVER, () -> atomicreference.get().runServer(), "Server thread");
        thread.setUncaughtExceptionHandler((p_177909_, p_177910_) -> LOGGER.error("Uncaught exception in server thread", p_177910_));
        if (Runtime.getRuntime().availableProcessors() > 4) {
           thread.setPriority(8);

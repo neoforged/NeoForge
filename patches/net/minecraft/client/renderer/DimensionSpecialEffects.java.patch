@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/DimensionSpecialEffects.java
 +++ b/net/minecraft/client/renderer/DimensionSpecialEffects.java
 @@ -13,7 +13,7 @@
- import net.minecraftforge.api.distmarker.OnlyIn;
+ import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
 -public abstract class DimensionSpecialEffects {

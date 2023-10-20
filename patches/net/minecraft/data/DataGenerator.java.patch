@@ -12,7 +12,7 @@
              LOGGER.debug("Generator {} already run for version {}", p_254418_, this.version.getName());
           } else {
              LOGGER.info("Starting provider: {}", p_254418_);
-+            net.minecraftforge.fml.StartupMessageManager.addModMessage("Generating: " + p_254418_);
++            net.neoforged.fml.StartupMessageManager.addModMessage("Generating: " + p_254418_);
              stopwatch1.start();
              hashcache.applyUpdate(hashcache.generateUpdate(p_254418_, p_253750_::run).join());
              stopwatch1.stop();

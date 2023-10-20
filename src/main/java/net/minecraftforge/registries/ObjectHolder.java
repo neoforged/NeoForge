@@ -6,7 +6,7 @@
 package net.minecraftforge.registries;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

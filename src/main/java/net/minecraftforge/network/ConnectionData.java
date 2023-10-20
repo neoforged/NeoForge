@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 import java.util.List;
 import java.util.Map;

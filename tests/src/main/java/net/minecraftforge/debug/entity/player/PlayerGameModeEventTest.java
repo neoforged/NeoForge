@@ -6,11 +6,11 @@
 package net.minecraftforge.debug.entity.player;
 
 import net.minecraft.world.level.GameType;
-import net.minecraftforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

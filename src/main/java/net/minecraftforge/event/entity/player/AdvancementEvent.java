@@ -16,7 +16,7 @@ import net.minecraftforge.common.MinecraftForge;
  * @see AdvancementEarnEvent
  * @see AdvancementProgressEvent
  */
-public class AdvancementEvent extends PlayerEvent
+public abstract class AdvancementEvent extends PlayerEvent
 {
     private final AdvancementHolder advancement;
 
@@ -37,10 +37,10 @@ public class AdvancementEvent extends PlayerEvent
      * <p>Note that advancements may be hidden from the player or used in background mechanics, such as recipe
      * advancements for unlocking recipes in the recipe book.</p>
      *
-     * <p>This event is not {@linkplain net.minecraftforge.eventbus.api.Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
-     * only on the {@linkplain net.minecraftforge.fml.LogicalSide#SERVER logical server}.</p>
+     * only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.</p>
      *
      * @see AdvancementProgress#isDone()
      */
@@ -56,10 +56,10 @@ public class AdvancementEvent extends PlayerEvent
     /**
      * Fired when the player's progress on an advancement criterion is granted or revoked.
      *
-     * <p>This event is not {@linkplain net.minecraftforge.eventbus.api.Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
-     * only on the {@linkplain net.minecraftforge.fml.LogicalSide#SERVER logical server}.</p>
+     * only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.</p>
      *
      * @see AdvancementEarnEvent
      * @see net.minecraft.server.PlayerAdvancements#award(AdvancementHolder, String)

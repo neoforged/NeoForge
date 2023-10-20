@@ -7,7 +7,7 @@ package net.minecraftforge.event;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.Nullable;
 
 /**

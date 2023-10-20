@@ -13,8 +13,8 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 
 import java.util.Arrays;
 import java.util.Collection;

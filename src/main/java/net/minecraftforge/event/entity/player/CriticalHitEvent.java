@@ -6,8 +6,7 @@
 package net.minecraftforge.event.entity.player;
 
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event.HasResult;
+import net.neoforged.bus.api.Event.HasResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
@@ -15,7 +14,7 @@ import net.minecraft.world.entity.player.Player;
  * This event is fired whenever a player attacks an Entity in
  * EntityPlayer#attackTargetEntityWithCurrentItem(Entity).<br>
  * <br>
- * This event is not {@link Cancelable}.<br>
+ * This event is not {@link ICancellableEvent}.<br>
  * <br>
  * This event has a result. {@link HasResult}<br>
  * DEFAULT: means the vanilla logic will determine if this a critical hit.<br>

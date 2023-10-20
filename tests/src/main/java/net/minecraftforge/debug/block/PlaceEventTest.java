@@ -7,8 +7,8 @@ package net.minecraftforge.debug.block;
 
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 @Mod("block_place_event_test")
 @Mod.EventBusSubscriber

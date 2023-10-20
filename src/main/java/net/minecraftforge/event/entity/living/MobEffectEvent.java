@@ -10,7 +10,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.
  */
-public class MobEffectEvent extends LivingEvent
+public abstract class MobEffectEvent extends LivingEvent
 {
     @Nullable
     protected final MobEffectInstance effectInstance;
@@ -38,11 +38,10 @@ public class MobEffectEvent extends LivingEvent
 
     /**
      * This Event is fired when a {@link MobEffect} is about to get removed from an Entity.
-     * This Event is {@link Cancelable}. If canceled, the effect will not be removed.
+     * This Event is {@link ICancellableEvent}. If canceled, the effect will not be removed.
      * This Event does not have a result.
      */
-    @Cancelable
-    public static class Remove extends MobEffectEvent
+    public static class Remove extends MobEffectEvent implements ICancellableEvent
     {
         private final MobEffect effect;
 
@@ -79,7 +78,7 @@ public class MobEffectEvent extends LivingEvent
 
     /**
      * This event is fired to check if a {@link MobEffectInstance} can be applied to an entity.
-     * This event is not {@link Cancelable}.
+     * This event is not {@link ICancellableEvent}.
      * This event {@link HasResult has a result}.
      * <p>
      * {@link Result#ALLOW ALLOW} will apply this mob effect.
@@ -105,7 +104,7 @@ public class MobEffectEvent extends LivingEvent
     /**
      * This event is fired when a new {@link MobEffectInstance} is added to an entity.
      * This event is also fired if an entity already has the effect but with a different duration or amplifier.
-     * This event is not {@link Cancelable}.
+     * This event is not {@link ICancellableEvent}.
      * This event does not have a result.
      */
     public static class Added extends MobEffectEvent
@@ -151,10 +150,10 @@ public class MobEffectEvent extends LivingEvent
 
     /**
      * This event is fired when a {@link MobEffectInstance} expires on an entity.
-     * This event is not {@link Cancelable}.
+     * This event is {@link ICancellableEvent}.
      * This event does not have a result.
      */
-    public static class Expired extends MobEffectEvent
+    public static class Expired extends MobEffectEvent implements ICancellableEvent
     {
         public Expired(LivingEntity living, MobEffectInstance effectInstance)
         {

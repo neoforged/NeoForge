@@ -6,9 +6,9 @@
 package net.minecraftforge.debug.entity.player;
 
 import net.minecraftforge.event.entity.player.PlayerSpawnPhantomsEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 /**
  * This tests for {@link PlayerSpawnPhantomsEventTest} and fires when the normal Phantom Spawns could occur.

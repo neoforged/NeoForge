@@ -8,9 +8,9 @@ package net.minecraftforge.event.entity.living;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * LivingAttackEvent is fired when a living Entity is attacked. <br>
@@ -23,15 +23,14 @@ import net.minecraft.world.entity.LivingEntity;
  * {@link #source} contains the DamageSource of the attack. <br>
  * {@link #amount} contains the amount of damage dealt to the entity. <br>
  * <br>
- * This event is {@link net.minecraftforge.eventbus.api.Cancelable}.<br>
+ * This event is {@link net.neoforged.bus.api.ICancellableEvent}.<br>
  * If this event is canceled, the Entity does not take attack damage.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  *<br>
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
-@Cancelable
-public class LivingAttackEvent extends LivingEvent
+public class LivingAttackEvent extends LivingEvent implements ICancellableEvent
 {
     private final DamageSource source;
     private final float amount;

@@ -9,7 +9,7 @@ import com.google.common.base.Preconditions;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.NonNullList;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 
 import javax.annotation.Nonnegative;
 import java.util.List;
@@ -17,12 +17,11 @@ import java.util.List;
 /**
  * This event is called when a player fishes an item.
  *
- * This event is {@link net.minecraftforge.eventbus.api.Cancelable}
+ * This event is {@link net.neoforged.bus.api.ICancellableEvent}
  * Canceling the event will cause the player to receive no items at all.
  * The hook will still take the damage specified
  */
-@Cancelable
-public class ItemFishedEvent extends PlayerEvent
+public class ItemFishedEvent extends PlayerEvent implements ICancellableEvent
 {
     private final NonNullList<ItemStack> stacks = NonNullList.create();
     private final FishingHook hook;

@@ -11,7 +11,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.fml.LogicalSide;
 import net.minecraftforge.network.custom.payload.SimpleQueryPayload;
 
 import java.util.function.BiFunction;
