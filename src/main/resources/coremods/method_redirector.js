@@ -6,7 +6,7 @@ var MethodInsnNode = Java.type('org.objectweb.asm.tree.MethodInsnNode');
 function finalizeSpawnNode(node){
     return new MethodInsnNode(
         Opcodes.INVOKESTATIC, 
-        "net/minecraftforge/event/ForgeEventFactory", 
+        "net/neoforged/neoforge/event/ForgeEventFactory",
         "onFinalizeSpawn", 
         "(Lnet/minecraft/world/entity/Mob;Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/world/DifficultyInstance;Lnet/minecraft/world/entity/MobSpawnType;Lnet/minecraft/world/entity/SpawnGroupData;Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/world/entity/SpawnGroupData;", 
         false);

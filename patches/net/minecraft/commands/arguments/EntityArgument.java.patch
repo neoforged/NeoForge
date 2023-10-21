@@ -5,7 +5,7 @@
           StringReader stringreader = new StringReader(p_91483_.getInput());
           stringreader.setCursor(p_91483_.getStart());
 -         EntitySelectorParser entityselectorparser = new EntitySelectorParser(stringreader, sharedsuggestionprovider.hasPermission(2));
-+         EntitySelectorParser entityselectorparser = new EntitySelectorParser(stringreader, net.minecraftforge.common.ForgeHooks.canUseEntitySelectors(sharedsuggestionprovider));
++         EntitySelectorParser entityselectorparser = new EntitySelectorParser(stringreader, net.neoforged.neoforge.common.ForgeHooks.canUseEntitySelectors(sharedsuggestionprovider));
  
           try {
              entityselectorparser.parse();

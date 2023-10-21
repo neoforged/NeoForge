@@ -33,7 +33,7 @@
        }
  
 -      return i == this.ingredients.size() && stackedcontents.canCraft(this, null);
-+      return i == this.ingredients.size() && (isSimple ? stackedcontents.canCraft(this, null) : net.minecraftforge.common.util.RecipeMatcher.findMatches(inputs,  this.ingredients) != null);
++      return i == this.ingredients.size() && (isSimple ? stackedcontents.canCraft(this, null) : net.neoforged.neoforge.common.util.RecipeMatcher.findMatches(inputs,  this.ingredients) != null);
     }
  
     public ItemStack assemble(CraftingContainer p_44260_, RegistryAccess p_266797_) {

@@ -11,7 +11,7 @@
 +   }
 +
 +   @Override
-+   public net.minecraftforge.client.model.data.ModelDataManager getModelDataManager() {
++   public net.neoforged.neoforge.client.model.data.ModelDataManager getModelDataManager() {
 +      return level.getModelDataManager();
 +   }
  }

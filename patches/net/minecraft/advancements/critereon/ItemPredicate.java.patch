@@ -6,7 +6,7 @@
     Optional<Holder<Potion>> potion,
 -   Optional<NbtPredicate> nbt
 +   Optional<NbtPredicate> nbt,
-+   Optional<net.minecraftforge.common.advancements.critereon.ICustomItemPredicate> customLogic
++   Optional<net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate> customLogic
  ) {
     private static final Codec<HolderSet<Item>> ITEMS_CODEC = BuiltInRegistries.ITEM
        .holderByNameCodec()
@@ -21,11 +21,11 @@
              )
              .apply(p_297904_, ItemPredicate::new)
     );
-+   public static Codec<ItemPredicate> CODEC = ExtraCodecs.<net.minecraftforge.common.advancements.critereon.ICustomItemPredicate, ItemPredicate>either(
++   public static Codec<ItemPredicate> CODEC = ExtraCodecs.<net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate, ItemPredicate>either(
 +           // Use dispatchUnsafe to always inline the dispatched type parameters into the root ingredient object, next to the "type"
-+           net.minecraftforge.common.util.ForgeExtraCodecs.dispatchUnsafe(
-+                   ExtraCodecs.lazyInitializedCodec(() -> net.minecraftforge.registries.ForgeRegistries.ITEM_PREDICATE_SERIALIZERS.get().getCodec()),
-+                   net.minecraftforge.common.advancements.critereon.ICustomItemPredicate::codec,
++           net.neoforged.neoforge.common.util.ForgeExtraCodecs.dispatchUnsafe(
++                   ExtraCodecs.lazyInitializedCodec(() -> net.neoforged.neoforge.registries.ForgeRegistries.ITEM_PREDICATE_SERIALIZERS.get().getCodec()),
++                   net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate::codec,
 +                   java.util.function.Function.identity()),
 +           VANILLA_CODEC
 +      ).xmap(either -> either.map(ItemPredicate::new, p -> p), predicate -> {
@@ -41,7 +41,7 @@
 +      this(tag, items, count, durability, enchantments, storedEnchantments, potion, nbt, Optional.empty());
 +   }
 +   
-+   public ItemPredicate(net.minecraftforge.common.advancements.critereon.ICustomItemPredicate customLogic) {
++   public ItemPredicate(net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate customLogic) {
 +      this(Optional.empty(), Optional.empty(), MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY, List.of(), List.of(), Optional.empty(), Optional.empty(), Optional.of(customLogic));
 +   }
 +   

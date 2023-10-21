@@ -39,7 +39,7 @@
           this.zo = this.getZ();
           Vec3 vec3 = this.getDeltaMovement();
           float f = this.getEyeHeight() - 0.11111111F;
-+         net.minecraftforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
++         net.neoforged.neoforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
 +         if (!fluidType.isAir() && !fluidType.isVanilla() && this.getFluidTypeHeight(fluidType) > (double)f) fluidType.setItemMovement(this);
 +         else
           if (this.isInWater() && this.getFluidHeight(FluidTags.WATER) > (double)f) {
@@ -62,7 +62,7 @@
 -         if (!this.level().isClientSide && this.age >= 6000) {
 +         ItemStack item = this.getItem();
 +         if (!this.level().isClientSide && this.age >= lifespan) {
-+             int hook = net.minecraftforge.event.ForgeEventFactory.onItemExpire(this, item);
++             int hook = net.neoforged.neoforge.event.ForgeEventFactory.onItemExpire(this, item);
 +             if (hook < 0) {
 +                this.discard();
 +             } else {
@@ -118,13 +118,13 @@
           Item item = itemstack.getItem();
           int i = itemstack.getCount();
 -         if (this.pickupDelay == 0 && (this.target == null || this.target.equals(p_32040_.getUUID())) && p_32040_.getInventory().add(itemstack)) {
-+         int hook = net.minecraftforge.event.ForgeEventFactory.onItemPickup(this, p_32040_);
++         int hook = net.neoforged.neoforge.event.ForgeEventFactory.onItemPickup(this, p_32040_);
 +         if (hook < 0) return;
 +         ItemStack copy = itemstack.copy();
 +         if (this.pickupDelay == 0 && (this.target == null || this.target.equals(p_32040_.getUUID())) && (hook == 1 || i <= 0 || p_32040_.getInventory().add(itemstack))) {
 +            i = copy.getCount() - itemstack.getCount();
 +            copy.setCount(i);
-+            net.minecraftforge.event.ForgeEventFactory.firePlayerItemPickupEvent(p_32040_, this, copy);
++            net.neoforged.neoforge.event.ForgeEventFactory.firePlayerItemPickupEvent(p_32040_, this, copy);
              p_32040_.take(this, i);
              if (itemstack.isEmpty()) {
                 this.discard();
@@ -134,7 +134,7 @@
     @Override
 -   public Entity changeDimension(ServerLevel p_32042_) {
 -      Entity entity = super.changeDimension(p_32042_);
-+   public Entity changeDimension(ServerLevel p_32042_, net.minecraftforge.common.util.ITeleporter teleporter) {
++   public Entity changeDimension(ServerLevel p_32042_, net.neoforged.neoforge.common.util.ITeleporter teleporter) {
 +      Entity entity = super.changeDimension(p_32042_, teleporter);
        if (!this.level().isClientSide && entity instanceof ItemEntity) {
           ((ItemEntity)entity).mergeWithNeighbours();

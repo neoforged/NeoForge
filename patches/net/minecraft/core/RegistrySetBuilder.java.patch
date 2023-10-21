@@ -16,7 +16,7 @@
           Builder<ResourceLocation, HolderGetter<?>> builder = ImmutableMap.builder();
           p_255995_.registries()
 -            .forEach(p_258197_ -> builder.put(p_258197_.key().location(), RegistrySetBuilder.wrapContextLookup(p_258197_.value().asLookup())));
-+            .forEach(p_258197_ -> builder.put(p_258197_.key().location(), net.minecraftforge.common.ForgeHooks.wrapRegistryLookup(p_258197_.value().asLookup())));
++            .forEach(p_258197_ -> builder.put(p_258197_.key().location(), net.neoforged.neoforge.common.ForgeHooks.wrapRegistryLookup(p_258197_.value().asLookup())));
           p_256495_.forEach(p_256603_ -> builder.put(p_256603_.location(), registrysetbuilder$universallookup));
           return new RegistrySetBuilder.BuildState(registrysetbuilder$compositeowner, registrysetbuilder$universallookup, builder.build(), new HashMap<>(), list);
        }

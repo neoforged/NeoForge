@@ -4,7 +4,7 @@
  package net.minecraft.world.level.pathfinder;
  
 -public enum BlockPathTypes {
-+public enum BlockPathTypes implements net.minecraftforge.common.IExtensibleEnum {
++public enum BlockPathTypes implements net.neoforged.neoforge.common.IExtensibleEnum {
     BLOCKED(-1.0F),
     OPEN(0.0F),
     WALKABLE(0.0F),

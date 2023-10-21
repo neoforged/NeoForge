@@ -5,7 +5,7 @@
  
           HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
 -         if (hitresult.getType() != HitResult.Type.MISS) {
-+         if (hitresult.getType() != HitResult.Type.MISS && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
++         if (hitresult.getType() != HitResult.Type.MISS && !net.neoforged.neoforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
              this.onHit(hitresult);
           }
        }

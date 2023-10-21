@@ -5,7 +5,7 @@
  import net.minecraft.world.level.block.state.BlockBehaviour;
  
 -public abstract class StemGrownBlock extends Block {
-+public abstract class StemGrownBlock extends Block implements net.minecraftforge.common.IPlantable {
++public abstract class StemGrownBlock extends Block implements net.neoforged.neoforge.common.IPlantable {
     public StemGrownBlock(BlockBehaviour.Properties p_57058_) {
        super(p_57058_);
     }

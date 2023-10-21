@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements WindowEventHandler {
-+public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements WindowEventHandler, net.minecraftforge.client.extensions.IForgeMinecraft {
++public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements WindowEventHandler, net.neoforged.neoforge.client.extensions.IForgeMinecraft {
     static Minecraft instance;
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final boolean ON_OSX = Util.getPlatform() == Util.OS.OSX;
@@ -31,7 +31,7 @@
        this.mainRenderTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
        this.mainRenderTarget.clear(ON_OSX);
        this.resourceManager = new ReloadableResourceManager(PackType.CLIENT_RESOURCES);
-+      net.minecraftforge.client.loading.ClientModLoader.begin(this, this.resourcePackRepository, this.resourceManager);
++      net.neoforged.neoforge.client.loading.ClientModLoader.begin(this, this.resourcePackRepository, this.resourceManager);
        this.resourcePackRepository.reload();
        this.options.loadSelectedResourcePacks(this.resourcePackRepository);
        this.languageManager = new LanguageManager(this.options.languageCode);
@@ -39,14 +39,14 @@
        this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getItemInHandRenderer(), this.resourceManager, this.renderBuffers);
        this.resourceManager.registerReloadListener(this.gameRenderer.createReloadListener());
        this.levelRenderer = new LevelRenderer(this, this.entityRenderDispatcher, this.blockEntityRenderDispatcher, this.renderBuffers);
-+      net.neoforged.fml.ModLoader.get().postEvent(new net.minecraftforge.client.event.RenderLevelStageEvent.RegisterStageEvent());
++      net.neoforged.fml.ModLoader.get().postEvent(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.RegisterStageEvent());
        this.resourceManager.registerReloadListener(this.levelRenderer);
 -      this.createSearchTrees();
 +      // Forge: We delay this to allow registration of modded creative mode tabs
 +      // this.createSearchTrees();
        this.resourceManager.registerReloadListener(this.searchRegistry);
        this.particleEngine = new ParticleEngine(this.level, this.textureManager);
-+      net.minecraftforge.client.ForgeHooksClient.onRegisterParticleProviders(this.particleEngine);
++      net.neoforged.neoforge.client.ForgeHooksClient.onRegisterParticleProviders(this.particleEngine);
        this.resourceManager.registerReloadListener(this.particleEngine);
        this.paintingTextures = new PaintingTextureManager(this.textureManager);
        this.resourceManager.registerReloadListener(this.paintingTextures);
@@ -55,7 +55,7 @@
        this.resourceManager.registerReloadListener(this.gpuWarnlistManager);
        this.resourceManager.registerReloadListener(this.regionalCompliancies);
 -      this.gui = new Gui(this, this.itemRenderer);
-+      this.gui = new net.minecraftforge.client.gui.overlay.ForgeGui(this);
++      this.gui = new net.neoforged.neoforge.client.gui.overlay.ForgeGui(this);
 +      // FORGE: Moved keyboard and mouse handler setup below ingame gui creation to prevent NPEs in them.
 +      this.mouseHandler.setup(this.window.getWindow());
 +      this.keyboardHandler.setup(this.window.getWindow());
@@ -66,7 +66,7 @@
           this.options.fullscreen().set(this.window.isFullscreen());
        }
  
-+      net.minecraftforge.client.ForgeHooksClient.initClientHooks(this, this.resourceManager);
++      net.neoforged.neoforge.client.ForgeHooksClient.initClientHooks(this, this.resourceManager);
        this.window.updateVsync(this.options.enableVsync().get());
        this.window.updateRawMouseInput(this.options.rawMouseInput().get());
        this.window.setDefaultErrorCallback();
@@ -96,7 +96,7 @@
           runnable = () -> this.setScreen(screen);
        }
  
-+      if (net.minecraftforge.client.loading.ClientModLoader.completeModLoading())
++      if (net.neoforged.neoforge.client.loading.ClientModLoader.completeModLoading())
 +      {
 +         runnable = () -> { }; //Forge: Do not override the error screen
 +      }
@@ -127,7 +127,7 @@
        StringBuilder stringbuilder = new StringBuilder("Minecraft");
        if (checkModStatus().shouldReportAsModified()) {
 -         stringbuilder.append("*");
-+         stringbuilder.append(' ').append(net.minecraftforge.forge.snapshots.ForgeSnapshotsMod.BRANDING_NAME).append('*');
++         stringbuilder.append(' ').append(net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod.BRANDING_NAME).append('*');
        }
  
        stringbuilder.append(" ");
@@ -153,8 +153,8 @@
     }
  
     public void createSearchTrees() {
-+      var nameSearchKeys = net.minecraftforge.client.CreativeModeTabSearchRegistry.getNameSearchKeys();
-+      var tagSearchKeys = net.minecraftforge.client.CreativeModeTabSearchRegistry.getTagSearchKeys();
++      var nameSearchKeys = net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getNameSearchKeys();
++      var tagSearchKeys = net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getTagSearchKeys();
 +      for (var nameSearchKey : nameSearchKeys.values())
        this.searchRegistry
           .register(
@@ -186,15 +186,15 @@
        if (p_91333_.getSaveFile() != null) {
           Bootstrap.realStdoutPrintln("#@!@# Game crashed! Crash report saved to: #@!@# " + p_91333_.getSaveFile());
 -         System.exit(-1);
-+         net.minecraftforge.server.ServerLifecycleHooks.handleExit(-1);
++         net.neoforged.neoforge.server.ServerLifecycleHooks.handleExit(-1);
        } else if (p_91333_.saveToFile(file2)) {
           Bootstrap.realStdoutPrintln("#@!@# Game crashed! Crash report saved to: #@!@# " + file2.getAbsolutePath());
 -         System.exit(-1);
-+         net.minecraftforge.server.ServerLifecycleHooks.handleExit(-1);
++         net.neoforged.neoforge.server.ServerLifecycleHooks.handleExit(-1);
        } else {
           Bootstrap.realStdoutPrintln("#@?@# Game crashed! Crash report could not be saved. #@?@#");
 -         System.exit(-2);
-+         net.minecraftforge.server.ServerLifecycleHooks.handleExit(-2);
++         net.neoforged.neoforge.server.ServerLifecycleHooks.handleExit(-2);
        }
     }
  
@@ -213,16 +213,16 @@
           }
        }
  
-+      net.minecraftforge.client.ForgeHooksClient.clearGuiLayers(this);
++      net.neoforged.neoforge.client.ForgeHooksClient.clearGuiLayers(this);
 +      Screen old = this.screen;
 +      if (p_91153_ != null) {
-+         var event = new net.minecraftforge.client.event.ScreenEvent.Opening(old, p_91153_);
-+         if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled()) return;
++         var event = new net.neoforged.neoforge.client.event.ScreenEvent.Opening(old, p_91153_);
++         if (net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled()) return;
 +         p_91153_ = event.getNewScreen();
 +      }
 +
 +      if (old != null && p_91153_ != old) {
-+         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.ScreenEvent.Closing(old));
++         net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Closing(old));
 +         old.removed();
 +      }
 +
@@ -234,11 +234,11 @@
        this.profiler.pop();
        if (!this.noRender) {
 +         this.realPartialTick = this.pause ? this.pausePartialTick : this.timer.partialTick; // Cache this since pause is volatile
-+         net.minecraftforge.event.ForgeEventFactory.onRenderTickStart(this.realPartialTick);
++         net.neoforged.neoforge.event.ForgeEventFactory.onRenderTickStart(this.realPartialTick);
           this.profiler.popPush("gameRenderer");
           this.gameRenderer.render(this.pause ? this.pausePartialTick : this.timer.partialTick, i, p_91384_);
           this.profiler.pop();
-+         net.minecraftforge.event.ForgeEventFactory.onRenderTickEnd(this.realPartialTick);
++         net.neoforged.neoforge.event.ForgeEventFactory.onRenderTickEnd(this.realPartialTick);
        }
  
        if (this.fpsPieResults != null) {
@@ -246,7 +246,7 @@
        this.window.setGuiScale((double)i);
        if (this.screen != null) {
           this.screen.resize(this, this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
-+         net.minecraftforge.client.ForgeHooksClient.resizeGuiLayers(this, this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
++         net.neoforged.neoforge.client.ForgeHooksClient.resizeGuiLayers(this, this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
        }
  
        RenderTarget rendertarget = this.getMainRenderTarget();
@@ -259,7 +259,7 @@
     }
  
     public void stop() {
-+      if (this.isRunning()) net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.GameShuttingDownEvent());
++      if (this.isRunning()) net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.GameShuttingDownEvent());
        this.running = false;
     }
  
@@ -269,7 +269,7 @@
              BlockPos blockpos = blockhitresult.getBlockPos();
 -            if (!this.level.getBlockState(blockpos).isAir()) {
 +            if (!this.level.isEmptyBlock(blockpos)) {
-+               var inputEvent = net.minecraftforge.client.ForgeHooksClient.onClickInput(0, this.options.keyAttack, InteractionHand.MAIN_HAND);
++               var inputEvent = net.neoforged.neoforge.client.ForgeHooksClient.onClickInput(0, this.options.keyAttack, InteractionHand.MAIN_HAND);
 +               if (inputEvent.isCanceled()) {
 +                  if (inputEvent.shouldSwingHand()) {
 +                     this.particleEngine.addBlockHitEffects(blockpos, blockhitresult);
@@ -289,7 +289,7 @@
              return false;
           } else {
              boolean flag = false;
-+            var inputEvent = net.minecraftforge.client.ForgeHooksClient.onClickInput(0, this.options.keyAttack, InteractionHand.MAIN_HAND);
++            var inputEvent = net.neoforged.neoforge.client.ForgeHooksClient.onClickInput(0, this.options.keyAttack, InteractionHand.MAIN_HAND);
 +            if (!inputEvent.isCanceled())
              switch(this.hitResult.getType()) {
                 case ENTITY:
@@ -307,7 +307,7 @@
                    }
  
                    this.player.resetAttackStrengthTicker();
-+                  net.minecraftforge.common.ForgeHooks.onEmptyLeftClick(this.player);
++                  net.neoforged.neoforge.common.ForgeHooks.onEmptyLeftClick(this.player);
              }
  
 +            if (inputEvent.shouldSwingHand())
@@ -318,7 +318,7 @@
              }
  
              for(InteractionHand interactionhand : InteractionHand.values()) {
-+               var inputEvent = net.minecraftforge.client.ForgeHooksClient.onClickInput(1, this.options.keyUse, interactionhand);
++               var inputEvent = net.neoforged.neoforge.client.ForgeHooksClient.onClickInput(1, this.options.keyUse, interactionhand);
 +               if (inputEvent.isCanceled()) {
 +                  if (inputEvent.shouldSwingHand()) this.player.swing(interactionhand);
 +                  return;
@@ -349,7 +349,7 @@
                 }
  
 +               if (itemstack.isEmpty() && (this.hitResult == null || this.hitResult.getType() == HitResult.Type.MISS))
-+                  net.minecraftforge.common.ForgeHooks.onEmptyClick(this.player, interactionhand);
++                  net.neoforged.neoforge.common.ForgeHooks.onEmptyClick(this.player, interactionhand);
 +
                 if (!itemstack.isEmpty()) {
                    InteractionResult interactionresult2 = this.gameMode.useItem(this.player, interactionhand);
@@ -358,7 +358,7 @@
           --this.rightClickDelay;
        }
  
-+      net.minecraftforge.event.ForgeEventFactory.onPreClientTick();
++      net.neoforged.neoforge.event.ForgeEventFactory.onPreClientTick();
 +
        this.profiler.push("gui");
        this.chatListener.tick();
@@ -367,7 +367,7 @@
  
              this.tutorial.tick();
  
-+            net.minecraftforge.event.ForgeEventFactory.onPreLevelTick(this.level, () -> true);
++            net.neoforged.neoforge.event.ForgeEventFactory.onPreLevelTick(this.level, () -> true);
              try {
                 this.level.tick(() -> true);
              } catch (Throwable throwable) {
@@ -375,7 +375,7 @@
  
                 throw new ReportedException(crashreport);
              }
-+            net.minecraftforge.event.ForgeEventFactory.onPostLevelTick(this.level, () -> true);
++            net.neoforged.neoforge.event.ForgeEventFactory.onPostLevelTick(this.level, () -> true);
           }
  
           this.profiler.popPush("animateTick");
@@ -384,7 +384,7 @@
        this.keyboardHandler.tick();
        this.profiler.pop();
 +
-+      net.minecraftforge.event.ForgeEventFactory.onPostClientTick();
++      net.neoforged.neoforge.event.ForgeEventFactory.onPostClientTick();
     }
  
     private boolean isMultiplayerServer() {
@@ -392,7 +392,7 @@
     }
  
     public void setLevel(ClientLevel p_91157_) {
-+      if (this.level != null) net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.level.LevelEvent.Unload(this.level));
++      if (this.level != null) net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
        ProgressScreen progressscreen = new ProgressScreen(true);
        progressscreen.progressStartNoAbort(Component.translatable("connect.joining"));
        this.updateScreenAndTick(progressscreen);
@@ -400,12 +400,12 @@
        IntegratedServer integratedserver = this.singleplayerServer;
        this.singleplayerServer = null;
        this.gameRenderer.resetData();
-+      net.minecraftforge.client.ForgeHooksClient.firePlayerLogout(this.gameMode, this.player);
++      net.neoforged.neoforge.client.ForgeHooksClient.firePlayerLogout(this.gameMode, this.player);
        this.gameMode = null;
        this.narrator.clear();
        this.updateScreenAndTick(p_91321_);
        if (this.level != null) {
-+         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.level.LevelEvent.Unload(this.level));
++         net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
           if (integratedserver != null) {
              this.profiler.push("waitForServer");
  
@@ -413,7 +413,7 @@
           this.downloadedPackSource.clearServerPack();
           this.gui.onDisconnected();
           this.isLocalServer = false;
-+         net.minecraftforge.client.ForgeHooksClient.handleClientLevelClosing(this.level);
++         net.neoforged.neoforge.client.ForgeHooksClient.handleClientLevelClosing(this.level);
        }
  
        this.level = null;
@@ -421,7 +421,7 @@
  
     private void pickBlock() {
        if (this.hitResult != null && this.hitResult.getType() != HitResult.Type.MISS) {
-+         if (net.minecraftforge.client.ForgeHooksClient.onClickInput(2, this.options.keyPickItem, InteractionHand.MAIN_HAND).isCanceled()) return;
++         if (net.neoforged.neoforge.client.ForgeHooksClient.onClickInput(2, this.options.keyPickItem, InteractionHand.MAIN_HAND).isCanceled()) return;
           boolean flag = this.player.getAbilities().instabuild;
           BlockEntity blockentity = null;
           HitResult.Type hitresult$type = this.hitResult.getType();

@@ -14,7 +14,7 @@
        SpawnPlacements.Data spawnplacements$data = DATA_BY_TYPE.get(p_217075_);
 -      return spawnplacements$data == null || ((SpawnPredicate<T>)spawnplacements$data.predicate).test(p_217075_, p_217076_, p_217077_, p_217078_, p_217079_);
 +      boolean vanillaResult = spawnplacements$data == null || spawnplacements$data.predicate.test((EntityType)p_217075_, p_217076_, p_217077_, p_217078_, p_217079_);
-+      return net.minecraftforge.event.ForgeEventFactory.checkSpawnPlacements(p_217075_, p_217076_, p_217077_, p_217078_, p_217079_, vanillaResult);
++      return net.neoforged.neoforge.event.ForgeEventFactory.checkSpawnPlacements(p_217075_, p_217076_, p_217077_, p_217078_, p_217079_, vanillaResult);
     }
  
     static {
@@ -23,19 +23,19 @@
     }
  
 -   public static enum Type {
-+   public static enum Type implements net.minecraftforge.common.IExtensibleEnum {
++   public static enum Type implements net.neoforged.neoforge.common.IExtensibleEnum {
        ON_GROUND,
        IN_WATER,
        NO_RESTRICTIONS,
        IN_LAVA;
 +
-+      public static Type create(String name, net.minecraftforge.common.util.TriPredicate<net.minecraft.world.level.LevelReader, BlockPos, EntityType<? extends Mob>> predicate) {
++      public static Type create(String name, net.neoforged.neoforge.common.util.TriPredicate<net.minecraft.world.level.LevelReader, BlockPos, EntityType<? extends Mob>> predicate) {
 +          throw new IllegalStateException("Enum not extended");
 +      }
 +
-+      private net.minecraftforge.common.util.TriPredicate<net.minecraft.world.level.LevelReader, BlockPos, EntityType<?>> predicate;
++      private net.neoforged.neoforge.common.util.TriPredicate<net.minecraft.world.level.LevelReader, BlockPos, EntityType<?>> predicate;
 +      private Type() { this(null); }
-+      private Type(net.minecraftforge.common.util.TriPredicate<net.minecraft.world.level.LevelReader, BlockPos, EntityType<?>> predicate) {
++      private Type(net.neoforged.neoforge.common.util.TriPredicate<net.minecraft.world.level.LevelReader, BlockPos, EntityType<?>> predicate) {
 +          this.predicate = predicate;
 +      }
 +
@@ -49,9 +49,9 @@
 +   // ******* FORGE START. INTERNAL USE ONLY! ****** //
 +   public static void fireSpawnPlacementEvent()
 +   {
-+       Map<EntityType<?>, net.minecraftforge.event.entity.SpawnPlacementRegisterEvent.MergedSpawnPredicate<?>> map = Maps.newHashMap();
-+       DATA_BY_TYPE.forEach((type, data) -> map.put(type, new net.minecraftforge.event.entity.SpawnPlacementRegisterEvent.MergedSpawnPredicate<>(data.predicate, data.placement, data.heightMap)));
-+       net.neoforged.fml.ModLoader.get().postEvent(new net.minecraftforge.event.entity.SpawnPlacementRegisterEvent(map));
++       Map<EntityType<?>, net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent.MergedSpawnPredicate<?>> map = Maps.newHashMap();
++       DATA_BY_TYPE.forEach((type, data) -> map.put(type, new net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent.MergedSpawnPredicate<>(data.predicate, data.placement, data.heightMap)));
++       net.neoforged.fml.ModLoader.get().postEvent(new net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent(map));
 +       map.forEach(((entityType, merged) -> DATA_BY_TYPE.put(entityType, new SpawnPlacements.Data(merged.getHeightmapType(), merged.getSpawnType(), merged.build()))));
     }
  }

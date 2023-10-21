@@ -5,7 +5,7 @@
           try {
              JsonObject jsonobject = GsonHelper.convertToJsonObject(p_300736_, "advancement");
 -            Advancement advancement = Advancement.fromJson(jsonobject, new DeserializationContext(p_300735_, this.lootData));
-+            Advancement advancement = Advancement.fromJson(jsonobject, new DeserializationContext(p_300735_, this.lootData), registryAccess == null ? com.mojang.serialization.JsonOps.INSTANCE : net.minecraftforge.common.conditions.ConditionalOps.create(net.minecraft.resources.RegistryOps.create(com.mojang.serialization.JsonOps.INSTANCE, registryAccess), conditionContext));
++            Advancement advancement = Advancement.fromJson(jsonobject, new DeserializationContext(p_300735_, this.lootData), registryAccess == null ? com.mojang.serialization.JsonOps.INSTANCE : net.neoforged.neoforge.common.conditions.ConditionalOps.create(net.minecraft.resources.RegistryOps.create(com.mojang.serialization.JsonOps.INSTANCE, registryAccess), conditionContext));
 +            if (advancement == null) {
 +               LOGGER.debug("Skipping loading advancement {} as its conditions were not met", p_300735_);
 +               return;

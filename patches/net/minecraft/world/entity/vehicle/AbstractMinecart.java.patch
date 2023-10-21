@@ -5,7 +5,7 @@
  import org.joml.Vector3f;
  
 -public abstract class AbstractMinecart extends Entity {
-+public abstract class AbstractMinecart extends Entity implements net.minecraftforge.common.extensions.IForgeAbstractMinecart {
++public abstract class AbstractMinecart extends Entity implements net.neoforged.neoforge.common.extensions.IForgeAbstractMinecart {
     private static final float LOWERED_PASSENGER_ATTACHMENT_Y = 0.0F;
     private static final float PASSENGER_ATTACHMENT_Y = 0.1875F;
     private static final EntityDataAccessor<Integer> DATA_ID_HURT = SynchedEntityData.defineId(AbstractMinecart.class, EntityDataSerializers.INT);
@@ -21,7 +21,7 @@
        p_38135_.put(RailShape.NORTH_WEST, Pair.of(vec3i2, vec3i));
        p_38135_.put(RailShape.NORTH_EAST, Pair.of(vec3i2, vec3i1));
     });
-+   private static net.minecraftforge.common.IMinecartCollisionHandler COLLISIONS = null;
++   private static net.neoforged.neoforge.common.IMinecartCollisionHandler COLLISIONS = null;
  
     protected AbstractMinecart(EntityType<?> p_38087_, Level p_38088_) {
        super(p_38087_, p_38088_);
@@ -29,11 +29,11 @@
        this.zo = p_38094_;
     }
  
-+   public net.minecraftforge.common.IMinecartCollisionHandler getCollisionHandler() {
++   public net.neoforged.neoforge.common.IMinecartCollisionHandler getCollisionHandler() {
 +      return COLLISIONS;
 +   }
 +
-+   public static void registerCollisionHandler(@Nullable net.minecraftforge.common.IMinecartCollisionHandler handler) {
++   public static void registerCollisionHandler(@Nullable net.neoforged.neoforge.common.IMinecartCollisionHandler handler) {
 +      COLLISIONS = handler;
 +   }
 +

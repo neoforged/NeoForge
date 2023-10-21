@@ -4,7 +4,7 @@
     @Override
     public void die(DamageSource p_9035_) {
        this.gameEvent(GameEvent.ENTITY_DIE);
-+      if (net.minecraftforge.common.ForgeHooks.onLivingDeath(this, p_9035_)) return;
++      if (net.neoforged.neoforge.common.ForgeHooks.onLivingDeath(this, p_9035_)) return;
        boolean flag = this.level().getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES);
        if (flag) {
           Component component = this.getCombatTracker().getDeathMessage();
@@ -13,8 +13,8 @@
     @Nullable
     @Override
 -   public Entity changeDimension(ServerLevel p_9180_) {
-+   public Entity changeDimension(ServerLevel p_9180_, net.minecraftforge.common.util.ITeleporter teleporter) {
-+      if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(this, p_9180_.dimension())) return null;
++   public Entity changeDimension(ServerLevel p_9180_, net.neoforged.neoforge.common.util.ITeleporter teleporter) {
++      if (!net.neoforged.neoforge.common.ForgeHooks.onTravelToDimension(this, p_9180_.dimension())) return null;
        this.isChangingDimension = true;
        ServerLevel serverlevel = this.serverLevel();
        ResourceKey<Level> resourcekey = serverlevel.dimension();
@@ -60,7 +60,7 @@
              this.lastSentExp = -1;
              this.lastSentHealth = -1.0F;
              this.lastSentFood = -1;
-+            net.minecraftforge.event.ForgeEventFactory.firePlayerChangedDimensionEvent(this, resourcekey, p_9180_.dimension());
++            net.neoforged.neoforge.event.ForgeEventFactory.firePlayerChangedDimensionEvent(this, resourcekey, p_9180_.dimension());
           }
  
           return this;
@@ -69,7 +69,7 @@
     @Override
     public Either<Player.BedSleepingProblem, Unit> startSleepInBed(BlockPos p_9115_) {
 +      java.util.Optional<BlockPos> optAt = java.util.Optional.of(p_9115_);
-+      Player.BedSleepingProblem ret = net.minecraftforge.event.ForgeEventFactory.onPlayerSleepInBed(this, optAt);
++      Player.BedSleepingProblem ret = net.neoforged.neoforge.event.ForgeEventFactory.onPlayerSleepInBed(this, optAt);
 +      if (ret != null) return Either.left(ret);
        Direction direction = this.level().getBlockState(p_9115_).getValue(HorizontalDirectionalBlock.FACING);
        if (this.isSleeping() || !this.isAlive()) {
@@ -79,7 +79,7 @@
        } else {
           this.setRespawnPosition(this.level().dimension(), p_9115_, this.getYRot(), false, true);
 -         if (this.level().isDay()) {
-+            if (!net.minecraftforge.event.ForgeEventFactory.fireSleepingTimeCheck(this, optAt)) {
++            if (!net.neoforged.neoforge.event.ForgeEventFactory.fireSleepingTimeCheck(this, optAt)) {
              return Either.left(Player.BedSleepingProblem.NOT_POSSIBLE_NOW);
           } else {
              if (!this.isCreative()) {
@@ -95,7 +95,7 @@
              this.connection.send(new ClientboundOpenScreenPacket(abstractcontainermenu.containerId, abstractcontainermenu.getType(), p_9033_.getDisplayName()));
              this.initMenu(abstractcontainermenu);
              this.containerMenu = abstractcontainermenu;
-+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.containerMenu));
++            net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.PlayerContainerEvent.Open(this, this.containerMenu));
              return OptionalInt.of(this.containerCounter);
           }
        }
@@ -103,7 +103,7 @@
        this.connection.send(new ClientboundHorseScreenOpenPacket(this.containerCounter, p_9060_.getContainerSize(), p_9059_.getId()));
        this.containerMenu = new HorseInventoryMenu(this.containerCounter, this.getInventory(), p_9060_, p_9059_);
        this.initMenu(this.containerMenu);
-+      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.containerMenu));
++      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.PlayerContainerEvent.Open(this, this.containerMenu));
     }
  
     @Override
@@ -111,7 +111,7 @@
     public void doCloseContainer() {
        this.containerMenu.removed(this);
        this.inventoryMenu.transferState(this.containerMenu);
-+      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Close(this, this.containerMenu));
++      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.PlayerContainerEvent.Close(this, this.containerMenu));
        this.containerMenu = this.inventoryMenu;
     }
  
@@ -125,7 +125,7 @@
 +      CompoundTag old = p_9016_.getPersistentData();
 +      if (old.contains(PERSISTED_NBT_TAG))
 +          getPersistentData().put(PERSISTED_NBT_TAG, old.get(PERSISTED_NBT_TAG));
-+      net.minecraftforge.event.ForgeEventFactory.onPlayerClone(this, p_9016_, !p_9017_);
++      net.neoforged.neoforge.event.ForgeEventFactory.onPlayerClone(this, p_9016_, !p_9017_);
 +      this.tabListHeader = p_9016_.tabListHeader;
 +      this.tabListFooter = p_9016_.tabListFooter;
     }
@@ -135,7 +135,7 @@
     }
  
     public boolean setGameMode(GameType p_143404_) {
-+      p_143404_ = net.minecraftforge.common.ForgeHooks.onChangeGameType(this, this.gameMode.getGameModeForPlayer(), p_143404_);
++      p_143404_ = net.neoforged.neoforge.common.ForgeHooks.onChangeGameType(this, this.gameMode.getGameModeForPlayer(), p_143404_);
 +      if (p_143404_ == null) return false;
        if (!this.gameMode.changeGameModeForPlayer(p_143404_)) {
           return false;
@@ -144,7 +144,7 @@
     public void setCamera(@Nullable Entity p_9214_) {
        Entity entity = this.getCamera();
        this.camera = (Entity)(p_9214_ == null ? this : p_9214_);
-+      while (this.camera instanceof net.minecraftforge.entity.PartEntity<?> partEntity) this.camera = partEntity.getParent(); // FORGE: fix MC-46486
++      while (this.camera instanceof net.neoforged.neoforge.entity.PartEntity<?> partEntity) this.camera = partEntity.getParent(); // FORGE: fix MC-46486
        if (entity != this.camera) {
           Level level = this.camera.level();
           if (level instanceof ServerLevel serverlevel) {
@@ -154,7 +154,7 @@
     public Component getTabListDisplayName() {
 -      return null;
 +      if (!this.hasTabListName) {
-+         this.tabListDisplayName = net.minecraftforge.event.ForgeEventFactory.getPlayerTabListDisplayName(this);
++         this.tabListDisplayName = net.neoforged.neoforge.event.ForgeEventFactory.getPlayerTabListDisplayName(this);
 +         this.hasTabListName = true;
 +      }
 +      return this.tabListDisplayName;
@@ -166,7 +166,7 @@
        if (p_9000_ == this.level()) {
           this.connection.teleport(p_9001_, p_9002_, p_9003_, p_9004_, p_9005_);
 -      } else {
-+      } else if (net.minecraftforge.common.ForgeHooks.onTravelToDimension(this, p_9000_.dimension())) {
++      } else if (net.neoforged.neoforge.common.ForgeHooks.onTravelToDimension(this, p_9000_.dimension())) {
           ServerLevel serverlevel = this.serverLevel();
           LevelData leveldata = p_9000_.getLevelData();
           this.connection.send(new ClientboundRespawnPacket(this.createCommonSpawnInfo(p_9000_), (byte)3));
@@ -183,7 +183,7 @@
 +         this.gameMode.setLevel(p_9000_);
           this.server.getPlayerList().sendLevelInfo(this, p_9000_);
           this.server.getPlayerList().sendAllPlayerInfo(this);
-+         net.minecraftforge.event.ForgeEventFactory.firePlayerChangedDimensionEvent(this, serverlevel.dimension(), p_9000_.dimension());
++         net.neoforged.neoforge.event.ForgeEventFactory.firePlayerChangedDimensionEvent(this, serverlevel.dimension(), p_9000_.dimension());
        }
     }
  
@@ -191,7 +191,7 @@
     }
  
     public void setRespawnPosition(ResourceKey<Level> p_9159_, @Nullable BlockPos p_9160_, float p_9161_, boolean p_9162_, boolean p_9163_) {
-+      if (net.minecraftforge.event.ForgeEventFactory.onPlayerSpawnSet(this, p_9160_ == null ? Level.OVERWORLD : p_9159_, p_9160_, p_9162_)) return;
++      if (net.neoforged.neoforge.event.ForgeEventFactory.onPlayerSpawnSet(this, p_9160_ == null ? Level.OVERWORLD : p_9159_, p_9160_, p_9162_)) return;
        if (p_9160_ != null) {
           boolean flag = p_9160_.equals(this.respawnPosition) && p_9159_.equals(this.respawnDimension);
           if (p_9163_ && !flag) {
@@ -267,11 +267,11 @@
 +   private boolean hasTabListName = false;
 +   private Component tabListDisplayName = null;
 +   /**
-+    * Force the name displayed in the tab list to refresh, by firing {@link net.minecraftforge.event.entity.player.PlayerEvent.TabListNameFormat}.
++    * Force the name displayed in the tab list to refresh, by firing {@link net.neoforged.neoforge.event.entity.player.PlayerEvent.TabListNameFormat}.
 +    */
 +   public void refreshTabListName() {
 +      Component oldName = this.tabListDisplayName;
-+      this.tabListDisplayName = net.minecraftforge.event.ForgeEventFactory.getPlayerTabListDisplayName(this);
++      this.tabListDisplayName = net.neoforged.neoforge.event.ForgeEventFactory.getPlayerTabListDisplayName(this);
 +      if (!java.util.Objects.equals(oldName, this.tabListDisplayName)) {
 +         this.getServer().getPlayerList().broadcastAll(new net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket(net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME, this));
 +      }
@@ -290,7 +290,7 @@
        ItemStack itemstack = inventory.removeFromSelected(p_182295_);
        this.containerMenu.findSlot(inventory, inventory.selected).ifPresent(p_287377_ -> this.containerMenu.setRemoteSlot(p_287377_, inventory.getSelected()));
 -      return this.drop(itemstack, false, true) != null;
-+      return net.minecraftforge.common.ForgeHooks.onPlayerTossEvent(this, itemstack, true) != null;
++      return net.neoforged.neoforge.common.ForgeHooks.onPlayerTossEvent(this, itemstack, true) != null;
     }
  
     public boolean allowsListing() {

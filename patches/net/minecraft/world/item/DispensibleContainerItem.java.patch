@@ -5,7 +5,7 @@
  import net.minecraft.world.phys.BlockHitResult;
  
 -public interface DispensibleContainerItem {
-+public interface DispensibleContainerItem extends net.minecraftforge.common.extensions.IForgeDispensibleContainerItem {
++public interface DispensibleContainerItem extends net.neoforged.neoforge.common.extensions.IForgeDispensibleContainerItem {
     default void checkExtraContent(@Nullable Player p_150817_, Level p_150818_, ItemStack p_150819_, BlockPos p_150820_) {
     }
  

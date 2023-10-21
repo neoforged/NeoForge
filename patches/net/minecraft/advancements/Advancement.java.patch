@@ -15,7 +15,7 @@
 +   
 +   @Nullable
 +   public static Advancement fromJson(JsonObject p_301286_, DeserializationContext p_300878_, com.mojang.serialization.DynamicOps<com.google.gson.JsonElement> jsonElementOps) {
-+      if (!net.minecraftforge.common.conditions.ICondition.conditionsMatched(jsonElementOps, p_301286_)) return null;
++      if (!net.neoforged.neoforge.common.conditions.ICondition.conditionsMatched(jsonElementOps, p_301286_)) return null;
        Optional<ResourceLocation> optional = p_301286_.has("parent")
           ? Optional.of(new ResourceLocation(GsonHelper.getAsString(p_301286_, "parent")))
           : Optional.empty();
@@ -24,7 +24,7 @@
     }
  
 -   public static class Builder {
-+   public static class Builder implements net.minecraftforge.common.extensions.IForgeAdvancementBuilder {
++   public static class Builder implements net.neoforged.neoforge.common.extensions.IForgeAdvancementBuilder {
        private Optional<ResourceLocation> parent = Optional.empty();
        private Optional<DisplayInfo> display = Optional.empty();
        private AdvancementRewards rewards = AdvancementRewards.EMPTY;

@@ -5,7 +5,7 @@
  import net.minecraft.world.phys.shapes.VoxelShape;
  
 -public class CactusBlock extends Block {
-+public class CactusBlock extends Block implements net.minecraftforge.common.IPlantable {
++public class CactusBlock extends Block implements net.neoforged.neoforge.common.IPlantable {
     public static final IntegerProperty AGE = BlockStateProperties.AGE_15;
     public static final int MAX_AGE = 15;
     protected static final int AABB_OFFSET = 1;
@@ -21,7 +21,7 @@
  
           if (i < 3) {
              int j = p_220913_.getValue(AGE);
-+            if(net.minecraftforge.common.ForgeHooks.onCropsGrowPre(p_220914_, blockpos, p_220913_, true)) {
++            if(net.neoforged.neoforge.common.ForgeHooks.onCropsGrowPre(p_220914_, blockpos, p_220913_, true)) {
              if (j == 15) {
                 p_220914_.setBlockAndUpdate(blockpos, this.defaultBlockState());
 -               BlockState blockstate = p_220913_.setValue(AGE, Integer.valueOf(0));
@@ -32,7 +32,7 @@
 -               p_220914_.setBlock(p_220915_, p_220913_.setValue(AGE, Integer.valueOf(j + 1)), 4);
 +               p_220914_.setBlock(p_220915_, p_220913_.setValue(AGE, j + 1), 4);
 +            }
-+            net.minecraftforge.common.ForgeHooks.onCropsGrowPost(p_220914_, p_220915_, p_220913_);
++            net.neoforged.neoforge.common.ForgeHooks.onCropsGrowPost(p_220914_, p_220915_, p_220913_);
              }
           }
        }
@@ -52,8 +52,8 @@
 +   }
 +
 +   @Override
-+   public net.minecraftforge.common.PlantType getPlantType(BlockGetter world, BlockPos pos) {
-+      return net.minecraftforge.common.PlantType.DESERT;
++   public net.neoforged.neoforge.common.PlantType getPlantType(BlockGetter world, BlockPos pos) {
++      return net.neoforged.neoforge.common.PlantType.DESERT;
 +   }
 +
 +   @Override

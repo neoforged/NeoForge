@@ -6,7 +6,7 @@
        this.functionLibrary = new ServerFunctionLibrary(p_206859_, this.commands.getDispatcher());
 +      // Neo: Create context object and inject it into listeners that need it
 +      this.registryAccess = p_206857_;
-+      this.context = new net.minecraftforge.common.conditions.ConditionContext(this.tagManager);
++      this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.tagManager);
     }
  
     public ServerFunctionLibrary getFunctionLibrary() {
@@ -18,9 +18,9 @@
 -            p_248588_, reloadableserverresources.listeners(), p_249136_, p_249601_, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()
 -         )
 +      List<PreparableReloadListener> listeners = new java.util.ArrayList<>(reloadableserverresources.listeners());
-+      listeners.addAll(net.minecraftforge.event.ForgeEventFactory.onResourceReload(reloadableserverresources, p_251163_));
++      listeners.addAll(net.neoforged.neoforge.event.ForgeEventFactory.onResourceReload(reloadableserverresources, p_251163_));
 +      listeners.forEach(rl -> {
-+         if (rl instanceof net.minecraftforge.resource.ContextAwareReloadListener srl) srl.injectContext(reloadableserverresources.context, reloadableserverresources.registryAccess);
++         if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener srl) srl.injectContext(reloadableserverresources.context, reloadableserverresources.registryAccess);
 +      });
 +      return SimpleReloadInstance.create(p_248588_, listeners, p_249136_, p_249601_, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled())
           .done()
@@ -30,7 +30,7 @@
     public void updateRegistryTags(RegistryAccess p_206869_) {
        this.tagManager.getResult().forEach(p_214315_ -> updateRegistryTags(p_206869_, p_214315_));
        Blocks.rebuildCache();
-+      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.TagsUpdatedEvent(p_206869_, false, false));
++      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(p_206869_, false, false));
     }
  
     private static <T> void updateRegistryTags(RegistryAccess p_206871_, TagManager.LoadResult<T> p_206872_) {
@@ -40,7 +40,7 @@
        p_206871_.registryOrThrow(resourcekey).bindTags(map);
 +   }
 +
-+   private final net.minecraftforge.common.conditions.ICondition.IContext context;
++   private final net.neoforged.neoforge.common.conditions.ICondition.IContext context;
 +   private final net.minecraft.core.RegistryAccess registryAccess;
 +
 +   /**
@@ -48,7 +48,7 @@
 +    * This is not useful outside the reloading stage.
 +    * @return The condition context for the currently active reload.
 +    */
-+   public net.minecraftforge.common.conditions.ICondition.IContext getConditionContext() {
++   public net.neoforged.neoforge.common.conditions.ICondition.IContext getConditionContext() {
 +      return this.context;
 +   }
 +   /**

@@ -5,7 +5,7 @@
                 ++i;
              } else {
 -               if (!(itemstack.getItem() instanceof DyeItem)) {
-+               if (!itemstack.is(net.minecraftforge.common.Tags.Items.DYES)) {
++               if (!itemstack.is(net.neoforged.neoforge.common.Tags.Items.DYES)) {
                    return false;
                 }
  

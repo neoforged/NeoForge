@@ -5,7 +5,7 @@
  import net.minecraft.util.profiling.ProfilerFiller;
  
 -public abstract class SimplePreparableReloadListener<T> implements PreparableReloadListener {
-+public abstract class SimplePreparableReloadListener<T> extends net.minecraftforge.resource.ContextAwareReloadListener implements PreparableReloadListener {
++public abstract class SimplePreparableReloadListener<T> extends net.neoforged.neoforge.resource.ContextAwareReloadListener implements PreparableReloadListener {
     @Override
     public final CompletableFuture<Void> reload(
        PreparableReloadListener.PreparationBarrier p_10780_,

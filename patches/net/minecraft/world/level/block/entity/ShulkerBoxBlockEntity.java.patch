@@ -16,8 +16,8 @@
 +   }
 +
 +   @Override
-+   protected net.minecraftforge.items.IItemHandler createUnSidedHandler() {
-+      return new net.minecraftforge.items.wrapper.SidedInvWrapper(this, Direction.UP);
++   protected net.neoforged.neoforge.items.IItemHandler createUnSidedHandler() {
++      return new net.neoforged.neoforge.items.wrapper.SidedInvWrapper(this, Direction.UP);
     }
  
     public static enum AnimationStatus {

@@ -4,7 +4,7 @@
                          p_105461_.run();
                       }
                    });
-+                  net.minecraftforge.client.ForgeHooksClient.processForgeListPingData(serverstatus, p_105460_);
++                  net.neoforged.neoforge.client.ForgeHooksClient.processForgeListPingData(serverstatus, p_105460_);
                    this.pingStart = Util.getMillis();
                    connection.send(new ServerboundPingRequestPacket(this.pingStart));
                    this.success = true;

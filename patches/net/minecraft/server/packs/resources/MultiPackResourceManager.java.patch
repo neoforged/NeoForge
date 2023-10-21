@@ -4,7 +4,7 @@
        try {
           return p_215468_.getMetadataSection(ResourceFilterSection.TYPE);
        } catch (IOException ioexception) {
-+         if (!net.minecraftforge.data.loading.DatagenModLoader.isRunningDataGen())// Neo: Only warn about malformed pack filters outside of datagen in case modders are replacing variables with gradle
++         if (!net.neoforged.neoforge.data.loading.DatagenModLoader.isRunningDataGen())// Neo: Only warn about malformed pack filters outside of datagen in case modders are replacing variables with gradle
           LOGGER.error("Failed to get filter section from pack {}", p_215468_.packId());
           return null;
        }

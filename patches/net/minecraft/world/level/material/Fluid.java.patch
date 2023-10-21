@@ -5,7 +5,7 @@
  import net.minecraft.world.phys.shapes.VoxelShape;
  
 -public abstract class Fluid {
-+public abstract class Fluid implements net.minecraftforge.common.extensions.IForgeFluid {
++public abstract class Fluid implements net.neoforged.neoforge.common.extensions.IForgeFluid {
     public static final IdMapper<FluidState> FLUID_STATE_REGISTRY = new IdMapper<>();
     protected final StateDefinition<Fluid, FluidState> stateDefinition;
     private FluidState defaultFluidState;
@@ -14,10 +14,10 @@
  
     public abstract VoxelShape getShape(FluidState p_76137_, BlockGetter p_76138_, BlockPos p_76139_);
 +
-+   private net.minecraftforge.fluids.FluidType forgeFluidType;
++   private net.neoforged.neoforge.fluids.FluidType forgeFluidType;
 +   @Override
-+   public net.minecraftforge.fluids.FluidType getFluidType() {
-+      if (forgeFluidType == null) forgeFluidType = net.minecraftforge.common.ForgeHooks.getVanillaFluidType(this);
++   public net.neoforged.neoforge.fluids.FluidType getFluidType() {
++      if (forgeFluidType == null) forgeFluidType = net.neoforged.neoforge.common.ForgeHooks.getVanillaFluidType(this);
 +      return forgeFluidType;
 +   }
  

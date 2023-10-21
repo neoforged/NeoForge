@@ -13,7 +13,7 @@
              ItemStack itemstack10 = this.getCarried();
              p_150434_.updateTutorialInventoryAction(itemstack10, slot7.getItem(), clickaction);
              if (!this.tryItemClickBehaviourOverride(p_150434_, clickaction, slot7, itemstack9, itemstack10)) {
-+            if (!net.minecraftforge.common.ForgeHooks.onItemStackedOn(itemstack9, itemstack10, slot7, clickaction, p_150434_, createCarriedSlotAccess()))
++            if (!net.neoforged.neoforge.common.ForgeHooks.onItemStackedOn(itemstack9, itemstack10, slot7, clickaction, p_150434_, createCarriedSlotAccess()))
                 if (itemstack9.isEmpty()) {
                    if (!itemstack10.isEmpty()) {
                       int i3 = clickaction == ClickAction.PRIMARY ? itemstack10.getCount() : 1;

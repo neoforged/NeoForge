@@ -10,7 +10,7 @@
 -            RecipeHolder<?> recipeholder = fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"));
 -            map.computeIfAbsent(recipeholder.value().getType(), p_44075_ -> ImmutableMap.builder()).put(resourcelocation, recipeholder);
 -            builder.put(resourcelocation, recipeholder);
-+            Optional<RecipeHolder<?>> recipeHolderOptional = fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"), net.minecraftforge.common.conditions.ConditionalOps.create(net.minecraft.resources.RegistryOps.create(com.mojang.serialization.JsonOps.INSTANCE, registryAccess), conditionContext));
++            Optional<RecipeHolder<?>> recipeHolderOptional = fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"), net.neoforged.neoforge.common.conditions.ConditionalOps.create(net.minecraft.resources.RegistryOps.create(com.mojang.serialization.JsonOps.INSTANCE, registryAccess), conditionContext));
 +            recipeHolderOptional.ifPresentOrElse(recipeholder -> {
 +               map.computeIfAbsent(recipeholder.value().getType(), p_44075_ -> ImmutableMap.builder()).put(resourcelocation, recipeholder);
 +               builder.put(resourcelocation, recipeholder);
@@ -37,16 +37,16 @@
 +      return fromJson(p_44046_, p_44047_, JsonOps.INSTANCE).orElseThrow();
 +   }
 +   
-+   public static final Codec<Recipe<?>> DISPATCH_CODEC = net.minecraftforge.common.util.ForgeExtraCodecs.dispatchUnsafe(ResourceLocation.CODEC, recipe -> BuiltInRegistries.RECIPE_SERIALIZER.getKey(recipe.getSerializer()), resourceLocation -> BuiltInRegistries.RECIPE_SERIALIZER
++   public static final Codec<Recipe<?>> DISPATCH_CODEC = net.neoforged.neoforge.common.util.ForgeExtraCodecs.dispatchUnsafe(ResourceLocation.CODEC, recipe -> BuiltInRegistries.RECIPE_SERIALIZER.getKey(recipe.getSerializer()), resourceLocation -> BuiltInRegistries.RECIPE_SERIALIZER
 +                .getOptional(resourceLocation)
 +                .orElseThrow(() -> new JsonSyntaxException("Invalid or unsupported recipe type '%s'".formatted(resourceLocation)))
 +                .codec());
 +
-+   public static final Codec<Optional<Recipe<?>>> CONDITIONAL_DISPATCH = net.minecraftforge.common.conditions.ConditionalOps.createConditionalCodec(DISPATCH_CODEC).codec();
++   public static final Codec<Optional<Recipe<?>>> CONDITIONAL_DISPATCH = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(DISPATCH_CODEC).codec();
 +   
 +   public static Optional<RecipeHolder<?>> fromJson(ResourceLocation p_44046_, JsonObject p_44047_, com.mojang.serialization.DynamicOps<com.google.gson.JsonElement> jsonElementOps) {
-+      Optional<? extends Recipe<?>> recipe = net.minecraftforge.common.conditions.ICondition.getWithConditionalCodec(CONDITIONAL_DISPATCH, jsonElementOps, p_44047_);
-+      return recipe.filter(r -> r != net.minecraftforge.common.crafting.CraftingHelper.EMPTY_RECIPE).map(r -> new RecipeHolder<>(p_44046_, r));
++      Optional<? extends Recipe<?>> recipe = net.neoforged.neoforge.common.conditions.ICondition.getWithConditionalCodec(CONDITIONAL_DISPATCH, jsonElementOps, p_44047_);
++      return recipe.filter(r -> r != net.neoforged.neoforge.common.crafting.CraftingHelper.EMPTY_RECIPE).map(r -> new RecipeHolder<>(p_44046_, r));
     }
  
     public void replaceRecipes(Iterable<RecipeHolder<?>> p_44025_) {

@@ -11,12 +11,12 @@
     @Nullable
     public static EntityDataSerializer<?> getSerializer(int p_135049_) {
 -      return SERIALIZERS.byId(p_135049_);
-+      return net.minecraftforge.common.ForgeHooks.getSerializer(p_135049_, SERIALIZERS);
++      return net.neoforged.neoforge.common.ForgeHooks.getSerializer(p_135049_, SERIALIZERS);
     }
  
     public static int getSerializedId(EntityDataSerializer<?> p_135053_) {
 -      return SERIALIZERS.getId(p_135053_);
-+      return net.minecraftforge.common.ForgeHooks.getSerializerId(p_135053_, SERIALIZERS);
++      return net.neoforged.neoforge.common.ForgeHooks.getSerializerId(p_135053_, SERIALIZERS);
     }
  
     private EntityDataSerializers() {

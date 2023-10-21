@@ -5,7 +5,7 @@
  
     private static String registryDirPath(ResourceLocation p_252033_) {
 -      return p_252033_.getPath();
-+      return net.minecraftforge.common.ForgeHooks.prefixNamespace(p_252033_); // FORGE: add non-vanilla registry namespace to loader directory, same format as tag directory (see net.minecraft.tags.TagManager#getTagDir(ResourceKey))
++      return net.neoforged.neoforge.common.ForgeHooks.prefixNamespace(p_252033_); // FORGE: add non-vanilla registry namespace to loader directory, same format as tag directory (see net.minecraft.tags.TagManager#getTagDir(ResourceKey))
     }
  
     static <E> void loadRegistryContents(
@@ -14,8 +14,8 @@
        String s = registryDirPath(p_255792_.location());
        FileToIdConverter filetoidconverter = FileToIdConverter.json(s);
 -      RegistryOps<JsonElement> registryops = RegistryOps.create(JsonOps.INSTANCE, p_256369_);
-+      RegistryOps<JsonElement> registryops = net.minecraftforge.common.conditions.ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, p_256369_), net.minecraftforge.common.conditions.ICondition.IContext.TAGS_INVALID);
-+      Decoder<Optional<E>> decoder = net.minecraftforge.common.conditions.ConditionalOps.createConditionalDecoder(p_256232_, "forge:conditions");
++      RegistryOps<JsonElement> registryops = net.neoforged.neoforge.common.conditions.ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, p_256369_), net.neoforged.neoforge.common.conditions.ICondition.IContext.TAGS_INVALID);
++      Decoder<Optional<E>> decoder = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalDecoder(p_256232_, "forge:conditions");
  
        for(Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(p_256349_).entrySet()) {
           ResourceLocation resourcelocation = entry.getKey();

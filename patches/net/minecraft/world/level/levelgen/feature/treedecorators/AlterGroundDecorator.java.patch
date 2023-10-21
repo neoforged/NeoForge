@@ -4,7 +4,7 @@
        }
  
        if (!list.isEmpty()) {
-+         var eventProvider = net.minecraftforge.event.ForgeEventFactory.alterGround(p_225969_, list, this.provider::getState);
++         var eventProvider = net.neoforged.neoforge.event.ForgeEventFactory.alterGround(p_225969_, list, this.provider::getState);
           int i = list.get(0).getY();
           list.stream().filter(p_69310_ -> p_69310_.getY() == i).forEach(p_225978_ -> {
 -            this.placeCircle(p_225969_, p_225978_.west().north());
@@ -33,7 +33,7 @@
 +      placeCircle(p_225971_, p_225972_, this.provider::getState);
 +   }
 +
-+   private void placeCircle(TreeDecorator.Context p_225971_, BlockPos p_225972_, net.minecraftforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
++   private void placeCircle(TreeDecorator.Context p_225971_, BlockPos p_225972_, net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
        for(int i = -2; i <= 2; ++i) {
           for(int j = -2; j <= 2; ++j) {
              if (Math.abs(i) != 2 || Math.abs(j) != 2) {
@@ -48,7 +48,7 @@
 +      placeCircle(p_225974_, p_225975_, this.provider::getState);
 +   }
 +
-+   private void placeBlockAt(TreeDecorator.Context p_225974_, BlockPos p_225975_, net.minecraftforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
++   private void placeBlockAt(TreeDecorator.Context p_225974_, BlockPos p_225975_, net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
        for(int i = 2; i >= -3; --i) {
           BlockPos blockpos = p_225975_.above(i);
           if (Feature.isGrassOrDirt(p_225974_.level(), blockpos)) {

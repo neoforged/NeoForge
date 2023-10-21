@@ -9,11 +9,11 @@
     public BucketItem(Fluid p_40689_, Item.Properties p_40690_) {
        super(p_40690_);
        this.content = p_40689_;
-+      this.fluidSupplier = net.minecraftforge.registries.ForgeRegistries.FLUIDS.getDelegateOrThrow(p_40689_);
++      this.fluidSupplier = net.neoforged.neoforge.registries.ForgeRegistries.FLUIDS.getDelegateOrThrow(p_40689_);
 +   }
 +
 +   /**
-+    * @param supplier A fluid supplier such as {@link net.minecraftforge.registries.RegistryObject<Fluid>}
++    * @param supplier A fluid supplier such as {@link net.neoforged.neoforge.registries.RegistryObject<Fluid>}
 +    */
 +   public BucketItem(java.util.function.Supplier<? extends Fluid> supplier, Item.Properties builder) {
 +      super(builder);
@@ -26,7 +26,7 @@
        BlockHitResult blockhitresult = getPlayerPOVHitResult(
           p_40703_, p_40704_, this.content == Fluids.EMPTY ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE
        );
-+      InteractionResultHolder<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onBucketUse(p_40704_, p_40703_, itemstack, blockhitresult);
++      InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.event.ForgeEventFactory.onBucketUse(p_40704_, p_40703_, itemstack, blockhitresult);
 +      if (ret != null) return ret;
        if (blockhitresult.getType() == HitResult.Type.MISS) {
           return InteractionResultHolder.pass(itemstack);
@@ -93,7 +93,7 @@
           }
  
           boolean flag1 = flag2;
-+         java.util.Optional<net.minecraftforge.fluids.FluidStack> containedFluidStack = java.util.Optional.ofNullable(container).flatMap(net.minecraftforge.fluids.FluidUtil::getFluidContained);
++         java.util.Optional<net.neoforged.neoforge.fluids.FluidStack> containedFluidStack = java.util.Optional.ofNullable(container).flatMap(net.neoforged.neoforge.fluids.FluidUtil::getFluidContained);
           if (!flag1) {
 -            return p_150719_ != null && this.emptyContents(p_150716_, p_150717_, p_150719_.getBlockPos().relative(p_150719_.getDirection()), null);
 +            return p_150719_ != null && this.emptyContents(p_150716_, p_150717_, p_150719_.getBlockPos().relative(p_150719_.getDirection()), (BlockHitResult)null, container);
@@ -124,16 +124,16 @@
  
     protected void playEmptySound(@Nullable Player p_40696_, LevelAccessor p_40697_, BlockPos p_40698_) {
 -      SoundEvent soundevent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
-+      SoundEvent soundevent = this.content.getFluidType().getSound(p_40696_, p_40697_, p_40698_, net.minecraftforge.common.SoundActions.BUCKET_EMPTY);
++      SoundEvent soundevent = this.content.getFluidType().getSound(p_40696_, p_40697_, p_40698_, net.neoforged.neoforge.common.SoundActions.BUCKET_EMPTY);
 +      if(soundevent == null) soundevent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
        p_40697_.playSound(p_40696_, p_40698_, soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
        p_40697_.gameEvent(p_40696_, GameEvent.FLUID_PLACE, p_40698_);
 +   }
 +
 +   @Override
-+   public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable net.minecraft.nbt.CompoundTag nbt) {
++   public net.neoforged.neoforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable net.minecraft.nbt.CompoundTag nbt) {
 +      if (this.getClass() == BucketItem.class)
-+         return new net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper(stack);
++         return new net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper(stack);
 +      else
 +         return super.initCapabilities(stack, nbt);
 +   }

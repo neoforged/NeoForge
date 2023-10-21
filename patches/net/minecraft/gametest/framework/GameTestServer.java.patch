@@ -4,14 +4,14 @@
     public boolean initServer() {
        this.setPlayerList(new PlayerList(this, this.registries(), this.playerDataStorage, 1) {
        });
-+      net.minecraftforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
++      net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
        this.loadLevel();
        ServerLevel serverlevel = this.overworld();
        serverlevel.setDefaultSpawnPos(this.spawnPos, 0.0F);
        int i = 20000000;
        serverlevel.setWeatherParameters(20000000, 20000000, false, false);
        LOGGER.info("Started game test server");
-+      net.minecraftforge.server.ServerLifecycleHooks.handleServerStarting(this);
++      net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(this);
        return true;
     }
  

@@ -5,7 +5,7 @@
     );
     protected ClientLevel level;
 -   private final Map<ParticleRenderType, Queue<Particle>> particles = Maps.newIdentityHashMap();
-+   private final Map<ParticleRenderType, Queue<Particle>> particles = Maps.newTreeMap(net.minecraftforge.client.ForgeHooksClient.makeParticleRenderTypeComparator(RENDER_ORDER));
++   private final Map<ParticleRenderType, Queue<Particle>> particles = Maps.newTreeMap(net.neoforged.neoforge.client.ForgeHooksClient.makeParticleRenderTypeComparator(RENDER_ORDER));
     private final Queue<TrackingEmitter> trackingEmitters = Queues.newArrayDeque();
     private final TextureManager textureManager;
     private final RandomSource random = RandomSource.create();
@@ -18,14 +18,14 @@
        this.register(ParticleTypes.EGG_CRACK, SuspendedTownParticle.EggCrackProvider::new);
     }
  
-+   /** @deprecated Register via {@link net.minecraftforge.client.event.RegisterParticleProvidersEvent} */
++   /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
 +   @Deprecated
     public <T extends ParticleOptions> void register(ParticleType<T> p_107382_, ParticleProvider<T> p_107383_) {
 -      this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getId(p_107382_), p_107383_);
 +      this.providers.put(BuiltInRegistries.PARTICLE_TYPE.getKey(p_107382_), p_107383_);
     }
  
-+   /** @deprecated Register via {@link net.minecraftforge.client.event.RegisterParticleProvidersEvent} */
++   /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
 +   @Deprecated
     public <T extends ParticleOptions> void register(ParticleType<T> p_273423_, ParticleProvider.Sprite<T> p_273134_) {
        this.register(
@@ -34,7 +34,7 @@
        );
     }
  
-+   /** @deprecated Register via {@link net.minecraftforge.client.event.RegisterParticleProvidersEvent} */
++   /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
 +   @Deprecated
     public <T extends ParticleOptions> void register(ParticleType<T> p_107379_, ParticleEngine.SpriteParticleRegistration<T> p_107380_) {
        ParticleEngine.MutableSpriteSet particleengine$mutablespriteset = new ParticleEngine.MutableSpriteSet();
@@ -92,7 +92,7 @@
  
     public void destroy(BlockPos p_107356_, BlockState p_107357_) {
 -      if (!p_107357_.isAir() && p_107357_.shouldSpawnTerrainParticles()) {
-+      if (!p_107357_.isAir() && !net.minecraftforge.client.extensions.common.IClientBlockExtensions.of(p_107357_).addDestroyEffects(p_107357_, this.level, p_107356_, this)) {
++      if (!p_107357_.isAir() && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(p_107357_).addDestroyEffects(p_107357_, this.level, p_107356_, this)) {
           VoxelShape voxelshape = p_107357_.getShape(this.level, p_107356_);
           double d0 = 0.25;
           voxelshape.forAllBoxes(
@@ -120,7 +120,7 @@
 +
 +   public void addBlockHitEffects(BlockPos pos, net.minecraft.world.phys.BlockHitResult target) {
 +      BlockState state = level.getBlockState(pos);
-+      if (!net.minecraftforge.client.extensions.common.IClientBlockExtensions.of(state).addHitEffects(state, level, target, this))
++      if (!net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(state).addHitEffects(state, level, target, this))
 +         crack(pos, target.getDirection());
     }
  

@@ -13,7 +13,7 @@
 -
 -         p_127520_.append("\n");
 +         p_127520_.append("Stacktrace:");
-+         p_127520_.append(net.minecraftforge.logging.CrashReportExtender.generateEnhancedStackTrace(this.uncategorizedStackTrace));
++         p_127520_.append(net.neoforged.neoforge.logging.CrashReportExtender.generateEnhancedStackTrace(this.uncategorizedStackTrace));
        }
  
        for(CrashReportCategory crashreportcategory : this.details) {
@@ -21,7 +21,7 @@
           p_127520_.append("\n\n");
        }
  
-+      net.minecraftforge.logging.CrashReportExtender.extendSystemReport(systemReport);
++      net.neoforged.neoforge.logging.CrashReportExtender.extendSystemReport(systemReport);
        this.systemReport.appendToCrashReportString(p_127520_);
     }
  
@@ -41,13 +41,13 @@
 -      }
 -
 -      return s;
-+      return net.minecraftforge.logging.CrashReportExtender.generateEnhancedStackTrace(throwable);
++      return net.neoforged.neoforge.logging.CrashReportExtender.generateEnhancedStackTrace(throwable);
     }
  
     public String getFriendlyReport() {
        StringBuilder stringbuilder = new StringBuilder();
        stringbuilder.append("---- Minecraft Crash Report ----\n");
-+      net.minecraftforge.logging.CrashReportExtender.addCrashReportHeader(stringbuilder, this);
++      net.neoforged.neoforge.logging.CrashReportExtender.addCrashReportHeader(stringbuilder, this);
        stringbuilder.append("// ");
        stringbuilder.append(getErrorComment());
        stringbuilder.append("\n\n");

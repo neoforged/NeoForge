@@ -5,7 +5,7 @@
        this.blockEntityRenderer = p_173400_;
        this.blockColors = p_173401_;
 -      this.modelRenderer = new ModelBlockRenderer(this.blockColors);
-+      this.modelRenderer = new net.minecraftforge.client.model.lighting.ForgeModelBlockRenderer(this.blockColors);
++      this.modelRenderer = new net.neoforged.neoforge.client.model.lighting.ForgeModelBlockRenderer(this.blockColors);
        this.liquidBlockRenderer = new LiquidBlockRenderer();
     }
  
@@ -15,9 +15,9 @@
  
 +   @Deprecated //Forge: Model data parameter
     public void renderBreakingTexture(BlockState p_110919_, BlockPos p_110920_, BlockAndTintGetter p_110921_, PoseStack p_110922_, VertexConsumer p_110923_) {
-+       renderBreakingTexture(p_110919_, p_110920_, p_110921_, p_110922_, p_110923_, net.minecraftforge.client.model.data.ModelData.EMPTY);
++       renderBreakingTexture(p_110919_, p_110920_, p_110921_, p_110922_, p_110923_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY);
 +   }
-+   public void renderBreakingTexture(BlockState p_110919_, BlockPos p_110920_, BlockAndTintGetter p_110921_, PoseStack p_110922_, VertexConsumer p_110923_, net.minecraftforge.client.model.data.ModelData modelData) {
++   public void renderBreakingTexture(BlockState p_110919_, BlockPos p_110920_, BlockAndTintGetter p_110921_, PoseStack p_110922_, VertexConsumer p_110923_, net.neoforged.neoforge.client.model.data.ModelData modelData) {
        if (p_110919_.getRenderShape() == RenderShape.MODEL) {
           BakedModel bakedmodel = this.blockModelShaper.getBlockModel(p_110919_);
           long i = p_110919_.getSeed(p_110920_);
@@ -30,7 +30,7 @@
        boolean p_234361_,
        RandomSource p_234362_
     ) {
-+      renderBatched(p_234356_, p_234357_, p_234358_, p_234359_, p_234360_, p_234361_, p_234362_, net.minecraftforge.client.model.data.ModelData.EMPTY, null);
++      renderBatched(p_234356_, p_234357_, p_234358_, p_234359_, p_234360_, p_234361_, p_234362_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
 +   }
 +   public void renderBatched(
 +      BlockState p_234356_,
@@ -40,7 +40,7 @@
 +      VertexConsumer p_234360_,
 +      boolean p_234361_,
 +      RandomSource p_234362_,
-+      net.minecraftforge.client.model.data.ModelData modelData,
++      net.neoforged.neoforge.client.model.data.ModelData modelData,
 +      net.minecraft.client.renderer.RenderType renderType
 +   ) {
        try {
@@ -63,9 +63,9 @@
  
 +   @Deprecated //Forge: Model data and render type parameter
     public void renderSingleBlock(BlockState p_110913_, PoseStack p_110914_, MultiBufferSource p_110915_, int p_110916_, int p_110917_) {
-+      renderSingleBlock(p_110913_, p_110914_, p_110915_, p_110916_, p_110917_, net.minecraftforge.client.model.data.ModelData.EMPTY, null);
++      renderSingleBlock(p_110913_, p_110914_, p_110915_, p_110916_, p_110917_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
 +   }
-+   public void renderSingleBlock(BlockState p_110913_, PoseStack p_110914_, MultiBufferSource p_110915_, int p_110916_, int p_110917_, net.minecraftforge.client.model.data.ModelData modelData, net.minecraft.client.renderer.RenderType renderType) {
++   public void renderSingleBlock(BlockState p_110913_, PoseStack p_110914_, MultiBufferSource p_110915_, int p_110916_, int p_110917_, net.neoforged.neoforge.client.model.data.ModelData modelData, net.minecraft.client.renderer.RenderType renderType) {
        RenderShape rendershape = p_110913_.getRenderShape();
        if (rendershape != RenderShape.INVISIBLE) {
           switch(rendershape) {
@@ -78,7 +78,7 @@
                    .renderModel(
                       p_110914_.last(),
 -                     p_110915_.getBuffer(ItemBlockRenderTypes.getRenderType(p_110913_, false)),
-+                     p_110915_.getBuffer(renderType != null ? renderType : net.minecraftforge.client.RenderTypeHelper.getEntityRenderType(rt, false)),
++                     p_110915_.getBuffer(renderType != null ? renderType : net.neoforged.neoforge.client.RenderTypeHelper.getEntityRenderType(rt, false)),
                       p_110913_,
                       bakedmodel,
                       f,
@@ -94,7 +94,7 @@
              case ENTITYBLOCK_ANIMATED:
 -               this.blockEntityRenderer.renderByItem(new ItemStack(p_110913_.getBlock()), ItemDisplayContext.NONE, p_110914_, p_110915_, p_110916_, p_110917_);
 +               ItemStack stack = new ItemStack(p_110913_.getBlock());
-+               net.minecraftforge.client.extensions.common.IClientItemExtensions.of(stack).getCustomRenderer().renderByItem(stack, ItemDisplayContext.NONE, p_110914_, p_110915_, p_110916_, p_110917_);
++               net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(stack).getCustomRenderer().renderByItem(stack, ItemDisplayContext.NONE, p_110914_, p_110915_, p_110916_, p_110917_);
           }
        }
     }

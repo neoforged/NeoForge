@@ -4,7 +4,7 @@
  
     @Override
     public void handleIntention(ClientIntentionPacket p_9975_) {
-+      if (!net.minecraftforge.server.ServerLifecycleHooks.handleServerLogin(p_9975_, this.connection)) return;
++      if (!net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerLogin(p_9975_, this.connection)) return;
        switch(p_9975_.intention()) {
           case LOGIN:
              this.connection.setClientboundProtocolAfterHandshake(ClientIntent.LOGIN);

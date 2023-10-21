@@ -5,7 +5,7 @@
  import net.minecraft.server.packs.resources.IoSupplier;
  
 -public interface PackResources extends AutoCloseable {
-+public interface PackResources extends AutoCloseable, net.minecraftforge.common.extensions.IForgePackResources {
++public interface PackResources extends AutoCloseable, net.neoforged.neoforge.common.extensions.IForgePackResources {
     String METADATA_EXTENSION = ".mcmeta";
     String PACK_META = "pack.mcmeta";
  

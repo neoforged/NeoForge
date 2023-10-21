@@ -4,7 +4,7 @@
        float p_139023_,
        @Nullable TeleportCommand.LookAt p_139024_
     ) throws CommandSyntaxException {
-+      net.minecraftforge.event.entity.EntityTeleportEvent.TeleportCommand event = net.minecraftforge.event.ForgeEventFactory.onEntityTeleportCommand(p_139016_, p_139018_, p_139019_, p_139020_);
++      net.neoforged.neoforge.event.entity.EntityTeleportEvent.TeleportCommand event = net.neoforged.neoforge.event.ForgeEventFactory.onEntityTeleportCommand(p_139016_, p_139018_, p_139019_, p_139020_);
 +      if (event.isCanceled()) {
 +          return;
 +      }

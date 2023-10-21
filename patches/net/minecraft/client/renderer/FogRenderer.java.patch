@@ -4,7 +4,7 @@
           fogBlue = fogBlue * (1.0F - f7) + fogBlue * f9 * f7;
        }
  
-+      Vector3f fogColor = net.minecraftforge.client.ForgeHooksClient.getFogColor(p_109019_, p_109020_, p_109021_, p_109022_, p_109023_, fogRed, fogGreen, fogBlue);
++      Vector3f fogColor = net.neoforged.neoforge.client.ForgeHooksClient.getFogColor(p_109019_, p_109020_, p_109021_, p_109022_, p_109023_, fogRed, fogGreen, fogBlue);
 +
 +      fogRed = fogColor.x();
 +      fogGreen = fogColor.y();
@@ -17,7 +17,7 @@
        RenderSystem.setShaderFogStart(fogrenderer$fogdata.start);
        RenderSystem.setShaderFogEnd(fogrenderer$fogdata.end);
        RenderSystem.setShaderFogShape(fogrenderer$fogdata.shape);
-+      net.minecraftforge.client.ForgeHooksClient.onFogRender(p_234174_, fogtype, p_234173_, p_234177_, p_234175_, fogrenderer$fogdata.start, fogrenderer$fogdata.end, fogrenderer$fogdata.shape);
++      net.neoforged.neoforge.client.ForgeHooksClient.onFogRender(p_234174_, fogtype, p_234173_, p_234177_, p_234175_, fogrenderer$fogdata.start, fogrenderer$fogdata.end, fogrenderer$fogdata.shape);
     }
  
     public static void levelFogColor() {

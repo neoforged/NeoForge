@@ -5,7 +5,7 @@
  import net.minecraft.world.level.pathfinder.PathComputationType;
  
 -public class BushBlock extends Block {
-+public class BushBlock extends Block implements net.minecraftforge.common.IPlantable {
++public class BushBlock extends Block implements net.neoforged.neoforge.common.IPlantable {
     public BushBlock(BlockBehaviour.Properties p_51021_) {
        super(p_51021_);
     }

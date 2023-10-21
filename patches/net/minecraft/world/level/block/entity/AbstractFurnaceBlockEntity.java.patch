@@ -131,7 +131,7 @@
        } else {
           Item item = p_58343_.getItem();
 -         return getFuel().getOrDefault(item, 0);
-+         return net.minecraftforge.common.ForgeHooks.getBurnTime(p_58343_, this.recipeType);
++         return net.neoforged.neoforge.common.ForgeHooks.getBurnTime(p_58343_, this.recipeType);
        }
     }
  
@@ -140,7 +140,7 @@
  
     public static boolean isFuel(ItemStack p_58400_) {
 -      return getFuel().containsKey(p_58400_.getItem());
-+      return net.minecraftforge.common.ForgeHooks.getBurnTime(p_58400_, null) > 0;
++      return net.neoforged.neoforge.common.ForgeHooks.getBurnTime(p_58400_, null) > 0;
     }
  
     @Override
@@ -149,7 +149,7 @@
        } else {
           ItemStack itemstack = this.items.get(1);
 -         return isFuel(p_58390_) || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
-+         return net.minecraftforge.common.ForgeHooks.getBurnTime(p_58390_, this.recipeType) > 0 || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
++         return net.neoforged.neoforge.common.ForgeHooks.getBurnTime(p_58390_, this.recipeType) > 0 || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
        }
     }
  
@@ -159,12 +159,12 @@
        }
 +   }
 +
-+   net.minecraftforge.common.util.LazyOptional<? extends net.minecraftforge.items.IItemHandler>[] handlers =
-+           net.minecraftforge.items.wrapper.SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
++   net.neoforged.neoforge.common.util.LazyOptional<? extends net.neoforged.neoforge.items.IItemHandler>[] handlers =
++           net.neoforged.neoforge.items.wrapper.SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
 +
 +   @Override
-+   public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable Direction facing) {
-+      if (!this.remove && facing != null && capability == net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER) {
++   public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(net.neoforged.neoforge.common.capabilities.Capability<T> capability, @Nullable Direction facing) {
++      if (!this.remove && facing != null && capability == net.neoforged.neoforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER) {
 +         if (facing == Direction.UP)
 +            return handlers[0].cast();
 +         else if (facing == Direction.DOWN)
@@ -185,6 +185,6 @@
 +   @Override
 +   public void reviveCaps() {
 +      super.reviveCaps();
-+      this.handlers = net.minecraftforge.items.wrapper.SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
++      this.handlers = net.neoforged.neoforge.items.wrapper.SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
     }
  }

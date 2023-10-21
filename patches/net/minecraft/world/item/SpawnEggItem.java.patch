@@ -4,7 +4,7 @@
     private final int highlightColor;
     private final EntityType<?> defaultType;
  
-+   /** @deprecated Forge: Use {@link net.minecraftforge.common.ForgeSpawnEggItem} instead for suppliers */
++   /** @deprecated Forge: Use {@link net.neoforged.neoforge.common.ForgeSpawnEggItem} instead for suppliers */
 +   @Deprecated
     public SpawnEggItem(EntityType<? extends Mob> p_43207_, int p_43208_, int p_43209_, Item.Properties p_43210_) {
        super(p_43210_);
@@ -19,7 +19,7 @@
        return p_43212_ == 0 ? this.backgroundColor : this.highlightColor;
     }
  
-+   /** @deprecated Forge: call {@link net.minecraftforge.common.ForgeSpawnEggItem#fromEntityType(EntityType)} instead */
++   /** @deprecated Forge: call {@link net.neoforged.neoforge.common.ForgeSpawnEggItem#fromEntityType(EntityType)} instead */
 +   @Deprecated
     @Nullable
     public static SpawnEggItem byId(@Nullable EntityType<?> p_43214_) {

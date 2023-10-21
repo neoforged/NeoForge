@@ -4,12 +4,12 @@
        this.setPvpAllowed(true);
        this.setFlightAllowed(true);
        this.initializeKeyPair();
-+      net.minecraftforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
++      net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
        this.loadLevel();
        GameProfile gameprofile = this.getSingleplayerProfile();
        String s = this.getWorldData().getLevelName();
        this.setMotd(gameprofile != null ? gameprofile.getName() + " - " + s : s);
-+      net.minecraftforge.server.ServerLifecycleHooks.handleServerStarting(this);
++      net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(this);
        return true;
     }
  

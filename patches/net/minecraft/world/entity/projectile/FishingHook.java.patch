@@ -6,8 +6,8 @@
        ItemStack itemstack1 = p_37137_.getOffhandItem();
 -      boolean flag = itemstack.is(Items.FISHING_ROD);
 -      boolean flag1 = itemstack1.is(Items.FISHING_ROD);
-+      boolean flag = itemstack.canPerformAction(net.minecraftforge.common.ToolActions.FISHING_ROD_CAST);
-+      boolean flag1 = itemstack1.canPerformAction(net.minecraftforge.common.ToolActions.FISHING_ROD_CAST);
++      boolean flag = itemstack.canPerformAction(net.neoforged.neoforge.common.ToolActions.FISHING_ROD_CAST);
++      boolean flag1 = itemstack1.canPerformAction(net.neoforged.neoforge.common.ToolActions.FISHING_ROD_CAST);
        if (!p_37137_.isRemoved() && p_37137_.isAlive() && (flag || flag1) && !(this.distanceToSqr(p_37137_) > 1024.0)) {
           return false;
        } else {
@@ -16,7 +16,7 @@
     private void checkCollision() {
        HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
 -      this.onHit(hitresult);
-+      if (hitresult.getType() == HitResult.Type.MISS || !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) this.onHit(hitresult);
++      if (hitresult.getType() == HitResult.Type.MISS || !net.neoforged.neoforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) this.onHit(hitresult);
     }
  
     @Override
@@ -24,7 +24,7 @@
        Player player = this.getPlayerOwner();
        if (!this.level().isClientSide && player != null && !this.shouldStopFishing(player)) {
           int i = 0;
-+         net.minecraftforge.event.entity.player.ItemFishedEvent event = null;
++         net.neoforged.neoforge.event.entity.player.ItemFishedEvent event = null;
           if (this.hookedIn != null) {
              this.pullEntity(this.hookedIn);
              CriteriaTriggers.FISHING_ROD_HOOKED.trigger((ServerPlayer)player, p_37157_, this, Collections.emptyList());
@@ -37,8 +37,8 @@
                 .create(LootContextParamSets.FISHING);
              LootTable loottable = this.level().getServer().getLootData().getLootTable(BuiltInLootTables.FISHING);
              List<ItemStack> list = loottable.getRandomItems(lootparams);
-+            event = new net.minecraftforge.event.entity.player.ItemFishedEvent(list, this.onGround() ? 2 : 1, this);
-+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
++            event = new net.neoforged.neoforge.event.entity.player.ItemFishedEvent(list, this.onGround() ? 2 : 1, this);
++            net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(event);
 +            if (event.isCanceled()) {
 +               this.discard();
 +               return event.getRodDamage();

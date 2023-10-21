@@ -4,7 +4,7 @@
                 CauldronInteraction.bootStrap();
                 BuiltInRegistries.bootStrap();
                 CreativeModeTabs.validate();
-+               net.minecraftforge.registries.GameData.vanillaSnapshot();
++               net.neoforged.neoforge.registries.GameData.vanillaSnapshot();
 +               if (false) // skip redirectOutputToLog, Forge already redirects stdout and stderr output to log so that they print with more context
                 wrapStreams();
                 bootstrapDuration.set(Duration.between(instant, Instant.now()).toMillis());

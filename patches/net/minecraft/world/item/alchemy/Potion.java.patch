@@ -5,7 +5,7 @@
  import net.minecraft.world.effect.MobEffectInstance;
  
 -public class Potion {
-+public class Potion implements net.minecraftforge.common.extensions.IForgePotion {
++public class Potion implements net.neoforged.neoforge.common.extensions.IForgePotion {
     @Nullable
     private final String name;
     private final ImmutableList<MobEffectInstance> effects;

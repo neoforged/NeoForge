@@ -11,7 +11,7 @@
 +         this.lootTableSupplier = p_60452_.lootTableSupplier;
 +      } else {
 +         this.lootTableSupplier = () -> {
-+            ResourceLocation registryName = net.minecraftforge.registries.ForgeRegistries.BLOCKS.getKey((Block) this);
++            ResourceLocation registryName = net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getKey((Block) this);
 +            return new ResourceLocation(registryName.getNamespace(), "blocks/" + registryName.getPath());
 +         };
 +      }
@@ -33,14 +33,14 @@
        } else {
 -         int i = p_60467_.hasCorrectToolForDrops(p_60466_) ? 30 : 100;
 -         return p_60467_.getDestroySpeed(p_60466_) / f / (float)i;
-+         int i = net.minecraftforge.common.ForgeHooks.isCorrectToolForDrops(p_60466_, p_60467_) ? 30 : 100;
++         int i = net.neoforged.neoforge.common.ForgeHooks.isCorrectToolForDrops(p_60466_, p_60467_) ? 30 : 100;
 +         return p_60467_.getDigSpeed(p_60466_, p_60469_) / f / (float)i;
        }
     }
  
     @Deprecated
     public void spawnAfterBreak(BlockState p_222949_, ServerLevel p_222950_, BlockPos p_222951_, ItemStack p_222952_, boolean p_222953_) {
-+      if (p_222953_) net.minecraftforge.common.ForgeHooks.dropXpForBlock(p_222949_, p_222950_, p_222951_, p_222952_);
++      if (p_222953_) net.neoforged.neoforge.common.ForgeHooks.dropXpForBlock(p_222949_, p_222950_, p_222951_, p_222952_);
     }
  
     @Deprecated
@@ -133,7 +133,7 @@
 +      @Deprecated // FORGE: Use the variant that takes a Supplier below
        public BlockBehaviour.Properties dropsLike(Block p_60917_) {
 -         this.drops = p_60917_.getLootTable();
-+         this.lootTableSupplier = () -> net.minecraftforge.registries.ForgeRegistries.BLOCKS.getDelegateOrThrow(p_60917_).get().getLootTable();
++         this.lootTableSupplier = () -> net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getDelegateOrThrow(p_60917_).get().getLootTable();
           return this;
 +      }
 +

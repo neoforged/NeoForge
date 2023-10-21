@@ -23,7 +23,7 @@
 +   }
 +
 +   @Override
-+   public void jumpInFluid(net.minecraftforge.fluids.FluidType type) {
++   public void jumpInFluid(net.neoforged.neoforge.fluids.FluidType type) {
 +      this.jumpInLiquidInternal();
     }
  

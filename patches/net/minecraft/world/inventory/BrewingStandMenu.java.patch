@@ -14,7 +14,7 @@
        @Override
        public boolean mayPlace(ItemStack p_39121_) {
 -         return PotionBrewing.isIngredient(p_39121_);
-+         return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidIngredient(p_39121_);
++         return net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry.isValidIngredient(p_39121_);
        }
  
        @Override
@@ -22,7 +22,7 @@
        public void onTake(Player p_150499_, ItemStack p_150500_) {
           Potion potion = PotionUtils.getPotion(p_150500_);
           if (p_150499_ instanceof ServerPlayer) {
-+            net.minecraftforge.event.ForgeEventFactory.onPlayerBrewedPotion(p_150499_, p_150500_);
++            net.neoforged.neoforge.event.ForgeEventFactory.onPlayerBrewedPotion(p_150499_, p_150500_);
              CriteriaTriggers.BREWED_POTION.trigger((ServerPlayer)p_150499_, potion);
           }
  
@@ -31,7 +31,7 @@
  
        public static boolean mayPlaceItem(ItemStack p_39134_) {
 -         return p_39134_.is(Items.POTION) || p_39134_.is(Items.SPLASH_POTION) || p_39134_.is(Items.LINGERING_POTION) || p_39134_.is(Items.GLASS_BOTTLE);
-+         return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidInput(p_39134_);
++         return net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry.isValidInput(p_39134_);
        }
     }
  }

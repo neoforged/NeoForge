@@ -5,7 +5,7 @@
  import net.minecraft.world.level.block.Block;
  
 -public enum EnchantmentCategory {
-+public enum EnchantmentCategory implements net.minecraftforge.common.IExtensibleEnum {
++public enum EnchantmentCategory implements net.neoforged.neoforge.common.IExtensibleEnum {
     ARMOR {
        @Override
        public boolean canEnchant(Item p_44751_) {

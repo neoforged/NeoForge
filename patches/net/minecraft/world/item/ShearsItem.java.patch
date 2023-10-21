@@ -5,7 +5,7 @@
  
     @Override
 +   public net.minecraft.world.InteractionResult interactLivingEntity(ItemStack stack, net.minecraft.world.entity.player.Player playerIn, LivingEntity entity, net.minecraft.world.InteractionHand hand) {
-+      if (entity instanceof net.minecraftforge.common.IForgeShearable target) {
++      if (entity instanceof net.neoforged.neoforge.common.IForgeShearable target) {
 +         if (entity.level().isClientSide) return net.minecraft.world.InteractionResult.SUCCESS;
 +         BlockPos pos = BlockPos.containing(entity.position());
 +         if (target.isShearable(stack, entity.level(), pos)) {
@@ -24,8 +24,8 @@
 +   }
 +
 +   @Override
-+   public boolean canPerformAction(ItemStack stack, net.minecraftforge.common.ToolAction toolAction) {
-+      return net.minecraftforge.common.ToolActions.DEFAULT_SHEARS_ACTIONS.contains(toolAction);
++   public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ToolAction toolAction) {
++      return net.neoforged.neoforge.common.ToolActions.DEFAULT_SHEARS_ACTIONS.contains(toolAction);
 +   }
 +
 +   @Override

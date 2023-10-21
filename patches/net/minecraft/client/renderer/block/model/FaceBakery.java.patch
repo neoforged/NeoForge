@@ -5,12 +5,12 @@
        }
  
 -      return new BakedQuad(aint, p_111603_.tintIndex, direction, p_111604_, p_111608_);
-+      net.minecraftforge.client.ForgeHooksClient.fillNormal(aint, direction);
++      net.neoforged.neoforge.client.ForgeHooksClient.fillNormal(aint, direction);
 +      var data = p_111603_.getFaceData();
 +      var quad = new BakedQuad(aint, p_111603_.tintIndex, direction, p_111604_, p_111608_, data.ambientOcclusion());
-+      if (!net.minecraftforge.client.model.ForgeFaceData.DEFAULT.equals(data)) {
-+         net.minecraftforge.client.model.QuadTransformers.applyingLightmap(data.blockLight(), data.skyLight()).processInPlace(quad);
-+         net.minecraftforge.client.model.QuadTransformers.applyingColor(data.color()).processInPlace(quad);
++      if (!net.neoforged.neoforge.client.model.ForgeFaceData.DEFAULT.equals(data)) {
++         net.neoforged.neoforge.client.model.QuadTransformers.applyingLightmap(data.blockLight(), data.skyLight()).processInPlace(quad);
++         net.neoforged.neoforge.client.model.QuadTransformers.applyingColor(data.color()).processInPlace(quad);
 +      }
 +      return quad;
     }

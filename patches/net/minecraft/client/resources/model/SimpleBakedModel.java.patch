@@ -4,11 +4,11 @@
     protected final TextureAtlasSprite particleIcon;
     protected final ItemTransforms transforms;
     protected final ItemOverrides overrides;
-+   protected final net.minecraftforge.client.ChunkRenderTypeSet blockRenderTypes;
++   protected final net.neoforged.neoforge.client.ChunkRenderTypeSet blockRenderTypes;
 +   protected final List<net.minecraft.client.renderer.RenderType> itemRenderTypes;
 +   protected final List<net.minecraft.client.renderer.RenderType> fabulousItemRenderTypes;
  
-+   /** @deprecated Forge: Use {@linkplain #SimpleBakedModel(List, Map, boolean, boolean, boolean, TextureAtlasSprite, ItemTransforms, ItemOverrides, net.minecraftforge.client.RenderTypeGroup) variant with RenderTypeGroup} **/
++   /** @deprecated Forge: Use {@linkplain #SimpleBakedModel(List, Map, boolean, boolean, boolean, TextureAtlasSprite, ItemTransforms, ItemOverrides, net.neoforged.neoforge.client.RenderTypeGroup) variant with RenderTypeGroup} **/
 +   @Deprecated
     public SimpleBakedModel(
        List<BakedQuad> p_119489_,
@@ -17,7 +17,7 @@
        ItemTransforms p_119495_,
        ItemOverrides p_119496_
     ) {
-+      this(p_119489_, p_119490_, p_119491_, p_119492_, p_119493_, p_119494_, p_119495_, p_119496_, net.minecraftforge.client.RenderTypeGroup.EMPTY);
++      this(p_119489_, p_119490_, p_119491_, p_119492_, p_119493_, p_119494_, p_119495_, p_119496_, net.neoforged.neoforge.client.RenderTypeGroup.EMPTY);
 +   }
 +
 +   public SimpleBakedModel(
@@ -29,7 +29,7 @@
 +           TextureAtlasSprite p_119494_,
 +           ItemTransforms p_119495_,
 +           ItemOverrides p_119496_,
-+           net.minecraftforge.client.RenderTypeGroup renderTypes
++           net.neoforged.neoforge.client.RenderTypeGroup renderTypes
 +   ) {
        this.unculledFaces = p_119489_;
        this.culledFaces = p_119490_;
@@ -38,7 +38,7 @@
        this.particleIcon = p_119494_;
        this.transforms = p_119495_;
        this.overrides = p_119496_;
-+      this.blockRenderTypes = !renderTypes.isEmpty() ? net.minecraftforge.client.ChunkRenderTypeSet.of(renderTypes.block()) : null;
++      this.blockRenderTypes = !renderTypes.isEmpty() ? net.neoforged.neoforge.client.ChunkRenderTypeSet.of(renderTypes.block()) : null;
 +      this.itemRenderTypes = !renderTypes.isEmpty() ? List.of(renderTypes.entity()) : null;
 +      this.fabulousItemRenderTypes = !renderTypes.isEmpty() ? List.of(renderTypes.entityFabulous()) : null;
     }
@@ -49,7 +49,7 @@
     }
  
 +   @Override
-+   public net.minecraftforge.client.ChunkRenderTypeSet getRenderTypes(@org.jetbrains.annotations.NotNull BlockState state, @org.jetbrains.annotations.NotNull RandomSource rand, @org.jetbrains.annotations.NotNull net.minecraftforge.client.model.data.ModelData data) {
++   public net.neoforged.neoforge.client.ChunkRenderTypeSet getRenderTypes(@org.jetbrains.annotations.NotNull BlockState state, @org.jetbrains.annotations.NotNull RandomSource rand, @org.jetbrains.annotations.NotNull net.neoforged.neoforge.client.model.data.ModelData data) {
 +      if (blockRenderTypes != null)
 +         return blockRenderTypes;
 +      return BakedModel.super.getRenderTypes(state, rand, data);
@@ -74,13 +74,13 @@
           return this;
        }
  
-+      /** @deprecated Forge: Use {@linkplain #build(net.minecraftforge.client.RenderTypeGroup) variant with RenderTypeGroup} **/
++      /** @deprecated Forge: Use {@linkplain #build(net.neoforged.neoforge.client.RenderTypeGroup) variant with RenderTypeGroup} **/
 +      @Deprecated
        public BakedModel build() {
-+         return build(net.minecraftforge.client.RenderTypeGroup.EMPTY);
++         return build(net.neoforged.neoforge.client.RenderTypeGroup.EMPTY);
 +      }
 +
-+      public BakedModel build(net.minecraftforge.client.RenderTypeGroup renderTypes) {
++      public BakedModel build(net.neoforged.neoforge.client.RenderTypeGroup renderTypes) {
           if (this.particleIcon == null) {
              throw new RuntimeException("Missing particle!");
           } else {

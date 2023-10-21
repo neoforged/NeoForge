@@ -51,7 +51,7 @@
           throw new IllegalArgumentException("Expected a potion, got: " + BuiltInRegistries.ITEM.getKey(p_43505_));
        } else {
 -         CONTAINER_MIXES.add(new PotionBrewing.Mix<>(p_43503_, Ingredient.of(p_43504_), p_43505_));
-+         CONTAINER_MIXES.add(new PotionBrewing.Mix<>(net.minecraftforge.registries.ForgeRegistries.ITEMS, p_43503_, Ingredient.of(p_43504_), p_43505_));
++         CONTAINER_MIXES.add(new PotionBrewing.Mix<>(net.neoforged.neoforge.registries.ForgeRegistries.ITEMS, p_43503_, Ingredient.of(p_43504_), p_43505_));
        }
     }
  
@@ -60,7 +60,7 @@
  
     private static void addMix(Potion p_43514_, Item p_43515_, Potion p_43516_) {
 -      POTION_MIXES.add(new PotionBrewing.Mix<>(p_43514_, Ingredient.of(p_43515_), p_43516_));
-+      POTION_MIXES.add(new PotionBrewing.Mix<>(net.minecraftforge.registries.ForgeRegistries.POTIONS, p_43514_, Ingredient.of(p_43515_), p_43516_));
++      POTION_MIXES.add(new PotionBrewing.Mix<>(net.neoforged.neoforge.registries.ForgeRegistries.POTIONS, p_43514_, Ingredient.of(p_43515_), p_43516_));
     }
  
     public static class Mix<T> {
@@ -73,7 +73,7 @@
  
 -      public Mix(T p_43536_, Ingredient p_43537_, T p_43538_) {
 -         this.from = p_43536_;
-+      public Mix(net.minecraftforge.registries.IForgeRegistry<T> registry, T p_43536_, Ingredient p_43537_, T p_43538_) {
++      public Mix(net.neoforged.neoforge.registries.IForgeRegistry<T> registry, T p_43536_, Ingredient p_43537_, T p_43538_) {
 +         this.from = registry.getDelegateOrThrow(p_43536_);
           this.ingredient = p_43537_;
 -         this.to = p_43538_;

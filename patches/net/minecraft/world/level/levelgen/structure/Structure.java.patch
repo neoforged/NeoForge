@@ -18,7 +18,7 @@
  
     protected Structure(Structure.StructureSettings p_226558_) {
        this.settings = p_226558_;
-+      this.modifiableStructureInfo = new net.minecraftforge.common.world.ModifiableStructureInfo(new net.minecraftforge.common.world.ModifiableStructureInfo.StructureInfo(p_226558_)); // FORGE: cache original structure info on construction so we can bypass our field read coremods where necessary
++      this.modifiableStructureInfo = new net.neoforged.neoforge.common.world.ModifiableStructureInfo(new net.neoforged.neoforge.common.world.ModifiableStructureInfo.StructureInfo(p_226558_)); // FORGE: cache original structure info on construction so we can bypass our field read coremods where necessary
     }
  
     public HolderSet<Biome> biomes() {
@@ -29,14 +29,14 @@
 +
 +   // FORGE START
 +
-+   private final net.minecraftforge.common.world.ModifiableStructureInfo modifiableStructureInfo;
++   private final net.neoforged.neoforge.common.world.ModifiableStructureInfo modifiableStructureInfo;
 +
 +   /**
 +    * {@return Cache of original structure data and structure data modified by structure modifiers}
 +    * Modified structure data is set by server after datapacks and serverconfigs load.
 +    * Settings field reads are coremodded to redirect to this.
 +    **/
-+   public net.minecraftforge.common.world.ModifiableStructureInfo modifiableStructureInfo()
++   public net.neoforged.neoforge.common.world.ModifiableStructureInfo modifiableStructureInfo()
 +   {
 +      return this.modifiableStructureInfo;
 +   }

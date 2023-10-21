@@ -46,7 +46,7 @@
           protected final double distAtCreation;
           protected final AtomicBoolean isCancelled = new AtomicBoolean(false);
           protected final boolean isHighPriority;
-+         protected final java.util.Map<net.minecraft.core.BlockPos, net.minecraftforge.client.model.data.ModelData> modelData;
++         protected final java.util.Map<net.minecraft.core.BlockPos, net.neoforged.neoforge.client.model.data.ModelData> modelData;
  
 +         @Deprecated
           public CompileTask(double p_294428_, boolean p_295051_) {
@@ -70,8 +70,8 @@
              return Doubles.compare(this.distAtCreation, p_296186_.distAtCreation);
           }
 +
-+         public net.minecraftforge.client.model.data.ModelData getModelData(BlockPos pos) {
-+            return modelData.getOrDefault(pos, net.minecraftforge.client.model.data.ModelData.EMPTY);
++         public net.neoforged.neoforge.client.model.data.ModelData getModelData(BlockPos pos) {
++            return modelData.getOrDefault(pos, net.neoforged.neoforge.client.model.data.ModelData.EMPTY);
 +         }
        }
  

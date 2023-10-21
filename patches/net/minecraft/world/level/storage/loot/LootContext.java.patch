@@ -6,7 +6,7 @@
  
 +   // ============================== FORGE START ==============================
 +   public int getLootingModifier() {
-+      return net.minecraftforge.common.ForgeHooks.getLootingLevel(getParamOrNull(LootContextParams.THIS_ENTITY), getParamOrNull(LootContextParams.KILLER_ENTITY), getParamOrNull(LootContextParams.DAMAGE_SOURCE));
++      return net.neoforged.neoforge.common.ForgeHooks.getLootingLevel(getParamOrNull(LootContextParams.THIS_ENTITY), getParamOrNull(LootContextParams.KILLER_ENTITY), getParamOrNull(LootContextParams.DAMAGE_SOURCE));
 +   }
 +
 +   private ResourceLocation queriedLootTableId;
@@ -21,7 +21,7 @@
 +   }
 +
 +   public ResourceLocation getQueriedLootTableId() {
-+      return this.queriedLootTableId == null ? net.minecraftforge.common.loot.LootTableIdCondition.UNKNOWN_LOOT_TABLE : this.queriedLootTableId;
++      return this.queriedLootTableId == null ? net.neoforged.neoforge.common.loot.LootTableIdCondition.UNKNOWN_LOOT_TABLE : this.queriedLootTableId;
 +   }
 +   // =============================== FORGE END ===============================
 +

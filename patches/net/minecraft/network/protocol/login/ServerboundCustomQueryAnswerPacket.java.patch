@@ -5,18 +5,18 @@
     }
  
 -   private static CustomQueryAnswerPayload readPayload(int p_296215_, FriendlyByteBuf p_295168_) {
-+   private static net.minecraftforge.network.custom.payload.SimpleQueryPayload readPayload(int p_296215_, FriendlyByteBuf p_295168_) {
++   private static net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload readPayload(int p_296215_, FriendlyByteBuf p_295168_) {
        return readUnknownPayload(p_295168_);
     }
  
 -   private static CustomQueryAnswerPayload readUnknownPayload(FriendlyByteBuf p_294928_) {
-+   private static net.minecraftforge.network.custom.payload.SimpleQueryPayload readUnknownPayload(FriendlyByteBuf p_294928_) {
++   private static net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload readUnknownPayload(FriendlyByteBuf p_294928_) {
        int i = p_294928_.readableBytes();
 -      if (i >= 0 && i <= 1048576) {
 -         p_294928_.skipBytes(i);
 -         return DiscardedQueryAnswerPayload.INSTANCE;
 +      if (i >= 0 && i <= MAX_PAYLOAD_SIZE) {
-+         return p_294928_.readNullable(net.minecraftforge.network.custom.payload.SimpleQueryPayload::inbound);
++         return p_294928_.readNullable(net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload::inbound);
        } else {
           throw new IllegalArgumentException("Payload may not be larger than 1048576 bytes");
        }

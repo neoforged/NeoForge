@@ -5,7 +5,7 @@
  import org.jetbrains.annotations.VisibleForTesting;
  
 -public interface HolderSet<T> extends Iterable<Holder<T>> {
-+public interface HolderSet<T> extends Iterable<Holder<T>>, net.minecraftforge.common.extensions.IForgeHolderSet<T> {
++public interface HolderSet<T> extends Iterable<Holder<T>>, net.neoforged.neoforge.common.extensions.IForgeHolderSet<T> {
     Stream<Holder<T>> stream();
  
     int size();

@@ -5,7 +5,7 @@
  import net.minecraft.world.phys.Vec3;
  
 -public class SnowGolem extends AbstractGolem implements Shearable, RangedAttackMob {
-+public class SnowGolem extends AbstractGolem implements Shearable, RangedAttackMob, net.minecraftforge.common.IForgeShearable {
++public class SnowGolem extends AbstractGolem implements Shearable, RangedAttackMob, net.neoforged.neoforge.common.IForgeShearable {
     private static final EntityDataAccessor<Byte> DATA_PUMPKIN_ID = SynchedEntityData.defineId(SnowGolem.class, EntityDataSerializers.BYTE);
     private static final byte PUMPKIN_FLAG = 16;
     private static final float EYE_HEIGHT = 1.7F;
@@ -14,7 +14,7 @@
           }
  
 -         if (!this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+         if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
++         if (!net.neoforged.neoforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
              return;
           }
  

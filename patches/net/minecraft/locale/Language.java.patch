@@ -6,7 +6,7 @@
        parseTranslations(biconsumer, "/assets/minecraft/lang/en_us.json");
 -      final Map<String, String> map = builder.build();
 +      final Map<String, String> map = new java.util.HashMap<>(builder.build());
-+      net.minecraftforge.server.LanguageHook.captureLanguageMap(map);
++      net.neoforged.neoforge.server.LanguageHook.captureLanguageMap(map);
        return new Language() {
           @Override
           public String getOrDefault(String p_128127_, String p_265421_) {

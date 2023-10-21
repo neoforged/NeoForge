@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public class MobEffectInstance implements Comparable<MobEffectInstance> {
-+public class MobEffectInstance implements Comparable<MobEffectInstance>, net.minecraftforge.common.extensions.IForgeMobEffectInstance {
++public class MobEffectInstance implements Comparable<MobEffectInstance>, net.neoforged.neoforge.common.extensions.IForgeMobEffectInstance {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final int INFINITE_DURATION = -1;
     private static final String TAG_ID = "id";
@@ -22,7 +22,7 @@
  
     public MobEffect getEffect() {
 -      return this.effect;
-+      return this.effect == null ? null : net.minecraftforge.registries.ForgeRegistries.MOB_EFFECTS.getDelegateOrThrow(this.effect).get();
++      return this.effect == null ? null : net.neoforged.neoforge.registries.ForgeRegistries.MOB_EFFECTS.getDelegateOrThrow(this.effect).get();
     }
  
     public int getDuration() {
@@ -30,7 +30,7 @@
     public CompoundTag save(CompoundTag p_19556_) {
        ResourceLocation resourcelocation = BuiltInRegistries.MOB_EFFECT.getKey(this.effect);
        p_19556_.putString("id", resourcelocation.toString());
-+      net.minecraftforge.common.ForgeHooks.saveMobEffect(p_19556_, "forge:id", this.getEffect());
++      net.neoforged.neoforge.common.ForgeHooks.saveMobEffect(p_19556_, "forge:id", this.getEffect());
        this.writeDetailsTo(p_19556_);
        return p_19556_;
     }

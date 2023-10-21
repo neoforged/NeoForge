@@ -11,7 +11,7 @@
           double d2 = -Mth.lerp((double)p_114445_, p_114444_.zOld, p_114444_.getZ());
  
 -         for(EnderDragonPart enderdragonpart : ((EnderDragon)p_114444_).getSubEntities()) {
-+         for(net.minecraftforge.entity.PartEntity<?> enderdragonpart : p_114444_.getParts()) {
++         for(net.neoforged.neoforge.entity.PartEntity<?> enderdragonpart : p_114444_.getParts()) {
              p_114442_.pushPose();
              double d3 = d0 + Mth.lerp((double)p_114445_, enderdragonpart.xOld, enderdragonpart.getX());
              double d4 = d1 + Mth.lerp((double)p_114445_, enderdragonpart.yOld, enderdragonpart.getY());
@@ -30,6 +30,6 @@
        );
        this.renderers = EntityRenderers.createEntityRenderers(entityrendererprovider$context);
        this.playerRenderers = EntityRenderers.createPlayerRenderers(entityrendererprovider$context);
-+      net.neoforged.fml.ModLoader.get().postEvent(new net.minecraftforge.client.event.EntityRenderersEvent.AddLayers(renderers, playerRenderers, entityrendererprovider$context));
++      net.neoforged.fml.ModLoader.get().postEvent(new net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers(renderers, playerRenderers, entityrendererprovider$context));
     }
  }

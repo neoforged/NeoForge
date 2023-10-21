@@ -28,7 +28,7 @@
  
           @Override
           public void onTake(Player p_150574_, ItemStack p_150575_) {
-+            if (net.minecraftforge.common.ForgeHooks.onGrindstoneTake(GrindstoneMenu.this.repairSlots, p_39568_, this::getExperienceAmount)) return;
++            if (net.neoforged.neoforge.common.ForgeHooks.onGrindstoneTake(GrindstoneMenu.this.repairSlots, p_39568_, this::getExperienceAmount)) return;
              p_39568_.execute((p_39634_, p_39635_) -> {
                 if (p_39634_ instanceof ServerLevel) {
                    ExperienceOrb.award((ServerLevel)p_39634_, Vec3.atCenterOf(p_39635_), this.getExperienceAmount(p_39634_));
@@ -44,7 +44,7 @@
        ItemStack itemstack1 = this.repairSlots.getItem(1);
        boolean flag = !itemstack.isEmpty() || !itemstack1.isEmpty();
        boolean flag1 = !itemstack.isEmpty() && !itemstack1.isEmpty();
-+      this.xp = net.minecraftforge.common.ForgeHooks.onGrindstoneChange(itemstack, itemstack1, this.resultSlots, -1);
++      this.xp = net.neoforged.neoforge.common.ForgeHooks.onGrindstoneChange(itemstack, itemstack1, this.resultSlots, -1);
 +      if (this.xp == Integer.MIN_VALUE)
        if (!flag) {
           this.resultSlots.setItem(0, ItemStack.EMPTY);

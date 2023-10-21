@@ -4,7 +4,7 @@
        
                 for(StructurePiece structurepiece : p_223936_.getPieces()) {
                    if (structurepiece.isCloseToChunk(p_223939_, 12)) {
-+               if (structurepiece instanceof net.minecraftforge.common.world.PieceBeardifierModifier pieceBeardifierModifier) {
++               if (structurepiece instanceof net.neoforged.neoforge.common.world.PieceBeardifierModifier pieceBeardifierModifier) {
 +                  if (pieceBeardifierModifier.getTerrainAdjustment() != TerrainAdjustment.NONE) {
 +                     objectlist.add(new Beardifier.Rigid(pieceBeardifierModifier.getBeardifierBox(), pieceBeardifierModifier.getTerrainAdjustment(), pieceBeardifierModifier.getGroundLevelDelta()));
 +                  }

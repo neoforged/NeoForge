@@ -4,7 +4,7 @@
        float f = (float)this.getSize() * 0.1F;
        this.setDeltaMovement(vec3.x, (double)(this.getJumpPower() + f), vec3.z);
        this.hasImpulse = true;
-+      net.minecraftforge.common.ForgeHooks.onLivingJump(this);
++      net.neoforged.neoforge.common.ForgeHooks.onLivingJump(this);
     }
  
     @Override
@@ -26,8 +26,8 @@
 +   }
 +
 +   @Override
-+   public void jumpInFluid(net.minecraftforge.fluids.FluidType type) {
-+      this.jumpInLiquidInternal(() -> type == net.minecraftforge.common.ForgeMod.LAVA_TYPE.get(), () -> super.jumpInFluid(type));
++   public void jumpInFluid(net.neoforged.neoforge.fluids.FluidType type) {
++      this.jumpInLiquidInternal(() -> type == net.neoforged.neoforge.common.ForgeMod.LAVA_TYPE.get(), () -> super.jumpInFluid(type));
     }
  
     @Override

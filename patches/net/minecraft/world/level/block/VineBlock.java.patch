@@ -5,7 +5,7 @@
  import net.minecraft.world.phys.shapes.VoxelShape;
  
 -public class VineBlock extends Block {
-+public class VineBlock extends Block implements net.minecraftforge.common.IForgeShearable {
++public class VineBlock extends Block implements net.neoforged.neoforge.common.IForgeShearable {
     public static final BooleanProperty UP = PipeBlock.UP;
     public static final BooleanProperty NORTH = PipeBlock.NORTH;
     public static final BooleanProperty EAST = PipeBlock.EAST;

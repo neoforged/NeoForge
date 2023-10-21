@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public abstract class BlockEntity {
-+public abstract class BlockEntity extends net.minecraftforge.common.capabilities.CapabilityProvider<BlockEntity> implements net.minecraftforge.common.extensions.IForgeBlockEntity {
++public abstract class BlockEntity extends net.neoforged.neoforge.common.capabilities.CapabilityProvider<BlockEntity> implements net.neoforged.neoforge.common.extensions.IForgeBlockEntity {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final BlockEntityType<?> type;
     @Nullable

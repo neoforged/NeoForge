@@ -5,7 +5,7 @@
  import net.minecraft.tags.TagKey;
  
 -public interface Holder<T> {
-+public interface Holder<T> extends java.util.function.Supplier<T>, net.minecraftforge.registries.tags.IReverseTag<T> {
++public interface Holder<T> extends java.util.function.Supplier<T>, net.neoforged.neoforge.registries.tags.IReverseTag<T> {
 +   @Override
 +   default boolean containsTag(TagKey<T> key) {
 +      return this.is(key);

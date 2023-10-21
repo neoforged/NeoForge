@@ -9,7 +9,7 @@
              this.activeButton = -1;
           }
  
-+         if (net.minecraftforge.client.ForgeHooksClient.onMouseButtonPre(p_91532_, p_91533_, p_91534_)) return;
++         if (net.neoforged.neoforge.client.ForgeHooksClient.onMouseButtonPre(p_91532_, p_91533_, p_91534_)) return;
           boolean[] aboolean = new boolean[]{false};
           if (this.minecraft.getOverlay() == null) {
              if (this.minecraft.screen == null) {
@@ -19,10 +19,10 @@
                    screen.afterMouseAction();
 -                  Screen.wrapScreenError(() -> aboolean[0] = screen.mouseClicked(d0, d1, i), "mouseClicked event handler", screen.getClass().getCanonicalName());
 +                  Screen.wrapScreenError(() -> {
-+                     aboolean[0] = net.minecraftforge.client.ForgeHooksClient.onScreenMouseClickedPre(screen, d0, d1, i);
++                     aboolean[0] = net.neoforged.neoforge.client.ForgeHooksClient.onScreenMouseClickedPre(screen, d0, d1, i);
 +                     if (!aboolean[0]) {
 +                        aboolean[0] = screen.mouseClicked(d0, d1, i);
-+                        aboolean[0] = net.minecraftforge.client.ForgeHooksClient.onScreenMouseClickedPost(screen, d0, d1, i, aboolean[0]);
++                        aboolean[0] = net.neoforged.neoforge.client.ForgeHooksClient.onScreenMouseClickedPost(screen, d0, d1, i, aboolean[0]);
 +                     }
 +                  }, "mouseClicked event handler", screen.getClass().getCanonicalName());
                 } else {
@@ -30,10 +30,10 @@
 -                     () -> aboolean[0] = screen.mouseReleased(d0, d1, i), "mouseReleased event handler", screen.getClass().getCanonicalName()
 -                  );
 +                  Screen.wrapScreenError(() -> {
-+                     aboolean[0] = net.minecraftforge.client.ForgeHooksClient.onScreenMouseReleasedPre(screen, d0, d1, i);
++                     aboolean[0] = net.neoforged.neoforge.client.ForgeHooksClient.onScreenMouseReleasedPre(screen, d0, d1, i);
 +                     if (!aboolean[0]) {
 +                        aboolean[0] = screen.mouseReleased(d0, d1, i);
-+                        aboolean[0] = net.minecraftforge.client.ForgeHooksClient.onScreenMouseReleasedPost(screen, d0, d1, i, aboolean[0]);
++                        aboolean[0] = net.neoforged.neoforge.client.ForgeHooksClient.onScreenMouseReleasedPost(screen, d0, d1, i, aboolean[0]);
 +                     }
 +                  }, "mouseReleased event handler", screen.getClass().getCanonicalName());
                 }
@@ -43,7 +43,7 @@
                 }
              }
           }
-+         net.minecraftforge.client.ForgeHooksClient.onMouseButtonPost(p_91532_, p_91533_, p_91534_);
++         net.neoforged.neoforge.client.ForgeHooksClient.onMouseButtonPost(p_91532_, p_91533_, p_91534_);
        }
     }
  
@@ -65,9 +65,9 @@
                 double d4 = this.ypos * (double)this.minecraft.getWindow().getGuiScaledHeight() / (double)this.minecraft.getWindow().getScreenHeight();
 -               this.minecraft.screen.mouseScrolled(d3, d4, d1, d2);
                 this.minecraft.screen.afterMouseAction();
-+               if (net.minecraftforge.client.ForgeHooksClient.onScreenMouseScrollPre(this, this.minecraft.screen, d0)) return;
++               if (net.neoforged.neoforge.client.ForgeHooksClient.onScreenMouseScrollPre(this, this.minecraft.screen, d0)) return;
 +               if (this.minecraft.screen.mouseScrolled(d3, d4, d1, d2)) return;
-+               net.minecraftforge.client.ForgeHooksClient.onScreenMouseScrollPost(this, this.minecraft.screen, d0);
++               net.neoforged.neoforge.client.ForgeHooksClient.onScreenMouseScrollPost(this, this.minecraft.screen, d0);
              } else if (this.minecraft.player != null) {
                 if (this.accumulatedScrollX != 0.0 && Math.signum(d1) != Math.signum(this.accumulatedScrollX)) {
                    this.accumulatedScrollX = 0.0;
@@ -75,7 +75,7 @@
                 this.accumulatedScrollX -= (double)j;
                 this.accumulatedScrollY -= (double)i;
                 int k = i == 0 ? -j : i;
-+               if (net.minecraftforge.client.ForgeHooksClient.onMouseScroll(this, d0)) return;
++               if (net.neoforged.neoforge.client.ForgeHooksClient.onMouseScroll(this, d0)) return;
                 if (this.minecraft.player.isSpectator()) {
                    if (this.minecraft.gui.getSpectatorGui().isMenuActive()) {
                       this.minecraft.gui.getSpectatorGui().onMouseScrolled(-k);

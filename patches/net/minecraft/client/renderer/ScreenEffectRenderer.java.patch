@@ -9,20 +9,20 @@
 -            renderTex(p_110719_.getBlockRenderer().getBlockModelShaper().getParticleIcon(blockstate), p_110720_);
 +         org.apache.commons.lang3.tuple.Pair<BlockState, BlockPos> overlay = getOverlayBlock(player);
 +         if (overlay != null) {
-+            if (!net.minecraftforge.client.ForgeHooksClient.renderBlockOverlay(player, p_110720_, net.minecraftforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK, overlay.getLeft(), overlay.getRight()))
++            if (!net.neoforged.neoforge.client.ForgeHooksClient.renderBlockOverlay(player, p_110720_, net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK, overlay.getLeft(), overlay.getRight()))
 +               renderTex(p_110719_.getBlockRenderer().getBlockModelShaper().getTexture(overlay.getLeft(), p_110719_.level, overlay.getRight()), p_110720_);
           }
        }
  
        if (!p_110719_.player.isSpectator()) {
           if (p_110719_.player.isEyeInFluid(FluidTags.WATER)) {
-+            if (!net.minecraftforge.client.ForgeHooksClient.renderWaterOverlay(player, p_110720_))
++            if (!net.neoforged.neoforge.client.ForgeHooksClient.renderWaterOverlay(player, p_110720_))
              renderWater(p_110719_, p_110720_);
           }
-+         else if (!player.getEyeInFluidType().isAir()) net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions.of(player.getEyeInFluidType()).renderOverlay(p_110719_, p_110720_);
++         else if (!player.getEyeInFluidType().isAir()) net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(player.getEyeInFluidType()).renderOverlay(p_110719_, p_110720_);
  
           if (p_110719_.player.isOnFire()) {
-+            if (!net.minecraftforge.client.ForgeHooksClient.renderFireOverlay(player, p_110720_))
++            if (!net.neoforged.neoforge.client.ForgeHooksClient.renderFireOverlay(player, p_110720_))
              renderFire(p_110719_, p_110720_);
           }
        }

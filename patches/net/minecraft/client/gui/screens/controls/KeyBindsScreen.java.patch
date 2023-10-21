@@ -13,14 +13,14 @@
     public boolean keyPressed(int p_193987_, int p_193988_, int p_193989_) {
        if (this.selectedKey != null) {
           if (p_193987_ == 256) {
-+            this.selectedKey.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), InputConstants.UNKNOWN);
++            this.selectedKey.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.getActiveModifier(), InputConstants.UNKNOWN);
              this.options.setKey(this.selectedKey, InputConstants.UNKNOWN);
           } else {
-+            this.selectedKey.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), InputConstants.getKey(p_193987_, p_193988_));
++            this.selectedKey.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.getActiveModifier(), InputConstants.getKey(p_193987_, p_193988_));
              this.options.setKey(this.selectedKey, InputConstants.getKey(p_193987_, p_193988_));
           }
  
-+         if(!net.minecraftforge.client.settings.KeyModifier.isKeyCodeModifier(this.selectedKey.getKey()))
++         if(!net.neoforged.neoforge.client.settings.KeyModifier.isKeyCodeModifier(this.selectedKey.getKey()))
           this.selectedKey = null;
           this.lastKeySelection = Util.getMillis();
           this.keyBindsList.resetMappingAndUpdateButtons();

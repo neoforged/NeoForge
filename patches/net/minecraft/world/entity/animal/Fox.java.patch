@@ -22,8 +22,8 @@
        protected void breed() {
           ServerLevel serverlevel = (ServerLevel)this.level;
           Fox fox = (Fox)this.animal.getBreedOffspring(serverlevel, this.partner);
-+         final net.minecraftforge.event.entity.living.BabyEntitySpawnEvent event = new net.minecraftforge.event.entity.living.BabyEntitySpawnEvent(animal, partner, fox);
-+         final boolean cancelled = net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled();
++         final net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent event = new net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent(animal, partner, fox);
++         final boolean cancelled = net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled();
 +         fox = (Fox) event.getChild();
 +         if (cancelled) {
 +            //Reset the "inLove" state for the animals
@@ -41,7 +41,7 @@
  
        protected void onReachedTarget() {
 -         if (Fox.this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+         if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(Fox.this.level(), Fox.this)) {
++         if (net.neoforged.neoforge.event.ForgeEventFactory.getMobGriefingEvent(Fox.this.level(), Fox.this)) {
              BlockState blockstate = Fox.this.level().getBlockState(this.blockPos);
              if (blockstate.is(Blocks.SWEET_BERRY_BUSH)) {
                 this.pickSweetBerries(blockstate);

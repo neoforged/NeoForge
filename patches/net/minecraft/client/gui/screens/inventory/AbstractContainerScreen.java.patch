@@ -4,7 +4,7 @@
        int i = this.leftPos;
        int j = this.topPos;
        super.render(p_283479_, p_283661_, p_281248_, p_281886_);
-+      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.ContainerScreenEvent.Render.Background(this, p_283479_, p_283661_, p_281248_));
++      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Background(this, p_283479_, p_283661_, p_281248_));
        RenderSystem.disableDepthTest();
        p_283479_.pose().pushPose();
        p_283479_.pose().translate((float)i, (float)j, 0.0F);
@@ -19,7 +19,7 @@
        }
  
        this.renderLabels(p_283479_, p_283661_, p_281248_);
-+      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.ContainerScreenEvent.Render.Foreground(this, p_283479_, p_283661_, p_281248_));
++      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Foreground(this, p_283479_, p_283661_, p_281248_));
        ItemStack itemstack = this.draggingItem.isEmpty() ? this.menu.getCarried() : this.draggingItem;
        if (!itemstack.isEmpty()) {
           int l1 = 8;
@@ -47,7 +47,7 @@
        p_282567_.pose().translate(0.0F, 0.0F, 232.0F);
        p_282567_.renderItem(p_281330_, p_281772_, p_281689_);
 -      p_282567_.renderItemDecorations(this.font, p_281330_, p_281772_, p_281689_ - (this.draggingItem.isEmpty() ? 0 : 8), p_282568_);
-+      var font = net.minecraftforge.client.extensions.common.IClientItemExtensions.of(p_281330_).getFont(p_281330_, net.minecraftforge.client.extensions.common.IClientItemExtensions.FontContext.ITEM_COUNT);
++      var font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(p_281330_).getFont(p_281330_, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.ITEM_COUNT);
 +      p_282567_.renderItemDecorations(font == null ? this.font : font, p_281330_, p_281772_, p_281689_ - (this.draggingItem.isEmpty() ? 0 : 8), p_282568_);
        p_282567_.pose().popPose();
     }

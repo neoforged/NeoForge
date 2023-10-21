@@ -5,7 +5,7 @@
           LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = RegistryLayer.createRegistryAccess();
           LayeredRegistryAccess<RegistryLayer> layeredregistryaccess1 = loadAndReplaceLayer(
 -            closeableresourcemanager, layeredregistryaccess, RegistryLayer.WORLDGEN, RegistryDataLoader.WORLDGEN_REGISTRIES
-+            closeableresourcemanager, layeredregistryaccess, RegistryLayer.WORLDGEN, net.minecraftforge.registries.DataPackRegistriesHooks.getDataPackRegistries()
++            closeableresourcemanager, layeredregistryaccess, RegistryLayer.WORLDGEN, net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistries()
           );
           RegistryAccess.Frozen registryaccess$frozen = layeredregistryaccess1.getAccessForLoading(RegistryLayer.DIMENSIONS);
           RegistryAccess.Frozen registryaccess$frozen1 = RegistryDataLoader.load(

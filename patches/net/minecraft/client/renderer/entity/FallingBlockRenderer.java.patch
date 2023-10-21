@@ -5,7 +5,7 @@
              BlockPos blockpos = BlockPos.containing(p_114634_.getX(), p_114634_.getBoundingBox().maxY, p_114634_.getZ());
              p_114637_.translate(-0.5, 0.0, -0.5);
 +            var model = this.dispatcher.getBlockModel(blockstate);
-+            for (var renderType : model.getRenderTypes(blockstate, RandomSource.create(blockstate.getSeed(p_114634_.getStartPos())), net.minecraftforge.client.model.data.ModelData.EMPTY))
++            for (var renderType : model.getRenderTypes(blockstate, RandomSource.create(blockstate.getSeed(p_114634_.getStartPos())), net.neoforged.neoforge.client.model.data.ModelData.EMPTY))
              this.dispatcher
                 .getModelRenderer()
                 .tesselateBlock(
@@ -15,7 +15,7 @@
                    blockstate.getSeed(p_114634_.getStartPos()),
 -                  OverlayTexture.NO_OVERLAY
 +                  OverlayTexture.NO_OVERLAY,
-+                  net.minecraftforge.client.model.data.ModelData.EMPTY,
++                  net.neoforged.neoforge.client.model.data.ModelData.EMPTY,
 +                  renderType
                 );
              p_114637_.popPose();

@@ -5,7 +5,7 @@
  
     public void handleBlockBreakAction(BlockPos p_215120_, ServerboundPlayerActionPacket.Action p_215121_, Direction p_215122_, int p_215123_, int p_215124_) {
 -      if (this.player.getEyePosition().distanceToSqr(Vec3.atCenterOf(p_215120_)) > ServerGamePacketListenerImpl.MAX_INTERACTION_DISTANCE) {
-+      net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event = net.minecraftforge.common.ForgeHooks.onLeftClickBlock(player, p_215120_, p_215122_, p_215121_);
++      net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event = net.neoforged.neoforge.common.ForgeHooks.onLeftClickBlock(player, p_215120_, p_215122_, p_215121_);
 +      if (event.isCanceled() || (!this.isCreative() && event.getResult() == net.neoforged.bus.api.Event.Result.DENY)) {
 +         return;
 +      }
@@ -26,7 +26,7 @@
     public boolean destroyBlock(BlockPos p_9281_) {
        BlockState blockstate = this.level.getBlockState(p_9281_);
 -      if (!this.player.getMainHandItem().getItem().canAttackBlock(blockstate, this.level, p_9281_, this.player)) {
-+      int exp = net.minecraftforge.common.ForgeHooks.onBlockBreakEvent(level, gameModeForPlayer, player, p_9281_);
++      int exp = net.neoforged.neoforge.common.ForgeHooks.onBlockBreakEvent(level, gameModeForPlayer, player, p_9281_);
 +      if (exp == -1) {
           return false;
        } else {
@@ -56,7 +56,7 @@
 +               boolean flag1 = blockstate.canHarvestBlock(this.level, p_9281_, this.player); // previously player.hasCorrectToolForDrops(blockstate)
                 itemstack.mineBlock(this.level, blockstate, p_9281_, this.player);
 +               if (itemstack.isEmpty() && !itemstack1.isEmpty())
-+                  net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(this.player, itemstack1, InteractionHand.MAIN_HAND);
++                  net.neoforged.neoforge.event.ForgeEventFactory.onPlayerDestroyItem(this.player, itemstack1, InteractionHand.MAIN_HAND);
 +               boolean flag = removeBlock(p_9281_, flag1);
 +
                 if (flag && flag1) {
@@ -85,7 +85,7 @@
        } else if (p_9262_.getCooldowns().isOnCooldown(p_9264_.getItem())) {
           return InteractionResult.PASS;
        } else {
-+         InteractionResult cancelResult = net.minecraftforge.common.ForgeHooks.onItemRightClick(p_9262_, p_9265_);
++         InteractionResult cancelResult = net.neoforged.neoforge.common.ForgeHooks.onItemRightClick(p_9262_, p_9265_);
 +         if (cancelResult != null) return cancelResult;
           int i = p_9264_.getCount();
           int j = p_9264_.getDamageValue();
@@ -96,7 +96,7 @@
           return InteractionResult.FAIL;
 -      } else if (this.gameModeForPlayer == GameType.SPECTATOR) {
 +      }
-+      net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock event = net.minecraftforge.common.ForgeHooks.onRightClickBlock(p_9266_, p_9269_, blockpos, p_9270_);
++      net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock event = net.neoforged.neoforge.common.ForgeHooks.onRightClickBlock(p_9266_, p_9269_, blockpos, p_9270_);
 +      if (event.isCanceled()) return event.getCancellationResult();
 +      if (this.gameModeForPlayer == GameType.SPECTATOR) {
           MenuProvider menuprovider = blockstate.getMenuProvider(p_9267_, blockpos);

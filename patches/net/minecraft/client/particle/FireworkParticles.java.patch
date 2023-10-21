@@ -22,7 +22,7 @@
                 aint = new int[]{DyeColor.BLACK.getFireworkColor()};
              }
  
-+            var factory = net.minecraftforge.client.FireworkShapeFactoryRegistry.get(fireworkrocketitem$shape);
++            var factory = net.neoforged.neoforge.client.FireworkShapeFactoryRegistry.get(fireworkrocketitem$shape);
 +            if (factory != null)
 +               factory.build(this, flag4, flag2, aint, aint1);
 +            else

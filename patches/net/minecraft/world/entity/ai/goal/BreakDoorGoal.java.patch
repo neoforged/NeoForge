@@ -5,7 +5,7 @@
        if (!super.canUse()) {
           return false;
 -      } else if (!this.mob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+      } else if (!net.minecraftforge.common.ForgeHooks.canEntityDestroy(this.mob.level(), this.doorPos, this.mob)) {
++      } else if (!net.neoforged.neoforge.common.ForgeHooks.canEntityDestroy(this.mob.level(), this.doorPos, this.mob)) {
           return false;
        } else {
           return this.isValidDifficulty(this.mob.level().getDifficulty()) && !this.isOpen();

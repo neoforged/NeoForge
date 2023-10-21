@@ -5,7 +5,7 @@
        this.gCol = 0.6F;
        this.bCol = 0.6F;
 -      if (!p_172458_.is(Blocks.GRASS_BLOCK)) {
-+      if (net.minecraftforge.client.extensions.common.IClientBlockExtensions.of(p_172458_).areBreakingParticlesTinted(p_172458_, p_172451_, p_172459_)) {
++      if (net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(p_172458_).areBreakingParticlesTinted(p_172458_, p_172451_, p_172459_)) {
           int i = Minecraft.getInstance().getBlockColors().getColor(p_172458_, p_172451_, p_172459_, 0);
           this.rCol *= (float)(i >> 16 & 0xFF) / 255.0F;
           this.gCol *= (float)(i >> 8 & 0xFF) / 255.0F;

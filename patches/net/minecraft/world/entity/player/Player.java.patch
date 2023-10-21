@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public abstract class Player extends LivingEntity {
-+public abstract class Player extends LivingEntity implements net.minecraftforge.common.extensions.IForgePlayer {
++public abstract class Player extends LivingEntity implements net.neoforged.neoforge.common.extensions.IForgePlayer {
 +   public static final String PERSISTED_NBT_TAG = "PlayerPersisted";
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final int MAX_NAME_LENGTH = 16;
@@ -29,7 +29,7 @@
 -         .add(Attributes.MOVEMENT_SPEED, 0.1F)
 -         .add(Attributes.ATTACK_SPEED)
 -         .add(Attributes.LUCK);
-+      return LivingEntity.createLivingAttributes().add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.MOVEMENT_SPEED, (double) 0.1F).add(Attributes.ATTACK_SPEED).add(Attributes.LUCK).add(net.minecraftforge.common.ForgeMod.BLOCK_REACH.get()).add(Attributes.ATTACK_KNOCKBACK).add(net.minecraftforge.common.ForgeMod.ENTITY_REACH.get());
++      return LivingEntity.createLivingAttributes().add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.MOVEMENT_SPEED, (double) 0.1F).add(Attributes.ATTACK_SPEED).add(Attributes.LUCK).add(net.neoforged.neoforge.common.ForgeMod.BLOCK_REACH.get()).add(Attributes.ATTACK_KNOCKBACK).add(net.neoforged.neoforge.common.ForgeMod.ENTITY_REACH.get());
     }
  
     @Override
@@ -37,7 +37,7 @@
  
     @Override
     public void tick() {
-+      net.minecraftforge.event.ForgeEventFactory.onPlayerPreTick(this);
++      net.neoforged.neoforge.event.ForgeEventFactory.onPlayerPreTick(this);
        this.noPhysics = this.isSpectator();
        if (this.isSpectator()) {
           this.setOnGround(false);
@@ -46,7 +46,7 @@
           }
  
 -         if (!this.level().isClientSide && this.level().isDay()) {
-+         if (!this.level().isClientSide && !net.minecraftforge.event.ForgeEventFactory.fireSleepingTimeCheck(this, getSleepingPos())) {
++         if (!this.level().isClientSide && !net.neoforged.neoforge.event.ForgeEventFactory.fireSleepingTimeCheck(this, getSleepingPos())) {
              this.stopSleepInBed(false, true);
           }
        } else if (this.sleepCounter > 0) {
@@ -54,7 +54,7 @@
        this.turtleHelmetTick();
        this.cooldowns.tick();
        this.updatePlayerPose();
-+      net.minecraftforge.event.ForgeEventFactory.onPlayerPostTick(this);
++      net.neoforged.neoforge.event.ForgeEventFactory.onPlayerPostTick(this);
     }
  
     public boolean isSecondaryUseActive() {
@@ -73,7 +73,7 @@
  
     @Override
     public void die(DamageSource p_36152_) {
-+      if (net.minecraftforge.common.ForgeHooks.onLivingDeath(this, p_36152_)) return;
++      if (net.neoforged.neoforge.common.ForgeHooks.onLivingDeath(this, p_36152_)) return;
        super.die(p_36152_);
        this.reapplyPosition();
        if (!this.isSpectator()) {
@@ -82,7 +82,7 @@
     @Nullable
     public ItemEntity drop(ItemStack p_36177_, boolean p_36178_) {
 -      return this.drop(p_36177_, false, p_36178_);
-+      return net.minecraftforge.common.ForgeHooks.onPlayerTossEvent(this, p_36177_, p_36178_);
++      return net.neoforged.neoforge.common.ForgeHooks.onPlayerTossEvent(this, p_36177_, p_36178_);
     }
  
     @Nullable
@@ -103,13 +103,13 @@
           f /= 5.0F;
        }
  
-+      f = net.minecraftforge.event.ForgeEventFactory.getBreakSpeed(this, p_36282_, f, pos);
++      f = net.neoforged.neoforge.event.ForgeEventFactory.getBreakSpeed(this, p_36282_, f, pos);
        return f;
     }
  
     public boolean hasCorrectToolForDrops(BlockState p_36299_) {
 -      return !p_36299_.requiresCorrectToolForDrops() || this.inventory.getSelected().isCorrectToolForDrops(p_36299_);
-+      return net.minecraftforge.event.ForgeEventFactory.doPlayerHarvestCheck(this, p_36299_, !p_36299_.requiresCorrectToolForDrops() || this.inventory.getSelected().isCorrectToolForDrops(p_36299_));
++      return net.neoforged.neoforge.event.ForgeEventFactory.doPlayerHarvestCheck(this, p_36299_, !p_36299_.requiresCorrectToolForDrops() || this.inventory.getSelected().isCorrectToolForDrops(p_36299_));
     }
  
     @Override
@@ -117,7 +117,7 @@
  
     @Override
     public boolean hurt(DamageSource p_36154_, float p_36155_) {
-+      if (!net.minecraftforge.common.ForgeHooks.onPlayerAttack(this, p_36154_, p_36155_)) return false;
++      if (!net.neoforged.neoforge.common.ForgeHooks.onPlayerAttack(this, p_36154_, p_36155_)) return false;
        if (this.isInvulnerableTo(p_36154_)) {
           return false;
        } else if (this.abilities.invulnerable && !p_36154_.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
@@ -135,7 +135,7 @@
     @Override
     protected void hurtCurrentlyUsedShield(float p_36383_) {
 -      if (this.useItem.is(Items.SHIELD)) {
-+      if (this.useItem.canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)) {
++      if (this.useItem.canPerformAction(net.neoforged.neoforge.common.ToolActions.SHIELD_BLOCK)) {
           if (!this.level().isClientSide) {
              this.awardStat(Stats.ITEM_USED.get(this.useItem.getItem()));
           }
@@ -143,7 +143,7 @@
              int i = 1 + Mth.floor(p_36383_);
              InteractionHand interactionhand = this.getUsedItemHand();
              this.useItem.hurtAndBreak(i, this, p_219739_ -> p_219739_.broadcastBreakEvent(interactionhand));
-+               net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(this, this.useItem, interactionhand);
++               net.neoforged.neoforge.event.ForgeEventFactory.onPlayerDestroyItem(this, this.useItem, interactionhand);
 +               stopUsingItem(); // Forge: fix MC-168573
              if (this.useItem.isEmpty()) {
                 if (interactionhand == InteractionHand.MAIN_HAND) {
@@ -152,13 +152,13 @@
     @Override
     protected void actuallyHurt(DamageSource p_36312_, float p_36313_) {
        if (!this.isInvulnerableTo(p_36312_)) {
-+         p_36313_ = net.minecraftforge.common.ForgeHooks.onLivingHurt(this, p_36312_, p_36313_);
++         p_36313_ = net.neoforged.neoforge.common.ForgeHooks.onLivingHurt(this, p_36312_, p_36313_);
 +         if (p_36313_ <= 0) return;
           p_36313_ = this.getDamageAfterArmorAbsorb(p_36312_, p_36313_);
           p_36313_ = this.getDamageAfterMagicAbsorb(p_36312_, p_36313_);
           float f1 = Math.max(p_36313_ - this.getAbsorptionAmount(), 0.0F);
           this.setAbsorptionAmount(this.getAbsorptionAmount() - (p_36313_ - f1));
-+         f1 = net.minecraftforge.common.ForgeHooks.onLivingDamage(this, p_36312_, f1);
++         f1 = net.neoforged.neoforge.common.ForgeHooks.onLivingDamage(this, p_36312_, f1);
           float f = p_36313_ - f1;
           if (f > 0.0F && f < 3.4028235E37F) {
              this.awardStat(Stats.DAMAGE_ABSORBED, Math.round(f * 10.0F));
@@ -166,7 +166,7 @@
  
           return InteractionResult.PASS;
        } else {
-+         InteractionResult cancelResult = net.minecraftforge.common.ForgeHooks.onInteractEntity(this, p_36158_, p_36159_);
++         InteractionResult cancelResult = net.neoforged.neoforge.common.ForgeHooks.onInteractEntity(this, p_36158_, p_36159_);
 +         if (cancelResult != null) return cancelResult;
           ItemStack itemstack = this.getItemInHand(p_36159_);
           ItemStack itemstack1 = itemstack.copy();
@@ -176,7 +176,7 @@
              }
  
 +            if (!this.abilities.instabuild && itemstack.isEmpty()) {
-+               net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(this, itemstack1, p_36159_);
++               net.neoforged.neoforge.event.ForgeEventFactory.onPlayerDestroyItem(this, itemstack1, p_36159_);
 +            }
              return interactionresult;
           } else {
@@ -185,7 +185,7 @@
                 if (interactionresult1.consumesAction()) {
                    this.level().gameEvent(GameEvent.ENTITY_INTERACT, p_36158_.position(), GameEvent.Context.of(this));
                    if (itemstack.isEmpty() && !this.abilities.instabuild) {
-+                     net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(this, itemstack1, p_36159_);
++                     net.neoforged.neoforge.event.ForgeEventFactory.onPlayerDestroyItem(this, itemstack1, p_36159_);
                       this.setItemInHand(p_36159_, ItemStack.EMPTY);
                    }
  
@@ -209,7 +209,7 @@
     }
  
     public void attack(Entity p_36347_) {
-+      if (!net.minecraftforge.common.ForgeHooks.onPlayerAttackTarget(this, p_36347_)) return;
++      if (!net.neoforged.neoforge.common.ForgeHooks.onPlayerAttackTarget(this, p_36347_)) return;
        if (p_36347_.isAttackable()) {
           if (!p_36347_.skipAttackInteraction(this)) {
              float f = (float)this.getAttributeValue(Attributes.ATTACK_DAMAGE);
@@ -230,7 +230,7 @@
                    && !this.isPassenger()
                    && p_36347_ instanceof LivingEntity;
                 flag2 = flag2 && !this.isSprinting();
-+               net.minecraftforge.event.entity.player.CriticalHitEvent hitResult = net.minecraftforge.common.ForgeHooks.getCriticalHit(this, p_36347_, flag2, flag2 ? 1.5F : 1.0F);
++               net.neoforged.neoforge.event.entity.player.CriticalHitEvent hitResult = net.neoforged.neoforge.common.ForgeHooks.getCriticalHit(this, p_36347_, flag2, flag2 ? 1.5F : 1.0F);
 +               flag2 = hitResult != null;
                 if (flag2) {
 -                  f *= 1.5F;
@@ -245,7 +245,7 @@
 -                  if (itemstack.getItem() instanceof SwordItem) {
 -                     flag3 = true;
 -                  }
-+                  flag3 = itemstack.canPerformAction(net.minecraftforge.common.ToolActions.SWORD_SWEEP);
++                  flag3 = itemstack.canPerformAction(net.neoforged.neoforge.common.ToolActions.SWORD_SWEEP);
                 }
  
                 float f4 = 0.0F;
@@ -270,15 +270,15 @@
                    Entity entity = p_36347_;
 -                  if (p_36347_ instanceof EnderDragonPart) {
 -                     entity = ((EnderDragonPart)p_36347_).parentMob;
-+                  if (p_36347_ instanceof net.minecraftforge.entity.PartEntity) {
-+                     entity = ((net.minecraftforge.entity.PartEntity<?>) p_36347_).getParent();
++                  if (p_36347_ instanceof net.neoforged.neoforge.entity.PartEntity) {
++                     entity = ((net.neoforged.neoforge.entity.PartEntity<?>) p_36347_).getParent();
                    }
  
                    if (!this.level().isClientSide && !itemstack1.isEmpty() && entity instanceof LivingEntity) {
 +                     ItemStack copy = itemstack1.copy();
                       itemstack1.hurtEnemy((LivingEntity)entity, this);
                       if (itemstack1.isEmpty()) {
-+                        net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(this, copy, InteractionHand.MAIN_HAND);
++                        net.neoforged.neoforge.event.ForgeEventFactory.onPlayerDestroyItem(this, copy, InteractionHand.MAIN_HAND);
                          this.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
                       }
                    }
@@ -303,7 +303,7 @@
     }
  
     public void stopSleepInBed(boolean p_36226_, boolean p_36227_) {
-+      net.minecraftforge.event.ForgeEventFactory.onPlayerWakeup(this, p_36226_, p_36227_);
++      net.neoforged.neoforge.event.ForgeEventFactory.onPlayerWakeup(this, p_36226_, p_36227_);
        super.stopSleeping();
        if (this.level() instanceof ServerLevel && p_36227_) {
           ((ServerLevel)this.level()).updateSleepingPlayerList();
@@ -320,7 +320,7 @@
     @Override
     public boolean causeFallDamage(float p_150093_, float p_150094_, DamageSource p_150095_) {
        if (this.abilities.mayfly) {
-+         net.minecraftforge.event.ForgeEventFactory.onPlayerFall(this, p_150093_, p_150093_);
++         net.neoforged.neoforge.event.ForgeEventFactory.onPlayerFall(this, p_150093_, p_150093_);
           return false;
        } else {
           if (p_150093_ >= 2.0F) {
@@ -353,8 +353,8 @@
     }
  
     public void giveExperiencePoints(int p_36291_) {
-+      net.minecraftforge.event.entity.player.PlayerXpEvent.XpChange event = new net.minecraftforge.event.entity.player.PlayerXpEvent.XpChange(this, p_36291_);
-+      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled()) return;
++      net.neoforged.neoforge.event.entity.player.PlayerXpEvent.XpChange event = new net.neoforged.neoforge.event.entity.player.PlayerXpEvent.XpChange(this, p_36291_);
++      if (net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled()) return;
 +      p_36291_ = event.getAmount();
 +
        this.increaseScore(p_36291_);
@@ -373,8 +373,8 @@
     }
  
     public void giveExperienceLevels(int p_36276_) {
-+      net.minecraftforge.event.entity.player.PlayerXpEvent.LevelChange event = new net.minecraftforge.event.entity.player.PlayerXpEvent.LevelChange(this, p_36276_);
-+      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled()) return;
++      net.neoforged.neoforge.event.entity.player.PlayerXpEvent.LevelChange event = new net.neoforged.neoforge.event.entity.player.PlayerXpEvent.LevelChange(this, p_36276_);
++      if (net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled()) return;
 +      p_36276_ = event.getLevels();
 +
        this.experienceLevel += p_36276_;
@@ -385,7 +385,7 @@
     @Override
     public Component getDisplayName() {
 -      MutableComponent mutablecomponent = PlayerTeam.formatNameForTeam(this.getTeam(), this.getName());
-+      if (this.displayname == null) this.displayname = net.minecraftforge.event.ForgeEventFactory.getPlayerDisplayName(this, this.getName());
++      if (this.displayname == null) this.displayname = net.neoforged.neoforge.event.ForgeEventFactory.getPlayerDisplayName(this, this.getName());
 +      MutableComponent mutablecomponent = Component.literal("");
 +      mutablecomponent = prefixes.stream().reduce(mutablecomponent, MutableComponent::append);
 +      mutablecomponent = mutablecomponent.append(PlayerTeam.formatNameForTeam(this.getTeam(), this.displayname));
@@ -398,7 +398,7 @@
           ItemStack itemstack = ProjectileWeaponItem.getHeldProjectile(this, predicate);
           if (!itemstack.isEmpty()) {
 -            return itemstack;
-+            return net.minecraftforge.common.ForgeHooks.getProjectile(this, p_36349_, itemstack);
++            return net.neoforged.neoforge.common.ForgeHooks.getProjectile(this, p_36349_, itemstack);
           } else {
              predicate = ((ProjectileWeaponItem)p_36349_.getItem()).getAllSupportedProjectiles();
  
@@ -406,12 +406,12 @@
                 ItemStack itemstack1 = this.inventory.getItem(i);
                 if (predicate.test(itemstack1)) {
 -                  return itemstack1;
-+                  return net.minecraftforge.common.ForgeHooks.getProjectile(this, p_36349_, itemstack1);
++                  return net.neoforged.neoforge.common.ForgeHooks.getProjectile(this, p_36349_, itemstack1);
                 }
              }
  
 -            return this.abilities.instabuild ? new ItemStack(Items.ARROW) : ItemStack.EMPTY;
-+            return net.minecraftforge.common.ForgeHooks.getProjectile(this, p_36349_, this.abilities.instabuild ? new ItemStack(Items.ARROW) : ItemStack.EMPTY);
++            return net.neoforged.neoforge.common.ForgeHooks.getProjectile(this, p_36349_, this.abilities.instabuild ? new ItemStack(Items.ARROW) : ItemStack.EMPTY);
           }
        }
     }
@@ -440,29 +440,29 @@
 +
 +   private Component displayname = null;
 +   /**
-+    * Force the displayed name to refresh, by firing {@link net.minecraftforge.event.entity.player.PlayerEvent.NameFormat}, using the real player name as event parameter.
++    * Force the displayed name to refresh, by firing {@link net.neoforged.neoforge.event.entity.player.PlayerEvent.NameFormat}, using the real player name as event parameter.
 +    */
 +   public void refreshDisplayName() {
-+      this.displayname = net.minecraftforge.event.ForgeEventFactory.getPlayerDisplayName(this, this.getName());
++      this.displayname = net.neoforged.neoforge.event.ForgeEventFactory.getPlayerDisplayName(this, this.getName());
 +   }
 +
-+   private final net.minecraftforge.common.util.LazyOptional<net.minecraftforge.items.IItemHandler>
-+         playerMainHandler = net.minecraftforge.common.util.LazyOptional.of(
-+               () -> new net.minecraftforge.items.wrapper.PlayerMainInvWrapper(inventory));
++   private final net.neoforged.neoforge.common.util.LazyOptional<net.neoforged.neoforge.items.IItemHandler>
++         playerMainHandler = net.neoforged.neoforge.common.util.LazyOptional.of(
++               () -> new net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper(inventory));
 +
-+   private final net.minecraftforge.common.util.LazyOptional<net.minecraftforge.items.IItemHandler>
-+         playerEquipmentHandler = net.minecraftforge.common.util.LazyOptional.of(
-+               () -> new net.minecraftforge.items.wrapper.CombinedInvWrapper(
-+                     new net.minecraftforge.items.wrapper.PlayerArmorInvWrapper(inventory),
-+                     new net.minecraftforge.items.wrapper.PlayerOffhandInvWrapper(inventory)));
++   private final net.neoforged.neoforge.common.util.LazyOptional<net.neoforged.neoforge.items.IItemHandler>
++         playerEquipmentHandler = net.neoforged.neoforge.common.util.LazyOptional.of(
++               () -> new net.neoforged.neoforge.items.wrapper.CombinedInvWrapper(
++                     new net.neoforged.neoforge.items.wrapper.PlayerArmorInvWrapper(inventory),
++                     new net.neoforged.neoforge.items.wrapper.PlayerOffhandInvWrapper(inventory)));
 +
-+   private final net.minecraftforge.common.util.LazyOptional<net.minecraftforge.items.IItemHandler>
-+         playerJoinedHandler = net.minecraftforge.common.util.LazyOptional.of(
-+               () -> new net.minecraftforge.items.wrapper.PlayerInvWrapper(inventory));
++   private final net.neoforged.neoforge.common.util.LazyOptional<net.neoforged.neoforge.items.IItemHandler>
++         playerJoinedHandler = net.neoforged.neoforge.common.util.LazyOptional.of(
++               () -> new net.neoforged.neoforge.items.wrapper.PlayerInvWrapper(inventory));
 +
 +   @Override
-+   public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable Direction facing) {
-+      if (this.isAlive() && capability == net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER) {
++   public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(net.neoforged.neoforge.common.capabilities.Capability<T> capability, @Nullable Direction facing) {
++      if (this.isAlive() && capability == net.neoforged.neoforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER) {
 +         if (facing == null) return playerJoinedHandler.cast();
 +         else if (facing.getAxis().isVertical()) return playerMainHandler.cast();
 +         else if (facing.getAxis().isHorizontal()) return playerEquipmentHandler.cast();

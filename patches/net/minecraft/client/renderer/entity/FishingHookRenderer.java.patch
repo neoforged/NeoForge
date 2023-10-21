@@ -5,7 +5,7 @@
           int i = player.getMainArm() == HumanoidArm.RIGHT ? 1 : -1;
           ItemStack itemstack = player.getMainHandItem();
 -         if (!itemstack.is(Items.FISHING_ROD)) {
-+         if (!itemstack.canPerformAction(net.minecraftforge.common.ToolActions.FISHING_ROD_CAST)) {
++         if (!itemstack.canPerformAction(net.neoforged.neoforge.common.ToolActions.FISHING_ROD_CAST)) {
              i = -i;
           }
  

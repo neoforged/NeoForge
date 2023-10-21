@@ -14,7 +14,7 @@
 -      this.hostName = hostName;
 -      this.port = port;
 -      this.intention = intention;
-+      this(protocolVersion, hostName, port, intention, net.minecraftforge.network.NetworkConstants.NETVERSION);
++      this(protocolVersion, hostName, port, intention, net.neoforged.neoforge.network.NetworkConstants.NETVERSION);
     }
  
     public ClientIntentionPacket(FriendlyByteBuf p_179801_) {

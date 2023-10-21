@@ -5,10 +5,10 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class KeyMapping implements Comparable<KeyMapping> {
-+public class KeyMapping implements Comparable<KeyMapping>, net.minecraftforge.client.extensions.IForgeKeyMapping {
++public class KeyMapping implements Comparable<KeyMapping>, net.neoforged.neoforge.client.extensions.IForgeKeyMapping {
     private static final Map<String, KeyMapping> ALL = Maps.newHashMap();
 -   private static final Map<InputConstants.Key, KeyMapping> MAP = Maps.newHashMap();
-+   private static final net.minecraftforge.client.settings.KeyMappingLookup MAP = new net.minecraftforge.client.settings.KeyMappingLookup();
++   private static final net.neoforged.neoforge.client.settings.KeyMappingLookup MAP = new net.neoforged.neoforge.client.settings.KeyMappingLookup();
     private static final Set<String> CATEGORIES = Sets.newHashSet();
     public static final String CATEGORY_MOVEMENT = "key.categories.movement";
     public static final String CATEGORY_MISC = "key.categories.misc";
@@ -66,8 +66,8 @@
  
     public boolean same(KeyMapping p_90851_) {
 +      if (getKeyConflictContext().conflicts(p_90851_.getKeyConflictContext()) || p_90851_.getKeyConflictContext().conflicts(getKeyConflictContext())) {
-+         net.minecraftforge.client.settings.KeyModifier keyModifier = getKeyModifier();
-+         net.minecraftforge.client.settings.KeyModifier otherKeyModifier = p_90851_.getKeyModifier();
++         net.neoforged.neoforge.client.settings.KeyModifier keyModifier = getKeyModifier();
++         net.neoforged.neoforge.client.settings.KeyModifier otherKeyModifier = p_90851_.getKeyModifier();
 +         if (keyModifier.matches(p_90851_.getKey()) || otherKeyModifier.matches(getKey())) {
 +            return true;
 +         } else if (getKey().equals(p_90851_.getKey())) {
@@ -75,8 +75,8 @@
 +            // For example: If you hold shift to crouch, you can still press E to open your inventory. This means that a Shift+E hotkey is in conflict with E.
 +            // GUI and other key contexts do not have this limitation.
 +            return keyModifier == otherKeyModifier ||
-+               (getKeyConflictContext().conflicts(net.minecraftforge.client.settings.KeyConflictContext.IN_GAME) &&
-+               (keyModifier == net.minecraftforge.client.settings.KeyModifier.NONE || otherKeyModifier == net.minecraftforge.client.settings.KeyModifier.NONE));
++               (getKeyConflictContext().conflicts(net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME) &&
++               (keyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE || otherKeyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE));
 +         }
 +      }
        return this.key.equals(p_90851_.key);
@@ -103,35 +103,35 @@
     }
 +
 +   /****************** Forge Start *****************************/
-+   private net.minecraftforge.client.settings.KeyModifier keyModifierDefault = net.minecraftforge.client.settings.KeyModifier.NONE;
-+   private net.minecraftforge.client.settings.KeyModifier keyModifier = net.minecraftforge.client.settings.KeyModifier.NONE;
-+   private net.minecraftforge.client.settings.IKeyConflictContext keyConflictContext = net.minecraftforge.client.settings.KeyConflictContext.UNIVERSAL;
++   private net.neoforged.neoforge.client.settings.KeyModifier keyModifierDefault = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
++   private net.neoforged.neoforge.client.settings.KeyModifier keyModifier = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
++   private net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext = net.neoforged.neoforge.client.settings.KeyConflictContext.UNIVERSAL;
 +
 +   /**
 +    * Convenience constructor for creating KeyBindings with keyConflictContext set.
 +    */
-+   public KeyMapping(String description, net.minecraftforge.client.settings.IKeyConflictContext keyConflictContext, final InputConstants.Type inputType, final int keyCode, String category) {
++   public KeyMapping(String description, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, final InputConstants.Type inputType, final int keyCode, String category) {
 +       this(description, keyConflictContext, inputType.getOrCreate(keyCode), category);
 +   }
 +
 +   /**
 +    * Convenience constructor for creating KeyBindings with keyConflictContext set.
 +    */
-+   public KeyMapping(String description, net.minecraftforge.client.settings.IKeyConflictContext keyConflictContext, InputConstants.Key keyCode, String category) {
-+       this(description, keyConflictContext, net.minecraftforge.client.settings.KeyModifier.NONE, keyCode, category);
++   public KeyMapping(String description, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, InputConstants.Key keyCode, String category) {
++       this(description, keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier.NONE, keyCode, category);
 +   }
 +
 +   /**
 +    * Convenience constructor for creating KeyBindings with keyConflictContext and keyModifier set.
 +    */
-+   public KeyMapping(String description, net.minecraftforge.client.settings.IKeyConflictContext keyConflictContext, net.minecraftforge.client.settings.KeyModifier keyModifier, final InputConstants.Type inputType, final int keyCode, String category) {
++   public KeyMapping(String description, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier keyModifier, final InputConstants.Type inputType, final int keyCode, String category) {
 +       this(description, keyConflictContext, keyModifier, inputType.getOrCreate(keyCode), category);
 +   }
 +
 +   /**
 +    * Convenience constructor for creating KeyBindings with keyConflictContext and keyModifier set.
 +    */
-+   public KeyMapping(String description, net.minecraftforge.client.settings.IKeyConflictContext keyConflictContext, net.minecraftforge.client.settings.KeyModifier keyModifier, InputConstants.Key keyCode, String category) {
++   public KeyMapping(String description, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier keyModifier, InputConstants.Key keyCode, String category) {
 +      this.name = description;
 +      this.key = keyCode;
 +      this.defaultKey = keyCode;
@@ -140,7 +140,7 @@
 +      this.keyModifier = keyModifier;
 +      this.keyModifierDefault = keyModifier;
 +      if (this.keyModifier.matches(keyCode))
-+         this.keyModifier = net.minecraftforge.client.settings.KeyModifier.NONE;
++         this.keyModifier = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
 +      ALL.put(description, this);
 +      MAP.put(keyCode, this);
 +      CATEGORIES.add(category);
@@ -152,30 +152,30 @@
 +   }
 +
 +   @Override
-+   public void setKeyConflictContext(net.minecraftforge.client.settings.IKeyConflictContext keyConflictContext) {
++   public void setKeyConflictContext(net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext) {
 +       this.keyConflictContext = keyConflictContext;
 +   }
 +
 +   @Override
-+   public net.minecraftforge.client.settings.IKeyConflictContext getKeyConflictContext() {
++   public net.neoforged.neoforge.client.settings.IKeyConflictContext getKeyConflictContext() {
 +       return keyConflictContext;
 +   }
 +
 +   @Override
-+   public net.minecraftforge.client.settings.KeyModifier getDefaultKeyModifier() {
++   public net.neoforged.neoforge.client.settings.KeyModifier getDefaultKeyModifier() {
 +       return keyModifierDefault;
 +   }
 +
 +   @Override
-+   public net.minecraftforge.client.settings.KeyModifier getKeyModifier() {
++   public net.neoforged.neoforge.client.settings.KeyModifier getKeyModifier() {
 +       return keyModifier;
 +   }
 +
 +   @Override
-+   public void setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier keyModifier, InputConstants.Key keyCode) {
++   public void setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier keyModifier, InputConstants.Key keyCode) {
 +       this.key = keyCode;
 +       if (keyModifier.matches(keyCode))
-+           keyModifier = net.minecraftforge.client.settings.KeyModifier.NONE;
++           keyModifier = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
 +       MAP.remove(this);
 +       this.keyModifier = keyModifier;
 +       MAP.put(keyCode, this);

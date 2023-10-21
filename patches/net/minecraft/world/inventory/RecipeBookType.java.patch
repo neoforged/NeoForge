@@ -4,7 +4,7 @@
  package net.minecraft.world.inventory;
  
 -public enum RecipeBookType {
-+public enum RecipeBookType implements net.minecraftforge.common.IExtensibleEnum {
++public enum RecipeBookType implements net.neoforged.neoforge.common.IExtensibleEnum {
     CRAFTING,
     FURNACE,
     BLAST_FURNACE,

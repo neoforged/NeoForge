@@ -15,7 +15,7 @@
        this.generationSettings = p_220532_;
        this.mobSettings = p_220533_;
        this.specialEffects = p_220531_;
-+      this.modifiableBiomeInfo = new net.minecraftforge.common.world.ModifiableBiomeInfo(new net.minecraftforge.common.world.ModifiableBiomeInfo.BiomeInfo(p_220530_, p_220531_, p_220532_, p_220533_)); // FORGE: cache original biome info on construction so we can bypass our field read coremods where necessary
++      this.modifiableBiomeInfo = new net.neoforged.neoforge.common.world.ModifiableBiomeInfo(new net.neoforged.neoforge.common.world.ModifiableBiomeInfo.BiomeInfo(p_220530_, p_220531_, p_220532_, p_220533_)); // FORGE: cache original biome info on construction so we can bypass our field read coremods where necessary
     }
  
     public int getSkyColor() {
@@ -44,14 +44,14 @@
 +
 +   // FORGE START
 +
-+   private final net.minecraftforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo;
++   private final net.neoforged.neoforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo;
 +
 +   /**
 +    * {@return Cache of original biome data and biome data modified by biome modifiers}
 +    * Modified biome data is set by server after datapacks and serverconfigs load.
 +    * Climate and effects field reads are coremodded to redirect to this.
 +    **/
-+   public net.minecraftforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo()
++   public net.neoforged.neoforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo()
 +   {
 +       return this.modifiableBiomeInfo;
 +   }

@@ -21,7 +21,7 @@
           return "local";
        } else {
 -         return p_295875_ ? this.address.toString() : "IP hidden";
-+         return p_295875_ ? net.minecraftforge.network.DualStackUtils.getAddressString(this.address) : "IP hidden";
++         return p_295875_ ? net.neoforged.neoforge.network.DualStackUtils.getAddressString(this.address) : "IP hidden";
        }
     }
  
@@ -29,8 +29,8 @@
     }
  
     public static ChannelFuture connect(InetSocketAddress p_290034_, boolean p_290035_, final Connection p_290031_) {
-+      net.minecraftforge.network.DualStackUtils.checkIPv6(p_290034_.getAddress());
-+      p_290031_.activationHandler = net.minecraftforge.network.NetworkHooks::registerClientLoginChannel;
++      net.neoforged.neoforge.network.DualStackUtils.checkIPv6(p_290034_.getAddress());
++      p_290031_.activationHandler = net.neoforged.neoforge.network.NetworkHooks::registerClientLoginChannel;
        Class<? extends SocketChannel> oclass;
        EventLoopGroup eventloopgroup;
        if (Epoll.isAvailable() && p_290035_) {
@@ -38,7 +38,7 @@
  
     public static Connection connectToLocalServer(SocketAddress p_129494_) {
        final Connection connection = new Connection(PacketFlow.CLIENTBOUND);
-+      connection.activationHandler = net.minecraftforge.network.NetworkHooks::registerClientLoginChannel;
++      connection.activationHandler = net.neoforged.neoforge.network.NetworkHooks::registerClientLoginChannel;
        new Bootstrap().group(LOCAL_WORKER_GROUP.get()).handler(new ChannelInitializer<Channel>() {
           @Override
           protected void initChannel(Channel p_129557_) {

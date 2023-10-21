@@ -5,8 +5,8 @@
  import net.minecraft.resources.ResourceLocation;
  
 +/**
-+ * @deprecated Forge: Use {@link net.minecraftforge.common.data.ForgeAdvancementProvider} instead,
-+ *             provides ease of access for the {@link net.minecraftforge.common.data.ExistingFileHelper} in the generator
++ * @deprecated Forge: Use {@link net.neoforged.neoforge.common.data.ForgeAdvancementProvider} instead,
++ *             provides ease of access for the {@link net.neoforged.neoforge.common.data.ExistingFileHelper} in the generator
 + */
 +@Deprecated
  public class AdvancementProvider implements DataProvider {

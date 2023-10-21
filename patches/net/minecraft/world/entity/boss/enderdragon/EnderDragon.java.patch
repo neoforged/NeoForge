@@ -33,7 +33,7 @@
                 BlockState blockstate = this.level().getBlockState(blockpos);
                 if (!blockstate.isAir() && !blockstate.is(BlockTags.DRAGON_TRANSPARENT)) {
 -                  if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && !blockstate.is(BlockTags.DRAGON_IMMUNE)) {
-+                  if (net.minecraftforge.common.ForgeHooks.canEntityDestroy(this.level(), blockpos, this) && !blockstate.is(BlockTags.DRAGON_IMMUNE)) {
++                  if (net.neoforged.neoforge.common.ForgeHooks.canEntityDestroy(this.level(), blockpos, this) && !blockstate.is(BlockTags.DRAGON_IMMUNE)) {
                       flag1 = this.level().removeBlock(blockpos, false) || flag1;
                    } else {
                       flag = true;
@@ -42,7 +42,7 @@
        if (this.level() instanceof ServerLevel) {
           if (this.dragonDeathTime > 150 && this.dragonDeathTime % 5 == 0 && flag) {
 -            ExperienceOrb.award((ServerLevel)this.level(), this.position(), Mth.floor((float)i * 0.08F));
-+            int award = net.minecraftforge.event.ForgeEventFactory.getExperienceDrop(this, this.unlimitedLastHurtByPlayer, Mth.floor((float)i * 0.08F));
++            int award = net.neoforged.neoforge.event.ForgeEventFactory.getExperienceDrop(this, this.unlimitedLastHurtByPlayer, Mth.floor((float)i * 0.08F));
 +            ExperienceOrb.award((ServerLevel) this.level(), this.position(), award);
           }
  
@@ -52,7 +52,7 @@
        if (this.dragonDeathTime == 200 && this.level() instanceof ServerLevel) {
           if (flag) {
 -            ExperienceOrb.award((ServerLevel)this.level(), this.position(), Mth.floor((float)i * 0.2F));
-+            int award = net.minecraftforge.event.ForgeEventFactory.getExperienceDrop(this, this.unlimitedLastHurtByPlayer, Mth.floor((float)i * 0.2F));
++            int award = net.neoforged.neoforge.event.ForgeEventFactory.getExperienceDrop(this, this.unlimitedLastHurtByPlayer, Mth.floor((float)i * 0.2F));
 +            ExperienceOrb.award((ServerLevel) this.level(), this.position(), award);
           }
  
@@ -66,7 +66,7 @@
 +   }
 +
 +   @Override
-+   public net.minecraftforge.entity.PartEntity<?>[] getParts() {
++   public net.neoforged.neoforge.entity.PartEntity<?>[] getParts() {
 +      return this.subEntities;
 +   }
 +

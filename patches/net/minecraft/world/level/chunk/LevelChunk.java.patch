@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public class LevelChunk extends ChunkAccess {
-+public class LevelChunk extends ChunkAccess implements net.minecraftforge.common.capabilities.ICapabilityProviderImpl<LevelChunk> {
++public class LevelChunk extends ChunkAccess implements net.neoforged.neoforge.common.capabilities.ICapabilityProviderImpl<LevelChunk> {
     static final Logger LOGGER = LogUtils.getLogger();
     private static final TickingBlockEntity NULL_TICKER = new TickingBlockEntity() {
        @Override
@@ -108,23 +108,23 @@
     }
  
 +   // FORGE START
-+   private final net.minecraftforge.common.capabilities.CapabilityProvider.AsField<LevelChunk> capProvider = new net.minecraftforge.common.capabilities.CapabilityProvider.AsField<>(LevelChunk.class, this);
++   private final net.neoforged.neoforge.common.capabilities.CapabilityProvider.AsField<LevelChunk> capProvider = new net.neoforged.neoforge.common.capabilities.CapabilityProvider.AsField<>(LevelChunk.class, this);
 +
 +   @org.jetbrains.annotations.NotNull
 +   @Override
-+   public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(@org.jetbrains.annotations.NotNull net.minecraftforge.common.capabilities.Capability<T> cap, @org.jetbrains.annotations.Nullable net.minecraft.core.Direction side)
++   public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(@org.jetbrains.annotations.NotNull net.neoforged.neoforge.common.capabilities.Capability<T> cap, @org.jetbrains.annotations.Nullable net.minecraft.core.Direction side)
 +   {
 +      return capProvider.getCapability(cap, side);
 +   }
 +
 +   @Override
-+   public boolean areCapsCompatible(net.minecraftforge.common.capabilities.CapabilityProvider<LevelChunk> other)
++   public boolean areCapsCompatible(net.neoforged.neoforge.common.capabilities.CapabilityProvider<LevelChunk> other)
 +   {
 +      return capProvider.areCapsCompatible(other);
 +   }
 +
 +   @Override
-+   public boolean areCapsCompatible(@org.jetbrains.annotations.Nullable net.minecraftforge.common.capabilities.CapabilityDispatcher other)
++   public boolean areCapsCompatible(@org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.capabilities.CapabilityDispatcher other)
 +   {
 +      return capProvider.areCapsCompatible(other);
 +   }
@@ -149,7 +149,7 @@
              if (LevelChunk.this.isTicking(blockpos)) {
                 try {
                    ProfilerFiller profilerfiller = LevelChunk.this.level.getProfiler();
-+                  net.minecraftforge.server.timings.TimeTracker.BLOCK_ENTITY_UPDATE.trackStart(blockEntity);
++                  net.neoforged.neoforge.server.timings.TimeTracker.BLOCK_ENTITY_UPDATE.trackStart(blockEntity);
                    profilerfiller.push(this::getType);
                    BlockState blockstate = LevelChunk.this.getBlockState(blockpos);
                    if (this.blockEntity.getType().isValid(blockstate)) {
@@ -158,7 +158,7 @@
                    CrashReportCategory crashreportcategory = crashreport.addCategory("Block entity being ticked");
                    this.blockEntity.fillCrashReportCategory(crashreportcategory);
 +
-+                  if (net.minecraftforge.common.ForgeConfig.SERVER.removeErroringBlockEntities.get()) {
++                  if (net.neoforged.neoforge.common.ForgeConfig.SERVER.removeErroringBlockEntities.get()) {
 +                     LOGGER.error("{}", crashreport.getFriendlyReport());
 +                     blockEntity.setRemoved();
 +                     LevelChunk.this.removeBlockEntity(blockEntity.getBlockPos());

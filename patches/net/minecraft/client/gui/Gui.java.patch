@@ -4,7 +4,7 @@
  
           for(MobEffectInstance mobeffectinstance : Ordering.natural().reverse().sortedCopy(collection)) {
              MobEffect mobeffect = mobeffectinstance.getEffect();
-+            var renderer = net.minecraftforge.client.extensions.common.IClientMobEffectExtensions.of(mobeffectinstance);
++            var renderer = net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions.of(mobeffectinstance);
 +            if (!renderer.isVisibleInGui(mobeffectinstance)) continue;
              if (mobeffectinstance.showIcon()) {
                 int i = this.screenWidth;
@@ -49,7 +49,7 @@
           if (l > 0) {
              p_283501_.fill(j - 2, k - 2, j + i + 2, k + 9 + 2, this.minecraft.options.getBackgroundColor(0));
 -            p_283501_.drawString(this.getFont(), mutablecomponent, j, k, 16777215 + (l << 24));
-+            Font font = net.minecraftforge.client.extensions.common.IClientItemExtensions.of(lastToolHighlight).getFont(lastToolHighlight, net.minecraftforge.client.extensions.common.IClientItemExtensions.FontContext.SELECTED_ITEM_NAME);
++            Font font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(lastToolHighlight).getFont(lastToolHighlight, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.SELECTED_ITEM_NAME);
 +            if (font == null) {
 +               p_283501_.drawString(this.getFont(), highlightTip, j, k, 16777215 + (l << 24));
 +            } else {

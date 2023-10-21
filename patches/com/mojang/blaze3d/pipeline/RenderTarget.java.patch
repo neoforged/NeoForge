@@ -17,7 +17,7 @@
           if (this.useDepth) {
 +         if(!stencilEnabled)
              GlStateManager._glFramebufferTexture2D(36160, 36096, 3553, this.depthBufferId, 0);
-+         else if(net.minecraftforge.common.ForgeConfig.CLIENT.useCombinedDepthStencilAttachment.get()) {
++         else if(net.neoforged.neoforge.common.ForgeConfig.CLIENT.useCombinedDepthStencilAttachment.get()) {
 +            GlStateManager._glFramebufferTexture2D(org.lwjgl.opengl.GL30.GL_FRAMEBUFFER, org.lwjgl.opengl.GL30.GL_DEPTH_STENCIL_ATTACHMENT, 3553, this.depthBufferId, 0);
 +         } else {
 +            GlStateManager._glFramebufferTexture2D(org.lwjgl.opengl.GL30.GL_FRAMEBUFFER, org.lwjgl.opengl.GL30.GL_DEPTH_ATTACHMENT, 3553, this.depthBufferId, 0);

@@ -5,7 +5,7 @@
  
     protected boolean isFuel(ItemStack p_38989_) {
 -      return AbstractFurnaceBlockEntity.isFuel(p_38989_);
-+      return net.minecraftforge.common.ForgeHooks.getBurnTime(p_38989_, this.recipeType) > 0;
++      return net.neoforged.neoforge.common.ForgeHooks.getBurnTime(p_38989_, this.recipeType) > 0;
     }
  
     public float getBurnProgress() {

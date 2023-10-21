@@ -21,7 +21,7 @@
     boolean isLookingAtMe(Player p_32535_) {
        ItemStack itemstack = p_32535_.getInventory().armor.get(3);
 -      if (itemstack.is(Blocks.CARVED_PUMPKIN.asItem())) {
-+      if (net.minecraftforge.common.ForgeHooks.shouldSuppressEnderManAnger(this, p_32535_, itemstack)) {
++      if (net.neoforged.neoforge.common.ForgeHooks.shouldSuppressEnderManAnger(this, p_32535_, itemstack)) {
           return false;
        } else {
           Vec3 vec3 = p_32535_.getViewVector(1.0F).normalize();
@@ -29,7 +29,7 @@
        boolean flag = blockstate.blocksMotion();
        boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
        if (flag && !flag1) {
-+         net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(this, p_32544_, p_32545_, p_32546_);
++         net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = net.neoforged.neoforge.event.ForgeEventFactory.onEnderTeleport(this, p_32544_, p_32545_, p_32546_);
 +         if (event.isCanceled()) return false;
           Vec3 vec3 = this.position();
 -         boolean flag2 = this.randomTeleport(p_32544_, p_32545_, p_32546_, true);
@@ -42,7 +42,7 @@
           if (this.enderman.getCarriedBlock() == null) {
              return false;
 -         } else if (!this.enderman.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+         } else if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.enderman.level(), this.enderman)) {
++         } else if (!net.neoforged.neoforge.event.ForgeEventFactory.getMobGriefingEvent(this.enderman.level(), this.enderman)) {
              return false;
           } else {
              return this.enderman.getRandom().nextInt(reducedTickDelay(2000)) == 0;
@@ -51,7 +51,7 @@
           if (blockstate2 != null) {
              blockstate2 = Block.updateFromNeighbourShapes(blockstate2, this.enderman.level(), blockpos);
 -            if (this.canPlaceBlock(level, blockpos, blockstate2, blockstate, blockstate1, blockpos1)) {
-+            if (this.canPlaceBlock(level, blockpos, blockstate2, blockstate, blockstate1, blockpos1) && !net.minecraftforge.event.ForgeEventFactory.onBlockPlace(enderman, net.minecraftforge.common.util.BlockSnapshot.create(level.dimension(), level, blockpos1), net.minecraft.core.Direction.UP)) {
++            if (this.canPlaceBlock(level, blockpos, blockstate2, blockstate, blockstate1, blockpos1) && !net.neoforged.neoforge.event.ForgeEventFactory.onBlockPlace(enderman, net.neoforged.neoforge.common.util.BlockSnapshot.create(level.dimension(), level, blockpos1), net.minecraft.core.Direction.UP)) {
                 level.setBlock(blockpos, blockstate2, 3);
                 level.gameEvent(GameEvent.BLOCK_PLACE, blockpos, GameEvent.Context.of(this.enderman, blockstate2));
                 this.enderman.setCarriedBlock(null);
@@ -66,7 +66,7 @@
 -            && p_32559_.getEntities(this.enderman, AABB.unitCubeFromLowerCorner(Vec3.atLowerCornerOf(p_32560_))).isEmpty();
 +                      && !p_32563_.isAir()
 +                      && !p_32563_.is(Blocks.BEDROCK)
-+                      && !p_32563_.is(net.minecraftforge.common.Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST)
++                      && !p_32563_.is(net.neoforged.neoforge.common.Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST)
 +                      && p_32563_.isCollisionShapeFullBlock(p_32559_, p_32564_)
 +                      && p_32561_.canSurvive(p_32559_, p_32560_)
 +                      && p_32559_.getEntities(this.enderman, AABB.unitCubeFromLowerCorner(Vec3.atLowerCornerOf(p_32560_))).isEmpty();
@@ -78,7 +78,7 @@
           if (this.enderman.getCarriedBlock() != null) {
              return false;
 -         } else if (!this.enderman.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+         } else if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.enderman.level(), this.enderman)) {
++         } else if (!net.neoforged.neoforge.event.ForgeEventFactory.getMobGriefingEvent(this.enderman.level(), this.enderman)) {
              return false;
           } else {
              return this.enderman.getRandom().nextInt(reducedTickDelay(20)) == 0;

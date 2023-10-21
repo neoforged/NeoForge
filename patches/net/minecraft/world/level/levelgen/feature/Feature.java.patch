@@ -5,7 +5,7 @@
  
     protected static boolean isStone(BlockState p_159748_) {
 -      return p_159748_.is(BlockTags.BASE_STONE_OVERWORLD);
-+      return p_159748_.is(net.minecraftforge.common.Tags.Blocks.STONE);
++      return p_159748_.is(net.neoforged.neoforge.common.Tags.Blocks.STONE);
     }
  
     public static boolean isDirt(BlockState p_159760_) {

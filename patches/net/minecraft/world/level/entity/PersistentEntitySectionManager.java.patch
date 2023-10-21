@@ -9,7 +9,7 @@
 +   }
 +
     private boolean addEntity(T p_157539_, boolean p_157540_) {
-+      if (p_157539_ instanceof Entity entity && net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinLevelEvent(entity, entity.level(), p_157540_)).isCanceled()) return false;
++      if (p_157539_ instanceof Entity entity && net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(entity, entity.level(), p_157540_)).isCanceled()) return false;
 +      return addEntityWithoutEvent(p_157539_, p_157540_);
 +   }
 +
@@ -71,7 +71,7 @@
              this.currentSection = entitysection;
              this.currentSectionKey = i;
              this.updateStatus(visibility, entitysection.getStatus());
-+            if (this.realEntity != null) net.minecraftforge.common.ForgeHooks.onEntityEnterSection(this.realEntity, oldSectionKey, i);
++            if (this.realEntity != null) net.neoforged.neoforge.common.ForgeHooks.onEntityEnterSection(this.realEntity, oldSectionKey, i);
           }
        }
  

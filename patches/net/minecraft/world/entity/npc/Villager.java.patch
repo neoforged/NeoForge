@@ -16,7 +16,7 @@
 -      return Component.translatable(
 -         this.getType().getDescriptionId() + "." + BuiltInRegistries.VILLAGER_PROFESSION.getKey(this.getVillagerData().getProfession()).getPath()
 -      );
-+      net.minecraft.resources.ResourceLocation profName = net.minecraftforge.registries.ForgeRegistries.VILLAGER_PROFESSIONS.getKey(this.getVillagerData().getProfession());
++      net.minecraft.resources.ResourceLocation profName = net.neoforged.neoforge.registries.ForgeRegistries.VILLAGER_PROFESSIONS.getKey(this.getVillagerData().getProfession());
 +      return Component.translatable(this.getType().getDescriptionId() + '.' + (!"minecraft".equals(profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath());
     }
  
@@ -26,7 +26,7 @@
     @Override
     public void thunderHit(ServerLevel p_35409_, LightningBolt p_35410_) {
 -      if (p_35409_.getDifficulty() != Difficulty.PEACEFUL) {
-+      if (p_35409_.getDifficulty() != Difficulty.PEACEFUL && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.WITCH, (timer) -> {})) {
++      if (p_35409_.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.WITCH, (timer) -> {})) {
           LOGGER.info("Villager {} was struck by lightning {}.", this, p_35410_);
           Witch witch = EntityType.WITCH.create(p_35409_);
           if (witch != null) {
@@ -34,7 +34,7 @@
              }
  
              witch.setPersistenceRequired();
-+         net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, witch);
++         net.neoforged.neoforge.event.ForgeEventFactory.onLivingConvert(this, witch);
              p_35409_.addFreshEntityWithPassengers(witch);
              this.releaseAllPois();
              this.discard();

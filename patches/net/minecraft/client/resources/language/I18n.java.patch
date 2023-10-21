@@ -4,7 +4,7 @@
  
     static void setLanguage(Language p_118942_) {
        language = p_118942_;
-+      net.minecraftforge.common.ForgeI18n.loadLanguageData(p_118942_.getLanguageData());
++      net.neoforged.neoforge.common.ForgeI18n.loadLanguageData(p_118942_.getLanguageData());
     }
  
     public static String get(String p_118939_, Object... p_118940_) {

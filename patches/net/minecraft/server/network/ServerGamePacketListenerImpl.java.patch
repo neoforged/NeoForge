@@ -6,8 +6,8 @@
     static final Logger LOGGER = LogUtils.getLogger();
 +   /**
 +    * Forge: Deprecated in favor of range/reach attributes.
-+    * @see net.minecraftforge.common.ForgeMod#BLOCK_REACH
-+    * @see net.minecraftforge.common.ForgeMod#ENTITY_REACH
++    * @see net.neoforged.neoforge.common.ForgeMod#BLOCK_REACH
++    * @see net.neoforged.neoforge.common.ForgeMod#ENTITY_REACH
 +    */
 +   @Deprecated
     public static final double MAX_INTERACTION_DISTANCE = Mth.square(6.0);
@@ -31,7 +31,7 @@
                 ItemStack itemstack = this.player.getItemInHand(InteractionHand.OFF_HAND);
 -               this.player.setItemInHand(InteractionHand.OFF_HAND, this.player.getItemInHand(InteractionHand.MAIN_HAND));
 -               this.player.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
-+               var event = net.minecraftforge.common.ForgeHooks.onLivingSwapHandItems(this.player);
++               var event = net.neoforged.neoforge.common.ForgeHooks.onLivingSwapHandItems(this.player);
 +               if (event.isCanceled()) return;
 +               this.player.setItemInHand(InteractionHand.OFF_HAND, event.getItemSwappedToOffHand());
 +               this.player.setItemInHand(InteractionHand.MAIN_HAND, event.getItemSwappedToMainHand());
@@ -99,7 +99,7 @@
  
                 CompletableFuture<FilteredText> completablefuture = this.filterTextPacket(playerchatmessage.signedContent());
 -               Component component = this.server.getChatDecorator().decorate(this.player, playerchatmessage.decoratedContent());
-+               CompletableFuture<Component> completablefuture1 = CompletableFuture.completedFuture(net.minecraftforge.common.ForgeHooks.getServerChatSubmittedDecorator().decorate(this.player, playerchatmessage.decoratedContent()));
++               CompletableFuture<Component> completablefuture1 = CompletableFuture.completedFuture(net.neoforged.neoforge.common.ForgeHooks.getServerChatSubmittedDecorator().decorate(this.player, playerchatmessage.decoratedContent()));
                 this.chatMessageChain.append(p_300782_ -> completablefuture.thenAcceptAsync(p_300785_ -> {
 -                     PlayerChatMessage playerchatmessage1 = playerchatmessage.withUnsignedContent(component).filter(p_300785_.mask());
 +                     Component decoratedContent = completablefuture1.join();

@@ -17,6 +17,6 @@
     default boolean isIncomplete() {
        NonNullList<Ingredient> nonnulllist = this.getIngredients();
 -      return nonnulllist.isEmpty() || nonnulllist.stream().anyMatch(p_151268_ -> p_151268_.getItems().length == 0);
-+      return nonnulllist.isEmpty() || nonnulllist.stream().anyMatch(net.minecraftforge.common.ForgeHooks::hasNoElements);
++      return nonnulllist.isEmpty() || nonnulllist.stream().anyMatch(net.neoforged.neoforge.common.ForgeHooks::hasNoElements);
     }
  }

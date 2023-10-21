@@ -4,7 +4,7 @@
     @Nullable
     private TitleScreen.WarningLabel warningLabel;
     private final LogoRenderer logoRenderer;
-+   private net.minecraftforge.client.gui.TitleScreenModUpdateIndicator modUpdateNotification;
++   private net.neoforged.neoforge.client.gui.TitleScreenModUpdateIndicator modUpdateNotification;
  
     public TitleScreen() {
        this(false);
@@ -17,10 +17,10 @@
           this.createDemoMenuOptions(l, 24);
        } else {
           this.createNormalMenuOptions(l, 24);
-+         modButton = this.addRenderableWidget(Button.builder(Component.translatable("fml.menu.mods"), button -> this.minecraft.setScreen(new net.minecraftforge.client.gui.ModListScreen(this)))
++         modButton = this.addRenderableWidget(Button.builder(Component.translatable("fml.menu.mods"), button -> this.minecraft.setScreen(new net.neoforged.neoforge.client.gui.ModListScreen(this)))
 +            .pos(this.width / 2 - 100, l + 24 * 2).size(98, 20).build());
        }
-+      modUpdateNotification = net.minecraftforge.client.gui.TitleScreenModUpdateIndicator.init(this, modButton);
++      modUpdateNotification = net.neoforged.neoforge.client.gui.TitleScreenModUpdateIndicator.init(this, modButton);
  
        SpriteIconButton spriteiconbutton = this.addRenderableWidget(
           CommonButtons.language(
@@ -37,7 +37,7 @@
              this.warningLabel.render(p_282860_, i);
           }
  
-+         net.minecraftforge.client.ForgeHooksClient.renderMainMenu(this, p_282860_, this.font, this.width, this.height, i);
++         net.neoforged.neoforge.client.ForgeHooksClient.renderMainMenu(this, p_282860_, this.font, this.width, this.height, i);
           if (this.splash != null) {
              this.splash.render(p_282860_, this.width, this.font, i);
           }
@@ -46,11 +46,11 @@
           }
  
 -         p_282860_.drawString(this.font, s, 2, this.height - 10, 16777215 | i);
-+         net.minecraftforge.internal.BrandingControl.forEachLine(true, true, (brdline, brd) ->
++         net.neoforged.neoforge.internal.BrandingControl.forEachLine(true, true, (brdline, brd) ->
 +            p_282860_.drawString(this.font, brd, 2, this.height - ( 10 + brdline * (this.font.lineHeight + 1)), 16777215 | i)
 +         );
 +
-+         net.minecraftforge.internal.BrandingControl.forEachAboveCopyrightLine((brdline, brd) ->
++         net.neoforged.neoforge.internal.BrandingControl.forEachAboveCopyrightLine((brdline, brd) ->
 +            p_282860_.drawString(this.font, brd, this.width - font.width(brd), this.height - (10 + (brdline + 1) * ( this.font.lineHeight + 1)), 16777215 | i)
 +         );
  

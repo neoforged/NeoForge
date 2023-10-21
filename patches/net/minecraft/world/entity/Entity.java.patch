@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public abstract class Entity implements Nameable, EntityAccess, CommandSource {
-+public abstract class Entity extends net.minecraftforge.common.capabilities.CapabilityProvider<Entity> implements Nameable, EntityAccess, CommandSource, net.minecraftforge.common.extensions.IForgeEntity {
++public abstract class Entity extends net.neoforged.neoforge.common.capabilities.CapabilityProvider<Entity> implements Nameable, EntityAccess, CommandSource, net.neoforged.neoforge.common.extensions.IForgeEntity {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final String ID_TAG = "id";
     public static final String PASSENGERS_TAG = "Passengers";
@@ -41,10 +41,10 @@
        this.defineSynchedData();
        this.setPos(0.0, 0.0, 0.0);
 -      this.eyeHeight = this.getEyeHeight(Pose.STANDING, this.dimensions);
-+      net.minecraftforge.event.entity.EntityEvent.Size sizeEvent = net.minecraftforge.event.ForgeEventFactory.getEntitySizeForge(this, Pose.STANDING, this.dimensions, this.getEyeHeight(Pose.STANDING, this.dimensions));
++      net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.ForgeEventFactory.getEntitySizeForge(this, Pose.STANDING, this.dimensions, this.getEyeHeight(Pose.STANDING, this.dimensions));
 +      this.dimensions = sizeEvent.getNewSize();
 +      this.eyeHeight = sizeEvent.getNewEyeHeight();
-+      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityEvent.EntityConstructing(this));
++      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityEvent.EntityConstructing(this));
 +      this.gatherCapabilities();
     }
  
@@ -62,7 +62,7 @@
        if (this.isInLava()) {
           this.lavaHurt();
 -         this.fallDistance *= 0.5F;
-+         this.fallDistance *= this.getFluidFallDistanceModifier(net.minecraftforge.common.ForgeMod.LAVA_TYPE.get());
++         this.fallDistance *= this.getFluidFallDistanceModifier(net.neoforged.neoforge.common.ForgeMod.LAVA_TYPE.get());
        }
  
        this.checkBelowWorld();
@@ -184,7 +184,7 @@
     private void updateFluidOnEyes() {
        this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
        this.fluidOnEyes.clear();
-+      this.forgeFluidTypeOnEyes = net.minecraftforge.common.ForgeMod.EMPTY_TYPE.get();
++      this.forgeFluidTypeOnEyes = net.neoforged.neoforge.common.ForgeMod.EMPTY_TYPE.get();
        double d0 = this.getEyeY() - 0.11111111F;
        Entity entity = this.getVehicle();
        if (entity instanceof Boat boat && !boat.isUnderWater() && boat.getBoundingBox().maxY >= d0 && boat.getBoundingBox().minY <= d0) {
@@ -228,14 +228,14 @@
  
 +   @Deprecated // Forge: Use isEyeInFluidType instead
     public boolean isEyeInFluid(TagKey<Fluid> p_204030_) {
-+      if (p_204030_ == FluidTags.WATER) return this.isEyeInFluidType(net.minecraftforge.common.ForgeMod.WATER_TYPE.get());
-+      else if (p_204030_ == FluidTags.LAVA) return this.isEyeInFluidType(net.minecraftforge.common.ForgeMod.LAVA_TYPE.get());
++      if (p_204030_ == FluidTags.WATER) return this.isEyeInFluidType(net.neoforged.neoforge.common.ForgeMod.WATER_TYPE.get());
++      else if (p_204030_ == FluidTags.LAVA) return this.isEyeInFluidType(net.neoforged.neoforge.common.ForgeMod.LAVA_TYPE.get());
        return this.fluidOnEyes.contains(p_204030_);
     }
  
     public boolean isInLava() {
 -      return !this.firstTick && this.fluidHeight.getDouble(FluidTags.LAVA) > 0.0;
-+      return !this.firstTick && this.forgeFluidTypeHeight.getDouble(net.minecraftforge.common.ForgeMod.LAVA_TYPE.get()) > 0.0D;
++      return !this.firstTick && this.forgeFluidTypeHeight.getDouble(net.neoforged.neoforge.common.ForgeMod.LAVA_TYPE.get()) > 0.0D;
     }
  
     public void moveRelative(float p_19921_, Vec3 p_19922_) {
@@ -290,7 +290,7 @@
              }
           }
  
-+      if (!net.minecraftforge.event.ForgeEventFactory.canMountEntity(this, p_19966_, true)) return false;
++      if (!net.neoforged.neoforge.event.ForgeEventFactory.canMountEntity(this, p_19966_, true)) return false;
           if (p_19967_ || this.canRide(p_19966_) && p_19966_.canAddPassenger(this)) {
              if (this.isPassenger()) {
                 this.stopRiding();
@@ -298,7 +298,7 @@
     public void removeVehicle() {
        if (this.vehicle != null) {
           Entity entity = this.vehicle;
-+         if (!net.minecraftforge.event.ForgeEventFactory.canMountEntity(this, entity, false)) return;
++         if (!net.neoforged.neoforge.event.ForgeEventFactory.canMountEntity(this, entity, false)) return;
           this.vehicle = null;
           entity.removePassenger(this);
        }
@@ -306,7 +306,7 @@
        return this.passengers.isEmpty();
     }
  
-+   /** @deprecated Forge: Use {@link #canBeRiddenUnderFluidType(net.minecraftforge.fluids.FluidType, Entity) rider sensitive version} */
++   /** @deprecated Forge: Use {@link #canBeRiddenUnderFluidType(net.neoforged.neoforge.fluids.FluidType, Entity) rider sensitive version} */
 +   @Deprecated
     protected boolean couldAcceptPassenger() {
        return true;
@@ -345,8 +345,8 @@
 +      return this.changeDimension(p_20118_, p_20118_.getPortalForcer());
 +   }
 +   @Nullable
-+   public Entity changeDimension(ServerLevel p_20118_, net.minecraftforge.common.util.ITeleporter teleporter) {
-+      if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(this, p_20118_.dimension())) return null;
++   public Entity changeDimension(ServerLevel p_20118_, net.neoforged.neoforge.common.util.ITeleporter teleporter) {
++      if (!net.neoforged.neoforge.common.ForgeHooks.onTravelToDimension(this, p_20118_.dimension())) return null;
        if (this.level() instanceof ServerLevel && !this.isRemoved()) {
           this.level().getProfiler().push("changeDimension");
           this.unRide();
@@ -394,7 +394,7 @@
        EntityDimensions entitydimensions = this.dimensions;
        Pose pose = this.getPose();
        EntityDimensions entitydimensions1 = this.getDimensions(pose);
-+      net.minecraftforge.event.entity.EntityEvent.Size sizeEvent = net.minecraftforge.event.ForgeEventFactory.getEntitySizeForge(this, pose, entitydimensions, entitydimensions1, this.getEyeHeight(pose, entitydimensions1));
++      net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.ForgeEventFactory.getEntitySizeForge(this, pose, entitydimensions, entitydimensions1, this.getEyeHeight(pose, entitydimensions1));
 +      entitydimensions1 = sizeEvent.getNewSize();
        this.dimensions = entitydimensions1;
 -      this.eyeHeight = this.getEyeHeight(pose, entitydimensions1);
@@ -421,8 +421,8 @@
 +   @Deprecated // Forge: Use no parameter version instead, only for vanilla Tags
     public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_, double p_204033_) {
 +      this.updateFluidHeightAndDoFluidPushing();
-+      if(p_204032_ == FluidTags.WATER) return this.isInFluidType(net.minecraftforge.common.ForgeMod.WATER_TYPE.get());
-+      else if (p_204032_ == FluidTags.LAVA) return this.isInFluidType(net.minecraftforge.common.ForgeMod.LAVA_TYPE.get());
++      if(p_204032_ == FluidTags.WATER) return this.isInFluidType(net.neoforged.neoforge.common.ForgeMod.WATER_TYPE.get());
++      else if (p_204032_ == FluidTags.LAVA) return this.isInFluidType(net.neoforged.neoforge.common.ForgeMod.LAVA_TYPE.get());
 +      else return false;
 +   }
 +
@@ -437,7 +437,7 @@
           Vec3 vec3 = Vec3.ZERO;
           int k1 = 0;
           BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-+         it.unimi.dsi.fastutil.objects.Object2ObjectMap<net.minecraftforge.fluids.FluidType, org.apache.commons.lang3.tuple.MutableTriple<Double, Vec3, Integer>> interimCalcs = new it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<>(net.minecraftforge.fluids.FluidType.SIZE.get() - 1);
++         it.unimi.dsi.fastutil.objects.Object2ObjectMap<net.neoforged.neoforge.fluids.FluidType, org.apache.commons.lang3.tuple.MutableTriple<Double, Vec3, Integer>> interimCalcs = new it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<>(net.neoforged.neoforge.fluids.FluidType.SIZE.get() - 1);
  
           for(int l1 = i; l1 < j; ++l1) {
              for(int i2 = k; i2 < l; ++i2) {
@@ -445,7 +445,7 @@
                    blockpos$mutableblockpos.set(l1, i2, j2);
                    FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
 -                  if (fluidstate.is(p_204032_)) {
-+                  net.minecraftforge.fluids.FluidType fluidType = fluidstate.getFluidType();
++                  net.neoforged.neoforge.fluids.FluidType fluidType = fluidstate.getFluidType();
 +                  if (!fluidType.isAir()) {
                       double d1 = (double)((float)i2 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos));
                       if (d1 >= aabb.minY) {
@@ -514,8 +514,8 @@
  
 +   @Deprecated // Forge: Use getFluidTypeHeight instead
     public double getFluidHeight(TagKey<Fluid> p_204037_) {
-+      if (p_204037_ == FluidTags.WATER) return getFluidTypeHeight(net.minecraftforge.common.ForgeMod.WATER_TYPE.get());
-+      else if (p_204037_ == FluidTags.LAVA) return getFluidTypeHeight(net.minecraftforge.common.ForgeMod.LAVA_TYPE.get());
++      if (p_204037_ == FluidTags.WATER) return getFluidTypeHeight(net.neoforged.neoforge.common.ForgeMod.WATER_TYPE.get());
++      else if (p_204037_ == FluidTags.LAVA) return getFluidTypeHeight(net.neoforged.neoforge.common.ForgeMod.LAVA_TYPE.get());
        return this.fluidHeight.getDouble(p_204037_);
     }
  
@@ -533,7 +533,7 @@
  
 +   /**
 +    * Gets the value of the legacy {@link #maxUpStep} field. Only used by players when the modified value causes issues.
-+    * @deprecated Use {@link net.minecraftforge.common.extensions.IForgeEntity#getStepHeight()} to get the real step height value.
++    * @deprecated Use {@link net.neoforged.neoforge.common.extensions.IForgeEntity#getStepHeight()} to get the real step height value.
 +    */
 +   @Deprecated
     public float maxUpStep() {
@@ -543,13 +543,13 @@
 +   /**
 +    * Changes the legacy {@link #maxUpStep} field. Only used by vanilla entities to improve maintainability.
 +    * <p>
-+    * For your own entities, you should change the default value of {@linkplain net.minecraftforge.common.ForgeMod#STEP_HEIGHT ForgeMod#STEP_HEIGHT}
++    * For your own entities, you should change the default value of {@linkplain net.neoforged.neoforge.common.ForgeMod#STEP_HEIGHT ForgeMod#STEP_HEIGHT}
 +    * during attribute creation.
 +    * <p>
 +    * For modifying the step height of other entities, you should use {@link net.minecraft.world.entity.ai.attributes.AttributeModifier AttributeModifiers} for
-+    * {@link net.minecraftforge.common.ForgeMod#STEP_HEIGHT ForgeMod#STEP_HEIGHT}.
++    * {@link net.neoforged.neoforge.common.ForgeMod#STEP_HEIGHT ForgeMod#STEP_HEIGHT}.
 +    *
-+    * @deprecated Use attribute modifiers for the {@link net.minecraftforge.common.ForgeMod#STEP_HEIGHT ForgeMod#STEP_HEIGHT} attribute.
++    * @deprecated Use attribute modifiers for the {@link net.neoforged.neoforge.common.ForgeMod#STEP_HEIGHT ForgeMod#STEP_HEIGHT} attribute.
 +    */
 +   @Deprecated
     public void setMaxUpStep(float p_275672_) {
@@ -593,7 +593,7 @@
 +   public boolean canTrample(BlockState state, BlockPos pos, float fallDistance) {
 +      return level.random.nextFloat() < fallDistance - 0.5F
 +          && this instanceof LivingEntity
-+          && (this instanceof Player || net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(level, this))
++          && (this instanceof Player || net.neoforged.neoforge.event.ForgeEventFactory.getMobGriefingEvent(level, this))
 +          && this.getBbWidth() * this.getBbWidth() * this.getBbHeight() > 0.512F;
 +   }
 +
@@ -627,17 +627,17 @@
 +      return this.getEyeHeight(pose, size);
 +   }
 +
-+   protected Object2DoubleMap<net.minecraftforge.fluids.FluidType> forgeFluidTypeHeight = new Object2DoubleArrayMap<>(net.minecraftforge.fluids.FluidType.SIZE.get());
-+   private net.minecraftforge.fluids.FluidType forgeFluidTypeOnEyes = net.minecraftforge.common.ForgeMod.EMPTY_TYPE.get();
-+   protected final void setFluidTypeHeight(net.minecraftforge.fluids.FluidType type, double height) {
++   protected Object2DoubleMap<net.neoforged.neoforge.fluids.FluidType> forgeFluidTypeHeight = new Object2DoubleArrayMap<>(net.neoforged.neoforge.fluids.FluidType.SIZE.get());
++   private net.neoforged.neoforge.fluids.FluidType forgeFluidTypeOnEyes = net.neoforged.neoforge.common.ForgeMod.EMPTY_TYPE.get();
++   protected final void setFluidTypeHeight(net.neoforged.neoforge.fluids.FluidType type, double height) {
 +      this.forgeFluidTypeHeight.put(type, height);
 +   }
 +   @Override
-+   public final double getFluidTypeHeight(net.minecraftforge.fluids.FluidType type) {
++   public final double getFluidTypeHeight(net.neoforged.neoforge.fluids.FluidType type) {
 +      return this.forgeFluidTypeHeight.getDouble(type);
 +   }
 +   @Override
-+   public final boolean isInFluidType(java.util.function.BiPredicate<net.minecraftforge.fluids.FluidType, Double> predicate, boolean forAllTypes) {
++   public final boolean isInFluidType(java.util.function.BiPredicate<net.neoforged.neoforge.fluids.FluidType, Double> predicate, boolean forAllTypes) {
 +      return forAllTypes ? this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().allMatch(e -> predicate.test(e.getKey(), e.getDoubleValue()))
 +              : this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().anyMatch(e -> predicate.test(e.getKey(), e.getDoubleValue()));
 +   }
@@ -646,12 +646,12 @@
 +      return this.forgeFluidTypeHeight.size() > 0;
 +   }
 +  @Override
-+  public final net.minecraftforge.fluids.FluidType getEyeInFluidType() {
++  public final net.neoforged.neoforge.fluids.FluidType getEyeInFluidType() {
 +      return forgeFluidTypeOnEyes;
 +   }
 +   @Override
-+   public net.minecraftforge.fluids.FluidType getMaxHeightFluidType() {
-+      return this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(Object2DoubleMap.Entry::getDoubleValue)).map(Object2DoubleMap.Entry::getKey).orElseGet(net.minecraftforge.common.ForgeMod.EMPTY_TYPE);
++   public net.neoforged.neoforge.fluids.FluidType getMaxHeightFluidType() {
++      return this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(Object2DoubleMap.Entry::getDoubleValue)).map(Object2DoubleMap.Entry::getKey).orElseGet(net.neoforged.neoforge.common.ForgeMod.EMPTY_TYPE);
 +   }
 +
 +   /* ================================== Forge End =====================================*/

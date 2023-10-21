@@ -8,7 +8,7 @@
 +               BiomeColors.FOLIAGE_COLOR_RESOLVER, new BlockTintCache(p_194177_ -> this.calculateBlockTint(p_194177_, BiomeColors.FOLIAGE_COLOR_RESOLVER))
           );
           p_194170_.put(BiomeColors.WATER_COLOR_RESOLVER, new BlockTintCache(p_194168_ -> this.calculateBlockTint(p_194168_, BiomeColors.WATER_COLOR_RESOLVER)));
-+         net.minecraftforge.client.ColorResolverManager.registerBlockTintCaches(ClientLevel.this, p_194170_);
++         net.neoforged.neoforge.client.ColorResolverManager.registerBlockTintCaches(ClientLevel.this, p_194170_);
        }
     );
     private final ClientChunkCache chunkSource;
@@ -16,8 +16,8 @@
     private int serverSimulationDistance;
     private final BlockStatePredictionHandler blockStatePredictionHandler = new BlockStatePredictionHandler();
     private static final Set<Item> MARKER_PARTICLE_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
-+   private final it.unimi.dsi.fastutil.ints.Int2ObjectMap<net.minecraftforge.entity.PartEntity<?>> partEntities = new it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap<>();
-+   private final net.minecraftforge.client.model.data.ModelDataManager modelDataManager = new net.minecraftforge.client.model.data.ModelDataManager(this);
++   private final it.unimi.dsi.fastutil.ints.Int2ObjectMap<net.neoforged.neoforge.entity.PartEntity<?>> partEntities = new it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap<>();
++   private final net.neoforged.neoforge.client.model.data.ModelDataManager modelDataManager = new net.neoforged.neoforge.client.model.data.ModelDataManager(this);
  
     public void handleBlockChangedAck(int p_233652_) {
        this.blockStatePredictionHandler.endPredictionsUpTo(p_233652_, this);
@@ -26,7 +26,7 @@
        this.updateSkyBrightness();
        this.prepareWeather();
 +      this.gatherCapabilities();
-+      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.level.LevelEvent.Load(this));
++      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(this));
     }
  
     public void queueLightUpdate(Runnable p_194172_) {
@@ -42,7 +42,7 @@
     }
  
     public void addEntity(Entity p_104741_) {
-+      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinLevelEvent(p_104741_, this)).isCanceled()) return;
++      if (net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(p_104741_, this)).isCanceled()) return;
        this.removeEntity(p_104741_.getId(), Entity.RemovalReason.DISCARDED);
        this.entityStorage.addEntity(p_104741_);
 +      p_104741_.onAddedToWorld();
@@ -53,7 +53,7 @@
        float p_263349_,
        long p_263408_
     ) {
-+      net.minecraftforge.event.PlayLevelSoundEvent.AtPosition event = net.minecraftforge.event.ForgeEventFactory.onPlaySoundAtPosition(this, p_263372_, p_263404_, p_263365_, p_263335_, p_263417_, p_263416_, p_263349_);
++      net.neoforged.neoforge.event.PlayLevelSoundEvent.AtPosition event = net.neoforged.neoforge.event.ForgeEventFactory.onPlaySoundAtPosition(this, p_263372_, p_263404_, p_263365_, p_263335_, p_263417_, p_263416_, p_263349_);
 +      if (event.isCanceled() || event.getSound() == null) return;
 +      p_263335_ = event.getSound();
 +      p_263417_ = event.getSource();
@@ -67,7 +67,7 @@
     public void playSeededSound(
        @Nullable Player p_263514_, Entity p_263536_, Holder<SoundEvent> p_263518_, SoundSource p_263487_, float p_263538_, float p_263524_, long p_263509_
     ) {
-+      net.minecraftforge.event.PlayLevelSoundEvent.AtEntity event = net.minecraftforge.event.ForgeEventFactory.onPlaySoundAtEntity(p_263536_, p_263518_, p_263487_, p_263538_, p_263524_);
++      net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.ForgeEventFactory.onPlaySoundAtEntity(p_263536_, p_263518_, p_263487_, p_263538_, p_263524_);
 +      if (event.isCanceled() || event.getSound() == null) return;
 +      p_263518_ = event.getSound();
 +      p_263487_ = event.getSource();
@@ -80,7 +80,7 @@
        }
  
        public void setDifficulty(Difficulty p_104852_) {
-+         net.minecraftforge.common.ForgeHooks.onDifficultyChange(p_104852_, this.difficulty);
++         net.neoforged.neoforge.common.ForgeHooks.onDifficultyChange(p_104852_, this.difficulty);
           this.difficulty = p_104852_;
        }
  
@@ -89,7 +89,7 @@
              ClientLevel.this.players.add((AbstractClientPlayer)p_171712_);
           }
 +         if (p_171712_.isMultipartEntity()) {
-+            for (net.minecraftforge.entity.PartEntity<?> part : p_171712_.getParts()) {
++            for (net.neoforged.neoforge.entity.PartEntity<?> part : p_171712_.getParts()) {
 +               ClientLevel.this.partEntities.put(part.getId(), part);
 +            }
 +         }
@@ -100,10 +100,10 @@
           ClientLevel.this.players.remove(p_171716_);
 +
 +         p_171716_.onRemovedFromWorld();
-+         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityLeaveLevelEvent(p_171716_, ClientLevel.this));
++         net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent(p_171716_, ClientLevel.this));
 +
 +         if (p_171716_.isMultipartEntity()) {
-+            for (net.minecraftforge.entity.PartEntity<?> part : p_171716_.getParts()) {
++            for (net.neoforged.neoforge.entity.PartEntity<?> part : p_171716_.getParts()) {
 +               ClientLevel.this.partEntities.remove(part.getId());
 +            }
 +         }
@@ -114,12 +114,12 @@
 +   }
 +
 +   @Override
-+   public java.util.Collection<net.minecraftforge.entity.PartEntity<?>> getPartEntities() {
++   public java.util.Collection<net.neoforged.neoforge.entity.PartEntity<?>> getPartEntities() {
 +      return this.partEntities.values();
 +   }
 +
 +   @Override
-+   public net.minecraftforge.client.model.data.ModelDataManager getModelDataManager() {
++   public net.neoforged.neoforge.client.model.data.ModelDataManager getModelDataManager() {
 +      return modelDataManager;
 +   }
 +
@@ -128,6 +128,6 @@
 +      boolean constantAmbientLight = this.effects().constantAmbientLight();
 +      if (!shade)
 +         return constantAmbientLight ? 0.9F : 1.0F;
-+      return net.minecraftforge.client.model.lighting.QuadLighter.calculateShade(normalX, normalY, normalZ, constantAmbientLight);
++      return net.neoforged.neoforge.client.model.lighting.QuadLighter.calculateShade(normalX, normalY, normalZ, constantAmbientLight);
     }
  }

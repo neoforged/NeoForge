@@ -13,7 +13,7 @@
           } else if (recipetype == RecipeType.SMITHING) {
              return RecipeBookCategories.SMITHING;
           } else {
-+            RecipeBookCategories categories = net.minecraftforge.client.RecipeBookManager.findCategories((RecipeType) recipetype, p_301136_);
++            RecipeBookCategories categories = net.neoforged.neoforge.client.RecipeBookManager.findCategories((RecipeType) recipetype, p_301136_);
 +            if (categories != null) return categories;
              LOGGER.warn(
                 "Unknown recipe category: {}/{}", LogUtils.defer(() -> BuiltInRegistries.RECIPE_TYPE.getKey(recipe.getType())), LogUtils.defer(p_301136_::id)

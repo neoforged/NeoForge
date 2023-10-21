@@ -9,13 +9,13 @@
     }
  
 -   private static DiscardedPayload readUnknownPayload(ResourceLocation p_294973_, FriendlyByteBuf p_296037_) {
-+   private static net.minecraftforge.network.custom.payload.SimplePayload readUnknownPayload(ResourceLocation p_294973_, FriendlyByteBuf p_296037_) {
++   private static net.neoforged.neoforge.network.custom.payload.SimplePayload readUnknownPayload(ResourceLocation p_294973_, FriendlyByteBuf p_296037_) {
        int i = p_296037_.readableBytes();
 -      if (i >= 0 && i <= 32767) {
 -         p_296037_.skipBytes(i);
 -         return new DiscardedPayload(p_294973_);
 +      if (i >= 0 && i <= MAX_PAYLOAD_SIZE) {
-+         return net.minecraftforge.network.custom.payload.SimplePayload.inbound(p_296037_, p_294973_);
++         return net.neoforged.neoforge.network.custom.payload.SimplePayload.inbound(p_296037_, p_294973_);
        } else {
           throw new IllegalArgumentException("Payload may not be larger than 32767 bytes");
        }

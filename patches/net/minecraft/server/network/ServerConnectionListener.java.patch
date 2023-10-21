@@ -21,7 +21,7 @@
  
     public void startTcpServerListener(@Nullable InetAddress p_9712_, int p_9713_) throws IOException {
 +      if (p_9712_ == null) p_9712_ = new java.net.InetSocketAddress(p_9713_).getAddress();
-+      net.minecraftforge.network.DualStackUtils.checkIPv6(p_9712_);
++      net.neoforged.neoforge.network.DualStackUtils.checkIPv6(p_9712_);
        synchronized(this.channels) {
           Class<? extends ServerSocketChannel> oclass;
           EventLoopGroup eventloopgroup;

@@ -4,7 +4,7 @@
  
        this.inventory.addListener(this);
        this.updateContainerEquipment();
-+      this.itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> new net.minecraftforge.items.wrapper.InvWrapper(this.inventory));
++      this.itemHandler = net.neoforged.neoforge.common.util.LazyOptional.of(() -> new net.neoforged.neoforge.items.wrapper.InvWrapper(this.inventory));
     }
  
     protected void updateContainerEquipment() {
@@ -24,7 +24,7 @@
        this.setDeltaMovement(vec3.x, d1, vec3.z);
        this.setIsJumping(true);
        this.hasImpulse = true;
-+               net.minecraftforge.common.ForgeHooks.onLivingJump(this);
++               net.neoforged.neoforge.common.ForgeHooks.onLivingJump(this);
        if (p_275435_.z > 0.0) {
           float f = Mth.sin(this.getYRot() * (float) (Math.PI / 180.0));
           float f1 = Mth.cos(this.getYRot() * (float) (Math.PI / 180.0));
@@ -34,11 +34,11 @@
        return super.finalizeSpawn(p_30555_, p_30556_, p_30557_, p_30558_, p_30559_);
 +   }
 +
-+   private net.minecraftforge.common.util.LazyOptional<?> itemHandler = null;
++   private net.neoforged.neoforge.common.util.LazyOptional<?> itemHandler = null;
 +
 +   @Override
-+   public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
-+      if (this.isAlive() && capability == net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER && itemHandler != null)
++   public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(net.neoforged.neoforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
++      if (this.isAlive() && capability == net.neoforged.neoforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER && itemHandler != null)
 +         return itemHandler.cast();
 +      return super.getCapability(capability, facing);
 +   }
@@ -47,7 +47,7 @@
 +   public void invalidateCaps() {
 +      super.invalidateCaps();
 +      if (itemHandler != null) {
-+         net.minecraftforge.common.util.LazyOptional<?> oldHandler = itemHandler;
++         net.neoforged.neoforge.common.util.LazyOptional<?> oldHandler = itemHandler;
 +         itemHandler = null;
 +         oldHandler.invalidate();
 +      }

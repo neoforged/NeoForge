@@ -4,12 +4,12 @@
  import net.minecraft.world.entity.decoration.PaintingVariants;
  
  public class PaintingVariantTagsProvider extends TagsProvider<PaintingVariant> {
-+   /** @deprecated Forge: Use the {@linkplain #PaintingVariantTagsProvider(PackOutput, CompletableFuture, String, net.minecraftforge.common.data.ExistingFileHelper) mod id variant} */
++   /** @deprecated Forge: Use the {@linkplain #PaintingVariantTagsProvider(PackOutput, CompletableFuture, String, net.neoforged.neoforge.common.data.ExistingFileHelper) mod id variant} */
 +   @Deprecated
     public PaintingVariantTagsProvider(PackOutput p_255750_, CompletableFuture<HolderLookup.Provider> p_256184_) {
        super(p_255750_, Registries.PAINTING_VARIANT, p_256184_);
 +   }
-+   public PaintingVariantTagsProvider(PackOutput p_255750_, CompletableFuture<HolderLookup.Provider> p_256184_, String modId, @org.jetbrains.annotations.Nullable net.minecraftforge.common.data.ExistingFileHelper existingFileHelper) {
++   public PaintingVariantTagsProvider(PackOutput p_255750_, CompletableFuture<HolderLookup.Provider> p_256184_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
 +      super(p_255750_, Registries.PAINTING_VARIANT, p_256184_, modId, existingFileHelper);
     }
  

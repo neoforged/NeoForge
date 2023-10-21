@@ -5,7 +5,7 @@
  import org.apache.commons.lang3.NotImplementedException;
  
 -public class ShapedRecipe implements CraftingRecipe {
-+public class ShapedRecipe implements CraftingRecipe, net.minecraftforge.common.crafting.IShapedRecipe<net.minecraft.world.inventory.CraftingContainer> {
++public class ShapedRecipe implements CraftingRecipe, net.neoforged.neoforge.common.crafting.IShapedRecipe<net.minecraft.world.inventory.CraftingContainer> {
 +   static int MAX_WIDTH = 3;
 +   static int MAX_HEIGHT = 3;
 +   /**
@@ -48,7 +48,7 @@
     public boolean isIncomplete() {
        NonNullList<Ingredient> nonnulllist = this.getIngredients();
 -      return nonnulllist.isEmpty() || nonnulllist.stream().filter(p_151277_ -> !p_151277_.isEmpty()).anyMatch(p_151273_ -> p_151273_.getItems().length == 0);
-+      return nonnulllist.isEmpty() || nonnulllist.stream().filter(p_151277_ -> !p_151277_.isEmpty()).anyMatch(net.minecraftforge.common.ForgeHooks::hasNoElements);
++      return nonnulllist.isEmpty() || nonnulllist.stream().filter(p_151277_ -> !p_151277_.isEmpty()).anyMatch(net.neoforged.neoforge.common.ForgeHooks::hasNoElements);
     }
  
     private static int firstNonSpace(String p_44185_) {

@@ -23,7 +23,7 @@
              BlockState blockstate = this.minecraft.level.getBlockState(p_105270_);
              this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, p_105270_, blockstate, 1.0F);
              this.startPrediction(this.minecraft.level, p_233757_ -> {
-+               if (!net.minecraftforge.common.ForgeHooks.onLeftClickBlock(this.minecraft.player, p_105270_, p_105271_, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK).isCanceled())
++               if (!net.neoforged.neoforge.common.ForgeHooks.onLeftClickBlock(this.minecraft.player, p_105270_, p_105271_, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK).isCanceled())
                 this.destroyBlock(p_105270_);
                 return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, p_105270_, p_105271_, p_233757_);
              });
@@ -31,7 +31,7 @@
                 this.connection
                    .send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK, this.destroyBlockPos, p_105271_));
              }
-+            net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event = net.minecraftforge.common.ForgeHooks.onLeftClickBlock(this.minecraft.player, p_105270_, p_105271_, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK);
++            net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event = net.neoforged.neoforge.common.ForgeHooks.onLeftClickBlock(this.minecraft.player, p_105270_, p_105271_, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK);
  
              BlockState blockstate1 = this.minecraft.level.getBlockState(p_105270_);
              this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, p_105270_, blockstate1, 0.0F);
@@ -60,7 +60,7 @@
           BlockState blockstate1 = this.minecraft.level.getBlockState(p_105284_);
           this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, p_105284_, blockstate1, 1.0F);
           this.startPrediction(this.minecraft.level, p_233753_ -> {
-+            if (!net.minecraftforge.common.ForgeHooks.onLeftClickBlock(this.minecraft.player, p_105284_, p_105285_, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK).isCanceled())
++            if (!net.neoforged.neoforge.common.ForgeHooks.onLeftClickBlock(this.minecraft.player, p_105284_, p_105285_, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK).isCanceled())
              this.destroyBlock(p_105284_);
              return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, p_105284_, p_105285_, p_233753_);
           });
@@ -77,7 +77,7 @@
  
              ++this.destroyTicks;
              this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, p_105284_, blockstate, Mth.clamp(this.destroyProgress, 0.0F, 1.0F));
-+            if (net.minecraftforge.common.ForgeHooks.onClientMineHold(this.minecraft.player, p_105284_, p_105285_).getUseItem() == net.neoforged.bus.api.Event.Result.DENY) return true;
++            if (net.neoforged.neoforge.common.ForgeHooks.onClientMineHold(this.minecraft.player, p_105284_, p_105285_).getUseItem() == net.neoforged.bus.api.Event.Result.DENY) return true;
              if (this.destroyProgress >= 1.0F) {
                 this.isDestroying = false;
                 this.startPrediction(this.minecraft.level, p_233739_ -> {
@@ -103,7 +103,7 @@
     private InteractionResult performUseItemOn(LocalPlayer p_233747_, InteractionHand p_233748_, BlockHitResult p_233749_) {
        BlockPos blockpos = p_233749_.getBlockPos();
        ItemStack itemstack = p_233747_.getItemInHand(p_233748_);
-+      net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock event = net.minecraftforge.common.ForgeHooks.onRightClickBlock(p_233747_, p_233748_, blockpos, p_233749_);
++      net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock event = net.neoforged.neoforge.common.ForgeHooks.onRightClickBlock(p_233747_, p_233748_, blockpos, p_233749_);
 +      if (event.isCanceled()) {
 +         return event.getCancellationResult();
 +      }
@@ -146,7 +146,7 @@
                 mutableobject.setValue(InteractionResult.PASS);
                 return serverbounduseitempacket;
              } else {
-+               InteractionResult cancelResult = net.minecraftforge.common.ForgeHooks.onItemRightClick(p_233722_, p_233723_);
++               InteractionResult cancelResult = net.neoforged.neoforge.common.ForgeHooks.onItemRightClick(p_233722_, p_233723_);
 +               if (cancelResult != null) {
 +                  mutableobject.setValue(cancelResult);
 +                  return serverbounduseitempacket;
@@ -156,7 +156,7 @@
                 if (itemstack1 != itemstack) {
                    p_233722_.setItemInHand(p_233723_, itemstack1);
 +                  if (itemstack1.isEmpty())
-+                     net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(p_233722_, itemstack, p_233723_);
++                     net.neoforged.neoforge.event.ForgeEventFactory.onPlayerDestroyItem(p_233722_, itemstack, p_233723_);
                 }
  
                 mutableobject.setValue(interactionresultholder.getResult());
@@ -165,7 +165,7 @@
        Vec3 vec3 = p_105233_.getLocation().subtract(p_105232_.getX(), p_105232_.getY(), p_105232_.getZ());
        this.connection.send(ServerboundInteractPacket.createInteractionPacket(p_105232_, p_105231_.isShiftKeyDown(), p_105234_, vec3));
 +      if (this.localPlayerMode == GameType.SPECTATOR) return InteractionResult.PASS; // don't fire for spectators to match non-specific EntityInteract
-+      InteractionResult cancelResult = net.minecraftforge.common.ForgeHooks.onInteractEntityAt(p_105231_, p_105232_, p_105233_, p_105234_);
++      InteractionResult cancelResult = net.neoforged.neoforge.common.ForgeHooks.onInteractEntityAt(p_105231_, p_105232_, p_105233_, p_105234_);
 +      if(cancelResult != null) return cancelResult;
        return this.localPlayerMode == GameType.SPECTATOR ? InteractionResult.PASS : p_105232_.interactAt(p_105231_, vec3, p_105234_);
     }

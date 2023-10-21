@@ -15,7 +15,7 @@
  
     public void setTarget(@Nullable LivingEntity p_21544_) {
 -      this.target = p_21544_;
-+      net.minecraftforge.event.entity.living.LivingChangeTargetEvent changeTargetEvent = net.minecraftforge.common.ForgeHooks.onLivingChangeTarget(this, p_21544_, net.minecraftforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET);
++      net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent changeTargetEvent = net.neoforged.neoforge.common.ForgeHooks.onLivingChangeTarget(this, p_21544_, net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET);
 +      if(!changeTargetEvent.isCanceled()) {
 +          this.target = changeTargetEvent.getNewTarget();
 +      }
@@ -65,7 +65,7 @@
 +      for(ItemEntity itementity : this.level()
 +                                        .getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ()))) {
 +         if (!this.level().isClientSide && this.canPickUpLoot() && this.isAlive() && !this.dead &&
-+                   net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
++                   net.neoforged.neoforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
              if (!itementity.isRemoved() && !itementity.getItem().isEmpty() && !itementity.hasPickUpDelay() && this.wantsToPickUp(itementity.getItem())) {
                 this.pickUpItem(itementity);
              }
@@ -73,7 +73,7 @@
           this.discard();
        } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
           Entity entity = this.level().getNearestPlayer(this, -1.0);
-+         net.neoforged.bus.api.Event.Result result = net.minecraftforge.event.ForgeEventFactory.canEntityDespawn(this, (ServerLevel) this.level());
++         net.neoforged.bus.api.Event.Result result = net.neoforged.neoforge.event.ForgeEventFactory.canEntityDespawn(this, (ServerLevel) this.level());
 +         if (result == net.neoforged.bus.api.Event.Result.DENY) {
 +            noActionTime = 0;
 +            entity = null;
@@ -94,7 +94,7 @@
 +    * Vanilla calls are replaced with a transformer, and are not visible in source.<br>
 +    * <p>
 +    * Be certain to either call super.finalizeSpawn or set the {@link #spawnType} field from within your override.
-+    * @see {@link net.minecraftforge.event.ForgeEventFactory#onFinalizeSpawn onFinalizeSpawn} for additional documentation.
++    * @see {@link net.neoforged.neoforge.event.ForgeEventFactory#onFinalizeSpawn onFinalizeSpawn} for additional documentation.
 +    */
 +   @Deprecated
 +   @org.jetbrains.annotations.ApiStatus.OverrideOnly
@@ -128,7 +128,7 @@
     }
  
 +   @Override
-+   public void jumpInFluid(net.minecraftforge.fluids.FluidType type) {
++   public void jumpInFluid(net.neoforged.neoforge.fluids.FluidType type) {
 +      this.jumpInLiquidInternal(() -> super.jumpInFluid(type));
 +   }
 +
@@ -153,8 +153,8 @@
 +   }
 +
 +   /**
-+    * This method exists so that spawns can be cancelled from the {@link net.minecraftforge.event.entity.living.MobSpawnEvent.FinalizeSpawn FinalizeSpawnEvent}
-+    * without needing to hook up an additional handler for the {@link net.minecraftforge.event.entity.EntityJoinLevelEvent EntityJoinLevelEvent}.
++    * This method exists so that spawns can be cancelled from the {@link net.neoforged.neoforge.event.entity.living.MobSpawnEvent.FinalizeSpawn FinalizeSpawnEvent}
++    * without needing to hook up an additional handler for the {@link net.neoforged.neoforge.event.entity.EntityJoinLevelEvent EntityJoinLevelEvent}.
 +    * @return if this mob will be blocked from spawning during {@link Level#addFreshEntity(Entity)}
 +    * @apiNote Not public-facing API.
 +    */

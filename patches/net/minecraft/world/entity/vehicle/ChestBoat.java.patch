@@ -5,11 +5,11 @@
     }
  
 +   // Forge Start
-+   private net.minecraftforge.common.util.LazyOptional<?> itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> new net.minecraftforge.items.wrapper.InvWrapper(this));
++   private net.neoforged.neoforge.common.util.LazyOptional<?> itemHandler = net.neoforged.neoforge.common.util.LazyOptional.of(() -> new net.neoforged.neoforge.items.wrapper.InvWrapper(this));
 +
 +   @Override
-+   public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
-+      if (this.isAlive() && capability == net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER)
++   public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(net.neoforged.neoforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
++      if (this.isAlive() && capability == net.neoforged.neoforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER)
 +         return itemHandler.cast();
 +      return super.getCapability(capability, facing);
 +   }
@@ -23,7 +23,7 @@
 +   @Override
 +   public void reviveCaps() {
 +      super.reviveCaps();
-+      itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> new net.minecraftforge.items.wrapper.InvWrapper(this));
++      itemHandler = net.neoforged.neoforge.common.util.LazyOptional.of(() -> new net.neoforged.neoforge.items.wrapper.InvWrapper(this));
 +   }
 +
     @Override

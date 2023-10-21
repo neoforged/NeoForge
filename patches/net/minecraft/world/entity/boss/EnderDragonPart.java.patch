@@ -5,7 +5,7 @@
  import net.minecraft.world.item.ItemStack;
  
 -public class EnderDragonPart extends Entity {
-+public class EnderDragonPart extends net.minecraftforge.entity.PartEntity<EnderDragon> {
++public class EnderDragonPart extends net.neoforged.neoforge.entity.PartEntity<EnderDragon> {
     public final EnderDragon parentMob;
     public final String name;
     private final EntityDimensions size;

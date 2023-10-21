@@ -5,7 +5,7 @@
     }
  
 -   static enum RaiderType {
-+   public static enum RaiderType implements net.minecraftforge.common.IExtensibleEnum {
++   public static enum RaiderType implements net.neoforged.neoforge.common.IExtensibleEnum {
        VINDICATOR(EntityType.VINDICATOR, new int[]{0, 0, 2, 0, 1, 4, 2, 5}),
        EVOKER(EntityType.EVOKER, new int[]{0, 0, 0, 0, 0, 1, 1, 2}),
        PILLAGER(EntityType.PILLAGER, new int[]{0, 4, 3, 3, 4, 4, 4, 2}),

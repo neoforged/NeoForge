@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public enum RecipeBookCategories {
-+public enum RecipeBookCategories implements net.minecraftforge.common.IExtensibleEnum {
++public enum RecipeBookCategories implements net.neoforged.neoforge.common.IExtensibleEnum {
     CRAFTING_SEARCH(new ItemStack(Items.COMPASS)),
     CRAFTING_BUILDING_BLOCKS(new ItemStack(Blocks.BRICKS)),
     CRAFTING_REDSTONE(new ItemStack(Items.REDSTONE)),
@@ -23,7 +23,7 @@
 -      SMOKER_SEARCH,
 -      ImmutableList.of(SMOKER_FOOD)
 -   );
-+   public static final Map<RecipeBookCategories, List<RecipeBookCategories>> AGGREGATE_CATEGORIES = net.minecraftforge.client.RecipeBookManager.getAggregateCategories();
++   public static final Map<RecipeBookCategories, List<RecipeBookCategories>> AGGREGATE_CATEGORIES = net.neoforged.neoforge.client.RecipeBookManager.getAggregateCategories();
     private final List<ItemStack> itemIcons;
  
     private RecipeBookCategories(ItemStack... p_92267_) {
@@ -31,7 +31,7 @@
           case FURNACE -> FURNACE_CATEGORIES;
           case BLAST_FURNACE -> BLAST_FURNACE_CATEGORIES;
           case SMOKER -> SMOKER_CATEGORIES;
-+         default -> net.minecraftforge.client.RecipeBookManager.getCustomCategoriesOrEmpty(p_92270_);
++         default -> net.neoforged.neoforge.client.RecipeBookManager.getCustomCategoriesOrEmpty(p_92270_);
        };
     }
  

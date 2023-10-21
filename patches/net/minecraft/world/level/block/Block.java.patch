@@ -5,12 +5,12 @@
  import org.slf4j.Logger;
  
 -public class Block extends BlockBehaviour implements ItemLike {
-+public class Block extends BlockBehaviour implements ItemLike, net.minecraftforge.common.extensions.IForgeBlock {
++public class Block extends BlockBehaviour implements ItemLike, net.neoforged.neoforge.common.extensions.IForgeBlock {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final Holder.Reference<Block> builtInRegistryHolder = BuiltInRegistries.BLOCK.createIntrusiveHolder(this);
 -   public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = new IdMapper<>();
 +   @Deprecated //Forge: Do not use, use GameRegistry
-+   public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = net.minecraftforge.registries.GameData.getBlockStateIDMap();
++   public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = net.neoforged.neoforge.registries.GameData.getBlockStateIDMap();
     private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
        .maximumSize(512L)
        .weakKeys()
@@ -115,7 +115,7 @@
        }
  
 -      return this.item;
-+      return net.minecraftforge.registries.ForgeRegistries.ITEMS.getDelegateOrThrow(this.item).get(); // Forge: Vanilla caches the items, update with registry replacements.
++      return net.neoforged.neoforge.registries.ForgeRegistries.ITEMS.getDelegateOrThrow(this.item).get(); // Forge: Vanilla caches the items, update with registry replacements.
     }
  
     public boolean hasDynamicShape() {
@@ -145,13 +145,13 @@
 +      }
 +   }
 +
-+   public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientBlockExtensions> consumer) {
++   public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions> consumer) {
 +   }
 +
 +   @Override
-+   public boolean canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, net.minecraftforge.common.IPlantable plantable) {
++   public boolean canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, net.neoforged.neoforge.common.IPlantable plantable) {
 +      BlockState plant = plantable.getPlant(world, pos.relative(facing));
-+      net.minecraftforge.common.PlantType type = plantable.getPlantType(world, pos.relative(facing));
++      net.neoforged.neoforge.common.PlantType type = plantable.getPlantType(world, pos.relative(facing));
 +
 +      if (plant.getBlock() == Blocks.CACTUS)
 +         return state.is(Blocks.CACTUS) || state.is(BlockTags.SAND);
@@ -162,19 +162,19 @@
 +      if (plantable instanceof BushBlock && ((BushBlock)plantable).mayPlaceOn(state, world, pos))
 +         return true;
 +
-+      if (net.minecraftforge.common.PlantType.DESERT.equals(type)) {
++      if (net.neoforged.neoforge.common.PlantType.DESERT.equals(type)) {
 +         return state.is(BlockTags.SAND) || this == Blocks.TERRACOTTA || this instanceof GlazedTerracottaBlock;
-+      } else if (net.minecraftforge.common.PlantType.NETHER.equals(type)) {
++      } else if (net.neoforged.neoforge.common.PlantType.NETHER.equals(type)) {
 +         return this == Blocks.SOUL_SAND;
-+      } else if (net.minecraftforge.common.PlantType.CROP.equals(type)) {
++      } else if (net.neoforged.neoforge.common.PlantType.CROP.equals(type)) {
 +         return state.is(Blocks.FARMLAND);
-+      } else if (net.minecraftforge.common.PlantType.CAVE.equals(type)) {
++      } else if (net.neoforged.neoforge.common.PlantType.CAVE.equals(type)) {
 +         return state.isFaceSturdy(world, pos, Direction.UP);
-+      } else if (net.minecraftforge.common.PlantType.PLAINS.equals(type)) {
++      } else if (net.neoforged.neoforge.common.PlantType.PLAINS.equals(type)) {
 +         return state.is(BlockTags.DIRT) || this == Blocks.FARMLAND;
-+      } else if (net.minecraftforge.common.PlantType.WATER.equals(type)) {
++      } else if (net.neoforged.neoforge.common.PlantType.WATER.equals(type)) {
 +         return (state.is(Blocks.WATER) || state.getBlock() instanceof IceBlock) && world.getFluidState(pos.relative(facing)).isEmpty();
-+      } else if (net.minecraftforge.common.PlantType.BEACH.equals(type)) {
++      } else if (net.neoforged.neoforge.common.PlantType.BEACH.equals(type)) {
 +         boolean isBeach = state.is(BlockTags.DIRT) || state.is(BlockTags.SAND);
 +         boolean hasWater = false;
 +         for (Direction face : Direction.Plane.HORIZONTAL) {

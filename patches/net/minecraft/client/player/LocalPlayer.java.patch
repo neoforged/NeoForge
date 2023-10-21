@@ -4,7 +4,7 @@
  
     @Override
     public boolean hurt(DamageSource p_108662_, float p_108663_) {
-+      net.minecraftforge.common.ForgeHooks.onPlayerAttack(this, p_108662_, p_108663_);
++      net.neoforged.neoforge.common.ForgeHooks.onPlayerAttack(this, p_108662_, p_108663_);
        return false;
     }
  
@@ -22,7 +22,7 @@
     public void playSound(SoundEvent p_108651_, float p_108652_, float p_108653_) {
 -      this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), p_108651_, this.getSoundSource(), p_108652_, p_108653_, false);
 +      net.minecraft.core.Holder<SoundEvent> holder = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(p_108651_);
-+      net.minecraftforge.event.PlayLevelSoundEvent.AtEntity event = net.minecraftforge.event.ForgeEventFactory.onPlaySoundAtEntity(this, holder, this.getSoundSource(), p_108652_, p_108653_);
++      net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.ForgeEventFactory.onPlaySoundAtEntity(this, holder, this.getSoundSource(), p_108652_, p_108653_);
 +      if (event.isCanceled() || event.getSound() == null) return;
 +      p_108651_ = event.getSound().get();
 +      SoundSource source = event.getSource();
@@ -36,7 +36,7 @@
           && (this.isShiftKeyDown() || !this.isSleeping() && !this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.STANDING));
        float f = Mth.clamp(0.3F + EnchantmentHelper.getSneakingSpeedBonus(this), 0.0F, 1.0F);
        this.input.tick(this.isMovingSlowly(), f);
-+      net.minecraftforge.client.ForgeHooksClient.onMovementInputUpdate(this, this.input);
++      net.neoforged.neoforge.client.ForgeHooksClient.onMovementInputUpdate(this, this.input);
        this.minecraft.getTutorial().onInput(this.input);
        if (this.isUsingItem() && !this.isPassenger()) {
           this.input.leftImpulse *= 0.2F;
@@ -81,9 +81,9 @@
        this.wasFallFlying = this.isFallFlying();
 -      if (this.isInWater() && this.input.shiftKeyDown && this.isAffectedByFluids()) {
 -         this.goDownInWater();
-+      net.minecraftforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
++      net.neoforged.neoforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
 +      if ((this.isInWater() || (!fluidType.isAir() && this.canSwimInFluidType(fluidType))) && this.input.shiftKeyDown && this.isAffectedByFluids()) {
-+         this.sinkInFluid(this.isInWater() ? net.minecraftforge.common.ForgeMod.WATER_TYPE.get() : fluidType);
++         this.sinkInFluid(this.isInWater() ? net.neoforged.neoforge.common.ForgeMod.WATER_TYPE.get() : fluidType);
        }
  
        if (this.isEyeInFluid(FluidTags.WATER)) {

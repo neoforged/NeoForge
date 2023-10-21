@@ -23,7 +23,7 @@
     @Override
     public boolean wantsToPickUp(ItemStack p_34777_) {
 -      return this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && this.canPickUpLoot() && PiglinAi.wantsToPickup(this, p_34777_);
-+      return net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this) && this.canPickUpLoot() && PiglinAi.wantsToPickup(this, p_34777_);
++      return net.neoforged.neoforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this) && this.canPickUpLoot() && PiglinAi.wantsToPickup(this, p_34777_);
     }
  
     protected boolean canReplaceCurrentItem(ItemStack p_34788_) {

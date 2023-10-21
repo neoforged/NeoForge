@@ -5,13 +5,13 @@
  
     protected abstract AbstractContainerMenu createMenu(int p_58627_, Inventory p_58628_);
 +
-+   private net.minecraftforge.common.util.LazyOptional<?> itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> createUnSidedHandler());
-+   protected net.minecraftforge.items.IItemHandler createUnSidedHandler() {
-+      return new net.minecraftforge.items.wrapper.InvWrapper(this);
++   private net.neoforged.neoforge.common.util.LazyOptional<?> itemHandler = net.neoforged.neoforge.common.util.LazyOptional.of(() -> createUnSidedHandler());
++   protected net.neoforged.neoforge.items.IItemHandler createUnSidedHandler() {
++      return new net.neoforged.neoforge.items.wrapper.InvWrapper(this);
 +   }
 +
-+   public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> cap, @org.jetbrains.annotations.Nullable net.minecraft.core.Direction side) {
-+      if (!this.remove && cap == net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER)
++   public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(net.neoforged.neoforge.common.capabilities.Capability<T> cap, @org.jetbrains.annotations.Nullable net.minecraft.core.Direction side) {
++      if (!this.remove && cap == net.neoforged.neoforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER)
 +         return itemHandler.cast();
 +      return super.getCapability(cap, side);
 +   }
@@ -25,6 +25,6 @@
 +   @Override
 +   public void reviveCaps() {
 +      super.reviveCaps();
-+      itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> createUnSidedHandler());
++      itemHandler = net.neoforged.neoforge.common.util.LazyOptional.of(() -> createUnSidedHandler());
 +   }
  }

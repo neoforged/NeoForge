@@ -5,7 +5,7 @@
  import net.minecraft.world.phys.Vec3;
  
 -public class CommandSourceStack implements SharedSuggestionProvider {
-+public class CommandSourceStack implements SharedSuggestionProvider, net.minecraftforge.common.extensions.IForgeCommandSourceStack {
++public class CommandSourceStack implements SharedSuggestionProvider, net.neoforged.neoforge.common.extensions.IForgeCommandSourceStack {
     public static final SimpleCommandExceptionType ERROR_NOT_PLAYER = new SimpleCommandExceptionType(Component.translatable("permissions.requires.player"));
     public static final SimpleCommandExceptionType ERROR_NOT_ENTITY = new SimpleCommandExceptionType(Component.translatable("permissions.requires.entity"));
     public final CommandSource source;

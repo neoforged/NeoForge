@@ -4,8 +4,8 @@
     private final Codec<Holder<E>> elementCodec;
     private final Codec<List<Holder<E>>> homogenousListCodec;
     private final Codec<Either<TagKey<E>, List<Holder<E>>>> registryAwareCodec;
-+   private final Codec<net.minecraftforge.registries.holdersets.ICustomHolderSet<E>> forgeDispatchCodec;
-+   private final Codec<Either<net.minecraftforge.registries.holdersets.ICustomHolderSet<E>, Either<TagKey<E>, List<Holder<E>>>>> combinedCodec;
++   private final Codec<net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<E>> forgeDispatchCodec;
++   private final Codec<Either<net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<E>, Either<TagKey<E>, List<Holder<E>>>>> combinedCodec;
  
     private static <E> Codec<List<Holder<E>>> homogenousList(Codec<Holder<E>> p_206668_, boolean p_206669_) {
        Codec<List<Holder<E>>> codec = ExtraCodecs.validate(p_206668_.listOf(), ExtraCodecs.ensureHomogenous(Holder::kind));
@@ -14,8 +14,8 @@
        this.homogenousListCodec = homogenousList(p_206661_, p_206662_);
        this.registryAwareCodec = Codec.either(TagKey.hashedCodec(p_206660_), this.homogenousListCodec);
 +      // FORGE: make registry-specific dispatch codec and make forge-or-vanilla either codec
-+      this.forgeDispatchCodec = ExtraCodecs.lazyInitializedCodec(() -> net.minecraftforge.registries.ForgeRegistries.HOLDER_SET_TYPES.get().getCodec())
-+          .dispatch(net.minecraftforge.registries.holdersets.ICustomHolderSet::type, type -> type.makeCodec(p_206660_, p_206661_, p_206662_));
++      this.forgeDispatchCodec = ExtraCodecs.lazyInitializedCodec(() -> net.neoforged.neoforge.registries.ForgeRegistries.HOLDER_SET_TYPES.get().getCodec())
++          .dispatch(net.neoforged.neoforge.registries.holdersets.ICustomHolderSet::type, type -> type.makeCodec(p_206660_, p_206661_, p_206662_));
 +      this.combinedCodec = new ExtraCodecs.EitherCodec<>(this.forgeDispatchCodec, this.registryAwareCodec);
     }
  
@@ -38,7 +38,7 @@
              }
  
 +            // FORGE: use the dispatch codec to encode custom holdersets, otherwise fall back to vanilla tag/list
-+            if (p_206674_ instanceof net.minecraftforge.registries.holdersets.ICustomHolderSet<E> customHolderSet)
++            if (p_206674_ instanceof net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<E> customHolderSet)
 +                return this.forgeDispatchCodec.encode(customHolderSet, p_206675_, p_206676_);
              return this.registryAwareCodec.encode(p_206674_.unwrap().mapRight(List::copyOf), p_206675_, p_206676_);
           }

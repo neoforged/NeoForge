@@ -6,8 +6,8 @@
                 ExtraCodecs.strictOptionalField(ResourceLocation.CODEC, "random_sequence").forGetter(p_297998_ -> p_297998_.randomSequence),
 -               ExtraCodecs.strictOptionalField(LootPool.CODEC.listOf(), "pools", List.of()).forGetter(p_298002_ -> p_298002_.pools),
 -               ExtraCodecs.strictOptionalField(LootItemFunctions.CODEC.listOf(), "functions", List.of()).forGetter(p_298000_ -> p_298000_.functions)
-+               ExtraCodecs.strictOptionalField(net.minecraftforge.common.conditions.ConditionalOps.decodeListWithElementConditionsAndConsumeIndex(LootPool.CODEC, "forge:conditions", (pool, i) -> { if (pool.getName() == null) pool.setName("custom#" + i); }), "pools", List.of()).forGetter(p_298002_ -> p_298002_.pools),
-+               ExtraCodecs.strictOptionalField(net.minecraftforge.common.conditions.ConditionalOps.decodeListWithElementConditions(LootItemFunctions.CODEC, "forge:conditions"), "functions", List.of()).forGetter(p_298000_ -> p_298000_.functions)
++               ExtraCodecs.strictOptionalField(net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditionsAndConsumeIndex(LootPool.CODEC, "forge:conditions", (pool, i) -> { if (pool.getName() == null) pool.setName("custom#" + i); }), "pools", List.of()).forGetter(p_298002_ -> p_298002_.pools),
++               ExtraCodecs.strictOptionalField(net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(LootItemFunctions.CODEC, "forge:conditions"), "functions", List.of()).forGetter(p_298000_ -> p_298000_.functions)
              )
              .apply(p_297999_, LootTable::new)
     );
@@ -60,7 +60,7 @@
        ObjectArrayList<ItemStack> objectarraylist = new ObjectArrayList<>();
 -      this.getRandomItems(p_230923_, objectarraylist::add);
 +      this.getRandomItemsRaw(p_230923_, createStackSplitter(p_230923_.getLevel(), objectarraylist::add));
-+      objectarraylist = net.minecraftforge.common.ForgeHooks.modifyLoot(this.getLootTableId(), objectarraylist, p_230923_);
++      objectarraylist = net.neoforged.neoforge.common.ForgeHooks.modifyLoot(this.getLootTableId(), objectarraylist, p_230923_);
        return objectarraylist;
     }
  

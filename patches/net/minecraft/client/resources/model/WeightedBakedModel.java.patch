@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class WeightedBakedModel implements BakedModel {
-+public class WeightedBakedModel implements net.minecraftforge.client.model.IDynamicBakedModel {
++public class WeightedBakedModel implements net.neoforged.neoforge.client.model.IDynamicBakedModel {
     private final int totalWeight;
     private final List<WeightedEntry.Wrapper<BakedModel>> list;
     private final BakedModel wrapped;
@@ -15,7 +15,7 @@
     @Override
 -   public List<BakedQuad> getQuads(@Nullable BlockState p_235058_, @Nullable Direction p_235059_, RandomSource p_235060_) {
 +   // FORGE: Implement our overloads (here and below) so child models can have custom logic
-+   public List<BakedQuad> getQuads(@Nullable BlockState p_235058_, @Nullable Direction p_235059_, RandomSource p_235060_, net.minecraftforge.client.model.data.ModelData modelData, @org.jetbrains.annotations.Nullable net.minecraft.client.renderer.RenderType renderType) {
++   public List<BakedQuad> getQuads(@Nullable BlockState p_235058_, @Nullable Direction p_235059_, RandomSource p_235060_, net.neoforged.neoforge.client.model.data.ModelData modelData, @org.jetbrains.annotations.Nullable net.minecraft.client.renderer.RenderType renderType) {
        return WeightedRandom.getWeightedItem(this.list, Math.abs((int)p_235060_.nextLong()) % this.totalWeight)
 -         .map(p_235065_ -> p_235065_.getData().getQuads(p_235058_, p_235059_, p_235060_))
 -         .orElse(Collections.emptyList());
@@ -45,7 +45,7 @@
     }
  
     @Override
-+   public TextureAtlasSprite getParticleIcon(net.minecraftforge.client.model.data.ModelData modelData) {
++   public TextureAtlasSprite getParticleIcon(net.neoforged.neoforge.client.model.data.ModelData modelData) {
 +      return this.wrapped.getParticleIcon(modelData);
 +   }
 +
@@ -58,10 +58,10 @@
 +   }
 +
 +   @Override // FORGE: Get render types based on the active weighted model
-+   public net.minecraftforge.client.ChunkRenderTypeSet getRenderTypes(@org.jetbrains.annotations.NotNull BlockState state, @org.jetbrains.annotations.NotNull RandomSource rand, @org.jetbrains.annotations.NotNull net.minecraftforge.client.model.data.ModelData data) {
++   public net.neoforged.neoforge.client.ChunkRenderTypeSet getRenderTypes(@org.jetbrains.annotations.NotNull BlockState state, @org.jetbrains.annotations.NotNull RandomSource rand, @org.jetbrains.annotations.NotNull net.neoforged.neoforge.client.model.data.ModelData data) {
 +      return WeightedRandom.getWeightedItem(this.list, Math.abs((int)rand.nextLong()) % this.totalWeight)
 +              .map((p_235065_) -> p_235065_.getData().getRenderTypes(state, rand, data))
-+              .orElse(net.minecraftforge.client.ChunkRenderTypeSet.none());
++              .orElse(net.neoforged.neoforge.client.ChunkRenderTypeSet.none());
     }
  
     @Override

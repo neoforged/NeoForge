@@ -38,7 +38,7 @@
 +           CompletableFuture<HolderLookup.Provider> p_256488_,
 +           Function<T, ResourceKey<T>> p_256168_,
 +           String modId,
-+           @javax.annotation.Nullable net.minecraftforge.common.data.ExistingFileHelper existingFileHelper
++           @javax.annotation.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper
 +           ) {
 +      super(p_256164_, p_256155_, p_256488_, modId, existingFileHelper);
        this.keyExtractor = p_256168_;
@@ -56,7 +56,7 @@
 +           CompletableFuture<TagsProvider.TagLookup<T>> p_275311_,
 +           Function<T, ResourceKey<T>> p_275566_,
 +           String modId,
-+           @javax.annotation.Nullable net.minecraftforge.common.data.ExistingFileHelper existingFileHelper
++           @javax.annotation.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper
     ) {
 -      super(p_275304_, p_275709_, p_275227_, p_275311_);
 +      super(p_275304_, p_275709_, p_275227_, p_275311_, modId, existingFileHelper);
@@ -72,7 +72,7 @@
     }
  
 -   public static class IntrinsicTagAppender<T> extends TagsProvider.TagAppender<T> {
-+   public static class IntrinsicTagAppender<T> extends TagsProvider.TagAppender<T> implements net.minecraftforge.common.extensions.IForgeIntrinsicHolderTagAppender<T> {
++   public static class IntrinsicTagAppender<T> extends TagsProvider.TagAppender<T> implements net.neoforged.neoforge.common.extensions.IForgeIntrinsicHolderTagAppender<T> {
        private final Function<T, ResourceKey<T>> keyExtractor;
  
 -      IntrinsicTagAppender(TagBuilder p_256108_, Function<T, ResourceKey<T>> p_256433_) {

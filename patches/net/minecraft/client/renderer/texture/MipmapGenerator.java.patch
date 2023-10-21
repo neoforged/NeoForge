@@ -4,7 +4,7 @@
           anativeimage[0] = p_251300_[0];
           boolean flag = hasTransparentPixel(anativeimage[0]);
  
-+         int maxMipmapLevel = net.minecraftforge.client.ForgeHooksClient.getMaxMipmapLevel(anativeimage[0].getWidth(), anativeimage[0].getHeight());
++         int maxMipmapLevel = net.neoforged.neoforge.client.ForgeHooksClient.getMaxMipmapLevel(anativeimage[0].getWidth(), anativeimage[0].getHeight());
           for(int i = 1; i <= p_252326_; ++i) {
              if (i < p_251300_.length) {
                 anativeimage[i] = p_251300_[i];

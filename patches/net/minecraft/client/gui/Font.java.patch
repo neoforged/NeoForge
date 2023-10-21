@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class Font {
-+public class Font implements net.minecraftforge.client.extensions.IForgeFont {
++public class Font implements net.neoforged.neoforge.client.extensions.IForgeFont {
     private static final float EFFECT_DEPTH = 0.01F;
     private static final Vector3f SHADOW_OFFSET = new Vector3f(0.0F, 0.0F, 0.03F);
     public static final int ALPHA_CUTOFF = 8;

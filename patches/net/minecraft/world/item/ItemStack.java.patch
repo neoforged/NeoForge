@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public final class ItemStack {
-+public final class ItemStack extends net.minecraftforge.common.capabilities.CapabilityProvider<ItemStack> implements net.minecraftforge.common.extensions.IForgeItemStack {
++public final class ItemStack extends net.neoforged.neoforge.common.capabilities.CapabilityProvider<ItemStack> implements net.neoforged.neoforge.common.extensions.IForgeItemStack {
     public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
        p_258963_ -> p_258963_.group(
                 BuiltInRegistries.ITEM.byNameCodec().fieldOf("id").forGetter(ItemStack::getItem),
@@ -19,6 +19,15 @@
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final ItemStack EMPTY = new ItemStack((Void)null);
     public static final DecimalFormat ATTRIBUTE_MODIFIER_FORMAT = Util.make(
+@@ -131,7 +134,7 @@
+       this(p_204116_.value(), 1);
+    }
+ 
+-   private ItemStack(ItemLike p_41604_, int p_41605_, Optional<CompoundTag> p_41606_) {
++   public ItemStack(ItemLike p_41604_, int p_41605_, Optional<CompoundTag> p_41606_) {
+       this(p_41604_, p_41605_);
+       p_41606_.ifPresent(this::setTag);
+    }
 @@ -140,27 +143,39 @@
        this(p_220155_.value(), p_220156_);
     }
@@ -32,7 +41,7 @@
 +      super(ItemStack.class, true);
 +      this.capNBT = p_41606_;
 +      this.item = p_41604_.asItem();
-+      this.delegate = net.minecraftforge.registries.ForgeRegistries.ITEMS.getDelegateOrThrow(p_41604_.asItem());
++      this.delegate = net.neoforged.neoforge.registries.ForgeRegistries.ITEMS.getDelegateOrThrow(p_41604_.asItem());
 +      this.count = p_41605_;
 +      this.forgeInit();
 +      if (this.item.isDamageable(this)) {
@@ -51,7 +60,7 @@
 +      this.capNBT = p_41608_.contains("ForgeCaps") ? p_41608_.getCompound("ForgeCaps") : null;
 +      Item rawItem =
        this.item = BuiltInRegistries.ITEM.get(new ResourceLocation(p_41608_.getString("id")));
-+      this.delegate = net.minecraftforge.registries.ForgeRegistries.ITEMS.getDelegateOrThrow(rawItem);
++      this.delegate = net.neoforged.neoforge.registries.ForgeRegistries.ITEMS.getDelegateOrThrow(rawItem);
        this.count = p_41608_.getByte("Count");
        if (p_41608_.contains("tag", 10)) {
           this.tag = p_41608_.getCompound("tag");
@@ -86,7 +95,7 @@
     }
  
     public InteractionResult useOn(UseOnContext p_41662_) {
-+      if (!p_41662_.getLevel().isClientSide) return net.minecraftforge.common.ForgeHooks.onPlaceItemIntoWorld(p_41662_);
++      if (!p_41662_.getLevel().isClientSide) return net.neoforged.neoforge.common.ForgeHooks.onPlaceItemIntoWorld(p_41662_);
 +      return onItemUse(p_41662_, (c) -> getItem().useOn(p_41662_));
 +   }
 +
@@ -214,7 +223,7 @@
           list.add(DISABLED_ITEM_TOOLTIP);
        }
  
-+      net.minecraftforge.event.ForgeEventFactory.onItemTooltip(this, p_41652_, list, p_41653_);
++      net.neoforged.neoforge.event.ForgeEventFactory.onItemTooltip(this, p_41652_, list, p_41653_);
        return list;
     }
  
@@ -235,7 +244,7 @@
 +         multimap = this.getItem().getAttributeModifiers(p_41639_, this);
        }
  
-+      multimap = net.minecraftforge.common.ForgeHooks.getAttributeModifiers(this, p_41639_, multimap);
++      multimap = net.neoforged.neoforge.common.ForgeHooks.getAttributeModifiers(this, p_41639_, multimap);
        return multimap;
     }
  
@@ -255,7 +264,7 @@
        this.getItem().onUseTick(p_41732_, p_41733_, this, p_41734_);
     }
  
-+   /** @deprecated Forge: Use {@linkplain net.minecraftforge.common.extensions.IForgeItemStack#onDestroyed(ItemEntity, net.minecraft.world.damagesource.DamageSource) damage source sensitive version} */
++   /** @deprecated Forge: Use {@linkplain net.neoforged.neoforge.common.extensions.IForgeItemStack#onDestroyed(ItemEntity, net.minecraft.world.damagesource.DamageSource) damage source sensitive version} */
 +   @Deprecated
     public void onDestroyed(ItemEntity p_150925_) {
        this.getItem().onDestroyed(p_150925_);

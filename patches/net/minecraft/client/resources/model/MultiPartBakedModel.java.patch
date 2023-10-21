@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class MultiPartBakedModel implements BakedModel {
-+public class MultiPartBakedModel implements net.minecraftforge.client.model.IDynamicBakedModel {
++public class MultiPartBakedModel implements net.neoforged.neoforge.client.model.IDynamicBakedModel {
     private final List<Pair<Predicate<BlockState>, BakedModel>> selectors;
     protected final boolean hasAmbientOcclusion;
     protected final boolean isGui3d;
@@ -44,7 +44,7 @@
  
 -         List<BakedQuad> list = Lists.newArrayList();
 +   // FORGE: Implement our overloads (here and below) so child models can have custom logic
-+   public List<BakedQuad> getQuads(@Nullable BlockState p_235050_, @Nullable Direction p_235051_, RandomSource p_235052_, net.minecraftforge.client.model.data.ModelData modelData, @org.jetbrains.annotations.Nullable net.minecraft.client.renderer.RenderType renderType) {
++   public List<BakedQuad> getQuads(@Nullable BlockState p_235050_, @Nullable Direction p_235051_, RandomSource p_235052_, net.neoforged.neoforge.client.model.data.ModelData modelData, @org.jetbrains.annotations.Nullable net.minecraft.client.renderer.RenderType renderType) {
 +      if (p_235050_ == null) {
 +         return Collections.emptyList();
 +      } else {
@@ -57,12 +57,12 @@
 -               list.addAll(this.selectors.get(j).getRight().getQuads(p_235050_, p_235051_, RandomSource.create(k)));
 +               var model = this.selectors.get(j).getRight();
 +               if (renderType == null || model.getRenderTypes(p_235050_, p_235052_, modelData).contains(renderType)) // FORGE: Only put quad data if the model is using the render type passed
-+               list.add(model.getQuads(p_235050_, p_235051_, RandomSource.create(k), net.minecraftforge.client.model.data.MultipartModelData.resolve(modelData, model), renderType));
++               list.add(model.getQuads(p_235050_, p_235051_, RandomSource.create(k), net.neoforged.neoforge.client.model.data.MultipartModelData.resolve(modelData, model), renderType));
              }
           }
  
 -         return list;
-+         return net.minecraftforge.common.util.ConcatenatedListView.of(list);
++         return net.neoforged.neoforge.common.util.ConcatenatedListView.of(list);
        }
     }
 -
@@ -82,8 +82,8 @@
 +   }
 +
 +   @Override
-+   public net.minecraftforge.client.model.data.ModelData getModelData(net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state, net.minecraftforge.client.model.data.ModelData modelData) {
-+      return net.minecraftforge.client.model.data.MultipartModelData.create(selectors, getSelectors(state), level, pos, state, modelData);
++   public net.neoforged.neoforge.client.model.data.ModelData getModelData(net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state, net.neoforged.neoforge.client.model.data.ModelData modelData) {
++      return net.neoforged.neoforge.client.model.data.MultipartModelData.create(selectors, getSelectors(state), level, pos, state, modelData);
 +   }
 +
     public boolean isGui3d() {
@@ -99,7 +99,7 @@
     }
  
     @Override
-+   public TextureAtlasSprite getParticleIcon(net.minecraftforge.client.model.data.ModelData modelData) {
++   public TextureAtlasSprite getParticleIcon(net.neoforged.neoforge.client.model.data.ModelData modelData) {
 +      return this.defaultModel.getParticleIcon(modelData);
 +   }
 +
@@ -113,13 +113,13 @@
 +   }
 +
 +   @Override // FORGE: Get render types based on the selectors matched by the given block state
-+   public net.minecraftforge.client.ChunkRenderTypeSet getRenderTypes(@org.jetbrains.annotations.NotNull BlockState state, @org.jetbrains.annotations.NotNull RandomSource rand, @org.jetbrains.annotations.NotNull net.minecraftforge.client.model.data.ModelData data) {
-+      var renderTypeSets = new java.util.LinkedList<net.minecraftforge.client.ChunkRenderTypeSet>();
++   public net.neoforged.neoforge.client.ChunkRenderTypeSet getRenderTypes(@org.jetbrains.annotations.NotNull BlockState state, @org.jetbrains.annotations.NotNull RandomSource rand, @org.jetbrains.annotations.NotNull net.neoforged.neoforge.client.model.data.ModelData data) {
++      var renderTypeSets = new java.util.LinkedList<net.neoforged.neoforge.client.ChunkRenderTypeSet>();
 +      var selectors = getSelectors(state);
 +      for (int i = 0; i < selectors.length(); i++)
 +         if (selectors.get(i))
 +            renderTypeSets.add(this.selectors.get(i).getRight().getRenderTypes(state, rand, data));
-+      return net.minecraftforge.client.ChunkRenderTypeSet.union(renderTypeSets);
++      return net.neoforged.neoforge.client.ChunkRenderTypeSet.union(renderTypeSets);
     }
  
     @Override

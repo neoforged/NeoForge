@@ -4,14 +4,14 @@
        GameEvent.UNEQUIP
     };
  
-+   /** @deprecated Forge: Use the {@linkplain #GameEventTagsProvider(PackOutput, CompletableFuture, String, net.minecraftforge.common.data.ExistingFileHelper) mod id variant} */
++   /** @deprecated Forge: Use the {@linkplain #GameEventTagsProvider(PackOutput, CompletableFuture, String, net.neoforged.neoforge.common.data.ExistingFileHelper) mod id variant} */
 +   @Deprecated
     public GameEventTagsProvider(PackOutput p_256060_, CompletableFuture<HolderLookup.Provider> p_255621_) {
 -      super(p_256060_, Registries.GAME_EVENT, p_255621_, p_256368_ -> p_256368_.builtInRegistryHolder().key());
 +      this(p_256060_, p_255621_, "vanilla", null);
 +   }
 +
-+   public GameEventTagsProvider(PackOutput p_256060_, CompletableFuture<HolderLookup.Provider> p_255621_, String modId, @org.jetbrains.annotations.Nullable net.minecraftforge.common.data.ExistingFileHelper existingFileHelper) {
++   public GameEventTagsProvider(PackOutput p_256060_, CompletableFuture<HolderLookup.Provider> p_255621_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
 +      super(p_256060_, Registries.GAME_EVENT, p_255621_, p_256368_ -> p_256368_.builtInRegistryHolder().key(), modId, existingFileHelper);
     }
  

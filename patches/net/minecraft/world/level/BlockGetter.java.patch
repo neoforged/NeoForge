@@ -5,7 +5,7 @@
  import net.minecraft.world.phys.shapes.VoxelShape;
  
 -public interface BlockGetter extends LevelHeightAccessor {
-+public interface BlockGetter extends LevelHeightAccessor, net.minecraftforge.common.extensions.IForgeBlockGetter {
++public interface BlockGetter extends LevelHeightAccessor, net.neoforged.neoforge.common.extensions.IForgeBlockGetter {
     @Nullable
     BlockEntity getBlockEntity(BlockPos p_45570_);
  

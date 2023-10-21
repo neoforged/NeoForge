@@ -27,7 +27,7 @@
                 );
  
              for(Entity entity : list1) {
-+               if (!net.minecraftforge.event.ForgeEventFactory.onEntityStruckByLightning(entity, this))
++               if (!net.neoforged.neoforge.event.ForgeEventFactory.onEntityStruckByLightning(entity, this))
                 entity.thunderHit((ServerLevel)this.level(), this);
              }
  

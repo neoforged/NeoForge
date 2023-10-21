@@ -6,7 +6,7 @@
     public void tick() {
 +      if (this.state == State.NEGOTIATING) {
 +         // We force the state into "NEGOTIATING" which is otherwise unused. Once we're completed we move the negotiation onto "VERIFYING"
-+         boolean negotiationComplete = net.minecraftforge.network.NetworkHooks.tickNegotiation(this.connection);
++         boolean negotiationComplete = net.neoforged.neoforge.network.NetworkHooks.tickNegotiation(this.connection);
 +         if (negotiationComplete) {
 +             this.state = State.VERIFYING;
 +         }
@@ -20,7 +20,7 @@
     public String getUserName() {
        String s = this.connection.getLoggableAddress(this.server.logIPs());
 -      return this.requestedUsername != null ? this.requestedUsername + " (" + s + ")" : s;
-+      final String addressString = net.minecraftforge.network.DualStackUtils.getAddressString(this.connection.getRemoteAddress());
++      final String addressString = net.neoforged.neoforge.network.DualStackUtils.getAddressString(this.connection.getRemoteAddress());
 +      return this.authenticatedProfile != null ? this.authenticatedProfile + " (" + addressString + ")" : addressString;
     }
  
@@ -57,7 +57,7 @@
  
     @Override
     public void handleCustomQueryPacket(ServerboundCustomQueryAnswerPacket p_295398_) {
-+      if (p_295398_.payload() instanceof net.minecraftforge.network.custom.payload.SimpleQueryPayload simpleQueryPayload && net.minecraftforge.network.NetworkHooks.onCustomQuery(p_295398_, simpleQueryPayload, connection)) {
++      if (p_295398_.payload() instanceof net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload simpleQueryPayload && net.neoforged.neoforge.network.NetworkHooks.onCustomQuery(p_295398_, simpleQueryPayload, connection)) {
 +          return;
 +      }
 +

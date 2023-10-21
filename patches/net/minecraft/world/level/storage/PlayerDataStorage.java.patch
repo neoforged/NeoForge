@@ -4,7 +4,7 @@
           File file2 = new File(this.playerDir, p_78434_.getStringUUID() + ".dat");
           File file3 = new File(this.playerDir, p_78434_.getStringUUID() + ".dat_old");
           Util.safeReplaceFile(file2, file1, file3);
-+         net.minecraftforge.event.ForgeEventFactory.firePlayerSavingEvent(p_78434_, playerDir, p_78434_.getStringUUID());
++         net.neoforged.neoforge.event.ForgeEventFactory.firePlayerSavingEvent(p_78434_, playerDir, p_78434_.getStringUUID());
        } catch (Exception exception) {
           LOGGER.warn("Failed to save player data for {}", p_78434_.getName().getString());
        }
@@ -12,7 +12,7 @@
           int i = NbtUtils.getDataVersion(compoundtag, -1);
           p_78436_.load(DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, compoundtag, i));
        }
-+      net.minecraftforge.event.ForgeEventFactory.firePlayerLoadingEvent(p_78436_, playerDir, p_78436_.getStringUUID());
++      net.neoforged.neoforge.event.ForgeEventFactory.firePlayerLoadingEvent(p_78436_, playerDir, p_78436_.getStringUUID());
  
        return compoundtag;
     }

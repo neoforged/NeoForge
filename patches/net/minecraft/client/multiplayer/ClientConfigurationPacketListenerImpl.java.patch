@@ -12,7 +12,7 @@
  
 -   private void handleUnknownCustomPayload(CustomPacketPayload p_296412_) {
 +   private void handleUnknownCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_296412_) {
-+      if (p_296412_ instanceof net.minecraftforge.network.custom.payload.SimplePayload simplePayload && net.minecraftforge.network.NetworkHooks.onCustomPayload(p_295727_, simplePayload, connection)) {
++      if (p_296412_ instanceof net.neoforged.neoforge.network.custom.payload.SimplePayload simplePayload && net.neoforged.neoforge.network.NetworkHooks.onCustomPayload(p_295727_, simplePayload, connection)) {
 +         return;
 +      }
 +      

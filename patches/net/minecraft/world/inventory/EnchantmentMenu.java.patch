@@ -5,7 +5,7 @@
           @Override
           public boolean mayPlace(ItemStack p_39517_) {
 -            return p_39517_.is(Items.LAPIS_LAZULI);
-+            return p_39517_.is(net.minecraftforge.common.Tags.Items.ENCHANTING_FUELS);
++            return p_39517_.is(net.neoforged.neoforge.common.Tags.Items.ENCHANTING_FUELS);
           }
  
           @Override
@@ -33,7 +33,7 @@
                    if (this.costs[k] < k + 1) {
                       this.costs[k] = 0;
                    }
-+                  this.costs[k] = net.minecraftforge.event.ForgeEventFactory.onEnchantmentLevelSet(p_39485_, p_39486_, k, (int)j, itemstack, costs[k]);
++                  this.costs[k] = net.neoforged.neoforge.event.ForgeEventFactory.onEnchantmentLevelSet(p_39485_, p_39486_, k, (int)j, itemstack, costs[k]);
                 }
  
                 for(int l = 0; l < 3; ++l) {
@@ -42,7 +42,7 @@
                 return ItemStack.EMPTY;
              }
 -         } else if (itemstack1.is(Items.LAPIS_LAZULI)) {
-+         } else if (itemstack1.is(net.minecraftforge.common.Tags.Items.ENCHANTING_FUELS)) {
++         } else if (itemstack1.is(net.neoforged.neoforge.common.Tags.Items.ENCHANTING_FUELS)) {
              if (!this.moveItemStackTo(itemstack1, 1, 2, true)) {
                 return ItemStack.EMPTY;
              }

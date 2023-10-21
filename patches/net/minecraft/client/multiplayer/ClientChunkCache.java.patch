@@ -4,7 +4,7 @@
           int i = this.storage.getIndex(p_295783_.x, p_295783_.z);
           LevelChunk levelchunk = this.storage.getChunk(i);
           if (isValidChunk(levelchunk, p_295783_.x, p_295783_.z)) {
-+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.level.ChunkEvent.Unload(levelchunk));
++            net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Unload(levelchunk));
              this.storage.replace(i, levelchunk, null);
           }
        }
@@ -12,7 +12,7 @@
           }
  
           this.level.onChunkLoaded(chunkpos);
-+         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.level.ChunkEvent.Load(levelchunk, false));
++         net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Load(levelchunk, false));
           return levelchunk;
        }
     }

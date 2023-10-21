@@ -5,7 +5,7 @@
  import net.minecraft.world.entity.ai.attributes.AttributeModifier;
  
 -public class MobEffect {
-+public class MobEffect implements net.minecraftforge.common.extensions.IForgeMobEffect {
++public class MobEffect implements net.neoforged.neoforge.common.extensions.IForgeMobEffect {
     private final Map<Attribute, AttributeModifierTemplate> attributeModifiers = Maps.newHashMap();
     private final MobEffectCategory category;
     private final int color;
@@ -42,7 +42,7 @@
 +      }
 +   }
 +
-+   public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientMobEffectExtensions> consumer) {
++   public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions> consumer) {
 +   }
 +   // END FORGE
 +

@@ -18,7 +18,7 @@
 +      final OptionSpec<net.minecraft.core.BlockPos> spawnPosOpt;
 +      boolean gametestEnabled = Boolean.getBoolean("forge.gameTestServer");
 +      if (gametestEnabled) {
-+         spawnPosOpt = optionparser.accepts("spawnPos").withRequiredArg().withValuesConvertedBy(new net.minecraftforge.gametest.BlockPosValueConverter()).defaultsTo(new net.minecraft.core.BlockPos(0, 60, 0));
++         spawnPosOpt = optionparser.accepts("spawnPos").withRequiredArg().withValuesConvertedBy(new net.neoforged.neoforge.gametest.BlockPosValueConverter()).defaultsTo(new net.minecraft.core.BlockPos(0, 60, 0));
 +      } else {
 +          spawnPosOpt = null;
 +      }
@@ -43,7 +43,7 @@
           Bootstrap.validate();
           Util.startTimerHackThread();
           Path path1 = Paths.get("server.properties");
-+         if (!optionset.has(optionspec1)) net.minecraftforge.server.loading.ServerModLoader.load(); // Load mods before we load almost anything else anymore. Single spot now. Only loads if they haven't passed the initserver param
++         if (!optionset.has(optionspec1)) net.neoforged.neoforge.server.loading.ServerModLoader.load(); // Load mods before we load almost anything else anymore. Single spot now. Only loads if they haven't passed the initserver param
           DedicatedServerSettings dedicatedserversettings = new DedicatedServerSettings(path1);
           dedicatedserversettings.forceSave();
 -         Path path2 = Paths.get("eula.txt");
@@ -101,7 +101,7 @@
 -               );
 +               MinecraftServer dedicatedserver1;
 +               if (gametestEnabled) {
-+                  net.minecraftforge.gametest.ForgeGameTestHooks.registerGametests();
++                  net.neoforged.neoforge.gametest.ForgeGameTestHooks.registerGametests();
 +                  java.util.Collection<net.minecraft.gametest.framework.GameTestBatch> testBatches = net.minecraft.gametest.framework.GameTestRunner.groupTestsIntoBatches(net.minecraft.gametest.framework.GameTestRegistry.getAllTestFunctions());
 +                  net.minecraft.core.BlockPos spawnPos = optionset.valueOf(spawnPosOpt);
 +                  dedicatedserver1 = new net.minecraft.gametest.framework.GameTestServer(p_293760_, levelstoragesource$levelstorageaccess, packrepository, worldstem, testBatches, spawnPos);

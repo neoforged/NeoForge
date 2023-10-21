@@ -5,7 +5,7 @@
  import net.minecraft.resources.ResourceLocation;
  
 -public class TagBuilder {
-+public class TagBuilder implements net.minecraftforge.common.extensions.IForgeRawTagBuilder {
++public class TagBuilder implements net.neoforged.neoforge.common.extensions.IForgeRawTagBuilder {
 +   // FORGE: Remove entries are used for datagen.
 +   private final List<TagEntry> removeEntries = new ArrayList<>();
 +   public java.util.stream.Stream<TagEntry> getRemoveEntries() { return this.removeEntries.stream(); }

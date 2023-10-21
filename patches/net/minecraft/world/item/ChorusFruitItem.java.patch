@@ -6,7 +6,7 @@
              Vec3 vec3 = p_40714_.position();
 -            if (p_40714_.randomTeleport(d3, d4, d5, true)) {
                 p_40713_.gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(p_40714_));
-+            net.minecraftforge.event.entity.EntityTeleportEvent.ChorusFruit event = net.minecraftforge.event.ForgeEventFactory.onChorusFruitTeleport(p_40714_, d3, d4, d5);
++            net.neoforged.neoforge.event.entity.EntityTeleportEvent.ChorusFruit event = net.neoforged.neoforge.event.ForgeEventFactory.onChorusFruitTeleport(p_40714_, d3, d4, d5);
 +            if (event.isCanceled()) return itemstack;
 +            if (p_40714_.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true)) {
                 SoundEvent soundevent = p_40714_ instanceof Fox ? SoundEvents.FOX_TELEPORT : SoundEvents.CHORUS_FRUIT_TELEPORT;

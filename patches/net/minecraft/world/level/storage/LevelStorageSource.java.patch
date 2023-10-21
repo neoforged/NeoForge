@@ -13,7 +13,7 @@
 +         LevelStorageSource.this.readLevelData(this.levelDirectory, (path, dataFixer) -> {
 +            try {
 +               CompoundTag compoundTag = NbtIo.readCompressed(path.toFile());
-+               net.minecraftforge.common.ForgeHooks.readAdditionalLevelSaveData(compoundTag, this.levelDirectory);
++               net.neoforged.neoforge.common.ForgeHooks.readAdditionalLevelSaveData(compoundTag, this.levelDirectory);
 +            } catch (Exception e) {
 +                LOGGER.error("Exception reading {}", path, e);
 +            }
@@ -32,7 +32,7 @@
           CompoundTag compoundtag1 = new CompoundTag();
           compoundtag1.put("Data", compoundtag);
  
-+         net.minecraftforge.common.ForgeHooks.writeAdditionalLevelSaveData(p_78292_, compoundtag1);
++         net.neoforged.neoforge.common.ForgeHooks.writeAdditionalLevelSaveData(p_78292_, compoundtag1);
 +
           try {
              File file2 = File.createTempFile("level", ".dat", file1);

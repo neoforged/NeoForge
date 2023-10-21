@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public abstract class LivingEntity extends Entity implements Attackable {
-+public abstract class LivingEntity extends Entity implements Attackable, net.minecraftforge.common.extensions.IForgeLivingEntity {
++public abstract class LivingEntity extends Entity implements Attackable, net.neoforged.neoforge.common.extensions.IForgeLivingEntity {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String TAG_ACTIVE_EFFECTS = "active_effects";
     private static final UUID SPEED_MODIFIER_SOUL_SPEED_UUID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
@@ -34,10 +34,10 @@
 +              .add(Attributes.ARMOR)
 +              .add(Attributes.ARMOR_TOUGHNESS)
 +              .add(Attributes.MAX_ABSORPTION)
-+              .add(net.minecraftforge.common.ForgeMod.SWIM_SPEED.get())
-+              .add(net.minecraftforge.common.ForgeMod.NAMETAG_DISTANCE.get())
-+              .add(net.minecraftforge.common.ForgeMod.ENTITY_GRAVITY.get())
-+              .add(net.minecraftforge.common.ForgeMod.STEP_HEIGHT.get());
++              .add(net.neoforged.neoforge.common.ForgeMod.SWIM_SPEED.get())
++              .add(net.neoforged.neoforge.common.ForgeMod.NAMETAG_DISTANCE.get())
++              .add(net.neoforged.neoforge.common.ForgeMod.ENTITY_GRAVITY.get())
++              .add(net.neoforged.neoforge.common.ForgeMod.STEP_HEIGHT.get());
     }
  
     @Override
@@ -69,7 +69,7 @@
           }
  
 +         int airSupply = this.getAirSupply();
-+         net.minecraftforge.common.ForgeHooks.onLivingBreathe(this, airSupply - decreaseAirSupply(airSupply), increaseAirSupply(airSupply) - airSupply);
++         net.neoforged.neoforge.common.ForgeHooks.onLivingBreathe(this, airSupply - decreaseAirSupply(airSupply), increaseAirSupply(airSupply) - airSupply);
 +         if (false) // Forge: Handled in ForgeHooks#onLivingBreathe(LivingEntity, int, int)
           if (this.isEyeInFluid(FluidTags.WATER)
              && !this.level().getBlockState(BlockPos.containing(this.getX(), this.getEyeY(), this.getZ())).is(Blocks.BUBBLE_COLUMN)) {
@@ -88,7 +88,7 @@
              MobEffectInstance mobeffectinstance = this.activeEffects.get(mobeffect);
              if (!mobeffectinstance.tick(this, () -> this.onEffectUpdated(mobeffectinstance, true, null))) {
 -               if (!this.level().isClientSide) {
-+               if (!this.level().isClientSide && !net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Expired(this, mobeffectinstance)).isCanceled()) {
++               if (!this.level().isClientSide && !net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Expired(this, mobeffectinstance)).isCanceled()) {
                    iterator.remove();
                    this.onEffectRemoved(mobeffectinstance);
                 }
@@ -98,8 +98,8 @@
           Collection<MobEffectInstance> collection = this.activeEffects.values();
 -         this.entityData.set(DATA_EFFECT_AMBIENCE_ID, areAllEffectsAmbient(collection));
 -         this.entityData.set(DATA_EFFECT_COLOR_ID, PotionUtils.getColor(collection));
-+         net.minecraftforge.event.entity.living.PotionColorCalculationEvent event = new net.minecraftforge.event.entity.living.PotionColorCalculationEvent(this, PotionUtils.getColor(collection), areAllEffectsAmbient(collection), collection);
-+         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
++         net.neoforged.neoforge.event.entity.living.PotionColorCalculationEvent event = new net.neoforged.neoforge.event.entity.living.PotionColorCalculationEvent(this, PotionUtils.getColor(collection), areAllEffectsAmbient(collection), collection);
++         net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(event);
 +         this.entityData.set(DATA_EFFECT_AMBIENCE_ID, event.areParticlesHidden());
 +         this.entityData.set(DATA_EFFECT_COLOR_ID, event.getColor());
           this.setInvisible(this.hasEffect(MobEffects.INVISIBILITY));
@@ -110,7 +110,7 @@
           }
        }
 -
-+      d0 = net.minecraftforge.common.ForgeHooks.getEntityVisibilityMultiplier(this, p_20969_, d0);
++      d0 = net.neoforged.neoforge.common.ForgeHooks.getEntityVisibilityMultiplier(this, p_20969_, d0);
        return d0;
     }
  
@@ -120,7 +120,7 @@
           for(flag = false; iterator.hasNext(); flag = true) {
 -            this.onEffectRemoved(iterator.next());
 +            MobEffectInstance effect = iterator.next();
-+            if(net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Remove(this, effect)).isCanceled()) continue;
++            if(net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Remove(this, effect)).isCanceled()) continue;
 +            this.onEffectRemoved(effect);
              iterator.remove();
           }
@@ -129,7 +129,7 @@
        } else {
           MobEffectInstance mobeffectinstance = this.activeEffects.get(p_147208_.getEffect());
           boolean flag = false;
-+         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Added(this, mobeffectinstance, p_147208_, p_147209_));
++         net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Added(this, mobeffectinstance, p_147208_, p_147209_));
           if (mobeffectinstance == null) {
              this.activeEffects.put(p_147208_.getEffect(), p_147208_);
              this.onEffectAdded(p_147208_, p_147209_);
@@ -137,8 +137,8 @@
     }
  
     public boolean canBeAffected(MobEffectInstance p_21197_) {
-+      net.minecraftforge.event.entity.living.MobEffectEvent.Applicable event = new net.minecraftforge.event.entity.living.MobEffectEvent.Applicable(this, p_21197_);
-+      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
++      net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable event = new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable(this, p_21197_);
++      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(event);
 +      if (event.getResult() != net.neoforged.bus.api.Event.Result.DEFAULT) return event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW;
        if (this.getMobType() == MobType.UNDEAD) {
           MobEffect mobeffect = p_21197_.getEffect();
@@ -147,7 +147,7 @@
     }
  
     public boolean removeEffect(MobEffect p_21196_) {
-+      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Remove(this, p_21196_)).isCanceled()) return false;
++      if (net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Remove(this, p_21196_)).isCanceled()) return false;
        MobEffectInstance mobeffectinstance = this.removeEffectNoUpdate(p_21196_);
        if (mobeffectinstance != null) {
           this.onEffectRemoved(mobeffectinstance);
@@ -155,7 +155,7 @@
     }
  
     public void heal(float p_21116_) {
-+      p_21116_ = net.minecraftforge.event.ForgeEventFactory.onLivingHeal(this, p_21116_);
++      p_21116_ = net.neoforged.neoforge.event.ForgeEventFactory.onLivingHeal(this, p_21116_);
 +      if (p_21116_ <= 0) return;
        float f = this.getHealth();
        if (f > 0.0F) {
@@ -164,7 +164,7 @@
  
     @Override
     public boolean hurt(DamageSource p_21016_, float p_21017_) {
-+      if (!net.minecraftforge.common.ForgeHooks.onLivingAttack(this, p_21016_, p_21017_)) return false;
++      if (!net.neoforged.neoforge.common.ForgeHooks.onLivingAttack(this, p_21016_, p_21017_)) return false;
        if (this.isInvulnerableTo(p_21016_)) {
           return false;
        } else if (this.level().isClientSide) {
@@ -175,7 +175,7 @@
 -            this.hurtCurrentlyUsedShield(p_21017_);
 -            f1 = p_21017_;
 -            p_21017_ = 0.0F;
-+            net.minecraftforge.event.entity.living.ShieldBlockEvent ev = net.minecraftforge.common.ForgeHooks.onShieldBlock(this, p_21016_, p_21017_);
++            net.neoforged.neoforge.event.entity.living.ShieldBlockEvent ev = net.neoforged.neoforge.common.ForgeHooks.onShieldBlock(this, p_21016_, p_21017_);
 +            if(!ev.isCanceled()) {
 +            if(ev.shieldTakesDamage()) this.hurtCurrentlyUsedShield(p_21017_);
 +            f1 = ev.getBlockedDamage();
@@ -224,7 +224,7 @@
           for(InteractionHand interactionhand : InteractionHand.values()) {
              ItemStack itemstack1 = this.getItemInHand(interactionhand);
 -            if (itemstack1.is(Items.TOTEM_OF_UNDYING)) {
-+            if (itemstack1.is(Items.TOTEM_OF_UNDYING) && net.minecraftforge.common.ForgeHooks.onLivingUseTotem(this, p_21263_, itemstack1, interactionhand)) {
++            if (itemstack1.is(Items.TOTEM_OF_UNDYING) && net.neoforged.neoforge.common.ForgeHooks.onLivingUseTotem(this, p_21263_, itemstack1, interactionhand)) {
                 itemstack = itemstack1.copy();
                 itemstack1.shrink(1);
                 break;
@@ -241,7 +241,7 @@
     }
  
     public void die(DamageSource p_21014_) {
-+      if (net.minecraftforge.common.ForgeHooks.onLivingDeath(this, p_21014_)) return;
++      if (net.neoforged.neoforge.common.ForgeHooks.onLivingDeath(this, p_21014_)) return;
        if (!this.isRemoved() && !this.dead) {
           Entity entity = p_21014_.getEntity();
           LivingEntity livingentity = this.getKillCredit();
@@ -250,7 +250,7 @@
           boolean flag = false;
           if (p_21269_ instanceof WitherBoss) {
 -            if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+            if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), p_21269_)) {
++            if (net.neoforged.neoforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), p_21269_)) {
                 BlockPos blockpos = this.blockPosition();
                 BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
 -               if (this.level().getBlockState(blockpos).isAir() && blockstate.canSurvive(this.level(), blockpos)) {
@@ -269,7 +269,7 @@
 -         i = 0;
 -      }
 +
-+      int i = net.minecraftforge.common.ForgeHooks.getLootingLevel(this, entity, p_21192_);
++      int i = net.neoforged.neoforge.common.ForgeHooks.getLootingLevel(this, entity, p_21192_);
 +      this.captureDrops(new java.util.ArrayList<>());
  
        boolean flag = this.lastHurtByPlayerTime > 0;
@@ -280,7 +280,7 @@
        this.dropExperience();
 +
 +      Collection<ItemEntity> drops = captureDrops(null);
-+      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, lastHurtByPlayerTime > 0))
++      if (!net.neoforged.neoforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, lastHurtByPlayerTime > 0))
 +         drops.forEach(e -> level().addFreshEntity(e));
     }
  
@@ -290,7 +290,7 @@
                 || this.lastHurtByPlayerTime > 0 && this.shouldDropExperience() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)
           )) {
 -         ExperienceOrb.award((ServerLevel)this.level(), this.position(), this.getExperienceReward());
-+         int reward = net.minecraftforge.event.ForgeEventFactory.getExperienceDrop(this, this.lastHurtByPlayer, this.getExperienceReward());
++         int reward = net.neoforged.neoforge.event.ForgeEventFactory.getExperienceDrop(this, this.lastHurtByPlayer, this.getExperienceReward());
 +         ExperienceOrb.award((ServerLevel) this.level(), this.position(), reward);
        }
     }
@@ -299,7 +299,7 @@
     }
  
     public void knockback(double p_147241_, double p_147242_, double p_147243_) {
-+      net.minecraftforge.event.entity.living.LivingKnockBackEvent event = net.minecraftforge.common.ForgeHooks.onLivingKnockBack(this, (float) p_147241_, p_147242_, p_147243_);
++      net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent event = net.neoforged.neoforge.common.ForgeHooks.onLivingKnockBack(this, (float) p_147241_, p_147242_, p_147243_);
 +      if(event.isCanceled()) return;
 +      p_147241_ = event.getStrength();
 +      p_147242_ = event.getRatioX();
@@ -320,7 +320,7 @@
 -         } else {
 -            return false;
 -         }
-+         Optional<BlockPos> ladderPos = net.minecraftforge.common.ForgeHooks.isLivingOnLadder(blockstate, level(), blockpos, this);
++         Optional<BlockPos> ladderPos = net.neoforged.neoforge.common.ForgeHooks.isLivingOnLadder(blockstate, level(), blockpos, this);
 +         if (ladderPos.isPresent()) this.lastClimbablePos = ladderPos;
 +         return ladderPos.isPresent();
        }
@@ -330,7 +330,7 @@
  
     @Override
     public boolean causeFallDamage(float p_147187_, float p_147188_, DamageSource p_147189_) {
-+      float[] ret = net.minecraftforge.common.ForgeHooks.onLivingFall(this, p_147187_, p_147188_);
++      float[] ret = net.neoforged.neoforge.common.ForgeHooks.onLivingFall(this, p_147187_, p_147188_);
 +      if (ret == null) return false;
 +      p_147187_ = ret[0];
 +      p_147188_ = ret[1];
@@ -367,7 +367,7 @@
  
     protected void actuallyHurt(DamageSource p_21240_, float p_21241_) {
        if (!this.isInvulnerableTo(p_21240_)) {
-+         p_21241_ = net.minecraftforge.common.ForgeHooks.onLivingHurt(this, p_21240_, p_21241_);
++         p_21241_ = net.neoforged.neoforge.common.ForgeHooks.onLivingHurt(this, p_21240_, p_21241_);
 +         if (p_21241_ <= 0) return;
           p_21241_ = this.getDamageAfterArmorAbsorb(p_21240_, p_21241_);
           p_21241_ = this.getDamageAfterMagicAbsorb(p_21240_, p_21241_);
@@ -376,7 +376,7 @@
              }
           }
  
-+         f1 = net.minecraftforge.common.ForgeHooks.onLivingDamage(this, p_21240_, f1);
++         f1 = net.neoforged.neoforge.common.ForgeHooks.onLivingDamage(this, p_21240_, f1);
           if (f1 != 0.0F) {
              this.getCombatTracker().recordDamage(p_21240_, f1);
              this.setHealth(this.getHealth() - f1);
@@ -395,7 +395,7 @@
        ItemStack itemstack = this.getItemBySlot(EquipmentSlot.OFFHAND);
 -      this.setItemSlot(EquipmentSlot.OFFHAND, this.getItemBySlot(EquipmentSlot.MAINHAND));
 -      this.setItemSlot(EquipmentSlot.MAINHAND, itemstack);
-+      var event = net.minecraftforge.common.ForgeHooks.onLivingSwapHandItems(this);
++      var event = net.neoforged.neoforge.common.ForgeHooks.onLivingSwapHandItems(this);
 +      if (event.isCanceled()) return;
 +      this.setItemSlot(EquipmentSlot.OFFHAND, event.getItemSwappedToOffHand());
 +      this.setItemSlot(EquipmentSlot.MAINHAND, event.getItemSwappedToMainHand());
@@ -406,19 +406,19 @@
        }
  
        this.hasImpulse = true;
-+      net.minecraftforge.common.ForgeHooks.onLivingJump(this);
++      net.neoforged.neoforge.common.ForgeHooks.onLivingJump(this);
     }
  
 +   @Deprecated // FORGE: use sinkInFluid instead
     protected void goDownInWater() {
 -      this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.04F, 0.0));
-+      this.sinkInFluid(net.minecraftforge.common.ForgeMod.WATER_TYPE.get());
++      this.sinkInFluid(net.neoforged.neoforge.common.ForgeMod.WATER_TYPE.get());
     }
  
 +   @Deprecated // FORGE: use jumpInFluid instead
     protected void jumpInLiquid(TagKey<Fluid> p_204043_) {
 -      this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.04F, 0.0));
-+      this.setDeltaMovement(this.getDeltaMovement().add(0.0D, (double)0.04F * this.getAttribute(net.minecraftforge.common.ForgeMod.SWIM_SPEED.get()).getValue(), 0.0D));
++      this.setDeltaMovement(this.getDeltaMovement().add(0.0D, (double)0.04F * this.getAttribute(net.neoforged.neoforge.common.ForgeMod.SWIM_SPEED.get()).getValue(), 0.0D));
     }
  
     protected float getWaterSlowDown() {
@@ -426,7 +426,7 @@
     public void travel(Vec3 p_21280_) {
        if (this.isControlledByLocalInstance()) {
           double d0 = 0.08;
-+         AttributeInstance gravity = this.getAttribute(net.minecraftforge.common.ForgeMod.ENTITY_GRAVITY.get());
++         AttributeInstance gravity = this.getAttribute(net.neoforged.neoforge.common.ForgeMod.ENTITY_GRAVITY.get());
           boolean flag = this.getDeltaMovement().y <= 0.0;
           if (flag && this.hasEffect(MobEffects.SLOW_FALLING)) {
 -            d0 = 0.01;
@@ -438,7 +438,7 @@
  
           FluidState fluidstate = this.level().getFluidState(this.blockPosition());
 -         if (this.isInWater() && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
-+         if ((this.isInWater() || (this.isInFluidType(fluidstate) && fluidstate.getFluidType() != net.minecraftforge.common.ForgeMod.LAVA_TYPE.get())) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
++         if ((this.isInWater() || (this.isInFluidType(fluidstate) && fluidstate.getFluidType() != net.neoforged.neoforge.common.ForgeMod.LAVA_TYPE.get())) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
 +            if (this.isInWater() || (this.isInFluidType(fluidstate) && !this.moveInFluid(fluidstate, p_21280_, d0))) {
              double d9 = this.getY();
              float f4 = this.isSprinting() ? 0.9F : this.getWaterSlowDown();
@@ -447,7 +447,7 @@
                 f4 = 0.96F;
              }
  
-+            f5 *= (float)this.getAttribute(net.minecraftforge.common.ForgeMod.SWIM_SPEED.get()).getValue();
++            f5 *= (float)this.getAttribute(net.neoforged.neoforge.common.ForgeMod.SWIM_SPEED.get()).getValue();
              this.moveRelative(f5, p_21280_);
              this.move(MoverType.SELF, this.getDeltaMovement());
              Vec3 vec36 = this.getDeltaMovement();
@@ -481,7 +481,7 @@
  
     @Override
     public void tick() {
-+      if (net.minecraftforge.common.ForgeHooks.onLivingTick(this)) return;
++      if (net.neoforged.neoforge.common.ForgeHooks.onLivingTick(this)) return;
        super.tick();
        this.updatingUsingItem();
        this.updateSwimAmount();
@@ -489,7 +489,7 @@
  
           ItemStack itemstack1 = this.getItemBySlot(equipmentslot);
           if (this.equipmentHasChanged(itemstack, itemstack1)) {
-+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent(this, equipmentslot, itemstack, itemstack1));
++            net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent(this, equipmentslot, itemstack, itemstack1));
              if (map == null) {
                 map = Maps.newEnumMap(EquipmentSlot.class);
              }
@@ -497,7 +497,7 @@
        this.level().getProfiler().push("jump");
        if (this.jumping && this.isAffectedByFluids()) {
           double d3;
-+         net.minecraftforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
++         net.neoforged.neoforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
 +         if (!fluidType.isAir()) d3 = this.getFluidTypeHeight(fluidType);
 +         else
           if (this.isInLava()) {
@@ -515,11 +515,11 @@
 +               } else this.jumpInFluid(fluidType);
              } else {
 -               this.jumpInLiquid(FluidTags.LAVA);
-+               this.jumpInFluid(net.minecraftforge.common.ForgeMod.LAVA_TYPE.get());
++               this.jumpInFluid(net.neoforged.neoforge.common.ForgeMod.LAVA_TYPE.get());
              }
           } else {
 -            this.jumpInLiquid(FluidTags.WATER);
-+            this.jumpInFluid(net.minecraftforge.common.ForgeMod.WATER_TYPE.get());
++            this.jumpInFluid(net.neoforged.neoforge.common.ForgeMod.WATER_TYPE.get());
           }
        } else {
           this.noJumpDelay = 0;
@@ -539,7 +539,7 @@
 -         if (ItemStack.isSameItem(this.getItemInHand(this.getUsedItemHand()), this.useItem)) {
 -            this.useItem = this.getItemInHand(this.getUsedItemHand());
 +         ItemStack itemStack = this.getItemInHand(this.getUsedItemHand());
-+         if (net.minecraftforge.common.ForgeHooks.canContinueUsing(this.useItem, itemStack)) {
++         if (net.neoforged.neoforge.common.ForgeHooks.canContinueUsing(this.useItem, itemStack)) {
 +            this.useItem = itemStack;
 +         }
 +         if (itemStack == this.useItem) {
@@ -551,7 +551,7 @@
  
     protected void updateUsingItem(ItemStack p_147201_) {
 +      if (!p_147201_.isEmpty())
-+          this.useItemRemaining = net.minecraftforge.event.ForgeEventFactory.onItemUseTick(this, p_147201_, this.getUseItemRemainingTicks());
++          this.useItemRemaining = net.neoforged.neoforge.event.ForgeEventFactory.onItemUseTick(this, p_147201_, this.getUseItemRemainingTicks());
 +      if (this.getUseItemRemainingTicks() > 0)
        p_147201_.onUseTick(this.level(), this, this.getUseItemRemainingTicks());
        if (this.shouldTriggerItemUseEffects()) {
@@ -575,7 +575,7 @@
     public void startUsingItem(InteractionHand p_21159_) {
        ItemStack itemstack = this.getItemInHand(p_21159_);
        if (!itemstack.isEmpty() && !this.isUsingItem()) {
-+         int duration = net.minecraftforge.event.ForgeEventFactory.onItemUseStart(this, itemstack, itemstack.getUseDuration());
++         int duration = net.neoforged.neoforge.event.ForgeEventFactory.onItemUseStart(this, itemstack, itemstack.getUseDuration());
 +         if (duration <= 0) return;
           this.useItem = itemstack;
 -         this.useItemRemaining = itemstack.getUseDuration();
@@ -602,7 +602,7 @@
                 this.triggerItemUseEffects(this.useItem, 16);
 -               ItemStack itemstack = this.useItem.finishUsingItem(this.level(), this);
 +               ItemStack copy = this.useItem.copy();
-+               ItemStack itemstack = net.minecraftforge.event.ForgeEventFactory.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(this.level(), this));
++               ItemStack itemstack = net.neoforged.neoforge.event.ForgeEventFactory.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(this.level(), this));
                 if (itemstack != this.useItem) {
                    this.setItemInHand(interactionhand, itemstack);
                 }
@@ -610,10 +610,10 @@
  
     public void releaseUsingItem() {
        if (!this.useItem.isEmpty()) {
-+         if (!net.minecraftforge.event.ForgeEventFactory.onUseItemStop(this, useItem, this.getUseItemRemainingTicks())) {
++         if (!net.neoforged.neoforge.event.ForgeEventFactory.onUseItemStop(this, useItem, this.getUseItemRemainingTicks())) {
 +            ItemStack copy = this instanceof Player ? useItem.copy() : null;
           this.useItem.releaseUsing(this.level(), this, this.getUseItemRemainingTicks());
-+           if (copy != null && useItem.isEmpty()) net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem((Player)this, copy, getUsedItemHand());
++           if (copy != null && useItem.isEmpty()) net.neoforged.neoforge.event.ForgeEventFactory.onPlayerDestroyItem((Player)this, copy, getUsedItemHand());
 +         }
           if (this.useItem.useOnRelease()) {
              this.updatingUsingItem();
@@ -631,7 +631,7 @@
        if (this.isUsingItem() && !this.useItem.isEmpty()) {
           Item item = this.useItem.getItem();
 -         if (item.getUseAnimation(this.useItem) != UseAnim.BLOCK) {
-+         if (!this.useItem.canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)) {
++         if (!this.useItem.canPerformAction(net.neoforged.neoforge.common.ToolActions.SHIELD_BLOCK)) {
              return false;
           } else {
              return item.getUseDuration(this.useItem) - this.useItemRemaining >= 5;
@@ -652,7 +652,7 @@
     private boolean checkBedExists() {
 -      return this.getSleepingPos().map(p_301742_ -> this.level().getBlockState(p_301742_).getBlock() instanceof BedBlock).orElse(false);
 +      return this.getSleepingPos().map((p_289310_) -> {
-+         return net.minecraftforge.event.ForgeEventFactory.fireSleepingLocationCheck(this, p_289310_);
++         return net.neoforged.neoforge.event.ForgeEventFactory.fireSleepingLocationCheck(this, p_289310_);
 +      }).orElse(false);
     }
  
@@ -683,7 +683,7 @@
  
     public ItemStack getProjectile(ItemStack p_21272_) {
 -      return ItemStack.EMPTY;
-+      return net.minecraftforge.common.ForgeHooks.getProjectile(this, p_21272_, ItemStack.EMPTY);
++      return net.neoforged.neoforge.common.ForgeHooks.getProjectile(this, p_21272_, ItemStack.EMPTY);
     }
  
     public ItemStack eat(Level p_21067_, ItemStack p_21068_) {
@@ -713,7 +713,7 @@
 +      Iterator<MobEffectInstance> itr = this.activeEffects.values().iterator();
 +      while (itr.hasNext()) {
 +         MobEffectInstance effect = itr.next();
-+         if (effect.isCurativeItem(curativeItem) && !net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Remove(this, effect)).isCanceled()) {
++         if (effect.isCurativeItem(curativeItem) && !net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Remove(this, effect)).isCanceled()) {
 +            this.onEffectRemoved(effect);
 +            itr.remove();
 +            ret = true;
@@ -734,11 +734,11 @@
 +      return this instanceof net.minecraft.world.entity.animal.Pig;
 +   }
 +
-+   private net.minecraftforge.common.util.LazyOptional<?>[] handlers = net.minecraftforge.items.wrapper.EntityEquipmentInvWrapper.create(this);
++   private net.neoforged.neoforge.common.util.LazyOptional<?>[] handlers = net.neoforged.neoforge.items.wrapper.EntityEquipmentInvWrapper.create(this);
 +
 +   @Override
-+   public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable Direction facing) {
-+      if (this.isAlive() && capability == net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER) {
++   public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(net.neoforged.neoforge.common.capabilities.Capability<T> capability, @Nullable Direction facing) {
++      if (this.isAlive() && capability == net.neoforged.neoforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER) {
 +         if (facing == null) return handlers[2].cast();
 +         else if (facing.getAxis().isVertical()) return handlers[0].cast();
 +         else if (facing.getAxis().isHorizontal()) return handlers[1].cast();
@@ -756,7 +756,7 @@
 +   @Override
 +   public void reviveCaps() {
 +      super.reviveCaps();
-+      handlers = net.minecraftforge.items.wrapper.EntityEquipmentInvWrapper.create(this);
++      handlers = net.neoforged.neoforge.items.wrapper.EntityEquipmentInvWrapper.create(this);
 +   }
 +
     public AABB getBoundingBoxForCulling() {
@@ -777,7 +777,7 @@
  
 +   /**
 +    * Gets the value of the legacy {@link #maxUpStep} field.
-+    * @deprecated Use {@link net.minecraftforge.common.extensions.IForgeEntity#getStepHeight()} to get the real step height value.
++    * @deprecated Use {@link net.neoforged.neoforge.common.extensions.IForgeEntity#getStepHeight()} to get the real step height value.
 +    */
 +   @Deprecated
     @Override

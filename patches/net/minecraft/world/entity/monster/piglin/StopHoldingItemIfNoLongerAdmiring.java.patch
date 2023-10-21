@@ -5,7 +5,7 @@
           p_259197_ -> p_259197_.group(p_259197_.absent(MemoryModuleType.ADMIRING_ITEM))
                 .apply(p_259197_, p_259512_ -> (p_301914_, p_301915_, p_301916_) -> {
 -                     if (!p_301915_.getOffhandItem().isEmpty() && !p_301915_.getOffhandItem().is(Items.SHIELD)) {
-+                     if (!p_301915_.getOffhandItem().isEmpty() && !p_301915_.getOffhandItem().canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)) {
++                     if (!p_301915_.getOffhandItem().isEmpty() && !p_301915_.getOffhandItem().canPerformAction(net.neoforged.neoforge.common.ToolActions.SHIELD_BLOCK)) {
                          PiglinAi.stopHoldingOffHandItem(p_301915_, true);
                          return true;
                       } else {

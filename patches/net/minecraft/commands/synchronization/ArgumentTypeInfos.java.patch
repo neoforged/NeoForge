@@ -6,7 +6,7 @@
  
 +   /**
 +    * Forge: Use this in conjunction with a
-+    * {@link net.minecraftforge.registries.DeferredRegister#register(String, java.util.function.Supplier) DeferredRegister#register(String, Supplier)}
++    * {@link net.neoforged.neoforge.registries.DeferredRegister#register(String, java.util.function.Supplier) DeferredRegister#register(String, Supplier)}
 +    * call to both populate the {@code BY_CLASS} map and register the argument type info so it can be used in commands.
 +    *
 +    * @param infoClass the class type of the argument type info

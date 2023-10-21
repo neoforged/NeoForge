@@ -4,8 +4,8 @@
     private boolean hasClickedOutside;
     private final Set<TagKey<Item>> visibleTags = new HashSet<>();
     private final boolean displayOperatorCreativeTab;
-+   private final List<net.minecraftforge.client.gui.CreativeTabsScreenPage> pages = new java.util.ArrayList<>();
-+   private net.minecraftforge.client.gui.CreativeTabsScreenPage currentPage = new net.minecraftforge.client.gui.CreativeTabsScreenPage(new java.util.ArrayList<>());
++   private final List<net.neoforged.neoforge.client.gui.CreativeTabsScreenPage> pages = new java.util.ArrayList<>();
++   private net.neoforged.neoforge.client.gui.CreativeTabsScreenPage currentPage = new net.neoforged.neoforge.client.gui.CreativeTabsScreenPage(new java.util.ArrayList<>());
  
     public CreativeModeInventoryScreen(Player p_259788_, FeatureFlagSet p_260074_, boolean p_259569_) {
        super(new CreativeModeInventoryScreen.ItemPickerMenu(p_259788_), p_259788_.getInventory(), CommonComponents.EMPTY);
@@ -25,20 +25,20 @@
 +         this.pages.clear();
 +         int tabIndex = 0;
 +         List<CreativeModeTab> currentPage = new java.util.ArrayList<>();
-+         for (CreativeModeTab sortedCreativeModeTab : net.minecraftforge.common.CreativeModeTabRegistry.getSortedCreativeModeTabs()) {
++         for (CreativeModeTab sortedCreativeModeTab : net.neoforged.neoforge.common.CreativeModeTabRegistry.getSortedCreativeModeTabs()) {
 +            currentPage.add(sortedCreativeModeTab);
 +            tabIndex++;
 +            if (tabIndex == 10) {
-+               this.pages.add(new net.minecraftforge.client.gui.CreativeTabsScreenPage(currentPage));
++               this.pages.add(new net.neoforged.neoforge.client.gui.CreativeTabsScreenPage(currentPage));
 +               currentPage = new java.util.ArrayList<>();
 +               tabIndex = 0;
 +            }
 +         }
 +         if (tabIndex != 0) {
-+            this.pages.add(new net.minecraftforge.client.gui.CreativeTabsScreenPage(currentPage));
++            this.pages.add(new net.neoforged.neoforge.client.gui.CreativeTabsScreenPage(currentPage));
 +         }
 +         if (this.pages.isEmpty()) {
-+            this.currentPage = new net.minecraftforge.client.gui.CreativeTabsScreenPage(new java.util.ArrayList<>());
++            this.currentPage = new net.neoforged.neoforge.client.gui.CreativeTabsScreenPage(new java.util.ArrayList<>());
 +         } else {
 +            this.currentPage = this.pages.get(0);
 +         }
@@ -84,11 +84,11 @@
           if (s.startsWith("#")) {
              s = s.substring(1);
 -            searchtree = this.minecraft.getSearchTree(SearchRegistry.CREATIVE_TAGS);
-+            searchtree = this.minecraft.getSearchTree(net.minecraftforge.client.CreativeModeTabSearchRegistry.getTagSearchKey(selectedTab));
++            searchtree = this.minecraft.getSearchTree(net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getTagSearchKey(selectedTab));
              this.updateVisibleTags(s);
           } else {
 -            searchtree = this.minecraft.getSearchTree(SearchRegistry.CREATIVE_NAMES);
-+            searchtree = this.minecraft.getSearchTree(net.minecraftforge.client.CreativeModeTabSearchRegistry.getNameSearchKey(selectedTab));
++            searchtree = this.minecraft.getSearchTree(net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getNameSearchKey(selectedTab));
           }
  
           this.menu.items.addAll(searchtree.search(s.toLowerCase(Locale.ROOT)));
@@ -259,11 +259,11 @@
        }
     }
  
-+   public net.minecraftforge.client.gui.CreativeTabsScreenPage getCurrentPage() {
++   public net.neoforged.neoforge.client.gui.CreativeTabsScreenPage getCurrentPage() {
 +      return currentPage;
 +   }
 +
-+   public void setCurrentPage(net.minecraftforge.client.gui.CreativeTabsScreenPage currentPage) {
++   public void setCurrentPage(net.neoforged.neoforge.client.gui.CreativeTabsScreenPage currentPage) {
 +      this.currentPage = currentPage;
 +   }
 +

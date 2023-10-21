@@ -5,7 +5,7 @@
        this.loadTopLevel(ItemRenderer.TRIDENT_IN_HAND_MODEL);
        this.loadTopLevel(ItemRenderer.SPYGLASS_IN_HAND_MODEL);
 +      Set<ResourceLocation> additionalModels = Sets.newHashSet();
-+      net.minecraftforge.client.ForgeHooksClient.onRegisterAdditionalModels(additionalModels);
++      net.neoforged.neoforge.client.ForgeHooksClient.onRegisterAdditionalModels(additionalModels);
 +      for (ResourceLocation rl : additionalModels) {
 +         UnbakedModel unbakedmodel = this.getModel(rl); // loadTopLevel(...), but w/o ModelResourceLocation limitation
 +         this.unbakedCache.put(rl, unbakedmodel);

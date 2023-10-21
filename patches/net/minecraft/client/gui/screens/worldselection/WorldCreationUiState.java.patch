@@ -10,7 +10,7 @@
     public PresetEditor getPresetEditor() {
        Holder<WorldPreset> holder = this.getWorldType().preset();
 -      return holder != null ? PresetEditor.EDITORS.get(holder.unwrapKey()) : null;
-+      return holder != null ? holder.unwrapKey().map(net.minecraftforge.client.PresetEditorManager::get).orElse(null) : null; // FORGE: redirect lookup to expanded map
++      return holder != null ? holder.unwrapKey().map(net.neoforged.neoforge.client.PresetEditorManager::get).orElse(null) : null; // FORGE: redirect lookup to expanded map
     }
  
     public List<WorldCreationUiState.WorldTypeEntry> getNormalPresetList() {

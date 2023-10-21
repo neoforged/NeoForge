@@ -5,7 +5,7 @@
  import org.joml.Vector3f;
  
 -public class FriendlyByteBuf extends ByteBuf {
-+public class FriendlyByteBuf extends ByteBuf implements net.minecraftforge.common.extensions.IForgeFriendlyByteBuf {
++public class FriendlyByteBuf extends ByteBuf implements net.neoforged.neoforge.common.extensions.IForgeFriendlyByteBuf {
     public static final int DEFAULT_NBT_QUOTA = 2097152;
     private final ByteBuf source;
     public static final short MAX_STRING_LENGTH = 32767;

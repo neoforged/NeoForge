@@ -30,64 +30,64 @@
 +   private static final WritableRegistry<WritableRegistry<?>> WRITABLE_REGISTRY = new MappedRegistry<>(ResourceKey.createRegistryKey(ROOT_REGISTRY_NAME), Lifecycle.stable());
 +   public static final DefaultedRegistry<GameEvent> GAME_EVENT = registerDefaultedWithIntrusiveHolders(Registries.GAME_EVENT, "step", p_260052_ -> GameEvent.STEP);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#SOUND_EVENTS} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#SOUND_EVENTS} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<SoundEvent> SOUND_EVENT = forge(Registries.SOUND_EVENT, p_260167_ -> SoundEvents.ITEM_PICKUP);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#FLUIDS} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#FLUIDS} instead.
 +    */
 +   @Deprecated
 +   public static final DefaultedRegistry<Fluid> FLUID = forge(Registries.FLUID, "empty", p_259453_ -> Fluids.EMPTY);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#MOB_EFFECTS} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#MOB_EFFECTS} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<MobEffect> MOB_EFFECT = forge(Registries.MOB_EFFECT, p_259689_ -> MobEffects.LUCK);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#BLOCKS} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#BLOCKS} instead.
 +    */
 +   @Deprecated
 +   public static final DefaultedRegistry<Block> BLOCK = forge(Registries.BLOCK, "air", p_259909_ -> Blocks.AIR);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#ENCHANTMENTS} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#ENCHANTMENTS} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<Enchantment> ENCHANTMENT = forge(Registries.ENCHANTMENT, p_259104_ -> Enchantments.BLOCK_FORTUNE);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#ENTITY_TYPES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#ENTITY_TYPES} instead.
 +    */
 +   @Deprecated
 +   public static final DefaultedRegistry<EntityType<?>> ENTITY_TYPE = forge(Registries.ENTITY_TYPE, "pig", p_259175_ -> EntityType.PIG);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#ITEMS} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#ITEMS} instead.
 +    */
 +   @Deprecated
 +   public static final DefaultedRegistry<Item> ITEM = forge(Registries.ITEM, "air", p_260227_ -> Items.AIR);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#POTIONS} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#POTIONS} instead.
 +    */
 +   @Deprecated
 +   public static final DefaultedRegistry<Potion> POTION = forge(Registries.POTION, "empty", p_259869_ -> Potions.EMPTY);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#PARTICLE_TYPES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#PARTICLE_TYPES} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<ParticleType<?>> PARTICLE_TYPE = forge(Registries.PARTICLE_TYPE, p_260266_ -> ParticleTypes.BLOCK);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#BLOCK_ENTITY_TYPES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#BLOCK_ENTITY_TYPES} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = forge(Registries.BLOCK_ENTITY_TYPE, p_259434_ -> BlockEntityType.FURNACE);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#PAINTING_VARIANTS} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#PAINTING_VARIANTS} instead.
 +    */
 +   @Deprecated
 +   public static final DefaultedRegistry<PaintingVariant> PAINTING_VARIANT = forge(Registries.PAINTING_VARIANT, "kebab", PaintingVariants::bootstrap);
     public static final Registry<ResourceLocation> CUSTOM_STAT = registerSimple(Registries.CUSTOM_STAT, p_259833_ -> Stats.JUMP);
 -   public static final DefaultedRegistry<ChunkStatus> CHUNK_STATUS = registerDefaulted(Registries.CHUNK_STATUS, "empty", p_259971_ -> ChunkStatus.EMPTY);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#CHUNK_STATUS} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#CHUNK_STATUS} instead.
 +    */
 +   @Deprecated
 +   public static final DefaultedRegistry<ChunkStatus> CHUNK_STATUS = forge(Registries.CHUNK_STATUS, "empty", p_259971_ -> ChunkStatus.EMPTY);
@@ -109,33 +109,33 @@
 -   public static final Registry<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPE = registerSimple(Registries.COMMAND_ARGUMENT_TYPE, (RegistryBootstrap)ArgumentTypeInfos::bootstrap);
 -   public static final Registry<StatType<?>> STAT_TYPE = registerSimple(Registries.STAT_TYPE, p_259967_ -> Stats.ITEM_USED);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#MENU_TYPES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#MENU_TYPES} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<MenuType<?>> MENU = forge(Registries.MENU, p_259341_ -> MenuType.ANVIL);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#RECIPE_TYPES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#RECIPE_TYPES} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<RecipeType<?>> RECIPE_TYPE = forge(Registries.RECIPE_TYPE, p_259086_ -> RecipeType.CRAFTING);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#RECIPE_SERIALIZERS} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#RECIPE_SERIALIZERS} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<RecipeSerializer<?>> RECIPE_SERIALIZER = forge(Registries.RECIPE_SERIALIZER, p_260230_ -> RecipeSerializer.SHAPELESS_RECIPE);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#ATTRIBUTES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#ATTRIBUTES} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<Attribute> ATTRIBUTE = forge(Registries.ATTRIBUTE, p_260300_ -> Attributes.LUCK);
 +   public static final Registry<PositionSourceType<?>> POSITION_SOURCE_TYPE = registerSimple(Registries.POSITION_SOURCE_TYPE, p_259113_ -> PositionSourceType.BLOCK);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#COMMAND_ARGUMENT_TYPES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#COMMAND_ARGUMENT_TYPES} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPE = forge(Registries.COMMAND_ARGUMENT_TYPE, (RegistryBootstrap)ArgumentTypeInfos::bootstrap);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#STAT_TYPES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#STAT_TYPES} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<StatType<?>> STAT_TYPE = forge(Registries.STAT_TYPE, p_259967_ -> Stats.ITEM_USED);
@@ -151,32 +151,32 @@
 -   public static final Registry<Schedule> SCHEDULE = registerSimple(Registries.SCHEDULE, p_259540_ -> Schedule.EMPTY);
 -   public static final Registry<Activity> ACTIVITY = registerSimple(Registries.ACTIVITY, p_260197_ -> Activity.IDLE);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#VILLAGER_PROFESSIONS} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#VILLAGER_PROFESSIONS} instead.
 +    */
 +   @Deprecated
 +   public static final DefaultedRegistry<VillagerProfession> VILLAGER_PROFESSION = forge(Registries.VILLAGER_PROFESSION, "none", p_259037_ -> VillagerProfession.NONE);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#POI_TYPES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#POI_TYPES} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<PoiType> POINT_OF_INTEREST_TYPE = forge(Registries.POINT_OF_INTEREST_TYPE, PoiTypes::bootstrap);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#MEMORY_MODULE_TYPES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#MEMORY_MODULE_TYPES} instead.
 +    */
 +   @Deprecated
 +   public static final DefaultedRegistry<MemoryModuleType<?>> MEMORY_MODULE_TYPE = forge(Registries.MEMORY_MODULE_TYPE, "dummy", p_259248_ -> MemoryModuleType.DUMMY);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#SENSOR_TYPES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#SENSOR_TYPES} instead.
 +    */
 +   @Deprecated
 +   public static final DefaultedRegistry<SensorType<?>> SENSOR_TYPE = forge(Registries.SENSOR_TYPE, "dummy", p_259757_ -> SensorType.DUMMY);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#SCHEDULES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#SCHEDULES} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<Schedule> SCHEDULE = forge(Registries.SCHEDULE, p_259540_ -> Schedule.EMPTY);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#ACTIVITIES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#ACTIVITIES} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<Activity> ACTIVITY = forge(Registries.ACTIVITY, p_260197_ -> Activity.IDLE);
@@ -223,12 +223,12 @@
 +   public static final Registry<HeightProviderType<?>> HEIGHT_PROVIDER_TYPE = registerSimple(Registries.HEIGHT_PROVIDER_TYPE, p_259663_ -> HeightProviderType.CONSTANT);
 +   public static final Registry<BlockPredicateType<?>> BLOCK_PREDICATE_TYPE = registerSimple(Registries.BLOCK_PREDICATE_TYPE, p_260006_ -> BlockPredicateType.NOT);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#WORLD_CARVERS} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#WORLD_CARVERS} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<WorldCarver<?>> CARVER = forge(Registries.CARVER, p_260200_ -> WorldCarver.CAVE);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#FEATURES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#FEATURES} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<Feature<?>> FEATURE = forge(Registries.FEATURE, p_259143_ -> Feature.ORE);
@@ -264,19 +264,19 @@
 -   );
 +   public static final Registry<PlacementModifierType<?>> PLACEMENT_MODIFIER_TYPE = registerSimple(Registries.PLACEMENT_MODIFIER_TYPE, p_260335_ -> PlacementModifierType.COUNT);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#BLOCK_STATE_PROVIDER_TYPES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#BLOCK_STATE_PROVIDER_TYPES} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<BlockStateProviderType<?>> BLOCKSTATE_PROVIDER_TYPE = forge(Registries.BLOCK_STATE_PROVIDER_TYPE, p_259345_ -> BlockStateProviderType.SIMPLE_STATE_PROVIDER);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#FOLIAGE_PLACER_TYPES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#FOLIAGE_PLACER_TYPES} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<FoliagePlacerType<?>> FOLIAGE_PLACER_TYPE = forge(Registries.FOLIAGE_PLACER_TYPE, p_260329_ -> FoliagePlacerType.BLOB_FOLIAGE_PLACER);
 +   public static final Registry<TrunkPlacerType<?>> TRUNK_PLACER_TYPE = registerSimple(Registries.TRUNK_PLACER_TYPE, p_259690_ -> TrunkPlacerType.STRAIGHT_TRUNK_PLACER);
 +   public static final Registry<RootPlacerType<?>> ROOT_PLACER_TYPE = registerSimple(Registries.ROOT_PLACER_TYPE, p_259493_ -> RootPlacerType.MANGROVE_ROOT_PLACER);
 +   /**
-+    * @deprecated Forge: Use {@link net.minecraftforge.registries.ForgeRegistries#TREE_DECORATOR_TYPES} instead.
++    * @deprecated Forge: Use {@link net.neoforged.neoforge.registries.ForgeRegistries#TREE_DECORATOR_TYPES} instead.
 +    */
 +   @Deprecated
 +   public static final Registry<TreeDecoratorType<?>> TREE_DECORATOR_TYPE = forge(Registries.TREE_DECORATOR_TYPE, p_259122_ -> TreeDecoratorType.LEAVE_VINE);
@@ -433,11 +433,11 @@
 +   }
 +   
 +   private static <T> Registry<T> forge(ResourceKey<? extends Registry<T>> key, Lifecycle cycle, BuiltInRegistries.RegistryBootstrap<T> def) {
-+      return internalRegister(key, net.minecraftforge.registries.GameData.getWrapper(key, cycle), def, cycle);
++      return internalRegister(key, net.neoforged.neoforge.registries.GameData.getWrapper(key, cycle), def, cycle);
 +   }
 +   
 +   @SuppressWarnings("unchecked")
 +   private static <T> DefaultedRegistry<T> forge(ResourceKey<? extends Registry<T>> key, String defKey, Lifecycle cycle, BuiltInRegistries.RegistryBootstrap<T> def) {
-+      return (DefaultedRegistry<T>) internalRegister(key, net.minecraftforge.registries.GameData.getWrapper(key, cycle, defKey), def, cycle);
++      return (DefaultedRegistry<T>) internalRegister(key, net.neoforged.neoforge.registries.GameData.getWrapper(key, cycle, defKey), def, cycle);
     }
  }

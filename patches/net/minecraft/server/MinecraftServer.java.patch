@@ -13,7 +13,7 @@
        this.readScoreboard(dimensiondatastorage);
        this.commandStorage = new CommandStorage(dimensiondatastorage);
        WorldBorder worldborder = serverlevel.getWorldBorder();
-+      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.level.LevelEvent.Load(levels.get(Level.OVERWORLD)));
++      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(levels.get(Level.OVERWORLD)));
        if (!serverleveldata.isInitialized()) {
           try {
              setInitialSpawn(serverlevel, serverleveldata, worldoptions.generateBonusChest(), flag);
@@ -21,7 +21,7 @@
              );
              worldborder.addListener(new BorderChangeListener.DelegateBorderChangeListener(serverlevel1.getWorldBorder()));
              this.levels.put(resourcekey1, serverlevel1);
-+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.level.LevelEvent.Load(levels.get(resourcekey)));
++            net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(levels.get(resourcekey)));
           }
        }
  
@@ -29,7 +29,7 @@
           p_177898_.setSpawn(BlockPos.ZERO.above(80), 0.0F);
        } else {
           ServerChunkCache serverchunkcache = p_177897_.getChunkSource();
-+         if (net.minecraftforge.event.ForgeEventFactory.onCreateWorldSpawn(p_177897_, p_177898_)) return;
++         if (net.neoforged.neoforge.event.ForgeEventFactory.onCreateWorldSpawn(p_177897_, p_177898_)) return;
           ChunkPos chunkpos = new ChunkPos(serverchunkcache.randomState().sampler().findSpawnPosition());
           int i = serverchunkcache.getGenerator().getSpawnHeight(p_177897_);
           if (i < p_177897_.getMinBuildHeight()) {
@@ -37,7 +37,7 @@
                 ChunkPos chunkpos = new ChunkPos(i);
                 serverlevel1.getChunkSource().updateChunkForced(chunkpos, true);
              }
-+            net.minecraftforge.common.world.ForgeChunkManager.reinstatePersistentChunks(serverlevel1, forcedchunkssaveddata);
++            net.neoforged.neoforge.common.world.ForgeChunkManager.reinstatePersistentChunks(serverlevel1, forcedchunkssaveddata);
           }
        }
  
@@ -45,7 +45,7 @@
        for(ServerLevel serverlevel2 : this.getAllLevels()) {
           if (serverlevel2 != null) {
              try {
-+               net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.level.LevelEvent.Unload(serverlevel2));
++               net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(serverlevel2));
                 serverlevel2.close();
              } catch (IOException ioexception1) {
                 LOGGER.error("Exception closing the level", (Throwable)ioexception1);
@@ -53,7 +53,7 @@
              throw new IllegalStateException("Failed to initialize server");
           }
  
-+         net.minecraftforge.server.ServerLifecycleHooks.handleServerStarted(this);
++         net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarted(this);
           this.nextTickTime = Util.getMillis();
           this.statusIcon = this.loadStatusIcon().orElse(null);
           this.status = this.buildServerStatus();
@@ -65,8 +65,8 @@
              this.isReady = true;
              JvmProfiler.INSTANCE.onServerTick(this.averageTickTime);
           }
-+         net.minecraftforge.server.ServerLifecycleHooks.handleServerStopping(this);
-+         net.minecraftforge.server.ServerLifecycleHooks.expectServerStopped(); // Forge: Has to come before MinecraftServer#onServerCrash to avoid race conditions
++         net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStopping(this);
++         net.neoforged.neoforge.server.ServerLifecycleHooks.expectServerStopped(); // Forge: Has to come before MinecraftServer#onServerCrash to avoid race conditions
        } catch (Throwable throwable1) {
           LOGGER.error("Encountered an unexpected exception", throwable1);
           CrashReport crashreport = constructOrExtractCrashReport(throwable1);
@@ -74,7 +74,7 @@
              LOGGER.error("We were unable to save this crash report to disk.");
           }
  
-+         net.minecraftforge.server.ServerLifecycleHooks.expectServerStopped(); // Forge: Has to come before MinecraftServer#onServerCrash to avoid race conditions
++         net.neoforged.neoforge.server.ServerLifecycleHooks.expectServerStopped(); // Forge: Has to come before MinecraftServer#onServerCrash to avoid race conditions
           this.onServerCrash(crashreport);
        } finally {
           try {
@@ -82,7 +82,7 @@
                 this.services.profileCache().clearExecutor();
              }
  
-+            net.minecraftforge.server.ServerLifecycleHooks.handleServerStopped(this);
++            net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStopped(this);
              this.onServerExit();
           }
        }
@@ -90,7 +90,7 @@
  
     public void tickServer(BooleanSupplier p_129871_) {
        long i = Util.getNanos();
-+      net.minecraftforge.event.ForgeEventFactory.onPreServerTick(p_129871_, this);
++      net.neoforged.neoforge.event.ForgeEventFactory.onPreServerTick(p_129871_, this);
        ++this.tickCount;
        this.tickChildren(p_129871_);
        if (i - this.lastServerStatus >= 5000000000L) {
@@ -104,7 +104,7 @@
        long k = Util.getNanos();
        this.logTickTime(k - i);
        this.profiler.pop();
-+      net.minecraftforge.event.ForgeEventFactory.onPostServerTick(p_129871_, this);
++      net.neoforged.neoforge.event.ForgeEventFactory.onPostServerTick(p_129871_, this);
 +   }
 +
 +   private static final com.google.gson.Gson GSON = new com.google.gson.Gson();
@@ -132,7 +132,7 @@
 +              Optional.of(ServerStatus.Version.current()),
 +              Optional.ofNullable(this.statusIcon),
 +              this.enforceSecureProfile(),
-+              Optional.of(new net.minecraftforge.network.ServerStatusPing())
++              Optional.of(new net.neoforged.neoforge.network.ServerStatusPing())
        );
     }
  
@@ -150,7 +150,7 @@
           }
  
           this.profiler.push("tick");
-+         net.minecraftforge.event.ForgeEventFactory.onPreLevelTick(serverlevel, p_129954_);
++         net.neoforged.neoforge.event.ForgeEventFactory.onPreLevelTick(serverlevel, p_129954_);
  
           try {
              serverlevel.tick(p_129954_);
@@ -158,7 +158,7 @@
              serverlevel.fillReportDetails(crashreport);
              throw new ReportedException(crashreport);
           }
-+         net.minecraftforge.event.ForgeEventFactory.onPostLevelTick(serverlevel, p_129954_);
++         net.neoforged.neoforge.event.ForgeEventFactory.onPostLevelTick(serverlevel, p_129954_);
  
           this.profiler.pop();
           this.profiler.pop();
@@ -170,7 +170,7 @@
        this.profiler.popPush("players");
        this.playerList.tick();
 -      if (SharedConstants.IS_RUNNING_IN_IDE) {
-+      if (net.minecraftforge.gametest.ForgeGameTestHooks.isGametestEnabled()) {
++      if (net.neoforged.neoforge.gametest.ForgeGameTestHooks.isGametestEnabled()) {
           GameTestTicker.SINGLETON.tick();
        }
  
@@ -179,7 +179,7 @@
     @DontObfuscate
     public String getServerModName() {
 -      return "vanilla";
-+      return net.minecraftforge.internal.BrandingControl.getServerBranding();
++      return net.neoforged.neoforge.internal.BrandingControl.getServerBranding();
     }
  
     public SystemReport fillSystemReport(SystemReport p_177936_) {
@@ -195,15 +195,15 @@
     }
  
     public static WorldDataConfiguration configurePackRepository(PackRepository p_248681_, DataPackConfig p_248920_, boolean p_249869_, FeatureFlagSet p_251243_) {
-+      net.minecraftforge.resource.ResourcePackLoader.loadResourcePacks(p_248681_, net.minecraftforge.server.ServerLifecycleHooks::buildPackFinder);
++      net.neoforged.neoforge.resource.ResourcePackLoader.loadResourcePacks(p_248681_, net.neoforged.neoforge.server.ServerLifecycleHooks::buildPackFinder);
        p_248681_.reload();
-+      DataPackConfig.DEFAULT.addModPacks(net.minecraftforge.common.ForgeHooks.getModPacks());
-+      p_248920_.addModPacks(net.minecraftforge.common.ForgeHooks.getModPacks());
++      DataPackConfig.DEFAULT.addModPacks(net.neoforged.neoforge.common.ForgeHooks.getModPacks());
++      p_248920_.addModPacks(net.neoforged.neoforge.common.ForgeHooks.getModPacks());
        if (p_249869_) {
 -         p_248681_.setSelected(Collections.singleton("vanilla"));
 -         return WorldDataConfiguration.DEFAULT;
-+         p_248681_.setSelected(net.minecraftforge.common.ForgeHooks.getModPacksWithVanilla());
-+         return new WorldDataConfiguration(new DataPackConfig(net.minecraftforge.common.ForgeHooks.getModPacksWithVanilla(), ImmutableList.of()), FeatureFlags.DEFAULT_FLAGS);
++         p_248681_.setSelected(net.neoforged.neoforge.common.ForgeHooks.getModPacksWithVanilla());
++         return new WorldDataConfiguration(new DataPackConfig(net.neoforged.neoforge.common.ForgeHooks.getModPacksWithVanilla(), ImmutableList.of()), FeatureFlags.DEFAULT_FLAGS);
        } else {
           Set<String> set = Sets.newLinkedHashSet();
  

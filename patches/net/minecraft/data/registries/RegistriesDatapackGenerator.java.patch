@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 +/**
-+ * @deprecated Forge: Use {@link net.minecraftforge.common.data.DatapackBuiltinEntriesProvider} instead
++ * @deprecated Forge: Use {@link net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider} instead
 + */
 +@Deprecated
  public class RegistriesDatapackGenerator implements DataProvider {
@@ -25,7 +25,7 @@
        this.output = p_256643_;
     }
  
-+   /** Forge: Call this to get the registry holder lookup provider that includes elements added via {@link net.minecraftforge.common.data.DatapackBuiltinEntriesProvider} */
++   /** Forge: Call this to get the registry holder lookup provider that includes elements added via {@link net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider} */
 +   public CompletableFuture<HolderLookup.Provider> getRegistryProvider() {
 +      return registries;
 +   }
@@ -39,7 +39,7 @@
                 return CompletableFuture.allOf(
 -                  RegistryDataLoader.WORLDGEN_REGISTRIES
 -                     .stream()
-+                      net.minecraftforge.registries.DataPackRegistriesHooks.getDataPackRegistriesWithDimensions()
++                      net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistriesWithDimensions()
                       .flatMap(p_256552_ -> this.dumpRegistryCap(p_255785_, p_256533_, dynamicops, p_256552_).stream())
                       .toArray(p_255809_ -> new CompletableFuture[p_255809_])
                 );
@@ -48,7 +48,7 @@
           .map(
              p_255847_ -> {
 -               PackOutput.PathProvider packoutput$pathprovider = this.output.createPathProvider(PackOutput.Target.DATA_PACK, resourcekey.location().getPath());
-+               PackOutput.PathProvider packoutput$pathprovider = this.output.createPathProvider(PackOutput.Target.DATA_PACK, net.minecraftforge.common.ForgeHooks.prefixNamespace(resourcekey.location()));
++               PackOutput.PathProvider packoutput$pathprovider = this.output.createPathProvider(PackOutput.Target.DATA_PACK, net.neoforged.neoforge.common.ForgeHooks.prefixNamespace(resourcekey.location()));
                 return CompletableFuture.allOf(
                    p_255847_.listElements()
 +                     .filter(holder -> this.namespacePredicate.test(holder.key().location().getNamespace()))

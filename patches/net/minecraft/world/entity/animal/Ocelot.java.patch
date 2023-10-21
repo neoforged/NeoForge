@@ -5,7 +5,7 @@
           this.usePlayerItem(p_29021_, p_29022_, itemstack);
           if (!this.level().isClientSide) {
 -            if (this.random.nextInt(3) == 0) {
-+            if (this.random.nextInt(3) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, p_29021_)) {
++            if (this.random.nextInt(3) == 0 && !net.neoforged.neoforge.event.ForgeEventFactory.onAnimalTame(this, p_29021_)) {
                 this.setTrusting(true);
                 this.spawnTrustingParticles(true);
                 this.level().broadcastEntityEvent(this, (byte)41);

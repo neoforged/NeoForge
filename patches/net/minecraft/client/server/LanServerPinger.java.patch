@@ -5,7 +5,7 @@
     private static final AtomicInteger UNIQUE_THREAD_ID = new AtomicInteger(0);
     private static final Logger LOGGER = LogUtils.getLogger();
 -   public static final String MULTICAST_GROUP = "224.0.2.60";
-+   public static final String MULTICAST_GROUP = net.minecraftforge.network.DualStackUtils.getMulticastGroup();
++   public static final String MULTICAST_GROUP = net.neoforged.neoforge.network.DualStackUtils.getMulticastGroup();
     public static final int PING_PORT = 4445;
     private static final long PING_INTERVAL = 1500L;
     private final String motd;

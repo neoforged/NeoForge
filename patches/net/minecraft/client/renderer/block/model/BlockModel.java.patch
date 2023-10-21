@@ -4,11 +4,11 @@
     public BlockModel parent;
     @Nullable
     protected ResourceLocation parentLocation;
-+   public final net.minecraftforge.client.model.geometry.BlockGeometryBakingContext customData = new net.minecraftforge.client.model.geometry.BlockGeometryBakingContext(this);
++   public final net.neoforged.neoforge.client.model.geometry.BlockGeometryBakingContext customData = new net.neoforged.neoforge.client.model.geometry.BlockGeometryBakingContext(this);
  
     public static BlockModel fromStream(Reader p_111462_) {
 -      return GsonHelper.fromJson(GSON, p_111462_, BlockModel.class);
-+      return GsonHelper.fromJson(net.minecraftforge.client.model.ExtendedBlockModelDeserializer.INSTANCE, p_111462_, BlockModel.class);
++      return GsonHelper.fromJson(net.neoforged.neoforge.client.model.ExtendedBlockModelDeserializer.INSTANCE, p_111462_, BlockModel.class);
     }
  
     public static BlockModel fromString(String p_111464_) {
@@ -72,7 +72,7 @@
 +           boolean p_111455_
 +   )
 +   {
-+      return net.minecraftforge.client.model.geometry.UnbakedGeometryHelper.bake(this, p_249720_, p_111451_, p_111452_, p_111453_, p_111454_, p_111455_);
++      return net.neoforged.neoforge.client.model.geometry.UnbakedGeometryHelper.bake(this, p_249720_, p_111451_, p_111452_, p_111453_, p_111454_, p_111455_);
 +   }
 +
 +   public BakedModel bakeVanilla(

@@ -13,7 +13,7 @@
        Thread thread = new Thread("Server console handler") {
           @Override
           public void run() {
-+            if (net.minecraftforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
++            if (net.neoforged.neoforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
              BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
  
              String s1;
@@ -21,7 +21,7 @@
           long i = Util.getNanos();
           SkullBlockEntity.setup(this.services, this);
           GameProfileCache.setUsesAuthentication(this.usesAuthentication());
-+         net.minecraftforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
++         net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
           LOGGER.info("Preparing level \"{}\"", this.getLevelIdName());
           this.loadLevel();
           long j = Util.getNanos() - i;
@@ -35,12 +35,12 @@
              LOGGER.info("JMX monitoring enabled");
           }
  
-+         if (net.minecraftforge.common.ForgeConfig.SERVER.advertiseDedicatedServerToLan.get()) {
++         if (net.neoforged.neoforge.common.ForgeConfig.SERVER.advertiseDedicatedServerToLan.get()) {
 +            this.dediLanPinger = new net.minecraft.client.server.LanServerPinger(this.getMotd(), String.valueOf(this.getServerPort()));
 +            this.dediLanPinger.start();
 +         }
 +
-+         net.minecraftforge.server.ServerLifecycleHooks.handleServerStarting(this);
++         net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(this);
           return true;
        }
     }
@@ -59,7 +59,7 @@
  
     @Override
     public void stopServer() {
-+      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.GameShuttingDownEvent());
++      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.GameShuttingDownEvent());
        super.stopServer();
 +      if (this.dediLanPinger != null) {
 +         this.dediLanPinger.interrupt();

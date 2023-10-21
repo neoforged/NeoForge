@@ -5,7 +5,7 @@
  import org.joml.Vector3f;
  
 -public class Boat extends Entity implements VariantHolder<Boat.Type> {
-+public class Boat extends Entity implements net.minecraftforge.common.extensions.IForgeBoat {
++public class Boat extends Entity implements net.neoforged.neoforge.common.extensions.IForgeBoat {
     private static final EntityDataAccessor<Integer> DATA_ID_HURT = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_ID_HURTDIR = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> DATA_ID_DAMAGE = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.FLOAT);

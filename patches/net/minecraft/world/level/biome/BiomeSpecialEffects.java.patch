@@ -5,7 +5,7 @@
     }
  
 -   public static enum GrassColorModifier implements StringRepresentable {
-+   public static enum GrassColorModifier implements StringRepresentable, net.minecraftforge.common.IExtensibleEnum {
++   public static enum GrassColorModifier implements StringRepresentable, net.neoforged.neoforge.common.IExtensibleEnum {
        NONE("none") {
           @Override
           public int modifyColor(double p_48081_, double p_48082_, int p_48083_) {
@@ -14,7 +14,7 @@
  
        private final String name;
 -      public static final Codec<BiomeSpecialEffects.GrassColorModifier> CODEC = StringRepresentable.fromEnum(BiomeSpecialEffects.GrassColorModifier::values);
-+      public static final Codec<BiomeSpecialEffects.GrassColorModifier> CODEC = net.minecraftforge.common.IExtensibleEnum.createCodecForExtensibleEnum(BiomeSpecialEffects.GrassColorModifier::values, BiomeSpecialEffects.GrassColorModifier::byName);
++      public static final Codec<BiomeSpecialEffects.GrassColorModifier> CODEC = net.neoforged.neoforge.common.IExtensibleEnum.createCodecForExtensibleEnum(BiomeSpecialEffects.GrassColorModifier::values, BiomeSpecialEffects.GrassColorModifier::byName);
 +      private static final java.util.Map<String, GrassColorModifier> BY_NAME = java.util.Arrays.stream(values()).collect(java.util.stream.Collectors.toMap(BiomeSpecialEffects.GrassColorModifier::getName, grassColorModifier -> grassColorModifier));
  
 -      public abstract int modifyColor(double p_48065_, double p_48066_, int p_48067_);
