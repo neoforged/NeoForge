@@ -231,18 +231,21 @@ publishing {
 
         artifacts = []
 
-        artifact (signUniversalJar.output) {
-            classifier 'universal'
+        afterEvaluate {
+            artifact (signUniversalJar.output) {
+                classifier 'universal'
+            }
+            artifact (signInstallerJar.output) {
+                classifier 'installer'
+            }
+            artifact (userdevJar) {
+                classifier 'userdev'
+            }
+            artifact (sourcesJar) {
+                classifier 'sources'
+            }
         }
-        artifact (signInstallerJar.output) {
-            classifier 'installer'
-        }
-        artifact (userdevJar) {
-            classifier 'userdev'
-        }
-        artifact (sourcesJar) {
-            classifier 'sources'
-        }
+
 
         versionMapping {
             usage('java-api') {
