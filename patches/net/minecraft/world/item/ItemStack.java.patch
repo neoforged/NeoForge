@@ -19,15 +19,6 @@
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final ItemStack EMPTY = new ItemStack((Void)null);
     public static final DecimalFormat ATTRIBUTE_MODIFIER_FORMAT = Util.make(
-@@ -131,7 +134,7 @@
-       this(p_204116_.value(), 1);
-    }
- 
--   private ItemStack(ItemLike p_41604_, int p_41605_, Optional<CompoundTag> p_41606_) {
-+   public ItemStack(ItemLike p_41604_, int p_41605_, Optional<CompoundTag> p_41606_) {
-       this(p_41604_, p_41605_);
-       p_41606_.ifPresent(this::setTag);
-    }
 @@ -140,27 +143,39 @@
        this(p_220155_.value(), p_220156_);
     }

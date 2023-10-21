@@ -43,7 +43,7 @@ import java.util.function.Supplier;
  *
  * It is somewhat a copy of the superclass render method.
  */
-public class ForgeLoadingOverlay extends LoadingOverlay {
+public class NeoForgeLoadingOverlay extends LoadingOverlay {
     private final Minecraft minecraft;
     private final ReloadInstance reload;
     private final Consumer<Optional<Throwable>> onFinish;
@@ -51,7 +51,7 @@ public class ForgeLoadingOverlay extends LoadingOverlay {
     private final ProgressMeter progress;
     private long fadeOutStart = -1L;
 
-    public ForgeLoadingOverlay(final Minecraft mc, final ReloadInstance reloader, final Consumer<Optional<Throwable>> errorConsumer, DisplayWindow displayWindow) {
+    public NeoForgeLoadingOverlay(final Minecraft mc, final ReloadInstance reloader, final Consumer<Optional<Throwable>> errorConsumer, DisplayWindow displayWindow) {
         super(mc, reloader, errorConsumer, false);
         this.minecraft = mc;
         this.reload = reloader;
@@ -62,7 +62,7 @@ public class ForgeLoadingOverlay extends LoadingOverlay {
     }
 
     public static Supplier<LoadingOverlay> newInstance(Supplier<Minecraft> mc, Supplier<ReloadInstance> ri, Consumer<Optional<Throwable>> handler, DisplayWindow window) {
-        return ()->new ForgeLoadingOverlay(mc.get(), ri.get(), handler, window);
+        return ()->new NeoForgeLoadingOverlay(mc.get(), ri.get(), handler, window);
     }
 
     @Override

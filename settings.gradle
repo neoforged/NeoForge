@@ -20,10 +20,10 @@ rootProject.name = rootDir.name
 
 dynamicProjects {
     include ':base'
-    include ':forge'
+    include ':neoforge'
 
     project(":base").projectDir = file("projects/base")
-    project(":forge").projectDir = file("projects/forge")
+    project(":neoforge").projectDir = file("projects/neoforge")
 }
 
 include ':tests'

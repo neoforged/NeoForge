@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLConfig;
-import net.neoforged.neoforge.versions.forge.ForgeVersion;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.neoforge.client.loading.ClientModLoader;
 import net.neoforged.api.distmarker.Dist;
@@ -22,7 +22,7 @@ import net.neoforged.api.distmarker.Dist;
 public class TitleScreenModUpdateIndicator extends Screen
 {
 
-    private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation(ForgeVersion.MOD_ID, "textures/gui/version_check_icons.png");
+    private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation(NeoForgeVersion.MOD_ID, "textures/gui/version_check_icons.png");
 
     private final Button modButton;
     private VersionChecker.Status showNotification = null;

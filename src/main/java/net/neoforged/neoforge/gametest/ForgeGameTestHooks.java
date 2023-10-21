@@ -33,12 +33,12 @@ public class ForgeGameTestHooks
 
     public static boolean isGametestEnabled()
     {
-        return !FMLLoader.isProduction() && (SharedConstants.IS_RUNNING_IN_IDE || isGametestServer() || Boolean.getBoolean("forge.enableGameTest"));
+        return !FMLLoader.isProduction() && (SharedConstants.IS_RUNNING_IN_IDE || isGametestServer() || Boolean.getBoolean("neoforge.enableGameTest"));
     }
 
     public static boolean isGametestServer()
     {
-        return !FMLLoader.isProduction() && Boolean.getBoolean("forge.gameTestServer");
+        return !FMLLoader.isProduction() && Boolean.getBoolean("neoforge.gameTestServer");
     }
 
     @SuppressWarnings("deprecation")

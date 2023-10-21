@@ -78,6 +78,8 @@ import net.neoforged.fml.*;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.*;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.internal.versions.neoform.NeoFormVersion;
 import net.neoforged.neoforge.registries.*;
 import net.neoforged.neoforge.registries.holdersets.AndHolderSet;
 import net.neoforged.neoforge.registries.holdersets.AnyHolderSet;
@@ -94,8 +96,6 @@ import net.neoforged.neoforge.server.command.ModIdArgument;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
-import net.neoforged.neoforge.versions.forge.ForgeVersion;
-import net.neoforged.neoforge.versions.mcp.MCPVersion;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -123,12 +123,12 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@Mod("forge")
+@Mod(NeoForgeVersion.MOD_ID)
 public class ForgeMod
 {
     public static final String VERSION_CHECK_CAT = "version_checking";
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Marker FORGEMOD = MarkerManager.getMarker("FORGEMOD");
+    private static final Marker NEOFORGEMOD = MarkerManager.getMarker("NEOFORGE-MOD");
 
     private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.Keys.ATTRIBUTES, "forge");
     private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, "forge");
@@ -435,7 +435,7 @@ public class ForgeMod
 
     public ForgeMod()
     {
-        LOGGER.info(FORGEMOD,"NeoForge mod loading, version {}, for MC {} with MCP {}", ForgeVersion.getVersion(), MCPVersion.getMCVersion(), MCPVersion.getMCPVersion());
+        LOGGER.info(NEOFORGEMOD,"NeoForge mod loading, version {}, for MC {} with MCP {}", NeoForgeVersion.getVersion(), NeoFormVersion.getMCVersion(), NeoFormVersion.getMCPVersion());
         ForgeSnapshotsMod.logStartupWarning();
         INSTANCE = this;
         MinecraftForge.initialize();
@@ -445,9 +445,9 @@ public class ForgeMod
             return uuid.toString();
         });
 
-        LOGGER.debug(FORGEMOD, "Loading Network data for FML net version: {}", NetworkConstants.init());
-        CrashReportCallables.registerCrashCallable("FML", ForgeVersion::getSpec);
-        CrashReportCallables.registerCrashCallable("NeoForge", ()->ForgeVersion.getGroup()+":"+ForgeVersion.getVersion());
+        LOGGER.debug(NEOFORGEMOD, "Loading Network data for FML net version: {}", NetworkConstants.init());
+        CrashReportCallables.registerCrashCallable("FML", NeoForgeVersion::getSpec);
+        CrashReportCallables.registerCrashCallable("NeoForge", ()-> NeoForgeVersion.getGroup()+":"+ NeoForgeVersion.getVersion());
 
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         // Forge-provided datapack registries
@@ -480,7 +480,7 @@ public class ForgeMod
         ForgeDeferredRegistriesSetup.setup(modEventBus);
         // Forge does not display problems when the remote is not matching.
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, ()->new IExtensionPoint.DisplayTest(()->"ANY", (remote, isServer)-> true));
-        StartupMessageManager.addModMessage("NeoForge version "+ForgeVersion.getVersion());
+        StartupMessageManager.addModMessage("NeoForge version "+ NeoForgeVersion.getVersion());
 
         MinecraftForge.EVENT_BUS.addListener(VillagerTradingManager::loadTrades);
         MinecraftForge.EVENT_BUS.register(MinecraftForge.INTERNAL_HANDLER);

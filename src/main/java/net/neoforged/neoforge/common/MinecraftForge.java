@@ -11,8 +11,8 @@ import net.neoforged.bus.api.BusBuilder;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.DualStackUtils;
-import net.neoforged.neoforge.versions.forge.ForgeVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -43,7 +43,7 @@ public class MinecraftForge
     */
    public static void initialize()
    {
-       LOGGER.info(FORGE,"NeoForge v{} Initialized", ForgeVersion.getVersion());
+       LOGGER.info(FORGE,"NeoForge v{} Initialized", NeoForgeVersion.getVersion());
 
        UsernameCache.load();
        TierSortingRegistry.init();

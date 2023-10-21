@@ -11,8 +11,8 @@ public class GameTestMain
 {
     public static void main(String[] args) throws Exception
     {
-        System.setProperty("forge.enableGameTest", "true");
-        System.setProperty("forge.gameTestServer", "true");
+        System.setProperty("neoforge.enableGameTest", "true");
+        System.setProperty("neoforge.gameTestServer", "true");
         Main.main(args);
     }
 }

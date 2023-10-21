@@ -1,7 +1,7 @@
 apply plugin: 'net.neoforged.gradle.platform'
 apply plugin: 'java'
 
-def forgeProject = project(':forge')
+def neoforgeProject = project(':neoforge')
 
 repositories {
     mavenLocal()
@@ -24,7 +24,7 @@ sourceSets {
 }
 
 dependencies {
-    implementation forgeProject
+    implementation neoforgeProject
 
     implementation "org.junit.jupiter:junit-jupiter-api:${project.jupiter_api_version}"
     implementation "org.junit.vintage:junit-vintage-engine:${project.vintage_engine_version}"
@@ -36,19 +36,19 @@ dependencies {
 
 runs {
     client {
-        configure forgeProject.runTypes.client
+        configure neoforgeProject.runTypes.client
     }
     server {
-        configure forgeProject.runTypes.server
+        configure neoforgeProject.runTypes.server
     }
     "GameTest Server" {
-        configure forgeProject.runTypes.gameTestServer
+        configure neoforgeProject.runTypes.gameTestServer
     }
     "GameTest Client" {
-        configure forgeProject.runTypes.gameTestClient
+        configure neoforgeProject.runTypes.gameTestClient
     }
     data {
-        configure forgeProject.runTypes.data
+        configure neoforgeProject.runTypes.data
 
         programArguments.addAll '--flat', '--all', '--validate',
                 '--mod', 'data_gen_test',
@@ -77,8 +77,8 @@ runs {
 
 //We need the assets and natives tasks from the forge project.
 runs.configureEach {
-    dependsOn(forgeProject.runtime.assets, forgeProject.runtime.natives)
-    modSource forgeProject.sourceSets.main
+    dependsOn(neoforgeProject.runtime.assets, neoforgeProject.runtime.natives)
+    modSource neoforgeProject.sourceSets.main
 }
 
 afterEvaluate {

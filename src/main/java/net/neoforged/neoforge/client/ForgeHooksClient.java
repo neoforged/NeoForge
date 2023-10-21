@@ -159,11 +159,11 @@ import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.gametest.ForgeGameTestHooks;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.NetworkConstants;
 import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.network.ServerStatusPing;
 import net.neoforged.neoforge.registries.GameData;
-import net.neoforged.neoforge.versions.forge.ForgeVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -383,7 +383,7 @@ public class ForgeHooksClient
 
     public static void renderMainMenu(TitleScreen gui, GuiGraphics guiGraphics, Font font, int width, int height, int alpha)
     {
-        VersionChecker.Status status = ForgeVersion.getStatus();
+        VersionChecker.Status status = NeoForgeVersion.getStatus();
         ForgeSnapshotsModClient.renderMainMenuWarning(status, gui, guiGraphics, font, width, height, alpha);
 
         forgeStatusLine = switch(status)
@@ -391,7 +391,7 @@ public class ForgeHooksClient
             // case FAILED -> " Version check failed";
             // case UP_TO_DATE -> "Forge up to date";
             // case AHEAD -> "Using non-recommended Forge build, issues may arise.";
-            case OUTDATED, BETA_OUTDATED -> I18n.get("forge.update.newversion", ForgeVersion.getTarget());
+            case OUTDATED, BETA_OUTDATED -> I18n.get("forge.update.newversion", NeoForgeVersion.getTarget());
             default -> null;
         };
     }
@@ -862,7 +862,7 @@ public class ForgeHooksClient
         }, () -> target.forgeData = new ExtendedServerListData("VANILLA", NetworkRegistry.canConnectToVanillaServer(),0, null));
     }
 
-    private static final ResourceLocation ICON_SHEET = new ResourceLocation(ForgeVersion.MOD_ID, "textures/gui/icons.png");
+    private static final ResourceLocation ICON_SHEET = new ResourceLocation(NeoForgeVersion.MOD_ID, "textures/gui/icons.png");
     public static void drawForgePingInfo(JoinMultiplayerScreen gui, ServerData target, GuiGraphics guiGraphics, int x, int y, int width, int relativeMouseX, int relativeMouseY) {
         int idx;
         String tooltip;

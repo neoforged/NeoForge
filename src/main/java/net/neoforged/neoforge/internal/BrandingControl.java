@@ -17,8 +17,8 @@ import net.neoforged.neoforge.client.ForgeHooksClient;
 import net.neoforged.neoforge.common.ForgeI18n;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
-import net.neoforged.neoforge.versions.forge.ForgeVersion;
-import net.neoforged.neoforge.versions.mcp.MCPVersion;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.internal.versions.neoform.NeoFormVersion;
 
 
 public class BrandingControl
@@ -32,8 +32,8 @@ public class BrandingControl
         if (brandings == null)
         {
             ImmutableList.Builder<String> brd = ImmutableList.builder();
-            brd.add(ForgeSnapshotsMod.BRANDING_NAME + ' ' + ForgeVersion.getVersion());
-            brd.add("Minecraft " + MCPVersion.getMCVersion());
+            brd.add(ForgeSnapshotsMod.BRANDING_NAME + ' ' + NeoForgeVersion.getVersion());
+            brd.add("Minecraft " + NeoFormVersion.getMCVersion());
             int tModCount = ModList.get().size();
             brd.add(ForgeI18n.parseMessage("fml.menu.loadingmods", tModCount));
             brandings = brd.build();

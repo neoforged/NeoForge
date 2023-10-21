@@ -91,19 +91,19 @@ runTypes {
         singleInstance false
         client true
 
-        arguments.addAll '--fml.forgeVersion', project.version
+        arguments.addAll '--fml.neoForgeVersion', project.version
         arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
         arguments.addAll '--fml.mcVersion', project.minecraft_version
-        arguments.addAll '--fml.mcpVersion', project.neoform_version
+        arguments.addAll '--fml.neoFormVersion', project.neoform_version
     }
 
     server {
         server true
 
-        arguments.addAll '--fml.forgeVersion', project.version
+        arguments.addAll '--fml.neoForgeVersion', project.version
         arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
         arguments.addAll '--fml.mcVersion', project.minecraft_version
-        arguments.addAll '--fml.mcpVersion', project.neoform_version
+        arguments.addAll '--fml.neoFormVersion', project.neoform_version
     }
 
     gameTestServer {
@@ -122,10 +122,10 @@ runTypes {
         dataGenerator true
 
         // Don't set modid here so we can reuse this runType for test datagen
-        arguments.addAll '--fml.forgeVersion', project.version
+        arguments.addAll '--fml.neoForgeVersion', project.version
         arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
         arguments.addAll '--fml.mcVersion', project.minecraft_version
-        arguments.addAll '--fml.mcpVersion', project.neoform_version
+        arguments.addAll '--fml.neoFormVersion', project.neoform_version
     }
 }
 
@@ -141,7 +141,7 @@ runs {
     "Data" {
         configure project.runTypes.data
 
-        programArguments.addAll '--mod', 'forge'
+        programArguments.addAll '--mod', 'neoforge'
 
         modSources.add project.sourceSets.main
 
@@ -161,26 +161,26 @@ runs.configureEach { it ->
 
 launcherProfile {
     arguments {
-        game '--fml.forgeVersion'
+        game '--fml.neoForgeVersion'
         game project.version
         game '--fml.fmlVersion'
         game project.fancy_mod_loader_version
         game '--fml.mcVersion'
         game project.minecraft_version
-        game '--fml.mcpVersion'
+        game '--fml.neoFormVersion'
         game project.neoform_version
     }
 }
 
 userdevProfile {
     runTypes.configureEach {
-        argument '--fml.forgeVersion'
+        argument '--fml.neoForgeVersion'
         argument project.version
         argument '--fml.fmlVersion'
         argument project.fancy_mod_loader_version
         argument '--fml.mcVersion'
         argument project.minecraft_version
-        argument '--fml.mcpVersion'
+        argument '--fml.neoFormVersion'
         argument project.neoform_version
     }
 }
