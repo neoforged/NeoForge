@@ -132,12 +132,8 @@ runTypes {
 runs {
     client { }
     server { }
-    "GameTest Server" {
-        configure project.runTypes.gameTestServer
-    }
-    "GameTest Client" {
-        configure project.runTypes.gameTestClient
-    }
+    gameTestServer { }
+    gameTestClient { }
     "Data" {
         configure project.runTypes.data
 
