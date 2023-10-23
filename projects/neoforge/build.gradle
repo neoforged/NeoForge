@@ -80,8 +80,12 @@ dependencies {
     installer "net.minecrell:terminalconsoleappender:${project.terminalconsoleappender_version}"
     installer "org.spongepowered:mixin:${project.mixin_version}"
     installer "org.openjdk.nashorn:nashorn-core:${project.nashorn_core_version}"
-    installer "net.neoforged:JarJarSelector:${project.jarjar_version}"
-    installer "net.neoforged:JarJarMetadata:${project.jarjar_version}"
+    installer ("net.neoforged:JarJarSelector:${project.jarjar_version}") {
+        exclude group: 'org.slf4j'
+    }
+    installer ("net.neoforged:JarJarMetadata:${project.jarjar_version}") {
+        exclude group: 'org.slf4j'
+    }
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
 }
