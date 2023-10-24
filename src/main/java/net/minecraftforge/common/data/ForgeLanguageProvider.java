@@ -260,6 +260,7 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.TOOLS_BOWS, "Bows");
         add(Tags.Items.TOOLS_CROSSBOWS, "Crossbows");
         add(Tags.Items.TOOLS_FISHING_RODS, "Fishing Rods");
+        add(Tags.Items.TOOLS_BRUSHES, "Brushes");
         add(Tags.Items.TOOLS_SPEARS, "Spears");
         add(Tags.Items.TOOLS, "Tools");
         add(Tags.Items.ARMORS_HELMETS, "Helmets");

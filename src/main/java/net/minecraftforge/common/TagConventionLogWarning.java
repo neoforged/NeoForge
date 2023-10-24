@@ -332,6 +332,7 @@ public final class TagConventionLogWarning
             createMapEntry(Registries.ITEM, "tools/crossbows", Tags.Items.TOOLS_CROSSBOWS),
             createMapEntry(Registries.ITEM, "tools/fishing_rods", Tags.Items.TOOLS_FISHING_RODS),
             createMapEntry(Registries.ITEM, "tools/tridents", Tags.Items.TOOLS_SPEARS),
+            createMapEntry(Registries.ITEM, "tools/brushes", Tags.Items.TOOLS_BRUSHES),
             createMapEntry(Registries.ITEM, "armors", Tags.Items.ARMORS),
             createMapEntry(Registries.ITEM, "armors/helmets", Tags.Items.ARMORS_HELMETS),
             createMapEntry(Registries.ITEM, "armors/chestplates", Tags.Items.ARMORS_CHESTPLATES),

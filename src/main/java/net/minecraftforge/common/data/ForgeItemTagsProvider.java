@@ -184,12 +184,13 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.TOOLS_SHIELDS).add(Items.SHIELD);
         tag(Tags.Items.TOOLS_BOWS).add(Items.BOW);
         tag(Tags.Items.TOOLS_CROSSBOWS).add(Items.CROSSBOW);
+        tag(Tags.Items.TOOLS_BRUSHES).add(Items.BRUSH);
         tag(Tags.Items.TOOLS_FISHING_RODS).add(Items.FISHING_ROD);
         tag(Tags.Items.TOOLS_SHEARS).add(Items.SHEARS);
         tag(Tags.Items.TOOLS_SPEARS).add(Items.TRIDENT);
         tag(Tags.Items.TOOLS)
             .addTags(ItemTags.AXES, ItemTags.HOES, ItemTags.PICKAXES, ItemTags.SHOVELS, ItemTags.SWORDS)
-            .addTags(Tags.Items.TOOLS_BOWS, Tags.Items.TOOLS_CROSSBOWS, Tags.Items.TOOLS_FISHING_RODS, Tags.Items.TOOLS_SHEARS, Tags.Items.TOOLS_SHIELDS, Tags.Items.TOOLS_SPEARS);
+            .addTags(Tags.Items.TOOLS_BOWS, Tags.Items.TOOLS_CROSSBOWS, Tags.Items.TOOLS_BRUSHES, Tags.Items.TOOLS_FISHING_RODS, Tags.Items.TOOLS_SHEARS, Tags.Items.TOOLS_SHIELDS, Tags.Items.TOOLS_SPEARS);
         tag(Tags.Items.ARMORS_HELMETS).add(Items.LEATHER_HELMET, Items.CHAINMAIL_HELMET, Items.IRON_HELMET, Items.GOLDEN_HELMET, Items.DIAMOND_HELMET, Items.NETHERITE_HELMET, Items.TURTLE_HELMET);
         tag(Tags.Items.ARMORS_CHESTPLATES).add(Items.LEATHER_CHESTPLATE, Items.CHAINMAIL_CHESTPLATE, Items.IRON_CHESTPLATE, Items.GOLDEN_CHESTPLATE, Items.DIAMOND_CHESTPLATE, Items.NETHERITE_CHESTPLATE);
         tag(Tags.Items.ARMORS_LEGGINGS).add(Items.LEATHER_LEGGINGS, Items.CHAINMAIL_LEGGINGS, Items.IRON_LEGGINGS, Items.GOLDEN_LEGGINGS, Items.DIAMOND_LEGGINGS, Items.NETHERITE_LEGGINGS);

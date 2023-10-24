@@ -555,6 +555,14 @@ public class Tags
          */
         public static final TagKey<Item> TOOLS_SPEARS = tag("tools/spears");
         /**
+         * A tag containing all existing brushes. Do not use this tag for determining a tool's behavior.
+         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
+         *
+         * @see net.minecraftforge.common.ToolAction
+         * @see net.minecraftforge.common.ToolActions
+         */
+        public static final TagKey<Item> TOOLS_BRUSHES = tag("tools/brushes");
+        /**
          * A tag containing all existing armors.
          */
         public static final TagKey<Item> ARMORS = tag("armors");
