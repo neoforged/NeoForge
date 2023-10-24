@@ -12,7 +12,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import java.util.Set;
 
-public interface IForgeEnchantment
+public interface IEnchantmentExtension
 {
     private Enchantment self()
     {

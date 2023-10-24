@@ -9,7 +9,7 @@ import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.fluids.FluidType;
 
-public interface IForgeBoat
+public interface IBoatExtension
 {
     private Boat self()
     {

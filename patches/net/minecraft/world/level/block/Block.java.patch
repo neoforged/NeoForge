@@ -1,11 +1,14 @@
 --- a/net/minecraft/world/level/block/Block.java
 +++ b/net/minecraft/world/level/block/Block.java
-@@ -61,10 +61,11 @@
+@@ -59,12 +59,14 @@
+ import net.minecraft.world.phys.shapes.BooleanOp;
+ import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
++import net.neoforged.neoforge.common.extensions.IBlockExtension;
  import org.slf4j.Logger;
  
 -public class Block extends BlockBehaviour implements ItemLike {
-+public class Block extends BlockBehaviour implements ItemLike, net.neoforged.neoforge.common.extensions.IForgeBlock {
++public class Block extends BlockBehaviour implements ItemLike, IBlockExtension {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final Holder.Reference<Block> builtInRegistryHolder = BuiltInRegistries.BLOCK.createIntrusiveHolder(this);
 -   public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = new IdMapper<>();
@@ -14,7 +17,7 @@
     private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
        .maximumSize(512L)
        .weakKeys()
-@@ -186,6 +187,7 @@
+@@ -186,6 +188,7 @@
              LOGGER.error("Block classes should end with Block and {} doesn't.", s);
           }
        }
@@ -22,7 +25,7 @@
     }
  
     public static boolean isExceptionForConnection(BlockState p_152464_) {
-@@ -206,6 +208,8 @@
+@@ -206,6 +209,8 @@
        BlockState blockstate = p_152446_.getBlockState(p_152449_);
        if (p_152445_.skipRendering(blockstate, p_152448_)) {
           return false;
@@ -31,7 +34,7 @@
        } else if (blockstate.canOcclude()) {
           Block.BlockStatePairKey block$blockstatepairkey = new Block.BlockStatePairKey(p_152445_, blockstate, p_152448_);
           Object2ByteLinkedOpenHashMap<Block.BlockStatePairKey> object2bytelinkedopenhashmap = OCCLUSION_CACHE.get();
-@@ -298,9 +302,12 @@
+@@ -298,9 +303,12 @@
     public static void dropResources(
        BlockState p_49882_, Level p_49883_, BlockPos p_49884_, @Nullable BlockEntity p_49885_, @Nullable Entity p_49886_, ItemStack p_49887_
     ) {
@@ -45,7 +48,7 @@
        }
     }
  
-@@ -328,7 +335,7 @@
+@@ -328,7 +336,7 @@
     }
  
     private static void popResource(Level p_152441_, Supplier<ItemEntity> p_152442_, ItemStack p_152443_) {
@@ -54,7 +57,7 @@
           ItemEntity itementity = p_152442_.get();
           itementity.setDefaultPickUpDelay();
           p_152441_.addFreshEntity(itementity);
-@@ -336,15 +343,16 @@
+@@ -336,15 +344,16 @@
     }
  
     public void popExperience(ServerLevel p_49806_, BlockPos p_49807_, int p_49808_) {
@@ -73,7 +76,7 @@
     public void wasExploded(Level p_49844_, BlockPos p_49845_, Explosion p_49846_) {
     }
  
-@@ -359,7 +367,8 @@
+@@ -359,7 +368,8 @@
     public void playerDestroy(Level p_49827_, Player p_49828_, BlockPos p_49829_, BlockState p_49830_, @Nullable BlockEntity p_49831_, ItemStack p_49832_) {
        p_49828_.awardStat(Stats.BLOCK_MINED.get(this));
        p_49828_.causeFoodExhaustion(0.005F);
@@ -83,7 +86,7 @@
     }
  
     public void setPlacedBy(Level p_49847_, BlockPos p_49848_, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack p_49851_) {
-@@ -387,8 +396,10 @@
+@@ -387,8 +397,10 @@
  
     public void updateEntityAfterFallOn(BlockGetter p_49821_, Entity p_49822_) {
        p_49822_.setDeltaMovement(p_49822_.getDeltaMovement().multiply(1.0, 0.0, 1.0));
@@ -94,7 +97,7 @@
     public ItemStack getCloneItemStack(BlockGetter p_49823_, BlockPos p_49824_, BlockState p_49825_) {
        return new ItemStack(this);
     }
-@@ -421,6 +432,7 @@
+@@ -421,6 +433,7 @@
     public void handlePrecipitation(BlockState p_152450_, Level p_152451_, BlockPos p_152452_, Biome.Precipitation p_152453_) {
     }
  
@@ -102,7 +105,7 @@
     public boolean dropFromExplosion(Explosion p_49826_) {
        return true;
     }
-@@ -456,6 +468,7 @@
+@@ -456,6 +469,7 @@
        return p_152456_.setValue(p_152457_, p_152455_.getValue(p_152457_));
     }
  
@@ -110,7 +113,7 @@
     public SoundType getSoundType(BlockState p_49963_) {
        return this.soundType;
     }
-@@ -466,7 +479,7 @@
+@@ -466,7 +480,7 @@
           this.item = Item.byBlock(this);
        }
  
@@ -119,7 +122,7 @@
     }
  
     public boolean hasDynamicShape() {
-@@ -490,6 +503,75 @@
+@@ -490,6 +504,75 @@
        return this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), p_152459_));
     }
  

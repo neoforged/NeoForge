@@ -1,11 +1,26 @@
 --- a/net/minecraft/world/level/portal/PortalShape.java
 +++ b/net/minecraft/world/level/portal/PortalShape.java
-@@ -28,7 +28,7 @@
+@@ -11,7 +11,6 @@
+ import net.minecraft.util.Mth;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntityDimensions;
+-import net.minecraft.world.level.BlockGetter;
+ import net.minecraft.world.level.LevelAccessor;
+ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.block.NetherPortalBlock;
+@@ -22,13 +21,14 @@
+ import net.minecraft.world.phys.Vec3;
+ import net.minecraft.world.phys.shapes.Shapes;
+ import net.minecraft.world.phys.shapes.VoxelShape;
++import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
+ 
+ public class PortalShape {
+    private static final int MIN_WIDTH = 2;
     public static final int MAX_WIDTH = 21;
     private static final int MIN_HEIGHT = 3;
     public static final int MAX_HEIGHT = 21;
 -   private static final BlockBehaviour.StatePredicate FRAME = (p_77720_, p_77721_, p_77722_) -> p_77720_.is(Blocks.OBSIDIAN);
-+   private static final BlockBehaviour.StatePredicate FRAME = net.neoforged.neoforge.common.extensions.IForgeBlockState::isPortalFrame;
++   private static final BlockBehaviour.StatePredicate FRAME = IBlockStateExtension::isPortalFrame;
     private static final float SAFE_TRAVEL_MAX_ENTITY_XY = 4.0F;
     private static final double SAFE_TRAVEL_MAX_VERTICAL_DELTA = 1.0;
     private final LevelAccessor level;

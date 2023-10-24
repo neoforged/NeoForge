@@ -1,15 +1,18 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -15,7 +15,7 @@
+@@ -13,9 +13,10 @@
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.Level;
  import net.minecraft.world.level.block.state.BlockState;
++import net.neoforged.neoforge.common.extensions.IBlockEntityExtension;
  import org.slf4j.Logger;
  
 -public abstract class BlockEntity {
-+public abstract class BlockEntity extends net.neoforged.neoforge.common.capabilities.CapabilityProvider<BlockEntity> implements net.neoforged.neoforge.common.extensions.IForgeBlockEntity {
++public abstract class BlockEntity extends net.neoforged.neoforge.common.capabilities.CapabilityProvider<BlockEntity> implements IBlockEntityExtension {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final BlockEntityType<?> type;
     @Nullable
-@@ -23,11 +23,14 @@
+@@ -23,11 +24,14 @@
     protected final BlockPos worldPosition;
     protected boolean remove;
     private BlockState blockState;
@@ -24,7 +27,7 @@
     }
  
     public static BlockPos getPosFromTag(CompoundTag p_187473_) {
-@@ -48,9 +51,13 @@
+@@ -48,9 +52,13 @@
     }
  
     public void load(CompoundTag p_155245_) {
@@ -38,7 +41,7 @@
     }
  
     public final CompoundTag saveWithFullMetadata() {
-@@ -161,6 +168,13 @@
+@@ -161,6 +169,13 @@
  
     public void setRemoved() {
        this.remove = true;
@@ -52,7 +55,7 @@
     }
  
     public void clearRemoved() {
-@@ -185,6 +199,13 @@
+@@ -185,6 +200,13 @@
  
     public BlockEntityType<?> getType() {
        return this.type;

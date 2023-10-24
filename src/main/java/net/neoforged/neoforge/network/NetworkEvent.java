@@ -33,14 +33,14 @@ public class NetworkEvent extends Event
     private final Context source;
     private final int loginIndex;
 
-    private NetworkEvent(final IForgeCustomPacketPayload payload, final Context source)
+    private NetworkEvent(final ICustomPacketPayloadWithBuffer payload, final Context source)
     {
         this.payload = payload.buffer();
         this.source = source;
         this.loginIndex = payload.packetIndex();
     }
 
-    private NetworkEvent(final IForgeCustomQueryPayload payload, final Context source)
+    private NetworkEvent(final ICustomQueryPayloadWithBuffer payload, final Context source)
     {
         this.payload = payload.buffer();
         this.source = source;
@@ -77,40 +77,40 @@ public class NetworkEvent extends Event
 
     public static class ServerCustomPayloadEvent extends NetworkEvent
     {
-        ServerCustomPayloadEvent(final IForgeCustomPacketPayload payload, final Context source) {
+        ServerCustomPayloadEvent(final ICustomPacketPayloadWithBuffer payload, final Context source) {
             super(payload, source);
         }
 
-        ServerCustomPayloadEvent(final IForgeCustomQueryPayload payload, final Context source) {
+        ServerCustomPayloadEvent(final ICustomQueryPayloadWithBuffer payload, final Context source) {
             super(payload, source);
         }
     }
     public static class ClientCustomPayloadEvent extends NetworkEvent
     {
-        ClientCustomPayloadEvent(final IForgeCustomQueryPayload payload, final Context source) {
+        ClientCustomPayloadEvent(final ICustomQueryPayloadWithBuffer payload, final Context source) {
             super(payload, source);
         }
-        ClientCustomPayloadEvent(final IForgeCustomPacketPayload payload, final Context source) {
+        ClientCustomPayloadEvent(final ICustomPacketPayloadWithBuffer payload, final Context source) {
             super(payload, source);
         }
     }
     public static class ServerCustomPayloadLoginEvent extends ServerCustomPayloadEvent {
-        ServerCustomPayloadLoginEvent(final IForgeCustomPacketPayload payload, final Context source)
+        ServerCustomPayloadLoginEvent(final ICustomPacketPayloadWithBuffer payload, final Context source)
         {
             super(payload, source);
         }
-        ServerCustomPayloadLoginEvent(final IForgeCustomQueryPayload payload, final Context source)
+        ServerCustomPayloadLoginEvent(final ICustomQueryPayloadWithBuffer payload, final Context source)
         {
             super(payload, source);
         }
     }
 
     public static class ClientCustomPayloadLoginEvent extends ClientCustomPayloadEvent {
-        ClientCustomPayloadLoginEvent(final IForgeCustomPacketPayload payload, final Context source)
+        ClientCustomPayloadLoginEvent(final ICustomPacketPayloadWithBuffer payload, final Context source)
         {
             super(payload, source);
         }
-        ClientCustomPayloadLoginEvent(final IForgeCustomQueryPayload payload, final Context source)
+        ClientCustomPayloadLoginEvent(final ICustomQueryPayloadWithBuffer payload, final Context source)
         {
             super(payload, source);
         }

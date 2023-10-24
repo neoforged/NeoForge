@@ -1,15 +1,17 @@
 --- a/net/minecraft/world/level/material/FluidState.java
 +++ b/net/minecraft/world/level/material/FluidState.java
-@@ -21,7 +21,7 @@
+@@ -20,8 +20,9 @@
+ import net.minecraft.world.level.block.state.properties.Property;
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.phys.shapes.VoxelShape;
++import net.neoforged.neoforge.common.extensions.IFluidStateExtension;
  
 -public final class FluidState extends StateHolder<Fluid, FluidState> {
-+public final class FluidState extends StateHolder<Fluid, FluidState> implements net.neoforged.neoforge.common.extensions.IForgeFluidState {
++public final class FluidState extends StateHolder<Fluid, FluidState> implements IFluidStateExtension {
     public static final Codec<FluidState> CODEC = codec(BuiltInRegistries.FLUID.byNameCodec(), Fluid::defaultFluidState).stable();
     public static final int AMOUNT_MAX = 9;
     public static final int AMOUNT_FULL = 8;
-@@ -113,6 +113,7 @@
+@@ -113,6 +114,7 @@
        return this.getType() == p_192918_;
     }
  

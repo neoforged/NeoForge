@@ -14,7 +14,7 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public interface IForgeAdvancementBuilder
+public interface IAdvancementBuilderExtension
 {
 
     private Advancement.Builder self()

@@ -13,7 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
-public interface IForgeDispensibleContainerItem
+public interface IDispensibleContainerItemExtension
 {
     private DispensibleContainerItem self()
     {

@@ -24,7 +24,7 @@ public enum LoginNetworkDirection implements INetworkDirection<LoginNetworkDirec
     LOGIN_TO_SERVER(NetworkEvent.ClientCustomPayloadLoginEvent::new, LogicalSide.CLIENT, ServerboundCustomQueryAnswerPacket.class, 1, (d, i, n) -> new ServerboundCustomQueryAnswerPacket(i, SimpleQueryPayload.outbound(d, i, n))),
     LOGIN_TO_CLIENT(NetworkEvent.ServerCustomPayloadLoginEvent::new, LogicalSide.SERVER, ClientboundCustomQueryPacket.class, 0, (d, i, n) -> new ClientboundCustomQueryPacket(i, SimpleQueryPayload.outbound(d, i, n)));
 
-    private final BiFunction<IForgeCustomQueryPayload, NetworkEvent.Context, NetworkEvent> eventSupplier;
+    private final BiFunction<ICustomQueryPayloadWithBuffer, NetworkEvent.Context, NetworkEvent> eventSupplier;
     private final LogicalSide logicalSide;
     private final Class<? extends Packet<?>> packetClass;
     private final int otherWay;
@@ -33,7 +33,7 @@ public enum LoginNetworkDirection implements INetworkDirection<LoginNetworkDirec
     private static final Reference2ReferenceArrayMap<Class<? extends Packet<?>>, LoginNetworkDirection> PACKET_LOOKUP = Stream.of(values()).
             collect(Collectors.toMap(LoginNetworkDirection::getPacketClass, Function.identity(), (m1, m2)->m1, Reference2ReferenceArrayMap::new));
 
-    private LoginNetworkDirection(BiFunction<IForgeCustomQueryPayload, NetworkEvent.Context, NetworkEvent> eventSupplier, LogicalSide logicalSide, Class<? extends Packet<?>> clazz, int i, Factory<?> factory)
+    private LoginNetworkDirection(BiFunction<ICustomQueryPayloadWithBuffer, NetworkEvent.Context, NetworkEvent> eventSupplier, LogicalSide logicalSide, Class<? extends Packet<?>> clazz, int i, Factory<?> factory)
     {
         this.eventSupplier = eventSupplier;
         this.logicalSide = logicalSide;
@@ -54,7 +54,7 @@ public enum LoginNetworkDirection implements INetworkDirection<LoginNetworkDirec
     public LoginNetworkDirection reply() {
         return LoginNetworkDirection.values()[this.otherWay];
     }
-    public NetworkEvent getEvent(final IForgeCustomQueryPayload buffer, final NetworkEvent.Context context) {
+    public NetworkEvent getEvent(final ICustomQueryPayloadWithBuffer buffer, final NetworkEvent.Context context) {
         return this.eventSupplier.apply(buffer, context);
     }
 

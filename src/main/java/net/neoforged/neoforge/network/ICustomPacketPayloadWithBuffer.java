@@ -12,7 +12,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 /**
  * Forge extension interface to deal with custom forge query payloads.
  */
-public interface IForgeCustomPacketPayload extends CustomPacketPayload {
+public interface ICustomPacketPayloadWithBuffer extends CustomPacketPayload {
 
     /**
      * The buffer that created the query payload.

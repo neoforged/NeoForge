@@ -10,7 +10,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 
-public interface IForgeAbstractMinecart
+public interface IAbstractMinecartExtension
 {
     public static float DEFAULT_MAX_SPEED_AIR_LATERAL = 0.4f;
     public static float DEFAULT_MAX_SPEED_AIR_VERTICAL = -1.0f;

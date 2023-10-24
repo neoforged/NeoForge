@@ -72,20 +72,20 @@ public class NetworkHooks
         return (Packet<ClientGamePacketListener>) NetworkConstants.playChannel.toVanillaPacket(new PlayMessages.SpawnEntity(entity), PlayNetworkDirection.PLAY_TO_CLIENT);
     }
 
-    public static boolean onCustomPayload(Packet<?> packet, final IForgeCustomPacketPayload payload, final Connection manager) {
+    public static boolean onCustomPayload(Packet<?> packet, final ICustomPacketPayloadWithBuffer payload, final Connection manager) {
         return NetworkRegistry.findTarget(payload.id()).
                 filter(ni->validateSideForProcessing(packet, payload, ni, manager)).
                 map(ni->ni.dispatch(payload.getDirection(packet), payload, manager)).orElse(Boolean.FALSE);
     }
 
 
-    public static boolean onCustomQuery(Packet<?> packet, final IForgeCustomQueryPayload payload, final Connection manager) {
+    public static boolean onCustomQuery(Packet<?> packet, final ICustomQueryPayloadWithBuffer payload, final Connection manager) {
         return NetworkRegistry.findTarget(payload.id()).
                 filter(ni->validateSideForProcessing(packet, payload, ni, manager)).
                 map(ni->ni.dispatch(payload.getDirection(packet), payload, manager)).orElse(Boolean.FALSE);
     }
 
-    private static boolean validateSideForProcessing(Packet<?> packet, final IForgeCustomPacketPayload payload, final NetworkInstance ni, final Connection manager) {
+    private static boolean validateSideForProcessing(Packet<?> packet, final ICustomPacketPayloadWithBuffer payload, final NetworkInstance ni, final Connection manager) {
         if (payload.getDirection(packet).getReceptionSide() != EffectiveSide.get()) {
             manager.disconnect(Component.literal("Illegal packet received, terminating connection"));
             return false;
@@ -93,7 +93,7 @@ public class NetworkHooks
         return true;
     }
 
-    private static boolean validateSideForProcessing(Packet<?> packet, final IForgeCustomQueryPayload payload, final NetworkInstance ni, final Connection manager) {
+    private static boolean validateSideForProcessing(Packet<?> packet, final ICustomQueryPayloadWithBuffer payload, final NetworkInstance ni, final Connection manager) {
         if (payload.getDirection(packet).getReceptionSide() != EffectiveSide.get()) {
             manager.disconnect(Component.literal("Illegal packet received, terminating connection"));
             return false;

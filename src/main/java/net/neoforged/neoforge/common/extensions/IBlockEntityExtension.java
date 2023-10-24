@@ -25,7 +25,7 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.capabilities.ICapabilitySerializable;
 import org.jetbrains.annotations.NotNull;
 
-public interface IForgeBlockEntity extends ICapabilitySerializable<CompoundTag>
+public interface IBlockEntityExtension extends ICapabilitySerializable<CompoundTag>
 {
     private BlockEntity self() { return (BlockEntity) this; }
 

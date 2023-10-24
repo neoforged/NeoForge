@@ -11,7 +11,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.ForgeMod;
 import net.neoforged.neoforge.fluids.FluidType;
 
-public interface IForgeLivingEntity extends IForgeEntity
+public interface IForgeLivingEntity extends IEntityExtension
 {
     default LivingEntity self()
     {
@@ -22,7 +22,7 @@ public interface IForgeLivingEntity extends IForgeEntity
     default boolean canSwimInFluidType(FluidType type)
     {
         if (type == ForgeMod.WATER_TYPE.get()) return !self().isSensitiveToWater();
-        else return IForgeEntity.super.canSwimInFluidType(type);
+        else return IEntityExtension.super.canSwimInFluidType(type);
     }
 
     /**

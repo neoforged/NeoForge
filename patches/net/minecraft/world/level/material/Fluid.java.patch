@@ -1,15 +1,17 @@
 --- a/net/minecraft/world/level/material/Fluid.java
 +++ b/net/minecraft/world/level/material/Fluid.java
-@@ -20,7 +20,7 @@
+@@ -19,8 +19,9 @@
+ import net.minecraft.world.level.block.state.StateDefinition;
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.phys.shapes.VoxelShape;
++import net.neoforged.neoforge.common.extensions.IFluidExtension;
  
 -public abstract class Fluid {
-+public abstract class Fluid implements net.neoforged.neoforge.common.extensions.IForgeFluid {
++public abstract class Fluid implements IFluidExtension {
     public static final IdMapper<FluidState> FLUID_STATE_REGISTRY = new IdMapper<>();
     protected final StateDefinition<Fluid, FluidState> stateDefinition;
     private FluidState defaultFluidState;
-@@ -100,6 +100,13 @@
+@@ -100,6 +101,13 @@
     }
  
     public abstract VoxelShape getShape(FluidState p_76137_, BlockGetter p_76138_, BlockPos p_76139_);

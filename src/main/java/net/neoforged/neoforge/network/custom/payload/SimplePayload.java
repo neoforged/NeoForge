@@ -8,9 +8,9 @@ package net.neoforged.neoforge.network.custom.payload;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.IForgeCustomPacketPayload;
+import net.neoforged.neoforge.network.ICustomPacketPayloadWithBuffer;
 
-public record SimplePayload(FriendlyByteBuf payload, ResourceLocation id, int packetIndex) implements IForgeCustomPacketPayload {
+public record SimplePayload(FriendlyByteBuf payload, ResourceLocation id, int packetIndex) implements ICustomPacketPayloadWithBuffer {
     public SimplePayload(byte[] payload, ResourceLocation id, int packetIndex) {
         this(new FriendlyByteBuf(Unpooled.wrappedBuffer(payload)), id, packetIndex);
     }

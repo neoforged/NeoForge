@@ -15,7 +15,7 @@ import net.minecraft.world.scores.Scoreboard;
 /**
  * Additional methods for {@link CommandSourceStack} so that commands and arguments can access various things without directly referencing using server specific classes
  */
-public interface IForgeCommandSourceStack
+public interface ICommandSourceStackExtension
 {
 
     private CommandSourceStack self()

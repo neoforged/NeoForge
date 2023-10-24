@@ -32,7 +32,7 @@ import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
-public interface IForgeEntity extends ICapabilitySerializable<CompoundTag>
+public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
 {
     private Entity self() { return (Entity) this; }
 

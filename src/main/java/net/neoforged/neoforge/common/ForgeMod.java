@@ -59,7 +59,7 @@ import net.neoforged.neoforge.common.data.ForgeBiomeTagsProvider;
 import net.neoforged.neoforge.common.data.ForgeFluidTagsProvider;
 import net.neoforged.neoforge.common.data.ForgeSpriteSourceProvider;
 import net.neoforged.neoforge.common.data.VanillaSoundDefinitionsProvider;
-import net.neoforged.neoforge.common.extensions.IForgeEntity;
+import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.extensions.IForgePlayer;
 import net.neoforged.neoforge.common.loot.CanToolPerformAction;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
@@ -165,7 +165,7 @@ public class ForgeMod
 
     /**
      * Step Height Addition modifies the amount of blocks an entity may walk up without jumping.
-     * @see IForgeEntity#getStepHeight()
+     * @see IEntityExtension#getStepHeight()
      */
     public static final RegistryObject<Attribute> STEP_HEIGHT = ATTRIBUTES.register("step_height", () -> new RangedAttribute("forge.step_height", 0.0D, -512.0D, 512.0D).setSyncable(true));
 

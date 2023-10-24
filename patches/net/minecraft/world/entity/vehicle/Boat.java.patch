@@ -1,15 +1,34 @@
 --- a/net/minecraft/world/entity/vehicle/Boat.java
 +++ b/net/minecraft/world/entity/vehicle/Boat.java
-@@ -52,7 +52,7 @@
+@@ -16,7 +16,6 @@
+ import net.minecraft.network.syncher.SynchedEntityData;
+ import net.minecraft.sounds.SoundEvent;
+ import net.minecraft.sounds.SoundEvents;
+-import net.minecraft.tags.FluidTags;
+ import net.minecraft.util.ByIdMap;
+ import net.minecraft.util.Mth;
+ import net.minecraft.util.StringRepresentable;
+@@ -30,7 +29,6 @@
+ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.MoverType;
+ import net.minecraft.world.entity.Pose;
+-import net.minecraft.world.entity.VariantHolder;
+ import net.minecraft.world.entity.animal.Animal;
+ import net.minecraft.world.entity.animal.WaterAnimal;
+ import net.minecraft.world.entity.player.Player;
+@@ -50,9 +48,10 @@
+ import net.minecraft.world.phys.shapes.BooleanOp;
+ import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
++import net.neoforged.neoforge.common.extensions.IBoatExtension;
  import org.joml.Vector3f;
  
 -public class Boat extends Entity implements VariantHolder<Boat.Type> {
-+public class Boat extends Entity implements net.neoforged.neoforge.common.extensions.IForgeBoat {
++public class Boat extends Entity implements IBoatExtension {
     private static final EntityDataAccessor<Integer> DATA_ID_HURT = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_ID_HURTDIR = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> DATA_ID_DAMAGE = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.FLOAT);
-@@ -502,7 +502,7 @@
+@@ -502,7 +501,7 @@
              for(int i2 = i1; i2 < j1; ++i2) {
                 blockpos$mutableblockpos.set(l1, k1, i2);
                 FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
@@ -18,7 +37,7 @@
                    f = Math.max(f, fluidstate.getHeight(this.level(), blockpos$mutableblockpos));
                 }
  
-@@ -548,7 +548,7 @@
+@@ -548,7 +547,7 @@
                             voxelshape,
                             BooleanOp.AND
                          )) {
@@ -27,7 +46,7 @@
                          ++k1;
                       }
                    }
-@@ -577,7 +577,7 @@
+@@ -577,7 +576,7 @@
              for(int i2 = i1; i2 < j1; ++i2) {
                 blockpos$mutableblockpos.set(k1, l1, i2);
                 FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
@@ -36,7 +55,7 @@
                    float f = (float)l1 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos);
                    this.waterLevel = Math.max((double)f, this.waterLevel);
                    flag |= aabb.minY < (double)f;
-@@ -607,7 +607,7 @@
+@@ -607,7 +606,7 @@
              for(int i2 = i1; i2 < j1; ++i2) {
                 blockpos$mutableblockpos.set(k1, l1, i2);
                 FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
@@ -45,7 +64,7 @@
                    && d0 < (double)((float)blockpos$mutableblockpos.getY() + fluidstate.getHeight(this.level(), blockpos$mutableblockpos))) {
                    if (!fluidstate.isSource()) {
                       return Boat.Status.UNDER_FLOWING_WATER;
-@@ -815,7 +815,7 @@
+@@ -815,7 +814,7 @@
              }
  
              this.resetFallDistance();
@@ -54,7 +73,7 @@
              this.fallDistance -= (float)p_38307_;
           }
        }
-@@ -871,7 +871,7 @@
+@@ -871,7 +870,7 @@
  
     @Override
     protected boolean canAddPassenger(Entity p_38390_) {
@@ -63,7 +82,7 @@
     }
  
     protected int getMaxPassengers() {
-@@ -900,6 +900,16 @@
+@@ -900,6 +899,16 @@
     @Override
     public boolean isUnderWater() {
        return this.status == Boat.Status.UNDER_WATER || this.status == Boat.Status.UNDER_FLOWING_WATER;

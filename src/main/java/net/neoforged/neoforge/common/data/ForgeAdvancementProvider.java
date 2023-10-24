@@ -11,7 +11,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.extensions.IForgeAdvancementBuilder;
+import net.neoforged.neoforge.common.extensions.IAdvancementBuilderExtension;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -47,7 +47,7 @@ public class ForgeAdvancementProvider extends AdvancementProvider
     {
         /**
          * A method used to generate advancements for a mod. Advancements should be
-         * built via {@link IForgeAdvancementBuilder#save(Consumer, ResourceLocation, ExistingFileHelper)}.
+         * built via {@link IAdvancementBuilderExtension#save(Consumer, ResourceLocation, ExistingFileHelper)}.
          *
          * @param registries a lookup for registries and their objects
          * @param saver a consumer used to write advancements to a file

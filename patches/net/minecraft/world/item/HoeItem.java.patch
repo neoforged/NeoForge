@@ -1,19 +1,22 @@
 --- a/net/minecraft/world/item/HoeItem.java
 +++ b/net/minecraft/world/item/HoeItem.java
-@@ -22,6 +22,12 @@
+@@ -20,8 +20,15 @@
+ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.gameevent.GameEvent;
++import net.neoforged.neoforge.common.extensions.IBlockExtension;
  
  public class HoeItem extends DiggerItem {
 +   /**
 +    * @deprecated Forge: This map is patched out of vanilla code.
 +    * Listen to {@link net.neoforged.neoforge.event.level.BlockEvent.BlockToolModificationEvent}
-+    * or override {@link net.neoforged.neoforge.common.extensions.IForgeBlock#getToolModifiedState(BlockState, UseOnContext, net.neoforged.neoforge.common.ToolAction, boolean)}.
++    * or override {@link IBlockExtension#getToolModifiedState(BlockState, UseOnContext, net.neoforged.neoforge.common.ToolAction, boolean)}.
 +    */
 +   @Deprecated
     protected static final Map<Block, Pair<Predicate<UseOnContext>, Consumer<UseOnContext>>> TILLABLES = Maps.newHashMap(
        ImmutableMap.of(
           Blocks.GRASS_BLOCK,
-@@ -45,7 +51,8 @@
+@@ -45,7 +52,8 @@
     public InteractionResult useOn(UseOnContext p_41341_) {
        Level level = p_41341_.getLevel();
        BlockPos blockpos = p_41341_.getClickedPos();
@@ -23,7 +26,7 @@
        if (pair == null) {
           return InteractionResult.PASS;
        } else {
-@@ -85,5 +92,10 @@
+@@ -85,5 +93,10 @@
  
     public static boolean onlyIfAirAbove(UseOnContext p_150857_) {
        return p_150857_.getClickedFace() != Direction.DOWN && p_150857_.getLevel().getBlockState(p_150857_.getClickedPos().above()).isAir();

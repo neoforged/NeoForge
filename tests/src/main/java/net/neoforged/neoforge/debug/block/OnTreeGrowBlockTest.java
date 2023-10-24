@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.common.IPlantable;
-import net.neoforged.neoforge.common.extensions.IForgeBlockState;
+import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -30,7 +30,7 @@ import net.neoforged.neoforge.registries.RegistryObject;
 import java.util.function.BiConsumer;
 
 /**
- * A test case used to ensure that {@link IForgeBlockState#onTreeGrow(LevelReader, BiConsumer, RandomSource, BlockPos, TreeConfiguration)}
+ * A test case used to ensure that {@link IBlockStateExtension#onTreeGrow(LevelReader, BiConsumer, RandomSource, BlockPos, TreeConfiguration)}
  * works properly, using a custom grass block that should revert to its custom dirt form after a tree grows on
  * top of it instead of turning to dirt.
  */

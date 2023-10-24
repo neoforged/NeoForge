@@ -14,7 +14,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public interface IForgeBaseRailBlock
+public interface IBaseRailBlockExtension
 {
 
     /**

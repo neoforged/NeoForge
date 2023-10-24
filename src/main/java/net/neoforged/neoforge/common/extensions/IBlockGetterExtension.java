@@ -14,7 +14,7 @@ import net.minecraft.world.level.chunk.*;
 import net.neoforged.neoforge.client.model.data.ModelDataManager;
 import org.jetbrains.annotations.Nullable;
 
-public interface IForgeBlockGetter
+public interface IBlockGetterExtension
 {
     private BlockGetter self() { return (BlockGetter) this; }
 

@@ -13,7 +13,7 @@ import net.minecraft.network.protocol.login.custom.CustomQueryPayload;
 /**
  * Forge extension interface to deal with custom forge query payloads.
  */
-public interface IForgeCustomQueryPayload extends CustomQueryPayload, CustomQueryAnswerPayload {
+public interface ICustomQueryPayloadWithBuffer extends CustomQueryPayload, CustomQueryAnswerPayload {
 
     /**
      * The buffer that created the query payload.

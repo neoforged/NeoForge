@@ -58,7 +58,7 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("deprecation")
-public interface IForgeBlock
+public interface IBlockExtension
 {
     private Block self()
     {
@@ -105,7 +105,7 @@ public interface IForgeBlock
      *     </li>
      *     <li>
      *         This method may be called on a worker thread and must therefore use
-     *         {@link IForgeBlockGetter#getExistingBlockEntity(BlockPos)} to retrieve the {@link BlockEntity}
+     *         {@link IBlockGetterExtension#getExistingBlockEntity(BlockPos)} to retrieve the {@link BlockEntity}
      *         at the given position
      *     </li>
      * </ul>
@@ -866,7 +866,7 @@ public interface IForgeBlock
      * <p>
      * WARNING: This method is likely to be called from a worker thread! If you want to retrieve a
      *          {@link net.minecraft.world.level.block.entity.BlockEntity} from the given level, make sure to use
-     *          {@link IForgeBlockGetter#getExistingBlockEntity(BlockPos)} to not
+     *          {@link IBlockGetterExtension#getExistingBlockEntity(BlockPos)} to not
      *          accidentally create a new or delete an old {@link net.minecraft.world.level.block.entity.BlockEntity}
      *          off of the main thread as this would cause a write operation to the given {@link BlockGetter} and cause
      *          a CME in the process. Any other direct or indirect write operation to the {@link BlockGetter} will have
@@ -885,7 +885,7 @@ public interface IForgeBlock
 
     /**
      * Whether this block allows a neighboring block to hide the face of this block it touches.
-     * If this returns true, {@link IForgeBlockState#hidesNeighborFace(BlockGetter, BlockPos, BlockState, Direction)}
+     * If this returns true, {@link IBlockStateExtension#hidesNeighborFace(BlockGetter, BlockPos, BlockState, Direction)}
      * will be called on the neighboring block.
      */
     default boolean supportsExternalFaceHiding(BlockState state)
@@ -966,7 +966,7 @@ public interface IForgeBlock
      * @param queryState The state of the block that is querying the appearance, or {@code null} if not applicable
      * @param queryPos   The position of the block that is querying the appearance, or {@code null} if not applicable
      * @return The appearance of this block on the given side. By default, the current state
-     * @see IForgeBlockState#getAppearance(BlockAndTintGetter, BlockPos, Direction, BlockState, BlockPos)
+     * @see IBlockStateExtension#getAppearance(BlockAndTintGetter, BlockPos, Direction, BlockState, BlockPos)
      */
     default BlockState getAppearance(BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side, @Nullable BlockState queryState, @Nullable BlockPos queryPos)
     {

@@ -46,7 +46,7 @@ import net.neoforged.neoforge.event.ForgeEventFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface IForgeBlockState
+public interface IBlockStateExtension
 {
     private BlockState self()
     {
@@ -708,7 +708,7 @@ public interface IForgeBlockState
 
     /**
      * Whether this block allows a neighboring block to hide the face of this block it touches.
-     * If this returns true, {@link IForgeBlockState#hidesNeighborFace(BlockGetter, BlockPos, BlockState, Direction)}
+     * If this returns true, {@link IBlockStateExtension#hidesNeighborFace(BlockGetter, BlockPos, BlockState, Direction)}
      * will be called on the neighboring block.
      */
     default boolean supportsExternalFaceHiding()
@@ -761,7 +761,7 @@ public interface IForgeBlockState
      * @param queryState The state of the block that is querying the appearance, or {@code null} if not applicable
      * @param queryPos   The position of the block that is querying the appearance, or {@code null} if not applicable
      * @return The appearance of this block from the given side
-     * @see IForgeBlock#getAppearance(BlockState, BlockAndTintGetter, BlockPos, Direction, BlockState, BlockPos)
+     * @see IBlockExtension#getAppearance(BlockState, BlockAndTintGetter, BlockPos, Direction, BlockState, BlockPos)
      */
     default BlockState getAppearance(BlockAndTintGetter level, BlockPos pos, Direction side, @Nullable BlockState queryState, @Nullable BlockPos queryPos)
     {

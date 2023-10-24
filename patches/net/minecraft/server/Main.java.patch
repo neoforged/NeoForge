@@ -16,7 +16,7 @@
 +      optionparser.accepts("allowUpdates").withRequiredArg().ofType(Boolean.class).defaultsTo(Boolean.TRUE); // Forge: allow mod updates to proceed
 +      optionparser.accepts("gameDir").withRequiredArg().ofType(File.class).defaultsTo(new File(".")); //Forge: Consume this argument, we use it in the launcher, and the client side.
 +      final OptionSpec<net.minecraft.core.BlockPos> spawnPosOpt;
-+      boolean gametestEnabled = Boolean.getBoolean("neoforge.gameTestServer");
++      boolean gametestEnabled = Boolean.getBoolean("forge.gameTestServer");
 +      if (gametestEnabled) {
 +         spawnPosOpt = optionparser.accepts("spawnPos").withRequiredArg().withValuesConvertedBy(new net.neoforged.neoforge.gametest.BlockPosValueConverter()).defaultsTo(new net.minecraft.core.BlockPos(0, 60, 0));
 +      } else {

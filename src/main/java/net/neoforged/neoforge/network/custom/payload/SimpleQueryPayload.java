@@ -8,12 +8,12 @@ package net.neoforged.neoforge.network.custom.payload;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.IForgeCustomQueryPayload;
+import net.neoforged.neoforge.network.ICustomQueryPayloadWithBuffer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public final class SimpleQueryPayload implements IForgeCustomQueryPayload {
+public final class SimpleQueryPayload implements ICustomQueryPayloadWithBuffer {
     private final FriendlyByteBuf payload;
     private final int packetIndex;
     private final ResourceLocation id;

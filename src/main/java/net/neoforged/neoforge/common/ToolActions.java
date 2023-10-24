@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.common;
 
 import com.google.common.collect.Sets;
-import net.neoforged.neoforge.common.extensions.IForgeBlock;
+import net.neoforged.neoforge.common.extensions.IBlockExtension;
 import net.neoforged.neoforge.common.extensions.IForgeItem;
 
 import java.util.Set;
@@ -46,22 +46,22 @@ public class ToolActions
     public static final ToolAction SHEARS_DIG = ToolAction.get("shears_dig");
 
     /**
-     *  Passed onto {@link IForgeBlock#getToolModifiedState} when an axe wants to strip a log
+     *  Passed onto {@link IBlockExtension#getToolModifiedState} when an axe wants to strip a log
      */
     public static final ToolAction AXE_STRIP = ToolAction.get("axe_strip");
 
     /**
-     *  Passed onto {@link IForgeBlock#getToolModifiedState} when an axe wants to scrape oxidization off copper
+     *  Passed onto {@link IBlockExtension#getToolModifiedState} when an axe wants to scrape oxidization off copper
      */
     public static final ToolAction AXE_SCRAPE = ToolAction.get("axe_scrape");
 
     /**
-     *  Passed onto {@link IForgeBlock#getToolModifiedState} when an axe wants to remove wax out of copper
+     *  Passed onto {@link IBlockExtension#getToolModifiedState} when an axe wants to remove wax out of copper
      */
     public static final ToolAction AXE_WAX_OFF = ToolAction.get("axe_wax_off");
 
     /**
-     *  Passed onto {@link IForgeBlock#getToolModifiedState} when a shovel wants to turn dirt into path
+     *  Passed onto {@link IBlockExtension#getToolModifiedState} when a shovel wants to turn dirt into path
      */
     public static final ToolAction SHOVEL_FLATTEN = ToolAction.get("shovel_flatten");
 
@@ -91,7 +91,7 @@ public class ToolActions
     public static final ToolAction SHEARS_DISARM = ToolAction.get("shears_disarm");
 
     /**
-    *  Passed onto {@link IForgeBlock#getToolModifiedState} when a hoe wants to turn dirt into soil
+    *  Passed onto {@link IBlockExtension#getToolModifiedState} when a hoe wants to turn dirt into soil
     */
     public static final ToolAction HOE_TILL = ToolAction.get("till");
 

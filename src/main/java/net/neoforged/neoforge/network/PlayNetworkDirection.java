@@ -23,7 +23,7 @@ public enum PlayNetworkDirection implements INetworkDirection<PlayNetworkDirecti
     PLAY_TO_SERVER(NetworkEvent.ClientCustomPayloadEvent::new, LogicalSide.CLIENT, ServerboundCustomPayloadPacket.class, 1, (d, i, n) -> new ServerboundCustomPayloadPacket(SimplePayload.outbound(d, i, n))),
     PLAY_TO_CLIENT(NetworkEvent.ServerCustomPayloadEvent::new, LogicalSide.SERVER, ClientboundCustomPayloadPacket.class, 0, (d, i, n) -> new ClientboundCustomPayloadPacket(SimplePayload.outbound(d, i, n)));
 
-    private final BiFunction<IForgeCustomPacketPayload, NetworkEvent.Context, NetworkEvent> eventSupplier;
+    private final BiFunction<ICustomPacketPayloadWithBuffer, NetworkEvent.Context, NetworkEvent> eventSupplier;
     private final LogicalSide logicalSide;
     private final Class<? extends Packet<?>> packetClass;
     private final int otherWay;
@@ -36,7 +36,7 @@ public enum PlayNetworkDirection implements INetworkDirection<PlayNetworkDirecti
                 collect(Collectors.toMap(PlayNetworkDirection::getPacketClass, Function.identity(), (m1, m2)->m1, Reference2ReferenceArrayMap::new));
     }
 
-    private PlayNetworkDirection(BiFunction<IForgeCustomPacketPayload, NetworkEvent.Context, NetworkEvent> eventSupplier, LogicalSide logicalSide, Class<? extends Packet<?>> clazz, int i, Factory<?> factory)
+    private PlayNetworkDirection(BiFunction<ICustomPacketPayloadWithBuffer, NetworkEvent.Context, NetworkEvent> eventSupplier, LogicalSide logicalSide, Class<? extends Packet<?>> clazz, int i, Factory<?> factory)
     {
         this.eventSupplier = eventSupplier;
         this.logicalSide = logicalSide;
@@ -58,7 +58,7 @@ public enum PlayNetworkDirection implements INetworkDirection<PlayNetworkDirecti
     public PlayNetworkDirection reply() {
         return PlayNetworkDirection.values()[this.otherWay];
     }
-    public NetworkEvent getEvent(final IForgeCustomPacketPayload buffer, final NetworkEvent.Context manager) {
+    public NetworkEvent getEvent(final ICustomPacketPayloadWithBuffer buffer, final NetworkEvent.Context manager) {
         return this.eventSupplier.apply(buffer, manager);
     }
 
