@@ -104,6 +104,7 @@ public final class TagConventionLogWarning
             createMapEntry(Registries.BLOCK, "glass_panes/white", Tags.Blocks.GLASS_PANES),
             createMapEntry(Registries.BLOCK, "glass_panes/yellow", Tags.Blocks.GLASS_PANES),
             createMapEntry(Registries.BLOCK, "gravel", Tags.Blocks.GRAVEL),
+            createMapEntry(Registries.BLOCK, "heads", Tags.Blocks.HEADS),
             createMapEntry(Registries.BLOCK, "netherrack", Tags.Blocks.NETHERRACK),
             createMapEntry(Registries.BLOCK, "obsidian", Tags.Blocks.OBSIDIAN),
             createMapEntry(Registries.BLOCK, "ore_bearing_ground/deepslate", Tags.Blocks.ORE_BEARING_GROUND_DEEPSLATE),

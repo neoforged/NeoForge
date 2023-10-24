@@ -111,6 +111,10 @@ public class Tags
         public static final TagKey<Block> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
 
         public static final TagKey<Block> GRAVEL = tag("gravel");
+        /**
+         * Tag that holds all head based blocks such as Skeleton Skull or Player Head.
+         */
+        public static final TagKey<Block> HEADS = tag("heads");
         public static final TagKey<Block> NETHERRACK = tag("netherrack");
         public static final TagKey<Block> OBSIDIAN = tag("obsidian");
         /**
@@ -365,6 +369,13 @@ public class Tags
 
         public static final TagKey<Item> GRAVEL = tag("gravel");
         public static final TagKey<Item> GUNPOWDER = tag("gunpowder");
+        /**
+         * Tag that holds all head based blocks such as Skeleton Skull or Player Head.
+         * <p></p>
+         * Note: If you don't want Player Head in recipe, use custom ingredients to do tag exclusions to exclude Player Head.
+         * See {@link net.minecraftforge.common.crafting.AbstractIngredient} children classes for various
+         * custom ingredients available that can also be used in data generation.
+         */
         public static final TagKey<Item> HEADS = tag("heads");
         public static final TagKey<Item> INGOTS = tag("ingots");
         public static final TagKey<Item> INGOTS_BRICK = tag("ingots/brick");
