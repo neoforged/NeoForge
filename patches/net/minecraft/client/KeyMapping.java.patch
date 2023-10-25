@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class KeyMapping implements Comparable<KeyMapping> {
-+public class KeyMapping implements Comparable<KeyMapping>, net.neoforged.neoforge.client.extensions.IForgeKeyMapping {
++public class KeyMapping implements Comparable<KeyMapping>, net.neoforged.neoforge.client.extensions.IKeyMappingExtension {
     private static final Map<String, KeyMapping> ALL = Maps.newHashMap();
 -   private static final Map<InputConstants.Key, KeyMapping> MAP = Maps.newHashMap();
 +   private static final net.neoforged.neoforge.client.settings.KeyMappingLookup MAP = new net.neoforged.neoforge.client.settings.KeyMappingLookup();

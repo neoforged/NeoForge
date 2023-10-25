@@ -12,9 +12,9 @@ import net.neoforged.neoforge.client.ForgeHooksClient;
 import java.util.Locale;
 
 /**
- * Extension interface for {@link IForgeMinecraft}.
+ * Extension interface for {@link Minecraft}.
  */
-public interface IForgeMinecraft
+public interface IMinecraftExtension
 {
     private Minecraft self()
     {

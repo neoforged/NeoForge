@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public interface ModelBaker {
-+public interface ModelBaker extends net.neoforged.neoforge.client.extensions.IForgeModelBaker {
++public interface ModelBaker extends net.neoforged.neoforge.client.extensions.IModelBakerExtension {
     UnbakedModel getModel(ResourceLocation p_252194_);
  
 +   /**

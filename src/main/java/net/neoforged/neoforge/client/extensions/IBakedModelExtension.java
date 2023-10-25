@@ -28,9 +28,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Extension interface for {@link IForgeBakedModel}.
+ * Extension interface for {@link BakedModel}.
  */
-public interface IForgeBakedModel
+public interface IBakedModelExtension
 {
     private BakedModel self()
     {

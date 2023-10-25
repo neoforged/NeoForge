@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements WindowEventHandler {
-+public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements WindowEventHandler, net.neoforged.neoforge.client.extensions.IForgeMinecraft {
++public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements WindowEventHandler, net.neoforged.neoforge.client.extensions.IMinecraftExtension {
     static Minecraft instance;
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final boolean ON_OSX = Util.getPlatform() == Util.OS.OSX;

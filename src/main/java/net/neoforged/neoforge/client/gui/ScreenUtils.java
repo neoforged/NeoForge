@@ -14,14 +14,14 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.resources.ResourceLocation;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.neoforged.neoforge.client.extensions.IForgeGuiGraphics;
+import net.neoforged.neoforge.client.extensions.IGuiGraphicsExtension;
 import org.joml.Matrix4f;
 
 /**
  * This class provides several methods and constants used by the Config GUI classes.
  *
  * @author bspkrs
- * @deprecated Use extension methods in {@link IForgeGuiGraphics} instead
+ * @deprecated Use extension methods in {@link IGuiGraphicsExtension} instead
  */
 @Deprecated(forRemoval = true)
 public class ScreenUtils

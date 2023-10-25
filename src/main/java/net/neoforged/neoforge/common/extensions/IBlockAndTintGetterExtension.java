@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.extensions;
+package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -11,7 +11,7 @@ import net.minecraft.world.level.BlockAndTintGetter;
 /**
  * Extension interface for {@link BlockAndTintGetter}.
  */
-public interface IForgeBlockAndTintGetter
+public interface IBlockAndTintGetterExtension
 {
     private BlockAndTintGetter self()
     {

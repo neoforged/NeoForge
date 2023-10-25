@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 /**
  * Extension interface for {@link GuiGraphics}.
  */
-public interface IForgeGuiGraphics
+public interface IGuiGraphicsExtension
 {
     private GuiGraphics self()
     {

@@ -16,7 +16,7 @@ import org.joml.Vector3f;
 /**
  * Extension interface for {@link DimensionSpecialEffects}.
  */
-public interface IForgeDimensionSpecialEffects
+public interface IDimensionSpecialEffectsExtension
 {
     private DimensionSpecialEffects self()
     {

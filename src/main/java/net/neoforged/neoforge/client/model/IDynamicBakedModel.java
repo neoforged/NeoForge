@@ -11,7 +11,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.extensions.IForgeBakedModel;
+import net.neoforged.neoforge.client.extensions.IBakedModelExtension;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Convenience interface with default implementation of {@link IForgeBakedModel#getQuads(BlockState, Direction, RandomSource, ModelData, RenderType)}.
+ * Convenience interface with default implementation of {@link IBakedModelExtension#getQuads(BlockState, Direction, RandomSource, ModelData, RenderType)}.
  */
 public interface IDynamicBakedModel extends BakedModel
 {

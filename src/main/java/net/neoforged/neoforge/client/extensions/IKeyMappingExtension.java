@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Extension interface for {@link KeyMapping}.
  */
-public interface IForgeKeyMapping
+public interface IKeyMappingExtension
 {
     private KeyMapping self()
     {

@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class PoseStack {
-+public class PoseStack implements net.neoforged.neoforge.client.extensions.IForgePoseStack {
++public class PoseStack implements net.neoforged.neoforge.client.extensions.IPoseStackExtension {
     private final Deque<PoseStack.Pose> poseStack = Util.make(Queues.newArrayDeque(), p_85848_ -> {
        Matrix4f matrix4f = new Matrix4f();
        Matrix3f matrix3f = new Matrix3f();

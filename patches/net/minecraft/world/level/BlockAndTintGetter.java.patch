@@ -5,7 +5,7 @@
  import net.minecraft.world.level.lighting.LevelLightEngine;
  
 -public interface BlockAndTintGetter extends BlockGetter {
-+public interface BlockAndTintGetter extends BlockGetter, net.neoforged.neoforge.client.extensions.IForgeBlockAndTintGetter {
++public interface BlockAndTintGetter extends BlockGetter, net.neoforged.neoforge.common.extensions.IBlockAndTintGetterExtension {
     float getShade(Direction p_45522_, boolean p_45523_);
  
     LevelLightEngine getLightEngine();

@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 /**
  * Extension interface for {@link VertexConsumer}.
  */
-public interface IForgeVertexConsumer
+public interface IVertexConsumerExtension
 {
     private VertexConsumer self()
     {
