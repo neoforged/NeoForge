@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.RegisterRecipeBookCategoriesEvent;
 import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.common.extensions.IForgeMenuType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -46,7 +46,7 @@ public class RecipeBookExtensionTest
 
     public static final DeferredRegister<MenuType<?>> MENU_TYPE = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MOD_ID);
     public static final RegistryObject<MenuType<RecipeBookTestMenu>> RECIPE_BOOK_TEST_MENU_TYPE =
-            MENU_TYPE.register("test_recipe_menu", () -> IForgeMenuType.create(RecipeBookTestMenu::new));
+            MENU_TYPE.register("test_recipe_menu", () -> IMenuTypeExtension.create(RecipeBookTestMenu::new));
 
     public static final DeferredRegister<RecipeType<?>> RECIPE_TYPE = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, MOD_ID);
     public static final RegistryObject<RecipeType<RecipeBookTestRecipe>> RECIPE_BOOK_TEST_RECIPE_TYPE = RECIPE_TYPE.register("test_recipe", () -> RecipeType.simple(getId("test_recipe")));

@@ -11,7 +11,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.neoforge.resource.DelegatingPackResources;
 
-public interface IForgePackResources
+public interface IPackResourcesExtension
 {
     /**
      * {@return {@code true} if the pack should be hidden from any user interfaces}

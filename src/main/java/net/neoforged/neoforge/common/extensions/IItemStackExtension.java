@@ -43,7 +43,7 @@ import java.util.Objects;
 /*
  * Extension added to ItemStack that bounces to ItemSack sensitive Item methods. Typically this is just for convince.
  */
-public interface IForgeItemStack extends ICapabilitySerializable<CompoundTag>
+public interface IItemStackExtension extends ICapabilitySerializable<CompoundTag>
 {
     // Helpers for accessing Item data
     private ItemStack self()
@@ -545,7 +545,7 @@ public interface IForgeItemStack extends ICapabilitySerializable<CompoundTag>
 
     /**
      * Get the food properties for this item.
-     * This is a bouncer for easier use of {@link IForgeItem#getFoodProperties(ItemStack, LivingEntity)}
+     * This is a bouncer for easier use of {@link IItemExtension#getFoodProperties(ItemStack, LivingEntity)}
      *
      * The @Nullable annotation was only added, due to the default method, also being @Nullable.
      * Use this with a grain of salt, as if you return null here and true at {@link Item#isEdible()}, NPEs will occur!

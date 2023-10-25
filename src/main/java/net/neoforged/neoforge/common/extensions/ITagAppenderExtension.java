@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 
-public interface IForgeTagAppender<T>
+public interface ITagAppenderExtension<T>
 {
     private TagsProvider.TagAppender<T> self() {
         return (TagsProvider.TagAppender<T>) this;

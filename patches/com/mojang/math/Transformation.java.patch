@@ -5,7 +5,7 @@
  import org.joml.Vector3f;
  
 -public final class Transformation {
-+public final class Transformation implements net.neoforged.neoforge.common.extensions.IForgeTransformation {
++public final class Transformation implements net.neoforged.neoforge.common.extensions.ITransformationExtension {
     private final Matrix4f matrix;
     public static final Codec<Transformation> CODEC = RecordCodecBuilder.create(
        p_269604_ -> p_269604_.group(

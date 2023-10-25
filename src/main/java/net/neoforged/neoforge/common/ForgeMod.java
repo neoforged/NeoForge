@@ -60,7 +60,7 @@ import net.neoforged.neoforge.common.data.ForgeFluidTagsProvider;
 import net.neoforged.neoforge.common.data.ForgeSpriteSourceProvider;
 import net.neoforged.neoforge.common.data.VanillaSoundDefinitionsProvider;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
-import net.neoforged.neoforge.common.extensions.IForgePlayer;
+import net.neoforged.neoforge.common.extensions.IPlayerExtension;
 import net.neoforged.neoforge.common.loot.CanToolPerformAction;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
 import net.neoforged.neoforge.common.world.BiomeModifier;
@@ -149,17 +149,17 @@ public class ForgeMod
 
     /**
      * Reach Distance represents the distance at which a player may interact with the world.  The default is 4.5 blocks.  Players in creative mode have an additional 0.5 blocks of block reach.
-     * @see IForgePlayer#getBlockReach()
-     * @see IForgePlayer#canReach(BlockPos, double)
+     * @see IPlayerExtension#getBlockReach()
+     * @see IPlayerExtension#canReach(BlockPos, double)
      */
     public static final RegistryObject<Attribute> BLOCK_REACH = ATTRIBUTES.register("block_reach", () -> new RangedAttribute("forge.block_reach", 4.5D, 0.0D, 1024.0D).setSyncable(true));
 
     /**
      * Attack Range represents the distance at which a player may attack an entity.  The default is 3 blocks.  Players in creative mode have an additional 3 blocks of entity reach.
      * The default of 3.0 is technically considered a bug by Mojang - see MC-172289 and MC-92484. However, updating this value would allow for longer-range attacks on vanilla servers, which makes some people mad.
-     * @see IForgePlayer#getEntityReach()
-     * @see IForgePlayer#canReach(Entity, double)
-     * @see IForgePlayer#canReach(Vec3, double)
+     * @see IPlayerExtension#getEntityReach()
+     * @see IPlayerExtension#canReach(Entity, double)
+     * @see IPlayerExtension#canReach(Vec3, double)
      */
     public static final RegistryObject<Attribute> ENTITY_REACH = ATTRIBUTES.register("entity_reach", () -> new RangedAttribute("forge.entity_reach", 3.0D, 0.0D, 1024.0D).setSyncable(true));
 

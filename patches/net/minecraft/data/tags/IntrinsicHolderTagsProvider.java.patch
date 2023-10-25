@@ -72,7 +72,7 @@
     }
  
 -   public static class IntrinsicTagAppender<T> extends TagsProvider.TagAppender<T> {
-+   public static class IntrinsicTagAppender<T> extends TagsProvider.TagAppender<T> implements net.neoforged.neoforge.common.extensions.IForgeIntrinsicHolderTagAppender<T> {
++   public static class IntrinsicTagAppender<T> extends TagsProvider.TagAppender<T> implements net.neoforged.neoforge.common.extensions.IIntrinsicHolderTagAppenderExtension<T> {
        private final Function<T, ResourceKey<T>> keyExtractor;
  
 -      IntrinsicTagAppender(TagBuilder p_256108_, Function<T, ResourceKey<T>> p_256433_) {

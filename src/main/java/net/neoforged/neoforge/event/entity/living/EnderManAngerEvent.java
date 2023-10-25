@@ -7,12 +7,12 @@ package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.extensions.IForgeItem;
+import net.neoforged.neoforge.common.extensions.IItemExtension;
 import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * This event is fired on the forge bus before an Enderman detects that a player is looking at them.
- * It will not be fired if the detection is already prevented by {@link IForgeItem#isEnderMask}
+ * It will not be fired if the detection is already prevented by {@link IItemExtension#isEnderMask}
  * <p>
  * This event is {@link ICancellableEvent}.
  * If this event is canceled, the Enderman will not target the player.

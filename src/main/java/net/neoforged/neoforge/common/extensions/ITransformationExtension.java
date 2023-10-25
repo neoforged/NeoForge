@@ -15,7 +15,7 @@ import org.joml.Vector4f;
 /**
  * Extension interface for {@link Transformation}.
  */
-public interface IForgeTransformation
+public interface ITransformationExtension
 {
     private Transformation self()
     {

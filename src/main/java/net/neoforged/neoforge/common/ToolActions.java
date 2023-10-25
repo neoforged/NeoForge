@@ -7,7 +7,7 @@ package net.neoforged.neoforge.common;
 
 import com.google.common.collect.Sets;
 import net.neoforged.neoforge.common.extensions.IBlockExtension;
-import net.neoforged.neoforge.common.extensions.IForgeItem;
+import net.neoforged.neoforge.common.extensions.IItemExtension;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -68,7 +68,7 @@ public class ToolActions
     /**
      *  Used during player attack to figure out if a sweep attack should be performed
      *  
-     *  @see IForgeItem#getSweepHitBox
+     *  @see IItemExtension#getSweepHitBox
      */
     public static final ToolAction SWORD_SWEEP = ToolAction.get("sword_sweep");
 

@@ -49,7 +49,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 // TODO systemic review of all extension functions. lots of unused -C
-public interface IForgeItem
+public interface IItemExtension
 {
     private Item self()
     {

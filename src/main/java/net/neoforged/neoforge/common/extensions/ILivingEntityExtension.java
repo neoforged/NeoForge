@@ -11,7 +11,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.ForgeMod;
 import net.neoforged.neoforge.fluids.FluidType;
 
-public interface IForgeLivingEntity extends IEntityExtension
+public interface ILivingEntityExtension extends IEntityExtension
 {
     default LivingEntity self()
     {

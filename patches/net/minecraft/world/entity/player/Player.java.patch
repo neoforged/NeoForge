@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public abstract class Player extends LivingEntity {
-+public abstract class Player extends LivingEntity implements net.neoforged.neoforge.common.extensions.IForgePlayer {
++public abstract class Player extends LivingEntity implements net.neoforged.neoforge.common.extensions.IPlayerExtension {
 +   public static final String PERSISTED_NBT_TAG = "PlayerPersisted";
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final int MAX_NAME_LENGTH = 16;

@@ -19,7 +19,7 @@ import java.util.Objects;
 /**
  * Extension-Interface providing methods for writing registry-id's instead of their registry-names.
  */
-public interface IForgeFriendlyByteBuf
+public interface IFriendlyByteBufExtension
 {
     private FriendlyByteBuf self()
     {

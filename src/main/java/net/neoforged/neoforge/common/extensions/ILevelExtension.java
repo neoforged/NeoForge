@@ -11,7 +11,7 @@ import java.util.Collections;
 import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.entity.PartEntity;
 
-public interface IForgeLevel extends ICapabilityProvider
+public interface ILevelExtension extends ICapabilityProvider
 {
     /**
      * The maximum radius to scan for entities when trying to check bounding boxes. Vanilla's default is

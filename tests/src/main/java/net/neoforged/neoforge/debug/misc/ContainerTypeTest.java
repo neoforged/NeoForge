@@ -23,7 +23,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.common.extensions.IForgeMenuType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -93,7 +93,7 @@ public class ContainerTypeTest
 
     private void registerContainers(final RegisterEvent event)
     {
-        event.register(ForgeRegistries.Keys.MENU_TYPES, helper -> helper.register("container", IForgeMenuType.create(TestContainer::new)));
+        event.register(ForgeRegistries.Keys.MENU_TYPES, helper -> helper.register("container", IMenuTypeExtension.create(TestContainer::new)));
     }
 
     private void setup(FMLClientSetupEvent event)

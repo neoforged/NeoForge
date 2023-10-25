@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public class MobEffectInstance implements Comparable<MobEffectInstance> {
-+public class MobEffectInstance implements Comparable<MobEffectInstance>, net.neoforged.neoforge.common.extensions.IForgeMobEffectInstance {
++public class MobEffectInstance implements Comparable<MobEffectInstance>, net.neoforged.neoforge.common.extensions.IMobEffectInstanceExtension {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final int INFINITE_DURATION = -1;
     private static final String TAG_ID = "id";

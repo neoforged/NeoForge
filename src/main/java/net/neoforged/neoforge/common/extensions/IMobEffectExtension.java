@@ -13,7 +13,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 
-public interface IForgeMobEffect
+public interface IMobEffectExtension
 {
     private MobEffect self() {
         return (MobEffect)this;

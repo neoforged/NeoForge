@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public final class ItemStack {
-+public final class ItemStack extends net.neoforged.neoforge.common.capabilities.CapabilityProvider<ItemStack> implements net.neoforged.neoforge.common.extensions.IForgeItemStack {
++public final class ItemStack extends net.neoforged.neoforge.common.capabilities.CapabilityProvider<ItemStack> implements net.neoforged.neoforge.common.extensions.IItemStackExtension {
     public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
        p_258963_ -> p_258963_.group(
                 BuiltInRegistries.ITEM.byNameCodec().fieldOf("id").forGetter(ItemStack::getItem),
@@ -255,7 +255,7 @@
        this.getItem().onUseTick(p_41732_, p_41733_, this, p_41734_);
     }
  
-+   /** @deprecated Forge: Use {@linkplain net.neoforged.neoforge.common.extensions.IForgeItemStack#onDestroyed(ItemEntity, net.minecraft.world.damagesource.DamageSource) damage source sensitive version} */
++   /** @deprecated Forge: Use {@linkplain IItemStackExtension#onDestroyed(ItemEntity, net.minecraft.world.damagesource.DamageSource) damage source sensitive version} */
 +   @Deprecated
     public void onDestroyed(ItemEntity p_150925_) {
        this.getItem().onDestroyed(p_150925_);

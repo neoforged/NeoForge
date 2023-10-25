@@ -128,7 +128,7 @@
     }
  
 -   public static class TagAppender<T> {
-+   public static class TagAppender<T> implements net.neoforged.neoforge.common.extensions.IForgeTagAppender<T> {
++   public static class TagAppender<T> implements net.neoforged.neoforge.common.extensions.ITagAppenderExtension<T> {
        private final TagBuilder builder;
 +      private final String modId;
  

@@ -7,7 +7,7 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.HolderSet.ListBacked;
 
-public interface IForgeHolderSet<T>
+public interface IHolderSetExtension<T>
 {
     /**
      * <p>Adds a callback to run when this holderset's contents invalidate (i.e. because tags were rebound).</p>
