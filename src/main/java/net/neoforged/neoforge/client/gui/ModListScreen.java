@@ -44,7 +44,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.Util;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.util.Size2i;
 import net.neoforged.neoforge.common.ForgeI18n;
 import net.neoforged.neoforge.common.util.MavenVersionStringHelper;
@@ -148,7 +148,7 @@ public class ModListScreen extends Screen
                     continue;
                 }
 
-                Component chat = ForgeHooks.newChatWithLinks(line, false);
+                Component chat = CommonHooks.newChatWithLinks(line, false);
                 int maxTextLength = this.width - 12;
                 if (maxTextLength >= 0)
                 {

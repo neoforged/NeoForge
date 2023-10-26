@@ -6,13 +6,13 @@
 package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.MinecraftForge;
 
 /**
  * LivingBreatheEvent is fired whenever a living entity ticks.<br>
  * <br>
- * This event is fired via {@link ForgeHooks#onLivingBreathe(LivingEntity, int, int)}.<br>
+ * This event is fired via {@link CommonHooks#onLivingBreathe(LivingEntity, int, int)}.<br>
  * <br>
  * This event is not {@link ICancellableEvent}.<br>
  * <br>

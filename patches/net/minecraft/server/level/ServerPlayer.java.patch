@@ -4,7 +4,7 @@
     @Override
     public void die(DamageSource p_9035_) {
        this.gameEvent(GameEvent.ENTITY_DIE);
-+      if (net.neoforged.neoforge.common.ForgeHooks.onLivingDeath(this, p_9035_)) return;
++      if (net.neoforged.neoforge.common.CommonHooks.onLivingDeath(this, p_9035_)) return;
        boolean flag = this.level().getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES);
        if (flag) {
           Component component = this.getCombatTracker().getDeathMessage();
@@ -14,7 +14,7 @@
     @Override
 -   public Entity changeDimension(ServerLevel p_9180_) {
 +   public Entity changeDimension(ServerLevel p_9180_, net.neoforged.neoforge.common.util.ITeleporter teleporter) {
-+      if (!net.neoforged.neoforge.common.ForgeHooks.onTravelToDimension(this, p_9180_.dimension())) return null;
++      if (!net.neoforged.neoforge.common.CommonHooks.onTravelToDimension(this, p_9180_.dimension())) return null;
        this.isChangingDimension = true;
        ServerLevel serverlevel = this.serverLevel();
        ResourceKey<Level> resourcekey = serverlevel.dimension();
@@ -135,7 +135,7 @@
     }
  
     public boolean setGameMode(GameType p_143404_) {
-+      p_143404_ = net.neoforged.neoforge.common.ForgeHooks.onChangeGameType(this, this.gameMode.getGameModeForPlayer(), p_143404_);
++      p_143404_ = net.neoforged.neoforge.common.CommonHooks.onChangeGameType(this, this.gameMode.getGameModeForPlayer(), p_143404_);
 +      if (p_143404_ == null) return false;
        if (!this.gameMode.changeGameModeForPlayer(p_143404_)) {
           return false;
@@ -166,7 +166,7 @@
        if (p_9000_ == this.level()) {
           this.connection.teleport(p_9001_, p_9002_, p_9003_, p_9004_, p_9005_);
 -      } else {
-+      } else if (net.neoforged.neoforge.common.ForgeHooks.onTravelToDimension(this, p_9000_.dimension())) {
++      } else if (net.neoforged.neoforge.common.CommonHooks.onTravelToDimension(this, p_9000_.dimension())) {
           ServerLevel serverlevel = this.serverLevel();
           LevelData leveldata = p_9000_.getLevelData();
           this.connection.send(new ClientboundRespawnPacket(this.createCommonSpawnInfo(p_9000_), (byte)3));
@@ -290,7 +290,7 @@
        ItemStack itemstack = inventory.removeFromSelected(p_182295_);
        this.containerMenu.findSlot(inventory, inventory.selected).ifPresent(p_287377_ -> this.containerMenu.setRemoteSlot(p_287377_, inventory.getSelected()));
 -      return this.drop(itemstack, false, true) != null;
-+      return net.neoforged.neoforge.common.ForgeHooks.onPlayerTossEvent(this, itemstack, true) != null;
++      return net.neoforged.neoforge.common.CommonHooks.onPlayerTossEvent(this, itemstack, true) != null;
     }
  
     public boolean allowsListing() {

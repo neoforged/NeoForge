@@ -17,7 +17,7 @@
 -               p_251421_.name(), new TextureAtlasSprite(this.location, p_251421_, p_276111_, p_276112_, p_250533_, p_251913_)
 -            )
 +         (p_251421_, p_250533_, p_251913_) -> {
-+            TextureAtlasSprite sprite = net.neoforged.neoforge.client.ForgeHooksClient.loadTextureAtlasSprite(this.location, p_251421_, p_276111_, p_276112_, p_250533_, p_251913_, p_251421_.byMipLevel.length - 1);
++            TextureAtlasSprite sprite = net.neoforged.neoforge.client.ClientHooks.loadTextureAtlasSprite(this.location, p_251421_, p_276111_, p_276112_, p_250533_, p_251913_, p_251421_.byMipLevel.length - 1);
 +            if (sprite != null) {
 +               map.put(p_251421_.name(), sprite);
 +               return;

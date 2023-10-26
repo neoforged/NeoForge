@@ -39,10 +39,10 @@ import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.server.level.ServerLevel;
-import net.neoforged.neoforge.client.ForgeHooksClient;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelDataManager;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.IPlantable;
 
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -166,7 +166,7 @@ public interface IBlockExtension
      */
     default public boolean canHarvestBlock(BlockState state, BlockGetter level, BlockPos pos, Player player)
     {
-        return ForgeHooks.isCorrectToolForDrops(state, player);
+        return CommonHooks.isCorrectToolForDrops(state, player);
     }
 
     /**
@@ -892,7 +892,7 @@ public interface IBlockExtension
     {
         if (FMLEnvironment.dist.isClient())
         {
-            return !ForgeHooksClient.isBlockInSolidLayer(state);
+            return !ClientHooks.isBlockInSolidLayer(state);
         }
         return true;
     }

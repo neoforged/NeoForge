@@ -18,7 +18,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.ForgeExtraCodecs;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
@@ -100,7 +100,7 @@ public class CraftingHelper
         );
         return eitherCodec.xmap(either -> either.map(i -> i, i -> i), ingredient -> {
             // Prefer writing without the "type" field if possible:
-            if (ingredient.getType() == ForgeMod.VANILLA_INGREDIENT_TYPE.get()) {
+            if (ingredient.getType() == NeoForgeMod.VANILLA_INGREDIENT_TYPE.get()) {
                 return Either.right(ingredient);
             } else {
                 return Either.left(ingredient);

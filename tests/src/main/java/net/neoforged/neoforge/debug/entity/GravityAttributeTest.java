@@ -15,7 +15,7 @@ import java.util.stream.StreamSupport;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
@@ -103,7 +103,7 @@ public class GravityAttributeTest
 
                 for(LivingEntity liv : list)
                 {
-                    AttributeInstance grav = liv.getAttribute(ForgeMod.ENTITY_GRAVITY.get());
+                    AttributeInstance grav = liv.getAttribute(NeoForgeMod.ENTITY_GRAVITY.get());
 
                     boolean inPlains = liv.level().getBiome(liv.blockPosition()).is(BiomeTags.IS_FOREST);
                     if (inPlains && !grav.hasModifier(REDUCED_GRAVITY))
@@ -143,7 +143,7 @@ public class GravityAttributeTest
             @SuppressWarnings("deprecation")
             Multimap<Attribute, AttributeModifier> multimap = super.getDefaultAttributeModifiers(slot);
             if (slot == EquipmentSlot.MAINHAND)
-                multimap.put(ForgeMod.ENTITY_GRAVITY.get(), new AttributeModifier(GRAVITY_MODIFIER, "More Gravity", 1.0D, Operation.ADDITION));
+                multimap.put(NeoForgeMod.ENTITY_GRAVITY.get(), new AttributeModifier(GRAVITY_MODIFIER, "More Gravity", 1.0D, Operation.ADDITION));
 
             return multimap;
         }

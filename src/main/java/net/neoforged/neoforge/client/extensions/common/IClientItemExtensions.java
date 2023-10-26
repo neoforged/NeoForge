@@ -21,7 +21,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.ForgeHooksClient;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.IArmPoseTransformer;
 import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.NotNull;
@@ -129,7 +129,7 @@ public interface IClientItemExtensions
         HumanoidModel<?> replacement = getHumanoidArmorModel(livingEntity, itemStack, equipmentSlot, original);
         if (replacement != original)
         {
-            ForgeHooksClient.copyModelProperties(original, replacement);
+            ClientHooks.copyModelProperties(original, replacement);
             return replacement;
         }
         return original;

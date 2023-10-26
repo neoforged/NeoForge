@@ -34,12 +34,12 @@
     }
  
     public void renderRightHand(PoseStack p_117771_, MultiBufferSource p_117772_, int p_117773_, AbstractClientPlayer p_117774_) {
-+      if(!net.neoforged.neoforge.client.ForgeHooksClient.renderSpecificFirstPersonArm(p_117771_, p_117772_, p_117773_, p_117774_, HumanoidArm.RIGHT))
++      if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonArm(p_117771_, p_117772_, p_117773_, p_117774_, HumanoidArm.RIGHT))
        this.renderHand(p_117771_, p_117772_, p_117773_, p_117774_, this.model.rightArm, this.model.rightSleeve);
     }
  
     public void renderLeftHand(PoseStack p_117814_, MultiBufferSource p_117815_, int p_117816_, AbstractClientPlayer p_117817_) {
-+      if(!net.neoforged.neoforge.client.ForgeHooksClient.renderSpecificFirstPersonArm(p_117814_, p_117815_, p_117816_, p_117817_, HumanoidArm.LEFT))
++      if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonArm(p_117814_, p_117815_, p_117816_, p_117817_, HumanoidArm.LEFT))
        this.renderHand(p_117814_, p_117815_, p_117816_, p_117817_, this.model.leftArm, this.model.leftSleeve);
     }
  

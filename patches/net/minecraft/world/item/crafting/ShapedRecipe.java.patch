@@ -48,7 +48,7 @@
     public boolean isIncomplete() {
        NonNullList<Ingredient> nonnulllist = this.getIngredients();
 -      return nonnulllist.isEmpty() || nonnulllist.stream().filter(p_151277_ -> !p_151277_.isEmpty()).anyMatch(p_151273_ -> p_151273_.getItems().length == 0);
-+      return nonnulllist.isEmpty() || nonnulllist.stream().filter(p_151277_ -> !p_151277_.isEmpty()).anyMatch(net.neoforged.neoforge.common.ForgeHooks::hasNoElements);
++      return nonnulllist.isEmpty() || nonnulllist.stream().filter(p_151277_ -> !p_151277_.isEmpty()).anyMatch(net.neoforged.neoforge.common.CommonHooks::hasNoElements);
     }
  
     private static int firstNonSpace(String p_44185_) {

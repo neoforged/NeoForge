@@ -17,9 +17,9 @@
 +         if (p_261751_.isEmptyBlock(p_261616_.above()) && p_261751_.getRawBrightness(p_261616_.above(), 0) >= 9) {
              int i = this.getHeightBelowUpToMax(p_261751_, p_261616_) + 1;
 -            if (i < 16) {
-+            if (i < 16 && net.neoforged.neoforge.common.ForgeHooks.onCropsGrowPre(p_261751_, p_261616_, p_261931_, p_261766_.nextInt(3) == 0)) {
++            if (i < 16 && net.neoforged.neoforge.common.CommonHooks.onCropsGrowPre(p_261751_, p_261616_, p_261931_, p_261766_.nextInt(3) == 0)) {
                 this.growBamboo(p_261931_, p_261751_, p_261616_, p_261766_, i);
-+               net.neoforged.neoforge.common.ForgeHooks.onCropsGrowPost(p_261751_, p_261616_, p_261931_);
++               net.neoforged.neoforge.common.CommonHooks.onCropsGrowPost(p_261751_, p_261616_, p_261931_);
              }
           }
        }

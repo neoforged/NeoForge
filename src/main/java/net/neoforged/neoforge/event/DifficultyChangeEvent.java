@@ -6,14 +6,14 @@
 package net.neoforged.neoforge.event;
 
 import net.minecraft.world.Difficulty;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.bus.api.Event;
 
 /**
  * DifficultyChangeEvent is fired when difficulty is changing. <br>
  * <br>
- * This event is fired via the {@link ForgeHooks#onDifficultyChange(Difficulty, Difficulty)}.<br>
+ * This event is fired via the {@link CommonHooks#onDifficultyChange(Difficulty, Difficulty)}.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>

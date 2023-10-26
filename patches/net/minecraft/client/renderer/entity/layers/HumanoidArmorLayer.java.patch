@@ -83,7 +83,7 @@
 +    * Hook to allow item-sensitive armor model. for HumanoidArmorLayer.
 +    */
 +   protected net.minecraft.client.model.Model getArmorModelHook(T entity, ItemStack itemStack, EquipmentSlot slot, A model) {
-+      return net.neoforged.neoforge.client.ForgeHooksClient.getArmorModel(entity, itemStack, slot, model);
++      return net.neoforged.neoforge.client.ClientHooks.getArmorModel(entity, itemStack, slot, model);
 +   }
 +
 +   /**
@@ -106,7 +106,7 @@
 +      }
 +      String s1 = String.format(java.util.Locale.ROOT, "%s:textures/models/armor/%s_layer_%d%s.png", domain, texture, (usesInnerModel(slot) ? 2 : 1), type == null ? "" : String.format(java.util.Locale.ROOT, "_%s", type));
 +
-+      s1 = net.neoforged.neoforge.client.ForgeHooksClient.getArmorTexture(entity, stack, s1, slot, type);
++      s1 = net.neoforged.neoforge.client.ClientHooks.getArmorTexture(entity, stack, s1, slot, type);
 +      ResourceLocation resourcelocation = ARMOR_LOCATION_CACHE.get(s1);
 +
 +      if (resourcelocation == null) {

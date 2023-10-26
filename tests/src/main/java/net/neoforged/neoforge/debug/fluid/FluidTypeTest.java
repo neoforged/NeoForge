@@ -25,7 +25,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.fluids.FluidInteractionRegistry;
@@ -162,7 +162,7 @@ public class FluidTypeTest
         if (ENABLE)
         {
             logger = LogManager.getLogger();
-            ForgeMod.enableMilkFluid();
+            NeoForgeMod.enableMilkFluid();
 
             var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
@@ -187,8 +187,8 @@ public class FluidTypeTest
     private void commonSetup(FMLCommonSetupEvent event)
     {
         // Add Interactions for sources
-        FluidInteractionRegistry.addInteraction(TEST_FLUID_TYPE.get(), new FluidInteractionRegistry.InteractionInformation(ForgeMod.LAVA_TYPE.get(), Blocks.GOLD_BLOCK.defaultBlockState()));
-        FluidInteractionRegistry.addInteraction(ForgeMod.WATER_TYPE.get(), new FluidInteractionRegistry.InteractionInformation(TEST_FLUID_TYPE.get(), state -> state.isSource() ? Blocks.DIAMOND_BLOCK.defaultBlockState() : Blocks.IRON_BLOCK.defaultBlockState()));
+        FluidInteractionRegistry.addInteraction(TEST_FLUID_TYPE.get(), new FluidInteractionRegistry.InteractionInformation(NeoForgeMod.LAVA_TYPE.get(), Blocks.GOLD_BLOCK.defaultBlockState()));
+        FluidInteractionRegistry.addInteraction(NeoForgeMod.WATER_TYPE.get(), new FluidInteractionRegistry.InteractionInformation(TEST_FLUID_TYPE.get(), state -> state.isSource() ? Blocks.DIAMOND_BLOCK.defaultBlockState() : Blocks.IRON_BLOCK.defaultBlockState()));
 
         // Log Fluid Types for all fluids
         event.enqueueWork(() ->

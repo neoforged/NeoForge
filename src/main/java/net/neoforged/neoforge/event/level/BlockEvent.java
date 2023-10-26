@@ -20,7 +20,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
@@ -75,7 +75,7 @@ public abstract class BlockEvent extends Event
             super(level, pos, state);
             this.player = player;
 
-            if (state == null || !ForgeHooks.isCorrectToolForDrops(state, player)) // Handle empty block or player unable to break block scenario
+            if (state == null || !CommonHooks.isCorrectToolForDrops(state, player)) // Handle empty block or player unable to break block scenario
             {
                 this.exp = 0;
             }

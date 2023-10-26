@@ -16,7 +16,7 @@ import it.unimi.dsi.fastutil.ints.IntComparators;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.ForgeExtraCodecs;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +35,7 @@ public class CompoundIngredient extends Ingredient
 
     protected CompoundIngredient(List<Ingredient> children)
     {
-        super(children.stream().map(Value::new), ForgeMod.COMPOUND_INGREDIENT_TYPE::get);
+        super(children.stream().map(Value::new), NeoForgeMod.COMPOUND_INGREDIENT_TYPE::get);
         this.children = Collections.unmodifiableList(children);
         this.isSimple = children.stream().allMatch(Ingredient::isSimple);
         this.synchronizeWithContents = children.stream().anyMatch(Ingredient::synchronizeWithContents);

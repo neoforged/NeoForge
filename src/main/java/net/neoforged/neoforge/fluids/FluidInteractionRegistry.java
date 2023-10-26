@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.ForgeEventFactory;
 
 import java.util.ArrayList;
@@ -79,13 +79,13 @@ public final class FluidInteractionRegistry
     static
     {
         // Lava + Water = Obsidian (Source Lava) / Cobblestone (Flowing Lava)
-        addInteraction(ForgeMod.LAVA_TYPE.get(), new InteractionInformation(
-                ForgeMod.WATER_TYPE.get(),
+        addInteraction(NeoForgeMod.LAVA_TYPE.get(), new InteractionInformation(
+                NeoForgeMod.WATER_TYPE.get(),
                 fluidState -> fluidState.isSource() ? Blocks.OBSIDIAN.defaultBlockState() : Blocks.COBBLESTONE.defaultBlockState()
         ));
 
         // Lava + Soul Soil (Below) + Blue Ice = Basalt
-        addInteraction(ForgeMod.LAVA_TYPE.get(), new InteractionInformation(
+        addInteraction(NeoForgeMod.LAVA_TYPE.get(), new InteractionInformation(
                 (level, currentPos, relativePos, currentState) -> level.getBlockState(currentPos.below()).is(Blocks.SOUL_SOIL) && level.getBlockState(relativePos).is(Blocks.BLUE_ICE),
                 Blocks.BASALT.defaultBlockState()
         ));

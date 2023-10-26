@@ -35,7 +35,7 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.common.util.Lazy;
@@ -365,7 +365,7 @@ public class FluidType
      */
     public boolean canRideVehicleUnder(Entity vehicle, Entity rider)
     {
-        if (this == ForgeMod.WATER_TYPE.get()) return !vehicle.dismountsUnderwater();
+        if (this == NeoForgeMod.WATER_TYPE.get()) return !vehicle.dismountsUnderwater();
         return true;
     }
 
@@ -715,7 +715,7 @@ public class FluidType
      */
     public final boolean isAir()
     {
-        return this == ForgeMod.EMPTY_TYPE.get();
+        return this == NeoForgeMod.EMPTY_TYPE.get();
     }
 
     /**
@@ -725,7 +725,7 @@ public class FluidType
      */
     public final boolean isVanilla()
     {
-        return this == ForgeMod.LAVA_TYPE.get() || this == ForgeMod.WATER_TYPE.get();
+        return this == NeoForgeMod.LAVA_TYPE.get() || this == NeoForgeMod.WATER_TYPE.get();
     }
 
     /**
@@ -825,7 +825,7 @@ public class FluidType
     {
         if (level.dimensionType().ultraWarm())
         {
-            return this == ForgeMod.WATER_TYPE.get() || this.getStateForPlacement(level, pos, stack).is(FluidTags.WATER);
+            return this == NeoForgeMod.WATER_TYPE.get() || this.getStateForPlacement(level, pos, stack).is(FluidTags.WATER);
         }
         return false;
     }

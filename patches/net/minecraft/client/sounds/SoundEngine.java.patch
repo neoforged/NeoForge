@@ -21,7 +21,7 @@
     public void play(SoundInstance p_120313_) {
        if (this.loaded) {
 -         if (p_120313_.canPlaySound()) {
-+         p_120313_ = net.neoforged.neoforge.client.ForgeHooksClient.playSound(this, p_120313_);
++         p_120313_ = net.neoforged.neoforge.client.ClientHooks.playSound(this, p_120313_);
 +         if (p_120313_ != null && p_120313_.canPlaySound()) {
              WeighedSoundEvents weighedsoundevents = p_120313_.resolve(this.soundManager);
              ResourceLocation resourcelocation = p_120313_.getLocation();

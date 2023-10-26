@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.world.damagesource.DamageSource;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -16,7 +16,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * This event is fired whenever an Entity is set to fall in
  * {@link LivingEntity#causeFallDamage(float, float, DamageSource)}.<br>
  * <br>
- * This event is fired via the {@link ForgeHooks#onLivingFall(LivingEntity, float, float)}.<br>
+ * This event is fired via the {@link CommonHooks#onLivingFall(LivingEntity, float, float)}.<br>
  * <br>
  * {@link #distance} contains the distance the Entity is to fall. If this event is canceled, this value is set to 0.0F.
  * <br>

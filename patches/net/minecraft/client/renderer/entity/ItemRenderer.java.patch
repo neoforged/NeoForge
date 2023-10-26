@@ -14,7 +14,7 @@
           }
  
 -         p_115151_.getTransforms().getTransform(p_270188_).apply(p_115146_, p_115147_);
-+         p_115151_ = net.neoforged.neoforge.client.ForgeHooksClient.handleCameraTransforms(p_115147_, p_115151_, p_270188_, p_115146_);
++         p_115151_ = net.neoforged.neoforge.client.ClientHooks.handleCameraTransforms(p_115147_, p_115151_, p_270188_, p_115146_);
           p_115147_.translate(-0.5F, -0.5F, -0.5F);
           if (!p_115151_.isCustomRenderer() && (!p_115144_.is(Items.TRIDENT) || flag)) {
              boolean flag1;

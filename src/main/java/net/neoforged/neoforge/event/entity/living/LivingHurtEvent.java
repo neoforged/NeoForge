@@ -7,7 +7,7 @@ package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.bus.api.ICancellableEvent;
 
@@ -17,7 +17,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * {@code LivingEntity#actuallyHurt(DamageSource, float)} and
  * {@code Player#actuallyHurt(DamageSource, float)}.<br>
  * <br>
- * This event is fired via the {@link ForgeHooks#onLivingHurt(LivingEntity, DamageSource, float)}.<br>
+ * This event is fired via the {@link CommonHooks#onLivingHurt(LivingEntity, DamageSource, float)}.<br>
  * <br>
  * {@link #source} contains the DamageSource that caused this Entity to be hurt. <br>
  * {@link #amount} contains the amount of damage dealt to the Entity that was hurt. <br>

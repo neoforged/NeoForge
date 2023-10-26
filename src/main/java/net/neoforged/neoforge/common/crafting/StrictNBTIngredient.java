@@ -11,7 +11,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.ForgeExtraCodecs;
 
 /** Ingredient that matches the given stack, performing an exact NBT match. Use {@link PartialNBTIngredient} if you need partial match. */
@@ -24,7 +24,7 @@ public class StrictNBTIngredient extends Ingredient
     
     protected StrictNBTIngredient(ItemStack stack)
     {
-        super(Stream.of(new Ingredient.ItemValue(stack, StrictNBTIngredient::compareStacksWithNbt)), ForgeMod.STRICT_NBT_INGREDIENT_TYPE::get);
+        super(Stream.of(new Ingredient.ItemValue(stack, StrictNBTIngredient::compareStacksWithNbt)), NeoForgeMod.STRICT_NBT_INGREDIENT_TYPE::get);
     }
 
     /** Creates a new ingredient matching the given stack and tag */

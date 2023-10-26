@@ -40,7 +40,7 @@
                 )
           );
 +      p_252136_.popPush("forge_modify_baking_result");
-+      net.neoforged.neoforge.client.ForgeHooksClient.onModifyBakingResult(p_248945_.getBakedTopLevelModels(), p_248945_);
++      net.neoforged.neoforge.client.ClientHooks.onModifyBakingResult(p_248945_.getBakedTopLevelModels(), p_248945_);
        p_252136_.popPush("dispatch");
        Map<ResourceLocation, BakedModel> map = p_248945_.getBakedTopLevelModels();
        BakedModel bakedmodel = map.get(ModelBakery.MISSING_MODEL_LOCATION);
@@ -49,7 +49,7 @@
        this.modelGroups = modelbakery.getModelGroups();
        this.missingModel = p_248996_.missingModel;
 +      this.modelBakery = modelbakery;
-+      net.neoforged.neoforge.client.ForgeHooksClient.onModelBake(this, this.bakedRegistry, modelbakery);
++      net.neoforged.neoforge.client.ClientHooks.onModelBake(this, this.bakedRegistry, modelbakery);
        p_251960_.popPush("cache");
        this.blockModelShaper.replaceCache(p_248996_.modelCache);
        p_251960_.pop();

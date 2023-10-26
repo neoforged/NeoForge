@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 public class NeoForgeVersion
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    // This is Forge's Mod Id, used for the ForgeMod and resource locations
+    // This is Forge's Mod Id, used for the NeoForgeMod and resource locations
     public static final String MOD_ID = "neoforge";
 
     private static final String neoForgeVersion;

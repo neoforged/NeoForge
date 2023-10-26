@@ -21,7 +21,7 @@
        if (this.wanderingTraderId != null) {
           p_78547_.putUUID("WanderingTraderId", this.wanderingTraderId);
        }
-+      p_78547_.putString("forgeLifecycle", net.neoforged.neoforge.common.ForgeHooks.encodeLifecycle(this.settings.getLifecycle()));
++      p_78547_.putString("forgeLifecycle", net.neoforged.neoforge.common.CommonHooks.encodeLifecycle(this.settings.getLifecycle()));
 +      p_78547_.putBoolean("confirmedExperimentalSettings", this.confirmedExperimentalWarning);
     }
  

@@ -25,14 +25,14 @@
                 if (p_90897_ == 1 || p_90897_ == 2) {
                    screen.afterKeyboardAction();
 -                  aboolean[0] = screen.keyPressed(p_90895_, p_90896_, p_90898_);
-+                  aboolean[0] = net.neoforged.neoforge.client.ForgeHooksClient.onScreenKeyPressedPre(screen, p_90895_, p_90896_, p_90898_);
++                  aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenKeyPressedPre(screen, p_90895_, p_90896_, p_90898_);
 +                  if (!aboolean[0]) aboolean[0] = screen.keyPressed(p_90895_, p_90896_, p_90898_);
-+                  if (!aboolean[0]) aboolean[0] = net.neoforged.neoforge.client.ForgeHooksClient.onScreenKeyPressedPost(screen, p_90895_, p_90896_, p_90898_);
++                  if (!aboolean[0]) aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenKeyPressedPost(screen, p_90895_, p_90896_, p_90898_);
                 } else if (p_90897_ == 0) {
 -                  aboolean[0] = screen.keyReleased(p_90895_, p_90896_, p_90898_);
-+                  aboolean[0] = net.neoforged.neoforge.client.ForgeHooksClient.onScreenKeyReleasedPre(screen, p_90895_, p_90896_, p_90898_);
++                  aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPre(screen, p_90895_, p_90896_, p_90898_);
 +                  if (!aboolean[0]) aboolean[0] = screen.keyReleased(p_90895_, p_90896_, p_90898_);
-+                  if (!aboolean[0]) aboolean[0] = net.neoforged.neoforge.client.ForgeHooksClient.onScreenKeyReleasedPost(screen, p_90895_, p_90896_, p_90898_);
++                  if (!aboolean[0]) aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPost(screen, p_90895_, p_90896_, p_90898_);
                 }
              }, "keyPressed event handler", screen.getClass().getCanonicalName());
              if (aboolean[0]) {
@@ -40,7 +40,7 @@
                 this.minecraft.debugFpsMeterKeyPress(p_90895_ - 48);
              }
           }
-+         net.neoforged.neoforge.client.ForgeHooksClient.onKeyInput(p_90895_, p_90896_, p_90897_, p_90898_);
++         net.neoforged.neoforge.client.ClientHooks.onKeyInput(p_90895_, p_90896_, p_90897_, p_90898_);
        }
     }
  
@@ -53,9 +53,9 @@
 -               Screen.wrapScreenError(
 -                  () -> guieventlistener.charTyped((char)p_90891_, p_90892_), "charTyped event handler", guieventlistener.getClass().getCanonicalName()
 -               );
-+               if (net.neoforged.neoforge.client.ForgeHooksClient.onScreenCharTypedPre(guieventlistener, (char)p_90891_, p_90892_)) return;
++               if (net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPre(guieventlistener, (char)p_90891_, p_90892_)) return;
 +               if (guieventlistener.charTyped((char)p_90891_, p_90892_)) return;
-+               net.neoforged.neoforge.client.ForgeHooksClient.onScreenCharTypedPost(guieventlistener, (char)p_90891_, p_90892_);
++               net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPost(guieventlistener, (char)p_90891_, p_90892_);
 +               Screen.wrapScreenError(() -> guieventlistener.charTyped((char) p_90891_, p_90892_), "charTyped event handler", guieventlistener.getClass().getCanonicalName());
              } else {
                 for(char c0 : Character.toChars(p_90891_)) {
@@ -63,9 +63,9 @@
 -                     () -> guieventlistener.charTyped(c0, p_90892_), "charTyped event handler", guieventlistener.getClass().getCanonicalName()
 -                  );
 +                  Screen.wrapScreenError(() -> {
-+                     if (net.neoforged.neoforge.client.ForgeHooksClient.onScreenCharTypedPre(guieventlistener, c0, p_90892_)) return;
++                     if (net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPre(guieventlistener, c0, p_90892_)) return;
 +                     if (guieventlistener.charTyped(c0, p_90892_)) return;
-+                     net.neoforged.neoforge.client.ForgeHooksClient.onScreenCharTypedPost(guieventlistener, c0, p_90892_);
++                     net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPost(guieventlistener, c0, p_90892_);
 +                     guieventlistener.charTyped(c0, p_90892_);
 +                  }, "charTyped event handler", guieventlistener.getClass().getCanonicalName());
                 }

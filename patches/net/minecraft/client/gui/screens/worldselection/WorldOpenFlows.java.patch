@@ -41,7 +41,7 @@
           } else {
 +            if (flag) // Forge: For legacy world options, let vanilla handle it.
              this.askForBackup(p_233146_, p_233147_, flag, () -> this.doLoadLevel(p_233146_, p_233147_, p_233148_, false));
-+            else net.neoforged.neoforge.client.ForgeHooksClient.createWorldConfirmationScreen(() -> this.doLoadLevel(p_233146_, p_233147_, p_233148_, false, true));
++            else net.neoforged.neoforge.client.ClientHooks.createWorldConfirmationScreen(() -> this.doLoadLevel(p_233146_, p_233147_, p_233148_, false, true));
              worldstem.close();
              safeCloseAccess(levelstoragesource$levelstorageaccess, p_233147_);
           }

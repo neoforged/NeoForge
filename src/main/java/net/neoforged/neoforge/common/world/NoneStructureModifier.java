@@ -8,7 +8,7 @@ package net.neoforged.neoforge.common.world;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 public class NoneStructureModifier implements StructureModifier
 {
@@ -23,6 +23,6 @@ public class NoneStructureModifier implements StructureModifier
     @Override
     public Codec<? extends StructureModifier> codec()
     {
-        return ForgeMod.NONE_STRUCTURE_MODIFIER_TYPE.get();
+        return NeoForgeMod.NONE_STRUCTURE_MODIFIER_TYPE.get();
     }
 }

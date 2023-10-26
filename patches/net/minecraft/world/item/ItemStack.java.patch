@@ -86,7 +86,7 @@
     }
  
     public InteractionResult useOn(UseOnContext p_41662_) {
-+      if (!p_41662_.getLevel().isClientSide) return net.neoforged.neoforge.common.ForgeHooks.onPlaceItemIntoWorld(p_41662_);
++      if (!p_41662_.getLevel().isClientSide) return net.neoforged.neoforge.common.CommonHooks.onPlaceItemIntoWorld(p_41662_);
 +      return onItemUse(p_41662_, (c) -> getItem().useOn(p_41662_));
 +   }
 +
@@ -235,7 +235,7 @@
 +         multimap = this.getItem().getAttributeModifiers(p_41639_, this);
        }
  
-+      multimap = net.neoforged.neoforge.common.ForgeHooks.getAttributeModifiers(this, p_41639_, multimap);
++      multimap = net.neoforged.neoforge.common.CommonHooks.getAttributeModifiers(this, p_41639_, multimap);
        return multimap;
     }
  

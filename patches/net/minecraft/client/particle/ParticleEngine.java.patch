@@ -5,7 +5,7 @@
     );
     protected ClientLevel level;
 -   private final Map<ParticleRenderType, Queue<Particle>> particles = Maps.newIdentityHashMap();
-+   private final Map<ParticleRenderType, Queue<Particle>> particles = Maps.newTreeMap(net.neoforged.neoforge.client.ForgeHooksClient.makeParticleRenderTypeComparator(RENDER_ORDER));
++   private final Map<ParticleRenderType, Queue<Particle>> particles = Maps.newTreeMap(net.neoforged.neoforge.client.ClientHooks.makeParticleRenderTypeComparator(RENDER_ORDER));
     private final Queue<TrackingEmitter> trackingEmitters = Queues.newArrayDeque();
     private final TextureManager textureManager;
     private final RandomSource random = RandomSource.create();

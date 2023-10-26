@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.neoforged.neoforge.client.ForgeHooksClient;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.ForgeI18n;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
@@ -54,7 +54,7 @@ public class BrandingControl
     private static void computeOverCopyrightBrandings() {
         if (overCopyrightBrandings == null) {
             ImmutableList.Builder<String> brd = ImmutableList.builder();
-            if (ForgeHooksClient.forgeStatusLine != null) brd.add(ForgeHooksClient.forgeStatusLine);
+            if (ClientHooks.forgeStatusLine != null) brd.add(ClientHooks.forgeStatusLine);
             overCopyrightBrandings = brd.build();
         }
     }

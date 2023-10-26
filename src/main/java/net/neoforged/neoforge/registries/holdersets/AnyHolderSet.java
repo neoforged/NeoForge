@@ -24,7 +24,7 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 /**
  * <p>Holderset that represents all elements of a registry. Json format:</p>
@@ -46,7 +46,7 @@ public record AnyHolderSet<T>(HolderLookup.RegistryLookup<T> registryLookup) imp
     @Override
     public HolderSetType type()
     {
-        return ForgeMod.ANY_HOLDER_SET.get();
+        return NeoForgeMod.ANY_HOLDER_SET.get();
     }
 
     @Override

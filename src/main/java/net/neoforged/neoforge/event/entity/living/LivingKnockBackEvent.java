@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.bus.api.ICancellableEvent;
 
@@ -22,7 +22,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * {@link Mob#doHurtTarget(Entity)} and
  * {@link Player#attack(Entity)} <br>
  * <br>
- * This event is fired via {@link ForgeHooks#onLivingKnockBack(LivingEntity, float, double, double)} .<br>
+ * This event is fired via {@link CommonHooks#onLivingKnockBack(LivingEntity, float, double, double)} .<br>
  * <br>
  * {@link #strength} contains the strength of the knock back. <br>
  * {@link #ratioX} contains the x ratio of the knock back. <br>

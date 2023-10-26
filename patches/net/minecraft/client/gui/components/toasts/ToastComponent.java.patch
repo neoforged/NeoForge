@@ -4,7 +4,7 @@
     }
  
     public void addToast(Toast p_94923_) {
-+      if (net.neoforged.neoforge.client.ForgeHooksClient.onToastAdd(p_94923_)) return;
++      if (net.neoforged.neoforge.client.ClientHooks.onToastAdd(p_94923_)) return;
        this.queued.add(p_94923_);
     }
  

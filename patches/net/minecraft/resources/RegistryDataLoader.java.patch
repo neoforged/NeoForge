@@ -5,7 +5,7 @@
  
     private static String registryDirPath(ResourceLocation p_252033_) {
 -      return p_252033_.getPath();
-+      return net.neoforged.neoforge.common.ForgeHooks.prefixNamespace(p_252033_); // FORGE: add non-vanilla registry namespace to loader directory, same format as tag directory (see net.minecraft.tags.TagManager#getTagDir(ResourceKey))
++      return net.neoforged.neoforge.common.CommonHooks.prefixNamespace(p_252033_); // FORGE: add non-vanilla registry namespace to loader directory, same format as tag directory (see net.minecraft.tags.TagManager#getTagDir(ResourceKey))
     }
  
     static <E> void loadRegistryContents(

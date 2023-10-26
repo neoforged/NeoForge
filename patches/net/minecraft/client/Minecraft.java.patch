@@ -46,7 +46,7 @@
 +      // this.createSearchTrees();
        this.resourceManager.registerReloadListener(this.searchRegistry);
        this.particleEngine = new ParticleEngine(this.level, this.textureManager);
-+      net.neoforged.neoforge.client.ForgeHooksClient.onRegisterParticleProviders(this.particleEngine);
++      net.neoforged.neoforge.client.ClientHooks.onRegisterParticleProviders(this.particleEngine);
        this.resourceManager.registerReloadListener(this.particleEngine);
        this.paintingTextures = new PaintingTextureManager(this.textureManager);
        this.resourceManager.registerReloadListener(this.paintingTextures);
@@ -66,7 +66,7 @@
           this.options.fullscreen().set(this.window.isFullscreen());
        }
  
-+      net.neoforged.neoforge.client.ForgeHooksClient.initClientHooks(this, this.resourceManager);
++      net.neoforged.neoforge.client.ClientHooks.initClientHooks(this, this.resourceManager);
        this.window.updateVsync(this.options.enableVsync().get());
        this.window.updateRawMouseInput(this.options.rawMouseInput().get());
        this.window.setDefaultErrorCallback();
@@ -213,7 +213,7 @@
           }
        }
  
-+      net.neoforged.neoforge.client.ForgeHooksClient.clearGuiLayers(this);
++      net.neoforged.neoforge.client.ClientHooks.clearGuiLayers(this);
 +      Screen old = this.screen;
 +      if (p_91153_ != null) {
 +         var event = new net.neoforged.neoforge.client.event.ScreenEvent.Opening(old, p_91153_);
@@ -246,7 +246,7 @@
        this.window.setGuiScale((double)i);
        if (this.screen != null) {
           this.screen.resize(this, this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
-+         net.neoforged.neoforge.client.ForgeHooksClient.resizeGuiLayers(this, this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
++         net.neoforged.neoforge.client.ClientHooks.resizeGuiLayers(this, this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
        }
  
        RenderTarget rendertarget = this.getMainRenderTarget();
@@ -269,7 +269,7 @@
              BlockPos blockpos = blockhitresult.getBlockPos();
 -            if (!this.level.getBlockState(blockpos).isAir()) {
 +            if (!this.level.isEmptyBlock(blockpos)) {
-+               var inputEvent = net.neoforged.neoforge.client.ForgeHooksClient.onClickInput(0, this.options.keyAttack, InteractionHand.MAIN_HAND);
++               var inputEvent = net.neoforged.neoforge.client.ClientHooks.onClickInput(0, this.options.keyAttack, InteractionHand.MAIN_HAND);
 +               if (inputEvent.isCanceled()) {
 +                  if (inputEvent.shouldSwingHand()) {
 +                     this.particleEngine.addBlockHitEffects(blockpos, blockhitresult);
@@ -289,7 +289,7 @@
              return false;
           } else {
              boolean flag = false;
-+            var inputEvent = net.neoforged.neoforge.client.ForgeHooksClient.onClickInput(0, this.options.keyAttack, InteractionHand.MAIN_HAND);
++            var inputEvent = net.neoforged.neoforge.client.ClientHooks.onClickInput(0, this.options.keyAttack, InteractionHand.MAIN_HAND);
 +            if (!inputEvent.isCanceled())
              switch(this.hitResult.getType()) {
                 case ENTITY:
@@ -307,7 +307,7 @@
                    }
  
                    this.player.resetAttackStrengthTicker();
-+                  net.neoforged.neoforge.common.ForgeHooks.onEmptyLeftClick(this.player);
++                  net.neoforged.neoforge.common.CommonHooks.onEmptyLeftClick(this.player);
              }
  
 +            if (inputEvent.shouldSwingHand())
@@ -318,7 +318,7 @@
              }
  
              for(InteractionHand interactionhand : InteractionHand.values()) {
-+               var inputEvent = net.neoforged.neoforge.client.ForgeHooksClient.onClickInput(1, this.options.keyUse, interactionhand);
++               var inputEvent = net.neoforged.neoforge.client.ClientHooks.onClickInput(1, this.options.keyUse, interactionhand);
 +               if (inputEvent.isCanceled()) {
 +                  if (inputEvent.shouldSwingHand()) this.player.swing(interactionhand);
 +                  return;
@@ -349,7 +349,7 @@
                 }
  
 +               if (itemstack.isEmpty() && (this.hitResult == null || this.hitResult.getType() == HitResult.Type.MISS))
-+                  net.neoforged.neoforge.common.ForgeHooks.onEmptyClick(this.player, interactionhand);
++                  net.neoforged.neoforge.common.CommonHooks.onEmptyClick(this.player, interactionhand);
 +
                 if (!itemstack.isEmpty()) {
                    InteractionResult interactionresult2 = this.gameMode.useItem(this.player, interactionhand);
@@ -400,7 +400,7 @@
        IntegratedServer integratedserver = this.singleplayerServer;
        this.singleplayerServer = null;
        this.gameRenderer.resetData();
-+      net.neoforged.neoforge.client.ForgeHooksClient.firePlayerLogout(this.gameMode, this.player);
++      net.neoforged.neoforge.client.ClientHooks.firePlayerLogout(this.gameMode, this.player);
        this.gameMode = null;
        this.narrator.clear();
        this.updateScreenAndTick(p_91321_);
@@ -413,7 +413,7 @@
           this.downloadedPackSource.clearServerPack();
           this.gui.onDisconnected();
           this.isLocalServer = false;
-+         net.neoforged.neoforge.client.ForgeHooksClient.handleClientLevelClosing(this.level);
++         net.neoforged.neoforge.client.ClientHooks.handleClientLevelClosing(this.level);
        }
  
        this.level = null;
@@ -421,7 +421,7 @@
  
     private void pickBlock() {
        if (this.hitResult != null && this.hitResult.getType() != HitResult.Type.MISS) {
-+         if (net.neoforged.neoforge.client.ForgeHooksClient.onClickInput(2, this.options.keyPickItem, InteractionHand.MAIN_HAND).isCanceled()) return;
++         if (net.neoforged.neoforge.client.ClientHooks.onClickInput(2, this.options.keyPickItem, InteractionHand.MAIN_HAND).isCanceled()) return;
           boolean flag = this.player.getAbilities().instabuild;
           BlockEntity blockentity = null;
           HitResult.Type hitresult$type = this.hitResult.getType();

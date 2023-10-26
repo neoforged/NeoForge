@@ -7,7 +7,7 @@ package net.neoforged.neoforge.client.extensions;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.neoforged.neoforge.client.ForgeHooksClient;
+import net.neoforged.neoforge.client.ClientHooks;
 
 import java.util.Locale;
 
@@ -28,7 +28,7 @@ public interface IMinecraftExtension
      */
     default void pushGuiLayer(Screen screen)
     {
-        ForgeHooksClient.pushGuiLayer(self(), screen);
+        ClientHooks.pushGuiLayer(self(), screen);
     }
 
     /**
@@ -36,7 +36,7 @@ public interface IMinecraftExtension
      */
     default void popGuiLayer()
     {
-        ForgeHooksClient.popGuiLayer(self());
+        ClientHooks.popGuiLayer(self());
     }
 
     /**

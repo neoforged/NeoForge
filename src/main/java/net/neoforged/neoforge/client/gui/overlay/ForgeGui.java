@@ -34,7 +34,7 @@ import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderGuiOverlayEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -239,7 +239,7 @@ public class ForgeGui extends Gui
         int top = height - rightHeight;
 
         int air = player.getAirSupply();
-        if (player.isEyeInFluidType(ForgeMod.WATER_TYPE.get()) || air < 300)
+        if (player.isEyeInFluidType(NeoForgeMod.WATER_TYPE.get()) || air < 300)
         {
             int full = Mth.ceil((double) (air - 2) * 10.0D / 300.0D);
             int partial = Mth.ceil((double) air * 10.0D / 300.0D) - full;

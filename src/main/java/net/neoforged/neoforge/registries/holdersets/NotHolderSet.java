@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderOwner;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.datafixers.util.Either;
@@ -70,7 +70,7 @@ public class NotHolderSet<T> implements ICustomHolderSet<T>
     @Override
     public HolderSetType type()
     {
-        return ForgeMod.NOT_HOLDER_SET.get();
+        return NeoForgeMod.NOT_HOLDER_SET.get();
     }
 
     @Override

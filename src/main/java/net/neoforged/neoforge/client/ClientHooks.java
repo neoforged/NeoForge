@@ -146,7 +146,7 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.textures.ForgeTextureMetadata;
 import net.neoforged.neoforge.client.textures.TextureAtlasSpriteLoaderManager;
 import net.neoforged.neoforge.common.ForgeI18n;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -194,8 +194,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@ApiStatus.Internal
-public class ForgeHooksClient
+/**
+ * Class for various client-side-only hooks.
+ */
+public class ClientHooks
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker CLIENTHOOKS = MarkerManager.getMarker("CLIENTHOOKS");
@@ -734,7 +736,7 @@ public class ForgeHooksClient
 
     public static boolean isNameplateInRenderDistance(Entity entity, double squareDistance) {
         if (entity instanceof LivingEntity) {
-            final AttributeInstance attribute = ((LivingEntity) entity).getAttribute(ForgeMod.NAMETAG_DISTANCE.get());
+            final AttributeInstance attribute = ((LivingEntity) entity).getAttribute(NeoForgeMod.NAMETAG_DISTANCE.get());
             if (attribute != null) {
                 return !(squareDistance > (attribute.getValue() * attribute.getValue()));
             }
@@ -1236,7 +1238,7 @@ public class ForgeHooksClient
         TextureAtlasSpriteLoaderManager.init();
         ClientTooltipComponentManager.init();
         EntitySpectatorShaderManager.init();
-        ForgeHooksClient.onRegisterKeyMappings(mc.options);
+        ClientHooks.onRegisterKeyMappings(mc.options);
         RecipeBookManager.init();
         GuiOverlayManager.init();
         DimensionSpecialEffectsManager.init();

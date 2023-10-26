@@ -21,7 +21,7 @@
     boolean isLookingAtMe(Player p_32535_) {
        ItemStack itemstack = p_32535_.getInventory().armor.get(3);
 -      if (itemstack.is(Blocks.CARVED_PUMPKIN.asItem())) {
-+      if (net.neoforged.neoforge.common.ForgeHooks.shouldSuppressEnderManAnger(this, p_32535_, itemstack)) {
++      if (net.neoforged.neoforge.common.CommonHooks.shouldSuppressEnderManAnger(this, p_32535_, itemstack)) {
           return false;
        } else {
           Vec3 vec3 = p_32535_.getViewVector(1.0F).normalize();

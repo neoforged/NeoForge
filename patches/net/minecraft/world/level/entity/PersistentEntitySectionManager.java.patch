@@ -71,7 +71,7 @@
              this.currentSection = entitysection;
              this.currentSectionKey = i;
              this.updateStatus(visibility, entitysection.getStatus());
-+            if (this.realEntity != null) net.neoforged.neoforge.common.ForgeHooks.onEntityEnterSection(this.realEntity, oldSectionKey, i);
++            if (this.realEntity != null) net.neoforged.neoforge.common.CommonHooks.onEntityEnterSection(this.realEntity, oldSectionKey, i);
           }
        }
  

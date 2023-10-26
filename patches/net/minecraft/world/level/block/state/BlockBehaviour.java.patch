@@ -33,14 +33,14 @@
        } else {
 -         int i = p_60467_.hasCorrectToolForDrops(p_60466_) ? 30 : 100;
 -         return p_60467_.getDestroySpeed(p_60466_) / f / (float)i;
-+         int i = net.neoforged.neoforge.common.ForgeHooks.isCorrectToolForDrops(p_60466_, p_60467_) ? 30 : 100;
++         int i = net.neoforged.neoforge.common.CommonHooks.isCorrectToolForDrops(p_60466_, p_60467_) ? 30 : 100;
 +         return p_60467_.getDigSpeed(p_60466_, p_60469_) / f / (float)i;
        }
     }
  
     @Deprecated
     public void spawnAfterBreak(BlockState p_222949_, ServerLevel p_222950_, BlockPos p_222951_, ItemStack p_222952_, boolean p_222953_) {
-+      if (p_222953_) net.neoforged.neoforge.common.ForgeHooks.dropXpForBlock(p_222949_, p_222950_, p_222951_, p_222952_);
++      if (p_222953_) net.neoforged.neoforge.common.CommonHooks.dropXpForBlock(p_222949_, p_222950_, p_222951_, p_222952_);
     }
  
     @Deprecated

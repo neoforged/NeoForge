@@ -39,7 +39,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.items.wrapper.ShulkerItemStackInvWrapper;
@@ -640,7 +640,7 @@ public interface IItemExtension
     @Nullable
     default String getCreatorModId(ItemStack itemStack)
     {
-        return ForgeHooks.getDefaultCreatorModId(itemStack);
+        return CommonHooks.getDefaultCreatorModId(itemStack);
     }
 
     /**

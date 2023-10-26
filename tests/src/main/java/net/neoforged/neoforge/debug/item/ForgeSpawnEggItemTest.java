@@ -17,7 +17,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.ForgeSpawnEggItem;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
@@ -70,7 +70,7 @@ public class ForgeSpawnEggItemTest
         //Remove step height attribute to validate that things are handled properly when an entity doesn't have it
         Map<Attribute, AttributeInstance> builder = ObfuscationReflectionHelper.getPrivateValue(AttributeSupplier.Builder.class, attributes, "builder");
         if (builder != null) {
-            builder.remove(ForgeMod.STEP_HEIGHT.get());
+            builder.remove(NeoForgeMod.STEP_HEIGHT.get());
         }
         event.put(ENTITY.get(), attributes.build());
     }

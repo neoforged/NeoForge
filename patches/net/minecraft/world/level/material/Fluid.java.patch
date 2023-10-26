@@ -19,7 +19,7 @@
 +   private net.neoforged.neoforge.fluids.FluidType forgeFluidType;
 +   @Override
 +   public net.neoforged.neoforge.fluids.FluidType getFluidType() {
-+      if (forgeFluidType == null) forgeFluidType = net.neoforged.neoforge.common.ForgeHooks.getVanillaFluidType(this);
++      if (forgeFluidType == null) forgeFluidType = net.neoforged.neoforge.common.CommonHooks.getVanillaFluidType(this);
 +      return forgeFluidType;
 +   }
  

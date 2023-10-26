@@ -16,7 +16,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.HolderSetCodec;
 import net.minecraft.resources.ResourceKey;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 /**
  * <p>Holderset that represents an intersection of other holdersets. Json format:</p>
@@ -49,7 +49,7 @@ public class AndHolderSet<T> extends CompositeHolderSet<T>
     @Override
     public HolderSetType type()
     {
-        return ForgeMod.AND_HOLDER_SET.get();
+        return NeoForgeMod.AND_HOLDER_SET.get();
     }
 
     @Override

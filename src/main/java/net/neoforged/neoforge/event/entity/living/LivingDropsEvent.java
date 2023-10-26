@@ -10,7 +10,7 @@ import java.util.Collection;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.bus.api.ICancellableEvent;
 
@@ -19,7 +19,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * This event is fired whenever an Entity dies and drops items in
  * {@link LivingEntity#die(DamageSource)}.<br>
  * <br>
- * This event is fired via the {@link ForgeHooks#onLivingDrops(LivingEntity, DamageSource, Collection, int, boolean)} .<br>
+ * This event is fired via the {@link CommonHooks#onLivingDrops(LivingEntity, DamageSource, Collection, int, boolean)} .<br>
  * <br>
  * {@link #source} contains the DamageSource that caused the drop to occur.<br>
  * {@link #drops} contains the ArrayList of EntityItems that will be dropped.<br>

@@ -10,7 +10,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -35,7 +35,7 @@ public class IntersectionIngredient extends Ingredient
             matchers.remove(ingredient);
             
             return new IntersectionValue(value, matchers);
-        })), ForgeMod.INTERSECTION_INGREDIENT_TYPE::get);
+        })), NeoForgeMod.INTERSECTION_INGREDIENT_TYPE::get);
         
         this.children = Collections.unmodifiableList(children);
     }

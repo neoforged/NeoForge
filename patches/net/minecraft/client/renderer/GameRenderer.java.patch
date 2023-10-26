@@ -5,7 +5,7 @@
        } else if (p_109107_ instanceof EnderMan) {
           this.loadEffect(new ResourceLocation("shaders/post/invert.json"));
 +      } else {
-+         net.neoforged.neoforge.client.ForgeHooksClient.loadEntityShader(p_109107_, this);
++         net.neoforged.neoforge.client.ClientHooks.loadEntityShader(p_109107_, this);
        }
     }
  
@@ -68,7 +68,7 @@
           }
  
 -         return d0;
-+         return net.neoforged.neoforge.client.ForgeHooksClient.getFieldOfView(this, p_109142_, p_109143_, d0, p_109144_);
++         return net.neoforged.neoforge.client.ClientHooks.getFieldOfView(this, p_109142_, p_109143_, d0, p_109144_);
        }
     }
  
@@ -85,14 +85,14 @@
 -               21000.0F
 -            );
 +                                   .setOrtho(
-+                                         0.0F, (float)((double)window.getWidth() / window.getGuiScale()), (float)((double)window.getHeight() / window.getGuiScale()), 0.0F, 1000.0F, net.neoforged.neoforge.client.ForgeHooksClient.getGuiFarPlane()
++                                         0.0F, (float)((double)window.getWidth() / window.getGuiScale()), (float)((double)window.getHeight() / window.getGuiScale()), 0.0F, 1000.0F, net.neoforged.neoforge.client.ClientHooks.getGuiFarPlane()
 +                                   );
           RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
           PoseStack posestack = RenderSystem.getModelViewStack();
           posestack.pushPose();
           posestack.setIdentity();
 -         posestack.translate(0.0F, 0.0F, -11000.0F);
-+         posestack.translate(0.0D, 0.0D, 1000F - net.neoforged.neoforge.client.ForgeHooksClient.getGuiFarPlane());
++         posestack.translate(0.0D, 0.0D, 1000F - net.neoforged.neoforge.client.ClientHooks.getGuiFarPlane());
           RenderSystem.applyModelViewMatrix();
           Lighting.setupFor3DItems();
           GuiGraphics guigraphics = new GuiGraphics(this.minecraft, this.renderBuffers.bufferSource());
@@ -101,7 +101,7 @@
           } else if (flag && this.minecraft.screen != null) {
              try {
 -               this.minecraft.screen.renderWithTooltip(guigraphics, i, j, this.minecraft.getDeltaFrameTime());
-+               net.neoforged.neoforge.client.ForgeHooksClient.drawScreen(this.minecraft.screen, guigraphics, i, j, this.minecraft.getDeltaFrameTime());
++               net.neoforged.neoforge.client.ClientHooks.drawScreen(this.minecraft.screen, guigraphics, i, j, this.minecraft.getDeltaFrameTime());
              } catch (Throwable throwable1) {
                 CrashReport crashreport1 = CrashReport.forThrowable(throwable1, "Rendering screen");
                 CrashReportCategory crashreportcategory1 = crashreport1.addCategory("Screen render details");
@@ -110,7 +110,7 @@
           p_109090_
        );
 +
-+      net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles cameraSetup = net.neoforged.neoforge.client.ForgeHooksClient.onCameraSetup(this, camera, p_109090_);
++      net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles cameraSetup = net.neoforged.neoforge.client.ClientHooks.onCameraSetup(this, camera, p_109090_);
 +      camera.setAnglesInternal(cameraSetup.getYaw(), cameraSetup.getPitch());
 +      p_109092_.mulPose(Axis.ZP.rotationDegrees(cameraSetup.getRoll()));
 +
@@ -122,7 +122,7 @@
           .prepareCullFrustum(p_109092_, camera.getPosition(), this.getProjectionMatrix(Math.max(d0, (double)this.minecraft.options.fov().get().intValue())));
        this.minecraft.levelRenderer.renderLevel(p_109092_, p_109090_, p_109091_, flag, camera, this, this.lightTexture, matrix4f);
 +      this.minecraft.getProfiler().popPush("forge_render_last");
-+      net.neoforged.neoforge.client.ForgeHooksClient.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL, this.minecraft.levelRenderer, posestack, matrix4f, this.minecraft.levelRenderer.getTicks(), camera, this.minecraft.levelRenderer.getFrustum());
++      net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL, this.minecraft.levelRenderer, posestack, matrix4f, this.minecraft.levelRenderer.getTicks(), camera, this.minecraft.levelRenderer.getFrustum());
        this.minecraft.getProfiler().popPush("hand");
        if (this.renderHand) {
           RenderSystem.clear(256, Minecraft.ON_OSX);

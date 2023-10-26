@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.common.data;
 
 import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 public class VanillaSoundDefinitionsProvider extends SoundDefinitionsProvider {
     public VanillaSoundDefinitionsProvider(PackOutput output, ExistingFileHelper helper) {
@@ -15,10 +15,10 @@ public class VanillaSoundDefinitionsProvider extends SoundDefinitionsProvider {
 
     @Override
     public void registerSounds() {
-        this.add(ForgeMod.BUCKET_EMPTY_MILK.getId(), definition().subtitle("subtitles.item.bucket.empty")
+        this.add(NeoForgeMod.BUCKET_EMPTY_MILK.getId(), definition().subtitle("subtitles.item.bucket.empty")
                 .with(sound("item/bucket/empty1"), sound("item/bucket/empty1").pitch(0.9),
                         sound("item/bucket/empty2"), sound("item/bucket/empty3")));
-        this.add(ForgeMod.BUCKET_FILL_MILK.getId(), definition().subtitle("subtitles.item.bucket.fill")
+        this.add(NeoForgeMod.BUCKET_FILL_MILK.getId(), definition().subtitle("subtitles.item.bucket.fill")
                 .with(sound("item/bucket/fill1"), sound("item/bucket/fill2"), sound("item/bucket/fill3")));
     }
 }

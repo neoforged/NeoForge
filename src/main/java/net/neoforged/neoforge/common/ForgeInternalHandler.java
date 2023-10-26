@@ -101,7 +101,7 @@ public class ForgeInternalHandler
     {
         if (event.shouldUpdateStaticData())
         {
-            ForgeHooks.updateBurns();
+            CommonHooks.updateBurns();
         }
     }
 

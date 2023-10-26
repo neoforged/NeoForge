@@ -4,7 +4,7 @@
  
        this.minecraft.debugRenderer.clear();
        this.minecraft.player.resetPos();
-+      net.neoforged.neoforge.client.ForgeHooksClient.firePlayerLogin(this.minecraft.gameMode, this.minecraft.player, this.minecraft.getConnection().connection);
++      net.neoforged.neoforge.client.ClientHooks.firePlayerLogin(this.minecraft.gameMode, this.minecraft.player, this.minecraft.getConnection().connection);
        this.minecraft.player.setId(p_105030_.playerId());
        this.level.addEntity(this.minecraft.player);
        this.minecraft.player.input = new KeyboardInput(this.minecraft.options);
@@ -22,7 +22,7 @@
  
 +      localplayer1.updateSyncFields(localplayer); // Forge: fix MC-10657
        localplayer1.resetPos();
-+      net.neoforged.neoforge.client.ForgeHooksClient.firePlayerRespawn(this.minecraft.gameMode, localplayer, localplayer1, localplayer1.connection.connection);
++      net.neoforged.neoforge.client.ClientHooks.firePlayerRespawn(this.minecraft.gameMode, localplayer, localplayer1, localplayer1.connection.connection);
        this.level.addEntity(localplayer1);
        localplayer1.setYRot(-180.0F);
        localplayer1.input = new KeyboardInput(this.minecraft.options);
@@ -53,7 +53,7 @@
        ClientRecipeBook clientrecipebook = this.minecraft.player.getRecipeBook();
        clientrecipebook.setupCollections(this.recipeManager.getRecipes(), this.minecraft.level.registryAccess());
        this.minecraft.populateSearchTree(SearchRegistry.RECIPE_COLLECTIONS, clientrecipebook.getCollections());
-+      net.neoforged.neoforge.client.ForgeHooksClient.onRecipesUpdated(this.recipeManager);
++      net.neoforged.neoforge.client.ClientHooks.onRecipesUpdated(this.recipeManager);
     }
  
     @Override
@@ -98,7 +98,7 @@
     }
  
     public void sendChat(String p_249888_) {
-+      p_249888_ = net.neoforged.neoforge.client.ForgeHooksClient.onClientSendMessage(p_249888_);
++      p_249888_ = net.neoforged.neoforge.client.ClientHooks.onClientSendMessage(p_249888_);
 +      if (p_249888_.isEmpty()) return;
        Instant instant = Instant.now();
        long i = Crypt.SaltSupplier.getLong();

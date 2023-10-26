@@ -8,7 +8,7 @@ package net.neoforged.neoforge.event.entity.living;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.behavior.StartAttacking;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -17,7 +17,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * This event allows you to change the target an entity has. <br>
  * This event is fired before {@link LivingSetAttackTargetEvent}. <br>
  * <br>
- * This event is fired via the {@link ForgeHooks#onLivingChangeTarget(LivingEntity, LivingEntity, ILivingTargetType)}<br>
+ * This event is fired via the {@link CommonHooks#onLivingChangeTarget(LivingEntity, LivingEntity, ILivingTargetType)}<br>
  * <br>
  * {@link #getOriginalTarget()} returns the target that should originally be set.
  * The return value cannot be affected by calling {@link #setNewTarget(LivingEntity)}.<br>

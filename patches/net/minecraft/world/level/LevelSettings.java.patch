@@ -29,7 +29,7 @@
           new GameRules(p_46925_.get("GameRules")),
 -         p_251697_
 +         p_251697_,
-+         net.neoforged.neoforge.common.ForgeHooks.parseLifecycle(p_46925_.get("forgeLifecycle").asString("stable"))
++         net.neoforged.neoforge.common.CommonHooks.parseLifecycle(p_46925_.get("forgeLifecycle").asString("stable"))
        );
     }
  
@@ -43,7 +43,7 @@
  
     public LevelSettings withDifficulty(Difficulty p_46919_) {
 -      return new LevelSettings(this.levelName, this.gameType, this.hardcore, p_46919_, this.allowCommands, this.gameRules, this.dataConfiguration);
-+      net.neoforged.neoforge.common.ForgeHooks.onDifficultyChange(p_46919_, this.difficulty);
++      net.neoforged.neoforge.common.CommonHooks.onDifficultyChange(p_46919_, this.difficulty);
 +      return new LevelSettings(this.levelName, this.gameType, this.hardcore, p_46919_, this.allowCommands, this.gameRules, this.dataConfiguration, this.lifecycle);
     }
  

@@ -13,7 +13,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.ForgeExtraCodecs;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 
@@ -43,7 +43,7 @@ public class PartialNBTIngredient extends Ingredient
             // copy NBT to prevent the stack from modifying the original, as capabilities or vanilla item durability will modify the tag
             stack.setTag(tag.copy());
             return new Ingredient.ItemValue(stack, PartialNBTIngredient::compareStacksUsingPredicate);
-        }), ForgeMod.PARTIAL_NBT_INGREDIENT_TYPE::get);
+        }), NeoForgeMod.PARTIAL_NBT_INGREDIENT_TYPE::get);
         
         if (items.isEmpty())
             throw new IllegalStateException("At least one item needs to be provided for a partial nbt matching ingredient.");

@@ -4,7 +4,7 @@
  
     @Override
     public boolean hurt(DamageSource p_108662_, float p_108663_) {
-+      net.neoforged.neoforge.common.ForgeHooks.onPlayerAttack(this, p_108662_, p_108663_);
++      net.neoforged.neoforge.common.CommonHooks.onPlayerAttack(this, p_108662_, p_108663_);
        return false;
     }
  
@@ -36,7 +36,7 @@
           && (this.isShiftKeyDown() || !this.isSleeping() && !this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.STANDING));
        float f = Mth.clamp(0.3F + EnchantmentHelper.getSneakingSpeedBonus(this), 0.0F, 1.0F);
        this.input.tick(this.isMovingSlowly(), f);
-+      net.neoforged.neoforge.client.ForgeHooksClient.onMovementInputUpdate(this, this.input);
++      net.neoforged.neoforge.client.ClientHooks.onMovementInputUpdate(this, this.input);
        this.minecraft.getTutorial().onInput(this.input);
        if (this.isUsingItem() && !this.isPassenger()) {
           this.input.leftImpulse *= 0.2F;
@@ -83,7 +83,7 @@
 -         this.goDownInWater();
 +      net.neoforged.neoforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
 +      if ((this.isInWater() || (!fluidType.isAir() && this.canSwimInFluidType(fluidType))) && this.input.shiftKeyDown && this.isAffectedByFluids()) {
-+         this.sinkInFluid(this.isInWater() ? net.neoforged.neoforge.common.ForgeMod.WATER_TYPE.get() : fluidType);
++         this.sinkInFluid(this.isInWater() ? net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.get() : fluidType);
        }
  
        if (this.isEyeInFluid(FluidTags.WATER)) {

@@ -5,10 +5,10 @@
     public void randomTick(BlockState p_221806_, ServerLevel p_221807_, BlockPos p_221808_, RandomSource p_221809_) {
        int i = p_221806_.getValue(AGE);
 -      if (i < 3 && p_221809_.nextInt(10) == 0) {
-+      if (i < 3 && net.neoforged.neoforge.common.ForgeHooks.onCropsGrowPre(p_221807_, p_221808_, p_221806_, p_221809_.nextInt(10) == 0)) {
++      if (i < 3 && net.neoforged.neoforge.common.CommonHooks.onCropsGrowPre(p_221807_, p_221808_, p_221806_, p_221809_.nextInt(10) == 0)) {
           p_221806_ = p_221806_.setValue(AGE, Integer.valueOf(i + 1));
           p_221807_.setBlock(p_221808_, p_221806_, 2);
-+         net.neoforged.neoforge.common.ForgeHooks.onCropsGrowPost(p_221807_, p_221808_, p_221806_);
++         net.neoforged.neoforge.common.CommonHooks.onCropsGrowPost(p_221807_, p_221808_, p_221806_);
        }
     }
  

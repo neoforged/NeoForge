@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.event.entity.EntityEvent;
@@ -40,7 +40,7 @@ public abstract class LivingEvent extends EntityEvent
     /**
      * LivingUpdateEvent is fired when a LivingEntity is ticked in {@link LivingEntity#tick()}. <br>
      * <br>
-     * This event is fired via the {@link ForgeHooks#onLivingTick(LivingEntity)}.<br>
+     * This event is fired via the {@link CommonHooks#onLivingTick(LivingEntity)}.<br>
      * <br>
      * This event is {@link ICancellableEvent}.<br>
      * If this event is canceled, the Entity does not update.<br>
@@ -60,7 +60,7 @@ public abstract class LivingEvent extends EntityEvent
      * {@code LivingEntity#jumpFromGround()}, {@code MagmaCube#jumpFromGround()},
      * and {@code Horse#jumpFromGround()}.<br>
      * <br>
-     * This event is fired via the {@link ForgeHooks#onLivingJump(LivingEntity)}.<br>
+     * This event is fired via the {@link CommonHooks#onLivingJump(LivingEntity)}.<br>
      * <br>
      * This event is not {@link ICancellableEvent}.<br>
      * <br>

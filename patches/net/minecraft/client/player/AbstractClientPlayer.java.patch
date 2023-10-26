@@ -5,6 +5,6 @@
        }
  
 -      return Mth.lerp(Minecraft.getInstance().options.fovEffectScale().get().floatValue(), 1.0F, f);
-+      return net.neoforged.neoforge.client.ForgeHooksClient.getFieldOfViewModifier(this, f);
++      return net.neoforged.neoforge.client.ClientHooks.getFieldOfViewModifier(this, f);
     }
  }

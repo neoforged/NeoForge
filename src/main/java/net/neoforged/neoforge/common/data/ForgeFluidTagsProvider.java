@@ -8,7 +8,7 @@ package net.neoforged.neoforge.common.data;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.FluidTagsProvider;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags.Fluids;
 
 import java.util.concurrent.CompletableFuture;
@@ -23,7 +23,7 @@ public final class ForgeFluidTagsProvider extends FluidTagsProvider
     @Override
     public void addTags(HolderLookup.Provider lookupProvider)
     {
-        tag(Fluids.MILK).addOptional(ForgeMod.MILK.getId()).addOptional(ForgeMod.FLOWING_MILK.getId());
+        tag(Fluids.MILK).addOptional(NeoForgeMod.MILK.getId()).addOptional(NeoForgeMod.FLOWING_MILK.getId());
     }
 
     @Override

@@ -7,7 +7,7 @@ package net.neoforged.neoforge.fluids.capability.wrappers;
 
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.core.Direction;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.capabilities.Capability;
 import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
 import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
@@ -65,9 +65,9 @@ public class FluidBucketWrapper implements IFluidHandlerItem, ICapabilityProvide
         {
             return new FluidStack(((BucketItem)item).getFluid(), FluidType.BUCKET_VOLUME);
         }
-        else if (item instanceof MilkBucketItem && ForgeMod.MILK.isPresent())
+        else if (item instanceof MilkBucketItem && NeoForgeMod.MILK.isPresent())
         {
-            return new FluidStack(ForgeMod.MILK.get(), FluidType.BUCKET_VOLUME);
+            return new FluidStack(NeoForgeMod.MILK.get(), FluidType.BUCKET_VOLUME);
         }
         else
         {

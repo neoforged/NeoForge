@@ -5,7 +5,7 @@
           return InteractionResult.SUCCESS;
        } else {
 -         p_55034_ = p_55034_.cycle(NOTE);
-+         int _new = net.neoforged.neoforge.common.ForgeHooks.onNoteChange(p_55035_, p_55036_, p_55034_, p_55034_.getValue(NOTE), p_55034_.cycle(NOTE).getValue(NOTE));
++         int _new = net.neoforged.neoforge.common.CommonHooks.onNoteChange(p_55035_, p_55036_, p_55034_, p_55034_.getValue(NOTE), p_55034_.cycle(NOTE).getValue(NOTE));
 +         if (_new == -1) return InteractionResult.FAIL;
 +         p_55034_ = p_55034_.setValue(NOTE, _new);
           p_55035_.setBlock(p_55036_, p_55034_, 3);

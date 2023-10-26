@@ -163,7 +163,7 @@
  
     @Override
     public void gameEvent(GameEvent p_215041_, Vec3 p_215042_, GameEvent.Context p_215043_) {
-+      if (!net.neoforged.neoforge.common.ForgeHooks.onVanillaGameEvent(this, p_215041_, p_215042_, p_215043_)) return;
++      if (!net.neoforged.neoforge.common.CommonHooks.onVanillaGameEvent(this, p_215041_, p_215042_, p_215043_)) return;
        this.gameEventDispatcher.post(p_215041_, p_215042_, p_215043_);
     }
  

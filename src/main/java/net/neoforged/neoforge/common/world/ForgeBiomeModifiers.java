@@ -19,7 +19,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
 import net.minecraft.world.level.levelgen.GenerationStep.Decoration;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 
 public final class ForgeBiomeModifiers
@@ -57,7 +57,7 @@ public final class ForgeBiomeModifiers
         @Override
         public Codec<? extends BiomeModifier> codec()
         {
-            return ForgeMod.ADD_FEATURES_BIOME_MODIFIER_TYPE.get();
+            return NeoForgeMod.ADD_FEATURES_BIOME_MODIFIER_TYPE.get();
         }
     }
 
@@ -104,7 +104,7 @@ public final class ForgeBiomeModifiers
         @Override
         public Codec<? extends BiomeModifier> codec()
         {
-            return ForgeMod.REMOVE_FEATURES_BIOME_MODIFIER_TYPE.get();
+            return NeoForgeMod.REMOVE_FEATURES_BIOME_MODIFIER_TYPE.get();
         }
     }
 
@@ -176,7 +176,7 @@ public final class ForgeBiomeModifiers
         @Override
         public Codec<? extends BiomeModifier> codec()
         {
-            return ForgeMod.ADD_SPAWNS_BIOME_MODIFIER_TYPE.get();
+            return NeoForgeMod.ADD_SPAWNS_BIOME_MODIFIER_TYPE.get();
         }
     }
 
@@ -212,7 +212,7 @@ public final class ForgeBiomeModifiers
         @Override
         public Codec<? extends BiomeModifier> codec()
         {
-            return ForgeMod.REMOVE_SPAWNS_BIOME_MODIFIER_TYPE.get();
+            return NeoForgeMod.REMOVE_SPAWNS_BIOME_MODIFIER_TYPE.get();
         }
     }
 }

@@ -124,7 +124,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Mod(NeoForgeVersion.MOD_ID)
-public class ForgeMod
+public class NeoForgeMod
 {
     public static final String VERSION_CHECK_CAT = "version_checking";
     private static final Logger LOGGER = LogManager.getLogger();
@@ -419,8 +419,8 @@ public class ForgeMod
     public static final RegistryObject<Fluid> MILK = RegistryObject.create(new ResourceLocation("milk"), ForgeRegistries.FLUIDS);
     public static final RegistryObject<Fluid> FLOWING_MILK = RegistryObject.create(new ResourceLocation("flowing_milk"), ForgeRegistries.FLUIDS);
 
-    private static ForgeMod INSTANCE;
-    public static ForgeMod getInstance()
+    private static NeoForgeMod INSTANCE;
+    public static NeoForgeMod getInstance()
     {
         return INSTANCE;
     }
@@ -433,7 +433,7 @@ public class ForgeMod
         enableMilkFluid = true;
     }
 
-    public ForgeMod()
+    public NeoForgeMod()
     {
         LOGGER.info(NEOFORGEMOD,"NeoForge mod loading, version {}, for MC {} with MCP {}", NeoForgeVersion.getVersion(), NeoFormVersion.getMCVersion(), NeoFormVersion.getMCPVersion());
         ForgeSnapshotsMod.logStartupWarning();

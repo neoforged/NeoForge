@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 public interface IPlayerExtension
 {
@@ -27,7 +27,7 @@ public interface IPlayerExtension
      */
     default double getEntityReach()
     {
-        double range = self().getAttributeValue(ForgeMod.ENTITY_REACH.get());
+        double range = self().getAttributeValue(NeoForgeMod.ENTITY_REACH.get());
         return range == 0 ? 0 : range + (self().isCreative() ? 3 : 0);
     }
 
@@ -37,7 +37,7 @@ public interface IPlayerExtension
      */
     default double getBlockReach()
     {
-        double reach = self().getAttributeValue(ForgeMod.BLOCK_REACH.get());
+        double reach = self().getAttributeValue(NeoForgeMod.BLOCK_REACH.get());
         return reach == 0 ? 0 : reach + (self().isCreative() ? 0.5 : 0);
     }
 

@@ -15,7 +15,7 @@
 +      this.recipeType = p_154994_;
     }
  
-+   /**@deprecated Forge: get burn times by calling ForgeHooks#getBurnTime(ItemStack)*/ @Deprecated
++   /**@deprecated Forge: get burn times by calling CommonHooks#getBurnTime(ItemStack)*/ @Deprecated
     public static Map<Item, Integer> getFuel() {
        Map<Item, Integer> map = Maps.newLinkedHashMap();
        add(map, Items.LAVA_BUCKET, 20000);
@@ -131,7 +131,7 @@
        } else {
           Item item = p_58343_.getItem();
 -         return getFuel().getOrDefault(item, 0);
-+         return net.neoforged.neoforge.common.ForgeHooks.getBurnTime(p_58343_, this.recipeType);
++         return net.neoforged.neoforge.common.CommonHooks.getBurnTime(p_58343_, this.recipeType);
        }
     }
  
@@ -140,7 +140,7 @@
  
     public static boolean isFuel(ItemStack p_58400_) {
 -      return getFuel().containsKey(p_58400_.getItem());
-+      return net.neoforged.neoforge.common.ForgeHooks.getBurnTime(p_58400_, null) > 0;
++      return net.neoforged.neoforge.common.CommonHooks.getBurnTime(p_58400_, null) > 0;
     }
  
     @Override
@@ -149,7 +149,7 @@
        } else {
           ItemStack itemstack = this.items.get(1);
 -         return isFuel(p_58390_) || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
-+         return net.neoforged.neoforge.common.ForgeHooks.getBurnTime(p_58390_, this.recipeType) > 0 || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
++         return net.neoforged.neoforge.common.CommonHooks.getBurnTime(p_58390_, this.recipeType) > 0 || p_58390_.is(Items.BUCKET) && !itemstack.is(Items.BUCKET);
        }
     }
  

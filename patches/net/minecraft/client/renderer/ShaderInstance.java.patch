@@ -37,7 +37,7 @@
 -                  p_173375_ = FileUtil.normalizeResourcePath((p_173374_ ? s1 : "shaders/include/") + p_173375_);
 -                  if (!this.importedPaths.add(p_173375_)) {
 +                  // FORGE: use the mod's namespace to look up resources if specified
-+                  ResourceLocation resourcelocation = net.neoforged.neoforge.client.ForgeHooksClient.getShaderImportLocation(s1, p_173374_, p_173375_);
++                  ResourceLocation resourcelocation = net.neoforged.neoforge.client.ClientHooks.getShaderImportLocation(s1, p_173374_, p_173375_);
 +                  if (!this.importedPaths.add(resourcelocation.toString())) {
                       return null;
                    } else {

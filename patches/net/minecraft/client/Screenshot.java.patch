@@ -4,7 +4,7 @@
           file2 = new File(file1, p_92307_);
        }
  
-+      net.neoforged.neoforge.client.event.ScreenshotEvent event = net.neoforged.neoforge.client.ForgeHooksClient.onScreenshot(nativeimage, file2);
++      net.neoforged.neoforge.client.event.ScreenshotEvent event = net.neoforged.neoforge.client.ClientHooks.onScreenshot(nativeimage, file2);
 +      if (event.isCanceled()) {
 +         p_92311_.accept(event.getCancelMessage());
 +         return;

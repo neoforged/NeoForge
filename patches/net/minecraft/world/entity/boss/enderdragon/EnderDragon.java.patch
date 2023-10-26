@@ -33,7 +33,7 @@
                 BlockState blockstate = this.level().getBlockState(blockpos);
                 if (!blockstate.isAir() && !blockstate.is(BlockTags.DRAGON_TRANSPARENT)) {
 -                  if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && !blockstate.is(BlockTags.DRAGON_IMMUNE)) {
-+                  if (net.neoforged.neoforge.common.ForgeHooks.canEntityDestroy(this.level(), blockpos, this) && !blockstate.is(BlockTags.DRAGON_IMMUNE)) {
++                  if (net.neoforged.neoforge.common.CommonHooks.canEntityDestroy(this.level(), blockpos, this) && !blockstate.is(BlockTags.DRAGON_IMMUNE)) {
                       flag1 = this.level().removeBlock(blockpos, false) || flag1;
                    } else {
                       flag = true;

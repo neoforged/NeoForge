@@ -24,7 +24,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.ForgeSpawnEggItem;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.capabilities.ICapabilitySerializable;
@@ -204,7 +204,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
     /**
      * @return Return the height in blocks the Entity can step up without needing to jump
      * This is the sum of vanilla's {@link Entity#maxUpStep()} method and the current value
-     * of the {@link ForgeMod#STEP_HEIGHT} attribute
+     * of the {@link NeoForgeMod#STEP_HEIGHT} attribute
      * (if this Entity is a {@link LivingEntity} and has the attribute), clamped at 0.
      */
     default float getStepHeight()
@@ -212,7 +212,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
         float vanillaStep = self().maxUpStep();
         if (self() instanceof LivingEntity living)
         {
-            AttributeInstance stepHeightAttribute = living.getAttribute(ForgeMod.STEP_HEIGHT.get());
+            AttributeInstance stepHeightAttribute = living.getAttribute(NeoForgeMod.STEP_HEIGHT.get());
             if (stepHeightAttribute != null)
             {
                 return (float) Math.max(0, vanillaStep + stepHeightAttribute.getValue());

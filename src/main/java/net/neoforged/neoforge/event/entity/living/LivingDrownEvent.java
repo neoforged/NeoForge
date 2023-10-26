@@ -9,14 +9,14 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * LivingDrownEvent is fired whenever a living entity can't breathe and its air supply is less than or equal to zero.
  * <p>
- * This event is fired via {@link ForgeHooks#onLivingBreathe(LivingEntity, int, int)}.
+ * This event is fired via {@link CommonHooks#onLivingBreathe(LivingEntity, int, int)}.
  * <p>
  * This event is {@link ICancellableEvent}. Effects of cancellation are noted in {@link #setCanceled(boolean)}.
  * <p>

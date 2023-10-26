@@ -5,7 +5,7 @@
           this.animatedTextures = List.copyOf(list1);
        }
 +
-+      net.neoforged.neoforge.client.ForgeHooksClient.onTextureStitchedPost(this);
++      net.neoforged.neoforge.client.ClientHooks.onTextureStitchedPost(this);
     }
  
     @Override

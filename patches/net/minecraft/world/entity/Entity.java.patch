@@ -82,7 +82,7 @@
        if (this.isInLava()) {
           this.lavaHurt();
 -         this.fallDistance *= 0.5F;
-+         this.fallDistance *= this.getFluidFallDistanceModifier(net.neoforged.neoforge.common.ForgeMod.LAVA_TYPE.get());
++         this.fallDistance *= this.getFluidFallDistanceModifier(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.get());
        }
  
        this.checkBelowWorld();
@@ -204,7 +204,7 @@
     private void updateFluidOnEyes() {
        this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
        this.fluidOnEyes.clear();
-+      this.forgeFluidTypeOnEyes = net.neoforged.neoforge.common.ForgeMod.EMPTY_TYPE.get();
++      this.forgeFluidTypeOnEyes = net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.get();
        double d0 = this.getEyeY() - 0.11111111F;
        Entity entity = this.getVehicle();
        if (entity instanceof Boat boat && !boat.isUnderWater() && boat.getBoundingBox().maxY >= d0 && boat.getBoundingBox().minY <= d0) {
@@ -248,14 +248,14 @@
  
 +   @Deprecated // Forge: Use isEyeInFluidType instead
     public boolean isEyeInFluid(TagKey<Fluid> p_204030_) {
-+      if (p_204030_ == FluidTags.WATER) return this.isEyeInFluidType(net.neoforged.neoforge.common.ForgeMod.WATER_TYPE.get());
-+      else if (p_204030_ == FluidTags.LAVA) return this.isEyeInFluidType(net.neoforged.neoforge.common.ForgeMod.LAVA_TYPE.get());
++      if (p_204030_ == FluidTags.WATER) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.get());
++      else if (p_204030_ == FluidTags.LAVA) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.get());
        return this.fluidOnEyes.contains(p_204030_);
     }
  
     public boolean isInLava() {
 -      return !this.firstTick && this.fluidHeight.getDouble(FluidTags.LAVA) > 0.0;
-+      return !this.firstTick && this.forgeFluidTypeHeight.getDouble(net.neoforged.neoforge.common.ForgeMod.LAVA_TYPE.get()) > 0.0D;
++      return !this.firstTick && this.forgeFluidTypeHeight.getDouble(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.get()) > 0.0D;
     }
  
     public void moveRelative(float p_19921_, Vec3 p_19922_) {
@@ -366,7 +366,7 @@
 +   }
 +   @Nullable
 +   public Entity changeDimension(ServerLevel p_20118_, net.neoforged.neoforge.common.util.ITeleporter teleporter) {
-+      if (!net.neoforged.neoforge.common.ForgeHooks.onTravelToDimension(this, p_20118_.dimension())) return null;
++      if (!net.neoforged.neoforge.common.CommonHooks.onTravelToDimension(this, p_20118_.dimension())) return null;
        if (this.level() instanceof ServerLevel && !this.isRemoved()) {
           this.level().getProfiler().push("changeDimension");
           this.unRide();
@@ -441,8 +441,8 @@
 +   @Deprecated // Forge: Use no parameter version instead, only for vanilla Tags
     public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_, double p_204033_) {
 +      this.updateFluidHeightAndDoFluidPushing();
-+      if(p_204032_ == FluidTags.WATER) return this.isInFluidType(net.neoforged.neoforge.common.ForgeMod.WATER_TYPE.get());
-+      else if (p_204032_ == FluidTags.LAVA) return this.isInFluidType(net.neoforged.neoforge.common.ForgeMod.LAVA_TYPE.get());
++      if(p_204032_ == FluidTags.WATER) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.get());
++      else if (p_204032_ == FluidTags.LAVA) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.get());
 +      else return false;
 +   }
 +
@@ -534,8 +534,8 @@
  
 +   @Deprecated // Forge: Use getFluidTypeHeight instead
     public double getFluidHeight(TagKey<Fluid> p_204037_) {
-+      if (p_204037_ == FluidTags.WATER) return getFluidTypeHeight(net.neoforged.neoforge.common.ForgeMod.WATER_TYPE.get());
-+      else if (p_204037_ == FluidTags.LAVA) return getFluidTypeHeight(net.neoforged.neoforge.common.ForgeMod.LAVA_TYPE.get());
++      if (p_204037_ == FluidTags.WATER) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.get());
++      else if (p_204037_ == FluidTags.LAVA) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.get());
        return this.fluidHeight.getDouble(p_204037_);
     }
  
@@ -563,13 +563,13 @@
 +   /**
 +    * Changes the legacy {@link #maxUpStep} field. Only used by vanilla entities to improve maintainability.
 +    * <p>
-+    * For your own entities, you should change the default value of {@linkplain net.neoforged.neoforge.common.ForgeMod#STEP_HEIGHT ForgeMod#STEP_HEIGHT}
++    * For your own entities, you should change the default value of {@linkplain net.neoforged.neoforge.common.NeoForgeMod#STEP_HEIGHT NeoForgeMod#STEP_HEIGHT}
 +    * during attribute creation.
 +    * <p>
 +    * For modifying the step height of other entities, you should use {@link net.minecraft.world.entity.ai.attributes.AttributeModifier AttributeModifiers} for
-+    * {@link net.neoforged.neoforge.common.ForgeMod#STEP_HEIGHT ForgeMod#STEP_HEIGHT}.
++    * {@link net.neoforged.neoforge.common.NeoForgeMod#STEP_HEIGHT NeoForgeMod#STEP_HEIGHT}.
 +    *
-+    * @deprecated Use attribute modifiers for the {@link net.neoforged.neoforge.common.ForgeMod#STEP_HEIGHT ForgeMod#STEP_HEIGHT} attribute.
++    * @deprecated Use attribute modifiers for the {@link net.neoforged.neoforge.common.NeoForgeMod#STEP_HEIGHT NeoForgeMod#STEP_HEIGHT} attribute.
 +    */
 +   @Deprecated
     public void setMaxUpStep(float p_275672_) {
@@ -648,7 +648,7 @@
 +   }
 +
 +   protected Object2DoubleMap<net.neoforged.neoforge.fluids.FluidType> forgeFluidTypeHeight = new Object2DoubleArrayMap<>(net.neoforged.neoforge.fluids.FluidType.SIZE.get());
-+   private net.neoforged.neoforge.fluids.FluidType forgeFluidTypeOnEyes = net.neoforged.neoforge.common.ForgeMod.EMPTY_TYPE.get();
++   private net.neoforged.neoforge.fluids.FluidType forgeFluidTypeOnEyes = net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.get();
 +   protected final void setFluidTypeHeight(net.neoforged.neoforge.fluids.FluidType type, double height) {
 +      this.forgeFluidTypeHeight.put(type, height);
 +   }
@@ -671,7 +671,7 @@
 +   }
 +   @Override
 +   public net.neoforged.neoforge.fluids.FluidType getMaxHeightFluidType() {
-+      return this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(Object2DoubleMap.Entry::getDoubleValue)).map(Object2DoubleMap.Entry::getKey).orElseGet(net.neoforged.neoforge.common.ForgeMod.EMPTY_TYPE);
++      return this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(Object2DoubleMap.Entry::getDoubleValue)).map(Object2DoubleMap.Entry::getKey).orElseGet(net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE);
 +   }
 +
 +   /* ================================== Forge End =====================================*/

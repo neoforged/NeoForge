@@ -4,7 +4,7 @@
     }
  
     protected void setGameMode(GameType p_105318_) {
-+      net.neoforged.neoforge.client.ForgeHooksClient.onClientChangeGameType(this, this.gameMode, p_105318_);
++      net.neoforged.neoforge.client.ClientHooks.onClientChangeGameType(this, this.gameMode, p_105318_);
        this.gameMode = p_105318_;
     }
  

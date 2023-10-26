@@ -4,7 +4,7 @@
  
           for(LerpingBossEvent lerpingbossevent : this.events.values()) {
              int k = i / 2 - 91;
-+            var event = net.neoforged.neoforge.client.ForgeHooksClient.onCustomizeBossEventProgress(p_283175_, this.minecraft.getWindow(), lerpingbossevent, k, j, 10 + this.minecraft.font.lineHeight);
++            var event = net.neoforged.neoforge.client.ClientHooks.onCustomizeBossEventProgress(p_283175_, this.minecraft.getWindow(), lerpingbossevent, k, j, 10 + this.minecraft.font.lineHeight);
 +            if (!event.isCanceled()) {
              this.drawBar(p_283175_, k, j, lerpingbossevent);
              Component component = lerpingbossevent.getName();

@@ -41,7 +41,7 @@
 +      this.modId = modId;
 +      this.existingFileHelper = existingFileHelper;
 +      this.resourceType = new net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType(net.minecraft.server.packs.PackType.SERVER_DATA, ".json", TagManager.getTagDir(p_275476_));
-+      this.elementResourceType = new net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType(net.minecraft.server.packs.PackType.SERVER_DATA, ".json", net.neoforged.neoforge.common.ForgeHooks.prefixNamespace(p_275476_.location()));
++      this.elementResourceType = new net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType(net.minecraft.server.packs.PackType.SERVER_DATA, ".json", net.neoforged.neoforge.common.CommonHooks.prefixNamespace(p_275476_.location()));
 +   }
 +
 +   // Forge: Allow customizing the path for a given tag or returning null

@@ -5,7 +5,7 @@
  
        Component resolveComponent(CommandSourceStack p_232197_) throws CommandSyntaxException {
 -         return this.toComponent(p_232197_, p_232197_.hasPermission(2));
-+         return this.toComponent(p_232197_, net.neoforged.neoforge.common.ForgeHooks.canUseEntitySelectors(p_232197_));
++         return this.toComponent(p_232197_, net.neoforged.neoforge.common.CommonHooks.canUseEntitySelectors(p_232197_));
        }
  
        public Component toComponent(CommandSourceStack p_96850_, boolean p_96851_) throws CommandSyntaxException {

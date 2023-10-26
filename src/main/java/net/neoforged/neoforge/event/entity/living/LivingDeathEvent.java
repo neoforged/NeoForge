@@ -7,7 +7,7 @@ package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,7 +20,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * {@link Player#die(DamageSource)}, and
  * {@link ServerPlayer#die(DamageSource)}. <br>
  * <br>
- * This event is fired via the {@link ForgeHooks#onLivingDeath(LivingEntity, DamageSource)}.<br>
+ * This event is fired via the {@link CommonHooks#onLivingDeath(LivingEntity, DamageSource)}.<br>
  * <br>
  * {@link #source} contains the DamageSource that caused the entity to die. <br>
  * <br>

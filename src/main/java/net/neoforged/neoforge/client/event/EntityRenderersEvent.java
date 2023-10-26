@@ -29,7 +29,7 @@ import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.SkullBlock.Type;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.neoforge.client.ForgeHooksClient;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
@@ -85,7 +85,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          */
         public void registerLayerDefinition(ModelLayerLocation layerLocation, Supplier<LayerDefinition> supplier)
         {
-            ForgeHooksClient.registerLayerDefinition(layerLocation, supplier);
+            ClientHooks.registerLayerDefinition(layerLocation, supplier);
         }
     }
 

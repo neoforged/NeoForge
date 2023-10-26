@@ -200,11 +200,12 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ForgeHooks
+/**
+ * Class for various common (i.e. client and server-side) hooks.
+ */
+public class CommonHooks
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    @SuppressWarnings("unused")
-    private static final Marker FORGEHOOKS = MarkerManager.getMarker("FORGEHOOKS");
     private static final Marker WORLDPERSISTENCE = MarkerManager.getMarker("WP");
 
     public static boolean canContinueUsing(@NotNull ItemStack from, @NotNull ItemStack to)
@@ -928,13 +929,13 @@ public class ForgeHooks
     public static FluidType getVanillaFluidType(Fluid fluid)
     {
         if (fluid == Fluids.EMPTY)
-            return ForgeMod.EMPTY_TYPE.get();
+            return NeoForgeMod.EMPTY_TYPE.get();
         if (fluid == Fluids.WATER || fluid == Fluids.FLOWING_WATER)
-            return ForgeMod.WATER_TYPE.get();
+            return NeoForgeMod.WATER_TYPE.get();
         if (fluid == Fluids.LAVA || fluid == Fluids.FLOWING_LAVA)
-            return ForgeMod.LAVA_TYPE.get();
-        if (ForgeMod.MILK.filter(milk -> milk == fluid).isPresent() || ForgeMod.FLOWING_MILK.filter(milk -> milk == fluid).isPresent())
-            return ForgeMod.MILK_TYPE.get();
+            return NeoForgeMod.LAVA_TYPE.get();
+        if (NeoForgeMod.MILK.filter(milk -> milk == fluid).isPresent() || NeoForgeMod.FLOWING_MILK.filter(milk -> milk == fluid).isPresent())
+            return NeoForgeMod.MILK_TYPE.get();
         throw new RuntimeException("Mod fluids must override getFluidType.");
     }
 
@@ -1536,7 +1537,7 @@ public class ForgeHooks
         }
         else if (provider instanceof CommandSourceStack source && source.source instanceof ServerPlayer player)
         {
-            return PermissionAPI.getPermission(player, ForgeMod.USE_SELECTORS_PERMISSION);
+            return PermissionAPI.getPermission(player, NeoForgeMod.USE_SELECTORS_PERMISSION);
         }
         return false;
     }

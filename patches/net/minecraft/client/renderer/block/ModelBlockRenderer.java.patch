@@ -128,7 +128,7 @@
     ) {
        for(BakedQuad bakedquad : p_111018_) {
           this.calculateShape(p_111013_, p_111014_, p_111015_, bakedquad.getVertices(), bakedquad.getDirection(), p_111019_, p_111020_);
-+         if (!net.neoforged.neoforge.client.ForgeHooksClient.calculateFaceWithoutAO(p_111013_, p_111014_, p_111015_, bakedquad, p_111020_.get(0), p_111021_.brightness, p_111021_.lightmap))
++         if (!net.neoforged.neoforge.client.ClientHooks.calculateFaceWithoutAO(p_111013_, p_111014_, p_111015_, bakedquad, p_111020_.get(0), p_111021_.brightness, p_111021_.lightmap))
           p_111021_.calculate(p_111013_, p_111014_, p_111015_, bakedquad.getDirection(), p_111019_, p_111020_, bakedquad.isShade());
           this.putQuadData(
              p_111013_,

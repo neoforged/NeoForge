@@ -15,7 +15,7 @@
  
     public void setTarget(@Nullable LivingEntity p_21544_) {
 -      this.target = p_21544_;
-+      net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent changeTargetEvent = net.neoforged.neoforge.common.ForgeHooks.onLivingChangeTarget(this, p_21544_, net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET);
++      net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent changeTargetEvent = net.neoforged.neoforge.common.CommonHooks.onLivingChangeTarget(this, p_21544_, net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET);
 +      if(!changeTargetEvent.isCanceled()) {
 +          this.target = changeTargetEvent.getNewTarget();
 +      }

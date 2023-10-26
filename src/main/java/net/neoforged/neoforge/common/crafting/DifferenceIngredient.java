@@ -11,7 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class DifferenceIngredient extends Ingredient
     
     protected DifferenceIngredient(Ingredient base, Ingredient subtracted)
     {
-        super(Arrays.stream(base.getValues()).map(value -> new SubtractingValue(value, subtracted)), ForgeMod.DIFFERENCE_INGREDIENT_TYPE::get);
+        super(Arrays.stream(base.getValues()).map(value -> new SubtractingValue(value, subtracted)), NeoForgeMod.DIFFERENCE_INGREDIENT_TYPE::get);
         
         this.base = base;
         this.subtracted = subtracted;

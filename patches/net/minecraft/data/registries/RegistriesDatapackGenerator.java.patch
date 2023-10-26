@@ -48,7 +48,7 @@
           .map(
              p_255847_ -> {
 -               PackOutput.PathProvider packoutput$pathprovider = this.output.createPathProvider(PackOutput.Target.DATA_PACK, resourcekey.location().getPath());
-+               PackOutput.PathProvider packoutput$pathprovider = this.output.createPathProvider(PackOutput.Target.DATA_PACK, net.neoforged.neoforge.common.ForgeHooks.prefixNamespace(resourcekey.location()));
++               PackOutput.PathProvider packoutput$pathprovider = this.output.createPathProvider(PackOutput.Target.DATA_PACK, net.neoforged.neoforge.common.CommonHooks.prefixNamespace(resourcekey.location()));
                 return CompletableFuture.allOf(
                    p_255847_.listElements()
 +                     .filter(holder -> this.namespacePredicate.test(holder.key().location().getNamespace()))

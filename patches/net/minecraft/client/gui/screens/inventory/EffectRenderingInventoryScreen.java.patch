@@ -4,7 +4,7 @@
        Collection<MobEffectInstance> collection = this.minecraft.player.getActiveEffects();
        if (!collection.isEmpty() && j >= 32) {
           boolean flag = j >= 120;
-+         var event = net.neoforged.neoforge.client.ForgeHooksClient.onScreenPotionSize(this, j, !flag, i);
++         var event = net.neoforged.neoforge.client.ClientHooks.onScreenPotionSize(this, j, !flag, i);
 +         if (event.isCanceled()) return;
 +         flag = !event.isCompact();
 +         i = event.getHorizontalOffset();
@@ -15,7 +15,7 @@
  
 -         Iterable<MobEffectInstance> iterable = Ordering.natural().sortedCopy(collection);
 +
-+         Iterable<MobEffectInstance> iterable = collection.stream().filter(net.neoforged.neoforge.client.ForgeHooksClient::shouldRenderEffect).sorted().collect(java.util.stream.Collectors.toList());
++         Iterable<MobEffectInstance> iterable = collection.stream().filter(net.neoforged.neoforge.client.ClientHooks::shouldRenderEffect).sorted().collect(java.util.stream.Collectors.toList());
           this.renderBackgrounds(p_281945_, i, k, iterable, flag);
           this.renderIcons(p_281945_, i, k, iterable, flag);
           if (flag) {

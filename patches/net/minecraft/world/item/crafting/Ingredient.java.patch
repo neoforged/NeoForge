@@ -18,11 +18,11 @@
 +   
     protected Ingredient(Stream<? extends Ingredient.Value> p_43907_) {
 -      this.values = p_43907_.toArray(p_43933_ -> new Ingredient.Value[p_43933_]);
-+      this(p_43907_, net.neoforged.neoforge.common.ForgeMod.VANILLA_INGREDIENT_TYPE::get);
++      this(p_43907_, net.neoforged.neoforge.common.NeoForgeMod.VANILLA_INGREDIENT_TYPE::get);
     }
  
     private Ingredient(Ingredient.Value[] p_301044_) {
-+      this(p_301044_, net.neoforged.neoforge.common.ForgeMod.VANILLA_INGREDIENT_TYPE::get);
++      this(p_301044_, net.neoforged.neoforge.common.NeoForgeMod.VANILLA_INGREDIENT_TYPE::get);
 +   }
 +   
 +   protected Ingredient(Stream<? extends Ingredient.Value> p_43907_, java.util.function.Supplier<net.neoforged.neoforge.common.crafting.IngredientType<?>> type) {

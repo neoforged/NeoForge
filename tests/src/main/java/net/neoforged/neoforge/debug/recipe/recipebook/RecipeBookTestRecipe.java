@@ -19,7 +19,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 
 import java.util.*;
 import java.util.function.Function;
@@ -137,7 +137,7 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
         return this.getIngredients().isEmpty() ||
                 this.getIngredients().stream()
                         .filter((ingredient) -> !ingredient.isEmpty())
-                        .anyMatch(ForgeHooks::hasNoElements);
+                        .anyMatch(CommonHooks::hasNoElements);
     }
 
     @Override

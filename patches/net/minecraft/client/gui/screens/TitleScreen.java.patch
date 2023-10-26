@@ -37,7 +37,7 @@
              this.warningLabel.render(p_282860_, i);
           }
  
-+         net.neoforged.neoforge.client.ForgeHooksClient.renderMainMenu(this, p_282860_, this.font, this.width, this.height, i);
++         net.neoforged.neoforge.client.ClientHooks.renderMainMenu(this, p_282860_, this.font, this.width, this.height, i);
           if (this.splash != null) {
              this.splash.render(p_282860_, this.width, this.font, i);
           }

@@ -4,14 +4,14 @@
        if (iteminhandrenderer$handrenderselection.renderMainHand) {
           float f4 = interactionhand == InteractionHand.MAIN_HAND ? f : 0.0F;
           float f5 = 1.0F - Mth.lerp(p_109315_, this.oMainHandHeight, this.mainHandHeight);
-+         if(!net.neoforged.neoforge.client.ForgeHooksClient.renderSpecificFirstPersonHand(InteractionHand.MAIN_HAND, p_109316_, p_109317_, p_109319_, p_109315_, f1, f4, f5, this.mainHandItem))
++         if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonHand(InteractionHand.MAIN_HAND, p_109316_, p_109317_, p_109319_, p_109315_, f1, f4, f5, this.mainHandItem))
           this.renderArmWithItem(p_109318_, p_109315_, f1, InteractionHand.MAIN_HAND, f4, this.mainHandItem, f5, p_109316_, p_109317_, p_109319_);
        }
  
        if (iteminhandrenderer$handrenderselection.renderOffHand) {
           float f6 = interactionhand == InteractionHand.OFF_HAND ? f : 0.0F;
           float f7 = 1.0F - Mth.lerp(p_109315_, this.oOffHandHeight, this.offHandHeight);
-+         if(!net.neoforged.neoforge.client.ForgeHooksClient.renderSpecificFirstPersonHand(InteractionHand.OFF_HAND, p_109316_, p_109317_, p_109319_, p_109315_, f1, f6, f7, this.offHandItem))
++         if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonHand(InteractionHand.OFF_HAND, p_109316_, p_109317_, p_109319_, p_109315_, f1, f6, f7, this.offHandItem))
           this.renderArmWithItem(p_109318_, p_109315_, f1, InteractionHand.OFF_HAND, f6, this.offHandItem, f7, p_109316_, p_109317_, p_109319_);
        }
  
@@ -38,8 +38,8 @@
           float f = localplayer.getAttackStrengthScale(1.0F);
 -         this.mainHandHeight += Mth.clamp((this.mainHandItem == itemstack ? f * f * f : 0.0F) - this.mainHandHeight, -0.4F, 0.4F);
 -         this.offHandHeight += Mth.clamp((float)(this.offHandItem == itemstack1 ? 1 : 0) - this.offHandHeight, -0.4F, 0.4F);
-+         boolean requipM = net.neoforged.neoforge.client.ForgeHooksClient.shouldCauseReequipAnimation(this.mainHandItem, itemstack, localplayer.getInventory().selected);
-+         boolean requipO = net.neoforged.neoforge.client.ForgeHooksClient.shouldCauseReequipAnimation(this.offHandItem, itemstack1, -1);
++         boolean requipM = net.neoforged.neoforge.client.ClientHooks.shouldCauseReequipAnimation(this.mainHandItem, itemstack, localplayer.getInventory().selected);
++         boolean requipO = net.neoforged.neoforge.client.ClientHooks.shouldCauseReequipAnimation(this.offHandItem, itemstack1, -1);
 +
 +         if (!requipM && this.mainHandItem != itemstack)
 +            this.mainHandItem = itemstack;

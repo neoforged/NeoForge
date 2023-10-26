@@ -66,11 +66,11 @@ public class MinecraftForge
        if (all.size() == 0)
         return;
 
-       ForgeMod.log.debug("Preloading CrashReport Classes");
+       NeoForgeMod.log.debug("Preloading CrashReport Classes");
        Collections.sort(all); //Sort it because I like pretty output ;)
        for (String name : all)
        {
-           ForgeMod.log.debug("\t{}", name);
+           NeoForgeMod.log.debug("\t{}", name);
            try
            {
                Class.forName(name.replace('/', '.'), false, MinecraftForge.class.getClassLoader());

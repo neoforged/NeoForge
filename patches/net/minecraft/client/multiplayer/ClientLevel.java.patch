@@ -80,7 +80,7 @@
        }
  
        public void setDifficulty(Difficulty p_104852_) {
-+         net.neoforged.neoforge.common.ForgeHooks.onDifficultyChange(p_104852_, this.difficulty);
++         net.neoforged.neoforge.common.CommonHooks.onDifficultyChange(p_104852_, this.difficulty);
           this.difficulty = p_104852_;
        }
  

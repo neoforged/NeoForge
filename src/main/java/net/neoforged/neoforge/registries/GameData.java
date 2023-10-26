@@ -48,7 +48,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.levelgen.DebugLevelSource;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.CreativeModeTabRegistry;
-import net.neoforged.neoforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate;
 import net.neoforged.neoforge.common.crafting.IngredientType;
@@ -381,7 +381,7 @@ public class GameData
             throw aggregate;
         } else
         {
-            ForgeHooks.modifyAttributes();
+            CommonHooks.modifyAttributes();
             SpawnPlacements.fireSpawnPlacementEvent();
             CreativeModeTabRegistry.sortTabs();
         }

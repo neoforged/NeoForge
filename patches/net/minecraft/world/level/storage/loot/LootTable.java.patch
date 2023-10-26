@@ -60,7 +60,7 @@
        ObjectArrayList<ItemStack> objectarraylist = new ObjectArrayList<>();
 -      this.getRandomItems(p_230923_, objectarraylist::add);
 +      this.getRandomItemsRaw(p_230923_, createStackSplitter(p_230923_.getLevel(), objectarraylist::add));
-+      objectarraylist = net.neoforged.neoforge.common.ForgeHooks.modifyLoot(this.getLootTableId(), objectarraylist, p_230923_);
++      objectarraylist = net.neoforged.neoforge.common.CommonHooks.modifyLoot(this.getLootTableId(), objectarraylist, p_230923_);
        return objectarraylist;
     }
  

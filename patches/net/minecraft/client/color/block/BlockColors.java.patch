@@ -14,7 +14,7 @@
        }, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
        blockcolors.addColoringState(StemBlock.AGE, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
        blockcolors.register((p_92596_, p_92597_, p_92598_, p_92599_) -> p_92597_ != null && p_92598_ != null ? 2129968 : 7455580, Blocks.LILY_PAD);
-+      net.neoforged.neoforge.client.ForgeHooksClient.onBlockColorsInit(blockcolors);
++      net.neoforged.neoforge.client.ClientHooks.onBlockColorsInit(blockcolors);
        return blockcolors;
     }
  
