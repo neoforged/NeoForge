@@ -5,7 +5,7 @@
        this.blockEntityRenderer = p_173400_;
        this.blockColors = p_173401_;
 -      this.modelRenderer = new ModelBlockRenderer(this.blockColors);
-+      this.modelRenderer = new net.neoforged.neoforge.client.model.lighting.ForgeModelBlockRenderer(this.blockColors);
++      this.modelRenderer = new net.neoforged.neoforge.client.model.lighting.LightPipelineAwareModelBlockRenderer(this.blockColors);
        this.liquidBlockRenderer = new LiquidBlockRenderer();
     }
  

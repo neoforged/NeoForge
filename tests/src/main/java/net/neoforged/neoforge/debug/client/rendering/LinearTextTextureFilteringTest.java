@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.debug.client.rendering;
 
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.neoforged.neoforge.client.ForgeRenderTypes;
+import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.client.event.ScreenEvent.Render;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -24,7 +24,7 @@ public class LinearTextTextureFilteringTest
     {
         if (ENABLED && event.getScreen() instanceof TitleScreen)
         {
-            ForgeRenderTypes.enableTextTextureLinearFiltering = true;
+            NeoForgeRenderTypes.enableTextTextureLinearFiltering = true;
         }
     }
 
@@ -33,7 +33,7 @@ public class LinearTextTextureFilteringTest
     {
         if (ENABLED && event.getScreen() instanceof TitleScreen)
         {
-            ForgeRenderTypes.enableTextTextureLinearFiltering = false;
+            NeoForgeRenderTypes.enableTextTextureLinearFiltering = false;
         }
     }
 }

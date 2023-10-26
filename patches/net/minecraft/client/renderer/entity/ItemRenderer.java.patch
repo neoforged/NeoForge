@@ -5,7 +5,7 @@
        this.minecraft = p_266926_;
        this.textureManager = p_266774_;
 -      this.itemModelShaper = new ItemModelShaper(p_266850_);
-+      this.itemModelShaper = new net.neoforged.neoforge.client.model.ForgeItemModelShaper(p_266850_);
++      this.itemModelShaper = new net.neoforged.neoforge.client.model.RegistryAwareItemModelShaper(p_266850_);
        this.blockEntityRenderer = p_267049_;
  
        for(Item item : BuiltInRegistries.ITEM) {

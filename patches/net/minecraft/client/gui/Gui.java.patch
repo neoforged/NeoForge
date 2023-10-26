@@ -59,35 +59,6 @@
           }
        }
  
-@@ -856,17 +868,17 @@
-    }
- 
-    protected void renderHearts(
--      GuiGraphics p_282497_,
--      Player p_168690_,
--      int p_168691_,
--      int p_168692_,
--      int p_168693_,
--      int p_168694_,
--      float p_168695_,
--      int p_168696_,
--      int p_168697_,
--      int p_168698_,
--      boolean p_168699_
-+         GuiGraphics p_282497_,
-+         Player p_168690_,
-+         int p_168691_,
-+         int p_168692_,
-+         int p_168693_,
-+         int p_168694_,
-+         float p_168695_,
-+         int p_168696_,
-+         int p_168697_,
-+         int p_168698_,
-+         boolean p_168699_
-    ) {
-       Gui.HeartType gui$hearttype = Gui.HeartType.forPlayer(p_168690_);
-       boolean flag = p_168690_.level().getLevelData().isHardcore();
 @@ -1085,9 +1097,7 @@
           ItemStack itemstack = this.minecraft.player.getInventory().getSelected();
           if (itemstack.isEmpty()) {

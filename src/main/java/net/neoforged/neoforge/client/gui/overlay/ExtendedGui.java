@@ -40,9 +40,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Forge wrapper around {@link Gui} to be able to render {@link IGuiOverlay HUD overlays}.
+ * NeoForge extension of {@link Gui} to be able to render {@link IGuiOverlay HUD overlays}.
  */
-public class ForgeGui extends Gui
+public class ExtendedGui extends Gui
 {
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -58,7 +58,7 @@ public class ForgeGui extends Gui
 
     private Font font = null;
 
-    public ForgeGui(Minecraft mc)
+    public ExtendedGui(Minecraft mc)
     {
         super(mc, mc.getItemRenderer());
     }

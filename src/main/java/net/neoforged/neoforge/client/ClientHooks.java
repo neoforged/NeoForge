@@ -143,8 +143,6 @@ import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtension
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.overlay.GuiOverlayManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.textures.ForgeTextureMetadata;
-import net.neoforged.neoforge.client.textures.TextureAtlasSpriteLoaderManager;
 import net.neoforged.neoforge.common.ForgeI18n;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.MinecraftForge;
@@ -758,45 +756,6 @@ public class ClientHooks
         return IClientMobEffectExtensions.of(effectInstance).isVisibleInInventory(effectInstance);
     }
 
-    @Nullable
-    public static SpriteContents loadSpriteContents(
-            ResourceLocation name,
-            Resource resource,
-            FrameSize frameSize,
-            NativeImage image,
-            AnimationMetadataSection animationMeta
-    )
-    {
-        try
-        {
-            ForgeTextureMetadata forgeMeta = ForgeTextureMetadata.forResource(resource);
-            return forgeMeta.getLoader() == null ? null : forgeMeta.getLoader().loadContents(name, resource, frameSize, image, resource.metadata());
-        }
-        catch (IOException e)
-        {
-            LOGGER.error("Unable to get NeoForge metadata for {}, falling back to vanilla loading", name);
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @Nullable
-    public static TextureAtlasSprite loadTextureAtlasSprite(
-            ResourceLocation atlasName,
-            SpriteContents contents,
-            int atlasWidth, int atlasHeight,
-            int spriteX, int spriteY, int mipmapLevel
-    )
-    {
-        return contents
-                .metadata()
-                .getSection(ForgeTextureMetadata.SERIALIZER)
-                .map(ForgeTextureMetadata::getLoader)
-                .map(loader -> loader.makeSprite(atlasName, contents, atlasWidth, atlasHeight, spriteX, spriteY, mipmapLevel))
-                .orElse(null);
-    }
-
-
     private static final Map<ModelLayerLocation, Supplier<LayerDefinition>> layerDefinitions = new HashMap<>();
 
     public static void registerLayerDefinition(ModelLayerLocation layerLocation, Supplier<LayerDefinition> supplier)
@@ -1235,7 +1194,6 @@ public class ClientHooks
         ModLoader.get().postEvent(new RegisterClientReloadListenersEvent(resourceManager));
         ModLoader.get().postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
         ModLoader.get().postEvent(new EntityRenderersEvent.RegisterRenderers());
-        TextureAtlasSpriteLoaderManager.init();
         ClientTooltipComponentManager.init();
         EntitySpectatorShaderManager.init();
         ClientHooks.onRegisterKeyMappings(mc.options);

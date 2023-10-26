@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.ForgeRenderTypes;
+import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
@@ -198,7 +198,7 @@ public class RenderLevelStageEvent extends Event
          * Called within a fabulous graphics target.
          * Happens after entities render.
          *
-         * @see ForgeRenderTypes#TRANSLUCENT_ON_PARTICLES_TARGET
+         * @see NeoForgeRenderTypes#TRANSLUCENT_ON_PARTICLES_TARGET
          */
         public static final Stage AFTER_PARTICLES = register("after_particles", null);
         /**

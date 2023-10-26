@@ -15,6 +15,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,12 +24,13 @@ import java.util.Map;
 /**
  * Wrapper around {@link ItemModelShaper} that cleans up the internal maps to respect ID remapping.
  */
-public class ForgeItemModelShaper extends ItemModelShaper
+@ApiStatus.Internal
+public class RegistryAwareItemModelShaper extends ItemModelShaper
 {
     private final Map<Holder.Reference<Item>, ModelResourceLocation> locations = Maps.newHashMap();
     private final Map<Holder.Reference<Item>, BakedModel> models = Maps.newHashMap();
 
-    public ForgeItemModelShaper(ModelManager manager)
+    public RegistryAwareItemModelShaper(ModelManager manager)
     {
         super(manager);
     }

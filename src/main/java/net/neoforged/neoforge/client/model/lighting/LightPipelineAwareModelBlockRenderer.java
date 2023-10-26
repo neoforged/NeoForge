@@ -21,19 +21,21 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.ForgeConfig;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
 /**
  * Wrapper around {@link ModelBlockRenderer} to allow rendering blocks via Forge's lighting pipeline.
  */
-public class ForgeModelBlockRenderer extends ModelBlockRenderer
+@ApiStatus.Internal
+public class LightPipelineAwareModelBlockRenderer extends ModelBlockRenderer
 {
     private static final Direction[] SIDES = Direction.values();
 
     private final ThreadLocal<QuadLighter> flatLighter, smoothLighter;
 
-    public ForgeModelBlockRenderer(BlockColors colors)
+    public LightPipelineAwareModelBlockRenderer(BlockColors colors)
     {
         super(colors);
         this.flatLighter = ThreadLocal.withInitial(() -> new FlatQuadLighter(colors));
@@ -68,7 +70,7 @@ public class ForgeModelBlockRenderer extends ModelBlockRenderer
 
     public static boolean render(VertexConsumer vertexConsumer, QuadLighter lighter, BlockAndTintGetter level, BakedModel model, BlockState state, BlockPos pos, PoseStack poseStack, boolean checkSides, RandomSource rand, long seed, int packedOverlay, ModelData modelData, RenderType renderType)
     {
-        ForgeModelBlockRenderer renderer = (ForgeModelBlockRenderer)Minecraft.getInstance().getBlockRenderer().getModelRenderer();
+        LightPipelineAwareModelBlockRenderer renderer = (LightPipelineAwareModelBlockRenderer)Minecraft.getInstance().getBlockRenderer().getModelRenderer();
         var pose = poseStack.last();
         var empty = true;
         var smoothLighter = lighter instanceof SmoothQuadLighter;

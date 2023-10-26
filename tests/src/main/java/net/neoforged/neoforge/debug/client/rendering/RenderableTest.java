@@ -24,7 +24,7 @@ import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.ForgeRenderTypes;
+import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -51,7 +51,7 @@ import org.joml.Matrix4f;
  * {@link Stage#AFTER_TRANSLUCENT_BLOCKS}, {@link Stage#AFTER_TRIPWIRE_BLOCKS}, {@link Stage#AFTER_PARTICLES}, and {@link Stage#AFTER_WEATHER}.
  * Due to how weather modifies the projection matrix, it's sugar glider will be positioned weirdly. Below each sugar gliders is a render of
  * blue stained glass to test translucency with fabulous graphics. {@link Stage#AFTER_PARTICLES} will render the stained glass using
- * {@link ForgeRenderTypes#TRANSLUCENT_ON_PARTICLES_TARGET}.
+ * {@link NeoForgeRenderTypes#TRANSLUCENT_ON_PARTICLES_TARGET}.
  */
 @Mod(RenderableTest.MODID)
 public class RenderableTest
@@ -194,7 +194,7 @@ public class RenderableTest
         private static RenderType getRenderType(Stage stage, ResourceLocation texture)
         {
             if (stage == Stage.AFTER_PARTICLES)
-                return ForgeRenderTypes.TRANSLUCENT_ON_PARTICLES_TARGET.get();
+                return NeoForgeRenderTypes.TRANSLUCENT_ON_PARTICLES_TARGET.get();
             return RenderType.entityTranslucent(texture);
         }
     }

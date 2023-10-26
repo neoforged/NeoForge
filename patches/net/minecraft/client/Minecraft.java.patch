@@ -55,7 +55,7 @@
        this.resourceManager.registerReloadListener(this.gpuWarnlistManager);
        this.resourceManager.registerReloadListener(this.regionalCompliancies);
 -      this.gui = new Gui(this, this.itemRenderer);
-+      this.gui = new net.neoforged.neoforge.client.gui.overlay.ForgeGui(this);
++      this.gui = new net.neoforged.neoforge.client.gui.overlay.ExtendedGui(this);
 +      // FORGE: Moved keyboard and mouse handler setup below ingame gui creation to prevent NPEs in them.
 +      this.mouseHandler.setup(this.window.getWindow());
 +      this.keyboardHandler.setup(this.window.getWindow());
