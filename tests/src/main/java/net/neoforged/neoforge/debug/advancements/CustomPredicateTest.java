@@ -16,8 +16,8 @@ import net.minecraft.world.item.Items;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate;
+import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.common.data.ForgeAdvancementProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
@@ -50,12 +50,11 @@ public class CustomPredicateTest {
 
     public static void generateData(GatherDataEvent event) {
         var gen = event.getGenerator();
-        var advancementProvider = new ForgeAdvancementProvider(
+        var advancementProvider = new AdvancementProvider(
                 gen.getPackOutput(),
                 event.getLookupProvider(),
                 event.getExistingFileHelper(),
-                List.of(new AdvancementProvider())) {
-        };
+                List.of(new AdvancementGenerator()));
         // Rename to avoid conflict with another testmod.
         // Would be good to have a better solution.
         var renamedProvider = new DataProvider() {
@@ -84,7 +83,7 @@ public class CustomPredicateTest {
         }
     }
 
-    public record AdvancementProvider() implements ForgeAdvancementProvider.AdvancementGenerator {
+    public record AdvancementGenerator() implements AdvancementProvider.AdvancementGenerator {
         @Override
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
             Advancement.Builder.advancement()

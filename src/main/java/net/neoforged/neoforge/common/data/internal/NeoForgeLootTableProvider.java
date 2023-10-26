@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common.data;
+package net.neoforged.neoforge.common.data.internal;
 
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.Holder;
@@ -49,10 +49,10 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Currently used only for replacing shears item to shears_dig tool action
  */
-public final class ForgeLootTableProvider extends LootTableProvider {
+public final class NeoForgeLootTableProvider extends LootTableProvider {
     private final List<Function<LootItemCondition, LootItemCondition.Builder>> conditionReplacers = new ArrayList<>();
 
-    public ForgeLootTableProvider(PackOutput packOutput) {
+    public NeoForgeLootTableProvider(PackOutput packOutput) {
         super(packOutput, Set.of(), VanillaLootTableProvider.create(packOutput).getTables());
     }
 

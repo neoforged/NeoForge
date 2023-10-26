@@ -3,10 +3,12 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common.data;
+package net.neoforged.neoforge.common.data.internal;
 
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 
 public class VanillaSoundDefinitionsProvider extends SoundDefinitionsProvider {
     public VanillaSoundDefinitionsProvider(PackOutput output, ExistingFileHelper helper) {

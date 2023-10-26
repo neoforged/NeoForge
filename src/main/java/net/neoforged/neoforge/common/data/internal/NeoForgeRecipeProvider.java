@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common.data;
+package net.neoforged.neoforge.common.data.internal;
 
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.Advancement;
@@ -35,12 +35,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public final class ForgeRecipeProvider extends VanillaRecipeProvider
+public final class NeoForgeRecipeProvider extends VanillaRecipeProvider
 {
     private final Map<Item, TagKey<Item>> replacements = new HashMap<>();
     private final Set<ResourceLocation> excludes = new HashSet<>();
 
-    public ForgeRecipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider)
+    public NeoForgeRecipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider)
     {
         super(packOutput, lookupProvider);
     }

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common.data;
+package net.neoforged.neoforge.common.data.internal;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -14,6 +14,8 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,11 +26,11 @@ import java.util.function.Consumer;
 // We typically don't do static imports as S2S can't remap them {as they are not qualified}, however this conflicts with vanilla and our tag class names, and our tags don't get obfed so its one line of warning.
 
 
-public final class ForgeBlockTagsProvider extends BlockTagsProvider
+public final class NeoForgeBlockTagsProvider extends BlockTagsProvider
 {
-    public ForgeBlockTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper)
+    public NeoForgeBlockTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper)
     {
-        super(output, lookupProvider, "forge", existingFileHelper);
+        super(output, lookupProvider, "neoforge", existingFileHelper);
     }
 
     @SuppressWarnings("unchecked")
@@ -134,11 +136,5 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         {
             throw new IllegalStateException(Tags.Blocks.class.getName() + " is missing tag name: " + name);
         }
-    }
-
-    @Override
-    public String getName()
-    {
-        return "Forge Block Tags";
     }
 }

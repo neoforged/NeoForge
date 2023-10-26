@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common.data;
+package net.neoforged.neoforge.common.data.internal;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -16,17 +16,18 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public final class ForgeItemTagsProvider extends ItemTagsProvider
+public final class NeoForgeItemTagsProvider extends ItemTagsProvider
 {
-    public ForgeItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagProvider, ExistingFileHelper existingFileHelper)
+    public NeoForgeItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagProvider, ExistingFileHelper existingFileHelper)
     {
-        super(output, lookupProvider, blockTagProvider, "forge", existingFileHelper);
+        super(output, lookupProvider, blockTagProvider, "neoforge", existingFileHelper);
     }
 
     @SuppressWarnings("unchecked")
@@ -224,11 +225,5 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         {
             throw new IllegalStateException(Tags.Items.class.getName() + " is missing tag name: " + name);
         }
-    }
-
-    @Override
-    public String getName()
-    {
-        return "Forge Item Tags";
     }
 }

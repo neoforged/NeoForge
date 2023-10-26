@@ -55,10 +55,10 @@ import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
 import net.neoforged.neoforge.common.conditions.TrueCondition;
 import net.neoforged.neoforge.common.crafting.*;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.common.data.ForgeBiomeTagsProvider;
-import net.neoforged.neoforge.common.data.ForgeFluidTagsProvider;
-import net.neoforged.neoforge.common.data.ForgeSpriteSourceProvider;
-import net.neoforged.neoforge.common.data.VanillaSoundDefinitionsProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeBiomeTagsProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeFluidTagsProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeSpriteSourceProvider;
+import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvider;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.extensions.IPlayerExtension;
 import net.neoforged.neoforge.common.loot.CanToolPerformAction;
@@ -102,11 +102,11 @@ import org.apache.logging.log4j.Logger;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.data.ForgeBlockTagsProvider;
-import net.neoforged.neoforge.common.data.ForgeEntityTypeTagsProvider;
-import net.neoforged.neoforge.common.data.ForgeItemTagsProvider;
-import net.neoforged.neoforge.common.data.ForgeLootTableProvider;
-import net.neoforged.neoforge.common.data.ForgeRecipeProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeBlockTagsProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeEntityTypeTagsProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeItemTagsProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeLootTableProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeRecipeProvider;
 import net.neoforged.fml.common.Mod;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
@@ -519,16 +519,16 @@ public class NeoForgeMod
                         Optional.of(new PackMetadataSection.ForgeData(Optional.of(Arrays.stream(PackType.values()).collect(Collectors.toMap(Function.identity(), DetectedVersion.BUILT_IN::getPackVersion))))
                 )))
         );
-        ForgeBlockTagsProvider blockTags = new ForgeBlockTagsProvider(packOutput, lookupProvider, existingFileHelper);
+        NeoForgeBlockTagsProvider blockTags = new NeoForgeBlockTagsProvider(packOutput, lookupProvider, existingFileHelper);
         gen.addProvider(event.includeServer(), blockTags);
-        gen.addProvider(event.includeServer(), new ForgeItemTagsProvider(packOutput, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
-        gen.addProvider(event.includeServer(), new ForgeEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
-        gen.addProvider(event.includeServer(), new ForgeFluidTagsProvider(packOutput, lookupProvider, existingFileHelper));
-        gen.addProvider(event.includeServer(), new ForgeRecipeProvider(packOutput, lookupProvider));
-        gen.addProvider(event.includeServer(), new ForgeLootTableProvider(packOutput));
-        gen.addProvider(event.includeServer(), new ForgeBiomeTagsProvider(packOutput, lookupProvider, existingFileHelper));
+        gen.addProvider(event.includeServer(), new NeoForgeItemTagsProvider(packOutput, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
+        gen.addProvider(event.includeServer(), new NeoForgeEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
+        gen.addProvider(event.includeServer(), new NeoForgeFluidTagsProvider(packOutput, lookupProvider, existingFileHelper));
+        gen.addProvider(event.includeServer(), new NeoForgeRecipeProvider(packOutput, lookupProvider));
+        gen.addProvider(event.includeServer(), new NeoForgeLootTableProvider(packOutput));
+        gen.addProvider(event.includeServer(), new NeoForgeBiomeTagsProvider(packOutput, lookupProvider, existingFileHelper));
 
-        gen.addProvider(event.includeClient(), new ForgeSpriteSourceProvider(packOutput, lookupProvider, existingFileHelper));
+        gen.addProvider(event.includeClient(), new NeoForgeSpriteSourceProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeClient(), new VanillaSoundDefinitionsProvider(packOutput, existingFileHelper));
     }
 

@@ -8,7 +8,6 @@ package net.neoforged.neoforge.common.data;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.extensions.IAdvancementBuilderExtension;
@@ -18,10 +17,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
- * An extension of the {@link AdvancementProvider} to provide a feature-complete
+ * An extension of the vanilla {@code AdvancementProvider} to provide a feature-complete
  * experience to generate modded advancements.
  */
-public class ForgeAdvancementProvider extends AdvancementProvider
+public class AdvancementProvider extends net.minecraft.data.advancements.AdvancementProvider
 {
     /**
      * Constructs an advancement provider using the generators to write the
@@ -32,7 +31,7 @@ public class ForgeAdvancementProvider extends AdvancementProvider
      * @param existingFileHelper a helper used to find whether a file exists
      * @param subProviders the generators used to create the advancements
      */
-    public ForgeAdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, ExistingFileHelper existingFileHelper, List<AdvancementGenerator> subProviders)
+    public AdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, ExistingFileHelper existingFileHelper, List<AdvancementGenerator> subProviders)
     {
         super(output, registries, subProviders.stream().map(generator -> generator.toSubProvider(existingFileHelper)).toList());
     }

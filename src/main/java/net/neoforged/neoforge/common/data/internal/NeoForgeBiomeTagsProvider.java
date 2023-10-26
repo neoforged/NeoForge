@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common.data;
+package net.neoforged.neoforge.common.data.internal;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -14,15 +14,16 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;
 
-public final class ForgeBiomeTagsProvider extends BiomeTagsProvider
+public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider
 {
 
-    public ForgeBiomeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper)
+    public NeoForgeBiomeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper)
     {
-        super(output, lookupProvider, "forge", existingFileHelper);
+        super(output, lookupProvider, "neoforge", existingFileHelper);
     }
 
     @Override
@@ -102,11 +103,5 @@ public final class ForgeBiomeTagsProvider extends BiomeTagsProvider
         {
             tag(key).add(biome);
         }
-    }
-
-    @Override
-    public String getName()
-    {
-        return "Forge Biome Tags";
     }
 }

@@ -5,7 +5,7 @@
  import net.minecraft.resources.ResourceLocation;
  
 +/**
-+ * @deprecated Forge: Use {@link net.neoforged.neoforge.common.data.ForgeAdvancementProvider} instead,
++ * @deprecated NeoForge: Use {@link net.neoforged.neoforge.common.data.AdvancementProvider} instead,
 + *             provides ease of access for the {@link net.neoforged.neoforge.common.data.ExistingFileHelper} in the generator
 + */
 +@Deprecated

@@ -124,7 +124,7 @@ public class DataGeneratorTest
 
         gen.addProvider(event.includeServer(), new Recipes(packOutput, event.getLookupProvider()));
         gen.addProvider(event.includeServer(), new Tags(packOutput, lookupProvider, event.getExistingFileHelper()));
-        gen.addProvider(event.includeServer(), new ForgeAdvancementProvider(packOutput, lookupProvider, event.getExistingFileHelper(), List.of(new Advancements())));
+        gen.addProvider(event.includeServer(), new AdvancementProvider(packOutput, lookupProvider, event.getExistingFileHelper(), List.of(new Advancements())));
         gen.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, BUILDER, Set.of(MODID)));
     }
 
@@ -982,7 +982,7 @@ public class DataGeneratorTest
         }
     }
 
-    private static class Advancements implements ForgeAdvancementProvider.AdvancementGenerator
+    private static class Advancements implements AdvancementProvider.AdvancementGenerator
     {
 
         @Override

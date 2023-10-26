@@ -3,21 +3,23 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common.data;
+package net.neoforged.neoforge.common.data.internal;
 
 import net.minecraft.client.renderer.texture.atlas.sources.SingleFile;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.SpriteSourceProvider;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class ForgeSpriteSourceProvider extends SpriteSourceProvider
+public class NeoForgeSpriteSourceProvider extends SpriteSourceProvider
 {
-    public ForgeSpriteSourceProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper fileHelper)
+    public NeoForgeSpriteSourceProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper fileHelper)
     {
-        super(output, lookupProvider, "forge", fileHelper);
+        super(output, lookupProvider, "neoforge", fileHelper);
     }
 
     @Override
