@@ -19,7 +19,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.model.ForgeFaceData;
+import net.neoforged.neoforge.client.model.ExtraFaceData;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -32,7 +32,7 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
         return new ItemLayerModelBuilder<>(parent, existingFileHelper);
     }
 
-    private final Int2ObjectMap<ForgeFaceData> faceData = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<ExtraFaceData> faceData = new Int2ObjectOpenHashMap<>();
     private final Map<ResourceLocation, IntSet> renderTypes = new LinkedHashMap<>();
     private final IntSet layersWithRenderTypes = new IntOpenHashSet();
 
@@ -60,8 +60,8 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
         for(int i : layers)
         {
             faceData.compute(i, (key, value) -> {
-                ForgeFaceData fallback = value == null ? ForgeFaceData.DEFAULT : value;
-                return new ForgeFaceData(fallback.color(), blockLight, skyLight, fallback.ambientOcclusion());
+                ExtraFaceData fallback = value == null ? ExtraFaceData.DEFAULT : value;
+                return new ExtraFaceData(fallback.color(), blockLight, skyLight, fallback.ambientOcclusion());
             });
         }
         return this;
@@ -85,8 +85,8 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
         for(int i : layers)
         {
             faceData.compute(i, (key, value) -> {
-                ForgeFaceData fallback = value == null ? ForgeFaceData.DEFAULT : value;
-                return new ForgeFaceData(color, fallback.blockLight(), fallback.skyLight(), fallback.ambientOcclusion());
+                ExtraFaceData fallback = value == null ? ExtraFaceData.DEFAULT : value;
+                return new ExtraFaceData(color, fallback.blockLight(), fallback.skyLight(), fallback.ambientOcclusion());
             });
         }
         return this;
@@ -153,13 +153,13 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
         JsonObject forgeData = new JsonObject();
         JsonObject layerObj = new JsonObject();
 
-        for(Int2ObjectMap.Entry<ForgeFaceData> entry : this.faceData.int2ObjectEntrySet())
+        for(Int2ObjectMap.Entry<ExtraFaceData> entry : this.faceData.int2ObjectEntrySet())
         {
-            layerObj.add(String.valueOf(entry.getIntKey()), ForgeFaceData.CODEC.encodeStart(JsonOps.INSTANCE, entry.getValue()).getOrThrow(false, s -> {}));
+            layerObj.add(String.valueOf(entry.getIntKey()), ExtraFaceData.CODEC.encodeStart(JsonOps.INSTANCE, entry.getValue()).getOrThrow(false, s -> {}));
         }
 
         forgeData.add("layers", layerObj);
-        json.add("forge_data", forgeData);
+        json.add("neoforge_data", forgeData);
 
         JsonObject renderTypes = new JsonObject();
         this.renderTypes.forEach((renderType, layers) -> {

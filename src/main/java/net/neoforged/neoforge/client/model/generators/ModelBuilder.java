@@ -33,7 +33,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.neoforged.neoforge.client.model.ForgeFaceData;
+import net.neoforged.neoforge.client.model.ExtraFaceData;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.util.TransformationHelper;
 import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
@@ -312,8 +312,8 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
                     partObj.addProperty("shade", part.shade);
                 }
 
-                if (!part.getFaceData().equals(ForgeFaceData.DEFAULT)) {
-                    partObj.add("forge_data", ForgeFaceData.CODEC.encodeStart(JsonOps.INSTANCE, part.getFaceData()).result().get());
+                if (!part.getFaceData().equals(ExtraFaceData.DEFAULT)) {
+                    partObj.add("neoforge_data", ExtraFaceData.CODEC.encodeStart(JsonOps.INSTANCE, part.getFaceData()).result().get());
                 }
 
                 JsonObject faces = new JsonObject();
@@ -335,8 +335,8 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
                     if (face.tintIndex != -1) {
                         faceObj.addProperty("tintindex", face.tintIndex);
                     }
-                    if (!face.getFaceData().equals(ForgeFaceData.DEFAULT)) {
-                        faceObj.add("forge_data", ForgeFaceData.CODEC.encodeStart(JsonOps.INSTANCE, face.getFaceData()).result().get());
+                    if (!face.getFaceData().equals(ExtraFaceData.DEFAULT)) {
+                        faceObj.add("neoforge_data", ExtraFaceData.CODEC.encodeStart(JsonOps.INSTANCE, face.getFaceData()).result().get());
                     }
                     faces.add(dir.getSerializedName(), faceObj);
                 }
@@ -568,7 +568,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         BlockElement build() {
             Map<Direction, BlockElementFace> faces = this.faces.entrySet().stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().build(), (k1, k2) -> { throw new IllegalArgumentException(); }, LinkedHashMap::new));
-            return new BlockElement(from, to, faces, rotation == null ? null : rotation.build(), shade, new ForgeFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion));
+            return new BlockElement(from, to, faces, rotation == null ? null : rotation.build(), shade, new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion));
         }
 
         public T end() { return self(); }
@@ -669,7 +669,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
                 if (this.texture == null) {
                     throw new IllegalStateException("A model face must have a texture");
                 }
-                return new BlockElementFace(cullface, tintindex, texture, new BlockFaceUV(uvs, rotation.rotation), new ForgeFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion));
+                return new BlockElementFace(cullface, tintindex, texture, new BlockFaceUV(uvs, rotation.rotation), new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion));
             }
 
             public ElementBuilder end() { return ElementBuilder.this; }

@@ -1,6 +1,6 @@
 {
   "parent": "neoforge:item/default",
-  "forge_data": {
+  "neoforge_data": {
     "layers": {
       "1": {
         "block_light": 15,

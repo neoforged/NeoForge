@@ -43,10 +43,10 @@ public class ItemLayerModel implements IUnbakedGeometry<ItemLayerModel>
 {
     @Nullable
     private ImmutableList<Material> textures;
-    private final Int2ObjectMap<ForgeFaceData> layerData;
+    private final Int2ObjectMap<ExtraFaceData> layerData;
     private final Int2ObjectMap<ResourceLocation> renderTypeNames;
 
-    private ItemLayerModel(@Nullable ImmutableList<Material> textures, Int2ObjectMap<ForgeFaceData> layerData, Int2ObjectMap<ResourceLocation> renderTypeNames)
+    private ItemLayerModel(@Nullable ImmutableList<Material> textures, Int2ObjectMap<ExtraFaceData> layerData, Int2ObjectMap<ResourceLocation> renderTypeNames)
     {
         this.textures = textures;
         this.layerData = layerData;
@@ -108,16 +108,17 @@ public class ItemLayerModel implements IUnbakedGeometry<ItemLayerModel>
                 }
             }
 
-            var emissiveLayers = new Int2ObjectArrayMap<ForgeFaceData>();
-            if(jsonObject.has("forge_data"))
+            var emissiveLayers = new Int2ObjectArrayMap<ExtraFaceData>();
+            if (jsonObject.has("forge_data")) throw new JsonParseException("forge_data should be replaced by neoforge_data"); // TODO 1.22: Remove
+            if(jsonObject.has("neoforge_data"))
             {
-                JsonObject forgeData = jsonObject.get("forge_data").getAsJsonObject();
+                JsonObject forgeData = jsonObject.get("neoforge_data").getAsJsonObject();
                 readLayerData(forgeData, "layers", renderTypeNames, emissiveLayers, false);    
             }
             return new ItemLayerModel(null, emissiveLayers, renderTypeNames);
         }
 
-        protected void readLayerData(JsonObject jsonObject, String name, Int2ObjectOpenHashMap<ResourceLocation> renderTypeNames, Int2ObjectMap<ForgeFaceData> layerData, boolean logWarning)
+        protected void readLayerData(JsonObject jsonObject, String name, Int2ObjectOpenHashMap<ResourceLocation> renderTypeNames, Int2ObjectMap<ExtraFaceData> layerData, boolean logWarning)
         {
             if (!jsonObject.has(name))
             {
@@ -127,7 +128,7 @@ public class ItemLayerModel implements IUnbakedGeometry<ItemLayerModel>
             for (var entry : fullbrightLayers.entrySet())
             {
                 int layer = Integer.parseInt(entry.getKey());
-                var data = ForgeFaceData.read(entry.getValue(), ForgeFaceData.DEFAULT);
+                var data = ExtraFaceData.read(entry.getValue(), ExtraFaceData.DEFAULT);
                 layerData.put(layer, data);
             }
         }

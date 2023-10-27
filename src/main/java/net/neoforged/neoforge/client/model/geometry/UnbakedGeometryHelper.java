@@ -27,7 +27,7 @@ import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.ElementsModel;
-import net.neoforged.neoforge.client.model.ForgeFaceData;
+import net.neoforged.neoforge.client.model.ExtraFaceData;
 import net.neoforged.neoforge.client.model.IModelBuilder;
 import net.neoforged.neoforge.client.model.IQuadTransformer;
 import net.neoforged.neoforge.client.model.QuadTransformers;
@@ -119,7 +119,7 @@ public class UnbakedGeometryHelper
     }
 
     /**
-     * @see #createUnbakedItemElements(int, SpriteContents, ForgeFaceData)
+     * @see #createUnbakedItemElements(int, SpriteContents, ExtraFaceData)
      */
     public static List<BlockElement> createUnbakedItemElements(int layerIndex, SpriteContents spriteContents)
     {
@@ -132,7 +132,7 @@ public class UnbakedGeometryHelper
      * <p>
      * The {@link Direction#NORTH} and {@link Direction#SOUTH} faces take up the whole surface.
      */
-    public static List<BlockElement> createUnbakedItemElements(int layerIndex, SpriteContents spriteContents, @Nullable ForgeFaceData faceData)
+    public static List<BlockElement> createUnbakedItemElements(int layerIndex, SpriteContents spriteContents, @Nullable ExtraFaceData faceData)
     {
         var elements = ITEM_MODEL_GENERATOR.processFrames(layerIndex, "layer" + layerIndex, spriteContents);
         if(faceData != null)
@@ -143,7 +143,7 @@ public class UnbakedGeometryHelper
     }
 
     /**
-     * @see #createUnbakedItemMaskElements(int, SpriteContents, ForgeFaceData)
+     * @see #createUnbakedItemMaskElements(int, SpriteContents, ExtraFaceData)
      */
     public static List<BlockElement> createUnbakedItemMaskElements(int layerIndex, SpriteContents spriteContents)
     {
@@ -156,7 +156,7 @@ public class UnbakedGeometryHelper
      * <p>
      * The {@link Direction#NORTH} and {@link Direction#SOUTH} faces take up only the pixels the texture uses.
      */
-    public static List<BlockElement> createUnbakedItemMaskElements(int layerIndex, SpriteContents spriteContents, @Nullable ForgeFaceData faceData)
+    public static List<BlockElement> createUnbakedItemMaskElements(int layerIndex, SpriteContents spriteContents, @Nullable ExtraFaceData faceData)
     {
         var elements = createUnbakedItemElements(layerIndex, spriteContents, faceData);
         elements.remove(0); // Remove north and south faces
