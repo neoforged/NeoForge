@@ -31,6 +31,13 @@ For support and questions, visit [the NeoForged Discord server][Discord].
 
 [See the "Getting Started" section in the NeoForged Documentation][Getting-Started].
 
+# 1.20.2 and future versions
+
+Since NeoForge started as a fork of Forge, a lot of things have to be changed/adjusted so we can properly continue the work.    
+This sadly leads to a delay in newer mc version updates.    
+But for transparency: [here](https://hackmd.io/@neoforged/SyPzw1Ryp) is a link for transparency that shows progress on how far we are with the work required to continue.
+
+
 # Contribute to Forge
 
 If you wish to actually inspect Forge, submit PRs or otherwise work
