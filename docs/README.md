@@ -35,7 +35,7 @@ For support and questions, visit [the NeoForged Discord server][Discord].
 
 Since NeoForge started as a fork of Forge, a lot of things have to be changed/adjusted so we can properly continue the work.    
 This sadly leads to a delay in newer mc version updates.    
-But for transparency: [here](https://hackmd.io/@neoforged/SyPzw1Ryp) is a link for transparency that shows progress on how far we are with the work required to continue.
+But for transparency: [here](https://hackmd.io/@neoforged/SyPzw1Ryp) is a link that shows progress on how far we are with the work required to continue.
 
 
 # Contribute to Forge
