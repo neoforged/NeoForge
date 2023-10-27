@@ -7,7 +7,7 @@ package net.neoforged.neoforge.event;
 
 import net.minecraft.world.Difficulty;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 
 /**
@@ -17,7 +17,7 @@ import net.neoforged.bus.api.Event;
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class DifficultyChangeEvent extends Event
 {

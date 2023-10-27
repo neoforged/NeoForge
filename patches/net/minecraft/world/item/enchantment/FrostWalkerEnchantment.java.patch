@@ -8,7 +8,7 @@
 -                     && p_45020_.isUnobstructed(blockstate, blockpos, CollisionContext.empty())) {
 +                            && blockstate.canSurvive(p_45020_, blockpos)
 +                            && p_45020_.isUnobstructed(blockstate, blockpos, CollisionContext.empty())
-+                            && !net.neoforged.neoforge.event.ForgeEventFactory.onBlockPlace(
++                            && !net.neoforged.neoforge.event.EventHooks.onBlockPlace(
 +                                  p_45019_,
 +                                  net.neoforged.neoforge.common.util.BlockSnapshot.create(p_45020_.dimension(),
 +                                    p_45020_,

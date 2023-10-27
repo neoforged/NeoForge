@@ -8,7 +8,7 @@
        }
  
 -      if (this.timeInOverworld > 300) {
-+      if (this.timeInOverworld > 300 && net.neoforged.neoforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.ZOMBIFIED_PIGLIN, (timer) -> this.timeInOverworld = timer)) {
++      if (this.timeInOverworld > 300 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.ZOMBIFIED_PIGLIN, (timer) -> this.timeInOverworld = timer)) {
           this.playConvertedSound();
           this.finishConversion((ServerLevel)this.level());
        }
@@ -16,7 +16,7 @@
        ZombifiedPiglin zombifiedpiglin = this.convertTo(EntityType.ZOMBIFIED_PIGLIN, true);
        if (zombifiedpiglin != null) {
           zombifiedpiglin.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
-+         net.neoforged.neoforge.event.ForgeEventFactory.onLivingConvert(this, zombifiedpiglin);
++         net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, zombifiedpiglin);
        }
     }
  

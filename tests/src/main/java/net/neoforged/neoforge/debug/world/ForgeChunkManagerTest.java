@@ -19,7 +19,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import net.neoforged.neoforge.common.world.ForgeChunkManager;
+import net.neoforged.neoforge.common.world.ForcedChunkManager;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.RegistryObject;
@@ -60,7 +60,7 @@ public class ForgeChunkManagerTest
 
     private void commonSetup(FMLCommonSetupEvent event)
     {
-        event.enqueueWork(() -> ForgeChunkManager.setForcedChunkLoadingCallback(MODID, (world, ticketHelper) -> {
+        event.enqueueWork(() -> ForcedChunkManager.setForcedChunkLoadingCallback(MODID, (world, ticketHelper) -> {
             for (Map.Entry<BlockPos, Pair<LongSet, LongSet>> entry : ticketHelper.getBlockTickets().entrySet())
             {
                 BlockPos key = entry.getKey();
@@ -99,7 +99,7 @@ public class ForgeChunkManagerTest
             if (worldIn instanceof ServerLevel)
             {
                 ChunkPos chunkPos = new ChunkPos(pos);
-                ForgeChunkManager.forceChunk((ServerLevel) worldIn, MODID, pos, chunkPos.x, chunkPos.z, true, false);
+                ForcedChunkManager.forceChunk((ServerLevel) worldIn, MODID, pos, chunkPos.x, chunkPos.z, true, false);
             }
         }
 
@@ -110,7 +110,7 @@ public class ForgeChunkManagerTest
             if (worldIn instanceof ServerLevel && !state.is(newState.getBlock()))
             {
                 ChunkPos chunkPos = new ChunkPos(pos);
-                ForgeChunkManager.forceChunk((ServerLevel) worldIn, MODID, pos, chunkPos.x, chunkPos.z, false, false);
+                ForcedChunkManager.forceChunk((ServerLevel) worldIn, MODID, pos, chunkPos.x, chunkPos.z, false, false);
             }
         }
     }

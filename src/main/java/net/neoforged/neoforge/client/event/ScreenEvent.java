@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -29,7 +29,7 @@ import java.util.function.Consumer;
  * Fired on different events/actions when a {@link Screen} is active and visible.
  * See the various subclasses for listening to different events.
  *
- * <p>These events are fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+ * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
  * @see Init
@@ -119,7 +119,7 @@ public abstract class ScreenEvent extends Event
          * If the event is cancelled, the initialization method will not be called, and the widgets and children lists
          * will not be cleared.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Pre extends Init implements ICancellableEvent
@@ -136,7 +136,7 @@ public abstract class ScreenEvent extends Event
          *
          * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Post extends Init
@@ -211,7 +211,7 @@ public abstract class ScreenEvent extends Event
          * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
          * If the event is cancelled, the screen will not be drawn.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Pre extends Render implements ICancellableEvent
@@ -228,7 +228,7 @@ public abstract class ScreenEvent extends Event
          *
          * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Post extends Render
@@ -247,7 +247,7 @@ public abstract class ScreenEvent extends Event
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class BackgroundRendered extends ScreenEvent
@@ -278,7 +278,7 @@ public abstract class ScreenEvent extends Event
      * <p>This event is {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * Cancelling this event will prevent vanilla rendering.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class RenderInventoryMobEffects extends ScreenEvent implements ICancellableEvent
@@ -420,7 +420,7 @@ public abstract class ScreenEvent extends Event
          * If the event is cancelled, the screen's mouse click handler will be bypassed
          * and the corresponding {@link MouseButtonPressed.Post} will not be fired.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Pre extends MouseButtonPressed implements ICancellableEvent
@@ -444,7 +444,7 @@ public abstract class ScreenEvent extends Event
          *   <li>{@link Result#DENY} - forcibly sets the mouse click as not handled.</li>
          * </ul>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         @HasResult
@@ -505,7 +505,7 @@ public abstract class ScreenEvent extends Event
          * If the event is cancelled, the screen's mouse release handler will be bypassed
          * and the corresponding {@link MouseButtonReleased.Post} will not be fired.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Pre extends MouseButtonReleased implements ICancellableEvent
@@ -529,7 +529,7 @@ public abstract class ScreenEvent extends Event
          *   <li>{@link Result#DENY} - forcibly sets the mouse release as not handled.</li>
          * </ul>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         @HasResult
@@ -610,7 +610,7 @@ public abstract class ScreenEvent extends Event
          * If the event is cancelled, the screen's mouse drag handler will be bypassed
          * and the corresponding {@link MouseDragged.Post} will not be fired.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Pre extends MouseDragged implements ICancellableEvent
@@ -629,7 +629,7 @@ public abstract class ScreenEvent extends Event
          * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
          * If the event is cancelled, the mouse drag will be set as handled.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Post extends MouseDragged
@@ -675,7 +675,7 @@ public abstract class ScreenEvent extends Event
          * If the event is cancelled, the screen's mouse scroll handler will be bypassed
          * and the corresponding {@link MouseScrolled.Post} will not be fired.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Pre extends MouseScrolled implements ICancellableEvent
@@ -694,7 +694,7 @@ public abstract class ScreenEvent extends Event
          * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
          * If the event is cancelled, the mouse scroll will be set as handled.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Post extends MouseScrolled
@@ -796,7 +796,7 @@ public abstract class ScreenEvent extends Event
          * If the event is cancelled, the screen's key press handler will be bypassed
          * and the corresponding {@link KeyPressed.Post} will not be fired.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Pre extends KeyPressed implements ICancellableEvent
@@ -815,7 +815,7 @@ public abstract class ScreenEvent extends Event
          * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
          * If the event is cancelled, the key press will be set as handled.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Post extends KeyPressed implements ICancellableEvent
@@ -850,7 +850,7 @@ public abstract class ScreenEvent extends Event
          * If the event is cancelled, the screen's key release handler will be bypassed
          * and the corresponding {@link KeyReleased.Post} will not be fired.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Pre extends KeyReleased implements ICancellableEvent
@@ -869,7 +869,7 @@ public abstract class ScreenEvent extends Event
          * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
          * If the event is cancelled, the key release will be set as handled.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Post extends KeyReleased implements ICancellableEvent
@@ -934,7 +934,7 @@ public abstract class ScreenEvent extends Event
          * If the event is cancelled, the screen's character input handler will be bypassed
          * and the corresponding {@link CharacterTyped.Post} will not be fired.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Pre extends CharacterTyped implements ICancellableEvent
@@ -953,7 +953,7 @@ public abstract class ScreenEvent extends Event
          * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
          * If the event is cancelled, the character input will be set as handled.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         public static class Post extends CharacterTyped
@@ -975,7 +975,7 @@ public abstract class ScreenEvent extends Event
      * will remain open. However, cancelling this event will not prevent the closing of screen layers which happened before
      * this event fired.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Opening extends ScreenEvent implements ICancellableEvent
@@ -1027,7 +1027,7 @@ public abstract class ScreenEvent extends Event
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Closing extends ScreenEvent

@@ -5,7 +5,7 @@
  import net.minecraft.world.level.gameevent.GameEvent;
  
 -public class MushroomCow extends Cow implements Shearable, VariantHolder<MushroomCow.MushroomType> {
-+public class MushroomCow extends Cow implements Shearable, net.neoforged.neoforge.common.IForgeShearable {
++public class MushroomCow extends Cow implements Shearable, net.neoforged.neoforge.common.IShearable {
     private static final EntityDataAccessor<String> DATA_TYPE = SynchedEntityData.defineId(MushroomCow.class, EntityDataSerializers.STRING);
     private static final int MUTATE_CHANCE = 1024;
     private static final String TAG_STEW_EFFECTS = "stew_effects";

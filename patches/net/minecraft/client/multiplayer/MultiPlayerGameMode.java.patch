@@ -156,7 +156,7 @@
                 if (itemstack1 != itemstack) {
                    p_233722_.setItemInHand(p_233723_, itemstack1);
 +                  if (itemstack1.isEmpty())
-+                     net.neoforged.neoforge.event.ForgeEventFactory.onPlayerDestroyItem(p_233722_, itemstack, p_233723_);
++                     net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(p_233722_, itemstack, p_233723_);
                 }
  
                 mutableobject.setValue(interactionresultholder.getResult());

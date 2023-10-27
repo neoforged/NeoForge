@@ -5,7 +5,7 @@
  import net.minecraft.world.phys.shapes.VoxelShape;
  
 -public class LeavesBlock extends Block implements SimpleWaterloggedBlock {
-+public class LeavesBlock extends Block implements SimpleWaterloggedBlock, net.neoforged.neoforge.common.IForgeShearable {
++public class LeavesBlock extends Block implements SimpleWaterloggedBlock, net.neoforged.neoforge.common.IShearable {
     public static final int DECAY_DISTANCE = 7;
     public static final IntegerProperty DISTANCE = BlockStateProperties.DISTANCE;
     public static final BooleanProperty PERSISTENT = BlockStateProperties.PERSISTENT;

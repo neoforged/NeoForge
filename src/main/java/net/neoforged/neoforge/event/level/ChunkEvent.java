@@ -9,7 +9,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.ApiStatus;
  * <br>
  * {@link #chunk} contains the Chunk this event is affecting.<br>
  * <br>
- * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+ * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
 public abstract class ChunkEvent extends LevelEvent
 {
@@ -54,7 +54,7 @@ public abstract class ChunkEvent extends LevelEvent
      * <br>
      * This event does not have a result. {@link HasResult} <br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
     public static class Load extends ChunkEvent
     {
@@ -89,7 +89,7 @@ public abstract class ChunkEvent extends LevelEvent
      * <br>
      * This event does not have a result. {@link HasResult} <br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
     public static class Unload extends ChunkEvent
     {

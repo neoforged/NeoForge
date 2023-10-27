@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.event.entity.living;
 
 import net.neoforged.bus.api.ICancellableEvent;
-import net.neoforged.neoforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.neoforged.neoforge.common.NeoForgeEventHandler;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
 import net.neoforged.bus.api.Event;
@@ -108,7 +108,7 @@ public abstract class MobSpawnEvent extends EntityEvent
      * <li>Default - The value of the vanilla check will be used to determine success.</li>
      * <li>Deny - The check will fail, and the spawn process will abort.</li>
      * </ul>
-     * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      * <p>
      * This event is not fired for mob spawners which utilize {@link CustomSpawnRules}, as they do not check spawn placements.
@@ -213,7 +213,7 @@ public abstract class MobSpawnEvent extends EntityEvent
      * <li>Default - The position will be accepted if {@link Mob#checkSpawnRules} and {@link Mob#checkSpawnObstruction} are both true.</li>
      * <li>Deny - The position will not be accepted. The spawn process will abort, and further events will not be called.</li>
      * </ul>
-     * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      *
      * @apiNote This event fires after Spawn Placement checks, which are the primary set of spawn checks.
@@ -264,8 +264,8 @@ public abstract class MobSpawnEvent extends EntityEvent
      * Canceling this event will result in {@link Mob#finalizeSpawn} not being called, and the returned value always being null, instead of propagating the SpawnGroupData.<br>
      * The entity will still be spawned. If you want to prevent the spawn, use {@link FinalizeSpawn#setSpawnCancelled}, which will cause Forge to prevent the spawn.
      * <p>
-     * This event is fired on {@link MinecraftForge#EVENT_BUS}, and is only fired on the logical server.
-     * @see ForgeEventFactory#onFinalizeSpawn
+     * This event is fired on {@link NeoForge#EVENT_BUS}, and is only fired on the logical server.
+     * @see EventHooks#onFinalizeSpawn
      * @apiNote Callers do not need to check if the entity's spawn was cancelled, as the spawn will be blocked by Forge.
      */
     public static class FinalizeSpawn extends MobSpawnEvent implements ICancellableEvent
@@ -281,7 +281,7 @@ public abstract class MobSpawnEvent extends EntityEvent
         private CompoundTag spawnTag;
 
         /**
-         * @apiNote Do not construct directly. Access via {@link ForgeEventFactory#onFinalizeSpawn} / {@link ForgeEventFactory#onFinalizeSpawnSpawner}.
+         * @apiNote Do not construct directly. Access via {@link EventHooks#onFinalizeSpawn} / {@link EventHooks#onFinalizeSpawnSpawner}.
          */
         @ApiStatus.Internal
         public FinalizeSpawn(Mob entity, ServerLevelAccessor level, double x, double y, double z, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag spawnTag, @Nullable BaseSpawner spawner)
@@ -409,7 +409,7 @@ public abstract class MobSpawnEvent extends EntityEvent
      * {@link Result#ALLOW} indicates that the mob should forcefully despawn.
      * {@link Result#DENY} indicates that the mob should forcefully stay spawned.
      * <p>
-     * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      *
      * @see LivingEntity#checkDespawn()

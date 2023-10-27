@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.event;
 
 import net.minecraft.client.gui.components.toasts.Toast;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -18,7 +18,7 @@ import net.neoforged.fml.LogicalSide;
  * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  * Cancelling the event stops the toast from being queued, which means it never renders.</p>
  *
- * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+ * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class ToastAddEvent extends Event implements ICancellableEvent

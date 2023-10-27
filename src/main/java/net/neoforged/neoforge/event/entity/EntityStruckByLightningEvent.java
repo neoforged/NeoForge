@@ -7,14 +7,14 @@ package net.neoforged.neoforge.event.entity;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LightningBolt;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * EntityStruckByLightningEvent is fired when an Entity is about to be struck by lightening.<br>
  * This event is fired whenever an EntityLightningBolt is updated to strike an Entity in
- * {@link LightningBolt#tick()} via {@link ForgeEventFactory#onEntityStruckByLightning(Entity, LightningBolt)}.<br>
+ * {@link LightningBolt#tick()} via {@link EventHooks#onEntityStruckByLightning(Entity, LightningBolt)}.<br>
  * <br>
  * {@link #lightning} contains the instance of EntityLightningBolt attempting to strike an entity.<br>
  * <br>
@@ -23,7 +23,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
 public class EntityStruckByLightningEvent extends EntityEvent implements ICancellableEvent
 {

@@ -9,7 +9,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * This event is fired when an interaction between a {@link LivingEntity} and {@link MobEffectInstance} happens.
  * <p>
- * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.
+ * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.
  */
 public abstract class MobEffectEvent extends LivingEvent
 {

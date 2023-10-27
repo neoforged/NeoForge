@@ -132,7 +132,7 @@ import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.common.util.MavenVersionStringHelper;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
 import net.neoforged.neoforge.event.DifficultyChangeEvent;
-import net.neoforged.neoforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.GrindstoneEvent;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.ItemStackedOnOtherEvent;
@@ -220,83 +220,83 @@ public class CommonHooks
     public static boolean isCorrectToolForDrops(@NotNull BlockState state, @NotNull Player player)
     {
         if (!state.requiresCorrectToolForDrops())
-            return ForgeEventFactory.doPlayerHarvestCheck(player, state, true);
+            return EventHooks.doPlayerHarvestCheck(player, state, true);
 
         return player.hasCorrectToolForDrops(state);
     }
 
     public static boolean onItemStackedOn(ItemStack carriedItem, ItemStack stackedOnItem, Slot slot, ClickAction action, Player player, SlotAccess carriedSlotAccess)
     {
-        return MinecraftForge.EVENT_BUS.post(new ItemStackedOnOtherEvent(carriedItem, stackedOnItem, slot, action, player, carriedSlotAccess)).isCanceled();
+        return NeoForge.EVENT_BUS.post(new ItemStackedOnOtherEvent(carriedItem, stackedOnItem, slot, action, player, carriedSlotAccess)).isCanceled();
     }
 
     public static void onDifficultyChange(Difficulty difficulty, Difficulty oldDifficulty)
     {
-        MinecraftForge.EVENT_BUS.post(new DifficultyChangeEvent(difficulty, oldDifficulty));
+        NeoForge.EVENT_BUS.post(new DifficultyChangeEvent(difficulty, oldDifficulty));
     }
 
     public static LivingChangeTargetEvent onLivingChangeTarget(LivingEntity entity, LivingEntity originalTarget, LivingChangeTargetEvent.ILivingTargetType targetType)
     {
         LivingChangeTargetEvent event = new LivingChangeTargetEvent(entity, originalTarget, targetType);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
 
         return event;
     }
 
     public static boolean onLivingTick(LivingEntity entity)
     {
-        return MinecraftForge.EVENT_BUS.post(new LivingEvent.LivingTickEvent(entity)).isCanceled();
+        return NeoForge.EVENT_BUS.post(new LivingEvent.LivingTickEvent(entity)).isCanceled();
     }
 
     public static boolean onLivingAttack(LivingEntity entity, DamageSource src, float amount)
     {
-        return entity instanceof Player || !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount)).isCanceled();
+        return entity instanceof Player || !NeoForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount)).isCanceled();
     }
 
     public static boolean onPlayerAttack(LivingEntity entity, DamageSource src, float amount)
     {
-        return !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount)).isCanceled();
+        return !NeoForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount)).isCanceled();
     }
 
     public static LivingKnockBackEvent onLivingKnockBack(LivingEntity target, float strength, double ratioX, double ratioZ)
     {
         LivingKnockBackEvent event = new LivingKnockBackEvent(target, strength, ratioX, ratioZ);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event;
     }
 
     public static boolean onLivingUseTotem(LivingEntity entity, DamageSource damageSource, ItemStack totem, InteractionHand hand)
     {
-        return !MinecraftForge.EVENT_BUS.post(new LivingUseTotemEvent(entity, damageSource, totem, hand)).isCanceled();
+        return !NeoForge.EVENT_BUS.post(new LivingUseTotemEvent(entity, damageSource, totem, hand)).isCanceled();
     }
 
     public static float onLivingHurt(LivingEntity entity, DamageSource src, float amount)
     {
         LivingHurtEvent event = new LivingHurtEvent(entity, src, amount);
-        return (MinecraftForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
+        return (NeoForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
     }
 
     public static float onLivingDamage(LivingEntity entity, DamageSource src, float amount)
     {
         LivingDamageEvent event = new LivingDamageEvent(entity, src, amount);
-        return (MinecraftForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
+        return (NeoForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
     }
 
     public static boolean onLivingDeath(LivingEntity entity, DamageSource src)
     {
-        return MinecraftForge.EVENT_BUS.post(new LivingDeathEvent(entity, src)).isCanceled();
+        return NeoForge.EVENT_BUS.post(new LivingDeathEvent(entity, src)).isCanceled();
     }
 
     public static boolean onLivingDrops(LivingEntity entity, DamageSource source, Collection<ItemEntity> drops, int lootingLevel, boolean recentlyHit)
     {
-        return MinecraftForge.EVENT_BUS.post(new LivingDropsEvent(entity, source, drops, lootingLevel, recentlyHit)).isCanceled();
+        return NeoForge.EVENT_BUS.post(new LivingDropsEvent(entity, source, drops, lootingLevel, recentlyHit)).isCanceled();
     }
 
     @Nullable
     public static float[] onLivingFall(LivingEntity entity, float distance, float damageMultiplier)
     {
         LivingFallEvent event = new LivingFallEvent(entity, distance, damageMultiplier);
-        return (MinecraftForge.EVENT_BUS.post(event).isCanceled() ? null : new float[]{event.getDistance(), event.getDamageMultiplier()});
+        return (NeoForge.EVENT_BUS.post(event).isCanceled() ? null : new float[]{event.getDistance(), event.getDamageMultiplier()});
     }
 
     public static int getLootingLevel(Entity target, @Nullable Entity killer, @Nullable DamageSource cause)
@@ -312,14 +312,14 @@ public class CommonHooks
     public static int getLootingLevel(LivingEntity target, @Nullable DamageSource cause, int level)
     {
         LootingLevelEvent event = new LootingLevelEvent(target, cause, level);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event.getLootingLevel();
     }
 
     public static double getEntityVisibilityMultiplier(LivingEntity entity, Entity lookingEntity, double originalMultiplier)
     {
         LivingEvent.LivingVisibilityEvent event = new LivingEvent.LivingVisibilityEvent(entity, lookingEntity, originalMultiplier);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return Math.max(0, event.getVisibilityModifier());
     }
 
@@ -359,7 +359,7 @@ public class CommonHooks
 
     public static void onLivingJump(LivingEntity entity)
     {
-        MinecraftForge.EVENT_BUS.post(new LivingEvent.LivingJumpEvent(entity));
+        NeoForge.EVENT_BUS.post(new LivingEvent.LivingJumpEvent(entity));
     }
 
     @Nullable
@@ -373,7 +373,7 @@ public class CommonHooks
             return null;
 
         ItemTossEvent event = new ItemTossEvent(ret, player);
-        if (MinecraftForge.EVENT_BUS.post(event).isCanceled())
+        if (NeoForge.EVENT_BUS.post(event).isCanceled())
             return null;
 
         if (!player.level().isClientSide)
@@ -383,7 +383,7 @@ public class CommonHooks
 
     public static boolean onVanillaGameEvent(Level level, GameEvent vanillaEvent, Vec3 pos, GameEvent.Context context)
     {
-        return !MinecraftForge.EVENT_BUS.post(new VanillaGameEvent(level, vanillaEvent, pos, context)).isCanceled();
+        return !NeoForge.EVENT_BUS.post(new VanillaGameEvent(level, vanillaEvent, pos, context)).isCanceled();
     }
 
     private static String getRawText(Component message)
@@ -395,7 +395,7 @@ public class CommonHooks
     public static Component onServerChatSubmittedEvent(ServerPlayer player, String plain, Component decorated)
     {
         ServerChatEvent event = new ServerChatEvent(player, plain, decorated);
-        return MinecraftForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
+        return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
     }
 
     @NotNull
@@ -532,7 +532,7 @@ public class CommonHooks
         BlockState state = level.getBlockState(pos);
         BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level, pos, state, entityPlayer);
         event.setCanceled(preCancelEvent);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
 
         // Handle if the event is canceled
         if (event.isCanceled())
@@ -576,7 +576,7 @@ public class CommonHooks
         ItemStack copy = itemstack.copy();
         InteractionResult ret = itemstack.getItem().useOn(context);
         if (itemstack.isEmpty())
-            ForgeEventFactory.onPlayerDestroyItem(player, copy, context.getHand());
+            EventHooks.onPlayerDestroyItem(player, copy, context.getHand());
 
         level.captureBlockSnapshots = false;
 
@@ -602,11 +602,11 @@ public class CommonHooks
             boolean eventResult = false;
             if (blockSnapshots.size() > 1)
             {
-                eventResult = ForgeEventFactory.onMultiBlockPlace(player, blockSnapshots, side);
+                eventResult = EventHooks.onMultiBlockPlace(player, blockSnapshots, side);
             }
             else if (blockSnapshots.size() == 1)
             {
-                eventResult = ForgeEventFactory.onBlockPlace(player, blockSnapshots.get(0), side);
+                eventResult = EventHooks.onBlockPlace(player, blockSnapshots.get(0), side);
             }
 
             if (eventResult)
@@ -647,7 +647,7 @@ public class CommonHooks
     public static boolean onAnvilChange(AnvilMenu container, @NotNull ItemStack left, @NotNull ItemStack right, Container outputSlot, String name, int baseCost, Player player)
     {
         AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost, player);
-        if (MinecraftForge.EVENT_BUS.post(e).isCanceled())
+        if (NeoForge.EVENT_BUS.post(e).isCanceled())
             return false;
         if (e.getOutput().isEmpty())
             return true;
@@ -661,14 +661,14 @@ public class CommonHooks
     public static float onAnvilRepair(Player player, @NotNull ItemStack output, @NotNull ItemStack left, @NotNull ItemStack right)
     {
         AnvilRepairEvent e = new AnvilRepairEvent(player, left, right, output);
-        MinecraftForge.EVENT_BUS.post(e);
+        NeoForge.EVENT_BUS.post(e);
         return e.getBreakChance();
     }
 
     public static int onGrindstoneChange(@NotNull ItemStack top, @NotNull ItemStack bottom, Container outputSlot, int xp)
     {
         GrindstoneEvent.OnPlaceItem e = new GrindstoneEvent.OnPlaceItem(top, bottom, xp);
-        if (MinecraftForge.EVENT_BUS.post(e).isCanceled())
+        if (NeoForge.EVENT_BUS.post(e).isCanceled())
         {
             outputSlot.setItem(0, ItemStack.EMPTY);
             return -1;
@@ -685,7 +685,7 @@ public class CommonHooks
         access.execute((l, p) -> {
             int xp = xpFunction.apply(l);
             GrindstoneEvent.OnTakeItem e = new GrindstoneEvent.OnTakeItem(inputSlots.getItem(0), inputSlots.getItem(1), xp);
-            if (MinecraftForge.EVENT_BUS.post(e).isCanceled())
+            if (NeoForge.EVENT_BUS.post(e).isCanceled())
             {
                 return;
             }
@@ -721,7 +721,7 @@ public class CommonHooks
             stack = stack.getItem().getCraftingRemainingItem(stack);
             if (!stack.isEmpty() && stack.isDamageableItem() && stack.getDamageValue() > stack.getMaxDamage())
             {
-                ForgeEventFactory.onPlayerDestroyItem(craftingPlayer.get(), stack, null);
+                EventHooks.onPlayerDestroyItem(craftingPlayer.get(), stack, null);
                 return ItemStack.EMPTY;
             }
             return stack;
@@ -731,7 +731,7 @@ public class CommonHooks
 
     public static boolean onPlayerAttackTarget(Player player, Entity target)
     {
-        if (MinecraftForge.EVENT_BUS.post(new AttackEntityEvent(player, target)).isCanceled())
+        if (NeoForge.EVENT_BUS.post(new AttackEntityEvent(player, target)).isCanceled())
             return false;
         ItemStack stack = player.getMainHandItem();
         return stack.isEmpty() || !stack.getItem().onLeftClickEntity(stack, player, target);
@@ -740,7 +740,7 @@ public class CommonHooks
     public static boolean onTravelToDimension(Entity entity, ResourceKey<Level> dimension)
     {
         EntityTravelToDimensionEvent event = new EntityTravelToDimensionEvent(entity, dimension);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return !event.isCanceled();
     }
 
@@ -753,21 +753,21 @@ public class CommonHooks
     public static InteractionResult onInteractEntityAt(Player player, Entity entity, Vec3 vec3d, InteractionHand hand)
     {
         PlayerInteractEvent.EntityInteractSpecific evt = new PlayerInteractEvent.EntityInteractSpecific(player, hand, entity, vec3d);
-        MinecraftForge.EVENT_BUS.post(evt);
+        NeoForge.EVENT_BUS.post(evt);
         return evt.isCanceled() ? evt.getCancellationResult() : null;
     }
 
     public static InteractionResult onInteractEntity(Player player, Entity entity, InteractionHand hand)
     {
         PlayerInteractEvent.EntityInteract evt = new PlayerInteractEvent.EntityInteract(player, hand, entity);
-        MinecraftForge.EVENT_BUS.post(evt);
+        NeoForge.EVENT_BUS.post(evt);
         return evt.isCanceled() ? evt.getCancellationResult() : null;
     }
 
     public static InteractionResult onItemRightClick(Player player, InteractionHand hand)
     {
         PlayerInteractEvent.RightClickItem evt = new PlayerInteractEvent.RightClickItem(player, hand);
-        MinecraftForge.EVENT_BUS.post(evt);
+        NeoForge.EVENT_BUS.post(evt);
         return evt.isCanceled() ? evt.getCancellationResult() : null;
     }
 
@@ -783,32 +783,32 @@ public class CommonHooks
     public static PlayerInteractEvent.LeftClickBlock onLeftClickBlock(Player player, BlockPos pos, Direction face, ServerboundPlayerActionPacket.Action action)
     {
         PlayerInteractEvent.LeftClickBlock evt = new PlayerInteractEvent.LeftClickBlock(player, pos, face, PlayerInteractEvent.LeftClickBlock.Action.convert(action));
-        MinecraftForge.EVENT_BUS.post(evt);
+        NeoForge.EVENT_BUS.post(evt);
         return evt;
     }
 
     public static PlayerInteractEvent.LeftClickBlock onClientMineHold(Player player, BlockPos pos, Direction face)
     {
         PlayerInteractEvent.LeftClickBlock evt = new PlayerInteractEvent.LeftClickBlock(player, pos, face, PlayerInteractEvent.LeftClickBlock.Action.CLIENT_HOLD);
-        MinecraftForge.EVENT_BUS.post(evt);
+        NeoForge.EVENT_BUS.post(evt);
         return evt;
     }
 
     public static PlayerInteractEvent.RightClickBlock onRightClickBlock(Player player, InteractionHand hand, BlockPos pos, BlockHitResult hitVec)
     {
         PlayerInteractEvent.RightClickBlock evt = new PlayerInteractEvent.RightClickBlock(player, hand, pos, hitVec);
-        MinecraftForge.EVENT_BUS.post(evt);
+        NeoForge.EVENT_BUS.post(evt);
         return evt;
     }
 
     public static void onEmptyClick(Player player, InteractionHand hand)
     {
-        MinecraftForge.EVENT_BUS.post(new PlayerInteractEvent.RightClickEmpty(player, hand));
+        NeoForge.EVENT_BUS.post(new PlayerInteractEvent.RightClickEmpty(player, hand));
     }
 
     public static void onEmptyLeftClick(Player player)
     {
-        MinecraftForge.EVENT_BUS.post(new PlayerInteractEvent.LeftClickEmpty(player));
+        NeoForge.EVENT_BUS.post(new PlayerInteractEvent.LeftClickEmpty(player));
     }
 
     /**
@@ -820,7 +820,7 @@ public class CommonHooks
         if (currentGameType != newGameType)
         {
             PlayerEvent.PlayerChangeGameModeEvent evt = new PlayerEvent.PlayerChangeGameModeEvent(player, currentGameType, newGameType);
-            MinecraftForge.EVENT_BUS.post(evt);
+            NeoForge.EVENT_BUS.post(evt);
             return evt.isCanceled() ? null : evt.getNewGameMode();
         }
         return newGameType;
@@ -881,7 +881,7 @@ public class CommonHooks
         }
 
         if (!custom)
-            ret = ForgeEventFactory.loadLootTable(name, ret);
+            ret = EventHooks.loadLootTable(name, ret);
 
         if (ret != null)
             ret.freeze();
@@ -967,20 +967,20 @@ public class CommonHooks
     public static boolean onCropsGrowPre(Level level, BlockPos pos, BlockState state, boolean def)
     {
         BlockEvent ev = new BlockEvent.CropGrowEvent.Pre(level, pos, state);
-        MinecraftForge.EVENT_BUS.post(ev);
+        NeoForge.EVENT_BUS.post(ev);
         return (ev.getResult() == net.neoforged.bus.api.Event.Result.ALLOW || (ev.getResult() == net.neoforged.bus.api.Event.Result.DEFAULT && def));
     }
 
     public static void onCropsGrowPost(Level level, BlockPos pos, BlockState state)
     {
-        MinecraftForge.EVENT_BUS.post(new BlockEvent.CropGrowEvent.Post(level, pos, state, level.getBlockState(pos)));
+        NeoForge.EVENT_BUS.post(new BlockEvent.CropGrowEvent.Post(level, pos, state, level.getBlockState(pos)));
     }
 
     @Nullable
     public static CriticalHitEvent getCriticalHit(Player player, Entity target, boolean vanillaCritical, float damageModifier)
     {
         CriticalHitEvent hitResult = new CriticalHitEvent(player, target, damageModifier, vanillaCritical);
-        MinecraftForge.EVENT_BUS.post(hitResult);
+        NeoForge.EVENT_BUS.post(hitResult);
         if (hitResult.getResult() == net.neoforged.bus.api.Event.Result.ALLOW || (vanillaCritical && hitResult.getResult() == net.neoforged.bus.api.Event.Result.DEFAULT))
         {
             return hitResult;
@@ -994,7 +994,7 @@ public class CommonHooks
     public static Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack stack, EquipmentSlot equipmentSlot, Multimap<Attribute, AttributeModifier> attributes)
     {
         ItemAttributeModifierEvent event = new ItemAttributeModifierEvent(stack, equipmentSlot, attributes);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event.getModifiers();
     }
 
@@ -1004,7 +1004,7 @@ public class CommonHooks
     public static ItemStack getProjectile(LivingEntity entity, ItemStack projectileWeaponItem, ItemStack projectile)
     {
         LivingGetProjectileEvent event = new LivingGetProjectileEvent(entity, projectileWeaponItem, projectile);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event.getProjectileItemStack();
     }
 
@@ -1058,7 +1058,7 @@ public class CommonHooks
         if (entity.canTrample(state, pos, fallDistance))
         {
             BlockEvent.FarmlandTrampleEvent event = new BlockEvent.FarmlandTrampleEvent(level, pos, state, fallDistance, entity);
-            MinecraftForge.EVENT_BUS.post(event);
+            NeoForge.EVENT_BUS.post(event);
             return !event.isCanceled();
         }
         return false;
@@ -1067,7 +1067,7 @@ public class CommonHooks
     public static int onNoteChange(Level level, BlockPos pos, BlockState state, int old, int _new)
     {
         NoteBlockEvent.Change event = new NoteBlockEvent.Change(level, pos, state, old, _new);
-        if (MinecraftForge.EVENT_BUS.post(event).isCanceled())
+        if (NeoForge.EVENT_BUS.post(event).isCanceled())
             return -1;
         return event.getVanillaNoteId();
     }
@@ -1123,7 +1123,7 @@ public class CommonHooks
         if (!level.isLoaded(pos))
             return false;
         BlockState state = level.getBlockState(pos);
-        return ForgeEventFactory.getMobGriefingEvent(level, entity) && state.canEntityDestroy(level, pos, entity) && ForgeEventFactory.onEntityDestroyBlock(entity, pos, state);
+        return EventHooks.getMobGriefingEvent(level, entity) && state.canEntityDestroy(level, pos, entity) && EventHooks.onEntityDestroyBlock(entity, pos, state);
     }
 
     private static final Map<Holder.Reference<Item>, Integer> VANILLA_BURNS = new HashMap<>();
@@ -1141,7 +1141,7 @@ public class CommonHooks
         {
             Item item = stack.getItem();
             int ret = stack.getBurnTime(recipeType);
-            return ForgeEventFactory.getItemBurnTime(stack, ret == -1 ? VANILLA_BURNS.getOrDefault(ForgeRegistries.ITEMS.getDelegateOrThrow(item), 0) : ret, recipeType);
+            return EventHooks.getItemBurnTime(stack, ret == -1 ? VANILLA_BURNS.getOrDefault(ForgeRegistries.ITEMS.getDelegateOrThrow(item), 0) : ret, recipeType);
         }
     }
 
@@ -1240,20 +1240,20 @@ public class CommonHooks
 
     public static void onEntityEnterSection(Entity entity, long packedOldPos, long packedNewPos)
     {
-        MinecraftForge.EVENT_BUS.post(new EntityEvent.EnteringSection(entity, packedOldPos, packedNewPos));
+        NeoForge.EVENT_BUS.post(new EntityEvent.EnteringSection(entity, packedOldPos, packedNewPos));
     }
 
     public static ShieldBlockEvent onShieldBlock(LivingEntity blocker, DamageSource source, float blocked)
     {
         ShieldBlockEvent e = new ShieldBlockEvent(blocker, source, blocked);
-        MinecraftForge.EVENT_BUS.post(e);
+        NeoForge.EVENT_BUS.post(e);
         return e;
     }
 
     public static LivingSwapItemsEvent.Hands onLivingSwapHandItems(LivingEntity livingEntity)
     {
         LivingSwapItemsEvent.Hands event = new LivingSwapItemsEvent.Hands(livingEntity);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event;
     }
 
@@ -1444,12 +1444,12 @@ public class CommonHooks
 
     public static boolean shouldSuppressEnderManAnger(EnderMan enderMan, Player player, ItemStack mask)
     {
-        return mask.isEnderMask(player, enderMan) || MinecraftForge.EVENT_BUS.post(new EnderManAngerEvent(enderMan, player)).isCanceled();
+        return mask.isEnderMask(player, enderMan) || NeoForge.EVENT_BUS.post(new EnderManAngerEvent(enderMan, player)).isCanceled();
     }
 
     private static final Lazy<Map<String, StructuresBecomeConfiguredFix.Conversion>> FORGE_CONVERSION_MAP = Lazy.concurrentOf(() -> {
         Map<String, StructuresBecomeConfiguredFix.Conversion> map = new HashMap<>();
-        MinecraftForge.EVENT_BUS.post(new RegisterStructureConversionsEvent(map));
+        NeoForge.EVENT_BUS.post(new RegisterStructureConversionsEvent(map));
         return ImmutableMap.copyOf(map);
     });
 
@@ -1588,7 +1588,7 @@ public class CommonHooks
             refillAirAmount = 0;
         }
         LivingBreatheEvent breatheEvent = new LivingBreatheEvent(entity, canBreathe, consumeAirAmount, refillAirAmount);
-        MinecraftForge.EVENT_BUS.post(breatheEvent);
+        NeoForge.EVENT_BUS.post(breatheEvent);
         if (breatheEvent.canBreathe())
         {
             entity.setAirSupply(Math.min(entity.getAirSupply() + breatheEvent.getRefillAirAmount(), entity.getMaxAirSupply()));
@@ -1601,7 +1601,7 @@ public class CommonHooks
         if (entity.getAirSupply() <= 0)
         {
             LivingDrownEvent drownEvent = new LivingDrownEvent(entity);
-            if (!MinecraftForge.EVENT_BUS.post(drownEvent).isCanceled() && drownEvent.isDrowning())
+            if (!NeoForge.EVENT_BUS.post(drownEvent).isCanceled() && drownEvent.isDrowning())
             {
                 entity.setAirSupply(0);
                 Vec3 vec3 = entity.getDeltaMovement();

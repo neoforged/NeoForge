@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.common.util;
 
-import net.neoforged.neoforge.common.ForgeI18n;
+import net.neoforged.neoforge.common.I18nExtension;
 import net.neoforged.neoforgespi.locating.ForgeFeature;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.Restriction;
@@ -26,7 +26,7 @@ public class MavenVersionStringHelper {
     public static String restrictionToString(final Restriction restriction) {
         if ( restriction.getLowerBound() == null && restriction.getUpperBound() == null )
         {
-            return ForgeI18n.parseMessage("fml.messages.version.restriction.any");
+            return I18nExtension.parseMessage("fml.messages.version.restriction.any");
         }
         else if ( restriction.getLowerBound() != null && restriction.getUpperBound() != null )
         {
@@ -38,19 +38,19 @@ public class MavenVersionStringHelper {
             {
                 if (restriction.isLowerBoundInclusive() && restriction.isUpperBoundInclusive())
                 {
-                    return ForgeI18n.parseMessage("fml.messages.version.restriction.bounded.inclusive", restriction.getLowerBound(), restriction.getUpperBound());
+                    return I18nExtension.parseMessage("fml.messages.version.restriction.bounded.inclusive", restriction.getLowerBound(), restriction.getUpperBound());
                 }
                 else if (restriction.isLowerBoundInclusive())
                 {
-                    return ForgeI18n.parseMessage("fml.messages.version.restriction.bounded.upperexclusive", restriction.getLowerBound(), restriction.getUpperBound());
+                    return I18nExtension.parseMessage("fml.messages.version.restriction.bounded.upperexclusive", restriction.getLowerBound(), restriction.getUpperBound());
                 }
                 else if (restriction.isUpperBoundInclusive())
                 {
-                    return ForgeI18n.parseMessage("fml.messages.version.restriction.bounded.lowerexclusive", restriction.getLowerBound(), restriction.getUpperBound());
+                    return I18nExtension.parseMessage("fml.messages.version.restriction.bounded.lowerexclusive", restriction.getLowerBound(), restriction.getUpperBound());
                 }
                 else
                 {
-                    return ForgeI18n.parseMessage("fml.messages.version.restriction.bounded.exclusive", restriction.getLowerBound(), restriction.getUpperBound());
+                    return I18nExtension.parseMessage("fml.messages.version.restriction.bounded.exclusive", restriction.getLowerBound(), restriction.getUpperBound());
                 }
             }
         }
@@ -58,22 +58,22 @@ public class MavenVersionStringHelper {
         {
             if ( restriction.isLowerBoundInclusive() )
             {
-                return ForgeI18n.parseMessage("fml.messages.version.restriction.lower.inclusive", restriction.getLowerBound());
+                return I18nExtension.parseMessage("fml.messages.version.restriction.lower.inclusive", restriction.getLowerBound());
             }
             else
             {
-                return ForgeI18n.parseMessage("fml.messages.version.restriction.lower.exclusive", restriction.getLowerBound());
+                return I18nExtension.parseMessage("fml.messages.version.restriction.lower.exclusive", restriction.getLowerBound());
             }
         }
         else
         {
             if ( restriction.isUpperBoundInclusive() )
             {
-                return ForgeI18n.parseMessage("fml.messages.version.restriction.upper.inclusive", restriction.getUpperBound());
+                return I18nExtension.parseMessage("fml.messages.version.restriction.upper.inclusive", restriction.getUpperBound());
             }
             else
             {
-                return ForgeI18n.parseMessage("fml.messages.version.restriction.upper.exclusive", restriction.getUpperBound());
+                return I18nExtension.parseMessage("fml.messages.version.restriction.upper.exclusive", restriction.getUpperBound());
             }
         }
     }

@@ -4,9 +4,9 @@
  
     public void render(AbstractClientPlayer p_117788_, float p_117789_, float p_117790_, PoseStack p_117791_, MultiBufferSource p_117792_, int p_117793_) {
        this.setModelProperties(p_117788_);
-+      if (net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderPlayerEvent.Pre(p_117788_, this, p_117790_, p_117791_, p_117792_, p_117793_)).isCanceled()) return;
++      if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderPlayerEvent.Pre(p_117788_, this, p_117790_, p_117791_, p_117792_, p_117793_)).isCanceled()) return;
        super.render(p_117788_, p_117789_, p_117790_, p_117791_, p_117792_, p_117793_);
-+      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderPlayerEvent.Post(p_117788_, this, p_117790_, p_117791_, p_117792_, p_117793_));
++      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderPlayerEvent.Post(p_117788_, this, p_117790_, p_117791_, p_117792_, p_117793_));
     }
  
     public Vec3 getRenderOffset(AbstractClientPlayer p_117785_, float p_117786_) {

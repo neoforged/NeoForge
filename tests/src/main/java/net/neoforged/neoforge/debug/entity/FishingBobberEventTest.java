@@ -11,7 +11,7 @@ import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.fml.common.Mod;
 
@@ -24,7 +24,7 @@ public class FishingBobberEventTest
     {
         if (ENABLE)
         {
-            MinecraftForge.EVENT_BUS.addListener(FishingBobberEventTest::handleImpact);
+            NeoForge.EVENT_BUS.addListener(FishingBobberEventTest::handleImpact);
         }
     }
 

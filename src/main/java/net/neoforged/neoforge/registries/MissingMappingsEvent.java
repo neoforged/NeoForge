@@ -9,7 +9,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 
 import java.util.Collection;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Fired on the {@link MinecraftForge#EVENT_BUS forge bus}.
+ * Fired on the {@link NeoForge#EVENT_BUS forge bus}.
  */
 public class MissingMappingsEvent extends Event
 {

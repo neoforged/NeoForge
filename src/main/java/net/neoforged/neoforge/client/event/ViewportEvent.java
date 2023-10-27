@@ -11,7 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FogRenderer.FogMode;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.level.material.FogType;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.ApiStatus;
  * These can be used for customizing the visual features visible to the player.
  * See the various subclasses for listening to different features.
  *
- * <p>These events are fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+ * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
  * @see RenderFog
@@ -74,7 +74,7 @@ public abstract class ViewportEvent extends Event
      * <p>This event is {@linkplain ICancellableEvent cancellable}, and {@linkplain HasResult has a result}. <br/>
      * The event must be cancelled for any changes to the plane distances to take effect.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class RenderFog extends ViewportEvent implements ICancellableEvent
@@ -194,7 +194,7 @@ public abstract class ViewportEvent extends Event
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class ComputeFogColor extends ViewportEvent
@@ -273,7 +273,7 @@ public abstract class ViewportEvent extends Event
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class ComputeCameraAngles extends ViewportEvent
@@ -352,7 +352,7 @@ public abstract class ViewportEvent extends Event
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      *
      * @see ComputeFovModifierEvent

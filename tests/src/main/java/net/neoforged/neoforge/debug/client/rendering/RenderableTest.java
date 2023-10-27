@@ -7,6 +7,7 @@ package net.neoforged.neoforge.debug.client.rendering;
 
 import java.util.Map;
 
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,7 +37,6 @@ import net.neoforged.neoforge.client.model.obj.ObjModel;
 import net.neoforged.neoforge.client.model.renderable.BakedModelRenderable;
 import net.neoforged.neoforge.client.model.renderable.CompositeRenderable;
 import net.neoforged.neoforge.client.model.renderable.IRenderable;
-import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -81,7 +81,7 @@ public class RenderableTest
         public static void init()
         {
             var modBus = FMLJavaModLoadingContext.get().getModEventBus();
-            var forgeBus = MinecraftForge.EVENT_BUS;
+            var forgeBus = NeoForge.EVENT_BUS;
             modBus.addListener(Client::registerModels);
             modBus.addListener(Client::registerReloadListeners);
             modBus.addListener(Client::registerStage);

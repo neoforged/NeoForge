@@ -7,7 +7,7 @@ package net.neoforged.neoforge.event.entity.player;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.Connection;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.concurrent.Future;
  * <br>
  * This event can be used to delay the player login until any necessary work such as preloading user data has completed.
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
 public class PlayerNegotiationEvent extends Event
 {

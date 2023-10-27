@@ -33,9 +33,10 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.fml.ModList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 
 @ParametersAreNonnullByDefault
-public class ForgeChunkManager
+public class ForcedChunkManager
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final TicketType<TicketOwner<BlockPos>> BLOCK = TicketType.create("forge:block", Comparator.comparing(info -> info));
@@ -233,11 +234,10 @@ public class ForgeChunkManager
     }
 
     /**
-     * Writes the forge forced chunks into the NBT compound. Format is List{modid, List{ChunkPos, List{BlockPos}, List{UUID}}}
-     *
-     * @apiNote Internal
+     * Writes the mod forced chunks into the NBT compound. Format is List{modid, List{ChunkPos, List{BlockPos}, List{UUID}}}
      */
-    public static void writeForgeForcedChunks(CompoundTag nbt, TicketTracker<BlockPos> blockForcedChunks, TicketTracker<UUID> entityForcedChunks)
+    @ApiStatus.Internal
+    public static void writeModForcedChunks(CompoundTag nbt, TicketTracker<BlockPos> blockForcedChunks, TicketTracker<UUID> entityForcedChunks)
     {
         if (!blockForcedChunks.isEmpty() || !entityForcedChunks.isEmpty())
         {
@@ -254,7 +254,7 @@ public class ForgeChunkManager
                 forcedEntry.put("ModForced", modForced);
                 forcedChunks.add(forcedEntry);
             }
-            nbt.put("ForgeForced", forcedChunks);
+            nbt.put("ModForced", forcedChunks);
         }
     }
 
@@ -289,13 +289,12 @@ public class ForgeChunkManager
     }
 
     /**
-     * Reads the forge forced chunks from the NBT compound. Format is List{modid, List{ChunkPos, List{BlockPos}, List{UUID}}}
-     *
-     * @apiNote Internal
+     * Reads the mod forced chunks from the NBT compound. Format is List{modid, List{ChunkPos, List{BlockPos}, List{UUID}}}
      */
-    public static void readForgeForcedChunks(CompoundTag nbt, TicketTracker<BlockPos> blockForcedChunks, TicketTracker<UUID> entityForcedChunks)
+    @ApiStatus.Internal
+    public static void readModForcedChunks(CompoundTag nbt, TicketTracker<BlockPos> blockForcedChunks, TicketTracker<UUID> entityForcedChunks)
     {
-        ListTag forcedChunks = nbt.getList("ForgeForced", Tag.TAG_COMPOUND);
+        ListTag forcedChunks = nbt.getList("ModForced", Tag.TAG_COMPOUND);
         for (int i = 0; i < forcedChunks.size(); i++)
         {
             CompoundTag forcedEntry = forcedChunks.getCompound(i);

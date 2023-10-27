@@ -217,12 +217,12 @@
 +      Screen old = this.screen;
 +      if (p_91153_ != null) {
 +         var event = new net.neoforged.neoforge.client.event.ScreenEvent.Opening(old, p_91153_);
-+         if (net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled()) return;
++         if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) return;
 +         p_91153_ = event.getNewScreen();
 +      }
 +
 +      if (old != null && p_91153_ != old) {
-+         net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Closing(old));
++         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Closing(old));
 +         old.removed();
 +      }
 +
@@ -234,11 +234,11 @@
        this.profiler.pop();
        if (!this.noRender) {
 +         this.realPartialTick = this.pause ? this.pausePartialTick : this.timer.partialTick; // Cache this since pause is volatile
-+         net.neoforged.neoforge.event.ForgeEventFactory.onRenderTickStart(this.realPartialTick);
++         net.neoforged.neoforge.event.EventHooks.onRenderTickStart(this.realPartialTick);
           this.profiler.popPush("gameRenderer");
           this.gameRenderer.render(this.pause ? this.pausePartialTick : this.timer.partialTick, i, p_91384_);
           this.profiler.pop();
-+         net.neoforged.neoforge.event.ForgeEventFactory.onRenderTickEnd(this.realPartialTick);
++         net.neoforged.neoforge.event.EventHooks.onRenderTickEnd(this.realPartialTick);
        }
  
        if (this.fpsPieResults != null) {
@@ -259,7 +259,7 @@
     }
  
     public void stop() {
-+      if (this.isRunning()) net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.GameShuttingDownEvent());
++      if (this.isRunning()) net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.GameShuttingDownEvent());
        this.running = false;
     }
  
@@ -358,7 +358,7 @@
           --this.rightClickDelay;
        }
  
-+      net.neoforged.neoforge.event.ForgeEventFactory.onPreClientTick();
++      net.neoforged.neoforge.event.EventHooks.onPreClientTick();
 +
        this.profiler.push("gui");
        this.chatListener.tick();
@@ -367,7 +367,7 @@
  
              this.tutorial.tick();
  
-+            net.neoforged.neoforge.event.ForgeEventFactory.onPreLevelTick(this.level, () -> true);
++            net.neoforged.neoforge.event.EventHooks.onPreLevelTick(this.level, () -> true);
              try {
                 this.level.tick(() -> true);
              } catch (Throwable throwable) {
@@ -375,7 +375,7 @@
  
                 throw new ReportedException(crashreport);
              }
-+            net.neoforged.neoforge.event.ForgeEventFactory.onPostLevelTick(this.level, () -> true);
++            net.neoforged.neoforge.event.EventHooks.onPostLevelTick(this.level, () -> true);
           }
  
           this.profiler.popPush("animateTick");
@@ -384,7 +384,7 @@
        this.keyboardHandler.tick();
        this.profiler.pop();
 +
-+      net.neoforged.neoforge.event.ForgeEventFactory.onPostClientTick();
++      net.neoforged.neoforge.event.EventHooks.onPostClientTick();
     }
  
     private boolean isMultiplayerServer() {
@@ -392,7 +392,7 @@
     }
  
     public void setLevel(ClientLevel p_91157_) {
-+      if (this.level != null) net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
++      if (this.level != null) net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
        ProgressScreen progressscreen = new ProgressScreen(true);
        progressscreen.progressStartNoAbort(Component.translatable("connect.joining"));
        this.updateScreenAndTick(progressscreen);
@@ -405,7 +405,7 @@
        this.narrator.clear();
        this.updateScreenAndTick(p_91321_);
        if (this.level != null) {
-+         net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
++         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
           if (integratedserver != null) {
              this.profiler.push("waitForServer");
  

@@ -8,7 +8,7 @@ package net.neoforged.neoforge.event;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.server.ReloadableServerResources;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 
 
@@ -19,7 +19,7 @@ import net.minecraft.commands.Commands;
  * Commands are rebuilt whenever {@link ReloadableServerResources} is recreated.
  * You can use this event to register your commands whenever the {@link Commands} class in constructed.
  *
- * The event is fired on the {@link MinecraftForge#EVENT_BUS}
+ * The event is fired on the {@link NeoForge#EVENT_BUS}
  */
 public class RegisterCommandsEvent extends Event
 {

@@ -27,6 +27,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraft.world.level.storage.LevelResource;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.fml.DistExecutor;
 import net.neoforged.fml.Logging;
@@ -39,7 +40,6 @@ import net.neoforged.neoforge.network.ConnectionType;
 import net.neoforged.neoforge.network.NetworkConstants;
 import net.neoforged.neoforge.network.NetworkHooks;
 import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.neoforge.gametest.GameTestHooks;
 import net.neoforged.neoforgespi.locating.IModFile;
 import net.neoforged.neoforge.registries.ForgeRegistries.Keys;
@@ -97,7 +97,7 @@ public class ServerLifecycleHooks
         LogicalSidedProvider.setServer(()->server);
         ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.SERVER, getServerConfigPath(server));
         runModifiers(server);
-        MinecraftForge.EVENT_BUS.post(new ServerAboutToStartEvent(server));
+        NeoForge.EVENT_BUS.post(new ServerAboutToStartEvent(server));
     }
 
     public static void handleServerStarting(final MinecraftServer server)
@@ -109,19 +109,19 @@ public class ServerLifecycleHooks
                 GameTestHooks.registerGametests();
         });
         PermissionAPI.initializePermissionAPI();
-        MinecraftForge.EVENT_BUS.post(new ServerStartingEvent(server));
+        NeoForge.EVENT_BUS.post(new ServerStartingEvent(server));
     }
 
     public static void handleServerStarted(final MinecraftServer server)
     {
-        MinecraftForge.EVENT_BUS.post(new ServerStartedEvent(server));
+        NeoForge.EVENT_BUS.post(new ServerStartedEvent(server));
         allowLogins.set(true);
     }
 
     public static void handleServerStopping(final MinecraftServer server)
     {
         allowLogins.set(false);
-        MinecraftForge.EVENT_BUS.post(new ServerStoppingEvent(server));
+        NeoForge.EVENT_BUS.post(new ServerStoppingEvent(server));
     }
 
     public static void expectServerStopped()
@@ -132,7 +132,7 @@ public class ServerLifecycleHooks
     public static void handleServerStopped(final MinecraftServer server)
     {
         if (!server.isDedicatedServer()) GameData.revertToFrozen();
-        MinecraftForge.EVENT_BUS.post(new ServerStoppedEvent(server));
+        NeoForge.EVENT_BUS.post(new ServerStoppedEvent(server));
         currentServer = null;
         LogicalSidedProvider.setServer(null);
         CountDownLatch latch = exitLatch;

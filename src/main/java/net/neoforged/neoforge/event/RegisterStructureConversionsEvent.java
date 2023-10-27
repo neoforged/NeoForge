@@ -7,7 +7,7 @@ package net.neoforged.neoforge.event;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.datafix.fixes.StructuresBecomeConfiguredFix;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 
 import java.util.Locale;
@@ -28,7 +28,7 @@ import com.google.common.base.Preconditions;
  *
  * <p>This event is not {@linkplain ICancellableEvent cancelable}, and does not {@linkplain HasResult have a result}.</p>
  *
- * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+ * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}. </p>
  *
  * @see StructuresBecomeConfiguredFix

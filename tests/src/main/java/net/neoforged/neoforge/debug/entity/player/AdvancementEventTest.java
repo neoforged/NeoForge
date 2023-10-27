@@ -8,7 +8,7 @@ package net.neoforged.neoforge.debug.entity.player;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
@@ -30,8 +30,8 @@ public class AdvancementEventTest
     {
         if (ENABLED)
         {
-            MinecraftForge.EVENT_BUS.addListener(this::onAdvancementEarnEvent);
-            MinecraftForge.EVENT_BUS.addListener(this::onAdvancementProgressEvent);
+            NeoForge.EVENT_BUS.addListener(this::onAdvancementEarnEvent);
+            NeoForge.EVENT_BUS.addListener(this::onAdvancementProgressEvent);
         }
     }
 

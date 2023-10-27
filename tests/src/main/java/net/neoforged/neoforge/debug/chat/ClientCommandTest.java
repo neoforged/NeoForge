@@ -18,7 +18,7 @@ import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.debug.client.TestScreen;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 
@@ -29,7 +29,7 @@ public class ClientCommandTest
 {
     public ClientCommandTest()
     {
-        MinecraftForge.EVENT_BUS.addListener(this::init);
+        NeoForge.EVENT_BUS.addListener(this::init);
     }
 
     private void init(RegisterClientCommandsEvent event)

@@ -25,7 +25,7 @@ import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.chat.*;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.server.command.CommandHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +41,7 @@ public class ClientCommandHandler
 
     public static void init()
     {
-        MinecraftForge.EVENT_BUS.addListener(ClientCommandHandler::handleClientPlayerLogin);
+        NeoForge.EVENT_BUS.addListener(ClientCommandHandler::handleClientPlayerLogin);
     }
 
     private static void handleClientPlayerLogin(ClientPlayerNetworkEvent.LoggingIn event)
@@ -62,7 +62,7 @@ public class ClientCommandHandler
     public static CommandDispatcher<SharedSuggestionProvider> mergeServerCommands(CommandDispatcher<SharedSuggestionProvider> serverCommands, CommandBuildContext buildContext)
     {
         CommandDispatcher<CommandSourceStack> commandsTemp = new CommandDispatcher<>();
-        MinecraftForge.EVENT_BUS.post(new RegisterClientCommandsEvent(commandsTemp, buildContext));
+        NeoForge.EVENT_BUS.post(new RegisterClientCommandsEvent(commandsTemp, buildContext));
 
         // Copies the client commands into another RootCommandNode so that redirects can't be used with server commands
         commands = new CommandDispatcher<>();

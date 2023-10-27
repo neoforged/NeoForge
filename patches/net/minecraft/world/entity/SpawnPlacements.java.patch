@@ -14,7 +14,7 @@
        SpawnPlacements.Data spawnplacements$data = DATA_BY_TYPE.get(p_217075_);
 -      return spawnplacements$data == null || ((SpawnPredicate<T>)spawnplacements$data.predicate).test(p_217075_, p_217076_, p_217077_, p_217078_, p_217079_);
 +      boolean vanillaResult = spawnplacements$data == null || spawnplacements$data.predicate.test((EntityType)p_217075_, p_217076_, p_217077_, p_217078_, p_217079_);
-+      return net.neoforged.neoforge.event.ForgeEventFactory.checkSpawnPlacements(p_217075_, p_217076_, p_217077_, p_217078_, p_217079_, vanillaResult);
++      return net.neoforged.neoforge.event.EventHooks.checkSpawnPlacements(p_217075_, p_217076_, p_217077_, p_217078_, p_217079_, vanillaResult);
     }
  
     static {

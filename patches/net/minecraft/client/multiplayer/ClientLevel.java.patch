@@ -26,7 +26,7 @@
        this.updateSkyBrightness();
        this.prepareWeather();
 +      this.gatherCapabilities();
-+      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(this));
++      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(this));
     }
  
     public void queueLightUpdate(Runnable p_194172_) {
@@ -42,7 +42,7 @@
     }
  
     public void addEntity(Entity p_104741_) {
-+      if (net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(p_104741_, this)).isCanceled()) return;
++      if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(p_104741_, this)).isCanceled()) return;
        this.removeEntity(p_104741_.getId(), Entity.RemovalReason.DISCARDED);
        this.entityStorage.addEntity(p_104741_);
 +      p_104741_.onAddedToWorld();
@@ -53,7 +53,7 @@
        float p_263349_,
        long p_263408_
     ) {
-+      net.neoforged.neoforge.event.PlayLevelSoundEvent.AtPosition event = net.neoforged.neoforge.event.ForgeEventFactory.onPlaySoundAtPosition(this, p_263372_, p_263404_, p_263365_, p_263335_, p_263417_, p_263416_, p_263349_);
++      net.neoforged.neoforge.event.PlayLevelSoundEvent.AtPosition event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtPosition(this, p_263372_, p_263404_, p_263365_, p_263335_, p_263417_, p_263416_, p_263349_);
 +      if (event.isCanceled() || event.getSound() == null) return;
 +      p_263335_ = event.getSound();
 +      p_263417_ = event.getSource();
@@ -67,7 +67,7 @@
     public void playSeededSound(
        @Nullable Player p_263514_, Entity p_263536_, Holder<SoundEvent> p_263518_, SoundSource p_263487_, float p_263538_, float p_263524_, long p_263509_
     ) {
-+      net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.ForgeEventFactory.onPlaySoundAtEntity(p_263536_, p_263518_, p_263487_, p_263538_, p_263524_);
++      net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtEntity(p_263536_, p_263518_, p_263487_, p_263538_, p_263524_);
 +      if (event.isCanceled() || event.getSound() == null) return;
 +      p_263518_ = event.getSound();
 +      p_263487_ = event.getSource();
@@ -100,7 +100,7 @@
           ClientLevel.this.players.remove(p_171716_);
 +
 +         p_171716_.onRemovedFromWorld();
-+         net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent(p_171716_, ClientLevel.this));
++         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent(p_171716_, ClientLevel.this));
 +
 +         if (p_171716_.isMultipartEntity()) {
 +            for (net.neoforged.neoforge.entity.PartEntity<?> part : p_171716_.getParts()) {

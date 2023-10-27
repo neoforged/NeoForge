@@ -8,8 +8,8 @@ package net.neoforged.neoforge.event.entity.living;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.bus.api.ICancellableEvent;
 
@@ -18,7 +18,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * If a method utilizes this event as its parameter, the method will
  * receive every child event of this class.
  *
- * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.
+ * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public abstract class ZombieEvent extends EntityEvent {
     private final Zombie zombie;
@@ -40,7 +40,7 @@ public abstract class ZombieEvent extends EntityEvent {
      * This event is fired whenever a Zombie Entity is summoned in
      * {@code Zombie#actuallyHurt(DamageSource, float)}.
      *
-     * This event is fired via the {@link ForgeEventFactory#fireZombieSummonAid(Zombie, Level, int, int, int, LivingEntity, double)}.
+     * This event is fired via the {@link EventHooks#fireZombieSummonAid(Zombie, Level, int, int, int, LivingEntity, double)}.
      *
      * {@link #getCustomSummonedAid()} remains null, but can be populated with a custom EntityZombie which will be spawned.
      * {@link #getLevel()} contains the world that this summoning is occurring in.
@@ -56,7 +56,7 @@ public abstract class ZombieEvent extends EntityEvent {
      * {@link Result#ALLOW} Zombie is summoned.
      * {@link Result#DENY} Zombie is not summoned.
      *
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.
      **/
     @HasResult
     public static class SummonAidEvent extends ZombieEvent {

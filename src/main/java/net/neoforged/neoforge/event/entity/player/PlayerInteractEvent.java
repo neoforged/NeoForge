@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * PlayerInteractEvent is fired when a player interacts in some way.
- * All subclasses are fired on {@link MinecraftForge#EVENT_BUS}.
+ * All subclasses are fired on {@link NeoForge#EVENT_BUS}.
  * See the individual documentation on each subevent for more details.
  **/
 public abstract class PlayerInteractEvent extends PlayerEvent

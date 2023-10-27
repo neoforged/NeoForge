@@ -5,11 +5,11 @@
 
 package net.neoforged.neoforge.debug.misc;
 
+import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 
-import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
 import net.neoforged.fml.common.Mod;
 
@@ -29,7 +29,7 @@ public class AnvilUpdateEventTest
     {
         if (ENABLED)
         {
-            MinecraftForge.EVENT_BUS.addListener(this::anvilUpdate);
+            NeoForge.EVENT_BUS.addListener(this::anvilUpdate);
         }
     }
 

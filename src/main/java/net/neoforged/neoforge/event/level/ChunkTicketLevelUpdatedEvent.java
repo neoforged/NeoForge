@@ -7,7 +7,7 @@ package net.neoforged.neoforge.event.level;
 
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
  * <p>
- * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
+ * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
  * only on the {@linkplain LogicalSide#SERVER logical server}.
  **/
 public class ChunkTicketLevelUpdatedEvent extends Event

@@ -42,7 +42,7 @@
        if (this.level() instanceof ServerLevel) {
           if (this.dragonDeathTime > 150 && this.dragonDeathTime % 5 == 0 && flag) {
 -            ExperienceOrb.award((ServerLevel)this.level(), this.position(), Mth.floor((float)i * 0.08F));
-+            int award = net.neoforged.neoforge.event.ForgeEventFactory.getExperienceDrop(this, this.unlimitedLastHurtByPlayer, Mth.floor((float)i * 0.08F));
++            int award = net.neoforged.neoforge.event.EventHooks.getExperienceDrop(this, this.unlimitedLastHurtByPlayer, Mth.floor((float)i * 0.08F));
 +            ExperienceOrb.award((ServerLevel) this.level(), this.position(), award);
           }
  
@@ -52,7 +52,7 @@
        if (this.dragonDeathTime == 200 && this.level() instanceof ServerLevel) {
           if (flag) {
 -            ExperienceOrb.award((ServerLevel)this.level(), this.position(), Mth.floor((float)i * 0.2F));
-+            int award = net.neoforged.neoforge.event.ForgeEventFactory.getExperienceDrop(this, this.unlimitedLastHurtByPlayer, Mth.floor((float)i * 0.2F));
++            int award = net.neoforged.neoforge.event.EventHooks.getExperienceDrop(this, this.unlimitedLastHurtByPlayer, Mth.floor((float)i * 0.2F));
 +            ExperienceOrb.award((ServerLevel) this.level(), this.position(), award);
           }
  

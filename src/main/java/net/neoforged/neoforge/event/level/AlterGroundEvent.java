@@ -10,7 +10,7 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Objects;
 
-import net.neoforged.neoforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.core.BlockPos;
@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.feature.treedecorators.AlterGroundDecorator;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecorator;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 
 /**
@@ -28,7 +28,7 @@ import net.neoforged.bus.api.Event;
  * <p>
  * This event is not {@linkplain ICancellableEvent cancellable}.
  * <p>
- * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus} only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.
+ * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus} only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.
  * <p>
  * This event is fired on worker threads, meaning it is unsafe to access external global state.<br>
  * Doing so may induce {@link ConcurrentModificationException} or deadlocks.
@@ -41,7 +41,7 @@ public class AlterGroundEvent extends Event
     private StateProvider provider;
 
     /**
-     * @see {@link ForgeEventFactory#alterGround} as the API endpoint for firing this event.
+     * @see {@link EventHooks#alterGround} as the API endpoint for firing this event.
      */
     @ApiStatus.Internal
     public AlterGroundEvent(TreeDecorator.Context ctx, List<BlockPos> positions, StateProvider provider)

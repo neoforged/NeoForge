@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.server.loading;
 
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.fml.*;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
@@ -42,7 +42,7 @@ public class ServerModLoader
             LOGGER.warn(Logging.LOADING, "Mods loaded with {} warnings", warnings.size());
             warnings.forEach(warning -> LOGGER.warn(Logging.LOADING, warning.formatToString()));
         }
-        MinecraftForge.EVENT_BUS.start();
+        NeoForge.EVENT_BUS.start();
     }
 
     public static boolean hasErrors() {

@@ -8,7 +8,7 @@ package net.neoforged.neoforge.event.entity.player;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 
 /**
@@ -39,7 +39,7 @@ public abstract class AdvancementEvent extends PlayerEvent
      *
      * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain Event.HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.</p>
      *
      * @see AdvancementProgress#isDone()
@@ -58,7 +58,7 @@ public abstract class AdvancementEvent extends PlayerEvent
      *
      * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain Event.HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.</p>
      *
      * @see AdvancementEarnEvent

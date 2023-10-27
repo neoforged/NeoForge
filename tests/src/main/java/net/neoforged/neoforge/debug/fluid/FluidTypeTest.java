@@ -30,7 +30,7 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.fluids.FluidInteractionRegistry;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.ForgeFlowingFluid;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.fml.DistExecutor;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -72,9 +72,9 @@ public class FluidTypeTest
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ID);
 
-    private static ForgeFlowingFluid.Properties fluidProperties()
+    private static BaseFlowingFluid.Properties fluidProperties()
     {
-        return new ForgeFlowingFluid.Properties(TEST_FLUID_TYPE, TEST_FLUID, TEST_FLUID_FLOWING)
+        return new BaseFlowingFluid.Properties(TEST_FLUID_TYPE, TEST_FLUID, TEST_FLUID_FLOWING)
                 .block(TEST_FLUID_BLOCK)
                 .bucket(TEST_FLUID_BUCKET);
     }
@@ -149,9 +149,9 @@ public class FluidTypeTest
                 }
             });
     private static final RegistryObject<FlowingFluid> TEST_FLUID = FLUIDS.register("test_fluid", () ->
-            new ForgeFlowingFluid.Source(fluidProperties()));
+            new BaseFlowingFluid.Source(fluidProperties()));
     private static final RegistryObject<Fluid> TEST_FLUID_FLOWING = FLUIDS.register("test_fluid_flowing", () ->
-            new ForgeFlowingFluid.Flowing(fluidProperties()));
+            new BaseFlowingFluid.Flowing(fluidProperties()));
     private static final RegistryObject<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.register("test_fluid_block", () ->
             new LiquidBlock(TEST_FLUID, BlockBehaviour.Properties.of().noCollission().strength(100.0F).noLootTable()));
     private static final RegistryObject<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () ->

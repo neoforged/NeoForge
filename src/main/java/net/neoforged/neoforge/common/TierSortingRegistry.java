@@ -233,7 +233,7 @@ public class TierSortingRegistry
     static void init()
     {
         SYNC_CHANNEL.registerMessage(0, SyncPacket.class, SyncPacket::encode, TierSortingRegistry::receive, TierSortingRegistry::handle, Optional.of(PlayNetworkDirection.PLAY_TO_CLIENT));
-        MinecraftForge.EVENT_BUS.addListener(TierSortingRegistry::playerLoggedIn);
+        NeoForge.EVENT_BUS.addListener(TierSortingRegistry::playerLoggedIn);
         if (FMLEnvironment.dist == Dist.CLIENT) ClientEvents.init();
     }
 
@@ -385,7 +385,7 @@ public class TierSortingRegistry
     {
         public static void init()
         {
-            MinecraftForge.EVENT_BUS.addListener(ClientEvents::clientLogInToServer);
+            NeoForge.EVENT_BUS.addListener(ClientEvents::clientLogInToServer);
         }
 
         private static void clientLogInToServer(ClientPlayerNetworkEvent.LoggingIn event)

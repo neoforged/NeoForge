@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -34,7 +34,7 @@ public class KeyMappingTest
         @SubscribeEvent
         public static void init(FMLConstructModEvent event)
         {
-            MinecraftForge.EVENT_BUS.addListener(ClientStuff::tick);
+            NeoForge.EVENT_BUS.addListener(ClientStuff::tick);
         }
 
         @SubscribeEvent

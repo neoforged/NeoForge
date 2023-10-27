@@ -13,7 +13,7 @@
           this.unregisterListeners(p_300979_);
           this.progressChanged.add(p_300979_);
           flag = true;
-+         net.neoforged.neoforge.event.ForgeEventFactory.onAdvancementProgressedEvent(this.player, p_300979_, advancementprogress, p_135990_, net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent.ProgressType.GRANT);
++         net.neoforged.neoforge.event.EventHooks.onAdvancementProgressedEvent(this.player, p_300979_, advancementprogress, p_135990_, net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent.ProgressType.GRANT);
           if (!flag1 && advancementprogress.isDone()) {
              p_300979_.value().rewards().grant(this.player);
              p_300979_.value()
@@ -21,7 +21,7 @@
                                false
                             );
                       }
-+                     net.neoforged.neoforge.event.ForgeEventFactory.onAdvancementEarnedEvent(this.player, p_300979_);
++                     net.neoforged.neoforge.event.EventHooks.onAdvancementEarnedEvent(this.player, p_300979_);
                    }
                 );
           }
@@ -29,7 +29,7 @@
           this.registerListeners(p_301073_);
           this.progressChanged.add(p_301073_);
           flag = true;
-+         net.neoforged.neoforge.event.ForgeEventFactory.onAdvancementProgressedEvent(this.player, p_301073_, advancementprogress, p_136000_, net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent.ProgressType.REVOKE);
++         net.neoforged.neoforge.event.EventHooks.onAdvancementProgressedEvent(this.player, p_301073_, advancementprogress, p_136000_, net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent.ProgressType.REVOKE);
        }
  
        if (flag1 && !advancementprogress.isDone()) {

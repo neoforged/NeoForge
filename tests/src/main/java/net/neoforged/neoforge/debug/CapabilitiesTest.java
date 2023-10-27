@@ -17,7 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.capabilities.*;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
@@ -75,7 +75,7 @@ public class CapabilitiesTest
         {
             this.cls = cls;
 
-            MinecraftForge.EVENT_BUS.addGenericListener(cls, this::attach);
+            NeoForge.EVENT_BUS.addGenericListener(cls, this::attach);
         }
 
         public void attach(AttachCapabilitiesEvent<T> event)

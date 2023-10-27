@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
+import net.neoforged.neoforge.common.I18nExtension;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -36,7 +37,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.neoforged.neoforge.common.ForgeI18n;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.network.ConnectionData.ModMismatchData;
@@ -90,10 +90,10 @@ public class ModMismatchDisconnectedScreen extends Screen
             this.addRenderableWidget(new MismatchInfoPanel(minecraft, listWidth, listHeight, (this.height - this.listHeight) / 2, listLeft));
 
         int buttonWidth = Math.min(210, this.width / 2 - 20);
-        this.addRenderableWidget(Button.builder(Component.literal(ForgeI18n.parseMessage("fml.button.open.file", logFile.getFileName())), button -> Util.getPlatform().openFile(logFile.toFile()))
+        this.addRenderableWidget(Button.builder(Component.literal(I18nExtension.parseMessage("fml.button.open.file", logFile.getFileName())), button -> Util.getPlatform().openFile(logFile.toFile()))
                 .bounds(Math.max(this.width / 4 - buttonWidth / 2, listLeft), upperButtonHeight, buttonWidth, 20)
                 .build());
-        this.addRenderableWidget(Button.builder(Component.literal(ForgeI18n.parseMessage("fml.button.open.mods.folder")), button -> Util.getPlatform().openFile(modsDir.toFile()))
+        this.addRenderableWidget(Button.builder(Component.literal(I18nExtension.parseMessage("fml.button.open.mods.folder")), button -> Util.getPlatform().openFile(modsDir.toFile()))
                 .bounds(Math.min(this.width * 3 / 4 - buttonWidth / 2, listLeft + listWidth - buttonWidth), upperButtonHeight, buttonWidth, 20)
                 .build());
         this.addRenderableWidget(Button.builder(Component.translatable("gui.toMenu"), button -> this.minecraft.setScreen(this.parent))
@@ -129,15 +129,15 @@ public class ModMismatchDisconnectedScreen extends Screen
             if (!missingModData.isEmpty())
             {
                 //The header of the section, colored in gray
-                rawTable.add(Pair.of(Component.literal(ForgeI18n.parseMessage(mismatchedDataFromServer ? "fml.modmismatchscreen.missingmods.server" : "fml.modmismatchscreen.missingmods.client")).withStyle(ChatFormatting.GRAY), null));
+                rawTable.add(Pair.of(Component.literal(I18nExtension.parseMessage(mismatchedDataFromServer ? "fml.modmismatchscreen.missingmods.server" : "fml.modmismatchscreen.missingmods.client")).withStyle(ChatFormatting.GRAY), null));
                 //This table section contains the mod name and mod version of each mod that has a missing remote counterpart (if the mod is missing on the server, the client mod version is displayed, and vice versa)
-                rawTable.add(Pair.of(Component.literal(ForgeI18n.parseMessage("fml.modmismatchscreen.table.modname")).withStyle(ChatFormatting.UNDERLINE), Pair.of("", ForgeI18n.parseMessage(mismatchedDataFromServer ? "fml.modmismatchscreen.table.youhave" : "fml.modmismatchscreen.table.youneed"))));
+                rawTable.add(Pair.of(Component.literal(I18nExtension.parseMessage("fml.modmismatchscreen.table.modname")).withStyle(ChatFormatting.UNDERLINE), Pair.of("", I18nExtension.parseMessage(mismatchedDataFromServer ? "fml.modmismatchscreen.table.youhave" : "fml.modmismatchscreen.table.youneed"))));
                 int i = 0;
                 for (ResourceLocation mod : missingModData) {
                     rawTable.add(Pair.of(toModNameComponent(mod, presentModData.get(mod).getLeft(), i), Pair.of("", presentModData.getOrDefault(mod, Pair.of("", "")).getRight())));
                     if (++i >= 10) {
                         //If too many missing mod entries are present, append a line referencing how to see the full list and stop rendering any more entries
-                        rawTable.add(Pair.of(Component.literal(ForgeI18n.parseMessage("fml.modmismatchscreen.additional", missingModData.size() - i)).withStyle(ChatFormatting.ITALIC), Pair.of("", "")));
+                        rawTable.add(Pair.of(Component.literal(I18nExtension.parseMessage("fml.modmismatchscreen.additional", missingModData.size() - i)).withStyle(ChatFormatting.ITALIC), Pair.of("", "")));
                         break;
                     }
                 }
@@ -146,15 +146,15 @@ public class ModMismatchDisconnectedScreen extends Screen
             if (!mismatchedModData.isEmpty())
             {
                 //The header of the table section, colored in gray
-                rawTable.add(Pair.of(Component.literal(ForgeI18n.parseMessage("fml.modmismatchscreen.mismatchedmods")).withStyle(ChatFormatting.GRAY), null));
+                rawTable.add(Pair.of(Component.literal(I18nExtension.parseMessage("fml.modmismatchscreen.mismatchedmods")).withStyle(ChatFormatting.GRAY), null));
                 //This table section contains the mod name and both mod versions of each mod that has a mismatching client and server version
-                rawTable.add(Pair.of(Component.literal(ForgeI18n.parseMessage("fml.modmismatchscreen.table.modname")).withStyle(ChatFormatting.UNDERLINE), Pair.of(ForgeI18n.parseMessage(mismatchedDataFromServer ? "fml.modmismatchscreen.table.youhave" : "fml.modmismatchscreen.table.serverhas"), ForgeI18n.parseMessage(mismatchedDataFromServer ? "fml.modmismatchscreen.table.serverhas" : "fml.modmismatchscreen.table.youhave"))));
+                rawTable.add(Pair.of(Component.literal(I18nExtension.parseMessage("fml.modmismatchscreen.table.modname")).withStyle(ChatFormatting.UNDERLINE), Pair.of(I18nExtension.parseMessage(mismatchedDataFromServer ? "fml.modmismatchscreen.table.youhave" : "fml.modmismatchscreen.table.serverhas"), I18nExtension.parseMessage(mismatchedDataFromServer ? "fml.modmismatchscreen.table.serverhas" : "fml.modmismatchscreen.table.youhave"))));
                 int i = 0;
                 for (Map.Entry<ResourceLocation,  String> modData : mismatchedModData.entrySet()) {
                     rawTable.add(Pair.of(toModNameComponent(modData.getKey(), presentModData.get(modData.getKey()).getLeft(), i), Pair.of(presentModData.getOrDefault(modData.getKey(), Pair.of("", "")).getRight(), modData.getValue())));
                     if (++i >= 10) {
                         //If too many mismatched mod entries are present, append a line referencing how to see the full list and stop rendering any more entries
-                        rawTable.add(Pair.of(Component.literal(ForgeI18n.parseMessage("fml.modmismatchscreen.additional", mismatchedModData.size() - i)).withStyle(ChatFormatting.ITALIC), Pair.of("", "")));
+                        rawTable.add(Pair.of(Component.literal(I18nExtension.parseMessage("fml.modmismatchscreen.additional", mismatchedModData.size() - i)).withStyle(ChatFormatting.ITALIC), Pair.of("", "")));
                         break;
                     }
                 }
@@ -201,7 +201,7 @@ public class ModMismatchDisconnectedScreen extends Screen
             String modId = id.getNamespace();
             String tooltipId = id.getPath().isEmpty() ? id.getNamespace() : id.toString();
             return Component.literal(modName).withStyle(color % 2 == 0 ? ChatFormatting.GOLD : ChatFormatting.YELLOW)
-                    .withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, Component.literal(tooltipId + (!presentModUrls.getOrDefault(modId, "").isEmpty() ? "\n" + ForgeI18n.parseMessage("fml.modmismatchscreen.homepage") : "")))))
+                    .withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, Component.literal(tooltipId + (!presentModUrls.getOrDefault(modId, "").isEmpty() ? "\n" + I18nExtension.parseMessage("fml.modmismatchscreen.homepage") : "")))))
                     .withStyle(s -> s.withClickEvent(!presentModUrls.getOrDefault(modId, "").isEmpty() ? new ClickEvent(ClickEvent.Action.OPEN_URL, presentModUrls.get(modId)) : null));
         }
 

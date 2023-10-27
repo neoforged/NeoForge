@@ -21,7 +21,7 @@ import net.neoforged.neoforge.client.ConfigScreenHandler;
 import net.neoforged.fml.util.thread.EffectiveSide;
 import net.neoforged.neoforge.network.ConnectionData.ModMismatchData;
 import net.neoforged.neoforge.network.filters.NetworkFilters;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -223,7 +223,7 @@ public class NetworkHooks
 
         player.containerMenu = c;
         player.initMenu(player.containerMenu);
-        MinecraftForge.EVENT_BUS.post(new PlayerContainerEvent.Open(player, c));
+        NeoForge.EVENT_BUS.post(new PlayerContainerEvent.Open(player, c));
     }
 
     /**

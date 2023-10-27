@@ -5,7 +5,7 @@
           if (this.isUnderWaterConverting()) {
              --this.conversionTime;
 -            if (this.conversionTime < 0) {
-+            if (this.conversionTime < 0 && net.neoforged.neoforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.DROWNED, (timer) -> this.conversionTime = timer)) {
++            if (this.conversionTime < 0 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.DROWNED, (timer) -> this.conversionTime = timer)) {
                 this.doUnderWaterConversion();
              }
           } else if (this.convertsInWater()) {
@@ -13,7 +13,7 @@
        if (zombie != null) {
           zombie.handleAttributes(zombie.level().getCurrentDifficultyAt(zombie.blockPosition()).getSpecialMultiplier());
           zombie.setCanBreakDoors(zombie.supportsBreakDoorGoal() && this.canBreakDoors());
-+         net.neoforged.neoforge.event.ForgeEventFactory.onLivingConvert(this, zombie);
++         net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, zombie);
        }
 -   }
  
@@ -37,7 +37,7 @@
 +         int j = Mth.floor(this.getY());
 +         int k = Mth.floor(this.getZ());
 +
-+         net.neoforged.neoforge.event.entity.living.ZombieEvent.SummonAidEvent event = net.neoforged.neoforge.event.ForgeEventFactory.fireZombieSummonAid(this, level(), i, j, k, livingentity, this.getAttribute(Attributes.SPAWN_REINFORCEMENTS_CHANCE).getValue());
++         net.neoforged.neoforge.event.entity.living.ZombieEvent.SummonAidEvent event = net.neoforged.neoforge.event.EventHooks.fireZombieSummonAid(this, level(), i, j, k, livingentity, this.getAttribute(Attributes.SPAWN_REINFORCEMENTS_CHANCE).getValue());
 +         if (event.getResult() == net.neoforged.bus.api.Event.Result.DENY) return true;
 +         if (event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW  ||
 +                 (livingentity != null
@@ -65,7 +65,7 @@
     public boolean killedEntity(ServerLevel p_219160_, LivingEntity p_219161_) {
        boolean flag = super.killedEntity(p_219160_, p_219161_);
 -      if ((p_219160_.getDifficulty() == Difficulty.NORMAL || p_219160_.getDifficulty() == Difficulty.HARD) && p_219161_ instanceof Villager villager) {
-+      if ((p_219160_.getDifficulty() == Difficulty.NORMAL || p_219160_.getDifficulty() == Difficulty.HARD) && p_219161_ instanceof Villager villager && net.neoforged.neoforge.event.ForgeEventFactory.canLivingConvert(p_219161_, EntityType.ZOMBIE_VILLAGER, (timer) -> {})) {
++      if ((p_219160_.getDifficulty() == Difficulty.NORMAL || p_219160_.getDifficulty() == Difficulty.HARD) && p_219161_ instanceof Villager villager && net.neoforged.neoforge.event.EventHooks.canLivingConvert(p_219161_, EntityType.ZOMBIE_VILLAGER, (timer) -> {})) {
           if (p_219160_.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
              return flag;
           }
@@ -73,7 +73,7 @@
              zombievillager.setGossips(villager.getGossips().store(NbtOps.INSTANCE));
              zombievillager.setTradeOffers(villager.getOffers().createTag());
              zombievillager.setVillagerXp(villager.getVillagerXp());
-+         net.neoforged.neoforge.event.ForgeEventFactory.onLivingConvert(p_219161_, zombievillager);
++         net.neoforged.neoforge.event.EventHooks.onLivingConvert(p_219161_, zombievillager);
              if (!this.isSilent()) {
                 p_219160_.levelEvent(null, 1026, this.blockPosition(), 0);
              }

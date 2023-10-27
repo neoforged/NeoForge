@@ -5,7 +5,7 @@
  import net.minecraft.world.phys.Vec3;
  
 -public class WebBlock extends Block {
-+public class WebBlock extends Block implements net.neoforged.neoforge.common.IForgeShearable {
++public class WebBlock extends Block implements net.neoforged.neoforge.common.IShearable {
     public WebBlock(BlockBehaviour.Properties p_58178_) {
        super(p_58178_);
     }

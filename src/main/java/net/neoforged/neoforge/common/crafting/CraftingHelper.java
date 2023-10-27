@@ -19,7 +19,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.util.ForgeExtraCodecs;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -72,7 +72,7 @@ public class CraftingHelper
     public static Codec<Ingredient> makeIngredientCodec(boolean allowEmpty, Codec<Ingredient> vanillaCodec) {
         var compoundIngredientCodec = ExtraCodecs.lazyInitializedCodec(() ->
                 allowEmpty ? CompoundIngredient.DIRECT_CODEC : CompoundIngredient.DIRECT_CODEC_NONEMPTY);
-        return ForgeExtraCodecs.withAlternative(
+        return NeoForgeExtraCodecs.withAlternative(
                 // Compound ingredient handling
                 compoundIngredientCodec.flatComapMap(
                         Function.identity(),
@@ -89,7 +89,7 @@ public class CraftingHelper
         // Dispatch codec for custom ingredient types:
         Codec<Ingredient> dispatchCodec = ExtraCodecs.lazyInitializedCodec(
                 // Use dispatchUnsafe to always inline the dispatched type parameters into the root ingredient object, next to the "type"
-                () -> ForgeExtraCodecs.dispatchUnsafe(
+                () -> NeoForgeExtraCodecs.dispatchUnsafe(
                         ForgeRegistries.INGREDIENT_TYPES.get().getCodec(),
                         Ingredient::getType,
                         ingredientType -> ingredientType.codec(allowEmpty)));

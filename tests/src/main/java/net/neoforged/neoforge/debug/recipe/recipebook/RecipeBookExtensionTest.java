@@ -19,7 +19,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.RegisterRecipeBookCategoriesEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.bus.api.IEventBus;
@@ -61,7 +61,7 @@ public class RecipeBookExtensionTest
         MENU_TYPE.register(modBus);
         RECIPE_TYPE.register(modBus);
 
-        MinecraftForge.EVENT_BUS.addListener(this::onRightClick);
+        NeoForge.EVENT_BUS.addListener(this::onRightClick);
     }
 
     private void onRightClick(PlayerInteractEvent.RightClickBlock event)

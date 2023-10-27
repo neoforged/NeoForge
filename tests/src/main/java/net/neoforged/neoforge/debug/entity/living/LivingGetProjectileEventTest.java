@@ -8,7 +8,7 @@ package net.neoforged.neoforge.debug.entity.living;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
 import net.neoforged.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -24,7 +24,7 @@ public class LivingGetProjectileEventTest
     {
         if (ENABLED)
         {
-            MinecraftForge.EVENT_BUS.addListener(this::onLivingGetProjectile);
+            NeoForge.EVENT_BUS.addListener(this::onLivingGetProjectile);
         }
     }
 

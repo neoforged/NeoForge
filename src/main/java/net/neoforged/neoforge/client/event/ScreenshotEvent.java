@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client.event;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Screenshot;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
@@ -25,7 +25,7 @@ import java.io.IOException;
  * If this event is cancelled, then the screenshot is not written to disk, and the message in the event will be posted
  * to the player's chat.</p>
  *
- * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+ * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
  * @see Screenshot

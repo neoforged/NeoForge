@@ -8,8 +8,8 @@ package net.neoforged.neoforge.event.furnace;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.NotNull;
@@ -20,13 +20,13 @@ import org.jetbrains.annotations.Nullable;
  * <br>
  * To set the burn time of your own item, use {@link Item#getBurnTime(ItemStack, RecipeType)} instead.<br>
  * <br>
- * This event is fired from {@link ForgeEventFactory#getItemBurnTime(ItemStack, int, RecipeType)}.<br>
+ * This event is fired from {@link EventHooks#getItemBurnTime(ItemStack, int, RecipeType)}.<br>
  * <br>
  * This event is {@link ICancellableEvent} to prevent later handlers from changing the value.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class FurnaceFuelBurnTimeEvent extends Event implements ICancellableEvent
 {

@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.util.ForgeExtraCodecs;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import java.util.Arrays;
@@ -26,12 +26,12 @@ public class PartialNBTIngredient extends Ingredient
 {
     
     public static final Codec<PartialNBTIngredient> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-          ForgeExtraCodecs.singularOrPluralCodec(ForgeRegistries.ITEMS.getCodec(), "item").forGetter(PartialNBTIngredient::getContainedItems),
+          NeoForgeExtraCodecs.singularOrPluralCodec(ForgeRegistries.ITEMS.getCodec(), "item").forGetter(PartialNBTIngredient::getContainedItems),
           CompoundTag.CODEC.fieldOf("tag").forGetter(PartialNBTIngredient::getTag)
     ).apply(builder, PartialNBTIngredient::new));
     
     public static final Codec<PartialNBTIngredient> CODEC_NONEMPTY = RecordCodecBuilder.create(builder -> builder.group(
-          ForgeExtraCodecs.singularOrPluralCodecNotEmpty(ForgeRegistries.ITEMS.getCodec(), "item").forGetter(PartialNBTIngredient::getContainedItems),
+          NeoForgeExtraCodecs.singularOrPluralCodecNotEmpty(ForgeRegistries.ITEMS.getCodec(), "item").forGetter(PartialNBTIngredient::getContainedItems),
           CompoundTag.CODEC.fieldOf("tag").forGetter(PartialNBTIngredient::getTag)
     ).apply(builder, PartialNBTIngredient::new));
     

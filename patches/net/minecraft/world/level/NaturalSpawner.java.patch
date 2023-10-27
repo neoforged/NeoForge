@@ -22,7 +22,7 @@
                             p_47040_.addFreshEntityWithPassengers(mob);
                             p_47044_.run(mob, p_47041_);
 -                           if (j >= mob.getMaxSpawnClusterSize()) {
-+                           if (j >= net.neoforged.neoforge.event.ForgeEventFactory.getMaxSpawnPackSize(mob)) {
++                           if (j >= net.neoforged.neoforge.event.EventHooks.getMaxSpawnPackSize(mob)) {
                                return;
                             }
  
@@ -31,7 +31,7 @@
           return false;
        } else {
 -         return p_46993_.checkSpawnRules(p_46992_, MobSpawnType.NATURAL) && p_46993_.checkSpawnObstruction(p_46992_);
-+         return net.neoforged.neoforge.event.ForgeEventFactory.checkSpawnPosition(p_46993_, p_46992_, MobSpawnType.NATURAL);
++         return net.neoforged.neoforge.event.EventHooks.checkSpawnPosition(p_46993_, p_46992_, MobSpawnType.NATURAL);
        }
     }
  
@@ -43,7 +43,7 @@
 -         ? NetherFortressStructure.FORTRESS_ENEMIES
 -         : p_220446_.getMobsAt(p_220449_ != null ? p_220449_ : p_220444_.getBiome(p_220448_), p_220445_, p_220447_, p_220448_);
 +      // Forge: Add in potential spawns, and replace hardcoded nether fortress mob list
-+      return net.neoforged.neoforge.event.ForgeEventFactory.getPotentialSpawns(p_220444_, p_220447_, p_220448_, isInNetherFortressBounds(p_220448_, p_220444_, p_220447_, p_220445_) ? p_220445_.registryAccess().registryOrThrow(Registries.STRUCTURE).getOrThrow(BuiltinStructures.FORTRESS).spawnOverrides().get(MobCategory.MONSTER).spawns() : p_220446_.getMobsAt(p_220449_ != null ? p_220449_ : p_220444_.getBiome(p_220448_), p_220445_, p_220447_, p_220448_));
++      return net.neoforged.neoforge.event.EventHooks.getPotentialSpawns(p_220444_, p_220447_, p_220448_, isInNetherFortressBounds(p_220448_, p_220444_, p_220447_, p_220445_) ? p_220445_.registryAccess().registryOrThrow(Registries.STRUCTURE).getOrThrow(BuiltinStructures.FORTRESS).spawnOverrides().get(MobCategory.MONSTER).spawns() : p_220446_.getMobsAt(p_220449_ != null ? p_220449_ : p_220444_.getBiome(p_220448_), p_220445_, p_220447_, p_220448_));
     }
  
     public static boolean isInNetherFortressBounds(BlockPos p_220456_, ServerLevel p_220457_, MobCategory p_220458_, StructureManager p_220459_) {
@@ -89,7 +89,7 @@
 -                           spawngroupdata = mob.finalizeSpawn(
 -                              p_220451_, p_220451_.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.CHUNK_GENERATION, spawngroupdata, null
 -                           );
-+                        if (entity instanceof Mob mob && net.neoforged.neoforge.event.ForgeEventFactory.checkSpawnPosition(mob, p_220451_, MobSpawnType.CHUNK_GENERATION)) {
++                        if (entity instanceof Mob mob && net.neoforged.neoforge.event.EventHooks.checkSpawnPosition(mob, p_220451_, MobSpawnType.CHUNK_GENERATION)) {
 +                           spawngroupdata = mob.finalizeSpawn(p_220451_, p_220451_.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.CHUNK_GENERATION, spawngroupdata, null);
                             p_220451_.addFreshEntityWithPassengers(mob);
                             flag = true;

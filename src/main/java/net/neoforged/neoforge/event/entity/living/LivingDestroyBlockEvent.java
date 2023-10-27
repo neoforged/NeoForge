@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.core.BlockPos;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
 
 /**
@@ -22,7 +22,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class LivingDestroyBlockEvent extends LivingEvent implements ICancellableEvent
 {

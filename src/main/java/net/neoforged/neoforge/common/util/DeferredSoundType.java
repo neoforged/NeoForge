@@ -33,7 +33,7 @@ import java.util.function.Supplier;
  *
  * @see SoundType
  */
-public class ForgeSoundType extends SoundType
+public class DeferredSoundType extends SoundType
 {
     private final Supplier<SoundEvent> breakSound;
     private final Supplier<SoundEvent> stepSound;
@@ -41,7 +41,7 @@ public class ForgeSoundType extends SoundType
     private final Supplier<SoundEvent> hitSound;
     private final Supplier<SoundEvent> fallSound;
 
-    public ForgeSoundType(float volumeIn, float pitchIn, Supplier<SoundEvent> breakSoundIn, Supplier<SoundEvent> stepSoundIn, Supplier<SoundEvent> placeSoundIn, Supplier<SoundEvent> hitSoundIn, Supplier<SoundEvent> fallSoundIn)
+    public DeferredSoundType(float volumeIn, float pitchIn, Supplier<SoundEvent> breakSoundIn, Supplier<SoundEvent> stepSoundIn, Supplier<SoundEvent> placeSoundIn, Supplier<SoundEvent> hitSoundIn, Supplier<SoundEvent> fallSoundIn)
     {
         super(volumeIn, pitchIn, (SoundEvent) null, (SoundEvent) null, (SoundEvent) null, (SoundEvent) null, (SoundEvent) null);
         this.breakSound = breakSoundIn;

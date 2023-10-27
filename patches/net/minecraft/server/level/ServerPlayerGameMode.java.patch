@@ -56,7 +56,7 @@
 +               boolean flag1 = blockstate.canHarvestBlock(this.level, p_9281_, this.player); // previously player.hasCorrectToolForDrops(blockstate)
                 itemstack.mineBlock(this.level, blockstate, p_9281_, this.player);
 +               if (itemstack.isEmpty() && !itemstack1.isEmpty())
-+                  net.neoforged.neoforge.event.ForgeEventFactory.onPlayerDestroyItem(this.player, itemstack1, InteractionHand.MAIN_HAND);
++                  net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(this.player, itemstack1, InteractionHand.MAIN_HAND);
 +               boolean flag = removeBlock(p_9281_, flag1);
 +
                 if (flag && flag1) {

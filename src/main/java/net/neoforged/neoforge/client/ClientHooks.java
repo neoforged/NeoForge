@@ -139,9 +139,9 @@ import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtension
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.overlay.GuiOverlayManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.common.ForgeI18n;
+import net.neoforged.neoforge.common.I18nExtension;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.bus.api.Event;
@@ -262,10 +262,10 @@ public class ClientHooks
         switch (target.getType()) {
             case BLOCK:
                 if (!(target instanceof BlockHitResult blockTarget)) return false;
-                return MinecraftForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, blockTarget, partialTick, poseStack, bufferSource)).isCanceled();
+                return NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, blockTarget, partialTick, poseStack, bufferSource)).isCanceled();
             case ENTITY:
                 if (!(target instanceof EntityHitResult entityTarget)) return false;
-                MinecraftForge.EVENT_BUS.post(new RenderHighlightEvent.Entity(context, camera, entityTarget, partialTick, poseStack, bufferSource));
+                NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Entity(context, camera, entityTarget, partialTick, poseStack, bufferSource));
                 return false;
             default:
                 return false; // NO-OP - This doesn't even get called for anything other than blocks and entities
@@ -277,7 +277,7 @@ public class ClientHooks
         var mc = Minecraft.getInstance();
         var profiler = mc.getProfiler();
         profiler.push(stage.toString());
-        MinecraftForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, levelRenderer, poseStack, projectionMatrix, renderTick, mc.getPartialTick(), camera, frustum));
+        NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, levelRenderer, poseStack, projectionMatrix, renderTick, mc.getPartialTick(), camera, frustum));
         profiler.pop();
     }
 
@@ -290,12 +290,12 @@ public class ClientHooks
 
     public static boolean renderSpecificFirstPersonHand(InteractionHand hand, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float partialTick, float interpPitch, float swingProgress, float equipProgress, ItemStack stack)
     {
-        return MinecraftForge.EVENT_BUS.post(new RenderHandEvent(hand, poseStack, bufferSource, packedLight, partialTick, interpPitch, swingProgress, equipProgress, stack)).isCanceled();
+        return NeoForge.EVENT_BUS.post(new RenderHandEvent(hand, poseStack, bufferSource, packedLight, partialTick, interpPitch, swingProgress, equipProgress, stack)).isCanceled();
     }
 
     public static boolean renderSpecificFirstPersonArm(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, AbstractClientPlayer player, HumanoidArm arm)
     {
-        return MinecraftForge.EVENT_BUS.post(new RenderArmEvent(poseStack, multiBufferSource, packedLight, player, arm)).isCanceled();
+        return NeoForge.EVENT_BUS.post(new RenderArmEvent(poseStack, multiBufferSource, packedLight, player, arm)).isCanceled();
     }
 
     public static void onTextureStitchedPost(TextureAtlas map)
@@ -357,14 +357,14 @@ public class ClientHooks
     public static float getFieldOfViewModifier(Player entity, float fovModifier)
     {
         ComputeFovModifierEvent fovModifierEvent = new ComputeFovModifierEvent(entity, fovModifier);
-        MinecraftForge.EVENT_BUS.post(fovModifierEvent);
+        NeoForge.EVENT_BUS.post(fovModifierEvent);
         return fovModifierEvent.getNewFovModifier();
     }
 
     public static double getFieldOfView(GameRenderer renderer, Camera camera, double partialTick, double fov, boolean usedConfiguredFov)
     {
         ViewportEvent.ComputeFov event = new ViewportEvent.ComputeFov(renderer, camera, partialTick, fov, usedConfiguredFov);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event.getFOV();
     }
 
@@ -397,7 +397,7 @@ public class ClientHooks
     public static SoundInstance playSound(SoundEngine manager, SoundInstance sound)
     {
         PlaySoundEvent e = new PlaySoundEvent(manager, sound);
-        MinecraftForge.EVENT_BUS.post(e);
+        NeoForge.EVENT_BUS.post(e);
         return e.getSound();
     }
 
@@ -415,9 +415,9 @@ public class ClientHooks
 
     private static void drawScreenInternal(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick)
     {
-        if (!MinecraftForge.EVENT_BUS.post(new ScreenEvent.Render.Pre(screen, guiGraphics, mouseX, mouseY, partialTick)).isCanceled())
+        if (!NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Pre(screen, guiGraphics, mouseX, mouseY, partialTick)).isCanceled())
             screen.renderWithTooltip(guiGraphics, mouseX, mouseY, partialTick);
-        MinecraftForge.EVENT_BUS.post(new ScreenEvent.Render.Post(screen, guiGraphics, mouseX, mouseY, partialTick));
+        NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Post(screen, guiGraphics, mouseX, mouseY, partialTick));
     }
 
     public static Vector3f getFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, float fogRed, float fogGreen, float fogBlue)
@@ -429,7 +429,7 @@ public class ClientHooks
             fluidFogColor = IClientFluidTypeExtensions.of(state).modifyFogColor(camera, partialTick, level, renderDistance, darkenWorldAmount, fluidFogColor);
 
         ViewportEvent.ComputeFogColor event = new ViewportEvent.ComputeFogColor(camera, partialTick, fluidFogColor.x(), fluidFogColor.y(), fluidFogColor.z());
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
 
         fluidFogColor.set(event.getRed(), event.getGreen(), event.getBlue());
         return fluidFogColor;
@@ -443,7 +443,7 @@ public class ClientHooks
             IClientFluidTypeExtensions.of(state).modifyFogRender(camera, mode, renderDistance, partialTick, nearDistance, farDistance, shape);
 
         ViewportEvent.RenderFog event = new ViewportEvent.RenderFog(mode, type, camera, partialTick, nearDistance, farDistance, shape);
-        if (MinecraftForge.EVENT_BUS.post(event).isCanceled())
+        if (NeoForge.EVENT_BUS.post(event).isCanceled())
         {
             RenderSystem.setShaderFogStart(event.getNearPlaneDistance());
             RenderSystem.setShaderFogEnd(event.getFarPlaneDistance());
@@ -454,7 +454,7 @@ public class ClientHooks
     public static ViewportEvent.ComputeCameraAngles onCameraSetup(GameRenderer renderer, Camera camera, float partial)
     {
         ViewportEvent.ComputeCameraAngles event = new ViewportEvent.ComputeCameraAngles(renderer, camera, partial, camera.getYRot(), camera.getXRot(), 0);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event;
     }
 
@@ -577,14 +577,14 @@ public class ClientHooks
     {
         CustomizeGuiOverlayEvent.BossEventProgress evt = new CustomizeGuiOverlayEvent.BossEventProgress(window, guiGraphics,
                 Minecraft.getInstance().getPartialTick(), bossInfo, x, y, increment);
-        MinecraftForge.EVENT_BUS.post(evt);
+        NeoForge.EVENT_BUS.post(evt);
         return evt;
     }
 
     public static ScreenshotEvent onScreenshot(NativeImage image, File screenshotFile)
     {
         ScreenshotEvent event = new ScreenshotEvent(image, screenshotFile);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event;
     }
 
@@ -593,51 +593,51 @@ public class ClientHooks
         if (currentGameMode != newGameMode)
         {
             ClientPlayerChangeGameTypeEvent evt = new ClientPlayerChangeGameTypeEvent(info, currentGameMode, newGameMode);
-            MinecraftForge.EVENT_BUS.post(evt);
+            NeoForge.EVENT_BUS.post(evt);
         }
     }
 
     public static void onMovementInputUpdate(Player player, Input movementInput)
     {
-        MinecraftForge.EVENT_BUS.post(new MovementInputUpdateEvent(player, movementInput));
+        NeoForge.EVENT_BUS.post(new MovementInputUpdateEvent(player, movementInput));
     }
 
     public static boolean onScreenMouseClickedPre(Screen guiScreen, double mouseX, double mouseY, int button)
     {
         var event = new ScreenEvent.MouseButtonPressed.Pre(guiScreen, mouseX, mouseY, button);
-        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
+        return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static boolean onScreenMouseClickedPost(Screen guiScreen, double mouseX, double mouseY, int button, boolean handled)
     {
         Event event = new ScreenEvent.MouseButtonPressed.Post(guiScreen, mouseX, mouseY, button, handled);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event.getResult() == Event.Result.DEFAULT ? handled : event.getResult() == Event.Result.ALLOW;
     }
 
     public static boolean onScreenMouseReleasedPre(Screen guiScreen, double mouseX, double mouseY, int button)
     {
         var event = new ScreenEvent.MouseButtonReleased.Pre(guiScreen, mouseX, mouseY, button);
-        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
+        return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static boolean onScreenMouseReleasedPost(Screen guiScreen, double mouseX, double mouseY, int button, boolean handled)
     {
         Event event = new ScreenEvent.MouseButtonReleased.Post(guiScreen, mouseX, mouseY, button, handled);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event.getResult() == Event.Result.DEFAULT ? handled : event.getResult() == Event.Result.ALLOW;
     }
 
     public static boolean onScreenMouseDragPre(Screen guiScreen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY)
     {
         var event = new ScreenEvent.MouseDragged.Pre(guiScreen, mouseX, mouseY, mouseButton, dragX, dragY);
-        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
+        return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static void onScreenMouseDragPost(Screen guiScreen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY)
     {
         Event event = new ScreenEvent.MouseDragged.Post(guiScreen, mouseX, mouseY, mouseButton, dragX, dragY);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
     }
 
     public static boolean onScreenMouseScrollPre(MouseHandler mouseHelper, Screen guiScreen, double scrollDelta)
@@ -646,7 +646,7 @@ public class ClientHooks
         double mouseX = mouseHelper.xpos() * (double) mainWindow.getGuiScaledWidth() / (double) mainWindow.getScreenWidth();
         double mouseY = mouseHelper.ypos() * (double) mainWindow.getGuiScaledHeight() / (double) mainWindow.getScreenHeight();
         var event = new ScreenEvent.MouseScrolled.Pre(guiScreen, mouseX, mouseY, scrollDelta);
-        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
+        return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static void onScreenMouseScrollPost(MouseHandler mouseHelper, Screen guiScreen, double scrollDelta)
@@ -655,76 +655,76 @@ public class ClientHooks
         double mouseX = mouseHelper.xpos() * (double) mainWindow.getGuiScaledWidth() / (double) mainWindow.getScreenWidth();
         double mouseY = mouseHelper.ypos() * (double) mainWindow.getGuiScaledHeight() / (double) mainWindow.getScreenHeight();
         Event event = new ScreenEvent.MouseScrolled.Post(guiScreen, mouseX, mouseY, scrollDelta);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
     }
 
     public static boolean onScreenKeyPressedPre(Screen guiScreen, int keyCode, int scanCode, int modifiers)
     {
         var event = new ScreenEvent.KeyPressed.Pre(guiScreen, keyCode, scanCode, modifiers);
-        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
+        return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static boolean onScreenKeyPressedPost(Screen guiScreen, int keyCode, int scanCode, int modifiers)
     {
         var event = new ScreenEvent.KeyPressed.Post(guiScreen, keyCode, scanCode, modifiers);
-        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
+        return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static boolean onScreenKeyReleasedPre(Screen guiScreen, int keyCode, int scanCode, int modifiers)
     {
         var event = new ScreenEvent.KeyReleased.Pre(guiScreen, keyCode, scanCode, modifiers);
-        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
+        return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static boolean onScreenKeyReleasedPost(Screen guiScreen, int keyCode, int scanCode, int modifiers)
     {
         var event = new ScreenEvent.KeyReleased.Post(guiScreen, keyCode, scanCode, modifiers);
-        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
+        return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static boolean onScreenCharTypedPre(Screen guiScreen, char codePoint, int modifiers)
     {
         var event = new ScreenEvent.CharacterTyped.Pre(guiScreen, codePoint, modifiers);
-        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
+        return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static void onScreenCharTypedPost(Screen guiScreen, char codePoint, int modifiers)
     {
         Event event = new ScreenEvent.CharacterTyped.Post(guiScreen, codePoint, modifiers);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
     }
 
     public static void onRecipesUpdated(RecipeManager mgr)
     {
         Event event = new RecipesUpdatedEvent(mgr);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
     }
 
     public static boolean onMouseButtonPre(int button, int action, int mods)
     {
-        return MinecraftForge.EVENT_BUS.post(new InputEvent.MouseButton.Pre(button, action, mods)).isCanceled();
+        return NeoForge.EVENT_BUS.post(new InputEvent.MouseButton.Pre(button, action, mods)).isCanceled();
     }
 
     public static void onMouseButtonPost(int button, int action, int mods)
     {
-        MinecraftForge.EVENT_BUS.post(new InputEvent.MouseButton.Post(button, action, mods));
+        NeoForge.EVENT_BUS.post(new InputEvent.MouseButton.Post(button, action, mods));
     }
 
     public static boolean onMouseScroll(MouseHandler mouseHelper, double scrollDelta)
     {
         var event = new InputEvent.MouseScrollingEvent(scrollDelta, mouseHelper.isLeftPressed(), mouseHelper.isMiddlePressed(), mouseHelper.isRightPressed(), mouseHelper.xpos(), mouseHelper.ypos());
-        return MinecraftForge.EVENT_BUS.post(event).isCanceled();
+        return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
     public static void onKeyInput(int key, int scanCode, int action, int modifiers)
     {
-        MinecraftForge.EVENT_BUS.post(new InputEvent.Key(key, scanCode, action, modifiers));
+        NeoForge.EVENT_BUS.post(new InputEvent.Key(key, scanCode, action, modifiers));
     }
 
     public static InputEvent.InteractionKeyMappingTriggered onClickInput(int button, KeyMapping keyBinding, InteractionHand hand)
     {
         InputEvent.InteractionKeyMappingTriggered event = new InputEvent.InteractionKeyMappingTriggered(button, keyBinding, hand);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event;
     }
 
@@ -797,7 +797,7 @@ public class ClientHooks
 
             if (!extraServerMods.isEmpty()) {
                 extraReason = "fml.menu.multiplayer.extraservermods";
-                LOGGER.info(CLIENTHOOKS, ForgeI18n.parseMessage(extraReason) + ": {}", extraServerMods.entrySet().stream()
+                LOGGER.info(CLIENTHOOKS, I18nExtension.parseMessage(extraReason) + ": {}", extraServerMods.entrySet().stream()
                         .map(e -> e.getKey() + "@" + e.getValue())
                         .collect(Collectors.joining(", ")));
             }
@@ -829,33 +829,33 @@ public class ClientHooks
             case "FML":
                 if (target.forgeData.isCompatible()) {
                     idx = 0;
-                    tooltip = ForgeI18n.parseMessage("fml.menu.multiplayer.compatible", target.forgeData.numberOfMods());
+                    tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.compatible", target.forgeData.numberOfMods());
                 } else {
                     idx = 16;
                     if(target.forgeData.extraReason() != null) {
-                        String extraReason = ForgeI18n.parseMessage(target.forgeData.extraReason());
-                        tooltip = ForgeI18n.parseMessage("fml.menu.multiplayer.incompatible.extra", extraReason);
+                        String extraReason = I18nExtension.parseMessage(target.forgeData.extraReason());
+                        tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.incompatible.extra", extraReason);
                     } else {
-                        tooltip = ForgeI18n.parseMessage("fml.menu.multiplayer.incompatible");
+                        tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.incompatible");
                     }
                 }
                 if (target.forgeData.truncated())
                 {
-                    tooltip += "\n" + ForgeI18n.parseMessage("fml.menu.multiplayer.truncated");
+                    tooltip += "\n" + I18nExtension.parseMessage("fml.menu.multiplayer.truncated");
                 }
                 break;
             case "VANILLA":
                 if (target.forgeData.isCompatible()) {
                     idx = 48;
-                    tooltip = ForgeI18n.parseMessage("fml.menu.multiplayer.vanilla");
+                    tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.vanilla");
                 } else {
                     idx = 80;
-                    tooltip = ForgeI18n.parseMessage("fml.menu.multiplayer.vanilla.incompatible");
+                    tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.vanilla.incompatible");
                 }
                 break;
             default:
                 idx = 64;
-                tooltip = ForgeI18n.parseMessage("fml.menu.multiplayer.unknown", target.forgeData.type());
+                tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.unknown", target.forgeData.type());
         }
 
         guiGraphics.blit(ICON_SHEET, x + width - 18, y + 10, 16, 16, 0, idx, 16, 16, 256, 256);
@@ -883,15 +883,15 @@ public class ClientHooks
     }
 
     public static void firePlayerLogin(MultiPlayerGameMode pc, LocalPlayer player, Connection networkManager) {
-        MinecraftForge.EVENT_BUS.post(new ClientPlayerNetworkEvent.LoggingIn(pc, player, networkManager));
+        NeoForge.EVENT_BUS.post(new ClientPlayerNetworkEvent.LoggingIn(pc, player, networkManager));
     }
 
     public static void firePlayerLogout(@Nullable MultiPlayerGameMode pc, @Nullable LocalPlayer player) {
-        MinecraftForge.EVENT_BUS.post(new ClientPlayerNetworkEvent.LoggingOut(pc, player, player != null ? player.connection != null ? player.connection.getConnection() : null : null));
+        NeoForge.EVENT_BUS.post(new ClientPlayerNetworkEvent.LoggingOut(pc, player, player != null ? player.connection != null ? player.connection.getConnection() : null : null));
     }
 
     public static void firePlayerRespawn(MultiPlayerGameMode pc, LocalPlayer oldPlayer, LocalPlayer newPlayer, Connection networkManager) {
-        MinecraftForge.EVENT_BUS.post(new ClientPlayerNetworkEvent.Clone(pc, oldPlayer, newPlayer, networkManager));
+        NeoForge.EVENT_BUS.post(new ClientPlayerNetworkEvent.Clone(pc, oldPlayer, newPlayer, networkManager));
     }
 
     public static void onRegisterParticleProviders(ParticleEngine particleEngine) {
@@ -910,14 +910,14 @@ public class ClientHooks
     public static Component onClientChat(ChatType.Bound boundChatType, Component message, UUID sender)
     {
         ClientChatReceivedEvent event = new ClientChatReceivedEvent(boundChatType, message, sender);
-        return MinecraftForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
+        return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
     }
 
     @Nullable
     public static Component onClientPlayerChat(ChatType.Bound boundChatType, Component message, PlayerChatMessage playerChatMessage, UUID sender)
     {
         ClientChatReceivedEvent.Player event = new ClientChatReceivedEvent.Player(boundChatType, message, playerChatMessage, sender);
-        return MinecraftForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
+        return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
     }
 
     private static final ChatTypeDecoration SYSTEM_CHAT_TYPE_DECORATION = new ChatTypeDecoration("forge.chatType.system", List.of(ChatTypeDecoration.Parameter.CONTENT), Style.EMPTY);
@@ -928,14 +928,14 @@ public class ClientHooks
     public static Component onClientSystemChat(Component message, boolean overlay)
     {
         ClientChatReceivedEvent.System event = new ClientChatReceivedEvent.System(SYSTEM_CHAT_TYPE_BOUND, message, overlay);
-        return MinecraftForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
+        return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
     }
 
     @NotNull
     public static String onClientSendMessage(String message)
     {
         ClientChatEvent event = new ClientChatEvent(message);
-        return MinecraftForge.EVENT_BUS.post(event).isCanceled() ? "" : event.getMessage();
+        return NeoForge.EVENT_BUS.post(event).isCanceled() ? "" : event.getMessage();
     }
 
     /**
@@ -977,14 +977,14 @@ public class ClientHooks
     public static RenderTooltipEvent.Pre onRenderTooltipPre(@NotNull ItemStack stack, GuiGraphics graphics, int x, int y, int screenWidth, int screenHeight, @NotNull List<ClientTooltipComponent> components, @NotNull Font fallbackFont, @NotNull ClientTooltipPositioner positioner)
     {
         var preEvent = new RenderTooltipEvent.Pre(stack, graphics, x, y, screenWidth, screenHeight, getTooltipFont(stack, fallbackFont), components, positioner);
-        MinecraftForge.EVENT_BUS.post(preEvent);
+        NeoForge.EVENT_BUS.post(preEvent);
         return preEvent;
     }
 
     public static RenderTooltipEvent.Color onRenderTooltipColor(@NotNull ItemStack stack, GuiGraphics graphics, int x, int y, @NotNull Font font, @NotNull List<ClientTooltipComponent> components)
     {
         var colorEvent = new RenderTooltipEvent.Color(stack, graphics, x, y, font, 0xf0100010, 0x505000FF, 0x5028007f, components);
-        MinecraftForge.EVENT_BUS.post(colorEvent);
+        NeoForge.EVENT_BUS.post(colorEvent);
         return colorEvent;
     }
 
@@ -1002,7 +1002,7 @@ public class ClientHooks
         itemComponent.ifPresent(c -> elements.add(1, Either.right(c)));
 
         var event = new RenderTooltipEvent.GatherComponents(stack, screenWidth, screenHeight, elements, -1);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         if (event.isCanceled()) return List.of();
 
         // text wrapping
@@ -1083,13 +1083,13 @@ public class ClientHooks
     public static ScreenEvent.RenderInventoryMobEffects onScreenPotionSize(Screen screen, int availableSpace, boolean compact, int horizontalOffset)
     {
         final ScreenEvent.RenderInventoryMobEffects event = new ScreenEvent.RenderInventoryMobEffects(screen, availableSpace, compact, horizontalOffset);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event;
     }
 
     public static boolean onToastAdd(Toast toast)
     {
-        return MinecraftForge.EVENT_BUS.post(new ToastAddEvent(toast)).isCanceled();
+        return NeoForge.EVENT_BUS.post(new ToastAddEvent(toast)).isCanceled();
     }
 
     public static boolean isBlockInSolidLayer(BlockState state)
@@ -1132,7 +1132,7 @@ public class ClientHooks
 
     public static boolean renderBlockOverlay(Player player, PoseStack mat, RenderBlockScreenEffectEvent.OverlayType type, BlockState block, BlockPos pos)
     {
-        return MinecraftForge.EVENT_BUS.post(new RenderBlockScreenEffectEvent(player, mat, type, block, pos)).isCanceled();
+        return NeoForge.EVENT_BUS.post(new RenderBlockScreenEffectEvent(player, mat, type, block, pos)).isCanceled();
     }
 
     public static int getMaxMipmapLevel(int width, int height)

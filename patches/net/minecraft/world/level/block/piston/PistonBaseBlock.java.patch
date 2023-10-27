@@ -4,7 +4,7 @@
        }
  
        if (p_60195_ == 0) {
-+         if (net.neoforged.neoforge.event.ForgeEventFactory.onPistonMovePre(p_60193_, p_60194_, direction, true)) return false;
++         if (net.neoforged.neoforge.event.EventHooks.onPistonMovePre(p_60193_, p_60194_, direction, true)) return false;
           if (!this.moveBlocks(p_60193_, p_60194_, direction, true)) {
              return false;
           }
@@ -12,7 +12,7 @@
           p_60193_.playSound(null, p_60194_, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.5F, p_60193_.random.nextFloat() * 0.25F + 0.6F);
           p_60193_.gameEvent(GameEvent.BLOCK_ACTIVATE, p_60194_, GameEvent.Context.of(blockstate));
        } else if (p_60195_ == 1 || p_60195_ == 2) {
-+         if (net.neoforged.neoforge.event.ForgeEventFactory.onPistonMovePre(p_60193_, p_60194_, direction, false)) return false;
++         if (net.neoforged.neoforge.event.EventHooks.onPistonMovePre(p_60193_, p_60194_, direction, false)) return false;
           BlockEntity blockentity1 = p_60193_.getBlockEntity(p_60194_.relative(direction));
           if (blockentity1 instanceof PistonMovingBlockEntity) {
              ((PistonMovingBlockEntity)blockentity1).finalTick();
@@ -20,7 +20,7 @@
           p_60193_.gameEvent(GameEvent.BLOCK_DEACTIVATE, p_60194_, GameEvent.Context.of(blockstate1));
        }
  
-+      net.neoforged.neoforge.event.ForgeEventFactory.onPistonMovePost(p_60193_, p_60194_, direction, (p_60195_ == 0));
++      net.neoforged.neoforge.event.EventHooks.onPistonMovePost(p_60193_, p_60194_, direction, (p_60195_ == 0));
        return true;
     }
  

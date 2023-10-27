@@ -62,7 +62,7 @@
 -         if (!this.level().isClientSide && this.age >= 6000) {
 +         ItemStack item = this.getItem();
 +         if (!this.level().isClientSide && this.age >= lifespan) {
-+             int hook = net.neoforged.neoforge.event.ForgeEventFactory.onItemExpire(this, item);
++             int hook = net.neoforged.neoforge.event.EventHooks.onItemExpire(this, item);
 +             if (hook < 0) {
 +                this.discard();
 +             } else {
@@ -118,13 +118,13 @@
           Item item = itemstack.getItem();
           int i = itemstack.getCount();
 -         if (this.pickupDelay == 0 && (this.target == null || this.target.equals(p_32040_.getUUID())) && p_32040_.getInventory().add(itemstack)) {
-+         int hook = net.neoforged.neoforge.event.ForgeEventFactory.onItemPickup(this, p_32040_);
++         int hook = net.neoforged.neoforge.event.EventHooks.onItemPickup(this, p_32040_);
 +         if (hook < 0) return;
 +         ItemStack copy = itemstack.copy();
 +         if (this.pickupDelay == 0 && (this.target == null || this.target.equals(p_32040_.getUUID())) && (hook == 1 || i <= 0 || p_32040_.getInventory().add(itemstack))) {
 +            i = copy.getCount() - itemstack.getCount();
 +            copy.setCount(i);
-+            net.neoforged.neoforge.event.ForgeEventFactory.firePlayerItemPickupEvent(p_32040_, this, copy);
++            net.neoforged.neoforge.event.EventHooks.firePlayerItemPickupEvent(p_32040_, this, copy);
              p_32040_.take(this, i);
              if (itemstack.isEmpty()) {
                 this.discard();

@@ -5,7 +5,7 @@
  import org.joml.Vector3f;
  
 -public class Sheep extends Animal implements Shearable {
-+public class Sheep extends Animal implements Shearable, net.neoforged.neoforge.common.IForgeShearable {
++public class Sheep extends Animal implements Shearable, net.neoforged.neoforge.common.IShearable {
     private static final int EAT_ANIMATION_TICKS = 40;
     private static final EntityDataAccessor<Byte> DATA_WOOL_ID = SynchedEntityData.defineId(Sheep.class, EntityDataSerializers.BYTE);
     private static final Map<DyeColor, ItemLike> ITEM_BY_DYE = Util.make(Maps.newEnumMap(DyeColor.class), p_29841_ -> {

@@ -29,7 +29,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.tags.TagKey;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -71,7 +71,7 @@ public class DataPackRegistriesTest
             return;
 
         final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-        final IEventBus forgeBus = MinecraftForge.EVENT_BUS;
+        final IEventBus forgeBus = NeoForge.EVENT_BUS;
 
         modBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
             event.dataPackRegistry(ResourceKey.createRegistryKey(new ResourceLocation(MODID, "unsyncable")), Unsyncable.DIRECT_CODEC);
@@ -150,7 +150,7 @@ public class DataPackRegistriesTest
     {
         private static void subscribeClientEvents()
         {
-            MinecraftForge.EVENT_BUS.addListener(ClientEvents::onClientTagsUpdated);
+            NeoForge.EVENT_BUS.addListener(ClientEvents::onClientTagsUpdated);
         }
 
         private static void onClientTagsUpdated(final TagsUpdatedEvent event)

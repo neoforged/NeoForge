@@ -7,7 +7,7 @@ package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
 
 /**
@@ -20,7 +20,7 @@ import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
  * <p>
  * This event does not have a result. {@link net.neoforged.bus.api.Event.HasResult}
  * <p>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
 public class LivingGetProjectileEvent extends LivingEvent
 {

@@ -13,7 +13,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import com.google.common.collect.Multimap;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -26,7 +26,7 @@ import java.util.Collection;
  * Note that this event is fired regardless of if the stack has NBT overriding attributes or not. If your attribute should be
  * ignored when attributes are overridden, you can check for the presence of the {@code AttributeModifiers} tag.
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
 public class ItemAttributeModifierEvent extends Event
 {

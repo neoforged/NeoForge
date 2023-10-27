@@ -22,7 +22,7 @@
        public void onTake(Player p_150499_, ItemStack p_150500_) {
           Potion potion = PotionUtils.getPotion(p_150500_);
           if (p_150499_ instanceof ServerPlayer) {
-+            net.neoforged.neoforge.event.ForgeEventFactory.onPlayerBrewedPotion(p_150499_, p_150500_);
++            net.neoforged.neoforge.event.EventHooks.onPlayerBrewedPotion(p_150499_, p_150500_);
              CriteriaTriggers.BREWED_POTION.trigger((ServerPlayer)p_150499_, potion);
           }
  

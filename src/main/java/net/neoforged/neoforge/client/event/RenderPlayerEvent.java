@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -94,7 +94,7 @@ public abstract class RenderPlayerEvent extends PlayerEvent
      * If this event is cancelled, then the player will not be rendered and the corresponding
      * {@link RenderPlayerEvent.Post} will not be fired.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Pre extends RenderPlayerEvent implements ICancellableEvent
@@ -111,7 +111,7 @@ public abstract class RenderPlayerEvent extends PlayerEvent
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain Event.HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Post extends RenderPlayerEvent

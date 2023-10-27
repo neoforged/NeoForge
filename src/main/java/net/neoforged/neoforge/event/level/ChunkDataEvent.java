@@ -13,7 +13,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.storage.ChunkSerializer;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 
 /**
@@ -23,7 +23,7 @@ import net.neoforged.bus.api.Event;
  * <br>
  * {@link #data} contains the NBTTagCompound containing the chunk data for this event.<br>
  * <br>
- * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+ * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
 public abstract class ChunkDataEvent extends ChunkEvent
 {
@@ -55,7 +55,7 @@ public abstract class ChunkDataEvent extends ChunkEvent
      * <br>
      * This event does not have a result. {@link HasResult} <br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
     public static class Load extends ChunkDataEvent
     {
@@ -82,7 +82,7 @@ public abstract class ChunkDataEvent extends ChunkEvent
      * <br>
      * This event does not have a result. {@link HasResult} <br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
     public static class Save extends ChunkDataEvent
     {

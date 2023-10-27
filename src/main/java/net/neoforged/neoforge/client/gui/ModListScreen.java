@@ -22,6 +22,7 @@ import net.neoforged.neoforge.client.ConfigScreenHandler;
 import net.neoforged.neoforge.client.gui.widget.ModListWidget;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
+import net.neoforged.neoforge.common.I18nExtension;
 import net.neoforged.neoforge.resource.PathPackResources;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -46,7 +47,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.Util;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.util.Size2i;
-import net.neoforged.neoforge.common.ForgeI18n;
 import net.neoforged.neoforge.common.util.MavenVersionStringHelper;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
@@ -432,24 +432,24 @@ public class ModListScreen extends Screen
         }).orElse(Pair.of(null, new Size2i(0, 0)));
 
         lines.add(selectedMod.getDisplayName());
-        lines.add(ForgeI18n.parseMessage("fml.menu.mods.info.version", MavenVersionStringHelper.artifactVersionToString(selectedMod.getVersion())));
-        lines.add(ForgeI18n.parseMessage("fml.menu.mods.info.idstate", selectedMod.getModId(), ModList.get().getModContainerById(selectedMod.getModId()).
+        lines.add(I18nExtension.parseMessage("fml.menu.mods.info.version", MavenVersionStringHelper.artifactVersionToString(selectedMod.getVersion())));
+        lines.add(I18nExtension.parseMessage("fml.menu.mods.info.idstate", selectedMod.getModId(), ModList.get().getModContainerById(selectedMod.getModId()).
                 map(ModContainer::getCurrentState).map(Object::toString).orElse("NONE")));
 
         selectedMod.getConfig().getConfigElement("credits").ifPresent(credits->
-                lines.add(ForgeI18n.parseMessage("fml.menu.mods.info.credits", credits)));
+                lines.add(I18nExtension.parseMessage("fml.menu.mods.info.credits", credits)));
         selectedMod.getConfig().getConfigElement("authors").ifPresent(authors ->
-                lines.add(ForgeI18n.parseMessage("fml.menu.mods.info.authors", authors)));
+                lines.add(I18nExtension.parseMessage("fml.menu.mods.info.authors", authors)));
         selectedMod.getConfig().getConfigElement("displayURL").ifPresent(displayURL ->
-                lines.add(ForgeI18n.parseMessage("fml.menu.mods.info.displayurl", displayURL)));
+                lines.add(I18nExtension.parseMessage("fml.menu.mods.info.displayurl", displayURL)));
         if (selectedMod.getOwningFile() == null || selectedMod.getOwningFile().getMods().size()==1)
-            lines.add(ForgeI18n.parseMessage("fml.menu.mods.info.nochildmods"));
+            lines.add(I18nExtension.parseMessage("fml.menu.mods.info.nochildmods"));
         else
-            lines.add(ForgeI18n.parseMessage("fml.menu.mods.info.childmods", selectedMod.getOwningFile().getMods().stream().map(IModInfo::getDisplayName).collect(Collectors.joining(","))));
+            lines.add(I18nExtension.parseMessage("fml.menu.mods.info.childmods", selectedMod.getOwningFile().getMods().stream().map(IModInfo::getDisplayName).collect(Collectors.joining(","))));
 
         if (vercheck.status() == VersionChecker.Status.OUTDATED || vercheck.status() == VersionChecker.Status.BETA_OUTDATED)
-            lines.add(ForgeI18n.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()));
-        lines.add(ForgeI18n.parseMessage("fml.menu.mods.info.license", ((ModFileInfo) selectedMod.getOwningFile()).getLicense()));
+            lines.add(I18nExtension.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()));
+        lines.add(I18nExtension.parseMessage("fml.menu.mods.info.license", ((ModFileInfo) selectedMod.getOwningFile()).getLicense()));
         lines.add(null);
         lines.add(selectedMod.getDescription());
 
@@ -466,7 +466,7 @@ public class ModListScreen extends Screen
         if ((vercheck.status() == VersionChecker.Status.OUTDATED || vercheck.status() == VersionChecker.Status.BETA_OUTDATED) && vercheck.changes().size() > 0)
         {
             lines.add(null);
-            lines.add(ForgeI18n.parseMessage("fml.menu.mods.info.changelogheader"));
+            lines.add(I18nExtension.parseMessage("fml.menu.mods.info.changelogheader"));
             for (Entry<ComparableVersion, String> entry : vercheck.changes().entrySet())
             {
                 lines.add("  " + entry.getKey() + ":");

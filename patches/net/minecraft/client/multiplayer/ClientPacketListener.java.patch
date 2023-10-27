@@ -63,7 +63,7 @@
  
 -      CreativeModeTabs.searchTab().rebuildSearchTree();
 +      CreativeModeTabs.allTabs().stream().filter(net.minecraft.world.item.CreativeModeTab::hasSearchBar).forEach(net.minecraft.world.item.CreativeModeTab::rebuildSearchTree);
-+      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(this.registryAccess, true, connection.isMemoryConnection()));
++      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(this.registryAccess, true, connection.isMemoryConnection()));
     }
  
     @Override

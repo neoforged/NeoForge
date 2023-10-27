@@ -9,7 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.LevelAccessor;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.fml.common.Mod;
 
@@ -27,7 +27,7 @@ public class PotentialSpawnsEventTest
     {
         if (ENABLED)
         {
-            MinecraftForge.EVENT_BUS.addListener(PotentialSpawnsEventTest::onlySpawnHostileMobs);
+            NeoForge.EVENT_BUS.addListener(PotentialSpawnsEventTest::onlySpawnHostileMobs);
         }
     }
 

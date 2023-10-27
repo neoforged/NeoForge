@@ -9,7 +9,7 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.fml.common.Mod;
 
@@ -18,8 +18,8 @@ public class LivingConversionEventTest
 {
     public LivingConversionEventTest()
     {
-        MinecraftForge.EVENT_BUS.addListener(this::canLivingConversion);
-        MinecraftForge.EVENT_BUS.addListener(this::onLivingConversion);
+        NeoForge.EVENT_BUS.addListener(this::canLivingConversion);
+        NeoForge.EVENT_BUS.addListener(this::onLivingConversion);
     }
 
     public void canLivingConversion(LivingConversionEvent.Pre event)

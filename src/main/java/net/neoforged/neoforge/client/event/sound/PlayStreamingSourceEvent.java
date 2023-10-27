@@ -9,7 +9,7 @@ import com.mojang.blaze3d.audio.Channel;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import net.neoforged.neoforge.client.event.sound.SoundEvent.SoundSourceEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
  *
- * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+ * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
  * @see PlayStreamingSourceEvent

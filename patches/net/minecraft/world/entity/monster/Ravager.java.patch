@@ -5,7 +5,7 @@
           }
  
 -         if (this.horizontalCollision && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+         if (this.horizontalCollision && net.neoforged.neoforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
++         if (this.horizontalCollision && net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), this)) {
              boolean flag = false;
              AABB aabb = this.getBoundingBox().inflate(0.2);
  

@@ -29,7 +29,7 @@
 -            long j = this.levelData.getDayTime() + 24000L;
 -            this.setDayTime(j - j % 24000L);
 +            long j = this.getDayTime() + 24000L;
-+            this.setDayTime(net.neoforged.neoforge.event.ForgeEventFactory.onSleepFinished(this, j - j % 24000L, this.getDayTime()));
++            this.setDayTime(net.neoforged.neoforge.event.EventHooks.onSleepFinished(this, j - j % 24000L, this.getDayTime()));
           }
  
           this.wakeUpAllPlayers();
@@ -38,7 +38,7 @@
        this.handlingTick = false;
        profilerfiller.pop();
 -      boolean flag = !this.players.isEmpty() || !this.getForcedChunks().isEmpty();
-+      boolean flag = !this.players.isEmpty() || net.neoforged.neoforge.common.world.ForgeChunkManager.hasForcedChunks(this); //Forge: Replace vanilla's has forced chunk check with forge's that checks both the vanilla and forge added ones
++      boolean flag = !this.players.isEmpty() || net.neoforged.neoforge.common.world.ForcedChunkManager.hasForcedChunks(this); //Forge: Replace vanilla's has forced chunk check with forge's that checks both the vanilla and forge added ones
        if (flag) {
           this.resetEmptyTime();
        }
@@ -97,7 +97,7 @@
           } else {
              this.entityManager.autoSave();
           }
-+         net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Save(this));
++         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Save(this));
        }
     }
  
@@ -105,7 +105,7 @@
     }
  
     private void addPlayer(ServerPlayer p_8854_) {
-+      if (net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(p_8854_, this)).isCanceled()) return;
++      if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(p_8854_, this)).isCanceled()) return;
        Entity entity = this.getEntities().get(p_8854_.getUUID());
        if (entity != null) {
           LOGGER.warn("Force-added player with duplicate UUID {}", p_8854_.getUUID());
@@ -137,7 +137,7 @@
        float p_263390_,
        long p_263403_
     ) {
-+      net.neoforged.neoforge.event.PlayLevelSoundEvent.AtPosition event = net.neoforged.neoforge.event.ForgeEventFactory.onPlaySoundAtPosition(this, p_263393_, p_263369_, p_263354_, p_263412_, p_263338_, p_263352_, p_263390_);
++      net.neoforged.neoforge.event.PlayLevelSoundEvent.AtPosition event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtPosition(this, p_263393_, p_263369_, p_263354_, p_263412_, p_263338_, p_263352_, p_263390_);
 +      if (event.isCanceled() || event.getSound() == null) return;
 +      p_263412_ = event.getSound();
 +      p_263338_ = event.getSource();
@@ -150,7 +150,7 @@
     public void playSeededSound(
        @Nullable Player p_263545_, Entity p_263544_, Holder<SoundEvent> p_263491_, SoundSource p_263542_, float p_263530_, float p_263520_, long p_263490_
     ) {
-+      net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.ForgeEventFactory.onPlaySoundAtEntity(p_263544_, p_263491_, p_263542_, p_263530_, p_263520_);
++      net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtEntity(p_263544_, p_263491_, p_263542_, p_263530_, p_263520_);
 +      if (event.isCanceled() || event.getSound() == null) return;
 +      p_263491_ = event.getSound();
 +      p_263542_ = event.getSource();
@@ -171,7 +171,7 @@
  
     @Override
     public void updateNeighborsAt(BlockPos p_215045_, Block p_215046_) {
-+      net.neoforged.neoforge.event.ForgeEventFactory.onNeighborNotify(this, p_215045_, this.getBlockState(p_215045_), java.util.EnumSet.allOf(Direction.class), false).isCanceled();
++      net.neoforged.neoforge.event.EventHooks.onNeighborNotify(this, p_215045_, this.getBlockState(p_215045_), java.util.EnumSet.allOf(Direction.class), false).isCanceled();
        this.neighborUpdater.updateNeighborsAtExceptFromFacing(p_215045_, p_215046_, null);
     }
  
@@ -179,7 +179,7 @@
     public void updateNeighborsAtExceptFromFacing(BlockPos p_215052_, Block p_215053_, Direction p_215054_) {
 +      java.util.EnumSet<Direction> directions = java.util.EnumSet.allOf(Direction.class);
 +      directions.remove(p_215054_);
-+      if (net.neoforged.neoforge.event.ForgeEventFactory.onNeighborNotify(this, p_215052_, this.getBlockState(p_215052_), directions, false).isCanceled())
++      if (net.neoforged.neoforge.event.EventHooks.onNeighborNotify(this, p_215052_, this.getBlockState(p_215052_), directions, false).isCanceled())
 +         return;
        this.neighborUpdater.updateNeighborsAtExceptFromFacing(p_215052_, p_215053_, p_215054_);
     }
@@ -237,7 +237,7 @@
           p_143375_.updateDynamicGameEventListener(DynamicGameEventListener::remove);
 +
 +         p_143375_.onRemovedFromWorld();
-+         net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent(p_143375_, ServerLevel.this));
++         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent(p_143375_, ServerLevel.this));
        }
  
        public void onSectionChange(Entity p_215086_) {

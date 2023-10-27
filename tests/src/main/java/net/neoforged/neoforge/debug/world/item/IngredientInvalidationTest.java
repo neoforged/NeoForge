@@ -8,7 +8,7 @@ package net.neoforged.neoforge.debug.world.item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.fml.common.Mod;
 
@@ -45,7 +45,7 @@ public class IngredientInvalidationTest
         if (!ENABLED)
             return;
 
-        MinecraftForge.EVENT_BUS.addListener(IngredientInvalidationTest::worldLoad);
+        NeoForge.EVENT_BUS.addListener(IngredientInvalidationTest::worldLoad);
     }
 
     private static void worldLoad(LevelEvent.Load event)

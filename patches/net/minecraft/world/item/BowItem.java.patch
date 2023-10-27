@@ -6,7 +6,7 @@
           ItemStack itemstack = player.getProjectile(p_40667_);
 +
 +         int i = this.getUseDuration(p_40667_) - p_40670_;
-+         i = net.neoforged.neoforge.event.ForgeEventFactory.onArrowLoose(p_40667_, p_40668_, player, i, !itemstack.isEmpty() || flag);
++         i = net.neoforged.neoforge.event.EventHooks.onArrowLoose(p_40667_, p_40668_, player, i, !itemstack.isEmpty() || flag);
 +         if (i < 0) return;
 +
           if (!itemstack.isEmpty() || flag) {
@@ -31,7 +31,7 @@
        ItemStack itemstack = p_40673_.getItemInHand(p_40674_);
        boolean flag = !p_40673_.getProjectile(itemstack).isEmpty();
 +
-+      InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.event.ForgeEventFactory.onArrowNock(itemstack, p_40672_, p_40673_, p_40674_, flag);
++      InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.event.EventHooks.onArrowNock(itemstack, p_40672_, p_40673_, p_40674_, flag);
 +      if (ret != null) return ret;
 +
        if (!p_40673_.getAbilities().instabuild && !flag) {

@@ -7,7 +7,7 @@ package net.neoforged.neoforge.eventtest.internal;
 
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
@@ -66,11 +66,11 @@ public class TestFramework {
 
         // Register the screen opened listener.
         // The main menu signals the end of the bootstrap tests.
-        MinecraftForge.EVENT_BUS.addListener(this::collectBootstrapTests);
+        NeoForge.EVENT_BUS.addListener(this::collectBootstrapTests);
 
         // Register the game shutting down listener.
         // If there are any unhandled tests after shutdown, notify of an event not fired.
-        MinecraftForge.EVENT_BUS.addListener(this::collectMissedTests);
+        NeoForge.EVENT_BUS.addListener(this::collectMissedTests);
     }
 
     /**

@@ -13,7 +13,7 @@
        this.readScoreboard(dimensiondatastorage);
        this.commandStorage = new CommandStorage(dimensiondatastorage);
        WorldBorder worldborder = serverlevel.getWorldBorder();
-+      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(levels.get(Level.OVERWORLD)));
++      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(levels.get(Level.OVERWORLD)));
        if (!serverleveldata.isInitialized()) {
           try {
              setInitialSpawn(serverlevel, serverleveldata, worldoptions.generateBonusChest(), flag);
@@ -21,7 +21,7 @@
              );
              worldborder.addListener(new BorderChangeListener.DelegateBorderChangeListener(serverlevel1.getWorldBorder()));
              this.levels.put(resourcekey1, serverlevel1);
-+            net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(levels.get(resourcekey)));
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(levels.get(resourcekey)));
           }
        }
  
@@ -29,7 +29,7 @@
           p_177898_.setSpawn(BlockPos.ZERO.above(80), 0.0F);
        } else {
           ServerChunkCache serverchunkcache = p_177897_.getChunkSource();
-+         if (net.neoforged.neoforge.event.ForgeEventFactory.onCreateWorldSpawn(p_177897_, p_177898_)) return;
++         if (net.neoforged.neoforge.event.EventHooks.onCreateWorldSpawn(p_177897_, p_177898_)) return;
           ChunkPos chunkpos = new ChunkPos(serverchunkcache.randomState().sampler().findSpawnPosition());
           int i = serverchunkcache.getGenerator().getSpawnHeight(p_177897_);
           if (i < p_177897_.getMinBuildHeight()) {
@@ -37,7 +37,7 @@
                 ChunkPos chunkpos = new ChunkPos(i);
                 serverlevel1.getChunkSource().updateChunkForced(chunkpos, true);
              }
-+            net.neoforged.neoforge.common.world.ForgeChunkManager.reinstatePersistentChunks(serverlevel1, forcedchunkssaveddata);
++            net.neoforged.neoforge.common.world.ForcedChunkManager.reinstatePersistentChunks(serverlevel1, forcedchunkssaveddata);
           }
        }
  
@@ -45,7 +45,7 @@
        for(ServerLevel serverlevel2 : this.getAllLevels()) {
           if (serverlevel2 != null) {
              try {
-+               net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(serverlevel2));
++               net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(serverlevel2));
                 serverlevel2.close();
              } catch (IOException ioexception1) {
                 LOGGER.error("Exception closing the level", (Throwable)ioexception1);
@@ -90,7 +90,7 @@
  
     public void tickServer(BooleanSupplier p_129871_) {
        long i = Util.getNanos();
-+      net.neoforged.neoforge.event.ForgeEventFactory.onPreServerTick(p_129871_, this);
++      net.neoforged.neoforge.event.EventHooks.onPreServerTick(p_129871_, this);
        ++this.tickCount;
        this.tickChildren(p_129871_);
        if (i - this.lastServerStatus >= 5000000000L) {
@@ -104,7 +104,7 @@
        long k = Util.getNanos();
        this.logTickTime(k - i);
        this.profiler.pop();
-+      net.neoforged.neoforge.event.ForgeEventFactory.onPostServerTick(p_129871_, this);
++      net.neoforged.neoforge.event.EventHooks.onPostServerTick(p_129871_, this);
 +   }
 +
 +   private static final com.google.gson.Gson GSON = new com.google.gson.Gson();
@@ -150,7 +150,7 @@
           }
  
           this.profiler.push("tick");
-+         net.neoforged.neoforge.event.ForgeEventFactory.onPreLevelTick(serverlevel, p_129954_);
++         net.neoforged.neoforge.event.EventHooks.onPreLevelTick(serverlevel, p_129954_);
  
           try {
              serverlevel.tick(p_129954_);
@@ -158,7 +158,7 @@
              serverlevel.fillReportDetails(crashreport);
              throw new ReportedException(crashreport);
           }
-+         net.neoforged.neoforge.event.ForgeEventFactory.onPostLevelTick(serverlevel, p_129954_);
++         net.neoforged.neoforge.event.EventHooks.onPostLevelTick(serverlevel, p_129954_);
  
           this.profiler.pop();
           this.profiler.pop();

@@ -11,7 +11,7 @@ import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoader;
@@ -25,7 +25,7 @@ import java.util.concurrent.Executor;
  * The main ResourceManager is recreated on each reload, just after {@link ReloadableServerResources}'s creation.
  *
  * The event is fired on each reload and lets modders add their own ReloadListeners, for server-side resources.
- * The event is fired on the {@link MinecraftForge#EVENT_BUS}
+ * The event is fired on the {@link NeoForge#EVENT_BUS}
  */
 public class AddReloadListenerEvent extends Event
 {

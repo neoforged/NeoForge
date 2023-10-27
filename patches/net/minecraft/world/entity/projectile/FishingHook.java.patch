@@ -16,7 +16,7 @@
     private void checkCollision() {
        HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
 -      this.onHit(hitresult);
-+      if (hitresult.getType() == HitResult.Type.MISS || !net.neoforged.neoforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) this.onHit(hitresult);
++      if (hitresult.getType() == HitResult.Type.MISS || !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) this.onHit(hitresult);
     }
  
     @Override
@@ -38,7 +38,7 @@
              LootTable loottable = this.level().getServer().getLootData().getLootTable(BuiltInLootTables.FISHING);
              List<ItemStack> list = loottable.getRandomItems(lootparams);
 +            event = new net.neoforged.neoforge.event.entity.player.ItemFishedEvent(list, this.onGround() ? 2 : 1, this);
-+            net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(event);
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
 +            if (event.isCanceled()) {
 +               this.discard();
 +               return event.getRodDamage();

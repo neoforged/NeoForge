@@ -9,7 +9,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 
@@ -19,7 +19,7 @@ import net.neoforged.fml.LogicalSide;
  * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  * If this event is cancelled, the totem will not prevent the entity's death.</p>
  *
- * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS Forge event bus},
+ * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS Forge event bus},
  * only on the {@linkplain LogicalSide#SERVER logical server}.</p>
  */
 public class LivingUseTotemEvent extends LivingEvent implements ICancellableEvent

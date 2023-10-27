@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -145,7 +145,7 @@ public final class FluidInteractionRegistry
         {
             this(predicate, (level, currentPos, relativePos, currentState) ->
             {
-                level.setBlockAndUpdate(currentPos, ForgeEventFactory.fireFluidPlaceBlockEvent(level, currentPos, currentPos, getState.apply(currentState)));
+                level.setBlockAndUpdate(currentPos, EventHooks.fireFluidPlaceBlockEvent(level, currentPos, currentPos, getState.apply(currentState)));
                 level.levelEvent(1501, currentPos, 0);
             });
         }

@@ -8,7 +8,7 @@ package net.neoforged.neoforge.debug.entity.living;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -22,7 +22,7 @@ public class LivingSetAttackTargetEventTest
     {
         if(ENABLE)
         {
-            MinecraftForge.EVENT_BUS.register(this);
+            NeoForge.EVENT_BUS.register(this);
         }
     }
     

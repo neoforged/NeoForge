@@ -4,7 +4,7 @@
     private final int highlightColor;
     private final EntityType<?> defaultType;
  
-+   /** @deprecated Forge: Use {@link net.neoforged.neoforge.common.ForgeSpawnEggItem} instead for suppliers */
++   /** @deprecated Forge: Use {@link net.neoforged.neoforge.common.DeferredSpawnEggItem} instead for suppliers */
 +   @Deprecated
     public SpawnEggItem(EntityType<? extends Mob> p_43207_, int p_43208_, int p_43209_, Item.Properties p_43210_) {
        super(p_43210_);
@@ -15,15 +15,15 @@
        BY_ID.put(p_43207_, this);
     }
  
-@@ -137,6 +140,8 @@
-       return p_43212_ == 0 ? this.backgroundColor : this.highlightColor;
-    }
+@@ -139,6 +142,8 @@
  
-+   /** @deprecated Forge: call {@link net.neoforged.neoforge.common.ForgeSpawnEggItem#fromEntityType(EntityType)} instead */
-+   @Deprecated
     @Nullable
     public static SpawnEggItem byId(@Nullable EntityType<?> p_43214_) {
++      var ret = net.neoforged.neoforge.common.DeferredSpawnEggItem.deferredOnlyById(p_43214_);
++      if (ret != null) return ret;
        return BY_ID.get(p_43214_);
+    }
+ 
 @@ -150,16 +155,16 @@
        if (p_43229_ != null && p_43229_.contains("EntityTag", 10)) {
           CompoundTag compoundtag = p_43229_.getCompound("EntityTag");

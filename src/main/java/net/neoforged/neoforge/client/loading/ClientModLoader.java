@@ -40,7 +40,7 @@ import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForgeConfig;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.resource.DelegatingPackResources;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.LanguageHook;
@@ -133,7 +133,7 @@ public class ClientModLoader
         File dumpedLocation = null;
         if (error == null) {
             // We can finally start the forge eventbus up
-            MinecraftForge.EVENT_BUS.start();
+            NeoForge.EVENT_BUS.start();
         } else {
             // Double check we have the langs loaded for forge
             LanguageHook.loadForgeAndMCLangs();

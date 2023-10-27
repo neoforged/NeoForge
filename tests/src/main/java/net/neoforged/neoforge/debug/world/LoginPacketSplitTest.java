@@ -33,7 +33,7 @@ import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.GsonHelper;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -41,7 +41,7 @@ import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
-import net.neoforged.neoforge.network.filters.ForgeConnectionNetworkFilter;
+import net.neoforged.neoforge.network.filters.NeoForgeConnectionNetworkFilter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -65,7 +65,7 @@ import java.util.stream.Collectors;
  * registryaccess in the packet would be, and how much {@code %} of the packet limit is represents. <br>
  * Connect to the server from the client, and if you successfully connect and the {@code /big_data} command
  * reports 50000 entries then the packet has been successfully split. <br> <br>
- * To test if the packet is too large simply remove the login packet from the {@link ForgeConnectionNetworkFilter}
+ * To test if the packet is too large simply remove the login packet from the {@link NeoForgeConnectionNetworkFilter}
  * and try connecting again. You should see the connection fail.
  */
 
@@ -103,7 +103,7 @@ public class LoginPacketSplitTest
 
             if (FMLLoader.getDist().isClient())
             {
-                MinecraftForge.EVENT_BUS.addListener((final RegisterClientCommandsEvent event) -> event.getDispatcher().register(Commands.literal("big_data")
+                NeoForge.EVENT_BUS.addListener((final RegisterClientCommandsEvent event) -> event.getDispatcher().register(Commands.literal("big_data")
                         .executes(context ->
                         {
                             context.getSource().sendSuccess(() -> Component.literal("Registry has " + context.getSource().registryAccess().registryOrThrow(BIG_DATA).holders().count() + " entries."), true);

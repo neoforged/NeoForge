@@ -42,7 +42,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
-import net.neoforged.neoforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -659,7 +659,7 @@ public interface IBlockStateExtension
     @Nullable
     default BlockState getToolModifiedState(UseOnContext context, ToolAction toolAction, boolean simulate)
     {
-        BlockState eventState = ForgeEventFactory.onToolUse(self(), context, toolAction, simulate);
+        BlockState eventState = EventHooks.onToolUse(self(), context, toolAction, simulate);
         return eventState != self() ? eventState : self().getBlock().getToolModifiedState(self(), context, toolAction, simulate);
     }
 

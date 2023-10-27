@@ -5,7 +5,7 @@
  
     @Override
 +   public net.minecraft.world.InteractionResult interactLivingEntity(ItemStack stack, net.minecraft.world.entity.player.Player playerIn, LivingEntity entity, net.minecraft.world.InteractionHand hand) {
-+      if (entity instanceof net.neoforged.neoforge.common.IForgeShearable target) {
++      if (entity instanceof net.neoforged.neoforge.common.IShearable target) {
 +         if (entity.level().isClientSide) return net.minecraft.world.InteractionResult.SUCCESS;
 +         BlockPos pos = BlockPos.containing(entity.position());
 +         if (target.isShearable(stack, entity.level(), pos)) {

@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.capabilities.CapabilityProvider;
 import net.neoforged.neoforge.common.util.TextTable;
 import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
@@ -61,7 +61,7 @@ public class LazyCapabilitiesOnItemsTest
             supportsFlagField.set(null, false);
 
             final Stopwatch timer = Stopwatch.createUnstarted();
-            final IEventBus bus = MinecraftForge.EVENT_BUS;
+            final IEventBus bus = NeoForge.EVENT_BUS;
 
             final ResourceLocation testCapId = new ResourceLocation(MOD_ID, "test");
             final Consumer<AttachCapabilitiesEvent<ItemStack>> capAttachmentHandler = e -> {

@@ -10,7 +10,7 @@ import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
 
 /**
@@ -21,7 +21,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * This event is {@link ICancellableEvent}. Effects of cancellation are noted in {@link #setCanceled(boolean)}.
  * <p>
  * This event does not {@linkplain HasResult have a result}.
- * This event is fired on {@link MinecraftForge#EVENT_BUS}
+ * This event is fired on {@link NeoForge#EVENT_BUS}
  **/
 public class LivingDrownEvent extends LivingEvent implements ICancellableEvent
 {

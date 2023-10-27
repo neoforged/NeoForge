@@ -61,10 +61,10 @@
        this.defineSynchedData();
        this.setPos(0.0, 0.0, 0.0);
 -      this.eyeHeight = this.getEyeHeight(Pose.STANDING, this.dimensions);
-+      net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.ForgeEventFactory.getEntitySizeForge(this, Pose.STANDING, this.dimensions, this.getEyeHeight(Pose.STANDING, this.dimensions));
++      net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.EventHooks.getEntitySizeForge(this, Pose.STANDING, this.dimensions, this.getEyeHeight(Pose.STANDING, this.dimensions));
 +      this.dimensions = sizeEvent.getNewSize();
 +      this.eyeHeight = sizeEvent.getNewEyeHeight();
-+      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityEvent.EntityConstructing(this));
++      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityEvent.EntityConstructing(this));
 +      this.gatherCapabilities();
     }
  
@@ -310,7 +310,7 @@
              }
           }
  
-+      if (!net.neoforged.neoforge.event.ForgeEventFactory.canMountEntity(this, p_19966_, true)) return false;
++      if (!net.neoforged.neoforge.event.EventHooks.canMountEntity(this, p_19966_, true)) return false;
           if (p_19967_ || this.canRide(p_19966_) && p_19966_.canAddPassenger(this)) {
              if (this.isPassenger()) {
                 this.stopRiding();
@@ -318,7 +318,7 @@
     public void removeVehicle() {
        if (this.vehicle != null) {
           Entity entity = this.vehicle;
-+         if (!net.neoforged.neoforge.event.ForgeEventFactory.canMountEntity(this, entity, false)) return;
++         if (!net.neoforged.neoforge.event.EventHooks.canMountEntity(this, entity, false)) return;
           this.vehicle = null;
           entity.removePassenger(this);
        }
@@ -414,7 +414,7 @@
        EntityDimensions entitydimensions = this.dimensions;
        Pose pose = this.getPose();
        EntityDimensions entitydimensions1 = this.getDimensions(pose);
-+      net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.ForgeEventFactory.getEntitySizeForge(this, pose, entitydimensions, entitydimensions1, this.getEyeHeight(pose, entitydimensions1));
++      net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.EventHooks.getEntitySizeForge(this, pose, entitydimensions, entitydimensions1, this.getEyeHeight(pose, entitydimensions1));
 +      entitydimensions1 = sizeEvent.getNewSize();
        this.dimensions = entitydimensions1;
 -      this.eyeHeight = this.getEyeHeight(pose, entitydimensions1);
@@ -613,7 +613,7 @@
 +   public boolean canTrample(BlockState state, BlockPos pos, float fallDistance) {
 +      return level.random.nextFloat() < fallDistance - 0.5F
 +          && this instanceof LivingEntity
-+          && (this instanceof Player || net.neoforged.neoforge.event.ForgeEventFactory.getMobGriefingEvent(level, this))
++          && (this instanceof Player || net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(level, this))
 +          && this.getBbWidth() * this.getBbWidth() * this.getBbHeight() > 0.512F;
 +   }
 +

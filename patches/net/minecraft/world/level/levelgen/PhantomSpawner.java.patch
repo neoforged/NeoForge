@@ -7,7 +7,7 @@
 -                     if (!p_64576_.dimensionType().hasSkyLight() || blockpos.getY() >= p_64576_.getSeaLevel() && p_64576_.canSeeSky(blockpos)) {
 -                        DifficultyInstance difficultyinstance = p_64576_.getCurrentDifficultyAt(blockpos);
 +                     DifficultyInstance difficultyinstance = p_64576_.getCurrentDifficultyAt(blockpos);
-+                     var event = net.neoforged.neoforge.event.ForgeEventFactory.onPhantomSpawn(serverplayer, 1 + randomsource.nextInt(difficultyinstance.getDifficulty().getId() + 1));
++                     var event = net.neoforged.neoforge.event.EventHooks.onPhantomSpawn(serverplayer, 1 + randomsource.nextInt(difficultyinstance.getDifficulty().getId() + 1));
 +                     if (event.getResult() == net.neoforged.bus.api.Event.Result.DENY) continue;
 +                     if (event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW || !p_64576_.dimensionType().hasSkyLight() || blockpos.getY() >= p_64576_.getSeaLevel() && p_64576_.canSeeSky(blockpos)) {
                          if (difficultyinstance.isHarderThan(randomsource.nextFloat() * 3.0F)) {

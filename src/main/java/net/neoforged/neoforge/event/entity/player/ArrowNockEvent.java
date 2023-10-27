@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
  * This event is {@link ICancellableEvent}.
  * Cancelling the event causes the action to fail with {@link net.minecraft.world.InteractionResult#FAIL}.
  * <p>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class ArrowNockEvent extends PlayerEvent implements ICancellableEvent
 {

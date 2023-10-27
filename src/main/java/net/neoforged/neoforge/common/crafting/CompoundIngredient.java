@@ -17,16 +17,16 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.util.ForgeExtraCodecs;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** Ingredient that matches if any of the child ingredients match */
 public class CompoundIngredient extends Ingredient
 {
-    public static final Codec<CompoundIngredient> CODEC = ForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC, "children", "ingredients").xmap(CompoundIngredient::new, CompoundIngredient::getChildren).codec();
+    public static final Codec<CompoundIngredient> CODEC = NeoForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC, "children", "ingredients").xmap(CompoundIngredient::new, CompoundIngredient::getChildren).codec();
     public static final Codec<CompoundIngredient> DIRECT_CODEC = Ingredient.LIST_CODEC.xmap(CompoundIngredient::new, CompoundIngredient::getChildren);
-    public static final Codec<CompoundIngredient> CODEC_NONEMPTY = ForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC_NONEMPTY, "children", "ingredients").xmap(CompoundIngredient::new, CompoundIngredient::getChildren).codec();
+    public static final Codec<CompoundIngredient> CODEC_NONEMPTY = NeoForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC_NONEMPTY, "children", "ingredients").xmap(CompoundIngredient::new, CompoundIngredient::getChildren).codec();
     public static final Codec<CompoundIngredient> DIRECT_CODEC_NONEMPTY = Ingredient.LIST_CODEC_NONEMPTY.xmap(CompoundIngredient::new, CompoundIngredient::getChildren);
 
     private final List<Ingredient> children;

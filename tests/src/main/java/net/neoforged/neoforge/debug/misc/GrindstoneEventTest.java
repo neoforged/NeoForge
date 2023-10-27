@@ -7,7 +7,7 @@ package net.neoforged.neoforge.debug.misc;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.GrindstoneEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -17,7 +17,7 @@ public class GrindstoneEventTest {
     private static final boolean ENABLED = false;
     public GrindstoneEventTest() {
         if (ENABLED) {
-            MinecraftForge.EVENT_BUS.register(this);
+            NeoForge.EVENT_BUS.register(this);
         }
     }
 

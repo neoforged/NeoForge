@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.event.entity;
 
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event.HasResult;
 
 /**
@@ -19,7 +19,7 @@ import net.neoforged.bus.api.Event.HasResult;
  * <li>{@link Result#DEFAULT} means the {@code mobGriefing} game rule is used to determine the behaviour.</li>
  * <li>{@link Result#DENY} means this instance of mob griefing is not allowed.</li>
  * </ul>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
 @HasResult
 public class EntityMobGriefingEvent extends EntityEvent

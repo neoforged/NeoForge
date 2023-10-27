@@ -21,7 +21,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.storage.ServerLevelData;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -29,7 +29,7 @@ import net.neoforged.fml.LogicalSide;
 /**
  * This event is fired whenever an event involving a {@link LevelAccessor} occurs.
  * <p>
- * All children of this event are fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}.
+ * All children of this event are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}.
  */
 public abstract class LevelEvent extends Event
 {
@@ -55,7 +55,7 @@ public abstract class LevelEvent extends Event
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
-     * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
      * on both logical sides.
      **/
     public static class Load extends LevelEvent
@@ -72,7 +72,7 @@ public abstract class LevelEvent extends Event
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
-     * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
      * on both logical sides.
      **/
     public static class Unload extends LevelEvent
@@ -87,7 +87,7 @@ public abstract class LevelEvent extends Event
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
-     * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      **/
     public static class Save extends LevelEvent
@@ -102,7 +102,7 @@ public abstract class LevelEvent extends Event
      * This event is {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * If the event is canceled, the vanilla logic to choose a spawn position will be skipped.
      * <p>
-     * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      *
      * @see ServerLevelData#isInitialized()

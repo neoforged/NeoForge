@@ -4,7 +4,7 @@
           return false;
        } else {
           Holder<ConfiguredFeature<?, ?>> holder = p_222897_.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolder(resourcekey).orElse(null);
-+         var event = net.neoforged.neoforge.event.ForgeEventFactory.blockGrowFeature(p_222897_, p_222901_, p_222899_, holder);
++         var event = net.neoforged.neoforge.event.EventHooks.blockGrowFeature(p_222897_, p_222901_, p_222899_, holder);
 +         holder = event.getFeature();
 +         if (event.getResult() == net.neoforged.bus.api.Event.Result.DENY) return false;
           if (holder == null) {

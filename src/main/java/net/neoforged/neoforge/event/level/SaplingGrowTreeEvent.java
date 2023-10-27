@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event.HasResult;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
  * using the features set on the event.
  * {@linkplain Result#DENY DENY} will prevent the sapling from growing.
  * <p>
- * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
+ * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
  * only on the {@linkplain net.neoforged.fml.LogicalSide#SERVER logical server}.
  */
 // TODO: Rename to BlockFeatureGrowEvent in 1.20

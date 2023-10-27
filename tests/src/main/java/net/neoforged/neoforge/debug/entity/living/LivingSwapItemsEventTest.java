@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.debug.entity.living;
 
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -22,7 +22,7 @@ public class LivingSwapItemsEventTest
     public LivingSwapItemsEventTest()
     {
         if (ENABLE)
-            MinecraftForge.EVENT_BUS.register(this);
+            NeoForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent

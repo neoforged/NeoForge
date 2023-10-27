@@ -13,7 +13,7 @@
        if (p_230943_.includeIntegrated) {
           PublishCommand.register(this.dispatcher);
        }
-+      net.neoforged.neoforge.event.ForgeEventFactory.onCommandRegister(this.dispatcher, p_230943_, p_230944_);
++      net.neoforged.neoforge.event.EventHooks.onCommandRegister(this.dispatcher, p_230943_, p_230944_);
  
        this.dispatcher.setConsumer((p_230954_, p_230955_, p_230956_) -> p_230954_.getSource().onCommandComplete(p_230954_, p_230955_, p_230956_));
     }
@@ -23,7 +23,7 @@
           try {
 -            return this.dispatcher.execute(p_242844_);
 +            net.neoforged.neoforge.event.CommandEvent event = new net.neoforged.neoforge.event.CommandEvent(p_242844_);
-+            if (net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled()) {
++            if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) {
 +               if (event.getException() instanceof Exception exception) {
 +                  throw exception;
 +               } else if (event.getException() != null) {

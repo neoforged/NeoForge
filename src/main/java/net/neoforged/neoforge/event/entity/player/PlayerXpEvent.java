@@ -7,7 +7,7 @@ package net.neoforged.neoforge.event.entity.player;
 
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
 
 /**
@@ -15,7 +15,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * If a method utilizes this {@link net.neoforged.bus.api.Event} as its parameter, the method will
  * receive every child event of this class.<br>
  * <br>
- * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.
+ * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.
  */
 public abstract class PlayerXpEvent extends PlayerEvent
 {

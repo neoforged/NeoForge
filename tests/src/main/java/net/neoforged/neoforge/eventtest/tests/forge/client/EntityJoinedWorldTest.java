@@ -8,7 +8,7 @@ package net.neoforged.neoforge.eventtest.tests.forge.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.eventtest.internal.EventTest;
 
@@ -28,7 +28,7 @@ public class EntityJoinedWorldTest extends EventTest {
 
     @Override
     public void registerEvents() {
-        MinecraftForge.EVENT_BUS.addListener(this::eventListener);
+        NeoForge.EVENT_BUS.addListener(this::eventListener);
     }
 
     private void eventListener(EntityJoinLevelEvent event) {

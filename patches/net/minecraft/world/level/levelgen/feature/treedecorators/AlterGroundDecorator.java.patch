@@ -4,7 +4,7 @@
        }
  
        if (!list.isEmpty()) {
-+         var eventProvider = net.neoforged.neoforge.event.ForgeEventFactory.alterGround(p_225969_, list, this.provider::getState);
++         var eventProvider = net.neoforged.neoforge.event.EventHooks.alterGround(p_225969_, list, this.provider::getState);
           int i = list.get(0).getY();
           list.stream().filter(p_69310_ -> p_69310_.getY() == i).forEach(p_225978_ -> {
 -            this.placeCircle(p_225969_, p_225978_.west().north());

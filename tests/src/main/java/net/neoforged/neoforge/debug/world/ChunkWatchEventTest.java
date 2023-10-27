@@ -9,7 +9,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -34,7 +34,7 @@ public class ChunkWatchEventTest
 
         if (ENABLED)
         {
-            MinecraftForge.EVENT_BUS.register(ChunkWatchEventTest.class);
+            NeoForge.EVENT_BUS.register(ChunkWatchEventTest.class);
         }
     }
 

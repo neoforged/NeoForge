@@ -22,7 +22,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.fml.common.Mod;
@@ -88,7 +88,7 @@ public class ContainerTypeTest
     {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerContainers);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        MinecraftForge.EVENT_BUS.addListener(this::onRightClick);
+        NeoForge.EVENT_BUS.addListener(this::onRightClick);
     }
 
     private void registerContainers(final RegisterEvent event)

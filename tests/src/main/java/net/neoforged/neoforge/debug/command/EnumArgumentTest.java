@@ -7,7 +7,7 @@ package net.neoforged.neoforge.debug.command;
 
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -23,7 +23,7 @@ public class EnumArgumentTest
     public EnumArgumentTest()
     {
         if (ENABLE)
-            MinecraftForge.EVENT_BUS.register(this);
+            NeoForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent

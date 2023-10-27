@@ -7,7 +7,7 @@ package net.neoforged.neoforge.event.brewing;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.NonNullList;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.NotNull;
@@ -54,7 +54,7 @@ public abstract class PotionBrewEvent extends Event
      * <br>
      * This event does not have a result. {@link HasResult}<br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
      * If this event is canceled, and items have been modified, PotionBrewEvent.Post will automatically be fired.
      **/
@@ -77,7 +77,7 @@ public abstract class PotionBrewEvent extends Event
      * <br>
      * This event does not have a result. {@link HasResult}<br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
     public static class Post extends PotionBrewEvent
     {

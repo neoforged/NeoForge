@@ -8,7 +8,7 @@ package net.neoforged.neoforge.debug;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -31,7 +31,7 @@ public class VanillaGameEventTest
     {
         if (!ENABLED) return;
 
-        MinecraftForge.EVENT_BUS.addListener(this::vanillaEvent);
+        NeoForge.EVENT_BUS.addListener(this::vanillaEvent);
     }
 
     public void vanillaEvent(VanillaGameEvent event)

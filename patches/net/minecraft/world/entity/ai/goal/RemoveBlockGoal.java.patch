@@ -5,7 +5,7 @@
     @Override
     public boolean canUse() {
 -      if (!this.removerMob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-+      if (!net.neoforged.neoforge.event.ForgeEventFactory.getMobGriefingEvent(this.removerMob.level(), this.removerMob)) {
++      if (!net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.removerMob.level(), this.removerMob)) {
           return false;
        } else if (this.nextStartTick > 0) {
           --this.nextStartTick;

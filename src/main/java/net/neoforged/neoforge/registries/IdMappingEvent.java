@@ -11,7 +11,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.Comparator;
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.Map;
  * this event to update caches or other in-mod artifacts that might be impacted by an ID
  * change.
  * <p>
- * Fired on the {@link MinecraftForge#EVENT_BUS forge bus}.
+ * Fired on the {@link NeoForge#EVENT_BUS forge bus}.
  */
 public class IdMappingEvent extends Event
 {

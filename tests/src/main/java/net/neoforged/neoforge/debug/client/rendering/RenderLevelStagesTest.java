@@ -9,7 +9,7 @@ import net.neoforged.fml.loading.FMLLoader;
 import org.apache.logging.log4j.LogManager;
 
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.fml.common.Mod;
 
 @Mod("render_level_stages_test")
@@ -21,7 +21,7 @@ public class RenderLevelStagesTest
     {
         if (FMLLoader.getDist().isClient())
         {
-            MinecraftForge.EVENT_BUS.addListener(this::onRenderLevelStages);
+            NeoForge.EVENT_BUS.addListener(this::onRenderLevelStages);
         }
     }
     

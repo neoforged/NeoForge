@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.fml.common.Mod;
@@ -25,7 +25,7 @@ public class MilkFluidTest
     if (ENABLE)
     {
       NeoForgeMod.enableMilkFluid();
-      MinecraftForge.EVENT_BUS.addListener(MilkFluidTest::useMilk);
+      NeoForge.EVENT_BUS.addListener(MilkFluidTest::useMilk);
     }
   }
 

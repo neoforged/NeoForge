@@ -8,7 +8,7 @@ package net.neoforged.neoforge.event.entity.player;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Player.BedSleepingProblem;
 import net.minecraft.core.BlockPos;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.Optional;
 
@@ -22,7 +22,7 @@ import java.util.Optional;
  * <br>
  * This event does not have a result. {@link HasResult}
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class PlayerSleepInBedEvent extends PlayerEvent
 {

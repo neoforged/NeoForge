@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event.HasResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -21,7 +21,7 @@ import net.minecraft.world.entity.player.Player;
  * DENY: it will not be a critical hit but the player still will attack<br>
  * ALLOW: this attack is forced to be critical
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 @HasResult
 public class CriticalHitEvent extends PlayerEvent

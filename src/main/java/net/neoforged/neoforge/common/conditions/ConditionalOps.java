@@ -9,7 +9,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.ExtraCodecs;
-import net.neoforged.neoforge.common.util.ForgeExtraCodecs;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,15 +49,15 @@ public class ConditionalOps<T> extends RegistryOps<T> {
 
    public static <T> Codec<List<T>> decodeListWithElementConditions(final Codec<T> ownerCodec, String conditionalsKey) {
       final Codec<List<T>> delegate = ownerCodec.listOf();
-      final Decoder<List<T>> decoder = ForgeExtraCodecs.listDecoderWithOptionalElements(createConditionalDecoder(ownerCodec, conditionalsKey));
+      final Decoder<List<T>> decoder = NeoForgeExtraCodecs.listDecoderWithOptionalElements(createConditionalDecoder(ownerCodec, conditionalsKey));
       return Codec.of(delegate, decoder);
    }
    
    public static <T> Codec<List<T>> decodeListWithElementConditionsAndConsumeIndex(final Codec<T> ownerCodec, final String conditionalsKey, final ObjIntConsumer<T> consumer) {
       final Codec<List<T>> list = ownerCodec.listOf();
-      return Codec.of(list, ForgeExtraCodecs.listOptionalUnwrapDecoder(
-            ForgeExtraCodecs.listDecoderWithIndexConsumer(
-                  ForgeExtraCodecs.listDecoder(createConditionalDecoder(ownerCodec, conditionalsKey)),
+      return Codec.of(list, NeoForgeExtraCodecs.listOptionalUnwrapDecoder(
+            NeoForgeExtraCodecs.listDecoderWithIndexConsumer(
+                  NeoForgeExtraCodecs.listDecoder(createConditionalDecoder(ownerCodec, conditionalsKey)),
                   (op, i) -> op.ifPresent(o -> consumer.accept(o, i))
             ),
             Function.identity()

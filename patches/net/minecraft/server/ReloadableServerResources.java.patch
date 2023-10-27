@@ -18,7 +18,7 @@
 -            p_248588_, reloadableserverresources.listeners(), p_249136_, p_249601_, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()
 -         )
 +      List<PreparableReloadListener> listeners = new java.util.ArrayList<>(reloadableserverresources.listeners());
-+      listeners.addAll(net.neoforged.neoforge.event.ForgeEventFactory.onResourceReload(reloadableserverresources, p_251163_));
++      listeners.addAll(net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_251163_));
 +      listeners.forEach(rl -> {
 +         if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener srl) srl.injectContext(reloadableserverresources.context, reloadableserverresources.registryAccess);
 +      });
@@ -30,7 +30,7 @@
     public void updateRegistryTags(RegistryAccess p_206869_) {
        this.tagManager.getResult().forEach(p_214315_ -> updateRegistryTags(p_206869_, p_214315_));
        Blocks.rebuildCache();
-+      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(p_206869_, false, false));
++      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(p_206869_, false, false));
     }
  
     private static <T> void updateRegistryTags(RegistryAccess p_206871_, TagManager.LoadResult<T> p_206872_) {

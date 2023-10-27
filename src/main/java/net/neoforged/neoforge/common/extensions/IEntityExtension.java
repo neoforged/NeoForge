@@ -25,7 +25,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.ForgeSpawnEggItem;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.capabilities.ICapabilitySerializable;
 import net.neoforged.neoforge.entity.PartEntity;
@@ -80,19 +80,12 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      * Called when a user uses the creative pick block button on this entity.
      *
      * @param target The full target the player is looking at
-     * @return A ItemStack to add to the player's inventory, empty ItemStack if nothing should be added.
+     * @return A ItemStack to add to the player's inventory, null ItemStack if nothing should be added.
      */
+    @Nullable
     default ItemStack getPickedResult(HitResult target)
     {
-        ItemStack result = self().getPickResult();
-        if (result == null) {
-            SpawnEggItem egg = ForgeSpawnEggItem.fromEntityType(self().getType());
-            if (egg != null)
-                result = new ItemStack(egg);
-            else
-                result = ItemStack.EMPTY;
-        }
-        return result;
+        return self().getPickResult();
     }
 
     /**

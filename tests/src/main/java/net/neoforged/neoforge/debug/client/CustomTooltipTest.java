@@ -27,7 +27,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -61,7 +61,7 @@ public class CustomTooltipTest
             IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
             if (FMLEnvironment.dist.isClient())
             {
-                MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
+                NeoForge.EVENT_BUS.register(ClientEventHandler.class);
                 modEventBus.register(ClientModBusEventHandler.class);
             }
             ITEMS.register(modEventBus);

@@ -9,7 +9,7 @@ import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.common.NeoForgeConfig;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.exceptions.UnregisteredPermissionException;
@@ -105,7 +105,7 @@ public final class PermissionAPI
         PermissionAPI.activeHandler = null;
 
         PermissionGatherEvent.Handler handlerEvent = new PermissionGatherEvent.Handler();
-        MinecraftForge.EVENT_BUS.post(handlerEvent);
+        NeoForge.EVENT_BUS.post(handlerEvent);
         Map<ResourceLocation, IPermissionHandlerFactory> availableHandlers = handlerEvent.getAvailablePermissionHandlerFactories();
 
         try
@@ -120,7 +120,7 @@ public final class PermissionAPI
             IPermissionHandlerFactory factory = availableHandlers.get(selectedPermissionHandler);
 
             PermissionGatherEvent.Nodes nodesEvent = new PermissionGatherEvent.Nodes();
-            MinecraftForge.EVENT_BUS.post(nodesEvent);
+            NeoForge.EVENT_BUS.post(nodesEvent);
 
             PermissionAPI.activeHandler = factory.create(nodesEvent.getNodes());
 

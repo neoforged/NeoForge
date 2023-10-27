@@ -53,7 +53,7 @@ public class VillagerTradingManager
         List<ItemListing> rare = NonNullList.create();
         Arrays.stream(WANDERER_TRADES.get(1)).forEach(generic::add);
         Arrays.stream(WANDERER_TRADES.get(2)).forEach(rare::add);
-        MinecraftForge.EVENT_BUS.post(new WandererTradesEvent(generic, rare));
+        NeoForge.EVENT_BUS.post(new WandererTradesEvent(generic, rare));
         VillagerTrades.WANDERING_TRADER_TRADES.put(1, generic.toArray(new ItemListing[0]));
         VillagerTrades.WANDERING_TRADER_TRADES.put(2, rare.toArray(new ItemListing[0]));
     }
@@ -75,7 +75,7 @@ public class VillagerTradingManager
             {
                 Arrays.stream(e.getValue()).forEach(mutableTrades.get(e.getIntKey())::add);
             });
-            MinecraftForge.EVENT_BUS.post(new VillagerTradesEvent(mutableTrades, prof));
+            NeoForge.EVENT_BUS.post(new VillagerTradesEvent(mutableTrades, prof));
             Int2ObjectMap<ItemListing[]> newTrades = new Int2ObjectOpenHashMap<>();
             mutableTrades.int2ObjectEntrySet().forEach(e -> newTrades.put(e.getIntKey(), e.getValue().toArray(new ItemListing[0])));
             VillagerTrades.TRADES.put(prof, newTrades);

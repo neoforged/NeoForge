@@ -11,7 +11,7 @@ import net.minecraft.client.multiplayer.resolver.ResolvedServerAddress;
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import net.minecraft.client.multiplayer.resolver.ServerNameResolver;
 import net.minecraft.util.HttpUtil;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
@@ -33,7 +33,7 @@ public class DualStackUtils
     private static final Logger LOGGER = LogUtils.getLogger();
 
     /**
-     * Called by {@link MinecraftForge} to load this class so that the initial network
+     * Called by {@link NeoForge} to load this class so that the initial network
      * property constants are set before any of the other methods in this class are called. This is so we can
      * distinguish what Java's read once on JVM start vs what we've set for Netty.
      */

@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.internal;
 
-import net.neoforged.neoforge.common.ForgeI18n;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.I18nExtension;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.I18NParser;
 import net.neoforged.fml.IBindingsProvider;
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 public class NeoForgeBindings implements IBindingsProvider {
     @Override
     public Supplier<IEventBus> getForgeBusSupplier() {
-        return ()-> MinecraftForge.EVENT_BUS;
+        return ()-> NeoForge.EVENT_BUS;
     }
 
     @Override
@@ -26,12 +26,12 @@ public class NeoForgeBindings implements IBindingsProvider {
         return ()->new I18NParser() {
             @Override
             public String parseMessage(final String i18nMessage, final Object... args) {
-                return ForgeI18n.parseMessage(i18nMessage, args);
+                return I18nExtension.parseMessage(i18nMessage, args);
             }
 
             @Override
             public String stripControlCodes(final String toStrip) {
-                return ForgeI18n.stripControlCodes(toStrip);
+                return I18nExtension.stripControlCodes(toStrip);
             }
         };
     }

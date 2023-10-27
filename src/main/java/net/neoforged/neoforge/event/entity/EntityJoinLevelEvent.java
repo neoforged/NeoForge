@@ -9,7 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 
@@ -24,7 +24,7 @@ import net.neoforged.fml.LogicalSide;
  * This event is {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
  * If the event is canceled, the entity will not be added to the level.
  * <p>
- * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
+ * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
  * on both logical sides.
  **/
 public class EntityJoinLevelEvent extends EntityEvent implements ICancellableEvent

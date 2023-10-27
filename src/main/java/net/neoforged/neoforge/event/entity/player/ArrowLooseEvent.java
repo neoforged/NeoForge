@@ -7,7 +7,7 @@ package net.neoforged.neoforge.event.entity.player;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BowItem;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
  * <br>
  * This event does not have a result. {@link Event.HasResult}<br>
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class ArrowLooseEvent extends PlayerEvent implements ICancellableEvent
 {

@@ -26,9 +26,9 @@ import org.jetbrains.annotations.Nullable;
  * Network filter for forge-forge connections.
  */
 @ChannelHandler.Sharable
-public class ForgeConnectionNetworkFilter extends VanillaPacketFilter
+public class NeoForgeConnectionNetworkFilter extends VanillaPacketFilter
 {
-    public ForgeConnectionNetworkFilter(@Nullable Connection manager)
+    public NeoForgeConnectionNetworkFilter(@Nullable Connection manager)
     {
         super(buildHandlers(manager));
     }
@@ -42,10 +42,10 @@ public class ForgeConnectionNetworkFilter extends VanillaPacketFilter
             return ImmutableMap.of();
         }
         ImmutableMap.Builder<Class<? extends Packet<?>>, BiConsumer<Packet<?>, List<? super Packet<?>>>> builder = ImmutableMap.<Class<? extends Packet<?>>, BiConsumer<Packet<?>, List<? super Packet<?>>>>builder()
-                .put(ClientboundUpdateRecipesPacket.class, ForgeConnectionNetworkFilter::splitPacket)
-                .put(ClientboundUpdateTagsPacket.class, ForgeConnectionNetworkFilter::splitPacket)
-                .put(ClientboundUpdateAdvancementsPacket.class, ForgeConnectionNetworkFilter::splitPacket)
-                .put(ClientboundLoginPacket.class, ForgeConnectionNetworkFilter::splitPacket); // When there are many dynamic registry entries that packet is BIG
+                .put(ClientboundUpdateRecipesPacket.class, NeoForgeConnectionNetworkFilter::splitPacket)
+                .put(ClientboundUpdateTagsPacket.class, NeoForgeConnectionNetworkFilter::splitPacket)
+                .put(ClientboundUpdateAdvancementsPacket.class, NeoForgeConnectionNetworkFilter::splitPacket)
+                .put(ClientboundLoginPacket.class, NeoForgeConnectionNetworkFilter::splitPacket); // When there are many dynamic registry entries that packet is BIG
 
         return builder.build();
     }

@@ -18,7 +18,7 @@ import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.ForgeSpawnEggItem;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -41,8 +41,8 @@ public class ForgeSpawnEggItemTest
     );
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-    private static final RegistryObject<ForgeSpawnEggItem> EGG = ITEMS.register("test_spawn_egg", () ->
-            new ForgeSpawnEggItem(ENTITY, 0x0000FF, 0xFF0000, new Item.Properties())
+    private static final RegistryObject<DeferredSpawnEggItem> EGG = ITEMS.register("test_spawn_egg", () ->
+            new DeferredSpawnEggItem(ENTITY, 0x0000FF, 0xFF0000, new Item.Properties())
     );
 
     public ForgeSpawnEggItemTest()

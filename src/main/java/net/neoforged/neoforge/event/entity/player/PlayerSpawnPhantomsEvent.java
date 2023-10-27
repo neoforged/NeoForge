@@ -7,7 +7,7 @@ package net.neoforged.neoforge.event.entity.player;
 
 import net.minecraft.world.level.levelgen.PhantomSpawner;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
  * The behavior of {@link PhantomSpawner} is determined by the result of this event.<br>
  * See {@link #setResult} for documentation.<br>
  * <p>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
  * @see PlayerSpawnPhantomsEvent#setResult for the effects of each result.
  */
 @Event.HasResult

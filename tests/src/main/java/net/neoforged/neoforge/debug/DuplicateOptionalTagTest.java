@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.registries.ForgeRegistries;
@@ -50,7 +50,7 @@ public class DuplicateOptionalTagTest
 
     public DuplicateOptionalTagTest()
     {
-        MinecraftForge.EVENT_BUS.addListener(this::onServerStarted);
+        NeoForge.EVENT_BUS.addListener(this::onServerStarted);
     }
 
     private void onServerStarted(ServerStartedEvent event)

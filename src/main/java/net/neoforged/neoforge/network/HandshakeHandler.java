@@ -17,7 +17,7 @@ import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.LogMessageAdapter;
 import net.neoforged.neoforge.event.entity.player.PlayerNegotiationEvent;
 import net.neoforged.neoforge.network.ConnectionData.ModMismatchData;
@@ -343,7 +343,7 @@ public class HandshakeHandler
         if (!negotiationStarted) {
             GameProfile profile = ((ServerLoginPacketListenerImpl) manager.getPacketListener()).authenticatedProfile;
             PlayerNegotiationEvent event = new PlayerNegotiationEvent(manager, profile, pendingFutures);
-            MinecraftForge.EVENT_BUS.post(event);
+            NeoForge.EVENT_BUS.post(event);
             negotiationStarted = true;
         }
 

@@ -15,8 +15,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.EventHooks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
  * If a method utilizes this {@link net.neoforged.bus.api.Event} as its parameter, the method will
  * receive every child event of this class.<br>
  * <br>
- * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.
+ * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public abstract class PlayerEvent extends LivingEvent
 {
@@ -56,7 +56,7 @@ public abstract class PlayerEvent extends LivingEvent
      * This event is fired whenever a player attempts to harvest a block in
      * {@link Player#hasCorrectToolForDrops(BlockState)}.<br>
      * <br>
-     * This event is fired via the {@link ForgeEventFactory#doPlayerHarvestCheck(Player, BlockState, boolean)}.<br>
+     * This event is fired via the {@link EventHooks#doPlayerHarvestCheck(Player, BlockState, boolean)}.<br>
      * <br>
      * {@link #state} contains the {@link BlockState} that is being checked for harvesting. <br>
      * {@link #success} contains the boolean value for whether the Block will be successfully harvested. <br>
@@ -65,7 +65,7 @@ public abstract class PlayerEvent extends LivingEvent
      * <br>
      * This event does not have a result. {@link Event.HasResult}<br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.
      **/
     public static class HarvestCheck extends PlayerEvent
     {
@@ -89,7 +89,7 @@ public abstract class PlayerEvent extends LivingEvent
      * This event is fired whenever a player attempts to harvest a block in
      * {@link Player#getDigSpeed(BlockState, BlockPos)}.<br>
      * <br>
-     * This event is fired via the {@link ForgeEventFactory#getBreakSpeed(Player, BlockState, float, BlockPos)}.<br>
+     * This event is fired via the {@link EventHooks#getBreakSpeed(Player, BlockState, float, BlockPos)}.<br>
      * <br>
      * {@link #state} contains the block being broken. <br>
      * {@link #originalSpeed} contains the original speed at which the player broke the block. <br>
@@ -101,7 +101,7 @@ public abstract class PlayerEvent extends LivingEvent
      * <br>
      * This event does not have a result. {@link Event.HasResult}<br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.
      **/
     public static class BreakSpeed extends PlayerEvent implements ICancellableEvent
     {
@@ -132,7 +132,7 @@ public abstract class PlayerEvent extends LivingEvent
      * This event is fired whenever a player's name is retrieved in
      * {@link Player#getDisplayName()} or {@link Player#refreshDisplayName()}.<br>
      * <br>
-     * This event is fired via the {@link ForgeEventFactory#getPlayerDisplayName(Player, Component)}.<br>
+     * This event is fired via the {@link EventHooks#getPlayerDisplayName(Player, Component)}.<br>
      * <br>
      * {@link #username} contains the username of the player.
      * {@link #displayname} contains the display name of the player.
@@ -141,7 +141,7 @@ public abstract class PlayerEvent extends LivingEvent
      * <br>
      * This event does not have a result. {@link Event.HasResult}
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.
      **/
     public static class NameFormat extends PlayerEvent
     {
@@ -176,7 +176,7 @@ public abstract class PlayerEvent extends LivingEvent
      * This event is fired whenever a player's display name for the tablist is retrieved in
      * {@link ServerPlayer#getTabListDisplayName()} or {@link ServerPlayer#refreshTabListName()}.<br>
      * <br>
-     * This event is fired via the {@link ForgeEventFactory#getPlayerTabListDisplayName(Player)}.<br>
+     * This event is fired via the {@link EventHooks#getPlayerTabListDisplayName(Player)}.<br>
      * <br>
      * {@link #getDisplayName()} contains the display name of the player or null if the client should determine the display name itself.
      * <br>
@@ -184,7 +184,7 @@ public abstract class PlayerEvent extends LivingEvent
      * <br>
      * This event does not have a result. {@link Event.HasResult}
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.
      **/
     public static class TabListNameFormat extends PlayerEvent
     {

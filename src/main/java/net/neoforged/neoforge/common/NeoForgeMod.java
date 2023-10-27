@@ -43,6 +43,9 @@ import net.minecraft.core.RegistryCodecs;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.client.ClientCommandHandler;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.conditions.AndCondition;
 import net.neoforged.neoforge.common.conditions.FalseCondition;
@@ -73,13 +76,14 @@ import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.ForgeFlowingFluid;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.fml.*;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.*;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.internal.versions.neoform.NeoFormVersion;
+import net.neoforged.neoforge.network.DualStackUtils;
 import net.neoforged.neoforge.registries.*;
 import net.neoforged.neoforge.registries.holdersets.AndHolderSet;
 import net.neoforged.neoforge.registries.holdersets.AnyHolderSet;
@@ -419,12 +423,6 @@ public class NeoForgeMod
     public static final RegistryObject<Fluid> MILK = RegistryObject.create(new ResourceLocation("milk"), ForgeRegistries.FLUIDS);
     public static final RegistryObject<Fluid> FLOWING_MILK = RegistryObject.create(new ResourceLocation("flowing_milk"), ForgeRegistries.FLUIDS);
 
-    private static NeoForgeMod INSTANCE;
-    public static NeoForgeMod getInstance()
-    {
-        return INSTANCE;
-    }
-
     /**
      * Run this method during mod constructor to enable milk and add it to the Minecraft milk bucket
      */
@@ -437,8 +435,7 @@ public class NeoForgeMod
     {
         LOGGER.info(NEOFORGEMOD,"NeoForge mod loading, version {}, for MC {} with MCP {}", NeoForgeVersion.getVersion(), NeoFormVersion.getMCVersion(), NeoFormVersion.getMCPVersion());
         ForgeSnapshotsMod.logStartupWarning();
-        INSTANCE = this;
-        MinecraftForge.initialize();
+
         CrashReportCallables.registerCrashCallable("Crash Report UUID", ()-> {
             final UUID uuid = UUID.randomUUID();
             LOGGER.fatal("Preparing crash report with UUID {}", uuid);
@@ -471,8 +468,8 @@ public class NeoForgeMod
         INGREDIENT_TYPES.register(modEventBus);
         CONDITION_CODECS.register(modEventBus);
         RECIPE_SERIALIZERS.register(modEventBus);
-        MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
-        MinecraftForge.EVENT_BUS.addListener(this::missingSoundMapping);
+        NeoForge.EVENT_BUS.addListener(this::serverStopping);
+        NeoForge.EVENT_BUS.addListener(this::missingSoundMapping);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.clientSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, NeoForgeConfig.serverSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, NeoForgeConfig.commonSpec);
@@ -482,9 +479,14 @@ public class NeoForgeMod
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, ()->new IExtensionPoint.DisplayTest(()->"ANY", (remote, isServer)-> true));
         StartupMessageManager.addModMessage("NeoForge version "+ NeoForgeVersion.getVersion());
 
-        MinecraftForge.EVENT_BUS.addListener(VillagerTradingManager::loadTrades);
-        MinecraftForge.EVENT_BUS.register(new NeoForgeEventHandler());
-        MinecraftForge.EVENT_BUS.addListener(this::registerPermissionNodes);
+        NeoForge.EVENT_BUS.addListener(VillagerTradingManager::loadTrades);
+        NeoForge.EVENT_BUS.register(new NeoForgeEventHandler());
+        NeoForge.EVENT_BUS.addListener(this::registerPermissionNodes);
+
+        UsernameCache.load();
+        TierSortingRegistry.init();
+        if (FMLEnvironment.dist == Dist.CLIENT) ClientCommandHandler.init();
+        DualStackUtils.initialise();
 
         ForgeRegistries.ITEMS.tags().addOptionalTagDefaults(Tags.Items.ENCHANTING_FUELS, Set.of(ForgeRegistries.ITEMS.getDelegateOrThrow(Items.LAPIS_LAZULI)));
     }
@@ -598,10 +600,10 @@ public class NeoForgeMod
             // register fluids
             event.register(ForgeRegistries.Keys.FLUIDS, helper -> {
                 // set up properties
-                ForgeFlowingFluid.Properties properties = new ForgeFlowingFluid.Properties(MILK_TYPE, MILK, FLOWING_MILK).bucket(() -> Items.MILK_BUCKET);
+                BaseFlowingFluid.Properties properties = new BaseFlowingFluid.Properties(MILK_TYPE, MILK, FLOWING_MILK).bucket(() -> Items.MILK_BUCKET);
 
-                helper.register(MILK.getId(), new ForgeFlowingFluid.Source(properties));
-                helper.register(FLOWING_MILK.getId(), new ForgeFlowingFluid.Flowing(properties));
+                helper.register(MILK.getId(), new BaseFlowingFluid.Source(properties));
+                helper.register(FLOWING_MILK.getId(), new BaseFlowingFluid.Flowing(properties));
             });
         }
     }

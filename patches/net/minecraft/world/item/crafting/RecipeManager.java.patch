@@ -37,7 +37,7 @@
 +      return fromJson(p_44046_, p_44047_, JsonOps.INSTANCE).orElseThrow();
 +   }
 +   
-+   public static final Codec<Recipe<?>> DISPATCH_CODEC = net.neoforged.neoforge.common.util.ForgeExtraCodecs.dispatchUnsafe(ResourceLocation.CODEC, recipe -> BuiltInRegistries.RECIPE_SERIALIZER.getKey(recipe.getSerializer()), resourceLocation -> BuiltInRegistries.RECIPE_SERIALIZER
++   public static final Codec<Recipe<?>> DISPATCH_CODEC = net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.dispatchUnsafe(ResourceLocation.CODEC, recipe -> BuiltInRegistries.RECIPE_SERIALIZER.getKey(recipe.getSerializer()), resourceLocation -> BuiltInRegistries.RECIPE_SERIALIZER
 +                .getOptional(resourceLocation)
 +                .orElseThrow(() -> new JsonSyntaxException("Invalid or unsupported recipe type '%s'".formatted(resourceLocation)))
 +                .codec());

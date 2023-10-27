@@ -12,12 +12,12 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.util.ForgeExtraCodecs;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
 /** Ingredient that matches the given stack, performing an exact NBT match. Use {@link PartialNBTIngredient} if you need partial match. */
 public class StrictNBTIngredient extends Ingredient
 {
-    public static final Codec<StrictNBTIngredient> CODEC = ForgeExtraCodecs.mapWithAlternative(
+    public static final Codec<StrictNBTIngredient> CODEC = NeoForgeExtraCodecs.mapWithAlternative(
         ((MapCodec.MapCodecCodec<ItemStack>)ItemStack.CODEC).codec(),
         ItemStack.CODEC.fieldOf("stack")
     ).xmap(StrictNBTIngredient::new, StrictNBTIngredient::getStack).codec();

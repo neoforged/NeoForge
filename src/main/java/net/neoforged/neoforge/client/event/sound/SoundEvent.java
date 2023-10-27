@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client.event.sound;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import com.mojang.blaze3d.audio.Channel;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * Superclass for sound related events.
  *
- * <p>These events are fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+ * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
  * @see SoundSourceEvent
@@ -44,7 +44,7 @@ public abstract class SoundEvent extends Event
     /**
      * Superclass for when a sound has started to play on an audio channel.
      *
-     * <p>These events are fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      *
      * @see PlaySoundSourceEvent

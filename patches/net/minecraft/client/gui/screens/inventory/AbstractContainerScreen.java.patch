@@ -4,7 +4,7 @@
        int i = this.leftPos;
        int j = this.topPos;
        super.render(p_283479_, p_283661_, p_281248_, p_281886_);
-+      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Background(this, p_283479_, p_283661_, p_281248_));
++      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Background(this, p_283479_, p_283661_, p_281248_));
        RenderSystem.disableDepthTest();
        p_283479_.pose().pushPose();
        p_283479_.pose().translate((float)i, (float)j, 0.0F);
@@ -19,7 +19,7 @@
        }
  
        this.renderLabels(p_283479_, p_283661_, p_281248_);
-+      net.neoforged.neoforge.common.MinecraftForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Foreground(this, p_283479_, p_283661_, p_281248_));
++      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Foreground(this, p_283479_, p_283661_, p_281248_));
        ItemStack itemstack = this.draggingItem.isEmpty() ? this.menu.getCarried() : this.draggingItem;
        if (!itemstack.isEmpty()) {
           int l1 = 8;

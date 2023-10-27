@@ -34,8 +34,8 @@ import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderGuiOverlayEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -102,7 +102,7 @@ public class ExtendedGui extends Gui
         rightHeight = 39;
         leftHeight = 39;
 
-        if (MinecraftForge.EVENT_BUS.post(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick)).isCanceled())
+        if (NeoForge.EVENT_BUS.post(new RenderGuiEvent.Pre(minecraft.getWindow(), guiGraphics, partialTick)).isCanceled())
         {
             return;
         }
@@ -126,7 +126,7 @@ public class ExtendedGui extends Gui
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-        MinecraftForge.EVENT_BUS.post(new RenderGuiEvent.Post(minecraft.getWindow(), guiGraphics, partialTick));
+        NeoForge.EVENT_BUS.post(new RenderGuiEvent.Post(minecraft.getWindow(), guiGraphics, partialTick));
     }
 
     public boolean shouldDrawSurvivalElements()
@@ -488,7 +488,7 @@ public class ExtendedGui extends Gui
 
         Window window = minecraft.getWindow();
         var event = new CustomizeGuiOverlayEvent.Chat(window, guiGraphics, minecraft.getFrameTime(), 0, height - 40);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
 
         guiGraphics.pose().pushPose();
         // We give the absolute Y position of the chat component in the event and account for the chat component's own offsetting here.
@@ -561,12 +561,12 @@ public class ExtendedGui extends Gui
     //Helper macros
     private boolean pre(NamedGuiOverlay overlay, GuiGraphics guiGraphics)
     {
-        return MinecraftForge.EVENT_BUS.post(new RenderGuiOverlayEvent.Pre(minecraft.getWindow(), guiGraphics, minecraft.getFrameTime(), overlay)).isCanceled();
+        return NeoForge.EVENT_BUS.post(new RenderGuiOverlayEvent.Pre(minecraft.getWindow(), guiGraphics, minecraft.getFrameTime(), overlay)).isCanceled();
     }
 
     private void post(NamedGuiOverlay overlay, GuiGraphics guiGraphics)
     {
-        MinecraftForge.EVENT_BUS.post(new RenderGuiOverlayEvent.Post(minecraft.getWindow(), guiGraphics, minecraft.getFrameTime(), overlay));
+        NeoForge.EVENT_BUS.post(new RenderGuiOverlayEvent.Post(minecraft.getWindow(), guiGraphics, minecraft.getFrameTime(), overlay));
     }
     
     public void renderDebugScreenOverlay(GuiGraphics guiGraphics) {

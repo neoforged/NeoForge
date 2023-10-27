@@ -8,7 +8,7 @@ package net.neoforged.neoforge.event.entity.living;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
  * <br>
  * This event does not have a result. {@link HasResult} <br>
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class LivingEquipmentChangeEvent extends LivingEvent
 {

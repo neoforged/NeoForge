@@ -29,7 +29,7 @@ import java.util.function.Function;
 import java.util.function.ObjIntConsumer;
 import java.util.stream.Stream;
 
-public class ForgeExtraCodecs
+public class NeoForgeExtraCodecs
 {
    public static <T> MapCodec<T> aliasedFieldOf(final Codec<T> codec, final String... names)
    {

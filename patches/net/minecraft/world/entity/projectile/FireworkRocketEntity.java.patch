@@ -6,7 +6,7 @@
  
 +   @Override
 +   protected void onHit(HitResult result) {
-+      if (result.getType() == HitResult.Type.MISS || !net.neoforged.neoforge.event.ForgeEventFactory.onProjectileImpact(this, result)) {
++      if (result.getType() == HitResult.Type.MISS || !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, result)) {
 +         super.onHit(result);
 +      }
 +   }

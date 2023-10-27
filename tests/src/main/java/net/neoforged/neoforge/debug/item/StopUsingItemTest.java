@@ -17,7 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.bus.api.IEventBus;
@@ -56,7 +56,7 @@ public class StopUsingItemTest
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		ITEMS.register(modEventBus);
 		modEventBus.addListener(this::addCreative);
-		MinecraftForge.EVENT_BUS.addListener(this::onVanillaEvent);
+		NeoForge.EVENT_BUS.addListener(this::onVanillaEvent);
 	}
 
 	/** Attempt at a "reverse scope" that also makes you fly without using the Forge method. Will not remove the speed if you scroll away or swap items */

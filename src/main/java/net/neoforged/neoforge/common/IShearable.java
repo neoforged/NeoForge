@@ -22,8 +22,9 @@ import org.jetbrains.annotations.Nullable;
  * Also, if your block/entity supports the Shears, this allows you
  * to support mod-shears as well.
  *
+ * TODO: reconsider this system, currently it is implemented but not checked for, for blocks.
  */
-public interface IForgeShearable
+public interface IShearable
 {
     /**
      * Checks if the object is currently shearable

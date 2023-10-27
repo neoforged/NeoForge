@@ -49,7 +49,7 @@ import net.minecraft.world.level.levelgen.DebugLevelSource;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.CreativeModeTabRegistry;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.conditions.ICondition;
@@ -668,7 +668,7 @@ public class GameData
                 ResourceLocation name = m.getKey();
                 ForgeRegistry<?> reg = STAGING.getRegistry(name);
                 MissingMappingsEvent event = reg.getMissingEvent(name, m.getValue());
-                MinecraftForge.EVENT_BUS.post(event);
+                NeoForge.EVENT_BUS.post(event);
 
                 List<MissingMappingsEvent.Mapping<?>> lst = event.getAllMappings(reg.getRegistryKey()).stream()
                         .filter(e -> e.action == MissingMappingsEvent.Action.DEFAULT)
@@ -756,7 +756,7 @@ public class GameData
     }
 
     private static void fireRemapEvent(final Map<ResourceLocation, Map<ResourceLocation, IdMappingEvent.IdRemapping>> remaps, final boolean isFreezing) {
-        MinecraftForge.EVENT_BUS.post(new IdMappingEvent(remaps, isFreezing));
+        NeoForge.EVENT_BUS.post(new IdMappingEvent(remaps, isFreezing));
     }
 
     //Has to be split because of generics, Yay!

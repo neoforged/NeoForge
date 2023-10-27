@@ -7,7 +7,7 @@ package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.bus.api.Event;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
  * If a method utilizes this {@link Event} as its parameter, the method will
  * receive every child event of this class.<br>
  * <br>
- * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+ * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
 public abstract class LivingEvent extends EntityEvent
 {
@@ -47,7 +47,7 @@ public abstract class LivingEvent extends EntityEvent
      * <br>
      * This event does not have a result. {@link HasResult}<br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.
      **/
     public static class LivingTickEvent extends LivingEvent implements ICancellableEvent
     {
@@ -66,7 +66,7 @@ public abstract class LivingEvent extends EntityEvent
      * <br>
      * This event does not have a result. {@link HasResult}<br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.
      **/
     public static class LivingJumpEvent extends LivingEvent
     {

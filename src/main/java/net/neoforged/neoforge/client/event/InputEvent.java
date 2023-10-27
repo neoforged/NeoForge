@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client.event;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.world.InteractionHand;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -34,7 +34,7 @@ public abstract class InputEvent extends Event
     /**
      * Fired when a mouse button is pressed/released. Sub-events get fired {@link Pre before} and {@link Post after} this happens.
      *
-     * <p>These events are fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      *
      * @see <a href="https://www.glfw.org/docs/latest/input_guide.html#input_mouse_button" target="_top">the online GLFW documentation</a>
@@ -99,7 +99,7 @@ public abstract class InputEvent extends Event
          * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
          * If the event is cancelled, then the mouse event will not be processed by vanilla (e.g. keymappings and screens) </p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          *
          * @see <a href="https://www.glfw.org/docs/latest/input_guide.html#input_mouse_button" target="_top">the online GLFW documentation</a>
@@ -118,7 +118,7 @@ public abstract class InputEvent extends Event
          *
          * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
          *
-         * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          *
          * @see <a href="https://www.glfw.org/docs/latest/input_guide.html#input_mouse_button" target="_top">the online GLFW documentation</a>
@@ -140,7 +140,7 @@ public abstract class InputEvent extends Event
      * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * If the event is cancelled, then the mouse scroll event will not be processed further.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      *
      * @see <a href="https://www.glfw.org/docs/latest/input_guide.html#input_mouse_button" target="_top">the online GLFW documentation</a>
@@ -219,7 +219,7 @@ public abstract class InputEvent extends Event
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Key extends InputEvent
@@ -307,7 +307,7 @@ public abstract class InputEvent extends Event
      * If this event is cancelled, then the keymapping's action is not processed further, and the hand will be swung
      * according to {@link #shouldSwingHand()}.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class InteractionKeyMappingTriggered extends InputEvent implements ICancellableEvent

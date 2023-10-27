@@ -9,7 +9,7 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.Pose;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 
 /**
@@ -19,7 +19,7 @@ import net.neoforged.bus.api.Event;
  * <br>
  * {@link #entity} contains the entity that caused this event to occur.<br>
  * <br>
- * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+ * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
 public abstract class EntityEvent extends Event
 {
@@ -43,7 +43,7 @@ public abstract class EntityEvent extends Event
      * <br>
      * This event does not have a result. {@link HasResult}<br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
     public static class EntityConstructing extends EntityEvent
     {
@@ -63,7 +63,7 @@ public abstract class EntityEvent extends Event
      * <br>
      * This event does not have a result. {@link HasResult}
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
     public static class EnteringSection extends EntityEvent
     {
@@ -134,7 +134,7 @@ public abstract class EntityEvent extends Event
      * <br>
      * This event does not have a result. {@link HasResult}
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
     public static class Size extends EntityEvent
     {

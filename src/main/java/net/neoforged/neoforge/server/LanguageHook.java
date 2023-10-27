@@ -13,7 +13,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.ForgeI18n;
+import net.neoforged.neoforge.common.I18nExtension;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -90,7 +90,7 @@ public class LanguageHook
         loadLocaleData(mc);
         loadLocaleData(forge);
         capturedTables.forEach(t->t.putAll(modTable));
-        ForgeI18n.loadLanguageData(modTable);
+        I18nExtension.loadLanguageData(modTable);
     }
 
     static void loadLanguagesOnServer(MinecraftServer server) {
@@ -100,6 +100,6 @@ public class LanguageHook
             loadLanguage(lang, server);
         }
         capturedTables.forEach(t->t.putAll(modTable));
-        ForgeI18n.loadLanguageData(modTable);
+        I18nExtension.loadLanguageData(modTable);
     }
 }

@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -110,7 +110,7 @@ public abstract class RenderLivingEvent<T extends LivingEntity, M extends Entity
      * If this event is cancelled, then the entity will not be rendered and the corresponding
      * {@link RenderLivingEvent.Post} will not be fired.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      *
      * @param <T> the living entity that is being rendered
@@ -130,7 +130,7 @@ public abstract class RenderLivingEvent<T extends LivingEntity, M extends Entity
      *
      * <p>This event is not {@linkplain ICancellableEvent cancelable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      *
      * @param <T> the living entity that was rendered

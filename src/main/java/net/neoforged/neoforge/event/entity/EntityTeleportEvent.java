@@ -11,7 +11,7 @@ import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
  * {@link #getTarget()} contains the target destination.<br>
  * {@link #getPrev()} contains the entity's current position.<br>
  * <br>
- * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+ * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
 public class EntityTeleportEvent extends EntityEvent implements ICancellableEvent
 {
@@ -62,7 +62,7 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * This event does not have a result. {@link HasResult}<br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
      * This event is only fired on the {@link LogicalSide#SERVER} side.<br>
      * <br>
@@ -85,7 +85,7 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * This event does not have a result. {@link HasResult}<br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
      * This event is only fired on the {@link LogicalSide#SERVER} side.<br>
      * <br>
@@ -107,7 +107,7 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * This event does not have a result. {@link HasResult}<br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
      * This event is only fired on the {@link LogicalSide#SERVER} side.<br>
      * <br>
@@ -137,7 +137,7 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * This event does not have a result. {@link HasResult}<br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
      * This event is only fired on the {@link LogicalSide#SERVER} side.<br>
      * <br>
@@ -195,7 +195,7 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * This event does not have a result. {@link HasResult}<br>
      * <br>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      * <br>
      * This event is only fired on the {@link LogicalSide#SERVER} side.<br>
      * <br>

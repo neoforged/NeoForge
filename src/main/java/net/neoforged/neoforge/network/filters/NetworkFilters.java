@@ -22,8 +22,8 @@ public class NetworkFilters
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final Map<String, Function<Connection, VanillaPacketFilter>> instances = ImmutableMap.of(
-            "forge:vanilla_filter", manager -> new VanillaConnectionNetworkFilter(),
-            "forge:forge_fixes", ForgeConnectionNetworkFilter::new
+            "neoforge:vanilla_filter", manager -> new VanillaConnectionNetworkFilter(),
+            "neoforge:forge_fixes", NeoForgeConnectionNetworkFilter::new
     );
 
     public static void injectIfNecessary(Connection manager)

@@ -13,7 +13,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositione
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -115,7 +115,7 @@ public abstract class RenderTooltipEvent extends Event
      * If this event is cancelled, then the list of components will be empty, causing the tooltip to not be rendered and
      * the corresponding {@link RenderTooltipEvent.Pre} and {@link RenderTooltipEvent.Color} to not be fired.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class GatherComponents extends Event implements ICancellableEvent
@@ -203,7 +203,7 @@ public abstract class RenderTooltipEvent extends Event
      * If this event is cancelled, then the tooltip will not be rendered and the corresponding
      * {@link RenderTooltipEvent.Color} will not be fired.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Pre extends RenderTooltipEvent implements ICancellableEvent
@@ -282,7 +282,7 @@ public abstract class RenderTooltipEvent extends Event
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus},
+     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Color extends RenderTooltipEvent

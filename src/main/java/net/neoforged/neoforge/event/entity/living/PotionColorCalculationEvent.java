@@ -9,14 +9,14 @@ import java.util.Collection;
 import java.util.Collections;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * Fires after Potion Color Calculation.
  * 
  * this event is not {@link ICancellableEvent}
  * 
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
 public class PotionColorCalculationEvent extends LivingEvent
 {

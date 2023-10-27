@@ -15,6 +15,7 @@ import java.util.stream.StreamSupport;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -37,7 +38,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -63,7 +63,7 @@ public class GravityAttributeTest
     {
         if (ENABLE)
         {
-            MinecraftForge.EVENT_BUS.register(this);
+            NeoForge.EVENT_BUS.register(this);
             IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
             modEventBus.register(this);
             ITEMS.register(modEventBus);

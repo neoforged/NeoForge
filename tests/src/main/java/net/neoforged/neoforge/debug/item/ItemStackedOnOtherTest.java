@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ItemStackedOnOtherEvent;
 import net.neoforged.fml.common.Mod;
 
@@ -24,7 +24,7 @@ public class ItemStackedOnOtherTest
     {
         if (ENABLED)
         {
-            MinecraftForge.EVENT_BUS.addListener(this::onStackedOn);
+            NeoForge.EVENT_BUS.addListener(this::onStackedOn);
         }
     }
 

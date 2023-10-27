@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.debug.entity;
 
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -22,7 +22,7 @@ public class EntityTeleportEventTest
     public EntityTeleportEventTest()
     {
         if (ENABLE)
-            MinecraftForge.EVENT_BUS.register(this);
+            NeoForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent

@@ -5,10 +5,10 @@
 
 package net.neoforged.neoforge.debug.block;
 
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.neoforge.event.level.BlockEvent.BlockToolModificationEvent;
 import net.neoforged.fml.common.Mod;
 
@@ -20,7 +20,7 @@ public class ToolInteractTest
 
     public ToolInteractTest()
     {
-        MinecraftForge.EVENT_BUS.addListener(this::onToolInteraction);
+        NeoForge.EVENT_BUS.addListener(this::onToolInteraction);
     }
 
     private void onToolInteraction(final BlockToolModificationEvent event)

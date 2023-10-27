@@ -11,7 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
 
 /**
@@ -33,7 +33,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  *<br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class LivingKnockBackEvent extends LivingEvent implements ICancellableEvent
 {

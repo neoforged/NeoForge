@@ -30,7 +30,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-public abstract class ForgeFlowingFluid extends FlowingFluid
+/**
+ * Base implementation of a {@link FlowingFluid} for mods to use.
+ * @see Flowing
+ * @see Source
+ */
+public abstract class BaseFlowingFluid extends FlowingFluid
 {
     private final Supplier<? extends FluidType> fluidType;
     private final Supplier<? extends Fluid> flowing;
@@ -44,7 +49,7 @@ public abstract class ForgeFlowingFluid extends FlowingFluid
     private final float explosionResistance;
     private final int tickRate;
 
-    protected ForgeFlowingFluid(Properties properties)
+    protected BaseFlowingFluid(Properties properties)
     {
         this.fluidType = properties.fluidType;
         this.flowing = properties.flowing;
@@ -151,7 +156,7 @@ public abstract class ForgeFlowingFluid extends FlowingFluid
         return Optional.ofNullable(getFluidType().getSound(SoundActions.BUCKET_FILL));
     }
 
-    public static class Flowing extends ForgeFlowingFluid
+    public static class Flowing extends BaseFlowingFluid
     {
         public Flowing(Properties properties)
         {
@@ -173,7 +178,7 @@ public abstract class ForgeFlowingFluid extends FlowingFluid
         }
     }
 
-    public static class Source extends ForgeFlowingFluid
+    public static class Source extends BaseFlowingFluid
     {
         public Source(Properties properties)
         {

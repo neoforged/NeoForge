@@ -8,7 +8,7 @@ package net.neoforged.neoforge.event.entity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
 
 /**
@@ -21,7 +21,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
 public class EntityTravelToDimensionEvent extends EntityEvent implements ICancellableEvent
 {

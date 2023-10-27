@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.EventHooks;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
 
@@ -14,7 +14,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * LivingHealEvent is fired when an Entity is set to be healed. <br>
  * This event is fired whenever an Entity is healed in {@link LivingEntity#heal(float)}<br>
  * <br>
- * This event is fired via the {@link ForgeEventFactory#onLivingHeal(LivingEntity, float)}.<br>
+ * This event is fired via the {@link EventHooks#onLivingHeal(LivingEntity, float)}.<br>
  * <br>
  * {@link #amount} contains the amount of healing done to the Entity that was healed. <br>
  * <br>
@@ -23,7 +23,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class LivingHealEvent extends LivingEvent implements ICancellableEvent
 {

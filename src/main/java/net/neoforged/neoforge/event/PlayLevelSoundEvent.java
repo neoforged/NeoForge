@@ -12,7 +12,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +35,7 @@ import java.util.Objects;
  * <p>
  * This event does not have a result.
  * <p>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
 public class PlayLevelSoundEvent extends Event implements ICancellableEvent
 {
@@ -159,7 +159,7 @@ public class PlayLevelSoundEvent extends Event implements ICancellableEvent
      * <p>
      * This event does not have a result.
      * <p>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.
      */
     public static class AtEntity extends PlayLevelSoundEvent
     {
@@ -189,7 +189,7 @@ public class PlayLevelSoundEvent extends Event implements ICancellableEvent
      * <p>
      * This event does not have a result.
      * <p>
-     * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.
      */
     public static class AtPosition extends PlayLevelSoundEvent
     {

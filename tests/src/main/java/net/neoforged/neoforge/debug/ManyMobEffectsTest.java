@@ -19,7 +19,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SuspiciousStewItem;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.block.SuspiciousEffectHolder;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -89,7 +89,7 @@ public class ManyMobEffectsTest
         if (!ENABLED) return;
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         MOB_EFFECTS.register(modBus);
-        MinecraftForge.EVENT_BUS.addListener(ManyMobEffectsTest::mobInteract);
+        NeoForge.EVENT_BUS.addListener(ManyMobEffectsTest::mobInteract);
         modBus.addListener((final RegisterEvent event) -> event.register(Registries.CREATIVE_MODE_TAB, helper ->
             helper.register(new ResourceLocation(MODID, "many_mob_effects_test"), CreativeModeTab.builder().withSearchBar()
                     .icon(() -> new ItemStack(Items.POTION))

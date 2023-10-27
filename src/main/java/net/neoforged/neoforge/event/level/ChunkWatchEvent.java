@@ -9,7 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -22,7 +22,7 @@ import net.neoforged.fml.LogicalSide;
  * <p>
  * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
  * <p>
- * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
+ * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
  * only on the {@linkplain LogicalSide#SERVER logical server}.
  **/
 public abstract class ChunkWatchEvent extends Event
@@ -73,7 +73,7 @@ public abstract class ChunkWatchEvent extends Event
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
-     * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      **/
     public static class Watch extends ChunkWatchEvent
@@ -100,7 +100,7 @@ public abstract class ChunkWatchEvent extends Event
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
-     * This event is fired on the {@linkplain MinecraftForge#EVENT_BUS main Forge event bus}
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      **/
     public static class UnWatch extends ChunkWatchEvent

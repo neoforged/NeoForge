@@ -4,7 +4,7 @@
     private final SoundEvent hitSound;
     private final SoundEvent fallSound;
  
-+   @Deprecated // Forge: Use {@link net.neoforged.neoforge.common.util.ForgeSoundType} instead for suppliers
++   @Deprecated // Forge: Use {@link net.neoforged.neoforge.common.util.DeferredSoundType} instead for suppliers
     public SoundType(float p_56766_, float p_56767_, SoundEvent p_56768_, SoundEvent p_56769_, SoundEvent p_56770_, SoundEvent p_56771_, SoundEvent p_56772_) {
        this.volume = p_56766_;
        this.pitch = p_56767_;

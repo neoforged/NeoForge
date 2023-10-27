@@ -26,7 +26,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.ForgeFlowingFluid;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.registries.RegistryObject;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -61,9 +61,9 @@ public class NewFluidTest
     public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, MODID);
     public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(ForgeRegistries.FLUIDS, MODID);
 
-    private static ForgeFlowingFluid.Properties makeProperties()
+    private static BaseFlowingFluid.Properties makeProperties()
     {
-        return new ForgeFlowingFluid.Properties(test_fluid_type, test_fluid, test_fluid_flowing)
+        return new BaseFlowingFluid.Properties(test_fluid_type, test_fluid, test_fluid_flowing)
                 .bucket(TEST_FLUID_BUCKET).block(test_fluid_block);
     }
 
@@ -103,10 +103,10 @@ public class NewFluidTest
     });
 
     public static RegistryObject<FlowingFluid> test_fluid = FLUIDS.register("test_fluid", () ->
-            new ForgeFlowingFluid.Source(makeProperties())
+            new BaseFlowingFluid.Source(makeProperties())
     );
     public static RegistryObject<FlowingFluid> test_fluid_flowing = FLUIDS.register("test_fluid_flowing", () ->
-            new ForgeFlowingFluid.Flowing(makeProperties())
+            new BaseFlowingFluid.Flowing(makeProperties())
     );
 
     public static RegistryObject<LiquidBlock> test_fluid_block = BLOCKS.register("test_fluid_block", () ->

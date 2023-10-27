@@ -10,7 +10,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.effect.MobEffects;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -33,7 +33,7 @@ public class PotionSizeEventTest
     {
         if (ENABLED && FMLEnvironment.dist == Dist.CLIENT)
         {
-            MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
+            NeoForge.EVENT_BUS.register(ClientEventHandler.class);
         }
     }
 

@@ -12,7 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -69,7 +69,7 @@ public abstract class CapabilityProvider<B extends ICapabilityProviderImpl<B>> i
 
     private void doGatherCapabilities(@Nullable ICapabilityProvider parent)
     {
-        this.capabilities = ForgeEventFactory.gatherCapabilities(baseClass, getProvider(), parent);
+        this.capabilities = EventHooks.gatherCapabilities(baseClass, getProvider(), parent);
         this.initialized = true;
     }
 

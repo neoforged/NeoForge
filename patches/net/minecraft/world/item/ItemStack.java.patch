@@ -214,7 +214,7 @@
           list.add(DISABLED_ITEM_TOOLTIP);
        }
  
-+      net.neoforged.neoforge.event.ForgeEventFactory.onItemTooltip(this, p_41652_, list, p_41653_);
++      net.neoforged.neoforge.event.EventHooks.onItemTooltip(this, p_41652_, list, p_41653_);
        return list;
     }
  

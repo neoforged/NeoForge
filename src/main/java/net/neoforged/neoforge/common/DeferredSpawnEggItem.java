@@ -21,6 +21,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -29,13 +30,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class ForgeSpawnEggItem extends SpawnEggItem
+public class DeferredSpawnEggItem extends SpawnEggItem
 {
-    private static final List<ForgeSpawnEggItem> MOD_EGGS = new ArrayList<>();
-    private static final Map<EntityType<? extends Mob>, ForgeSpawnEggItem> TYPE_MAP = new IdentityHashMap<>();
+    private static final List<DeferredSpawnEggItem> MOD_EGGS = new ArrayList<>();
+    private static final Map<EntityType<? extends Mob>, DeferredSpawnEggItem> TYPE_MAP = new IdentityHashMap<>();
     private final Supplier<? extends EntityType<? extends Mob>> typeSupplier;
 
-    public ForgeSpawnEggItem(Supplier<? extends EntityType<? extends Mob>> type, int backgroundColor, int highlightColor, Properties props)
+    public DeferredSpawnEggItem(Supplier<? extends EntityType<? extends Mob>> type, int backgroundColor, int highlightColor, Properties props)
     {
         super((EntityType<? extends Mob>) null, backgroundColor, highlightColor, props);
         this.typeSupplier = type;
@@ -56,11 +57,11 @@ public class ForgeSpawnEggItem extends SpawnEggItem
         return DEFAULT_DISPENSE_BEHAVIOR;
     }
 
+    @ApiStatus.Internal
     @Nullable
-    public static SpawnEggItem fromEntityType(@Nullable EntityType<?> type)
+    public static SpawnEggItem deferredOnlyById(@Nullable EntityType<?> type)
     {
-        SpawnEggItem ret = TYPE_MAP.get(type);
-        return ret != null ? ret : SpawnEggItem.byId(type);
+        return TYPE_MAP.get(type);
     }
 
     @Override

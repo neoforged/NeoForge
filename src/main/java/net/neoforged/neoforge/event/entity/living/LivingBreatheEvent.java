@@ -7,7 +7,7 @@ package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * LivingBreatheEvent is fired whenever a living entity ticks.<br>
@@ -18,7 +18,7 @@ import net.neoforged.neoforge.common.MinecraftForge;
  * <br>
  * This event does not have a result. {@link HasResult}
  * <br>
- * This event is fired on {@link MinecraftForge#EVENT_BUS}
+ * This event is fired on {@link NeoForge#EVENT_BUS}
  */
 public class LivingBreatheEvent extends LivingEvent
 {
