@@ -9,7 +9,7 @@
 +
 +   @Override
 +   public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(net.neoforged.neoforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
-+      if (this.isAlive() && capability == net.neoforged.neoforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER)
++      if (this.isAlive() && capability == net.neoforged.neoforge.common.capabilities.Capabilities.ITEM_HANDLER)
 +         return itemHandler.cast();
 +      return super.getCapability(capability, facing);
 +   }

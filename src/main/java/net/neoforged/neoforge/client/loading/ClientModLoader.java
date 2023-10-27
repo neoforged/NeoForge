@@ -39,7 +39,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.ForgeConfig;
+import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.neoforge.resource.DelegatingPackResources;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
@@ -118,7 +118,7 @@ public class ClientModLoader
         var warnings = ModLoader.get().getWarnings();
         boolean showWarnings = true;
         try {
-            showWarnings = ForgeConfig.CLIENT.showLoadWarnings.get();
+            showWarnings = NeoForgeConfig.CLIENT.showLoadWarnings.get();
         } catch (NullPointerException | IllegalStateException e) {
             // We're in an early error state, config is not available. Assume true.
         }

@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ForgeGameTestHooks
+public class GameTestHooks
 {
     private static boolean registeredGametests = false;
     private static final Logger LOGGER = LogManager.getLogger();
@@ -84,7 +84,7 @@ public class ForgeGameTestHooks
     {
         try
         {
-            Class<?> clazz = Class.forName(annotationData.clazz().getClassName(), true, ForgeGameTestHooks.class.getClassLoader());
+            Class<?> clazz = Class.forName(annotationData.clazz().getClassName(), true, GameTestHooks.class.getClassLoader());
 
             gameTestMethods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
         }

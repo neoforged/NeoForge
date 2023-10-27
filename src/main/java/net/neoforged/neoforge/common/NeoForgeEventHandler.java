@@ -26,10 +26,12 @@ import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
-import net.neoforged.neoforge.server.command.ForgeCommand;
+import net.neoforged.neoforge.server.command.NeoForgeCommand;
 import net.neoforged.neoforge.server.command.ConfigCommand;
+import org.jetbrains.annotations.ApiStatus;
 
-public class ForgeInternalHandler
+@ApiStatus.Internal
+public class NeoForgeEventHandler
 {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEntityJoinWorld(EntityJoinLevelEvent event)
@@ -108,7 +110,7 @@ public class ForgeInternalHandler
     @SubscribeEvent
     public void onCommandsRegister(RegisterCommandsEvent event)
     {
-        new ForgeCommand(event.getDispatcher());
+        NeoForgeCommand.register(event.getDispatcher());
         ConfigCommand.register(event.getDispatcher());
     }
 

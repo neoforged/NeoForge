@@ -45,13 +45,13 @@ public class TimeTracker<T>
      *
      * @return An immutable list of timings data collected by this tracker
      */
-    public ImmutableList<ForgeTimings<T>> getTimingData()
+    public ImmutableList<ObjectTimings<T>> getTimingData()
     {
-        ImmutableList.Builder<ForgeTimings<T>> builder = ImmutableList.builder();
+        ImmutableList.Builder<ObjectTimings<T>> builder = ImmutableList.builder();
 
         for (Map.Entry<T, int[]> entry : timings.entrySet())
         {
-            builder.add(new ForgeTimings<>(entry.getKey(), Arrays.copyOfRange(entry.getValue(), 0, 99)));
+            builder.add(new ObjectTimings<>(entry.getKey(), Arrays.copyOfRange(entry.getValue(), 0, 99)));
         }
         return builder.build();
     }

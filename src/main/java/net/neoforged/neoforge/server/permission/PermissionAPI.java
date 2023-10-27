@@ -8,7 +8,7 @@ package net.neoforged.neoforge.server.permission;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.common.ForgeConfig;
+import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
@@ -110,7 +110,7 @@ public final class PermissionAPI
 
         try
         {
-            ResourceLocation selectedPermissionHandler = new ResourceLocation(ForgeConfig.SERVER.permissionHandler.get());
+            ResourceLocation selectedPermissionHandler = new ResourceLocation(NeoForgeConfig.SERVER.permissionHandler.get());
             if (!availableHandlers.containsKey(selectedPermissionHandler))
             {
                 LOGGER.error("Unable to find configured permission handler {}, will use {}", selectedPermissionHandler, DefaultPermissionHandler.IDENTIFIER);

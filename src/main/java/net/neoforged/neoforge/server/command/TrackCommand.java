@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.server.timings.ForgeTimings;
+import net.neoforged.neoforge.server.timings.ObjectTimings;
 import net.neoforged.neoforge.server.timings.TimeTracker;
 
 class TrackCommand
@@ -100,20 +100,20 @@ class TrackCommand
          *
          * @return A list of time objects
          */
-        private static <T> List<ForgeTimings<T>> getSortedTimings(TimeTracker<T> tracker)
+        private static <T> List<ObjectTimings<T>> getSortedTimings(TimeTracker<T> tracker)
         {
-            ArrayList<ForgeTimings<T>> list = new ArrayList<>();
+            ArrayList<ObjectTimings<T>> list = new ArrayList<>();
 
             list.addAll(tracker.getTimingData());
-            list.sort(Comparator.comparingDouble(ForgeTimings::getAverageTimings));
+            list.sort(Comparator.comparingDouble(ObjectTimings::getAverageTimings));
             Collections.reverse(list);
 
             return list;
         }
 
-        private static <T> int execute(CommandSourceStack source, TimeTracker<T> tracker, Function<ForgeTimings<T>, Component> toString) throws CommandRuntimeException
+        private static <T> int execute(CommandSourceStack source, TimeTracker<T> tracker, Function<ObjectTimings<T>, Component> toString) throws CommandRuntimeException
         {
-            List<ForgeTimings<T>> timingsList = getSortedTimings(tracker);
+            List<ObjectTimings<T>> timingsList = getSortedTimings(tracker);
             if (timingsList.isEmpty())
             {
                 source.sendSuccess(() -> Component.translatable("commands.forge.tracking.no_data"), true);

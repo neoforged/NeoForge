@@ -9,7 +9,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
 import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -172,6 +172,6 @@ public class FluidBucketWrapper implements IFluidHandlerItem, ICapabilityProvide
     @NotNull
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing)
     {
-        return ForgeCapabilities.FLUID_HANDLER_ITEM.orEmpty(capability, holder);
+        return Capabilities.FLUID_HANDLER_ITEM.orEmpty(capability, holder);
     }
 }

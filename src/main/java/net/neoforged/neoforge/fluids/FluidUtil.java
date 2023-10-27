@@ -23,7 +23,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.SoundActions;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
@@ -89,7 +89,7 @@ public class FluidUtil
         ItemStack heldItem = player.getItemInHand(hand);
         if (!heldItem.isEmpty())
         {
-            return player.getCapability(ForgeCapabilities.ITEM_HANDLER)
+            return player.getCapability(Capabilities.ITEM_HANDLER)
                 .map(playerInventory -> {
 
                     FluidActionResult fluidActionResult = tryFillContainerAndStow(heldItem, handler, playerInventory, Integer.MAX_VALUE, player, true);
@@ -430,7 +430,7 @@ public class FluidUtil
      */
     public static LazyOptional<IFluidHandlerItem> getFluidHandler(@NotNull ItemStack itemStack)
     {
-        return itemStack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM);
+        return itemStack.getCapability(Capabilities.FLUID_HANDLER_ITEM);
     }
 
     /**
@@ -462,7 +462,7 @@ public class FluidUtil
             BlockEntity blockEntity = level.getBlockEntity(blockPos);
             if (blockEntity != null)
             {
-                return blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, side);
+                return blockEntity.getCapability(Capabilities.FLUID_HANDLER, side);
             }
         }
         return LazyOptional.empty();

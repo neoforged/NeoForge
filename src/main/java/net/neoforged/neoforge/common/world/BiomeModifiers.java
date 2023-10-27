@@ -22,9 +22,9 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 
-public final class ForgeBiomeModifiers
+public final class BiomeModifiers
 {
-    private ForgeBiomeModifiers() {} // Utility class.
+    private BiomeModifiers() {} // Utility class.
 
     /**
      * <p>Stock biome modifier that adds features to biomes. Has the following json format:</p>

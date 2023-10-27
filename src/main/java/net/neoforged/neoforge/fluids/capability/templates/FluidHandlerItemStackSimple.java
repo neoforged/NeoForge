@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
 import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -189,7 +189,7 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem, ICapabili
     @NotNull
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing)
     {
-        return ForgeCapabilities.FLUID_HANDLER_ITEM.orEmpty(capability, holder);
+        return Capabilities.FLUID_HANDLER_ITEM.orEmpty(capability, holder);
     }
 
     /**

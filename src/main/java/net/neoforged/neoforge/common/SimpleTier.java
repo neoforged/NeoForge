@@ -16,8 +16,7 @@ import java.util.function.Supplier;
 /**
  * Helper class to define a custom tier
  */
-@SuppressWarnings("ClassCanBeRecord") // can't make it a record because the method names will be obfuscated
-public final class ForgeTier implements Tier
+public final class SimpleTier implements Tier
 {
     private final int level;
     private final int uses;
@@ -29,8 +28,8 @@ public final class ForgeTier implements Tier
     @NotNull
     private final Supplier<Ingredient> repairIngredient;
 
-    public ForgeTier(int level, int uses, float speed, float attackDamageBonus, int enchantmentValue,
-                     @NotNull TagKey<Block> tag, @NotNull Supplier<Ingredient> repairIngredient)
+    public SimpleTier(int level, int uses, float speed, float attackDamageBonus, int enchantmentValue,
+                      @NotNull TagKey<Block> tag, @NotNull Supplier<Ingredient> repairIngredient)
     {
         this.level = level;
         this.uses = uses;

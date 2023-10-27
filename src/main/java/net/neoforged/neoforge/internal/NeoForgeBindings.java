@@ -15,7 +15,7 @@ import net.neoforged.fml.event.config.ModConfigEvent;
 
 import java.util.function.Supplier;
 
-public class ForgeBindings implements IBindingsProvider {
+public class NeoForgeBindings implements IBindingsProvider {
     @Override
     public Supplier<IEventBus> getForgeBusSupplier() {
         return ()-> MinecraftForge.EVENT_BUS;

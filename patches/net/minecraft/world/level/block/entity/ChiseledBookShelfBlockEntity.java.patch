@@ -12,7 +12,7 @@
 +
 +   @Override
 +   public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(net.neoforged.neoforge.common.capabilities.Capability<T> cap, @org.jetbrains.annotations.Nullable net.minecraft.core.Direction side) {
-+      if (!this.remove && cap == net.neoforged.neoforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER)
++      if (!this.remove && cap == net.neoforged.neoforge.common.capabilities.Capabilities.ITEM_HANDLER)
 +         return itemHandler.cast();
 +      return super.getCapability(cap, side);
 +   }

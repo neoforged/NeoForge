@@ -462,7 +462,7 @@
 +
 +   @Override
 +   public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(net.neoforged.neoforge.common.capabilities.Capability<T> capability, @Nullable Direction facing) {
-+      if (this.isAlive() && capability == net.neoforged.neoforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER) {
++      if (this.isAlive() && capability == net.neoforged.neoforge.common.capabilities.Capabilities.ITEM_HANDLER) {
 +         if (facing == null) return playerJoinedHandler.cast();
 +         else if (facing.getAxis().isVertical()) return playerMainHandler.cast();
 +         else if (facing.getAxis().isHorizontal()) return playerEquipmentHandler.cast();

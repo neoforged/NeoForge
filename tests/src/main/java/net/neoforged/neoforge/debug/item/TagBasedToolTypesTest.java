@@ -24,7 +24,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelFile.UncheckedModelFile;
-import net.neoforged.neoforge.common.ForgeTier;
+import net.neoforged.neoforge.common.SimpleTier;
 import net.neoforged.neoforge.common.TierSortingRegistry;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -52,7 +52,7 @@ public class TagBasedToolTypesTest
     private static final TagKey<Block> REQUIRES_TAG = BlockTags.create(new ResourceLocation(MODID, "needs_my_tier_tool"));
 
     private static final Tier MY_TIER = TierSortingRegistry.registerTier(
-        new ForgeTier(5, 5000, 10, 100, 0, REQUIRES_TAG, () -> Ingredient.of(Items.BEDROCK)),
+        new SimpleTier(5, 5000, 10, 100, 0, REQUIRES_TAG, () -> Ingredient.of(Items.BEDROCK)),
         new ResourceLocation(MODID, "my_tier"),
         List.of(Tiers.DIAMOND), List.of()
     );

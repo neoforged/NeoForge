@@ -35,7 +35,7 @@
              LOGGER.info("JMX monitoring enabled");
           }
  
-+         if (net.neoforged.neoforge.common.ForgeConfig.SERVER.advertiseDedicatedServerToLan.get()) {
++         if (net.neoforged.neoforge.common.NeoForgeConfig.SERVER.advertiseDedicatedServerToLan.get()) {
 +            this.dediLanPinger = new net.minecraft.client.server.LanServerPinger(this.getMotd(), String.valueOf(this.getServerPort()));
 +            this.dediLanPinger.start();
 +         }

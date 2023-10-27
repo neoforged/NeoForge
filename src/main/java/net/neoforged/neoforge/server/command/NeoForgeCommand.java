@@ -8,13 +8,15 @@ package net.neoforged.neoforge.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
+import org.jetbrains.annotations.ApiStatus;
 
-public class ForgeCommand
+@ApiStatus.Internal
+public class NeoForgeCommand
 {
-    public ForgeCommand(CommandDispatcher<CommandSourceStack> dispatcher)
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher)
     {
         dispatcher.register(
-            LiteralArgumentBuilder.<CommandSourceStack>literal("forge")
+            LiteralArgumentBuilder.<CommandSourceStack>literal("neoforge")
             .then(TPSCommand.register())
             .then(TrackCommand.register())
             .then(EntityCommand.register())

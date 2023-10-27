@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common;
+package net.neoforged.neoforge.internal;
 
 import java.util.List;
 import net.neoforged.neoforge.common.capabilities.CapabilityManager;
@@ -16,7 +16,7 @@ import net.neoforged.neoforge.registries.GameData;
 import net.neoforged.neoforge.registries.ObjectHolderRegistry;
 import net.neoforged.neoforge.registries.RegistryManager;
 
-public class ForgeStatesProvider implements IModStateProvider
+public class NeoForgeStatesProvider implements IModStateProvider
 {
     final ModLoadingState CREATE_REGISTRIES = ModLoadingState.withInline("CREATE_REGISTRIES", "CONSTRUCT", ModLoadingPhase.GATHER, ml -> RegistryManager.postNewRegistryEvent());
     final ModLoadingState OBJECT_HOLDERS = ModLoadingState.withInline("OBJECT_HOLDERS", "CREATE_REGISTRIES", ModLoadingPhase.GATHER, ml -> ObjectHolderRegistry.findObjectHolders());

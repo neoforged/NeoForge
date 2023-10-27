@@ -64,10 +64,10 @@ import net.neoforged.neoforge.common.extensions.IPlayerExtension;
 import net.neoforged.neoforge.common.loot.CanToolPerformAction;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
 import net.neoforged.neoforge.common.world.BiomeModifier;
-import net.neoforged.neoforge.common.world.ForgeBiomeModifiers.AddFeaturesBiomeModifier;
-import net.neoforged.neoforge.common.world.ForgeBiomeModifiers.AddSpawnsBiomeModifier;
-import net.neoforged.neoforge.common.world.ForgeBiomeModifiers.RemoveFeaturesBiomeModifier;
-import net.neoforged.neoforge.common.world.ForgeBiomeModifiers.RemoveSpawnsBiomeModifier;
+import net.neoforged.neoforge.common.world.BiomeModifiers.AddFeaturesBiomeModifier;
+import net.neoforged.neoforge.common.world.BiomeModifiers.AddSpawnsBiomeModifier;
+import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveFeaturesBiomeModifier;
+import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveSpawnsBiomeModifier;
 import net.neoforged.neoforge.common.world.NoneBiomeModifier;
 import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
@@ -473,17 +473,17 @@ public class NeoForgeMod
         RECIPE_SERIALIZERS.register(modEventBus);
         MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
         MinecraftForge.EVENT_BUS.addListener(this::missingSoundMapping);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ForgeConfig.clientSpec);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ForgeConfig.serverSpec);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ForgeConfig.commonSpec);
-        modEventBus.register(ForgeConfig.class);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.clientSpec);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, NeoForgeConfig.serverSpec);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, NeoForgeConfig.commonSpec);
+        modEventBus.register(NeoForgeConfig.class);
         ForgeDeferredRegistriesSetup.setup(modEventBus);
         // Forge does not display problems when the remote is not matching.
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, ()->new IExtensionPoint.DisplayTest(()->"ANY", (remote, isServer)-> true));
         StartupMessageManager.addModMessage("NeoForge version "+ NeoForgeVersion.getVersion());
 
         MinecraftForge.EVENT_BUS.addListener(VillagerTradingManager::loadTrades);
-        MinecraftForge.EVENT_BUS.register(MinecraftForge.INTERNAL_HANDLER);
+        MinecraftForge.EVENT_BUS.register(new NeoForgeEventHandler());
         MinecraftForge.EVENT_BUS.addListener(this::registerPermissionNodes);
 
         ForgeRegistries.ITEMS.tags().addOptionalTagDefaults(Tags.Items.ENCHANTING_FUELS, Set.of(ForgeRegistries.ITEMS.getDelegateOrThrow(Items.LAPIS_LAZULI)));

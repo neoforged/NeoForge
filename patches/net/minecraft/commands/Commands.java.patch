@@ -5,7 +5,7 @@
        }
  
 -      if (SharedConstants.IS_RUNNING_IN_IDE) {
-+      if (net.neoforged.neoforge.gametest.ForgeGameTestHooks.isGametestEnabled()) {
++      if (net.neoforged.neoforge.gametest.GameTestHooks.isGametestEnabled()) {
           TestCommand.register(this.dispatcher);
           SpawnArmorTrimsCommand.register(this.dispatcher);
           if (p_230943_.includeDedicated) {

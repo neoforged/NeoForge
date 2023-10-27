@@ -40,7 +40,7 @@ import net.neoforged.neoforge.network.NetworkConstants;
 import net.neoforged.neoforge.network.NetworkHooks;
 import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.gametest.ForgeGameTestHooks;
+import net.neoforged.neoforge.gametest.GameTestHooks;
 import net.neoforged.neoforgespi.locating.IModFile;
 import net.neoforged.neoforge.registries.ForgeRegistries.Keys;
 import net.neoforged.neoforge.resource.PathPackResources;
@@ -106,7 +106,7 @@ public class ServerLifecycleHooks
             LanguageHook.loadLanguagesOnServer(server);
             // GameTestServer requires the gametests to be registered earlier, so it is done in main and should not be done twice.
             if (!(server instanceof GameTestServer))
-                ForgeGameTestHooks.registerGametests();
+                GameTestHooks.registerGametests();
         });
         PermissionAPI.initializePermissionAPI();
         MinecraftForge.EVENT_BUS.post(new ServerStartingEvent(server));

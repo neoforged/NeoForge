@@ -23,7 +23,7 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.neoforged.neoforge.common.ForgeInternalHandler;
+import net.neoforged.neoforge.common.NeoForgeEventHandler;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
@@ -391,7 +391,7 @@ public abstract class MobSpawnEvent extends EntityEvent
         /**
          * Returns the current spawn cancellation status, which can be changed via {@link FinalizeSpawn#setSpawnCancelled(boolean)}.
          * @return If this mob's spawn is cancelled or not.
-         * @implNote This is enforced in {@link ForgeInternalHandler#builtinMobSpawnBlocker} and a patch in {@link WorldGenRegion#addEntity}
+         * @implNote This is enforced in {@link NeoForgeEventHandler#builtinMobSpawnBlocker} and a patch in {@link WorldGenRegion#addEntity}
          */
         public boolean isSpawnCancelled()
         {

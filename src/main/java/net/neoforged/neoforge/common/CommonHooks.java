@@ -328,7 +328,7 @@ public class CommonHooks
         boolean isSpectator = (entity instanceof Player && entity.isSpectator());
         if (isSpectator)
             return Optional.empty();
-        if (!ForgeConfig.SERVER.fullBoundingBoxLadders.get())
+        if (!NeoForgeConfig.SERVER.fullBoundingBoxLadders.get())
         {
             return state.isLadder(level, pos, entity) ? Optional.of(pos) : Optional.empty();
         }
@@ -1186,7 +1186,7 @@ public class CommonHooks
     public static ObjectArrayList<ItemStack> modifyLoot(ResourceLocation lootTableId, ObjectArrayList<ItemStack> generatedLoot, LootContext context)
     {
         context.setQueriedLootTableId(lootTableId); // In case the ID was set via copy constructor, this will be ignored: intended
-        LootModifierManager man = ForgeInternalHandler.getLootModifierManager();
+        LootModifierManager man = NeoForgeEventHandler.getLootModifierManager();
         for (IGlobalLootModifier mod : man.getAllLootMods())
         {
             generatedLoot = mod.apply(generatedLoot, context);

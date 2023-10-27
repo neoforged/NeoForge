@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
 import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -227,6 +227,6 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable, ICapa
     @NotNull
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side)
     {
-        return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap, this.holder);
+        return Capabilities.ITEM_HANDLER.orEmpty(cap, this.holder);
     }
 }

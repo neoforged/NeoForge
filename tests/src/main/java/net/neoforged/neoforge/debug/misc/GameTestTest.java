@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
@@ -172,7 +172,7 @@ public class GameTestTest
         helper.setBlock(energyPos, ENERGY_BLOCK.get());
 
         // Queries the energy capability
-        LazyOptional<IEnergyStorage> energyHolder = helper.getBlockEntity(energyPos).getCapability(ForgeCapabilities.ENERGY);
+        LazyOptional<IEnergyStorage> energyHolder = helper.getBlockEntity(energyPos).getCapability(Capabilities.ENERGY);
 
         // Adds 2000 FE, but our energy storage can only hold 1000 FE
         energyHolder.ifPresent(energyStorage -> energyStorage.receiveEnergy(2000, false));
@@ -217,7 +217,7 @@ public class GameTestTest
         @Override
         public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing)
         {
-            if (capability == ForgeCapabilities.ENERGY)
+            if (capability == Capabilities.ENERGY)
                 return energyHolder.cast();
 
             return super.getCapability(capability, facing);

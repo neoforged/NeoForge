@@ -21,7 +21,6 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.storage.ServerLevelData;
-import net.neoforged.neoforge.common.ForgeInternalHandler;
 import net.neoforged.neoforge.common.MinecraftForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -69,8 +68,7 @@ public abstract class LevelEvent extends Event
      * This event is fired whenever a level unloads in
      * {@link Minecraft#setLevel(ClientLevel)},
      * {@link MinecraftServer#stopServer()},
-     * {@link Minecraft#clearLevel(Screen)}, and
-     * {@link ForgeInternalHandler#onDimensionUnload(Unload)}.
+     * {@link Minecraft#clearLevel(Screen)}.
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>

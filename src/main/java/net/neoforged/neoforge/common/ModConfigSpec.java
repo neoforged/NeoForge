@@ -45,9 +45,9 @@ import org.jetbrains.annotations.Nullable;
 
 /*
  * Like {@link com.electronwill.nightconfig.core.ConfigSpec} except in builder format, and extended to accept comments, language keys,
- * and other things Forge configs would find useful.
+ * and other things mod configs would find useful.
  */
-public class ForgeConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig> implements IConfigSpec<ForgeConfigSpec>//TODO: Remove extends and pipe everything through getSpec/getValues?
+public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig> implements IConfigSpec<ModConfigSpec>//TODO: Remove extends and pipe everything through getSpec/getValues?
 {
     private Map<List<String>, String> levelComments;
     private Map<List<String>, String> levelTranslationKeys;
@@ -59,7 +59,7 @@ public class ForgeConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfi
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private ForgeConfigSpec(UnmodifiableConfig storage, UnmodifiableConfig values, Map<List<String>, String> levelComments, Map<List<String>, String> levelTranslationKeys) {
+    private ModConfigSpec(UnmodifiableConfig storage, UnmodifiableConfig values, Map<List<String>, String> levelComments, Map<List<String>, String> levelTranslationKeys) {
         super(storage);
         this.values = values;
         this.levelComments = levelComments;
@@ -605,18 +605,18 @@ public class ForgeConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfi
             return this;
         }
 
-        public <T> Pair<T, ForgeConfigSpec> configure(Function<Builder, T> consumer) {
+        public <T> Pair<T, ModConfigSpec> configure(Function<Builder, T> consumer) {
             T o = consumer.apply(this);
             return Pair.of(o, this.build());
         }
 
-        public ForgeConfigSpec build()
+        public ModConfigSpec build()
         {
             context.ensureEmpty();
             Config valueCfg = Config.of(Config.getDefaultMapCreator(true, true), InMemoryFormat.withSupport(ConfigValue.class::isAssignableFrom));
             values.forEach(v -> valueCfg.set(v.getPath(), v));
 
-            ForgeConfigSpec ret = new ForgeConfigSpec(storage, valueCfg, levelComments, levelTranslationKeys);
+            ModConfigSpec ret = new ModConfigSpec(storage, valueCfg, levelComments, levelTranslationKeys);
             values.forEach(v -> v.spec = ret);
             return ret;
         }
@@ -813,7 +813,7 @@ public class ForgeConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfi
 
         private T cachedValue = null;
 
-        private ForgeConfigSpec spec;
+        private ModConfigSpec spec;
 
         ConfigValue(Builder parent, List<String> path, Supplier<T> defaultSupplier)
         {
@@ -832,7 +832,7 @@ public class ForgeConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfi
          * Returns the actual value for the configuration setting, throwing if the config has not yet been loaded.
          *
          * @return the actual value for the setting
-         * @throws NullPointerException if the {@link ForgeConfigSpec config spec} object that will contain this has
+         * @throws NullPointerException if the {@link ModConfigSpec config spec} object that will contain this has
          *                              not yet been built
          * @throws IllegalStateException if the associated config has not yet been loaded
          */

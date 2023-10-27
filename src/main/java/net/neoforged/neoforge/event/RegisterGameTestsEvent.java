@@ -9,7 +9,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.gametest.ForgeGameTestHooks;
+import net.neoforged.neoforge.gametest.GameTestHooks;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -17,7 +17,7 @@ import java.util.Set;
 
 /**
  * Game tests are registered on client or server startup.
- * It is only run once for a given instance of the game if {@link ForgeGameTestHooks#isGametestEnabled} returns true.
+ * It is only run once for a given instance of the game if {@link GameTestHooks#isGametestEnabled} returns true.
  * This is the preferred way to register your game tests.
  * <p>
  * Fired on the Mod bus, see {@link IModBusEvent}.

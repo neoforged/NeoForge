@@ -34,7 +34,6 @@ public class MinecraftForge
         }
     }).build();
 
-    static final ForgeInternalHandler INTERNAL_HANDLER = new ForgeInternalHandler();
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker FORGE = MarkerManager.getMarker("FORGE");
 

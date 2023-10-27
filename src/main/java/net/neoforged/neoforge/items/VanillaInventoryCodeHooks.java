@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.Hopper;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -243,7 +243,7 @@ public class VanillaInventoryCodeHooks
             BlockEntity blockEntity = worldIn.getBlockEntity(blockpos);
             if (blockEntity != null)
             {
-                return blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, side)
+                return blockEntity.getCapability(Capabilities.ITEM_HANDLER, side)
                     .map(capability -> ImmutablePair.<IItemHandler, Object>of(capability, blockEntity));
             }
         }

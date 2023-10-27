@@ -20,7 +20,7 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.common.ForgeConfig;
+import net.neoforged.neoforge.common.NeoForgeConfig;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class LightPipelineAwareModelBlockRenderer extends ModelBlockRenderer
     @Override
     public void tesselateWithoutAO(BlockAndTintGetter level, BakedModel model, BlockState state, BlockPos pos, PoseStack poseStack, VertexConsumer vertexConsumer, boolean checkSides, RandomSource rand, long seed, int packedOverlay, ModelData modelData, RenderType renderType)
     {
-        if (ForgeConfig.CLIENT.experimentalForgeLightPipelineEnabled.get())
+        if (NeoForgeConfig.CLIENT.experimentalForgeLightPipelineEnabled.get())
         {
             render(vertexConsumer, flatLighter.get(), level, model, state, pos, poseStack, checkSides, rand, seed, packedOverlay, modelData, renderType);
         }
@@ -58,7 +58,7 @@ public class LightPipelineAwareModelBlockRenderer extends ModelBlockRenderer
     @Override
     public void tesselateWithAO(BlockAndTintGetter level, BakedModel model, BlockState state, BlockPos pos, PoseStack poseStack, VertexConsumer vertexConsumer, boolean checkSides, RandomSource rand, long seed, int packedOverlay, ModelData modelData, RenderType renderType)
     {
-        if (ForgeConfig.CLIENT.experimentalForgeLightPipelineEnabled.get())
+        if (NeoForgeConfig.CLIENT.experimentalForgeLightPipelineEnabled.get())
         {
             render(vertexConsumer, smoothLighter.get(), level, model, state, pos, poseStack, checkSides, rand, seed, packedOverlay, modelData, renderType);
         }

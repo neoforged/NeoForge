@@ -8,19 +8,19 @@ package net.neoforged.neoforge.server.timings;
 import java.lang.ref.WeakReference;
 
 /**
- * ForgeTimings aggregates timings data collected by {@link TimeTracker} for an Object
+ * ObjectTimings aggregates timings data collected by {@link TimeTracker} for an Object
  * and performs operations for interpretation of the data.
  *
  * @param <T>
  */
-public class ForgeTimings<T>
+public class ObjectTimings<T>
 {
 
     private WeakReference<T> object;
 
     private int[] rawTimingData;
 
-    public ForgeTimings(T object, int[] rawTimingData)
+    public ObjectTimings(T object, int[] rawTimingData)
     {
         this.object = new WeakReference<T>(object);
         this.rawTimingData = rawTimingData;

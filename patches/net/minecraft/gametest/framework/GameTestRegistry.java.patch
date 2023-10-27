@@ -21,7 +21,7 @@
        String s = p_177504_.getDeclaringClass().getSimpleName();
        GameTest gametest = p_177504_.getAnnotation(GameTest.class);
 -      if (gametest != null) {
-+      if (gametest != null && (allowedNamespaces.isEmpty() || allowedNamespaces.contains(net.neoforged.neoforge.gametest.ForgeGameTestHooks.getTemplateNamespace(p_177504_)))) {
++      if (gametest != null && (allowedNamespaces.isEmpty() || allowedNamespaces.contains(net.neoforged.neoforge.gametest.GameTestHooks.getTemplateNamespace(p_177504_)))) {
           TEST_FUNCTIONS.add(turnMethodIntoTestFunction(p_177504_));
           TEST_CLASS_NAMES.add(s);
        }
@@ -53,9 +53,9 @@
        String s1 = s.toLowerCase();
 -      String s2 = s1 + "." + p_177516_.getName().toLowerCase();
 -      String s3 = gametest.template().isEmpty() ? s2 : s1 + "." + gametest.template();
-+      boolean prefixGameTestTemplate = net.neoforged.neoforge.gametest.ForgeGameTestHooks.prefixGameTestTemplate(p_177516_);
++      boolean prefixGameTestTemplate = net.neoforged.neoforge.gametest.GameTestHooks.prefixGameTestTemplate(p_177516_);
 +      String s2 = (prefixGameTestTemplate ? s1 + "." : "") + p_177516_.getName().toLowerCase();
-+      String s3 = net.neoforged.neoforge.gametest.ForgeGameTestHooks.getTemplateNamespace(p_177516_) + ":" + (gametest.template().isEmpty() ? s2 : (prefixGameTestTemplate ? s1 + "." : "") + gametest.template());
++      String s3 = net.neoforged.neoforge.gametest.GameTestHooks.getTemplateNamespace(p_177516_) + ":" + (gametest.template().isEmpty() ? s2 : (prefixGameTestTemplate ? s1 + "." : "") + gametest.template());
        String s4 = gametest.batch();
        Rotation rotation = StructureUtils.getRotationForRotationSteps(gametest.rotationSteps());
        return new TestFunction(

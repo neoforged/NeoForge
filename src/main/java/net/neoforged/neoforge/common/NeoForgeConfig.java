@@ -11,11 +11,14 @@ import net.neoforged.fml.event.config.ModConfigEvent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 
-import net.neoforged.neoforge.common.ForgeConfigSpec.BooleanValue;
-import net.neoforged.neoforge.common.ForgeConfigSpec.DoubleValue;
-import net.neoforged.neoforge.common.ForgeConfigSpec.ConfigValue;
+import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
+import net.neoforged.neoforge.common.ModConfigSpec.DoubleValue;
+import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 
-public class ForgeConfig {
+/**
+ * NeoForge's own configuration.
+ */
+public class NeoForgeConfig {
     public static class Server {
         public final BooleanValue removeErroringBlockEntities;
 
@@ -30,7 +33,7 @@ public class ForgeConfig {
 
         public final BooleanValue advertiseDedicatedServerToLan;
 
-        Server(ForgeConfigSpec.Builder builder) {
+        Server(ModConfigSpec.Builder builder) {
             builder.comment("Server configuration settings")
                    .push("server");
 
@@ -83,7 +86,7 @@ public class ForgeConfig {
      */
     public static class Common {
 
-        Common(ForgeConfigSpec.Builder builder) {
+        Common(ModConfigSpec.Builder builder) {
             builder.comment("[DEPRECATED / NO EFFECT]: General configuration settings")
                     .push("general");
 
@@ -106,7 +109,7 @@ public class ForgeConfig {
         @Deprecated(since = "1.20.1", forRemoval = true) // Config option ignored.
         public final BooleanValue compressLanIPv6Addresses;
 
-        Client(ForgeConfigSpec.Builder builder) {
+        Client(ModConfigSpec.Builder builder) {
             builder.comment("Client only settings, mostly things related to rendering")
                    .push("client");
 
@@ -141,28 +144,28 @@ public class ForgeConfig {
         }
     }
 
-    static final ForgeConfigSpec clientSpec;
+    static final ModConfigSpec clientSpec;
     public static final Client CLIENT;
     static {
-        final Pair<Client, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Client::new);
+        final Pair<Client, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(Client::new);
         clientSpec = specPair.getRight();
         CLIENT = specPair.getLeft();
     }
 
 
-    static final ForgeConfigSpec commonSpec;
+    static final ModConfigSpec commonSpec;
     public static final Common COMMON;
     static {
-        final Pair<Common, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Common::new);
+        final Pair<Common, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(Common::new);
         commonSpec = specPair.getRight();
         COMMON = specPair.getLeft();
     }
 
 
-    static final ForgeConfigSpec serverSpec;
+    static final ModConfigSpec serverSpec;
     public static final Server SERVER;
     static {
-        final Pair<Server, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Server::new);
+        final Pair<Server, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(Server::new);
         serverSpec = specPair.getRight();
         SERVER = specPair.getLeft();
     }

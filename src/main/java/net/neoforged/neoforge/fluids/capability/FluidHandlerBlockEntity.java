@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -48,7 +48,7 @@ public class FluidHandlerBlockEntity extends BlockEntity
     @NotNull
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing)
     {
-        if (capability == ForgeCapabilities.FLUID_HANDLER)
+        if (capability == Capabilities.FLUID_HANDLER)
             return holder.cast();
         return super.getCapability(capability, facing);
     }

@@ -54,12 +54,9 @@ import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
-import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
@@ -81,7 +78,6 @@ import net.minecraft.network.protocol.status.ServerStatus;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -156,7 +152,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsModClient;
-import net.neoforged.neoforge.gametest.ForgeGameTestHooks;
+import net.neoforged.neoforge.gametest.GameTestHooks;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.NetworkConstants;
 import net.neoforged.neoforge.network.NetworkRegistry;
@@ -1190,7 +1186,7 @@ public class ClientHooks
         }
         initializedClientHooks = true;
 
-        ForgeGameTestHooks.registerGametests();
+        GameTestHooks.registerGametests();
         ModLoader.get().postEvent(new RegisterClientReloadListenersEvent(resourceManager));
         ModLoader.get().postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
         ModLoader.get().postEvent(new EntityRenderersEvent.RegisterRenderers());

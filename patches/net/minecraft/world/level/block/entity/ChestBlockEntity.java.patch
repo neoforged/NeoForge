@@ -17,7 +17,7 @@
 +
 +   @Override
 +   public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(net.neoforged.neoforge.common.capabilities.Capability<T> cap, Direction side) {
-+       if (!this.remove && cap == net.neoforged.neoforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER) {
++       if (!this.remove && cap == net.neoforged.neoforge.common.capabilities.Capabilities.ITEM_HANDLER) {
 +          if (this.chestHandler == null)
 +             this.chestHandler = net.neoforged.neoforge.common.util.LazyOptional.of(this::createHandler);
 +          return this.chestHandler.cast();
