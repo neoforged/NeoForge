@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 public final class CreativeModeTabRegistry
 {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final ResourceLocation CREATIVE_MODE_TAB_ORDERING_JSON = new ResourceLocation("forge", "creative_mode_tab_ordering.json");
+    private static final ResourceLocation CREATIVE_MODE_TAB_ORDERING_JSON = new ResourceLocation("neoforge", "creative_mode_tab_ordering.json");
     private static final List<CreativeModeTab> SORTED_TABS = new ArrayList<>();
     private static final List<CreativeModeTab> SORTED_TABS_VIEW = Collections.unmodifiableList(SORTED_TABS);
     private static final List<CreativeModeTab> DEFAULT_TABS = new ArrayList<>();

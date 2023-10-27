@@ -134,11 +134,11 @@ public class NeoForgeMod
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker NEOFORGEMOD = MarkerManager.getMarker("NEOFORGE-MOD");
 
-    private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.Keys.ATTRIBUTES, "forge");
-    private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, "forge");
-    private static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, "forge");
-    private static final DeferredRegister<Codec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, "forge");
-    private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(ForgeRegistries.Keys.HOLDER_SET_TYPES, "forge");
+    private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.Keys.ATTRIBUTES, "neoforge");
+    private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, "neoforge");
+    private static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, "neoforge");
+    private static final DeferredRegister<Codec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, "neoforge");
+    private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(ForgeRegistries.Keys.HOLDER_SET_TYPES, "neoforge");
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static final RegistryObject<EnumArgument.Info> ENUM_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("enum", () ->
@@ -147,16 +147,16 @@ public class NeoForgeMod
             ArgumentTypeInfos.registerByClass(ModIdArgument.class,
                     SingletonArgumentInfo.contextFree(ModIdArgument::modIdArgument)));
 
-    public static final RegistryObject<Attribute> SWIM_SPEED = ATTRIBUTES.register("swim_speed", () -> new RangedAttribute("forge.swim_speed", 1.0D, 0.0D, 1024.0D).setSyncable(true));
-    public static final RegistryObject<Attribute> NAMETAG_DISTANCE = ATTRIBUTES.register("nametag_distance", () -> new RangedAttribute("forge.name_tag_distance", 64.0D, 0.0D, 64.0).setSyncable(true));
-    public static final RegistryObject<Attribute> ENTITY_GRAVITY = ATTRIBUTES.register("entity_gravity", () -> new RangedAttribute("forge.entity_gravity", 0.08D, -8.0D, 8.0D).setSyncable(true));
+    public static final RegistryObject<Attribute> SWIM_SPEED = ATTRIBUTES.register("swim_speed", () -> new RangedAttribute("neoforge.swim_speed", 1.0D, 0.0D, 1024.0D).setSyncable(true));
+    public static final RegistryObject<Attribute> NAMETAG_DISTANCE = ATTRIBUTES.register("nametag_distance", () -> new RangedAttribute("neoforge.name_tag_distance", 64.0D, 0.0D, 64.0).setSyncable(true));
+    public static final RegistryObject<Attribute> ENTITY_GRAVITY = ATTRIBUTES.register("entity_gravity", () -> new RangedAttribute("neoforge.entity_gravity", 0.08D, -8.0D, 8.0D).setSyncable(true));
 
     /**
      * Reach Distance represents the distance at which a player may interact with the world.  The default is 4.5 blocks.  Players in creative mode have an additional 0.5 blocks of block reach.
      * @see IPlayerExtension#getBlockReach()
      * @see IPlayerExtension#canReach(BlockPos, double)
      */
-    public static final RegistryObject<Attribute> BLOCK_REACH = ATTRIBUTES.register("block_reach", () -> new RangedAttribute("forge.block_reach", 4.5D, 0.0D, 1024.0D).setSyncable(true));
+    public static final RegistryObject<Attribute> BLOCK_REACH = ATTRIBUTES.register("block_reach", () -> new RangedAttribute("neoforge.block_reach", 4.5D, 0.0D, 1024.0D).setSyncable(true));
 
     /**
      * Attack Range represents the distance at which a player may attack an entity.  The default is 3 blocks.  Players in creative mode have an additional 3 blocks of entity reach.
@@ -165,16 +165,16 @@ public class NeoForgeMod
      * @see IPlayerExtension#canReach(Entity, double)
      * @see IPlayerExtension#canReach(Vec3, double)
      */
-    public static final RegistryObject<Attribute> ENTITY_REACH = ATTRIBUTES.register("entity_reach", () -> new RangedAttribute("forge.entity_reach", 3.0D, 0.0D, 1024.0D).setSyncable(true));
+    public static final RegistryObject<Attribute> ENTITY_REACH = ATTRIBUTES.register("entity_reach", () -> new RangedAttribute("neoforge.entity_reach", 3.0D, 0.0D, 1024.0D).setSyncable(true));
 
     /**
      * Step Height Addition modifies the amount of blocks an entity may walk up without jumping.
      * @see IEntityExtension#getStepHeight()
      */
-    public static final RegistryObject<Attribute> STEP_HEIGHT = ATTRIBUTES.register("step_height", () -> new RangedAttribute("forge.step_height", 0.0D, -512.0D, 512.0D).setSyncable(true));
+    public static final RegistryObject<Attribute> STEP_HEIGHT = ATTRIBUTES.register("step_height", () -> new RangedAttribute("neoforge.step_height", 0.0D, -512.0D, 512.0D).setSyncable(true));
 
     /**
-     * Noop biome modifier. Can be used in a biome modifier json with "type": "forge:none".
+     * Noop biome modifier. Can be used in a biome modifier json with "type": "neoforge:none".
      */
     public static final RegistryObject<Codec<NoneBiomeModifier>> NONE_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("none", () -> Codec.unit(NoneBiomeModifier.INSTANCE));
 
@@ -228,32 +228,32 @@ public class NeoForgeMod
             ).apply(builder, RemoveSpawnsBiomeModifier::new))
         );
     /**
-     * Noop structure modifier. Can be used in a structure modifier json with "type": "forge:none".
+     * Noop structure modifier. Can be used in a structure modifier json with "type": "neoforge:none".
      */
     public static final RegistryObject<Codec<NoneStructureModifier>> NONE_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("none", () -> Codec.unit(NoneStructureModifier.INSTANCE));
 
     /**
-     * Stock holder set type that represents any/all values in a registry. Can be used in a holderset object with {@code { "type": "forge:any" }}
+     * Stock holder set type that represents any/all values in a registry. Can be used in a holderset object with {@code { "type": "neoforge:any" }}
      */
     public static final RegistryObject<HolderSetType> ANY_HOLDER_SET = HOLDER_SET_TYPES.register("any", () -> AnyHolderSet::codec);
 
     /**
-     * Stock holder set type that represents an intersection of other holdersets. Can be used in a holderset object with {@code { "type": "forge:and", "values": [list of holdersets] }}
+     * Stock holder set type that represents an intersection of other holdersets. Can be used in a holderset object with {@code { "type": "neoforge:and", "values": [list of holdersets] }}
      */
     public static final RegistryObject<HolderSetType> AND_HOLDER_SET = HOLDER_SET_TYPES.register("and", () -> AndHolderSet::codec);
 
     /**
-     * Stock holder set type that represents a union of other holdersets. Can be used in a holderset object with {@code { "type": "forge:or", "values": [list of holdersets] }}
+     * Stock holder set type that represents a union of other holdersets. Can be used in a holderset object with {@code { "type": "neoforge:or", "values": [list of holdersets] }}
      */
     public static final RegistryObject<HolderSetType> OR_HOLDER_SET = HOLDER_SET_TYPES.register("or", () -> OrHolderSet::codec);
 
     /**
      * <p>Stock holder set type that represents all values in a registry except those in another given set.
-     * Can be used in a holderset object with {@code { "type": "forge:not", "value": holderset }}</p>
+     * Can be used in a holderset object with {@code { "type": "neoforge:not", "value": holderset }}</p>
      */
     public static final RegistryObject<HolderSetType> NOT_HOLDER_SET = HOLDER_SET_TYPES.register("not", () -> NotHolderSet::codec);
     
-    private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(ForgeRegistries.Keys.INGREDIENT_TYPES, "forge");
+    private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(ForgeRegistries.Keys.INGREDIENT_TYPES, "neoforge");
     
     public static final RegistryObject<IngredientType<CompoundIngredient>> COMPOUND_INGREDIENT_TYPE = INGREDIENT_TYPES.register("compound", () -> new IngredientType<>(CompoundIngredient.CODEC, CompoundIngredient.CODEC_NONEMPTY));
     public static final RegistryObject<IngredientType<StrictNBTIngredient>> STRICT_NBT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("nbt", () -> new IngredientType<>(StrictNBTIngredient.CODEC));
@@ -261,10 +261,10 @@ public class NeoForgeMod
     public static final RegistryObject<IngredientType<DifferenceIngredient>> DIFFERENCE_INGREDIENT_TYPE = INGREDIENT_TYPES.register("difference", () -> new IngredientType<>(DifferenceIngredient.CODEC, DifferenceIngredient.CODEC_NONEMPTY));
     public static final RegistryObject<IngredientType<IntersectionIngredient>> INTERSECTION_INGREDIENT_TYPE = INGREDIENT_TYPES.register("intersection", () -> new IngredientType<>(IntersectionIngredient.CODEC, IntersectionIngredient.CODEC_NONEMPTY));
     
-    private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, "forge");
+    private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, "neoforge");
     public static final RegistryObject<RecipeSerializer<?>> CONDITIONAL_RECIPE = RECIPE_SERIALIZERS.register("conditional", ConditionalRecipe::new);
 
-    private static final DeferredRegister<Codec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(ForgeRegistries.Keys.CONDITION_SERIALIZERS, "forge");
+    private static final DeferredRegister<Codec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(ForgeRegistries.Keys.CONDITION_CODECS, "neoforge");
     public static final RegistryObject<Codec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
     public static final RegistryObject<Codec<FalseCondition>> FALSE_CONDITION = CONDITION_CODECS.register("false", () -> FalseCondition.CODEC);
     public static final RegistryObject<Codec<ItemExistsCondition>> ITEM_EXISTS_CONDITION = CONDITION_CODECS.register("item_exists", () -> ItemExistsCondition.CODEC);
@@ -518,7 +518,7 @@ public class NeoForgeMod
                         Component.translatable("pack.forge.description"),
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
                         Optional.empty(),
-                        Optional.of(new PackMetadataSection.ForgeData(Optional.of(Arrays.stream(PackType.values()).collect(Collectors.toMap(Function.identity(), DetectedVersion.BUILT_IN::getPackVersion))))
+                        Optional.of(new PackMetadataSection.NeoForgeData(Optional.of(Arrays.stream(PackType.values()).collect(Collectors.toMap(Function.identity(), DetectedVersion.BUILT_IN::getPackVersion))))
                 )))
         );
         NeoForgeBlockTagsProvider blockTags = new NeoForgeBlockTagsProvider(packOutput, lookupProvider, existingFileHelper);
@@ -579,8 +579,8 @@ public class NeoForgeMod
                 {
                     consumer.accept(new IClientFluidTypeExtensions()
                     {
-                        private static final ResourceLocation MILK_STILL = new ResourceLocation("forge", "block/milk_still"),
-                                MILK_FLOW = new ResourceLocation("forge", "block/milk_flowing");
+                        private static final ResourceLocation MILK_STILL = new ResourceLocation("neoforge", "block/milk_still"),
+                                MILK_FLOW = new ResourceLocation("neoforge", "block/milk_flowing");
 
                         @Override
                         public ResourceLocation getStillTexture()
@@ -614,7 +614,7 @@ public class NeoForgeMod
         {
             IForgeRegistryInternal<ItemDisplayContext> forgeRegistry = (IForgeRegistryInternal<ItemDisplayContext>) event.<ItemDisplayContext>getForgeRegistry();
             if (forgeRegistry == null)
-                throw new IllegalStateException("Item display context was not a forge registry, wtf???");
+                throw new IllegalStateException("Item display context was not a NeoForge registry, wtf???");
 
             Arrays.stream(ItemDisplayContext.values())
                     .filter(Predicate.not(ItemDisplayContext::isModded))
@@ -627,11 +627,11 @@ public class NeoForgeMod
         if (!event.getRegistryKey().equals(Registries.LOOT_CONDITION_TYPE))
             return;
 
-        event.register(Registries.LOOT_CONDITION_TYPE, new ResourceLocation("forge:loot_table_id"), () -> LootTableIdCondition.LOOT_TABLE_ID);
-        event.register(Registries.LOOT_CONDITION_TYPE, new ResourceLocation("forge:can_tool_perform_action"), () -> CanToolPerformAction.LOOT_CONDITION_TYPE);
+        event.register(Registries.LOOT_CONDITION_TYPE, new ResourceLocation("neoforge:loot_table_id"), () -> LootTableIdCondition.LOOT_TABLE_ID);
+        event.register(Registries.LOOT_CONDITION_TYPE, new ResourceLocation("neoforge:can_tool_perform_action"), () -> CanToolPerformAction.LOOT_CONDITION_TYPE);
     }
 
-    public static final PermissionNode<Boolean> USE_SELECTORS_PERMISSION = new PermissionNode<>("forge", "use_entity_selectors",
+    public static final PermissionNode<Boolean> USE_SELECTORS_PERMISSION = new PermissionNode<>("neoforge", "use_entity_selectors",
             PermissionTypes.BOOLEAN, (player, uuid, contexts) -> player != null && player.hasPermissions(Commands.LEVEL_GAMEMASTERS));
 
     public void registerPermissionNodes(PermissionGatherEvent.Nodes event)

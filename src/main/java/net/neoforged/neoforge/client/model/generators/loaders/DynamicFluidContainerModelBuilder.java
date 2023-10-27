@@ -29,7 +29,7 @@ public class DynamicFluidContainerModelBuilder<T extends ModelBuilder<T>> extend
 
     protected DynamicFluidContainerModelBuilder(T parent, ExistingFileHelper existingFileHelper)
     {
-        super(new ResourceLocation("forge:fluid_container"), parent, existingFileHelper);
+        super(new ResourceLocation("neoforge:fluid_container"), parent, existingFileHelper);
     }
 
     public DynamicFluidContainerModelBuilder<T> fluid(Fluid fluid)

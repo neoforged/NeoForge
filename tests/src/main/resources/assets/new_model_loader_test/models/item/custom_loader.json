@@ -1,5 +1,5 @@
 {
-  "parent": "forge:item/default",
+  "parent": "neoforge:item/default",
   "loader": "new_model_loader_test:custom_loader",
   "textures": {
     "particle": "item/quartz"

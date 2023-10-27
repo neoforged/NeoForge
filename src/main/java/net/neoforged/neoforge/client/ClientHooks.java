@@ -387,7 +387,7 @@ public class ClientHooks
             // case FAILED -> " Version check failed";
             // case UP_TO_DATE -> "Forge up to date";
             // case AHEAD -> "Using non-recommended Forge build, issues may arise.";
-            case OUTDATED, BETA_OUTDATED -> I18n.get("forge.update.newversion", NeoForgeVersion.getTarget());
+            case OUTDATED, BETA_OUTDATED -> I18n.get("neoforge.update.newversion", NeoForgeVersion.getTarget());
             default -> null;
         };
     }
@@ -765,11 +765,11 @@ public class ClientHooks
 
     public static void processForgeListPingData(ServerStatus packet, ServerData target)
     {
-        packet.forgeData().ifPresentOrElse(forgeData ->
+        packet.neoForgeData().ifPresentOrElse(neoForgeData ->
         {
-            final Map<String, String> mods = forgeData.getRemoteModData();
-            final Map<ResourceLocation, ServerStatusPing.ChannelData> remoteChannels = forgeData.getRemoteChannels();
-            final int fmlver = forgeData.getFMLNetworkVersion();
+            final Map<String, String> mods = neoForgeData.getRemoteModData();
+            final Map<ResourceLocation, ServerStatusPing.ChannelData> remoteChannels = neoForgeData.getRemoteChannels();
+            final int fmlver = neoForgeData.getFMLNetworkVersion();
 
             boolean fmlNetMatches = fmlver == NetworkConstants.FMLNETVERSION;
             boolean channelsMatch = NetworkRegistry.checkListPingCompatibilityForClient(remoteChannels);
@@ -815,37 +815,37 @@ public class ClientHooks
             if (fmlver > NetworkConstants.FMLNETVERSION) {
                 extraReason = "fml.menu.multiplayer.clientoutdated";
             }
-            target.forgeData = new ExtendedServerListData("FML", extraServerMods.isEmpty() && fmlNetMatches && channelsMatch && modsMatch, mods.size(), extraReason, forgeData.isTruncated());
-        }, () -> target.forgeData = new ExtendedServerListData("VANILLA", NetworkRegistry.canConnectToVanillaServer(),0, null));
+            target.neoForgeData = new ExtendedServerListData("FML", extraServerMods.isEmpty() && fmlNetMatches && channelsMatch && modsMatch, mods.size(), extraReason, neoForgeData.isTruncated());
+        }, () -> target.neoForgeData = new ExtendedServerListData("VANILLA", NetworkRegistry.canConnectToVanillaServer(),0, null));
     }
 
     private static final ResourceLocation ICON_SHEET = new ResourceLocation(NeoForgeVersion.MOD_ID, "textures/gui/icons.png");
     public static void drawForgePingInfo(JoinMultiplayerScreen gui, ServerData target, GuiGraphics guiGraphics, int x, int y, int width, int relativeMouseX, int relativeMouseY) {
         int idx;
         String tooltip;
-        if (target.forgeData == null)
+        if (target.neoForgeData == null)
             return;
-        switch (target.forgeData.type()) {
+        switch (target.neoForgeData.type()) {
             case "FML":
-                if (target.forgeData.isCompatible()) {
+                if (target.neoForgeData.isCompatible()) {
                     idx = 0;
-                    tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.compatible", target.forgeData.numberOfMods());
+                    tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.compatible", target.neoForgeData.numberOfMods());
                 } else {
                     idx = 16;
-                    if(target.forgeData.extraReason() != null) {
-                        String extraReason = I18nExtension.parseMessage(target.forgeData.extraReason());
+                    if(target.neoForgeData.extraReason() != null) {
+                        String extraReason = I18nExtension.parseMessage(target.neoForgeData.extraReason());
                         tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.incompatible.extra", extraReason);
                     } else {
                         tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.incompatible");
                     }
                 }
-                if (target.forgeData.truncated())
+                if (target.neoForgeData.truncated())
                 {
                     tooltip += "\n" + I18nExtension.parseMessage("fml.menu.multiplayer.truncated");
                 }
                 break;
             case "VANILLA":
-                if (target.forgeData.isCompatible()) {
+                if (target.neoForgeData.isCompatible()) {
                     idx = 48;
                     tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.vanilla");
                 } else {
@@ -855,7 +855,7 @@ public class ClientHooks
                 break;
             default:
                 idx = 64;
-                tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.unknown", target.forgeData.type());
+                tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.unknown", target.neoForgeData.type());
         }
 
         guiGraphics.blit(ICON_SHEET, x + width - 18, y + 10, 16, 16, 0, idx, 16, 16, 256, 256);
@@ -920,7 +920,7 @@ public class ClientHooks
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
     }
 
-    private static final ChatTypeDecoration SYSTEM_CHAT_TYPE_DECORATION = new ChatTypeDecoration("forge.chatType.system", List.of(ChatTypeDecoration.Parameter.CONTENT), Style.EMPTY);
+    private static final ChatTypeDecoration SYSTEM_CHAT_TYPE_DECORATION = new ChatTypeDecoration("neoforge.chatType.system", List.of(ChatTypeDecoration.Parameter.CONTENT), Style.EMPTY);
     private static final ChatType SYSTEM_CHAT_TYPE = new ChatType(SYSTEM_CHAT_TYPE_DECORATION, SYSTEM_CHAT_TYPE_DECORATION);
     private static final ChatType.Bound SYSTEM_CHAT_TYPE_BOUND = SYSTEM_CHAT_TYPE.bind(Component.literal("System"));
 
@@ -948,7 +948,7 @@ public class ClientHooks
         return RenderTypeHelper.getEntityRenderType(chunkRenderType, cull);
     }
 
-    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid="forge", bus= Mod.EventBusSubscriber.Bus.MOD)
+    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid="neoforge", bus= Mod.EventBusSubscriber.Bus.MOD)
     public static class ClientEvents
     {
         @Nullable
@@ -962,7 +962,7 @@ public class ClientHooks
         @SubscribeEvent
         public static void registerShaders(RegisterShadersEvent event) throws IOException
         {
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation("forge","rendertype_entity_unlit_translucent"), DefaultVertexFormat.NEW_ENTITY), (p_172645_) -> {
+            event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation("neoforge","rendertype_entity_unlit_translucent"), DefaultVertexFormat.NEW_ENTITY), (p_172645_) -> {
                 rendertypeEntityTranslucentUnlitShader = p_172645_;
             });
         }
@@ -1103,7 +1103,7 @@ public class ClientHooks
         Component title = Component.translatable("selectWorld.backupQuestion.experimental");
         Component msg = Component.translatable("selectWorld.backupWarning.experimental")
                 .append("\n\n")
-                .append(Component.translatable("forge.selectWorld.backupWarning.experimental.additional"));
+                .append(Component.translatable("neoforge.selectWorld.backupWarning.experimental.additional"));
 
         Screen screen = new ConfirmScreen(confirmed ->
         {

@@ -404,8 +404,8 @@ public class ModListScreen extends Screen
         {
             TextureManager tm = this.minecraft.getTextureManager();
             final PathPackResources resourcePack = ResourcePackLoader.getPackFor(selectedMod.getModId())
-                    .orElse(ResourcePackLoader.getPackFor("forge").
-                            orElseThrow(()->new RuntimeException("Can't find forge, WHAT!")));
+                    .orElse(ResourcePackLoader.getPackFor("neoforge").
+                            orElseThrow(()->new RuntimeException("Can't find neoforge, WHAT!")));
             try
             {
                 NativeImage logo = null;

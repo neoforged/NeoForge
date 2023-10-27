@@ -4,7 +4,7 @@
     private final byte[] encodeBuf = new byte[8192];
     private final Deflater deflater;
     private int threshold;
-+   private static final boolean DISABLE_PACKET_DEBUG = Boolean.parseBoolean(System.getProperty("forge.disablePacketCompressionDebug", "false"));
++   private static final boolean DISABLE_PACKET_DEBUG = Boolean.parseBoolean(System.getProperty("neoforge.disablePacketCompressionDebug", "false"));
 +   private static final org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger();
  
     public CompressionEncoder(int p_129448_) {

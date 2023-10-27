@@ -15,7 +15,7 @@
        FileToIdConverter filetoidconverter = FileToIdConverter.json(s);
 -      RegistryOps<JsonElement> registryops = RegistryOps.create(JsonOps.INSTANCE, p_256369_);
 +      RegistryOps<JsonElement> registryops = net.neoforged.neoforge.common.conditions.ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, p_256369_), net.neoforged.neoforge.common.conditions.ICondition.IContext.TAGS_INVALID);
-+      Decoder<Optional<E>> decoder = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalDecoder(p_256232_, "forge:conditions");
++      Decoder<Optional<E>> decoder = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalDecoder(p_256232_, "neoforge:conditions");
  
        for(Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(p_256349_).entrySet()) {
           ResourceLocation resourcelocation = entry.getKey();

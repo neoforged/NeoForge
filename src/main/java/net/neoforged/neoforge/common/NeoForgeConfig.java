@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Forge Development LLC and contributors
+ * Copyright (c) neoforge Development LLC and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
@@ -39,42 +39,42 @@ public class NeoForgeConfig {
 
             removeErroringBlockEntities = builder
                     .comment("Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log. BE WARNED THIS COULD SCREW UP EVERYTHING USE SPARINGLY WE ARE NOT RESPONSIBLE FOR DAMAGES.")
-                    .translation("forge.configgui.removeErroringBlockEntities")
+                    .translation("neoforge.configgui.removeErroringBlockEntities")
                     .worldRestart()
                     .define("removeErroringBlockEntities", false);
 
             removeErroringEntities = builder
                     .comment("Set this to true to remove any Entity (Note: Does not include BlockEntities) that throws an error in its tick method instead of closing the server and reporting a crash log. BE WARNED THIS COULD SCREW UP EVERYTHING USE SPARINGLY WE ARE NOT RESPONSIBLE FOR DAMAGES.")
-                    .translation("forge.configgui.removeErroringEntities")
+                    .translation("neoforge.configgui.removeErroringEntities")
                     .worldRestart()
                     .define("removeErroringEntities", false);
 
             fullBoundingBoxLadders = builder
                     .comment("Set this to true to check the entire entity's collision bounding box for ladders instead of just the block they are in. Causes noticeable differences in mechanics so default is vanilla behavior. Default: false.")
-                    .translation("forge.configgui.fullBoundingBoxLadders")
+                    .translation("neoforge.configgui.fullBoundingBoxLadders")
                     .worldRestart()
                     .define("fullBoundingBoxLadders", false);
 
             zombieBaseSummonChance = builder
                     .comment("Base zombie summoning spawn chance. Allows changing the bonus zombie summoning mechanic.")
-                    .translation("forge.configgui.zombieBaseSummonChance")
+                    .translation("neoforge.configgui.zombieBaseSummonChance")
                     .worldRestart()
                     .defineInRange("zombieBaseSummonChance", 0.1D, 0.0D, 1.0D);
 
             zombieBabyChance = builder
                     .comment("Chance that a zombie (or subclass) is a baby. Allows changing the zombie spawning mechanic.")
-                    .translation("forge.configgui.zombieBabyChance")
+                    .translation("neoforge.configgui.zombieBabyChance")
                     .worldRestart()
                     .defineInRange("zombieBabyChance", 0.05D, 0.0D, 1.0D);
 
             permissionHandler = builder
-                    .comment("The permission handler used by the server. Defaults to forge:default_handler if no such handler with that name is registered.")
-                    .translation("forge.configgui.permissionHandler")
-                    .define("permissionHandler", "forge:default_handler");
+                    .comment("The permission handler used by the server. Defaults to neoforge:default_handler if no such handler with that name is registered.")
+                    .translation("neoforge.configgui.permissionHandler")
+                    .define("permissionHandler", "neoforge:default_handler");
 
             advertiseDedicatedServerToLan = builder
                     .comment("Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.")
-                    .translation("forge.configgui.advertiseDedicatedServerToLan")
+                    .translation("neoforge.configgui.advertiseDedicatedServerToLan")
                     .define("advertiseDedicatedServerToLan", true);
 
             builder.pop();
@@ -95,7 +95,7 @@ public class NeoForgeConfig {
     }
 
     /**
-     * Client specific configuration - only loaded clientside from forge-client.toml
+     * Client specific configuration - only loaded clientside from neoforge-client.toml
      */
     public static class Client {
         public final BooleanValue alwaysSetupTerrainOffThread;
@@ -117,27 +117,27 @@ public class NeoForgeConfig {
                 .comment("Enable NeoForge to queue all chunk updates to the Chunk Update thread.",
                         "May increase FPS significantly, but may also cause weird rendering lag.",
                         "Not recommended for computers without a significant number of cores available.")
-                .translation("forge.configgui.alwaysSetupTerrainOffThread")
+                .translation("neoforge.configgui.alwaysSetupTerrainOffThread")
                 .define("alwaysSetupTerrainOffThread", false);
 
             experimentalForgeLightPipelineEnabled = builder
                 .comment("EXPERIMENTAL: Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.")
-                .translation("forge.configgui.forgeLightPipelineEnabled")
+                .translation("neoforge.configgui.forgeLightPipelineEnabled")
                 .define("experimentalForgeLightPipelineEnabled", false);
 
             showLoadWarnings = builder
                 .comment("When enabled, NeoForge will show any warnings that occurred during loading.")
-                .translation("forge.configgui.showLoadWarnings")
+                .translation("neoforge.configgui.showLoadWarnings")
                 .define("showLoadWarnings", true);
 
             useCombinedDepthStencilAttachment = builder
                     .comment("Set to true to use a combined DEPTH_STENCIL attachment instead of two separate ones.")
-                    .translation("forge.configgui.useCombinedDepthStencilAttachment")
+                    .translation("neoforge.configgui.useCombinedDepthStencilAttachment")
                     .define("useCombinedDepthStencilAttachment", false);
 
             compressLanIPv6Addresses = builder
                     .comment("[Deprecated for Removal] IPv6 addresses will always be compressed")
-                    .translation("forge.configgui.compressLanIPv6Addresses")
+                    .translation("neoforge.configgui.compressLanIPv6Addresses")
                     .define("compressLanIPv6Addresses", true);
 
             builder.pop();
@@ -172,7 +172,7 @@ public class NeoForgeConfig {
 
     @SubscribeEvent
     public static void onLoad(final ModConfigEvent.Loading configEvent) {
-        LogManager.getLogger().debug(Logging.FORGEMOD, "Loaded forge config file {}", configEvent.getConfig().getFileName());
+        LogManager.getLogger().debug(Logging.FORGEMOD, "Loaded NeoForge config file {}", configEvent.getConfig().getFileName());
     }
 
     @SubscribeEvent

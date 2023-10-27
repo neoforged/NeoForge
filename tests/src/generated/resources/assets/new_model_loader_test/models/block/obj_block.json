@@ -1,6 +1,6 @@
 {
   "flip_v": true,
-  "loader": "forge:obj",
+  "loader": "neoforge:obj",
   "model": "new_model_loader_test:models/item/sugar_glider.obj",
   "textures": {
     "particle": "#qr",

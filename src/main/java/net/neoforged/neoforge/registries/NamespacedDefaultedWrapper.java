@@ -63,7 +63,7 @@ class NamespacedDefaultedWrapper<T> extends NamespacedWrapper<T> implements Defa
 
     public static class Factory<V> implements IForgeRegistry.CreateCallback<V>, IForgeRegistry.AddCallback<V>
     {
-        public static final ResourceLocation ID = new ResourceLocation("forge", "registry_defaulted_wrapper");
+        public static final ResourceLocation ID = new ResourceLocation("neoforge", "registry_defaulted_wrapper");
 
         @Override
         public void onCreate(IForgeRegistryInternal<V> owner, RegistryManager stage)

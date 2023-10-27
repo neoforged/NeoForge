@@ -5,7 +5,7 @@
  import net.minecraft.util.InclusiveRange;
  
 -public record PackMetadataSection(Component description, int packFormat, Optional<InclusiveRange<Integer>> supportedFormats) {
-+public record PackMetadataSection(Component description, @Deprecated int packFormat, Optional<InclusiveRange<Integer>> supportedFormats, Optional<ForgeData> forgeData) {
++public record PackMetadataSection(Component description, @Deprecated int packFormat, Optional<InclusiveRange<Integer>> supportedFormats, Optional<NeoForgeData> neoForgeData) {
 +   
 +   @Deprecated
 +   public PackMetadataSection(Component description, int packFormat, Optional<InclusiveRange<Integer>> supportedFormats) {
@@ -16,12 +16,12 @@
 +      this(description, packFormat, Optional.of(supportedFormats), Optional.empty());
 +   }
 +   
-+   public PackMetadataSection(Component description, int packFormat, ForgeData forgeData) {
-+      this(description, packFormat, Optional.empty(), Optional.of(forgeData));
++   public PackMetadataSection(Component description, int packFormat, NeoForgeData neoForgeData) {
++      this(description, packFormat, Optional.empty(), Optional.of(neoForgeData));
 +   }
 +   
 +   public <R> PackMetadataSection(Component p_10371_, int p_10372_, java.util.Map<net.minecraft.server.packs.PackType, Integer> packTypeVersions) {
-+      this(p_10371_, p_10372_, new ForgeData(packTypeVersions));
++      this(p_10371_, p_10372_, new NeoForgeData(packTypeVersions));
 +   }
 +   
 +   public PackMetadataSection(Component description, int packVersion) {
@@ -39,7 +39,7 @@
 +                     ExtraCodecs.COMPONENT.fieldOf("description").forGetter(PackMetadataSection::description),
 +                     Codec.INT.fieldOf("pack_format").forGetter(PackMetadataSection::packFormat),
 +                     InclusiveRange.codec(Codec.INT).optionalFieldOf("supported_formats").forGetter(PackMetadataSection::supportedFormats),
-+                     ForgeData.CODEC.optionalFieldOf("forge").forGetter(PackMetadataSection::forgeData)
++                     NeoForgeData.CODEC.optionalFieldOf("neoforge").forGetter(PackMetadataSection::neoForgeData)
 +               )
 +                            .apply(p_294835_, PackMetadataSection::new)
     );
@@ -47,20 +47,20 @@
 +   
 +   
 +   public int packFormat(net.minecraft.server.packs.PackType packType) {
-+      return forgeData().flatMap(d -> d.packFormat(packType)).orElse(packFormat());
++      return neoForgeData().flatMap(d -> d.packFormat(packType)).orElse(packFormat());
 +   }
 +   
-+   public record ForgeData(Optional<java.util.Map<net.minecraft.server.packs.PackType, Integer>> formatPerPackType) {
++   public record NeoForgeData(Optional<java.util.Map<net.minecraft.server.packs.PackType, Integer>> formatPerPackType) {
 +      
-+      private static final Codec<ForgeData> CODEC = RecordCodecBuilder.create(builder -> builder.group(
++      private static final Codec<NeoForgeData> CODEC = RecordCodecBuilder.create(builder -> builder.group(
 +            Codec.simpleMap(
 +                  net.minecraft.util.StringRepresentable.fromEnum(net.minecraft.server.packs.PackType::values),
 +                  Codec.INT,
 +                  com.mojang.serialization.Keyable.forStrings(() -> java.util.Arrays.stream(net.minecraft.server.packs.PackType.values()).map(net.minecraft.util.StringRepresentable::getSerializedName))
-+            ).codec().optionalFieldOf("versions").forGetter(ForgeData::formatPerPackType)
-+      ).apply(builder, ForgeData::new));
-+      
-+      public ForgeData(java.util.Map<net.minecraft.server.packs.PackType, Integer> supportedFormats) {
++            ).codec().optionalFieldOf("versions").forGetter(NeoForgeData::formatPerPackType)
++      ).apply(builder, NeoForgeData::new));
++
++      public NeoForgeData(java.util.Map<net.minecraft.server.packs.PackType, Integer> supportedFormats) {
 +         this(Optional.of(supportedFormats));
 +      }
 +      

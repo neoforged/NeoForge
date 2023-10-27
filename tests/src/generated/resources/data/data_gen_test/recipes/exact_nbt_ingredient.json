@@ -3,7 +3,7 @@
   "category": "equipment",
   "ingredients": [
     {
-      "type": "forge:nbt",
+      "type": "neoforge:nbt",
       "Count": 1,
       "id": "minecraft:iron_pickaxe",
       "tag": {

@@ -6,7 +6,7 @@
     Optional<ServerStatus.Favicon> favicon,
 -   boolean enforcesSecureChat
 +   boolean enforcesSecureChat,
-+   Optional<net.neoforged.neoforge.network.ServerStatusPing> forgeData
++   Optional<net.neoforged.neoforge.network.ServerStatusPing> neoForgeData
  ) {
     public static final Codec<ServerStatus> CODEC = RecordCodecBuilder.create(
        p_273270_ -> p_273270_.group(
@@ -16,7 +16,7 @@
                 ServerStatus.Favicon.CODEC.optionalFieldOf("favicon").forGetter(ServerStatus::favicon),
 -               Codec.BOOL.optionalFieldOf("enforcesSecureChat", Boolean.valueOf(false)).forGetter(ServerStatus::enforcesSecureChat)
 +               Codec.BOOL.optionalFieldOf("enforcesSecureChat", Boolean.valueOf(false)).forGetter(ServerStatus::enforcesSecureChat),
-+               net.neoforged.neoforge.network.ServerStatusPing.CODEC.optionalFieldOf("forgeData").forGetter(ServerStatus::forgeData)
++               net.neoforged.neoforge.network.ServerStatusPing.CODEC.optionalFieldOf("neoForgeData").forGetter(ServerStatus::neoForgeData)
              )
              .apply(p_273270_, ServerStatus::new)
     );

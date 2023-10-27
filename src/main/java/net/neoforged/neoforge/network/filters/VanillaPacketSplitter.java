@@ -31,7 +31,7 @@ public class VanillaPacketSplitter
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private static final ResourceLocation CHANNEL = new ResourceLocation("forge", "split");
+    private static final ResourceLocation CHANNEL = new ResourceLocation("neoforge", "split");
     private static final String VERSION = "1.1";
 
     private static final int PROTOCOL_MAX = CompressionDecoder.MAXIMUM_UNCOMPRESSED_LENGTH;
@@ -130,7 +130,7 @@ public class VanillaPacketSplitter
         {
             if (!receivedBuffers.isEmpty())
             {
-                LOGGER.warn("forge:split received out of order - inbound buffer not empty when receiving first");
+                LOGGER.warn("neoforge:split received out of order - inbound buffer not empty when receiving first");
                 receivedBuffers.clear();
             }
         }
@@ -143,7 +143,7 @@ public class VanillaPacketSplitter
             Packet<?> packet = protocol.codec(direction).createPacket(packetId, full);
             if (packet == null)
             {
-                LOGGER.error("Received invalid packet ID {} in forge:split", packetId);
+                LOGGER.error("Received invalid packet ID {} in neoforge:split", packetId);
             }
             else
             {

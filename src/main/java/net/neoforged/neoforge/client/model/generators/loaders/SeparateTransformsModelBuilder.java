@@ -28,7 +28,7 @@ public class SeparateTransformsModelBuilder<T extends ModelBuilder<T>> extends C
 
     protected SeparateTransformsModelBuilder(T parent, ExistingFileHelper existingFileHelper)
     {
-        super(new ResourceLocation("forge:separate_transforms"), parent, existingFileHelper);
+        super(new ResourceLocation("neoforge:separate_transforms"), parent, existingFileHelper);
     }
 
     public SeparateTransformsModelBuilder<T> base(T modelBuilder)

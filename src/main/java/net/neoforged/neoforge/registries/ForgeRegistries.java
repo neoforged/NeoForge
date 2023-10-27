@@ -132,14 +132,14 @@ public class ForgeRegistries
      * Use {@link Keys#FLUID_TYPES} to create a {@link DeferredRegister}.
      */
     public static final Supplier<IForgeRegistry<FluidType>> FLUID_TYPES = DEFERRED_FLUID_TYPES.makeRegistry(GameData::getFluidTypeRegistryBuilder);
-    static final DeferredRegister<HolderSetType> DEFERRED_HOLDER_SET_TYPES = DeferredRegister.create(Keys.HOLDER_SET_TYPES, "forge");
+    static final DeferredRegister<HolderSetType> DEFERRED_HOLDER_SET_TYPES = DeferredRegister.create(Keys.HOLDER_SET_TYPES, Keys.HOLDER_SET_TYPES.location().getNamespace());
     /**
      * Calling {@link Supplier#get()} before {@link NewRegistryEvent} is fired will result in a null registry returned.
      * Use {@link Keys#HOLDER_SET_TYPES} to create a {@link DeferredRegister}.
      */
     public static final Supplier<IForgeRegistry<HolderSetType>> HOLDER_SET_TYPES = DEFERRED_HOLDER_SET_TYPES.makeRegistry(GameData::getHolderSetTypeRegistryBuilder);
 
-    static final DeferredRegister<ItemDisplayContext> DEFERRED_DISPLAY_CONTEXTS = DeferredRegister.create(Keys.DISPLAY_CONTEXTS, "forge");
+    static final DeferredRegister<ItemDisplayContext> DEFERRED_DISPLAY_CONTEXTS = DeferredRegister.create(Keys.DISPLAY_CONTEXTS, Keys.DISPLAY_CONTEXTS.location().getNamespace());
     /**
      * Calling {@link Supplier#get()} before {@link NewRegistryEvent} is fired will result in a null registry returned.
      * Use {@link Keys#DISPLAY_CONTEXTS} to create a {@link DeferredRegister}.
@@ -153,10 +153,10 @@ public class ForgeRegistries
      */
     public static final Supplier<IForgeRegistry<IngredientType<?>>> INGREDIENT_TYPES = DEFERRED_INGREDIENT_TYPES.makeRegistry(GameData::getIngredientTypeRegistryBuilder);
 
-    static final DeferredRegister<Codec<? extends ICondition>> DEFERRED_CONDITION_CODECS = DeferredRegister.create(Keys.CONDITION_SERIALIZERS, Keys.CONDITION_SERIALIZERS.location().getNamespace());
+    static final DeferredRegister<Codec<? extends ICondition>> DEFERRED_CONDITION_CODECS = DeferredRegister.create(Keys.CONDITION_CODECS, Keys.CONDITION_CODECS.location().getNamespace());
     /**
      * Calling {@link Supplier#get()} before {@link NewRegistryEvent} is fired will result in a null registry returned.
-     * Use {@link Keys#CONDITION_SERIALIZERS} to create a {@link DeferredRegister}.
+     * Use {@link Keys#CONDITION_CODECS} to create a {@link DeferredRegister}.
      */
     public static final Supplier<IForgeRegistry<Codec<? extends ICondition>>> CONDITION_SERIALIZERS = DEFERRED_CONDITION_CODECS.makeRegistry(GameData::getConditionCodecRegistryBuilder);
 
@@ -203,20 +203,20 @@ public class ForgeRegistries
         public static final ResourceKey<Registry<Biome>> BIOMES = key("worldgen/biome");
 
         // Forge
-        public static final ResourceKey<Registry<EntityDataSerializer<?>>> ENTITY_DATA_SERIALIZERS = key("forge:entity_data_serializers");
-        public static final ResourceKey<Registry<Codec<? extends IGlobalLootModifier>>> GLOBAL_LOOT_MODIFIER_SERIALIZERS = key("forge:global_loot_modifier_serializers");
-        public static final ResourceKey<Registry<Codec<? extends BiomeModifier>>> BIOME_MODIFIER_SERIALIZERS = key("forge:biome_modifier_serializers");
-        public static final ResourceKey<Registry<Codec<? extends StructureModifier>>> STRUCTURE_MODIFIER_SERIALIZERS = key("forge:structure_modifier_serializers");
-        public static final ResourceKey<Registry<FluidType>> FLUID_TYPES = key("forge:fluid_type");
-        public static final ResourceKey<Registry<HolderSetType>> HOLDER_SET_TYPES = key("forge:holder_set_type");
-        public static final ResourceKey<Registry<ItemDisplayContext>> DISPLAY_CONTEXTS = key("forge:display_contexts");
-        public static final ResourceKey<Registry<IngredientType<?>>> INGREDIENT_TYPES = key("forge:ingredient_serializer");
-        public static final ResourceKey<Registry<Codec<? extends ICondition>>> CONDITION_SERIALIZERS = key("forge:condition_codecs");
-        public static final ResourceKey<Registry<Codec<? extends ICustomItemPredicate>>> ITEM_PREDICATE_SERIALIZERS = key("forge:item_predicates");
+        public static final ResourceKey<Registry<EntityDataSerializer<?>>> ENTITY_DATA_SERIALIZERS = key("neoforge:entity_data_serializers");
+        public static final ResourceKey<Registry<Codec<? extends IGlobalLootModifier>>> GLOBAL_LOOT_MODIFIER_SERIALIZERS = key("neoforge:global_loot_modifier_serializers");
+        public static final ResourceKey<Registry<Codec<? extends BiomeModifier>>> BIOME_MODIFIER_SERIALIZERS = key("neoforge:biome_modifier_serializers");
+        public static final ResourceKey<Registry<Codec<? extends StructureModifier>>> STRUCTURE_MODIFIER_SERIALIZERS = key("neoforge:structure_modifier_serializers");
+        public static final ResourceKey<Registry<FluidType>> FLUID_TYPES = key("neoforge:fluid_type");
+        public static final ResourceKey<Registry<HolderSetType>> HOLDER_SET_TYPES = key("neoforge:holder_set_type");
+        public static final ResourceKey<Registry<ItemDisplayContext>> DISPLAY_CONTEXTS = key("neoforge:display_contexts");
+        public static final ResourceKey<Registry<IngredientType<?>>> INGREDIENT_TYPES = key("neoforge:ingredient_serializer");
+        public static final ResourceKey<Registry<Codec<? extends ICondition>>> CONDITION_CODECS = key("neoforge:condition_codecs");
+        public static final ResourceKey<Registry<Codec<? extends ICustomItemPredicate>>> ITEM_PREDICATE_SERIALIZERS = key("neoforge:item_predicates");
 
         // Forge Dynamic
-        public static final ResourceKey<Registry<BiomeModifier>> BIOME_MODIFIERS = key("forge:biome_modifier");
-        public static final ResourceKey<Registry<StructureModifier>> STRUCTURE_MODIFIERS = key("forge:structure_modifier");
+        public static final ResourceKey<Registry<BiomeModifier>> BIOME_MODIFIERS = key("neoforge:biome_modifier");
+        public static final ResourceKey<Registry<StructureModifier>> STRUCTURE_MODIFIERS = key("neoforge:structure_modifier");
 
         private static <T> ResourceKey<Registry<T>> key(String name)
         {

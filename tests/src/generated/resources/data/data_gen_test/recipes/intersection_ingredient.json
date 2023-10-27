@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "#": {
-      "type": "forge:intersection",
+      "type": "neoforge:intersection",
       "children": [
         {
           "tag": "minecraft:planks"

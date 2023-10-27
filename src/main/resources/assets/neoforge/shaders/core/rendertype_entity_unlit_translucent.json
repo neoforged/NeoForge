@@ -4,8 +4,8 @@
         "srcrgb": "srcalpha",
         "dstrgb": "1-srcalpha"
     },
-    "vertex": "forge:rendertype_entity_unlit_translucent",
-    "fragment": "forge:rendertype_entity_unlit_translucent",
+    "vertex": "neoforge:rendertype_entity_unlit_translucent",
+    "fragment": "neoforge:rendertype_entity_unlit_translucent",
     "attributes": [
         "Position",
         "Color",

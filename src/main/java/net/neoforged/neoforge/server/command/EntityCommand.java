@@ -44,9 +44,9 @@ class EntityCommand
 
     private static class EntityListCommand
     {
-        private static final SimpleCommandExceptionType INVALID_FILTER = new SimpleCommandExceptionType(Component.translatable("commands.forge.entity.list.invalid"));
-        private static final DynamicCommandExceptionType INVALID_DIMENSION = new DynamicCommandExceptionType(dim -> Component.translatable("commands.forge.entity.list.invalidworld", dim));
-        private static final SimpleCommandExceptionType NO_ENTITIES = new SimpleCommandExceptionType(Component.translatable("commands.forge.entity.list.none"));
+        private static final SimpleCommandExceptionType INVALID_FILTER = new SimpleCommandExceptionType(Component.translatable("commands.neoforge.entity.list.invalid"));
+        private static final DynamicCommandExceptionType INVALID_DIMENSION = new DynamicCommandExceptionType(dim -> Component.translatable("commands.neoforge.entity.list.invalidworld", dim));
+        private static final SimpleCommandExceptionType NO_ENTITIES = new SimpleCommandExceptionType(Component.translatable("commands.neoforge.entity.list.none"));
         static ArgumentBuilder<CommandSourceStack, ?> register()
         {
             return Commands.literal("list")
@@ -89,7 +89,7 @@ class EntityCommand
                 if (info == null)
                     throw NO_ENTITIES.create();
 
-                sender.sendSuccess(() -> Component.translatable("commands.forge.entity.list.single.header", name, info.getLeft()), false);
+                sender.sendSuccess(() -> Component.translatable("commands.neoforge.entity.list.single.header", name, info.getLeft()), false);
                 List<Map.Entry<ChunkPos, Integer>> toSort = new ArrayList<>();
                 toSort.addAll(info.getRight().entrySet());
                 toSort.sort((a, b) -> {
@@ -129,7 +129,7 @@ class EntityCommand
                     throw NO_ENTITIES.create();
 
                 int count = info.stream().mapToInt(Pair::getRight).sum();
-                sender.sendSuccess(() -> Component.translatable("commands.forge.entity.list.multiple.header", count), false);
+                sender.sendSuccess(() -> Component.translatable("commands.neoforge.entity.list.multiple.header", count), false);
                 info.forEach(e -> sender.sendSuccess(() -> Component.literal("  " + e.getValue() + ": " + e.getKey()), false));
                 return info.size();
             }

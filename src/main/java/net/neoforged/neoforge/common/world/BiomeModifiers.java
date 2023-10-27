@@ -30,7 +30,7 @@ public final class BiomeModifiers
      * <p>Stock biome modifier that adds features to biomes. Has the following json format:</p>
      * <pre>
      * {
-     *   "type": "forge:add_features", // required
+     *   "type": "neoforge:add_features", // required
      *   "biomes": "#namespace:your_biome_tag" // accepts a biome id, [list of biome ids], or #namespace:biome_tag
      *   "features": "namespace:your_feature", // accepts a placed feature id, [list of placed feature ids], or #namespace:feature_tag
      *   "step": "underground_ores" // accepts a Decoration enum name
@@ -65,7 +65,7 @@ public final class BiomeModifiers
      * <p>Stock biome modifier that removes features from biomes. Has the following json format:</p>
      * <pre>
      * {
-     *   "type": "forge:removefeatures", // required
+     *   "type": "neoforge:removefeatures", // required
      *   "biomes": "#namespace:your_biome_tag", // accepts a biome id, [list of biome ids], or #namespace:biome_tag
      *   "features": "namespace:your_feature", // accepts a placed feature id, [list of placed feature ids], or #namespace:feature_tag
      *   "steps": "underground_ores" OR ["underground_ores", "vegetal_decoration"] // one or more decoration steps; optional field, defaults to all steps if not specified
@@ -112,7 +112,7 @@ public final class BiomeModifiers
      * <p>Stock biome modifier that adds a mob spawn to a biome. Has the following json format:</p>
      * <pre>
      * {
-     *   "type": "forge:add_spawns", // Required
+     *   "type": "neoforge:add_spawns", // Required
      *   "biomes": "#namespace:biome_tag", // Accepts a biome id, [list of biome ids], or #namespace:biome_tag
      *   "spawners":
      *   {
@@ -126,7 +126,7 @@ public final class BiomeModifiers
      * <p>Optionally accepts a list of spawner objects instead of a single spawner:</p>
      * <pre>
      * {
-     *   "type": "forge:add_spawns", // Required
+     *   "type": "neoforge:add_spawns", // Required
      *   "biomes": "#namespace:biome_tag", // Accepts a biome id, [list of biome ids], or #namespace:biome_tag
      *   "spawners":
      *   [
@@ -184,7 +184,7 @@ public final class BiomeModifiers
      * <p>Stock biome modifier that removes mob spawns from a biome. Has the following json format:</p>
      * <pre>
      * {
-     *   "type": "forge:add_spawns", // Required
+     *   "type": "neoforge:add_spawns", // Required
      *   "biomes": "#namespace:biome_tag", // Accepts a biome id, [list of biome ids], or #namespace:biome_tag
      *   "entity_types": #namespace:entitytype_tag // Accepts an entity type, [list of entity types], or #namespace:entitytype_tag
      * }

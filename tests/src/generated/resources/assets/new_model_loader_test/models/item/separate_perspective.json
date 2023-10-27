@@ -1,9 +1,9 @@
 {
-  "parent": "forge:item/default",
+  "parent": "neoforge:item/default",
   "base": {
     "parent": "minecraft:item/coal"
   },
-  "loader": "forge:separate_transforms",
+  "loader": "neoforge:separate_transforms",
   "perspectives": {
     "firstperson_lefthand": {
       "parent": "minecraft:item/bone"

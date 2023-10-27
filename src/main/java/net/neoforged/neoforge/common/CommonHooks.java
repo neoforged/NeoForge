@@ -1473,40 +1473,6 @@ public class CommonHooks
         return biomeLocation != null && !biomeLocation.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE);
     }
 
-    public static Map<PackType, Integer> readTypedPackFormats(JsonObject json)
-    {
-        ImmutableMap.Builder<PackType, Integer> map = ImmutableMap.builder();
-
-        for (PackType packType : PackType.values())
-        {
-            String key = makePackFormatKey(packType);
-            if (json.has(key))
-            {
-                map.put(packType, GsonHelper.getAsInt(json, key));
-            }
-        }
-
-        return map.buildOrThrow();
-    }
-
-    public static void writeTypedPackFormats(JsonObject json, PackMetadataSection section)
-    {
-        int packFormat = section.packFormat();
-        for (PackType packType : PackType.values())
-        {
-            int format = section.packFormat(packType);
-            if (format != packFormat)
-            {
-                json.addProperty(makePackFormatKey(packType), format);
-            }
-        }
-    }
-
-    private static String makePackFormatKey(PackType packType)
-    {
-        return "forge:" + packType.name().toLowerCase(Locale.ROOT) + "_pack_format";
-    }
-
     /**
      * <p>
      * This method is used to prefix the path, where elements of the associated registry are stored, with their namespace, if it is not minecraft

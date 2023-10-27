@@ -1,8 +1,0 @@
-{
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "forge:items/bucket_base",
-        "layer1": "forge:items/bucket_fluid",
-        "layer2": "forge:items/bucket_cover"
-    }
-}

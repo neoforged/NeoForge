@@ -57,6 +57,7 @@ public class ObjMaterialLibrary
                     break;
 
                 case "forge_TintIndex":
+                case "neoforge_TintIndex":
                     currentMaterial.diffuseTintIndex = Integer.parseInt(line[1]);
                     break;
 

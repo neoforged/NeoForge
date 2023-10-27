@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Users should not be instantiating or using this themselves unless they know what they're doing.
  */
 @ApiStatus.Internal
-@EventBusSubscriber(modid = "forge", bus = Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = "neoforge", bus = Bus.FORGE, value = Dist.CLIENT)
 public class ModelDataManager
 {
     private final Level level;

@@ -38,7 +38,7 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
 
     protected ItemLayerModelBuilder(T parent, ExistingFileHelper existingFileHelper)
     {
-        super(new ResourceLocation("forge:item_layers"), parent, existingFileHelper);
+        super(new ResourceLocation("neoforge:item_layers"), parent, existingFileHelper);
     }
 
     /**

@@ -40,7 +40,7 @@ public enum KeyModifier {
         @Override
         public Component getCombinedName(InputConstants.Key key, Supplier<Component> defaultLogic)
         {
-            String localizationFormatKey = Minecraft.ON_OSX ? "forge.controlsgui.control.mac" : "forge.controlsgui.control";
+            String localizationFormatKey = Minecraft.ON_OSX ? "neoforge.controlsgui.control.mac" : "neoforge.controlsgui.control";
             return Component.translatable(localizationFormatKey, defaultLogic.get());
         }
     },
@@ -60,7 +60,7 @@ public enum KeyModifier {
         @Override
         public Component getCombinedName(InputConstants.Key key, Supplier<Component> defaultLogic)
         {
-            return Component.translatable("forge.controlsgui.shift", defaultLogic.get());
+            return Component.translatable("neoforge.controlsgui.shift", defaultLogic.get());
         }
     },
     ALT {
@@ -79,7 +79,7 @@ public enum KeyModifier {
         @Override
         public Component getCombinedName(InputConstants.Key keyCode, Supplier<Component> defaultLogic)
         {
-            return Component.translatable("forge.controlsgui.alt", defaultLogic.get());
+            return Component.translatable("neoforge.controlsgui.alt", defaultLogic.get());
         }
     },
     NONE {

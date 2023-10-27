@@ -30,7 +30,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
  * <p>Holderset that represents all elements of a registry. Json format:</p>
  * <pre>
  * {
- *   "type": "forge:any"
+ *   "type": "neoforge:any"
  * }
  * </pre>
  */

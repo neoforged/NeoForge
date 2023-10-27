@@ -27,7 +27,7 @@ public class CompositeModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
 
     protected CompositeModelBuilder(T parent, ExistingFileHelper existingFileHelper)
     {
-        super(new ResourceLocation("forge:composite"), parent, existingFileHelper);
+        super(new ResourceLocation("neoforge:composite"), parent, existingFileHelper);
     }
 
     public CompositeModelBuilder<T> child(String name, T modelBuilder)

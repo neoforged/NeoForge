@@ -86,7 +86,7 @@ public final class SimpleTier implements Tier
     @Override
     public String toString()
     {
-        return "ForgeTier[" +
+        return "SimpleTier[" +
                 "level=" + level + ", " +
                 "uses=" + uses + ", " +
                 "speed=" + speed + ", " +

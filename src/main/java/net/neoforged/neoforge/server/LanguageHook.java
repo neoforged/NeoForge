@@ -86,7 +86,7 @@ public class LanguageHook
     public static void loadForgeAndMCLangs() {
         modTable = new HashMap<>(5000);
         final InputStream mc = Thread.currentThread().getContextClassLoader().getResourceAsStream("assets/minecraft/lang/en_us.json");
-        final InputStream forge = Thread.currentThread().getContextClassLoader().getResourceAsStream("assets/forge/lang/en_us.json");
+        final InputStream forge = Thread.currentThread().getContextClassLoader().getResourceAsStream("assets/neoforge/lang/en_us.json");
         loadLocaleData(mc);
         loadLocaleData(forge);
         capturedTables.forEach(t->t.putAll(modTable));

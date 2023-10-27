@@ -22,7 +22,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
  * <p>Holderset that represents an intersection of other holdersets. Json format:</p>
  * <pre>
  * {
- *   "type": "forge:and",
+ *   "type": "neoforge:and",
  *   "values":
  *   [
  *      // list of sub-holdersets (strings, lists, or objects)

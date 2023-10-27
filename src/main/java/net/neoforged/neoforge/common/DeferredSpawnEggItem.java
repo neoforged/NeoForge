@@ -89,7 +89,7 @@ public class DeferredSpawnEggItem extends SpawnEggItem
         return stack;
     };
 
-    @Mod.EventBusSubscriber(modid = "forge", bus = Mod.EventBusSubscriber.Bus.MOD)
+    @Mod.EventBusSubscriber(modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
     private static class CommonHandler
     {
         @SubscribeEvent
@@ -108,7 +108,7 @@ public class DeferredSpawnEggItem extends SpawnEggItem
         }
     }
 
-    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = "forge", bus = Mod.EventBusSubscriber.Bus.MOD)
+    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
     private static class ColorRegisterHandler
     {
         @SubscribeEvent(priority = EventPriority.HIGHEST)

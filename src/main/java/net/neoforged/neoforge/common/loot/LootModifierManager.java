@@ -49,8 +49,8 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener {
     protected Map<ResourceLocation, JsonElement> prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
         Map<ResourceLocation, JsonElement> map = super.prepare(resourceManager, profilerFiller);
         List<ResourceLocation> finalLocations = new ArrayList<>();
-        ResourceLocation resourceLocation = new ResourceLocation("forge", "loot_modifiers/global_loot_modifiers.json");
-        //read in all data files from forge:loot_modifiers/global_loot_modifiers in order to do layering
+        ResourceLocation resourceLocation = new ResourceLocation("neoforge", "loot_modifiers/global_loot_modifiers.json");
+        //read in all data files from neoforge:loot_modifiers/global_loot_modifiers in order to do layering
         for (Resource resource : resourceManager.getResourceStack(resourceLocation)) {
             try (Reader reader = resource.openAsReader()) {
                 JsonObject jsonobject = GsonHelper.fromJson(GSON, reader, JsonObject.class);

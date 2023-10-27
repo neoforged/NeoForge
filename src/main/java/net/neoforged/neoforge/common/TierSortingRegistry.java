@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 public class TierSortingRegistry
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final ResourceLocation ITEM_TIER_ORDERING_JSON = new ResourceLocation("forge", "item_tier_ordering.json");
+    private static final ResourceLocation ITEM_TIER_ORDERING_JSON = new ResourceLocation("neoforge", "item_tier_ordering.json");
 
     /**
      * Registers a tier into the tier sorting registry.
@@ -216,7 +216,7 @@ public class TierSortingRegistry
     private static final List<Tier> sortedTiers = new ArrayList<>();
     private static final List<Tier> sortedTiersUnmodifiable = Collections.unmodifiableList(sortedTiers);
 
-    private static final ResourceLocation CHANNEL_NAME = new ResourceLocation("forge:tier_sorting");
+    private static final ResourceLocation CHANNEL_NAME = new ResourceLocation("neoforge:tier_sorting");
     private static final String PROTOCOL_VERSION = "1.0";
     private static final SimpleChannel SYNC_CHANNEL = NetworkRegistry.newSimpleChannel(
             CHANNEL_NAME, () -> "1.0",

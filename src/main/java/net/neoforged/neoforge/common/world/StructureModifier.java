@@ -29,7 +29,7 @@ import net.neoforged.neoforge.registries.ForgeRegistries;
  * }
  * </pre>
  * <p>
- * Datapacks can also disable a structure modifier by overriding the json and using {@code "type": "forge:none"}.</p>
+ * Datapacks can also disable a structure modifier by overriding the json and using {@code "type": "neoforge:none"}.</p>
  */
 public interface StructureModifier
 {

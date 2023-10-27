@@ -68,7 +68,7 @@ public abstract class GlobalLootModifierProvider implements DataProvider
     {
         start();
 
-        Path forgePath = this.output.getOutputFolder(PackOutput.Target.DATA_PACK).resolve("forge").resolve("loot_modifiers").resolve("global_loot_modifiers.json");
+        Path forgePath = this.output.getOutputFolder(PackOutput.Target.DATA_PACK).resolve("neoforge").resolve("loot_modifiers").resolve("global_loot_modifiers.json");
         Path modifierFolderPath = this.output.getOutputFolder(PackOutput.Target.DATA_PACK).resolve(this.modid).resolve("loot_modifiers");
         List<ResourceLocation> entries = new ArrayList<>();
 

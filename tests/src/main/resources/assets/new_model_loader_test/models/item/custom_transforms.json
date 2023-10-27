@@ -1,6 +1,6 @@
 {
-  "parent": "forge:item/default",
-  "loader": "forge:obj",
+  "parent": "neoforge:item/default",
+  "loader": "neoforge:obj",
   "model": "new_model_loader_test:models/item/item_direction.obj",
   "textures": {
     "particle": "block/oak_planks"

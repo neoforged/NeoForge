@@ -25,12 +25,12 @@ import java.util.function.Function;
  * Implementation that defines what a global loot modifier must implement in order to be functional.
  * {@link LootModifier} Supplies base functionality; most modders should only need to extend that.<br/>
  * Requires a {@link Codec} to be registered: {@link ForgeRegistries#GLOBAL_LOOT_MODIFIER_SERIALIZERS}, and returned in {@link #codec()}
- * Individual instances of modifiers must be registered via json, see forge:loot_modifiers/global_loot_modifiers
+ * Individual instances of modifiers must be registered via json, see neoforge:loot_modifiers/global_loot_modifiers
  */
 public interface IGlobalLootModifier {
     Codec<IGlobalLootModifier> DIRECT_CODEC = ExtraCodecs.lazyInitializedCodec(() -> ForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS.get().getCodec())
             .dispatch(IGlobalLootModifier::codec, Function.identity());
-    Codec<Optional<WithConditions<IGlobalLootModifier>>> CONDITIONAL_CODEC = ConditionalOps.createConditionalCodecWithConditions(DIRECT_CODEC, "forge:conditions").codec();
+    Codec<Optional<WithConditions<IGlobalLootModifier>>> CONDITIONAL_CODEC = ConditionalOps.createConditionalCodecWithConditions(DIRECT_CODEC, "neoforge:conditions").codec();
 
     Codec<LootItemCondition[]> LOOT_CONDITIONS_CODEC = LootItemConditions.CODEC.listOf().xmap(list -> list.toArray(LootItemCondition[]::new), List::of);
 

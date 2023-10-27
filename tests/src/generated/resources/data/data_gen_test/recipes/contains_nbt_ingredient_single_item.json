@@ -3,7 +3,7 @@
   "category": "equipment",
   "ingredients": [
     {
-      "type": "forge:partial_nbt",
+      "type": "neoforge:partial_nbt",
       "item": "minecraft:stone_pickaxe",
       "tag": {
         "Damage": 3

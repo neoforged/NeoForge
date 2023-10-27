@@ -27,7 +27,7 @@ import java.util.WeakHashMap;
 
 public class FarmlandWaterManager
 {
-    private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("forge.debugFarmlandWaterManager", "false"));
+    private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("neoforge.debugFarmlandWaterManager", "false"));
     private static final Map<LevelReader, Map<ChunkPos, ChunkTicketManager<Vec3>>> customWaterHandler = new WeakHashMap<>();
     private static final Logger LOGGER = LogManager.getLogger();
 

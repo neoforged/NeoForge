@@ -15,7 +15,7 @@
  
 +      public void save(net.minecraft.nbt.CompoundTag tag) {
 +         tag.putByte("Type", (byte) getId());
-+         tag.putString("forge:shape_type", name());
++         tag.putString("neoforge:shape_type", name());
 +      }
 +
 +      /** Use {getShape(ComoundTag)} */
@@ -25,7 +25,7 @@
 +      }
 +
 +      public static FireworkRocketItem.Shape getShape(net.minecraft.nbt.CompoundTag tag) {
-+         String name = tag.contains("forge:shape_type", net.minecraft.nbt.Tag.TAG_STRING) ? tag.getString("forge:shape_type") : null;
++         String name = tag.contains("neoforge:shape_type", net.minecraft.nbt.Tag.TAG_STRING) ? tag.getString("neoforge:shape_type") : null;
 +         if (name == null) return byId(tag.getByte("Type"));
 +         for (Shape ret : values())
 +             if (ret.name().equals(name))

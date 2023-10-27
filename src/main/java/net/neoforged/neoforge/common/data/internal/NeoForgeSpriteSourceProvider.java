@@ -25,6 +25,6 @@ public class NeoForgeSpriteSourceProvider extends SpriteSourceProvider
     @Override
     protected void gather()
     {
-        atlas(SpriteSourceProvider.BLOCKS_ATLAS).addSource(new SingleFile(new ResourceLocation("forge:white"), Optional.empty()));
+        atlas(SpriteSourceProvider.BLOCKS_ATLAS).addSource(new SingleFile(new ResourceLocation("neoforge:white"), Optional.empty()));
     }
 }

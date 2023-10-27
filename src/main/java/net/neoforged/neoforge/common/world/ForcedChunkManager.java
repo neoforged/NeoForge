@@ -39,10 +39,10 @@ import org.jetbrains.annotations.ApiStatus;
 public class ForcedChunkManager
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final TicketType<TicketOwner<BlockPos>> BLOCK = TicketType.create("forge:block", Comparator.comparing(info -> info));
-    private static final TicketType<TicketOwner<BlockPos>> BLOCK_TICKING = TicketType.create("forge:block_ticking", Comparator.comparing(info -> info));
-    private static final TicketType<TicketOwner<UUID>> ENTITY = TicketType.create("forge:entity", Comparator.comparing(info -> info));
-    private static final TicketType<TicketOwner<UUID>> ENTITY_TICKING = TicketType.create("forge:entity_ticking", Comparator.comparing(info -> info));
+    private static final TicketType<TicketOwner<BlockPos>> BLOCK = TicketType.create("neoforge:block", Comparator.comparing(info -> info));
+    private static final TicketType<TicketOwner<BlockPos>> BLOCK_TICKING = TicketType.create("neoforge:block_ticking", Comparator.comparing(info -> info));
+    private static final TicketType<TicketOwner<UUID>> ENTITY = TicketType.create("neoforge:entity", Comparator.comparing(info -> info));
+    private static final TicketType<TicketOwner<UUID>> ENTITY_TICKING = TicketType.create("neoforge:entity_ticking", Comparator.comparing(info -> info));
     private static final Map<String, LoadingValidationCallback> callbacks = new HashMap<>();
 
     /**

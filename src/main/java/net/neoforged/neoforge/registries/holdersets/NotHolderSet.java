@@ -31,11 +31,11 @@ import net.minecraft.util.RandomSource;
 
 /**
  * <p>Holderset that represents all elements of a registry not present in another holderset.
- * forge:exclusion is preferable when the number of allowed elements is small relative to the size of the registry.
+ * neoforge:exclusion is preferable when the number of allowed elements is small relative to the size of the registry.
  * Json format:</p>
  * <pre>
  * {
- *   "type": "forge:not",
+ *   "type": "neoforge:not",
  *   "value": "not_this_holderset" // string, list, or object
  * }
  * </pre>

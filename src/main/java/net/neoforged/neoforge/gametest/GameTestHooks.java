@@ -71,7 +71,7 @@ public class GameTestHooks
 
     private static Set<String> getEnabledNamespaces()
     {
-        String enabledNamespacesStr = System.getProperty("forge.enabledGameTestNamespaces");
+        String enabledNamespacesStr = System.getProperty("neoforge.enabledGameTestNamespaces");
         if (enabledNamespacesStr == null)
         {
             return Set.of();

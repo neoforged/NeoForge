@@ -28,7 +28,7 @@ import java.util.function.Function;
  * }
  * </pre>
  * <p>
- * Datapacks can also disable a biome modifier by overriding the json and using {@code "type": "forge:none"}.</p>
+ * Datapacks can also disable a biome modifier by overriding the json and using {@code "type": "neoforge:none"}.</p>
  */
 public interface BiomeModifier
 {

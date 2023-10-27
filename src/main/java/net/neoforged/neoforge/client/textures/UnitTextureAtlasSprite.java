@@ -19,7 +19,7 @@ import net.minecraft.server.packs.resources.ResourceMetadata;
  */
 public class UnitTextureAtlasSprite extends TextureAtlasSprite
 {
-    public static final ResourceLocation LOCATION = new ResourceLocation("forge", "unit");
+    public static final ResourceLocation LOCATION = new ResourceLocation("neoforge", "unit");
     public static final UnitTextureAtlasSprite INSTANCE = new UnitTextureAtlasSprite();
 
     private UnitTextureAtlasSprite()

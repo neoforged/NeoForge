@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class ModIdArgument implements ArgumentType<String> {
-    private static final List<String> EXAMPLES = Arrays.asList("forge", "inventorysorter");
+    private static final List<String> EXAMPLES = Arrays.asList("neoforge", "inventorysorter");
 
     public static ModIdArgument modIdArgument() {
         return new ModIdArgument();

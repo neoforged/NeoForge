@@ -14,7 +14,7 @@ import java.util.*;
 
 public final class DefaultPermissionHandler implements IPermissionHandler
 {
-    public static final ResourceLocation IDENTIFIER = new ResourceLocation("forge", "default_handler");;
+    public static final ResourceLocation IDENTIFIER = new ResourceLocation("neoforge", "default_handler");;
     private final Set<PermissionNode<?>> registeredNodes = new HashSet<>();
     private Set<PermissionNode<?>> immutableRegisteredNodes = Collections.unmodifiableSet(this.registeredNodes);
 

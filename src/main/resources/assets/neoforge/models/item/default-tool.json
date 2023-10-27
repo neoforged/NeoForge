@@ -1,5 +1,5 @@
 {
-  "parent": "forge:item/default",
+  "parent": "neoforge:item/default",
   "display": {
     "thirdperson_righthand": {
       "rotation": [ 0, -90, 55 ],

@@ -1,6 +1,6 @@
 {
-  "parent": "forge:item/default",
-  "loader": "forge:bucket",
+  "parent": "neoforge:item/default",
+  "loader": "neoforge:bucket",
   "textures": {
     "base": "minecraft:block/obsidian",
     "fluid": "dyn_bucket_model_test:item/lava_obsidian"

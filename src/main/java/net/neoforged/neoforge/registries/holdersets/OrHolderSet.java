@@ -22,7 +22,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
  * <p>Holderset that represents a union of other holdersets. Json format:</p>
  * <pre>
  * {
- *   "type": "forge:or",
+ *   "type": "neoforge:or",
  *   "values":
  *   [
  *      // list of sub-holdersets (strings, lists, or objects)

@@ -19,7 +19,7 @@ public class LootTableIdCondition implements LootItemCondition
     ).apply(builder, LootTableIdCondition::new));
     // TODO Forge Registry at some point?
     public static final LootItemConditionType LOOT_TABLE_ID = new LootItemConditionType(CODEC);
-    public static final ResourceLocation UNKNOWN_LOOT_TABLE = new ResourceLocation("forge", "unknown_loot_table");
+    public static final ResourceLocation UNKNOWN_LOOT_TABLE = new ResourceLocation("neoforge", "unknown_loot_table");
 
     private final ResourceLocation targetLootTableId;
 

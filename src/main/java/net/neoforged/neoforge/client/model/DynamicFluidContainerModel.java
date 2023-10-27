@@ -219,7 +219,7 @@ public class DynamicFluidContainerModel implements IUnbakedGeometry<DynamicFluid
                         if (!cache.containsKey(name))
                         {
                             DynamicFluidContainerModel unbaked = this.parent.withFluid(fluid);
-                            BakedModel bakedModel = unbaked.bake(owner, baker, Material::sprite, BlockModelRotation.X0_Y0, this, new ResourceLocation("forge:bucket_override"));
+                            BakedModel bakedModel = unbaked.bake(owner, baker, Material::sprite, BlockModelRotation.X0_Y0, this, new ResourceLocation("neoforge:bucket_override"));
                             cache.put(name, bakedModel);
                             return bakedModel;
                         }

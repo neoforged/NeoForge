@@ -50,7 +50,7 @@ function initializeCoreMod() {
     }
 
     return {
-        'forge_method_redirector': {
+        'neoforge_method_redirector': {
             'target': {
                 'type': 'CLASS',
                 'names': function(listofclasses) {

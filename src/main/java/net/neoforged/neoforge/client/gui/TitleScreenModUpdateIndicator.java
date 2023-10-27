@@ -30,7 +30,7 @@ public class TitleScreenModUpdateIndicator extends Screen
 
     public TitleScreenModUpdateIndicator(Button modButton)
     {
-        super(Component.translatable("forge.menu.updatescreen.title"));
+        super(Component.translatable("neoforge.menu.updatescreen.title"));
         this.modButton = modButton;
     }
 

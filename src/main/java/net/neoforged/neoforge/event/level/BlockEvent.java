@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class BlockEvent extends Event
 {
-    private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("forge.debugBlockEvent", "false"));
+    private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("neoforge.debugBlockEvent", "false"));
 
     private final LevelAccessor level;
     private final BlockPos pos;

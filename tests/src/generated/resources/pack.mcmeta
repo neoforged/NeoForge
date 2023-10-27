@@ -3,7 +3,7 @@
     "description": {
       "text": "Forge tests resource pack"
     },
-    "forge": {
+    "neoforge": {
       "versions": {
         "client_resources": 18,
         "server_data": 18

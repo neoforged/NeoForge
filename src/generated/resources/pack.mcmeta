@@ -3,7 +3,7 @@
     "description": {
       "translate": "pack.forge.description"
     },
-    "forge": {
+    "neoforge": {
       "versions": {
         "client_resources": 18,
         "server_data": 18

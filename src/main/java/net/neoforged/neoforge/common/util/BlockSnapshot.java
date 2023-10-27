@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class BlockSnapshot
 {
-    private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("forge.debugBlockSnapshot", "false"));
+    private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("neoforge.debugBlockSnapshot", "false"));
 
     private final ResourceKey<Level> dim;
     private final BlockPos pos;

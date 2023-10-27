@@ -69,7 +69,7 @@ public class ChunkGenWorker implements WorldWorkerManager.IWorker
 
     public MutableComponent getStartMessage(CommandSourceStack sender)
     {
-        return Component.translatable("commands.forge.gen.start", total, start.getX(), start.getZ(), dim);
+        return Component.translatable("commands.neoforge.gen.start", total, start.getX(), start.getZ(), dim);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class ChunkGenWorker implements WorldWorkerManager.IWorker
 
             if (lastNotifcationTime < System.currentTimeMillis() - 10*1000)
             {
-                listener.sendFeedback(new TranslationTextComponent("commands.forge.gen.progress", total - queue.size(), total), true);
+                listener.sendFeedback(new TranslationTextComponent("commands.neoforge.gen.progress", total - queue.size(), total), true);
                 lastNotifcationTime = System.currentTimeMillis();
             }
             return false;
@@ -107,7 +107,7 @@ public class ChunkGenWorker implements WorldWorkerManager.IWorker
 
             if (++lastNotification >= notificationFrequency || lastNotifcationTime < System.currentTimeMillis() - 60*1000)
             {
-                listener.sendSuccess(() -> Component.translatable("commands.forge.gen.progress", total - queue.size(), total), true);
+                listener.sendSuccess(() -> Component.translatable("commands.neoforge.gen.progress", total - queue.size(), total), true);
                 lastNotification = 0;
                 lastNotifcationTime = System.currentTimeMillis();
             }
@@ -126,7 +126,7 @@ public class ChunkGenWorker implements WorldWorkerManager.IWorker
 
         if (queue.size() == 0)
         {
-            listener.sendSuccess(() -> Component.translatable("commands.forge.gen.complete", genned, total, dim.dimension().location()), true);
+            listener.sendSuccess(() -> Component.translatable("commands.neoforge.gen.complete", genned, total, dim.dimension().location()), true);
             /* TODO: Readd if/when we introduce world unloading, or get Mojang to do it.
             if (keepingLoaded != null && !keepingLoaded)
                 DimensionManager.keepLoaded(dim, false);

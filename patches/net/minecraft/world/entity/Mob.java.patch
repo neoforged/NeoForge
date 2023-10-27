@@ -27,7 +27,7 @@
           p_21484_.putBoolean("NoAI", this.isNoAi());
        }
 +      if (this.spawnType != null) {
-+         p_21484_.putString("forge:spawn_type", this.spawnType.name());
++         p_21484_.putString("neoforge:spawn_type", this.spawnType.name());
 +      }
     }
  
@@ -37,11 +37,11 @@
  
        this.setNoAi(p_21450_.getBoolean("NoAI"));
 +
-+      if (p_21450_.contains("forge:spawn_type")) {
++      if (p_21450_.contains("neoforge:spawn_type")) {
 +         try {
-+            this.spawnType = MobSpawnType.valueOf(p_21450_.getString("forge:spawn_type"));
++            this.spawnType = MobSpawnType.valueOf(p_21450_.getString("neoforge:spawn_type"));
 +         } catch (Exception ex) {
-+            p_21450_.remove("forge:spawn_type");
++            p_21450_.remove("neoforge:spawn_type");
 +         }
 +      }
     }

@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "#": {
-      "type": "forge:difference",
+      "type": "neoforge:difference",
       "base": {
         "tag": "minecraft:fences"
       },

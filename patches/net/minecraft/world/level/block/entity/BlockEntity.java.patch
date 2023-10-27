@@ -31,12 +31,12 @@
     }
  
     public void load(CompoundTag p_155245_) {
-+      if (p_155245_.contains("ForgeData")) this.customPersistentData = p_155245_.getCompound("ForgeData");
++      if (p_155245_.contains("NeoForgeData")) this.customPersistentData = p_155245_.getCompound("NeoForgeData");
 +      if (getCapabilities() != null && p_155245_.contains("ForgeCaps")) deserializeCaps(p_155245_.getCompound("ForgeCaps"));
     }
  
     protected void saveAdditional(CompoundTag p_187471_) {
-+      if (this.customPersistentData != null) p_187471_.put("ForgeData", this.customPersistentData.copy());
++      if (this.customPersistentData != null) p_187471_.put("NeoForgeData", this.customPersistentData.copy());
 +      if (getCapabilities() != null) p_187471_.put("ForgeCaps", serializeCaps());
     }
  

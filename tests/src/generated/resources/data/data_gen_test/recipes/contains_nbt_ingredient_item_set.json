@@ -3,10 +3,10 @@
   "category": "equipment",
   "ingredients": [
     {
-      "type": "forge:partial_nbt",
+      "type": "neoforge:partial_nbt",
       "items": [
-        "minecraft:stone_pickaxe",
         "minecraft:wooden_pickaxe",
+        "minecraft:stone_pickaxe",
         "minecraft:iron_pickaxe"
       ],
       "tag": {

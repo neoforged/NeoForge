@@ -29,7 +29,7 @@ public class ObjModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuil
 
     protected ObjModelBuilder(T parent, ExistingFileHelper existingFileHelper)
     {
-        super(new ResourceLocation("forge:obj"), parent, existingFileHelper);
+        super(new ResourceLocation("neoforge:obj"), parent, existingFileHelper);
     }
 
     public ObjModelBuilder<T> modelLocation(ResourceLocation modelLocation)

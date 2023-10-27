@@ -14,7 +14,7 @@
 +
     private static <T> Dynamic<T> updateMobEffectInstance(Dynamic<T> p_298320_) {
 -      p_298320_ = updateMobEffectIdField(p_298320_, "Id", "id");
-+      p_298320_ = updateMobEffectIdFieldConsideringForge(p_298320_, "Id", p_298320_, "id", "forge:id");
++      p_298320_ = updateMobEffectIdFieldConsideringForge(p_298320_, "Id", p_298320_, "id", "neoforge:id");
        p_298320_ = renameField(p_298320_, "Ambient", "ambient");
        p_298320_ = renameField(p_298320_, "Amplifier", "amplifier");
        p_298320_ = renameField(p_298320_, "Duration", "duration");
@@ -23,7 +23,7 @@
  
     private static <T> Dynamic<T> updateSuspiciousStewEntry(Dynamic<T> p_298902_, Dynamic<T> p_299113_) {
 -      p_299113_ = updateMobEffectIdField(p_298902_, "EffectId", p_299113_, "id");
-+      p_299113_ = updateMobEffectIdFieldConsideringForge(p_298902_, "EffectId", p_299113_, "id", "forge:effect_id");
++      p_299113_ = updateMobEffectIdFieldConsideringForge(p_298902_, "EffectId", p_299113_, "id", "neoforge:effect_id");
        Optional<Dynamic<T>> optional = p_298902_.get("EffectDuration").result();
        return replaceField(p_299113_, "EffectDuration", "duration", optional);
     }

@@ -199,14 +199,14 @@ public class NewModelLoaderTest
         @Override
         protected void registerModels()
         {
-            withExistingParent(NewModelLoaderTest.item_layers.getId().getPath(), "forge:item/default")
+            withExistingParent(NewModelLoaderTest.item_layers.getId().getPath(), "neoforge:item/default")
                     .texture("particle", "minecraft:block/red_stained_glass")
                     .texture("layer0", "minecraft:item/coal")
                     .texture("layer1", "minecraft:item/stick")
                     .customLoader(ItemLayerModelBuilder::begin)
                         .emissive(15, 15, 1)
                     .end();
-            withExistingParent(NewModelLoaderTest.separate_perspective.getId().getPath(), "forge:item/default")
+            withExistingParent(NewModelLoaderTest.separate_perspective.getId().getPath(), "neoforge:item/default")
                     .customLoader(SeparateTransformsModelBuilder::begin)
                         .base(nested().parent(getExistingFile(mcLoc("minecraft:item/coal"))))
                         .perspective(ItemDisplayContext.GUI, nested().parent(getExistingFile(mcLoc("minecraft:item/snowball"))))

@@ -44,9 +44,9 @@ public class DatagenModLoader {
         CompletableFuture<HolderLookup.Provider> lookupProvider = CompletableFuture.supplyAsync(VanillaRegistries::createLookup, Util.backgroundExecutor());
         dataGeneratorConfig = new GatherDataEvent.DataGeneratorConfig(mods, path, inputs, lookupProvider, serverGenerators,
                 clientGenerators, devToolGenerators, reportsGenerator, structureValidator, flat);
-        if (!mods.contains("forge")) {
+        if (!mods.contains("neoforge")) {
             // If we aren't generating data for forge, automatically add forge as an existing so mods can access forge's data
-            existingMods.add("forge");
+            existingMods.add("neoforge");
         }
         existingFileHelper = new ExistingFileHelper(existingPacks, existingMods, structureValidator, assetIndex, assetsDir);
         ModLoader.get().runEventGenerator(mc -> new GatherDataEvent(mc, dataGeneratorConfig.makeGenerator(p -> dataGeneratorConfig.isFlat() ? p : p.resolve(mc.getModId()),

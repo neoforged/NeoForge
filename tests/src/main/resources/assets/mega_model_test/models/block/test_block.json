@@ -1,5 +1,5 @@
 {
-  "loader": "forge:separate_transforms",
+  "loader": "neoforge:separate_transforms",
   "base": {
     "parent": "block/block",
     "loader": "forge:composite",
