@@ -1,5 +1,6 @@
 apply plugin: 'net.neoforged.gradle.platform'
 apply plugin: 'java'
+apply plugin: 'net.neoforged.licenser'
 
 def neoforgeProject = project(':neoforge')
 
@@ -89,4 +90,10 @@ afterEvaluate {
         args.set(outputIndex+1, file('src/generated/resources/').absolutePath);
         programArguments.set(args);
     }
+}
+
+license {
+    header = rootProject.file('HEADER.txt')
+    skipExistingHeaders = true
+    include '**/*.java'
 }

@@ -1,7 +1,26 @@
+plugins {
+    id 'net.neoforged.licenser' version '0.7.2' apply false
+}
+
 allprojects {
     version '20.2.1'
     group 'net.neoforged'
     repositories {
         mavenLocal()
+    }
+}
+
+apply plugin: 'net.neoforged.licenser'
+
+license {
+    header = file('HEADER.txt')
+    skipExistingHeaders = true
+    tasks {
+        neoforge {
+            // Add all NeoForge sources
+            files.from rootProject.fileTree("src", {
+                include "**/*.java"
+            })
+        }
     }
 }
