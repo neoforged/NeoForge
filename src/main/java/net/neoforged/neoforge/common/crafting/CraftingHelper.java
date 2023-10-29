@@ -75,7 +75,7 @@ public class CraftingHelper {
                         Function.identity(),
                         i -> i instanceof CompoundIngredient c ? DataResult.success(c) : DataResult.error(() -> "Not a compound ingredient")),
                 // Otherwise choose between custom and vanilla
-                makeIngredientCodec0(true, vanillaCodec));
+                makeIngredientCodec0(allowEmpty, vanillaCodec));
     }
 
     // Choose between dispatch codec for custom ingredients and vanilla codec

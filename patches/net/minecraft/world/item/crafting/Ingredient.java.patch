@@ -12,7 +12,7 @@
 +   public static final Codec<Ingredient> VANILLA_CODEC = codec(true);
 +   public static final Codec<Ingredient> VANILLA_CODEC_NONEMPTY = codec(false);
 +   public static final Codec<Ingredient> CODEC = net.neoforged.neoforge.common.crafting.CraftingHelper.makeIngredientCodec(true, VANILLA_CODEC);
-+   public static final Codec<Ingredient> CODEC_NONEMPTY = net.neoforged.neoforge.common.crafting.CraftingHelper.makeIngredientCodec(false, VANILLA_CODEC);
++   public static final Codec<Ingredient> CODEC_NONEMPTY = net.neoforged.neoforge.common.crafting.CraftingHelper.makeIngredientCodec(false, VANILLA_CODEC_NONEMPTY);
 +   public static final Codec<List<Ingredient>> LIST_CODEC = CODEC.listOf();
 +   public static final Codec<List<Ingredient>> LIST_CODEC_NONEMPTY = CODEC_NONEMPTY.listOf();
 +   
