@@ -129,7 +129,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.IExtensionPoint;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
@@ -351,10 +350,9 @@ public class ClientHooks {
     }
 
     public static void renderMainMenu(TitleScreen gui, GuiGraphics guiGraphics, Font font, int width, int height, int alpha) {
-        VersionChecker.Status status = NeoForgeVersion.getStatus();
-        ForgeSnapshotsModClient.renderMainMenuWarning(status, gui, guiGraphics, font, width, height, alpha);
+        ForgeSnapshotsModClient.renderMainMenuWarning(NeoForgeVersion.getVersion(), guiGraphics, font, width, height, alpha);
 
-        forgeStatusLine = switch (status) {
+        forgeStatusLine = switch (NeoForgeVersion.getStatus()) {
             // case FAILED -> " Version check failed";
             // case UP_TO_DATE -> "Forge up to date";
             // case AHEAD -> "Using non-recommended Forge build, issues may arise.";

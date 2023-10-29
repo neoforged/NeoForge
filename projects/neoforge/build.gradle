@@ -281,4 +281,7 @@ publishing {
             }
         }
     }
+    repositories {
+        maven rootProject.gradleutils.getPublishingMaven()
+    }
 }

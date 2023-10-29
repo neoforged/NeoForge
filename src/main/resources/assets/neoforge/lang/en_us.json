@@ -141,7 +141,7 @@
   "commands.config.getwithtype": "Config for %s of type %s found at %s",
   "commands.config.noconfig": "Config for %s of type %s not found",
 
-  "neoforge.update.beta.1": "%sWARNING: %sForge Beta",
+  "neoforge.update.beta.1": "%sWARNING: %sNeoForge Beta",
   "neoforge.update.beta.2": "Major issues may arise, verify before reporting.",
   "neoforge.update.newversion": "New NeoForge version available: %s",
   "neoforge.menu.updatescreen.title": "Mod Update",
