@@ -1,27 +1,15 @@
 --- a/net/minecraft/world/entity/vehicle/AbstractMinecart.java
 +++ b/net/minecraft/world/entity/vehicle/AbstractMinecart.java
-@@ -4,7 +4,7 @@
- import com.google.common.collect.ImmutableMap;
- import com.google.common.collect.Maps;
- import com.mojang.datafixers.util.Pair;
--import java.util.EnumMap;
-+
- import java.util.List;
- import java.util.Map;
- import javax.annotation.Nullable;
-@@ -47,9 +47,10 @@
- import net.minecraft.world.level.gameevent.GameEvent;
- import net.minecraft.world.phys.AABB;
+@@ -49,7 +49,7 @@
  import net.minecraft.world.phys.Vec3;
-+import net.neoforged.neoforge.common.extensions.IAbstractMinecartExtension;
  import org.joml.Vector3f;
  
 -public abstract class AbstractMinecart extends Entity {
-+public abstract class AbstractMinecart extends Entity implements IAbstractMinecartExtension {
++public abstract class AbstractMinecart extends Entity implements net.neoforged.neoforge.common.extensions.IAbstractMinecartExtension {
     private static final float LOWERED_PASSENGER_ATTACHMENT_Y = 0.0F;
     private static final float PASSENGER_ATTACHMENT_Y = 0.1875F;
     private static final EntityDataAccessor<Integer> DATA_ID_HURT = SynchedEntityData.defineId(AbstractMinecart.class, EntityDataSerializers.INT);
-@@ -71,6 +72,7 @@
+@@ -71,6 +71,7 @@
     private double lerpYRot;
     private double lerpXRot;
     private Vec3 targetDeltaMovement = Vec3.ZERO;
@@ -29,7 +17,7 @@
     private static final Map<RailShape, Pair<Vec3i, Vec3i>> EXITS = Util.make(Maps.newEnumMap(RailShape.class), p_38135_ -> {
        Vec3i vec3i = Direction.WEST.getNormal();
        Vec3i vec3i1 = Direction.EAST.getNormal();
-@@ -91,6 +93,7 @@
+@@ -91,6 +92,7 @@
        p_38135_.put(RailShape.NORTH_WEST, Pair.of(vec3i2, vec3i));
        p_38135_.put(RailShape.NORTH_EAST, Pair.of(vec3i2, vec3i1));
     });
@@ -37,7 +25,7 @@
  
     protected AbstractMinecart(EntityType<?> p_38087_, Level p_38088_) {
        super(p_38087_, p_38088_);
-@@ -105,6 +108,14 @@
+@@ -105,6 +107,14 @@
        this.zo = p_38094_;
     }
  
@@ -52,7 +40,7 @@
     public static AbstractMinecart createMinecart(Level p_38120_, double p_38121_, double p_38122_, double p_38123_, AbstractMinecart.Type p_38124_) {
        if (p_38124_ == AbstractMinecart.Type.CHEST) {
           return new MinecartChest(p_38120_, p_38121_, p_38122_, p_38123_);
-@@ -145,7 +156,7 @@
+@@ -145,7 +155,7 @@
  
     @Override
     public boolean isPushable() {
@@ -61,7 +49,7 @@
     }
  
     @Override
-@@ -316,9 +327,9 @@
+@@ -316,9 +326,9 @@
           BlockPos blockpos = new BlockPos(k, i, j);
           BlockState blockstate = this.level().getBlockState(blockpos);
           this.onRails = BaseRailBlock.isRail(blockstate);
@@ -73,7 +61,7 @@
                 this.activateMinecart(k, i, j, blockstate.getValue(PoweredRailBlock.POWERED));
              }
           } else {
-@@ -343,8 +354,11 @@
+@@ -343,8 +353,11 @@
           }
  
           this.setRot(this.getYRot(), this.getXRot());
@@ -87,7 +75,7 @@
              if (!list.isEmpty()) {
                 for(Entity entity1 : list) {
                    if (!(entity1 instanceof Player)
-@@ -359,7 +373,7 @@
+@@ -359,7 +372,7 @@
                 }
              }
           } else {
@@ -96,7 +84,7 @@
                 if (!this.hasPassenger(entity) && entity.isPushable() && entity instanceof AbstractMinecart) {
                    entity.push(this);
                 }
-@@ -384,16 +398,23 @@
+@@ -384,16 +397,23 @@
     }
  
     protected void comeOffTrack() {
@@ -122,7 +110,7 @@
        }
     }
  
-@@ -406,18 +427,19 @@
+@@ -406,18 +426,19 @@
        d1 = (double)p_38156_.getY();
        boolean flag = false;
        boolean flag1 = false;
@@ -145,7 +133,7 @@
        switch(railshape) {
           case ASCENDING_EAST:
              this.setDeltaMovement(vec31.add(-d3, 0.0, 0.0));
-@@ -463,7 +485,7 @@
+@@ -463,7 +484,7 @@
           }
        }
  
@@ -154,7 +142,7 @@
           double d22 = this.getDeltaMovement().horizontalDistance();
           if (d22 < 0.03) {
              this.setDeltaMovement(Vec3.ZERO);
-@@ -492,10 +514,7 @@
+@@ -492,10 +513,7 @@
        d0 = d23 + d4 * d14;
        d2 = d10 + d5 * d14;
        this.setPos(d0, d1, d2);
@@ -166,7 +154,7 @@
        if (vec3i.getY() != 0 && Mth.floor(this.getX()) - p_38156_.getX() == vec3i.getX() && Mth.floor(this.getZ()) - p_38156_.getZ() == vec3i.getZ()) {
           this.setPos(this.getX(), this.getY() + (double)vec3i.getY(), this.getZ());
        } else if (vec3i1.getY() != 0 && Mth.floor(this.getX()) - p_38156_.getX() == vec3i1.getX() && Mth.floor(this.getZ()) - p_38156_.getZ() == vec3i1.getZ()) {
-@@ -523,7 +542,10 @@
+@@ -523,7 +541,10 @@
           this.setDeltaMovement(d26 * (double)(j - p_38156_.getX()), vec35.y, d26 * (double)(i - p_38156_.getZ()));
        }
  
@@ -178,7 +166,7 @@
           Vec3 vec36 = this.getDeltaMovement();
           double d27 = vec36.horizontalDistance();
           if (d27 > 0.01) {
-@@ -587,7 +609,7 @@
+@@ -587,7 +608,7 @@
  
        BlockState blockstate = this.level().getBlockState(new BlockPos(i, j, k));
        if (BaseRailBlock.isRail(blockstate)) {
@@ -187,7 +175,7 @@
           p_38098_ = (double)j;
           if (railshape.isAscending()) {
              p_38098_ = (double)(j + 1);
-@@ -626,7 +648,7 @@
+@@ -626,7 +647,7 @@
  
        BlockState blockstate = this.level().getBlockState(new BlockPos(i, j, k));
        if (BaseRailBlock.isRail(blockstate)) {
@@ -196,7 +184,7 @@
           Pair<Vec3i, Vec3i> pair = exits(railshape);
           Vec3i vec3i = pair.getFirst();
           Vec3i vec3i1 = pair.getSecond();
-@@ -690,6 +712,10 @@
+@@ -690,6 +711,10 @@
  
     @Override
     public void push(Entity p_38165_) {
@@ -207,7 +195,7 @@
        if (!this.level().isClientSide) {
           if (!p_38165_.noPhysics && !this.noPhysics) {
              if (!this.hasPassenger(p_38165_)) {
-@@ -726,13 +752,11 @@
+@@ -726,13 +751,11 @@
  
                       Vec3 vec32 = this.getDeltaMovement();
                       Vec3 vec33 = p_38165_.getDeltaMovement();
@@ -223,7 +211,7 @@
                          p_38165_.setDeltaMovement(vec33.multiply(0.2, 1.0, 0.2));
                          p_38165_.push(vec32.x + d0, 0.0, vec32.z + d1);
                          this.setDeltaMovement(vec32.multiply(0.95, 1.0, 0.95));
-@@ -855,6 +879,42 @@
+@@ -855,6 +878,42 @@
     public void setCustomDisplay(boolean p_38139_) {
        this.getEntityData().set(DATA_ID_CUSTOM_DISPLAY, p_38139_);
     }

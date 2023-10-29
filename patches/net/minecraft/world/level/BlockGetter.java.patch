@@ -1,17 +1,15 @@
 --- a/net/minecraft/world/level/BlockGetter.java
 +++ b/net/minecraft/world/level/BlockGetter.java
-@@ -17,8 +17,9 @@
- import net.minecraft.world.phys.BlockHitResult;
+@@ -18,7 +18,7 @@
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.phys.shapes.VoxelShape;
-+import net.neoforged.neoforge.common.extensions.IBlockGetterExtension;
  
 -public interface BlockGetter extends LevelHeightAccessor {
-+public interface BlockGetter extends LevelHeightAccessor, IBlockGetterExtension {
++public interface BlockGetter extends LevelHeightAccessor, net.neoforged.neoforge.common.extensions.IBlockGetterExtension {
     @Nullable
     BlockEntity getBlockEntity(BlockPos p_45570_);
  
-@@ -32,7 +33,7 @@
+@@ -32,7 +32,7 @@
     FluidState getFluidState(BlockPos p_45569_);
  
     default int getLightEmission(BlockPos p_45572_) {

@@ -1,13 +1,11 @@
 --- a/net/minecraft/world/level/block/state/BlockState.java
 +++ b/net/minecraft/world/level/block/state/BlockState.java
-@@ -6,8 +6,9 @@
- import net.minecraft.core.registries.BuiltInRegistries;
+@@ -7,7 +7,7 @@
  import net.minecraft.world.level.block.Block;
  import net.minecraft.world.level.block.state.properties.Property;
-+import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
  
 -public class BlockState extends BlockBehaviour.BlockStateBase {
-+public class BlockState extends BlockBehaviour.BlockStateBase implements IBlockStateExtension {
++public class BlockState extends BlockBehaviour.BlockStateBase implements net.neoforged.neoforge.common.extensions.IBlockStateExtension {
     public static final Codec<BlockState> CODEC = codec(BuiltInRegistries.BLOCK.byNameCodec(), Block::defaultBlockState).stable();
  
     public BlockState(Block p_61042_, ImmutableMap<Property<?>, Comparable<?>> p_61043_, MapCodec<BlockState> p_61044_) {

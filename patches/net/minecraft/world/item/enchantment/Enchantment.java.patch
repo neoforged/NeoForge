@@ -1,17 +1,15 @@
 --- a/net/minecraft/world/item/enchantment/Enchantment.java
 +++ b/net/minecraft/world/item/enchantment/Enchantment.java
-@@ -16,8 +16,9 @@
- import net.minecraft.world.entity.LivingEntity;
+@@ -17,7 +17,7 @@
  import net.minecraft.world.entity.MobType;
  import net.minecraft.world.item.ItemStack;
-+import net.neoforged.neoforge.common.extensions.IEnchantmentExtension;
  
 -public abstract class Enchantment {
-+public abstract class Enchantment implements IEnchantmentExtension {
++public abstract class Enchantment implements net.neoforged.neoforge.common.extensions.IEnchantmentExtension {
     private final EquipmentSlot[] slots;
     private final Enchantment.Rarity rarity;
     public final EnchantmentCategory category;
-@@ -73,6 +74,7 @@
+@@ -73,6 +73,7 @@
        return 0;
     }
  
@@ -19,7 +17,7 @@
     public float getDamageBonus(int p_44682_, MobType p_44683_) {
        return 0.0F;
     }
-@@ -113,7 +115,7 @@
+@@ -113,7 +114,7 @@
     }
  
     public boolean canEnchant(ItemStack p_44689_) {
@@ -28,7 +26,7 @@
     }
  
     public void doPostAttack(LivingEntity p_44686_, Entity p_44687_, int p_44688_) {
-@@ -135,6 +137,24 @@
+@@ -135,6 +136,24 @@
     }
  
     public boolean isDiscoverable() {

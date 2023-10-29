@@ -1,13 +1,11 @@
 --- a/net/minecraft/commands/CommandSourceStack.java
 +++ b/net/minecraft/commands/CommandSourceStack.java
-@@ -39,8 +39,9 @@
- import net.minecraft.world.level.dimension.DimensionType;
+@@ -40,7 +40,7 @@
  import net.minecraft.world.phys.Vec2;
  import net.minecraft.world.phys.Vec3;
-+import net.neoforged.neoforge.common.extensions.ICommandSourceStackExtension;
  
 -public class CommandSourceStack implements SharedSuggestionProvider {
-+public class CommandSourceStack implements SharedSuggestionProvider, ICommandSourceStackExtension {
++public class CommandSourceStack implements SharedSuggestionProvider, net.neoforged.neoforge.common.extensions.ICommandSourceStackExtension {
     public static final SimpleCommandExceptionType ERROR_NOT_PLAYER = new SimpleCommandExceptionType(Component.translatable("permissions.requires.player"));
     public static final SimpleCommandExceptionType ERROR_NOT_ENTITY = new SimpleCommandExceptionType(Component.translatable("permissions.requires.entity"));
     public final CommandSource source;

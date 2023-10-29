@@ -1,13 +1,11 @@
 --- a/net/minecraft/world/level/block/BucketPickup.java
 +++ b/net/minecraft/world/level/block/BucketPickup.java
-@@ -8,9 +8,11 @@
- import net.minecraft.world.item.ItemStack;
+@@ -9,8 +9,9 @@
  import net.minecraft.world.level.LevelAccessor;
  import net.minecraft.world.level.block.state.BlockState;
-+import net.neoforged.neoforge.common.extensions.IBucketPickupExtension;
  
 -public interface BucketPickup {
-+public interface BucketPickup extends IBucketPickupExtension {
++public interface BucketPickup extends net.neoforged.neoforge.common.extensions.IBucketPickupExtension {
     ItemStack pickupBlock(@Nullable Player p_294682_, LevelAccessor p_152719_, BlockPos p_152720_, BlockState p_152721_);
  
 +   @Deprecated//Forge: Use state sensitive variant instead

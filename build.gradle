@@ -46,4 +46,15 @@ spotless {
         eclipse().configFile file('codeformat/formatter-config.xml')
         importOrder()
     }
+    format 'patches', {
+        target rootProject.fileTree("patches")
+
+        custom 'noImportChanges', { String fileContents ->
+            if (fileContents.contains('+import') || fileContents.contains('-import')) {
+                throw new GradleException("Import changes are not allowed in patches!")
+            }
+            return fileContents
+        }
+        bumpThisNumberIfACustomStepChanges(1)
+    }
 }
