@@ -27,6 +27,7 @@ public abstract class EventTest {
      * A summarised view of the test result.
      * For passes: "PASS"
      * For failures: "FAIL - ($errorDetail)"
+     * 
      * @return test result
      */
     public String getTestResult() {
@@ -36,14 +37,19 @@ public abstract class EventTest {
     /**
      * Provide extra detail about the error.
      * Pass-through of errorDetail is default, but some events require something more robust.
+     * 
      * @return information to be shown in case of a test failure
      */
-    protected String getEnhancedDetail() { return errorDetail; }
+    protected String getEnhancedDetail() {
+        return errorDetail;
+    }
 
     /**
      * @return whether or not this event should be monitored while the game is loading to the main menu.
      */
-    public boolean isBootstrap() { return bootstrap; }
+    public boolean isBootstrap() {
+        return bootstrap;
+    }
 
     /**
      * Register event handlers for this event.
@@ -53,6 +59,7 @@ public abstract class EventTest {
 
     /**
      * Helper method - combines setting failure state with detail message.
+     * 
      * @param reason extra detail about why the failure occurred
      */
     protected void fail(String reason) {
@@ -73,6 +80,7 @@ public abstract class EventTest {
 
     /**
      * Helper method - combines setting error state with detail message.
+     * 
      * @param reason extra detail about why the error occured.
      */
     protected void error(String reason) {

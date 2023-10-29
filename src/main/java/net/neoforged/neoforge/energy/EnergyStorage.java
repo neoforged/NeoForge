@@ -15,39 +15,33 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
  * Derived from the Redstone Flux power system designed by King Lemming and originally utilized in Thermal Expansion and related mods.
  * Created with consent and permission of King Lemming and Team CoFH. Released with permission under LGPL 2.1 when bundled with Forge.
  */
-public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag>
-{
+public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
     protected int energy;
     protected int capacity;
     protected int maxReceive;
     protected int maxExtract;
 
-    public EnergyStorage(int capacity)
-    {
+    public EnergyStorage(int capacity) {
         this(capacity, capacity, capacity, 0);
     }
 
-    public EnergyStorage(int capacity, int maxTransfer)
-    {
+    public EnergyStorage(int capacity, int maxTransfer) {
         this(capacity, maxTransfer, maxTransfer, 0);
     }
 
-    public EnergyStorage(int capacity, int maxReceive, int maxExtract)
-    {
+    public EnergyStorage(int capacity, int maxReceive, int maxExtract) {
         this(capacity, maxReceive, maxExtract, 0);
     }
 
-    public EnergyStorage(int capacity, int maxReceive, int maxExtract, int energy)
-    {
+    public EnergyStorage(int capacity, int maxReceive, int maxExtract, int energy) {
         this.capacity = capacity;
         this.maxReceive = maxReceive;
         this.maxExtract = maxExtract;
-        this.energy = Math.max(0 , Math.min(capacity, energy));
+        this.energy = Math.max(0, Math.min(capacity, energy));
     }
 
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate)
-    {
+    public int receiveEnergy(int maxReceive, boolean simulate) {
         if (!canReceive())
             return 0;
 
@@ -58,8 +52,7 @@ public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag>
     }
 
     @Override
-    public int extractEnergy(int maxExtract, boolean simulate)
-    {
+    public int extractEnergy(int maxExtract, boolean simulate) {
         if (!canExtract())
             return 0;
 
@@ -70,38 +63,32 @@ public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag>
     }
 
     @Override
-    public int getEnergyStored()
-    {
+    public int getEnergyStored() {
         return energy;
     }
 
     @Override
-    public int getMaxEnergyStored()
-    {
+    public int getMaxEnergyStored() {
         return capacity;
     }
 
     @Override
-    public boolean canExtract()
-    {
+    public boolean canExtract() {
         return this.maxExtract > 0;
     }
 
     @Override
-    public boolean canReceive()
-    {
+    public boolean canReceive() {
         return this.maxReceive > 0;
     }
 
     @Override
-    public Tag serializeNBT()
-    {
+    public Tag serializeNBT() {
         return IntTag.valueOf(this.getEnergyStored());
     }
 
     @Override
-    public void deserializeNBT(Tag nbt)
-    {
+    public void deserializeNBT(Tag nbt) {
         if (!(nbt instanceof IntTag intNbt))
             throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
         this.energy = intNbt.getAsInt();

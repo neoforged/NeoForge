@@ -5,12 +5,11 @@
 
 package net.neoforged.neoforge.gametest;
 
-import net.minecraft.gametest.framework.GameTest;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import net.minecraft.gametest.framework.GameTest;
 
 /**
  * When used on a class, this sets the default state for whether
@@ -25,9 +24,8 @@ import java.lang.annotation.Target;
  * @see GameTestHolder
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface PrefixGameTestTemplate
-{
+@Target({ ElementType.TYPE, ElementType.METHOD })
+public @interface PrefixGameTestTemplate {
     /**
      * Whether to prefix the game test template with the containing class' {@link Class#getSimpleName() simple name}.
      * For example, true in a class named "MyTest" would result in "mytest.structure" while false would result in "structure".

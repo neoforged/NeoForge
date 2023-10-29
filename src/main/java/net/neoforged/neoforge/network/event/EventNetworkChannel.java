@@ -5,15 +5,14 @@
 
 package net.neoforged.neoforge.network.event;
 
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.NetworkEvent;
 import net.neoforged.neoforge.network.NetworkInstance;
 import net.neoforged.neoforge.network.NetworkRegistry;
-
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * An event-bus like object on which {@link NetworkEvent}s are posted.
@@ -25,27 +24,22 @@ import java.util.function.Supplier;
  * @see NetworkRegistry#newEventChannel(ResourceLocation, Supplier, Predicate, Predicate)
  * @see NetworkRegistry.ChannelBuilder#newEventChannel(ResourceLocation, Supplier, Predicate, Predicate)
  */
-public class EventNetworkChannel
-{
+public class EventNetworkChannel {
     private final NetworkInstance instance;
 
-    public EventNetworkChannel(NetworkInstance instance)
-    {
+    public EventNetworkChannel(NetworkInstance instance) {
         this.instance = instance;
     }
 
-    public <T extends NetworkEvent> void addListener(Consumer<T> eventListener)
-    {
+    public <T extends NetworkEvent> void addListener(Consumer<T> eventListener) {
         instance.addListener(eventListener);
     }
 
-    public void registerObject(Object object)
-    {
+    public void registerObject(Object object) {
         instance.registerObject(object);
     }
 
-    public void unregisterObject(Object object)
-    {
+    public void unregisterObject(Object object) {
         instance.unregisterObject(object);
     }
 

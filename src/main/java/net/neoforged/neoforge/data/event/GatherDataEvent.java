@@ -6,14 +6,6 @@
 package net.neoforged.neoforge.data.event;
 
 import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
-import net.minecraft.DetectedVersion;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.data.DataGenerator;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.bus.api.Event;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.event.IModBusEvent;
-
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,16 +16,21 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import net.minecraft.DetectedVersion;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.DataGenerator;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
-public class GatherDataEvent extends Event implements IModBusEvent
-{
+public class GatherDataEvent extends Event implements IModBusEvent {
     private final DataGenerator dataGenerator;
     private final DataGeneratorConfig config;
     private final ExistingFileHelper existingFileHelper;
     private final ModContainer modContainer;
 
-    public GatherDataEvent(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig, ExistingFileHelper existingFileHelper)
-    {
+    public GatherDataEvent(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig, ExistingFileHelper existingFileHelper) {
         this.modContainer = mc;
         this.dataGenerator = dataGenerator;
         this.config = dataGeneratorConfig;
@@ -44,15 +41,41 @@ public class GatherDataEvent extends Event implements IModBusEvent
         return this.modContainer;
     }
 
-    public Collection<Path> getInputs() { return this.config.getInputs(); }
-    public DataGenerator getGenerator() { return this.dataGenerator; }
-    public ExistingFileHelper getExistingFileHelper() { return existingFileHelper; }
-    public CompletableFuture<HolderLookup.Provider> getLookupProvider() { return this.config.lookupProvider; }
-    public boolean includeServer() { return this.config.server; }
-    public boolean includeClient() { return this.config.client; }
-    public boolean includeDev() { return this.config.dev; }
-    public boolean includeReports() { return this.config.reports; }
-    public boolean validate() { return this.config.validate; }
+    public Collection<Path> getInputs() {
+        return this.config.getInputs();
+    }
+
+    public DataGenerator getGenerator() {
+        return this.dataGenerator;
+    }
+
+    public ExistingFileHelper getExistingFileHelper() {
+        return existingFileHelper;
+    }
+
+    public CompletableFuture<HolderLookup.Provider> getLookupProvider() {
+        return this.config.lookupProvider;
+    }
+
+    public boolean includeServer() {
+        return this.config.server;
+    }
+
+    public boolean includeClient() {
+        return this.config.client;
+    }
+
+    public boolean includeDev() {
+        return this.config.dev;
+    }
+
+    public boolean includeReports() {
+        return this.config.reports;
+    }
+
+    public boolean validate() {
+        return this.config.validate;
+    }
 
     public static class DataGeneratorConfig {
         private final Set<String> mods;
@@ -94,7 +117,7 @@ public class GatherDataEvent extends Event implements IModBusEvent
             return flat || getMods().size() == 1;
         }
 
-        public DataGenerator makeGenerator(final Function<Path,Path> pathEnhancer, final boolean shouldExecute) {
+        public DataGenerator makeGenerator(final Function<Path, Path> pathEnhancer, final boolean shouldExecute) {
             final DataGenerator generator = new DataGenerator(pathEnhancer.apply(path), DetectedVersion.tryDetectVersion(), shouldExecute);
             if (shouldExecute)
                 generators.add(generator);

@@ -5,15 +5,9 @@
 
 package net.neoforged.neoforge.debug.client.rendering;
 
-import java.util.Map;
-
-import net.neoforged.neoforge.common.NeoForge;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
-
+import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
@@ -25,21 +19,24 @@ import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage;
-import net.neoforged.neoforge.client.model.geometry.StandaloneGeometryBakingContext;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.geometry.StandaloneGeometryBakingContext;
 import net.neoforged.neoforge.client.model.obj.ObjLoader;
 import net.neoforged.neoforge.client.model.obj.ObjModel;
 import net.neoforged.neoforge.client.model.renderable.BakedModelRenderable;
 import net.neoforged.neoforge.client.model.renderable.CompositeRenderable;
 import net.neoforged.neoforge.client.model.renderable.IRenderable;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joml.Matrix4f;
 
 /**
@@ -54,32 +51,27 @@ import org.joml.Matrix4f;
  * {@link NeoForgeRenderTypes#TRANSLUCENT_ON_PARTICLES_TARGET}.
  */
 @Mod(RenderableTest.MODID)
-public class RenderableTest
-{
+public class RenderableTest {
     public static final String MODID = "renderable_test";
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static final boolean ENABLED = false; // Renders at (0, 120, 0)
-    public RenderableTest()
-    {
-        if (ENABLED)
-        {
-            if (FMLEnvironment.dist == Dist.CLIENT)
-            {
+
+    public RenderableTest() {
+        if (ENABLED) {
+            if (FMLEnvironment.dist == Dist.CLIENT) {
                 Client.init();
             }
         }
     }
 
-    private static class Client
-    {
+    private static class Client {
         private static ResourceLocation MODEL_LOC = new ResourceLocation("minecraft:block/blue_stained_glass");
 
         private static IRenderable<CompositeRenderable.Transforms> renderable;
         private static IRenderable<ModelData> bakedRenderable;
 
-        public static void init()
-        {
+        public static void init() {
             var modBus = FMLJavaModLoadingContext.get().getModEventBus();
             var forgeBus = NeoForge.EVENT_BUS;
             modBus.addListener(Client::registerModels);
@@ -88,48 +80,39 @@ public class RenderableTest
             forgeBus.addListener(Client::renderStage);
         }
 
-        private static void registerModels(ModelEvent.RegisterAdditional event)
-        {
+        private static void registerModels(ModelEvent.RegisterAdditional event) {
             event.register(MODEL_LOC);
         }
 
-        public static void registerReloadListeners(RegisterClientReloadListenersEvent event)
-        {
-            event.registerReloadListener(new SimplePreparableReloadListener<ObjModel>()
-            {
+        public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+            event.registerReloadListener(new SimplePreparableReloadListener<ObjModel>() {
                 @Override
-                protected ObjModel prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller)
-                {
+                protected ObjModel prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
                     var settings = new ObjModel.ModelSettings(
                             new ResourceLocation("new_model_loader_test:models/item/sugar_glider.obj"),
                             false,
                             true,
                             true,
                             false,
-                            null
-                    );
+                            null);
                     return ObjLoader.INSTANCE.loadModel(settings);
                 }
 
                 @Override
-                protected void apply(ObjModel model, ResourceManager resourceManager, ProfilerFiller profilerFiller)
-                {
+                protected void apply(ObjModel model, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
                     var config = StandaloneGeometryBakingContext.create(Map.of(
-                            "#qr", new ResourceLocation("minecraft:block/quartz_block_top")
-                    ));
+                            "#qr", new ResourceLocation("minecraft:block/quartz_block_top")));
                     renderable = model.bakeRenderable(config);
                 }
             });
         }
 
-        public static void registerStage(RenderLevelStageEvent.RegisterStageEvent event)
-        {
+        public static void registerStage(RenderLevelStageEvent.RegisterStageEvent event) {
             var stage = event.register(new ResourceLocation(MODID, "test_stage"), null);
             LOGGER.info("Registered RenderLevelStageEvent.Stage: {}", stage);
         }
 
-        private static void renderStage(RenderLevelStageEvent event)
-        {
+        private static void renderStage(RenderLevelStageEvent event) {
             int xOffset = -1;
             var stage = event.getStage();
             if (stage == Stage.AFTER_SKY)
@@ -150,16 +133,14 @@ public class RenderableTest
                 render(stage, event.getPoseStack(), event.getRenderTick(), event.getPartialTick(), cam.x, cam.y, cam.z, xOffset);
         }
 
-        private static void render(Stage stage, PoseStack poseStack, int renderTick, float partialTick, double camX, double camY, double camZ, int xOffset)
-        {
+        private static void render(Stage stage, PoseStack poseStack, int renderTick, float partialTick, double camX, double camY, double camZ, int xOffset) {
             double x = camX, y = camY, z = camZ;
             if (!BlockPos.containing(0, y, 0).closerThan(BlockPos.containing(x, y, z), 100))
                 return;
 
             var profiler = Minecraft.getInstance().getProfiler();
             profiler.push("renderable_test");
-            if (bakedRenderable == null)
-            {
+            if (bakedRenderable == null) {
                 bakedRenderable = BakedModelRenderable.of(MODEL_LOC).withModelDataContext();
             }
 
@@ -170,11 +151,11 @@ public class RenderableTest
             var map = ImmutableMap.<String, Matrix4f>builder();
 
             var left = new Matrix4f();
-            left.rotation((float)Math.sin(time * 0.4) * 0.1f, 0, 0, 1);
+            left.rotation((float) Math.sin(time * 0.4) * 0.1f, 0, 0, 1);
             map.put("object_1", left);
 
             var right = new Matrix4f();
-            right.rotation(-(float)Math.sin(time * 0.4) * 0.1f, 0, 0, 1);
+            right.rotation(-(float) Math.sin(time * 0.4) * 0.1f, 0, 0, 1);
             map.put("object_9", right);
 
             var transforms = CompositeRenderable.Transforms.of(map.build());
@@ -191,8 +172,7 @@ public class RenderableTest
             profiler.pop();
         }
 
-        private static RenderType getRenderType(Stage stage, ResourceLocation texture)
-        {
+        private static RenderType getRenderType(Stage stage, ResourceLocation texture) {
             if (stage == Stage.AFTER_PARTICLES)
                 return NeoForgeRenderTypes.TRANSLUCENT_ON_PARTICLES_TARGET.get();
             return RenderType.entityTranslucent(texture);

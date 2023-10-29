@@ -8,23 +8,20 @@ package net.neoforged.neoforge.network;
 import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
 import io.netty.util.Attribute;
-import net.minecraft.ResourceLocationException;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.Connection;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-
-import org.slf4j.Logger;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import net.minecraft.ResourceLocationException;
+import net.minecraft.network.Connection;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.resources.ResourceLocation;
+import org.slf4j.Logger;
 
-public class MCRegisterPacketHandler
-{
+public class MCRegisterPacketHandler {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final MCRegisterPacketHandler INSTANCE = new MCRegisterPacketHandler();
 
@@ -44,7 +41,7 @@ public class MCRegisterPacketHandler
                     .map(NetworkRegistry::findTarget)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
-                    .forEach(t->t.dispatchEvent(new NetworkEvent.ChannelRegistrationChangeEvent(source, changeType)));
+                    .forEach(t -> t.dispatchEvent(new NetworkEvent.ChannelRegistrationChangeEvent(source, changeType)));
         }
 
         byte[] toByteArray() {

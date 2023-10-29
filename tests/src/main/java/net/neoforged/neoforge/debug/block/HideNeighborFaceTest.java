@@ -28,8 +28,7 @@ import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(HideNeighborFaceTest.MOD_ID)
-public class HideNeighborFaceTest
-{
+public class HideNeighborFaceTest {
     public static final String MOD_ID = "hide_neighbor_face_test";
 
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
@@ -38,50 +37,44 @@ public class HideNeighborFaceTest
     private static final RegistryObject<Block> GLASS_SLAB = BLOCKS.register("glass_slab", GlassSlab::new);
     private static final RegistryObject<Item> GLASS_SLAB_ITEM = ITEMS.register("glass_slab", () -> new BlockItem(GLASS_SLAB.get(), new Item.Properties()));
 
-    public HideNeighborFaceTest()
-    {
+    public HideNeighborFaceTest() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
         BLOCKS.register(bus);
         ITEMS.register(bus);
     }
 
-    private static class GlassSlab extends SlabBlock
-    {
-        public GlassSlab() { super(Properties.copy(Blocks.GLASS)); }
+    private static class GlassSlab extends SlabBlock {
+        public GlassSlab() {
+            super(Properties.copy(Blocks.GLASS));
+        }
 
         @Override
-        public boolean skipRendering(BlockState state, BlockState neighborState, Direction face)
-        {
+        public boolean skipRendering(BlockState state, BlockState neighborState, Direction face) {
             SlabType type = state.getValue(TYPE);
 
-            if (neighborState.is(Blocks.GLASS))
-            {
+            if (neighborState.is(Blocks.GLASS)) {
                 return (type == SlabType.BOTTOM && face == Direction.DOWN) ||
-                       (type == SlabType.TOP && face == Direction.UP) ||
-                       type == SlabType.DOUBLE;
-            }
-            else if (neighborState.is(this))
-            {
+                        (type == SlabType.TOP && face == Direction.UP) ||
+                        type == SlabType.DOUBLE;
+            } else if (neighborState.is(this)) {
                 SlabType neighborType = neighborState.getValue(TYPE);
                 return (type != SlabType.BOTTOM && neighborType != SlabType.TOP && face == Direction.UP) ||
-                       (type != SlabType.TOP && neighborType != SlabType.BOTTOM && face == Direction.DOWN) ||
-                       (type == neighborType && face.getAxis() != Direction.Axis.Y);
+                        (type != SlabType.TOP && neighborType != SlabType.BOTTOM && face == Direction.DOWN) ||
+                        (type == neighborType && face.getAxis() != Direction.Axis.Y);
             }
 
             return false;
         }
 
         @Override
-        public boolean hidesNeighborFace(BlockGetter level, BlockPos pos, BlockState state, BlockState neighborState, Direction dir)
-        {
+        public boolean hidesNeighborFace(BlockGetter level, BlockPos pos, BlockState state, BlockState neighborState, Direction dir) {
             SlabType type = state.getValue(TYPE);
 
-            if (neighborState.is(Blocks.GLASS))
-            {
+            if (neighborState.is(Blocks.GLASS)) {
                 return (type == SlabType.BOTTOM && dir == Direction.DOWN) ||
-                       (type == SlabType.TOP && dir == Direction.UP) ||
-                       type == SlabType.DOUBLE;
+                        (type == SlabType.TOP && dir == Direction.UP) ||
+                        type == SlabType.DOUBLE;
             }
 
             return false;
@@ -89,11 +82,9 @@ public class HideNeighborFaceTest
     }
 
     @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class ClientEvents
-    {
+    public static class ClientEvents {
         @SubscribeEvent
-        public static void onClientSetup(final FMLClientSetupEvent event)
-        {
+        public static void onClientSetup(final FMLClientSetupEvent event) {
             ItemBlockRenderTypes.setRenderLayer(GLASS_SLAB.get(), RenderType.cutout());
         }
     }

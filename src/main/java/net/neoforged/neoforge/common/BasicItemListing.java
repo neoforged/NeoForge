@@ -13,11 +13,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
 
 /**
- * A default, exposed implementation of ITrade.  All of the other implementations of ITrade (in VillagerTrades) are not public.
+ * A default, exposed implementation of ITrade. All of the other implementations of ITrade (in VillagerTrades) are not public.
  * This class contains everything needed to make a MerchantOffer, the actual "trade" object shown in trading guis.
  */
-public class BasicItemListing implements ItemListing
-{
+public class BasicItemListing implements ItemListing {
 
     protected final ItemStack price;
     protected final ItemStack price2;
@@ -26,8 +25,7 @@ public class BasicItemListing implements ItemListing
     protected final int xp;
     protected final float priceMult;
 
-    public BasicItemListing(ItemStack price, ItemStack price2, ItemStack forSale, int maxTrades, int xp, float priceMult)
-    {
+    public BasicItemListing(ItemStack price, ItemStack price2, ItemStack forSale, int maxTrades, int xp, float priceMult) {
         this.price = price;
         this.price2 = price2;
         this.forSale = forSale;
@@ -36,18 +34,15 @@ public class BasicItemListing implements ItemListing
         this.priceMult = priceMult;
     }
 
-    public BasicItemListing(ItemStack price, ItemStack forSale, int maxTrades, int xp, float priceMult)
-    {
+    public BasicItemListing(ItemStack price, ItemStack forSale, int maxTrades, int xp, float priceMult) {
         this(price, ItemStack.EMPTY, forSale, maxTrades, xp, priceMult);
     }
 
-    public BasicItemListing(int emeralds, ItemStack forSale, int maxTrades, int xp, float mult)
-    {
+    public BasicItemListing(int emeralds, ItemStack forSale, int maxTrades, int xp, float mult) {
         this(new ItemStack(Items.EMERALD, emeralds), forSale, maxTrades, xp, mult);
     }
 
-    public BasicItemListing(int emeralds, ItemStack forSale, int maxTrades, int xp)
-    {
+    public BasicItemListing(int emeralds, ItemStack forSale, int maxTrades, int xp) {
         this(new ItemStack(Items.EMERALD, emeralds), forSale, maxTrades, xp, 1);
     }
 

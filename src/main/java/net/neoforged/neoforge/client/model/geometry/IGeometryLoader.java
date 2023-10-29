@@ -9,8 +9,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 
 /**
  * A loader for custom {@linkplain IUnbakedGeometry model geometries}.
@@ -21,7 +21,6 @@ import net.neoforged.neoforge.client.event.ModelEvent;
  * @see ModelEvent.RegisterGeometryLoaders
  * @see RegisterClientReloadListenersEvent
  */
-public interface IGeometryLoader<T extends IUnbakedGeometry<T>>
-{
+public interface IGeometryLoader<T extends IUnbakedGeometry<T>> {
     T read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) throws JsonParseException;
 }

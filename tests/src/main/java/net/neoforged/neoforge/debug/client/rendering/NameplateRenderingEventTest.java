@@ -5,41 +5,35 @@
 
 package net.neoforged.neoforge.debug.client.rendering;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.ChatFormatting;
-import net.neoforged.neoforge.client.event.RenderNameTagEvent;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.api.distmarker.Dist;
-
+import net.neoforged.neoforge.client.event.RenderNameTagEvent;
 
 @Mod(NameplateRenderingEventTest.MODID)
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
-public class NameplateRenderingEventTest
-{
+public class NameplateRenderingEventTest {
     public static final String MODID = "nameplate_render_test";
     static final boolean ENABLED = false;
 
     @SubscribeEvent
-    public static void onNameplateRender(RenderNameTagEvent event)
-    {
+    public static void onNameplateRender(RenderNameTagEvent event) {
 
-        if(!ENABLED)
-        {
+        if (!ENABLED) {
             return;
         }
 
-        if(event.getEntity() instanceof Cow)
-        {
+        if (event.getEntity() instanceof Cow) {
             event.setContent(Component.literal("Evil Cow").withStyle(ChatFormatting.RED));
             event.setResult(Event.Result.ALLOW);
         }
 
-        if(event.getEntity() instanceof Player)
-        {
+        if (event.getEntity() instanceof Player) {
             event.setContent(event.getEntity().getDisplayName().copy().withStyle(ChatFormatting.GOLD));
         }
     }

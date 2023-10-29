@@ -6,21 +6,20 @@
 package net.neoforged.neoforge.client.loading;
 
 import com.mojang.blaze3d.platform.Monitor;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.LoadingOverlay;
-import net.minecraft.server.packs.resources.ReloadInstance;
-
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.LoadingOverlay;
+import net.minecraft.server.packs.resources.ReloadInstance;
 import org.lwjgl.glfw.GLFW;
 
 public final class NoVizFallback {
     private static long WINDOW;
+
     public static LongSupplier windowHandoff(IntSupplier width, IntSupplier height, Supplier<String> title, LongSupplier monitor) {
         return () -> WINDOW = GLFW.glfwCreateWindow(width.getAsInt(), height.getAsInt(), title.get(), monitor.getAsLong(), 0L);
     }
@@ -37,7 +36,7 @@ public final class NoVizFallback {
         if (WINDOW != 0) {
             var maj = GLFW.glfwGetWindowAttrib(WINDOW, GLFW.GLFW_CONTEXT_VERSION_MAJOR);
             var min = GLFW.glfwGetWindowAttrib(WINDOW, GLFW.GLFW_CONTEXT_VERSION_MINOR);
-            return maj+"."+min;
+            return maj + "." + min;
         } else {
             return "3.2";
         }

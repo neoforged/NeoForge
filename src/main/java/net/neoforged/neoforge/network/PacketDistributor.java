@@ -5,23 +5,22 @@
 
 package net.neoforged.neoforge.network;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.server.level.ServerChunkCache;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
-
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 /**
  * Means to distribute packets in various ways
@@ -99,11 +98,11 @@ public class PacketDistributor<T> {
          * A target point with excluded entity
          *
          * @param excluded Entity to exclude
-         * @param x X
-         * @param y Y
-         * @param z Z
-         * @param r2 Radius
-         * @param dim DimensionType
+         * @param x        X
+         * @param y        Y
+         * @param z        Z
+         * @param r2       Radius
+         * @param dim      DimensionType
          */
         public TargetPoint(final ServerPlayer excluded, final double x, final double y, final double z, final double r2, final ResourceKey<Level> dim) {
             this.excluded = excluded;
@@ -116,10 +115,11 @@ public class PacketDistributor<T> {
 
         /**
          * A target point without excluded entity
-         * @param x X
-         * @param y Y
-         * @param z Z
-         * @param r2 Radius
+         * 
+         * @param x   X
+         * @param y   Y
+         * @param z   Z
+         * @param r2  Radius
          * @param dim DimensionType
          */
         public TargetPoint(final double x, final double y, final double z, final double r2, final ResourceKey<Level> dim) {
@@ -133,16 +133,17 @@ public class PacketDistributor<T> {
 
         /**
          * Helper to build a TargetPoint without excluded Entity
-         * @param x X
-         * @param y Y
-         * @param z Z
-         * @param r2 Radius
+         * 
+         * @param x   X
+         * @param y   Y
+         * @param z   Z
+         * @param r2  Radius
          * @param dim DimensionType
          * @return A TargetPoint supplier
          */
         public static Supplier<TargetPoint> p(double x, double y, double z, double r2, ResourceKey<Level> dim) {
             TargetPoint tp = new TargetPoint(x, y, z, r2, dim);
-            return ()->tp;
+            return () -> tp;
         }
 
     }
@@ -156,6 +157,7 @@ public class PacketDistributor<T> {
     public static class PacketTarget {
         private final Consumer<Packet<?>> packetConsumer;
         private final PacketDistributor<?> distributor;
+
         PacketTarget(final Consumer<Packet<?>> packetConsumer, final PacketDistributor<?> distributor) {
             this.packetConsumer = packetConsumer;
             this.distributor = distributor;
@@ -181,6 +183,7 @@ public class PacketDistributor<T> {
 
     /**
      * Apply the supplied value to the specific distributor to generate an instance for sending packets to.
+     * 
      * @param input The input to apply
      * @return A curried instance
      */
@@ -196,14 +199,15 @@ public class PacketDistributor<T> {
      * @return A curried instance
      */
     public PacketTarget noArg() {
-        return new PacketTarget(functor.apply(this, ()->null), this);
+        return new PacketTarget(functor.apply(this, () -> null), this);
     }
 
     private Consumer<Packet<?>> playerConsumer(final Supplier<ServerPlayer> entityPlayerMPSupplier) {
         return p -> entityPlayerMPSupplier.get().connection.connection.send(p);
     }
+
     private Consumer<Packet<?>> playerListDimConsumer(final Supplier<ResourceKey<Level>> dimensionTypeSupplier) {
-        return p->getServer().getPlayerList().broadcastAll(p, dimensionTypeSupplier.get());
+        return p -> getServer().getPlayerList().broadcastAll(p, dimensionTypeSupplier.get());
     }
 
     private Consumer<Packet<?>> playerListAll(final Supplier<Void> voidSupplier) {
@@ -222,28 +226,28 @@ public class PacketDistributor<T> {
     }
 
     private Consumer<Packet<?>> trackingEntity(final Supplier<Entity> entitySupplier) {
-        return p-> {
+        return p -> {
             final Entity entity = entitySupplier.get();
-            ((ServerChunkCache)entity.getCommandSenderWorld().getChunkSource()).broadcast(entity, p);
+            ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).broadcast(entity, p);
         };
     }
 
     private Consumer<Packet<?>> trackingEntityAndSelf(final Supplier<Entity> entitySupplier) {
-        return p-> {
+        return p -> {
             final Entity entity = entitySupplier.get();
-            ((ServerChunkCache)entity.getCommandSenderWorld().getChunkSource()).broadcastAndSend(entity, p);
+            ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).broadcastAndSend(entity, p);
         };
     }
 
     private Consumer<Packet<?>> trackingChunk(final Supplier<LevelChunk> chunkPosSupplier) {
         return p -> {
             final LevelChunk chunk = chunkPosSupplier.get();
-            ((ServerChunkCache)chunk.getLevel().getChunkSource()).chunkMap.getPlayers(chunk.getPos(), false).forEach(e -> e.connection.send(p));
+            ((ServerChunkCache) chunk.getLevel().getChunkSource()).chunkMap.getPlayers(chunk.getPos(), false).forEach(e -> e.connection.send(p));
         };
     }
 
     private Consumer<Packet<?>> networkManagerList(final Supplier<List<Connection>> nmListSupplier) {
-        return p -> nmListSupplier.get().forEach(nm->nm.send(p));
+        return p -> nmListSupplier.get().forEach(nm -> nm.send(p));
     }
 
     private MinecraftServer getServer() {

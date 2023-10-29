@@ -19,7 +19,7 @@ public interface IKeyConflictContext {
 
     /**
      * @return true if the other context can have {@link KeyMapping} conflicts with this one.
-     * This will be called on both contexts to check for conflicts.
+     *         This will be called on both contexts to check for conflicts.
      */
     boolean conflicts(IKeyConflictContext other);
 }

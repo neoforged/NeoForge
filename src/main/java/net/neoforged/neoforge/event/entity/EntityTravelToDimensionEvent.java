@@ -5,11 +5,11 @@
 
 package net.neoforged.neoforge.event.entity;
 
-import net.minecraft.world.entity.Entity;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * EntityTravelToDimensionEvent is fired before an Entity travels to a dimension.<br>
@@ -23,18 +23,15 @@ import net.neoforged.bus.api.ICancellableEvent;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
-public class EntityTravelToDimensionEvent extends EntityEvent implements ICancellableEvent
-{
+public class EntityTravelToDimensionEvent extends EntityEvent implements ICancellableEvent {
     private final ResourceKey<Level> dimension;
 
-    public EntityTravelToDimensionEvent(Entity entity, ResourceKey<Level> dimension)
-    {
+    public EntityTravelToDimensionEvent(Entity entity, ResourceKey<Level> dimension) {
         super(entity);
         this.dimension = dimension;
     }
 
-    public ResourceKey<Level> getDimension()
-    {
+    public ResourceKey<Level> getDimension() {
         return dimension;
     }
 }

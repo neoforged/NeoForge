@@ -12,8 +12,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event.HasResult;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -29,15 +29,13 @@ import org.jetbrains.annotations.Nullable;
  */
 // TODO: Rename to BlockFeatureGrowEvent in 1.20
 @HasResult
-public class SaplingGrowTreeEvent extends LevelEvent
-{
+public class SaplingGrowTreeEvent extends LevelEvent {
     private final RandomSource randomSource;
     private final BlockPos pos;
     @Nullable
     private Holder<ConfiguredFeature<?, ?>> feature;
 
-    public SaplingGrowTreeEvent(LevelAccessor level, RandomSource randomSource, BlockPos pos, @Nullable Holder<ConfiguredFeature<?, ?>> feature)
-    {
+    public SaplingGrowTreeEvent(LevelAccessor level, RandomSource randomSource, BlockPos pos, @Nullable Holder<ConfiguredFeature<?, ?>> feature) {
         super(level);
         this.randomSource = randomSource;
         this.pos = pos;
@@ -47,16 +45,14 @@ public class SaplingGrowTreeEvent extends LevelEvent
     /**
      * {@return the random source which initiated the sapling growth}
      */
-    public RandomSource getRandomSource()
-    {
+    public RandomSource getRandomSource() {
         return this.randomSource;
     }
 
     /**
      * {@return the coordinates of the sapling attempting to grow}
      */
-    public BlockPos getPos()
-    {
+    public BlockPos getPos() {
         return pos;
     }
 
@@ -64,24 +60,21 @@ public class SaplingGrowTreeEvent extends LevelEvent
      * {@return the holder of the feature which will be placed, possibly null}
      */
     @Nullable
-    public Holder<ConfiguredFeature<?, ?>> getFeature()
-    {
+    public Holder<ConfiguredFeature<?, ?>> getFeature() {
         return feature;
     }
 
     /**
      * @param feature a {@linkplain Holder} referencing a tree feature to be placed instead of the current feature.
      */
-    public void setFeature(@Nullable Holder<ConfiguredFeature<?, ?>> feature)
-    {
+    public void setFeature(@Nullable Holder<ConfiguredFeature<?, ?>> feature) {
         this.feature = feature;
     }
 
     /**
      * @param featureKey a {@linkplain ResourceKey} referencing a tree feature to be placed instead of the current feature.
      */
-    public void setFeature(ResourceKey<ConfiguredFeature<?, ?>> featureKey)
-    {
+    public void setFeature(ResourceKey<ConfiguredFeature<?, ?>> featureKey) {
         this.feature = this.getLevel().registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolder(featureKey).orElse(null);
     }
 }

@@ -8,7 +8,6 @@ package net.neoforged.neoforge.event.level;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -21,30 +20,27 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.storage.ServerLevelData;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * This event is fired whenever an event involving a {@link LevelAccessor} occurs.
  * <p>
  * All children of this event are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}.
  */
-public abstract class LevelEvent extends Event
-{
+public abstract class LevelEvent extends Event {
     private final LevelAccessor level;
 
-    public LevelEvent(LevelAccessor level)
-    {
+    public LevelEvent(LevelAccessor level) {
         this.level = level;
     }
 
     /**
      * {@return the level this event is affecting}
      */
-    public LevelAccessor getLevel()
-    {
+    public LevelAccessor getLevel() {
         return level;
     }
 
@@ -58,9 +54,10 @@ public abstract class LevelEvent extends Event
      * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
      * on both logical sides.
      **/
-    public static class Load extends LevelEvent
-    {
-        public Load(LevelAccessor level) { super(level); }
+    public static class Load extends LevelEvent {
+        public Load(LevelAccessor level) {
+            super(level);
+        }
     }
 
     /**
@@ -75,9 +72,10 @@ public abstract class LevelEvent extends Event
      * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
      * on both logical sides.
      **/
-    public static class Unload extends LevelEvent
-    {
-        public Unload(LevelAccessor level) { super(level); }
+    public static class Unload extends LevelEvent {
+        public Unload(LevelAccessor level) {
+            super(level);
+        }
     }
 
     /**
@@ -90,9 +88,10 @@ public abstract class LevelEvent extends Event
      * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      **/
-    public static class Save extends LevelEvent
-    {
-        public Save(LevelAccessor level) { super(level); }
+    public static class Save extends LevelEvent {
+        public Save(LevelAccessor level) {
+            super(level);
+        }
     }
 
     /**
@@ -107,18 +106,15 @@ public abstract class LevelEvent extends Event
      *
      * @see ServerLevelData#isInitialized()
      */
-    public static class CreateSpawnPosition extends LevelEvent implements ICancellableEvent
-    {
+    public static class CreateSpawnPosition extends LevelEvent implements ICancellableEvent {
         private final ServerLevelData settings;
 
-        public CreateSpawnPosition(LevelAccessor level, ServerLevelData settings)
-        {
+        public CreateSpawnPosition(LevelAccessor level, ServerLevelData settings) {
             super(level);
             this.settings = settings;
         }
 
-        public ServerLevelData getSettings()
-        {
+        public ServerLevelData getSettings() {
             return settings;
         }
     }
@@ -134,15 +130,13 @@ public abstract class LevelEvent extends Event
      * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      * Canceling the event will result in an empty list, meaning no entity will be spawned.</p>
      */
-    public static class PotentialSpawns extends LevelEvent implements ICancellableEvent
-    {
+    public static class PotentialSpawns extends LevelEvent implements ICancellableEvent {
         private final MobCategory mobcategory;
         private final BlockPos pos;
         private final List<MobSpawnSettings.SpawnerData> list;
         private final List<MobSpawnSettings.SpawnerData> view;
 
-        public PotentialSpawns(LevelAccessor level, MobCategory category, BlockPos pos, WeightedRandomList<MobSpawnSettings.SpawnerData> oldList)
-        {
+        public PotentialSpawns(LevelAccessor level, MobCategory category, BlockPos pos, WeightedRandomList<MobSpawnSettings.SpawnerData> oldList) {
             super(level);
             this.pos = pos;
             this.mobcategory = category;
@@ -157,24 +151,21 @@ public abstract class LevelEvent extends Event
         /**
          * {@return the category of the mobs in the spawn list.}
          */
-        public MobCategory getMobCategory()
-        {
+        public MobCategory getMobCategory() {
             return mobcategory;
         }
 
         /**
          * {@return the block position where the chosen mob will be spawned.}
          */
-        public BlockPos getPos()
-        {
+        public BlockPos getPos() {
             return pos;
         }
 
         /**
          * {@return the list of mobs that can potentially be spawned.}
          */
-        public List<MobSpawnSettings.SpawnerData> getSpawnerDataList()
-        {
+        public List<MobSpawnSettings.SpawnerData> getSpawnerDataList() {
             return view;
         }
 
@@ -183,8 +174,7 @@ public abstract class LevelEvent extends Event
          *
          * @param data SpawnerData entry to be appended to the spawn list.
          */
-        public void addSpawnerData(MobSpawnSettings.SpawnerData data)
-        {
+        public void addSpawnerData(MobSpawnSettings.SpawnerData data) {
             list.add(data);
         }
 
@@ -193,10 +183,9 @@ public abstract class LevelEvent extends Event
          *
          * @param data SpawnerData entry to be removed from the spawn list.
          *
-         * {@return {@code true} if the spawn list contained the specified element.}
+         *             {@return {@code true} if the spawn list contained the specified element.}
          */
-        public boolean removeSpawnerData(MobSpawnSettings.SpawnerData data)
-        {
+        public boolean removeSpawnerData(MobSpawnSettings.SpawnerData data) {
             return list.remove(data);
         }
     }

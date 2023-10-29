@@ -16,8 +16,7 @@ import net.neoforged.neoforge.common.CreativeModeTabRegistry;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-public class CreativeModeTabSearchRegistry
-{
+public class CreativeModeTabSearchRegistry {
     private static final Map<CreativeModeTab, SearchRegistry.Key<ItemStack>> NAME_SEARCH_KEYS = new IdentityHashMap<>();
     private static final Map<CreativeModeTab, SearchRegistry.Key<ItemStack>> TAG_SEARCH_KEYS = new IdentityHashMap<>();
 
@@ -26,8 +25,7 @@ public class CreativeModeTabSearchRegistry
 
         nameSearchKeys.put(CreativeModeTabs.searchTab(), getNameSearchKey(CreativeModeTabs.searchTab()));
 
-        for (CreativeModeTab tab : CreativeModeTabRegistry.getSortedCreativeModeTabs())
-        {
+        for (CreativeModeTab tab : CreativeModeTabRegistry.getSortedCreativeModeTabs()) {
             SearchRegistry.Key<ItemStack> nameSearchKey = getNameSearchKey(tab);
             if (nameSearchKey != null)
                 nameSearchKeys.put(tab, nameSearchKey);
@@ -41,8 +39,7 @@ public class CreativeModeTabSearchRegistry
 
         tagSearchKeys.put(CreativeModeTabs.searchTab(), getTagSearchKey(CreativeModeTabs.searchTab()));
 
-        for (CreativeModeTab tab : CreativeModeTabRegistry.getSortedCreativeModeTabs())
-        {
+        for (CreativeModeTab tab : CreativeModeTabRegistry.getSortedCreativeModeTabs()) {
             SearchRegistry.Key<ItemStack> tagSearchKey = getTagSearchKey(tab);
             if (tagSearchKey != null)
                 tagSearchKeys.put(tab, tagSearchKey);
@@ -52,8 +49,7 @@ public class CreativeModeTabSearchRegistry
     }
 
     @Nullable
-    public static SearchRegistry.Key<ItemStack> getNameSearchKey(CreativeModeTab tab)
-    {
+    public static SearchRegistry.Key<ItemStack> getNameSearchKey(CreativeModeTab tab) {
         if (tab == CreativeModeTabs.searchTab())
             return SearchRegistry.CREATIVE_NAMES;
 
@@ -64,8 +60,7 @@ public class CreativeModeTabSearchRegistry
     }
 
     @Nullable
-    public static SearchRegistry.Key<ItemStack> getTagSearchKey(CreativeModeTab tab)
-    {
+    public static SearchRegistry.Key<ItemStack> getTagSearchKey(CreativeModeTab tab) {
         if (tab == CreativeModeTabs.searchTab())
             return SearchRegistry.CREATIVE_TAGS;
 

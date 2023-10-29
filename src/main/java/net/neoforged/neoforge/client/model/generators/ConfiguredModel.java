@@ -5,17 +5,14 @@
 
 package net.neoforged.neoforge.client.model.generators;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.IntStream;
-
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ObjectArrays;
 import com.google.gson.JsonObject;
-
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.IntStream;
 import net.minecraft.client.resources.model.BlockModelRotation;
 import org.jetbrains.annotations.Nullable;
 

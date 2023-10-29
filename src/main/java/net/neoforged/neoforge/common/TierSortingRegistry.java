@@ -11,6 +11,9 @@ import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import com.google.gson.*;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+import java.io.*;
+import java.util.*;
+import java.util.stream.Collectors;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -29,14 +32,14 @@ import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.toposort.TopologicalSort;
-import net.neoforged.neoforge.network.PlayNetworkDirection;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.NetworkEvent;
 import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PlayNetworkDirection;
 import net.neoforged.neoforge.network.simple.SimpleChannel;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
@@ -44,24 +47,19 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
-import java.util.*;
-import java.util.stream.Collectors;
-
-public class TierSortingRegistry
-{
+public class TierSortingRegistry {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ResourceLocation ITEM_TIER_ORDERING_JSON = new ResourceLocation("neoforge", "item_tier_ordering.json");
 
     /**
      * Registers a tier into the tier sorting registry.
-     * @param tier The tier to register
-     * @param name The name to use internally for dependency resolution
-     * @param after List of tiers to place this tier after (the tiers in the list will be considered lesser tiers)
+     * 
+     * @param tier   The tier to register
+     * @param name   The name to use internally for dependency resolution
+     * @param after  List of tiers to place this tier after (the tiers in the list will be considered lesser tiers)
      * @param before List of tiers to place this tier before (the tiers in the list will be considered better tiers)
      */
-    public static synchronized Tier registerTier(Tier tier, ResourceLocation name, List<Object> after, List<Object> before)
-    {
+    public static synchronized Tier registerTier(Tier tier, ResourceLocation name, List<Object> after, List<Object> before) {
         if (tiers.containsKey(name))
             throw new IllegalStateException("Duplicate tier name " + name);
 
@@ -74,53 +72,53 @@ public class TierSortingRegistry
     /**
      * Returns the list of tiers in the order defined by the dependencies.
      * This list will remain valid
+     * 
      * @return An unmodifiable list of tiers ordered lesser to greater
      */
-    public static List<Tier> getSortedTiers()
-    {
+    public static List<Tier> getSortedTiers() {
         return sortedTiersUnmodifiable;
     }
 
     /**
      * Returns the tier associated with a name, if registered into the sorting system.
+     * 
      * @param name The name to look up
      * @return The tier, or null if not registered
      */
     @Nullable
-    public static Tier byName(ResourceLocation name)
-    {
+    public static Tier byName(ResourceLocation name) {
         return tiers.get(name);
     }
 
     /**
      * Returns the name associated with a tier, if the tier is registered into the sorting system.
+     * 
      * @param tier The tier to look up
      * @return The name for the tier, or null if not registered
      */
     @Nullable
-    public static ResourceLocation getName(Tier tier)
-    {
+    public static ResourceLocation getName(Tier tier) {
         return tiers.inverse().get(tier);
     }
 
     /**
      * Queries if a tier should be evaluated using the sorting system, by calling isCorrectTierForDrops
+     * 
      * @param tier The tier to query
      * @return True if isCorrectTierForDrops should be called for the tier
      */
-    public static boolean isTierSorted(Tier tier)
-    {
+    public static boolean isTierSorted(Tier tier) {
         return getName(tier) != null;
     }
 
     /**
      * Queries if a tier is high enough to be able to get drops for the given blockstate.
-     * @param tier The tier to look up
+     * 
+     * @param tier  The tier to look up
      * @param state The state to test against
      * @return True if the tier is good enough
      */
-    public static boolean isCorrectTierForDrops(Tier tier, BlockState state)
-    {
+    public static boolean isCorrectTierForDrops(Tier tier, BlockState state) {
         if (!isTierSorted(tier))
             return isCorrectTierVanilla(tier, state);
 
@@ -134,11 +132,11 @@ public class TierSortingRegistry
 
     /**
      * Helper to query all tiers that are lower than the given tier
+     * 
      * @param tier The tier
      * @return All the lower tiers
      */
-    public static List<Tier> getTiersLowerThan(Tier tier)
-    {
+    public static List<Tier> getTiersLowerThan(Tier tier) {
         if (!isTierSorted(tier)) return List.of();
         return sortedTiers.stream().takeWhile(t -> t != tier).toList();
     }
@@ -148,41 +146,31 @@ public class TierSortingRegistry
     /**
      * Fallback for when a tier isn't in the registry, copy of the logic in {@link DiggerItem#isCorrectToolForDrops}
      */
-    private static boolean isCorrectTierVanilla(Tier tier, BlockState state)
-    {
+    private static boolean isCorrectTierVanilla(Tier tier, BlockState state) {
         int i = tier.getLevel();
-        if (i < 3 && state.is(BlockTags.NEEDS_DIAMOND_TOOL))
-        {
+        if (i < 3 && state.is(BlockTags.NEEDS_DIAMOND_TOOL)) {
             return false;
-        }
-        else if (i < 2 && state.is(BlockTags.NEEDS_IRON_TOOL))
-        {
+        } else if (i < 2 && state.is(BlockTags.NEEDS_IRON_TOOL)) {
             return false;
-        }
-        else if (i < 1 && state.is(BlockTags.NEEDS_STONE_TOOL))
-        {
+        } else if (i < 1 && state.is(BlockTags.NEEDS_STONE_TOOL)) {
             return false;
         }
         return true;
     }
 
-    private static void processTier(Tier tier, ResourceLocation name, List<Object> afters, List<Object> befores)
-    {
+    private static void processTier(Tier tier, ResourceLocation name, List<Object> afters, List<Object> befores) {
         tiers.put(name, tier);
-        for(Object after : afters)
-        {
+        for (Object after : afters) {
             ResourceLocation other = getTierName(after);
             edges.put(other, name);
         }
-        for(Object before : befores)
-        {
+        for (Object before : befores) {
             ResourceLocation other = getTierName(before);
             edges.put(name, other);
         }
     }
 
-    private static ResourceLocation getTierName(Object entry)
-    {
+    private static ResourceLocation getTierName(Object entry) {
         if (entry instanceof String s)
             return new ResourceLocation(s);
         if (entry instanceof ResourceLocation rl)
@@ -221,59 +209,46 @@ public class TierSortingRegistry
     private static final SimpleChannel SYNC_CHANNEL = NetworkRegistry.newSimpleChannel(
             CHANNEL_NAME, () -> "1.0",
             versionFromServer -> PROTOCOL_VERSION.equals(versionFromServer) || (allowVanilla() && NetworkRegistry.ACCEPTVANILLA.equals(versionFromServer)),
-            versionFromClient -> PROTOCOL_VERSION.equals(versionFromClient) || (allowVanilla() && NetworkRegistry.ACCEPTVANILLA.equals(versionFromClient))
-    );
+            versionFromClient -> PROTOCOL_VERSION.equals(versionFromClient) || (allowVanilla() && NetworkRegistry.ACCEPTVANILLA.equals(versionFromClient)));
 
-    static boolean allowVanilla()
-    {
+    static boolean allowVanilla() {
         return !hasCustomTiers;
     }
 
     /*package private*/
-    static void init()
-    {
+    static void init() {
         SYNC_CHANNEL.registerMessage(0, SyncPacket.class, SyncPacket::encode, TierSortingRegistry::receive, TierSortingRegistry::handle, Optional.of(PlayNetworkDirection.PLAY_TO_CLIENT));
         NeoForge.EVENT_BUS.addListener(TierSortingRegistry::playerLoggedIn);
         if (FMLEnvironment.dist == Dist.CLIENT) ClientEvents.init();
     }
 
     /*package private*/
-    static PreparableReloadListener getReloadListener()
-    {
-        return new SimplePreparableReloadListener<JsonObject>()
-        {
+    static PreparableReloadListener getReloadListener() {
+        return new SimplePreparableReloadListener<JsonObject>() {
             final Gson gson = (new GsonBuilder()).create();
 
             @NotNull
             @Override
-            protected JsonObject prepare(@NotNull ResourceManager resourceManager, ProfilerFiller p)
-            {
+            protected JsonObject prepare(@NotNull ResourceManager resourceManager, ProfilerFiller p) {
                 Optional<Resource> res = resourceManager.getResource(ITEM_TIER_ORDERING_JSON);
                 if (res.isEmpty())
                     return new JsonObject();
 
-                try (Reader reader = res.get().openAsReader())
-                {
+                try (Reader reader = res.get().openAsReader()) {
                     return gson.fromJson(reader, JsonObject.class);
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     LOGGER.error("Could not read Tier sorting file " + ITEM_TIER_ORDERING_JSON, e);
                     return new JsonObject();
                 }
             }
 
             @Override
-            protected void apply(@NotNull JsonObject data, @NotNull ResourceManager resourceManager, ProfilerFiller p)
-            {
-                try
-                {
-                    if (data.size() > 0)
-                    {
+            protected void apply(@NotNull JsonObject data, @NotNull ResourceManager resourceManager, ProfilerFiller p) {
+                try {
+                    if (data.size() > 0) {
                         JsonArray order = GsonHelper.getAsJsonArray(data, "order");
                         List<Tier> customOrder = new ArrayList<>();
-                        for (JsonElement entry : order)
-                        {
+                        for (JsonElement entry : order) {
                             ResourceLocation id = new ResourceLocation(entry.getAsString());
                             Tier tier = byName(id);
                             if (tier == null) throw new IllegalStateException("Tier not found with name " + id);
@@ -287,9 +262,7 @@ public class TierSortingRegistry
                         setTierOrder(customOrder);
                         return;
                     }
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     LOGGER.error("Error parsing Tier sorting file " + ITEM_TIER_ORDERING_JSON, e);
                 }
 
@@ -299,12 +272,10 @@ public class TierSortingRegistry
     }
 
     @SuppressWarnings("UnstableApiUsage")
-    private static void recalculateItemTiers()
-    {
+    private static void recalculateItemTiers() {
         final MutableGraph<Tier> graph = GraphBuilder.directed().nodeOrder(ElementOrder.<Tier>insertion()).build();
 
-        for(Tier tier : tiers.values())
-        {
+        for (Tier tier : tiers.values()) {
             graph.addNode(tier);
         }
         edges.forEach((key, value) -> {
@@ -316,80 +287,65 @@ public class TierSortingRegistry
         setTierOrder(tierList);
     }
 
-    private static void setTierOrder(List<Tier> tierList)
-    {
+    private static void setTierOrder(List<Tier> tierList) {
         runInServerThreadIfPossible(hasServer -> {
             sortedTiers.clear();
             sortedTiers.addAll(tierList);
-            if(hasServer) syncToAll();
+            if (hasServer) syncToAll();
         });
     }
 
-    private static void runInServerThreadIfPossible(BooleanConsumer runnable)
-    {
+    private static void runInServerThreadIfPossible(BooleanConsumer runnable) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server != null) server.execute(() -> runnable.accept(true));
         else runnable.accept(false);
     }
 
-    private static void syncToAll()
-    {
-        for(ServerPlayer serverPlayer : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers())
-        {
+    private static void syncToAll() {
+        for (ServerPlayer serverPlayer : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
             syncToPlayer(serverPlayer);
         }
     }
 
-    private static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event)
-    {
-        if (event.getEntity() instanceof ServerPlayer serverPlayer)
-        {
+    private static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             syncToPlayer(serverPlayer);
         }
     }
 
-    private static void syncToPlayer(ServerPlayer serverPlayer)
-    {
-        if (SYNC_CHANNEL.isRemotePresent(serverPlayer.connection.connection) && !serverPlayer.connection.connection.isMemoryConnection())
-        {
+    private static void syncToPlayer(ServerPlayer serverPlayer) {
+        if (SYNC_CHANNEL.isRemotePresent(serverPlayer.connection.connection) && !serverPlayer.connection.connection.isMemoryConnection()) {
             SYNC_CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new SyncPacket(sortedTiers.stream().map(TierSortingRegistry::getName).toList()));
         }
     }
 
-    private static SyncPacket receive(FriendlyByteBuf buffer)
-    {
+    private static SyncPacket receive(FriendlyByteBuf buffer) {
         int count = buffer.readVarInt();
         List<ResourceLocation> list = new ArrayList<>();
-        for(int i=0;i<count;i++)
+        for (int i = 0; i < count; i++)
             list.add(buffer.readResourceLocation());
         return new SyncPacket(list);
     }
 
-    private static void handle(SyncPacket packet, NetworkEvent.Context context)
-    {
+    private static void handle(SyncPacket packet, NetworkEvent.Context context) {
         setTierOrder(packet.tiers.stream().map(TierSortingRegistry::byName).toList());
         context.setPacketHandled(true);
     }
 
-    private record SyncPacket(List<ResourceLocation> tiers)
-    {
-        private void encode(FriendlyByteBuf buffer)
-        {
+    private record SyncPacket(List<ResourceLocation> tiers) {
+        private void encode(FriendlyByteBuf buffer) {
             buffer.writeVarInt(tiers.size());
-            for(ResourceLocation loc : tiers)
+            for (ResourceLocation loc : tiers)
                 buffer.writeResourceLocation(loc);
         }
     }
 
-    private static class ClientEvents
-    {
-        public static void init()
-        {
+    private static class ClientEvents {
+        public static void init() {
             NeoForge.EVENT_BUS.addListener(ClientEvents::clientLogInToServer);
         }
 
-        private static void clientLogInToServer(ClientPlayerNetworkEvent.LoggingIn event)
-        {
+        private static void clientLogInToServer(ClientPlayerNetworkEvent.LoggingIn event) {
             if (event.getConnection() == null || !event.getConnection().isMemoryConnection())
                 recalculateItemTiers();
         }

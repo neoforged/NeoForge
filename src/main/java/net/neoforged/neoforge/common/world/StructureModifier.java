@@ -22,17 +22,18 @@ import net.neoforged.neoforge.registries.ForgeRegistries;
  * Requires a {@link Codec} to deserialize structure modifiers from structure modifier jsons.
  * <p>
  * Structure modifier jsons have the following json format:
+ * 
  * <pre>
  * {
  *   "type": "yourmod:yourserializer", // Indicates a registered structure modifier serializer
  *   // Additional fields can be specified here according to the codec
  * }
  * </pre>
+ * 
  * <p>
  * Datapacks can also disable a structure modifier by overriding the json and using {@code "type": "neoforge:none"}.</p>
  */
-public interface StructureModifier
-{
+public interface StructureModifier {
     /**
      * Codec for (de)serializing structure modifiers inline.
      * Mods can use this for data generation.
@@ -58,8 +59,8 @@ public interface StructureModifier
      * and climate and client effects to be modified.
      *
      * @param structure the named structure being modified (with original data readable).
-     * @param phase structure modification phase. Structure modifiers apply in each phase in order of the enum constants.
-     * @param builder mutable structure info builder. Apply changes to this.
+     * @param phase     structure modification phase. Structure modifiers apply in each phase in order of the enum constants.
+     * @param builder   mutable structure info builder. Apply changes to this.
      */
     void modify(Holder<Structure> structure, Phase phase, StructureInfo.Builder builder);
 
@@ -68,8 +69,7 @@ public interface StructureModifier
      */
     Codec<? extends StructureModifier> codec();
 
-    enum Phase
-    {
+    enum Phase {
         /**
          * Catch-all for anything that needs to run before standard phases.
          */

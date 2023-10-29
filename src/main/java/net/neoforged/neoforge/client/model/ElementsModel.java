@@ -29,18 +29,15 @@ import net.neoforged.neoforge.client.model.geometry.UnbakedGeometryHelper;
 /**
  * A model composed of vanilla {@linkplain BlockElement block elements}.
  */
-public class ElementsModel extends SimpleUnbakedGeometry<ElementsModel>
-{
+public class ElementsModel extends SimpleUnbakedGeometry<ElementsModel> {
     private final List<BlockElement> elements;
 
-    public ElementsModel(List<BlockElement> elements)
-    {
+    public ElementsModel(List<BlockElement> elements) {
         this.elements = elements;
     }
 
     @Override
-    protected void addQuads(IGeometryBakingContext context, IModelBuilder<?> modelBuilder, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ResourceLocation modelLocation)
-    {
+    protected void addQuads(IGeometryBakingContext context, IModelBuilder<?> modelBuilder, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ResourceLocation modelLocation) {
         // If there is a root transform, undo the ModelState transform, apply it, then re-apply the ModelState transform.
         // This is necessary because of things like UV locking, which should only respond to the ModelState, and as such
         // that is the only transform that should be applied during face bake.
@@ -49,10 +46,8 @@ public class ElementsModel extends SimpleUnbakedGeometry<ElementsModel>
         if (!rootTransform.isIdentity())
             postTransform = UnbakedGeometryHelper.applyRootTransform(modelState, rootTransform);
 
-        for (BlockElement element : elements)
-        {
-            for (Direction direction : element.faces.keySet())
-            {
+        for (BlockElement element : elements) {
+            for (Direction direction : element.faces.keySet()) {
                 var face = element.faces.get(direction);
                 var sprite = spriteGetter.apply(context.getMaterial(face.texture));
                 var quad = BlockModel.bakeFace(element, face, sprite, direction, modelState, modelLocation);
@@ -66,23 +61,18 @@ public class ElementsModel extends SimpleUnbakedGeometry<ElementsModel>
         }
     }
 
-    public static final class Loader implements IGeometryLoader<ElementsModel>
-    {
+    public static final class Loader implements IGeometryLoader<ElementsModel> {
         public static final Loader INSTANCE = new Loader();
 
-        private Loader()
-        {
-        }
+        private Loader() {}
 
         @Override
-        public ElementsModel read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) throws JsonParseException
-        {
+        public ElementsModel read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) throws JsonParseException {
             if (!jsonObject.has("elements"))
                 throw new JsonParseException("An element model must have an \"elements\" member.");
 
             List<BlockElement> elements = new ArrayList<>();
-            for (JsonElement element : GsonHelper.getAsJsonArray(jsonObject, "elements"))
-            {
+            for (JsonElement element : GsonHelper.getAsJsonArray(jsonObject, "elements")) {
                 elements.add(deserializationContext.deserialize(element, BlockElement.class));
             }
 

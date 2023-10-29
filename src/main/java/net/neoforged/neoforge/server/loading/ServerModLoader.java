@@ -5,31 +5,29 @@
 
 package net.neoforged.neoforge.server.loading;
 
-import net.neoforged.neoforge.common.NeoForge;
+import java.io.File;
+import java.util.List;
 import net.neoforged.fml.*;
-import net.neoforged.neoforge.logging.CrashReportExtender;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
+import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.server.LanguageHook;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.util.List;
-
-public class ServerModLoader
-{
+public class ServerModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
     private static boolean hasErrors = false;
 
     public static void load() {
-        LogicalSidedProvider.setServer(()-> {
+        LogicalSidedProvider.setServer(() -> {
             throw new IllegalStateException("Unable to access server yet");
         });
         LanguageHook.loadForgeAndMCLangs();
         try {
-            ModLoader.get().gatherAndInitializeMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), ()->{});
-            ModLoader.get().loadMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), ()->{});
-            ModLoader.get().finishMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), ()->{});
+            ModLoader.get().gatherAndInitializeMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), () -> {});
+            ModLoader.get().loadMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), () -> {});
+            ModLoader.get().finishMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), () -> {});
         } catch (LoadingFailedException error) {
             ServerModLoader.hasErrors = true;
             // In case its not loaded properly

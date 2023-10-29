@@ -16,6 +16,7 @@ public interface ICustomPacketPayloadWithBuffer extends CustomPacketPayload {
 
     /**
      * The buffer that created the query payload.
+     * 
      * @return The buffer
      */
     FriendlyByteBuf buffer();

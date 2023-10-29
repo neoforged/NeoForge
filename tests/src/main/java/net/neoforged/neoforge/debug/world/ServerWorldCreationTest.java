@@ -18,11 +18,8 @@ import net.neoforged.fml.common.Mod;
  * will say `working correctly` in the chat if successful.
  */
 @Mod(ServerWorldCreationTest.MODID)
-public class ServerWorldCreationTest
-{
+public class ServerWorldCreationTest {
     static final String MODID = "server_world_creation_test";
-    public ServerWorldCreationTest()
-    {
-    }
-}
 
+    public ServerWorldCreationTest() {}
+}

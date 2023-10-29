@@ -6,10 +6,10 @@
 package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.world.damagesource.DamageSource;
-import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.NeoForge;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * LivingFallEvent is fired when an Entity is set to be falling.<br>
@@ -27,19 +27,29 @@ import net.neoforged.bus.api.ICancellableEvent;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class LivingFallEvent extends LivingEvent implements ICancellableEvent
-{
+public class LivingFallEvent extends LivingEvent implements ICancellableEvent {
     private float distance;
     private float damageMultiplier;
-    public LivingFallEvent(LivingEntity entity, float distance, float damageMultiplier)
-    {
+
+    public LivingFallEvent(LivingEntity entity, float distance, float damageMultiplier) {
         super(entity);
         this.setDistance(distance);
         this.setDamageMultiplier(damageMultiplier);
     }
 
-    public float getDistance() { return distance; }
-    public void setDistance(float distance) { this.distance = distance; }
-    public float getDamageMultiplier() { return damageMultiplier; }
-    public void setDamageMultiplier(float damageMultiplier) { this.damageMultiplier = damageMultiplier; }
+    public float getDistance() {
+        return distance;
+    }
+
+    public void setDistance(float distance) {
+        this.distance = distance;
+    }
+
+    public float getDamageMultiplier() {
+        return damageMultiplier;
+    }
+
+    public void setDamageMultiplier(float damageMultiplier) {
+        this.damageMultiplier = damageMultiplier;
+    }
 }

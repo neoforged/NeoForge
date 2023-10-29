@@ -6,23 +6,19 @@
 package net.neoforged.neoforge.client.settings;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.KeyMapping;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.client.KeyMapping;
+import org.jetbrains.annotations.Nullable;
 
-public class KeyMappingLookup
-{
+public class KeyMappingLookup {
     private static final EnumMap<KeyModifier, Map<InputConstants.Key, Collection<KeyMapping>>> map = new EnumMap<>(KeyModifier.class);
-    static
-    {
-        for (KeyModifier modifier : KeyModifier.values())
-        {
+    static {
+        for (KeyModifier modifier : KeyModifier.values()) {
             map.put(modifier, new HashMap<>());
         }
     }
@@ -30,14 +26,11 @@ public class KeyMappingLookup
     /** Replaced by {@link #getAll(InputConstants.Key) getAll} */
     @Deprecated(forRemoval = true, since = "1.20.1")
     @Nullable
-    public KeyMapping get(InputConstants.Key keyCode)
-    {
+    public KeyMapping get(InputConstants.Key keyCode) {
         KeyModifier activeModifier = KeyModifier.getActiveModifier();
-        if (!activeModifier.matches(keyCode))
-        {
+        if (!activeModifier.matches(keyCode)) {
             KeyMapping binding = get(keyCode, activeModifier);
-            if (binding != null)
-            {
+            if (binding != null) {
                 return binding;
             }
         }
@@ -46,15 +39,11 @@ public class KeyMappingLookup
 
     @Nullable
     @Deprecated(forRemoval = true, since = "1.20.1")
-    private KeyMapping get(InputConstants.Key keyCode, KeyModifier keyModifier)
-    {
+    private KeyMapping get(InputConstants.Key keyCode, KeyModifier keyModifier) {
         Collection<KeyMapping> bindings = map.get(keyModifier).get(keyCode);
-        if (bindings != null)
-        {
-            for (KeyMapping binding : bindings)
-            {
-                if (binding.isActiveAndMatches(keyCode))
-                {
+        if (bindings != null) {
+            for (KeyMapping binding : bindings) {
+                if (binding.isActiveAndMatches(keyCode)) {
                     return binding;
                 }
             }
@@ -69,53 +58,43 @@ public class KeyMappingLookup
      * @param keyCode the key being pressed
      * @return the list of key mappings
      */
-    public List<KeyMapping> getAll(InputConstants.Key keyCode)
-    {
+    public List<KeyMapping> getAll(InputConstants.Key keyCode) {
         List<KeyMapping> matchingBindings = new ArrayList<KeyMapping>();
-        for (Map<InputConstants.Key, Collection<KeyMapping>> bindingsMap : map.values())
-        {
+        for (Map<InputConstants.Key, Collection<KeyMapping>> bindingsMap : map.values()) {
             Collection<KeyMapping> bindings = bindingsMap.get(keyCode);
-            if (bindings != null)
-            {
+            if (bindings != null) {
                 matchingBindings.addAll(bindings);
             }
         }
         return matchingBindings;
     }
 
-    public void put(InputConstants.Key keyCode, KeyMapping keyBinding)
-    {
+    public void put(InputConstants.Key keyCode, KeyMapping keyBinding) {
         KeyModifier keyModifier = keyBinding.getKeyModifier();
         Map<InputConstants.Key, Collection<KeyMapping>> bindingsMap = map.get(keyModifier);
         Collection<KeyMapping> bindingsForKey = bindingsMap.get(keyCode);
-        if (bindingsForKey == null)
-        {
+        if (bindingsForKey == null) {
             bindingsForKey = new ArrayList<KeyMapping>();
             bindingsMap.put(keyCode, bindingsForKey);
         }
         bindingsForKey.add(keyBinding);
     }
 
-    public void remove(KeyMapping keyBinding)
-    {
+    public void remove(KeyMapping keyBinding) {
         KeyModifier keyModifier = keyBinding.getKeyModifier();
         InputConstants.Key keyCode = keyBinding.getKey();
         Map<InputConstants.Key, Collection<KeyMapping>> bindingsMap = map.get(keyModifier);
         Collection<KeyMapping> bindingsForKey = bindingsMap.get(keyCode);
-        if (bindingsForKey != null)
-        {
+        if (bindingsForKey != null) {
             bindingsForKey.remove(keyBinding);
-            if (bindingsForKey.isEmpty())
-            {
+            if (bindingsForKey.isEmpty()) {
                 bindingsMap.remove(keyCode);
             }
         }
     }
 
-    public void clear()
-    {
-        for (Map<InputConstants.Key, Collection<KeyMapping>> bindings : map.values())
-        {
+    public void clear() {
+        for (Map<InputConstants.Key, Collection<KeyMapping>> bindings : map.values()) {
             bindings.clear();
         }
     }

@@ -8,10 +8,10 @@ package net.neoforged.neoforge.event.entity.living;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.behavior.StartAttacking;
-import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * This event allows you to change the target an entity has. <br>
@@ -34,14 +34,12 @@ import net.neoforged.bus.api.ICancellableEvent;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
-public class LivingChangeTargetEvent extends LivingEvent implements ICancellableEvent
-{
+public class LivingChangeTargetEvent extends LivingEvent implements ICancellableEvent {
     private final ILivingTargetType targetType;
     private final LivingEntity originalTarget;
     private LivingEntity newTarget;
-    
-    public LivingChangeTargetEvent(LivingEntity entity, LivingEntity originalTarget, ILivingTargetType targetType)
-    {
+
+    public LivingChangeTargetEvent(LivingEntity entity, LivingEntity originalTarget, ILivingTargetType targetType) {
         super(entity);
         this.originalTarget = originalTarget;
         this.newTarget = originalTarget;
@@ -51,52 +49,46 @@ public class LivingChangeTargetEvent extends LivingEvent implements ICancellable
     /**
      * {@return the new target of this entity.}
      */
-    public LivingEntity getNewTarget()
-    {
+    public LivingEntity getNewTarget() {
         return newTarget;
     }
 
     /**
      * Sets the new target this entity shall have.
+     * 
      * @param newTarget The new target of this entity.
      */
-    public void setNewTarget(LivingEntity newTarget)
-    {
+    public void setNewTarget(LivingEntity newTarget) {
         this.newTarget = newTarget;
     }
-    
+
     /**
      * {@return the living target type.}
      */
-    public ILivingTargetType getTargetType()
-    {
+    public ILivingTargetType getTargetType() {
         return targetType;
     }
 
     /**
      * {@return the original entity MC intended to use as a target before firing this event.}
      */
-    public LivingEntity getOriginalTarget()
-    {
+    public LivingEntity getOriginalTarget() {
         return originalTarget;
     }
-    
-    
+
     /**
      * A living target type indicates what kind of system caused a change of
      * targets. For a list of default target types, take a look at
      * {@link LivingTargetType}.
      */
-    public static interface ILivingTargetType
-    {
-        
+    public static interface ILivingTargetType {
+
     }
-    
+
     /**
      * This enum contains two default living target types.
      */
-    public static enum LivingTargetType implements ILivingTargetType
-    {
+    public static enum LivingTargetType implements ILivingTargetType {
         /**
          * This target type indicates that the target has been set by calling {@link Mob#setTarget(LivingEntity)}.
          */

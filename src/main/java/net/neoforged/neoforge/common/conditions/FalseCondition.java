@@ -7,28 +7,25 @@ package net.neoforged.neoforge.common.conditions;
 
 import com.mojang.serialization.Codec;
 
-public final class FalseCondition implements ICondition
-{
-    
+public final class FalseCondition implements ICondition {
+
     public static final FalseCondition INSTANCE = new FalseCondition();
-    
+
     public static final Codec<FalseCondition> CODEC = Codec.unit(INSTANCE).stable();
-    
+
     private FalseCondition() {}
 
     @Override
-    public boolean test(IContext condition)
-    {
+    public boolean test(IContext condition) {
         return false;
     }
-    
+
     @Override
     public Codec<? extends ICondition> codec() {
         return CODEC;
     }
-    
-    public String toString()
-    {
+
+    public String toString() {
         return "false";
     }
 }

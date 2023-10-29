@@ -7,9 +7,9 @@ package net.neoforged.neoforge.client.event;
 
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.world.level.GameType;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -20,15 +20,13 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-public class ClientPlayerChangeGameTypeEvent extends Event
-{
+public class ClientPlayerChangeGameTypeEvent extends Event {
     private final PlayerInfo info;
     private final GameType currentGameType;
     private final GameType newGameType;
 
     @ApiStatus.Internal
-    public ClientPlayerChangeGameTypeEvent(PlayerInfo info, GameType currentGameType, GameType newGameType)
-    {
+    public ClientPlayerChangeGameTypeEvent(PlayerInfo info, GameType currentGameType, GameType newGameType) {
         this.info = info;
         this.currentGameType = currentGameType;
         this.newGameType = newGameType;
@@ -37,24 +35,21 @@ public class ClientPlayerChangeGameTypeEvent extends Event
     /**
      * {@return the client player information}
      */
-    public PlayerInfo getInfo()
-    {
+    public PlayerInfo getInfo() {
         return info;
     }
 
     /**
      * {@return the current game type of the player}
      */
-    public GameType getCurrentGameType()
-    {
+    public GameType getCurrentGameType() {
         return currentGameType;
     }
 
     /**
      * {@return the new game type of the player}
      */
-    public GameType getNewGameType()
-    {
+    public GameType getNewGameType() {
         return newGameType;
     }
 }

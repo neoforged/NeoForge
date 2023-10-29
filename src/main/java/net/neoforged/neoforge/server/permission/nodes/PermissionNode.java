@@ -6,17 +6,16 @@
 package net.neoforged.neoforge.server.permission.nodes;
 
 import com.google.common.base.Preconditions;
+import java.util.Objects;
+import java.util.UUID;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.server.permission.PermissionAPI;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.handler.IPermissionHandler;
-import net.neoforged.neoforge.server.permission.PermissionAPI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Represents the basic unit at the heart of the permission system.
@@ -43,8 +42,7 @@ import java.util.UUID;
  * <p>Each node should be registered via the {@link PermissionGatherEvent.Nodes} and stored statically in a field.
  * That instance should then be reused every-time a permission check needs to be performed via {@link PermissionAPI#getPermission(ServerPlayer, PermissionNode, PermissionDynamicContext[])}.</p>
  */
-public final class PermissionNode<T>
-{
+public final class PermissionNode<T> {
     private final String nodeName;
     private final PermissionType<T> type;
     private final PermissionResolver<T> defaultResolver;
@@ -59,8 +57,7 @@ public final class PermissionNode<T>
      * Calls {@link PermissionNode#PermissionNode(String, PermissionType, PermissionResolver, PermissionDynamicContextKey[])}
      * with "namespace.path" as the first parameter
      */
-    public PermissionNode(ResourceLocation nodeName, PermissionType<T> type, PermissionResolver<T> defaultResolver, PermissionDynamicContextKey... dynamics)
-    {
+    public PermissionNode(ResourceLocation nodeName, PermissionType<T> type, PermissionResolver<T> defaultResolver, PermissionDynamicContextKey... dynamics) {
         this(nodeName.getNamespace(), nodeName.getPath(), type, defaultResolver, dynamics);
     }
 
@@ -68,8 +65,7 @@ public final class PermissionNode<T>
      * Calls {@link PermissionNode#PermissionNode(String, PermissionType, PermissionResolver, PermissionDynamicContextKey[])}
      * with "modid.nodename" as the first parameter
      */
-    public PermissionNode(String modID, String nodeName, PermissionType<T> type, PermissionResolver<T> defaultResolver, PermissionDynamicContextKey... dynamics)
-    {
+    public PermissionNode(String modID, String nodeName, PermissionType<T> type, PermissionResolver<T> defaultResolver, PermissionDynamicContextKey... dynamics) {
         this(modID + "." + nodeName, type, defaultResolver, dynamics);
     }
 
@@ -80,8 +76,7 @@ public final class PermissionNode<T>
      * @param dynamics        PermissionDynamicContextKey is a dynamic component for permission nodes, similar to BlockState Properties.
      *                        They <strong>must</strong> be passed into the constructor if you want to use them.
      */
-    private PermissionNode(String nodeName, PermissionType<T> type, PermissionResolver<T> defaultResolver, PermissionDynamicContextKey... dynamics)
-    {
+    private PermissionNode(String nodeName, PermissionType<T> type, PermissionResolver<T> defaultResolver, PermissionDynamicContextKey... dynamics) {
         this.nodeName = nodeName;
         this.type = type;
         this.dynamics = dynamics;
@@ -102,8 +97,7 @@ public final class PermissionNode<T>
      *                     when using TranslatableComponent, key should be of format {@code "permission.desc.<nodename>"}
      * @return itself with the new information set.
      */
-    public PermissionNode setInformation(@NotNull Component readableName, @NotNull Component description)
-    {
+    public PermissionNode setInformation(@NotNull Component readableName, @NotNull Component description) {
         Preconditions.checkNotNull(readableName, "Readable name for PermissionNodes must not be null %s", this.nodeName);
         Preconditions.checkNotNull(description, "Description for PermissionNodes must not be null %s", this.nodeName);
 
@@ -113,35 +107,29 @@ public final class PermissionNode<T>
         return this;
     }
 
-    public String getNodeName()
-    {
+    public String getNodeName() {
         return nodeName;
     }
 
-    public PermissionType<T> getType()
-    {
+    public PermissionType<T> getType() {
         return type;
     }
 
-    public PermissionDynamicContextKey<?>[] getDynamics()
-    {
+    public PermissionDynamicContextKey<?>[] getDynamics() {
         return dynamics;
     }
 
-    public PermissionResolver<T> getDefaultResolver()
-    {
+    public PermissionResolver<T> getDefaultResolver() {
         return defaultResolver;
     }
 
     @Nullable
-    public Component getReadableName()
-    {
+    public Component getReadableName() {
         return readableName;
     }
 
     @Nullable
-    public Component getDescription()
-    {
+    public Component getDescription() {
         return description;
     }
 
@@ -151,8 +139,7 @@ public final class PermissionNode<T>
      * @param <T> generic value of the PermissionType of a PermissionNode
      */
     @FunctionalInterface
-    public interface PermissionResolver<T>
-    {
+    public interface PermissionResolver<T> {
         /**
          * @param player     an online player
          * @param playerUUID if the player is null, this UUID belongs to an offline player,
@@ -164,16 +151,14 @@ public final class PermissionNode<T>
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof PermissionNode otherNode)) return false;
         return nodeName.equals(otherNode.nodeName) && type.equals(otherNode.type);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(nodeName, type);
     }
 }

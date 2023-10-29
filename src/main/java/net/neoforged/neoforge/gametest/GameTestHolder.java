@@ -5,13 +5,12 @@
 
 package net.neoforged.neoforge.gametest;
 
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestGenerator;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestGenerator;
 
 /**
  * Marks a class as containing game tests that should be registered automatically.
@@ -19,8 +18,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface GameTestHolder
-{
+public @interface GameTestHolder {
     /**
      * Used as the default {@link GameTest#templateNamespace() template namespace} for any game tests in the class that do not specify one.
      */

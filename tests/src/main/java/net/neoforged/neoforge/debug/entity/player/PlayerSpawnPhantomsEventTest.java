@@ -5,10 +5,10 @@
 
 package net.neoforged.neoforge.debug.entity.player;
 
-import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
 
 /**
  * This tests for {@link PlayerSpawnPhantomsEventTest} and fires when the normal Phantom Spawns could occur.
@@ -18,14 +18,12 @@ import net.neoforged.fml.common.Mod;
  */
 @Mod("player_spawn_phantoms_event_test")
 @Mod.EventBusSubscriber()
-public class PlayerSpawnPhantomsEventTest
-{
+public class PlayerSpawnPhantomsEventTest {
 
     private static final boolean ENABLE = false;
 
     @SubscribeEvent
-    public static void onPhantomsSpawn(PlayerSpawnPhantomsEvent event)
-    {
+    public static void onPhantomsSpawn(PlayerSpawnPhantomsEvent event) {
         if (!ENABLE) return;
         event.setPhantomsToSpawn(20);
         event.setResult(Event.Result.ALLOW);

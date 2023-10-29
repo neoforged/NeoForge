@@ -9,9 +9,9 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * LivingDrownEvent is fired whenever a living entity can't breathe and its air supply is less than or equal to zero.
@@ -23,8 +23,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * This event does not {@linkplain HasResult have a result}.
  * This event is fired on {@link NeoForge#EVENT_BUS}
  **/
-public class LivingDrownEvent extends LivingEvent implements ICancellableEvent
-{
+public class LivingDrownEvent extends LivingEvent implements ICancellableEvent {
     private boolean isDrowning;
     private float damageAmount;
     private int bubbleCount;
@@ -37,8 +36,7 @@ public class LivingDrownEvent extends LivingEvent implements ICancellableEvent
      * @param damageAmount The amount of {@linkplain DamageSources#drown() drowning damage} the entity would take.
      * @param bubbleCount  The number of {@linkplain ParticleTypes#BUBBLE} particles that will be spawned when actively drowning.
      */
-    public LivingDrownEvent(LivingEntity entity, boolean isDrowning, float damageAmount, int bubbleCount)
-    {
+    public LivingDrownEvent(LivingEntity entity, boolean isDrowning, float damageAmount, int bubbleCount) {
         super(entity);
         this.isDrowning = isDrowning;
         this.damageAmount = damageAmount;
@@ -50,8 +48,7 @@ public class LivingDrownEvent extends LivingEvent implements ICancellableEvent
      * 
      * @see #LivingDrownEvent(LivingEntity, boolean, float, boolean)
      */
-    public LivingDrownEvent(LivingEntity entity)
-    {
+    public LivingDrownEvent(LivingEntity entity) {
         this(entity, entity.getAirSupply() <= -20, 2.0F, 8);
     }
 
@@ -62,8 +59,7 @@ public class LivingDrownEvent extends LivingEvent implements ICancellableEvent
      * 
      * @return If the entity is actively drowning.
      */
-    public boolean isDrowning()
-    {
+    public boolean isDrowning() {
         return isDrowning;
     }
 
@@ -73,8 +69,7 @@ public class LivingDrownEvent extends LivingEvent implements ICancellableEvent
      * @param isDrowning The new value.
      * @see #isDrowning()
      */
-    public void setDrowning(boolean isDrowning)
-    {
+    public void setDrowning(boolean isDrowning) {
         this.isDrowning = isDrowning;
     }
 
@@ -87,8 +82,7 @@ public class LivingDrownEvent extends LivingEvent implements ICancellableEvent
      * 
      * @return The amount of damage that will be dealt to the entity when actively drowning.
      */
-    public float getDamageAmount()
-    {
+    public float getDamageAmount() {
         return damageAmount;
     }
 
@@ -98,8 +92,7 @@ public class LivingDrownEvent extends LivingEvent implements ICancellableEvent
      * @param damageAmount The new value.
      * @see #getDamageAmount()
      */
-    public void setDamageAmount(float damageAmount)
-    {
+    public void setDamageAmount(float damageAmount) {
         this.damageAmount = damageAmount;
     }
 
@@ -110,8 +103,7 @@ public class LivingDrownEvent extends LivingEvent implements ICancellableEvent
      * 
      * @return The number of bubble particles that will spawn when actively drowning.
      */
-    public int getBubbleCount()
-    {
+    public int getBubbleCount() {
         return bubbleCount;
     }
 
@@ -121,8 +113,7 @@ public class LivingDrownEvent extends LivingEvent implements ICancellableEvent
      * @param bubbleCount The new value.
      * @see #getBubbleCount()
      */
-    public void setBubbleCount(int bubbleCount)
-    {
+    public void setBubbleCount(int bubbleCount) {
         this.bubbleCount = bubbleCount;
     }
 
@@ -132,8 +123,7 @@ public class LivingDrownEvent extends LivingEvent implements ICancellableEvent
      * However, this also incurs the usual side effects of cancellation.
      */
     @Override
-    public void setCanceled(boolean cancel)
-    {
+    public void setCanceled(boolean cancel) {
         ICancellableEvent.super.setCanceled(cancel);
     }
 }

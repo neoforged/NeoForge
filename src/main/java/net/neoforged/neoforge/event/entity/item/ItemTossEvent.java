@@ -15,8 +15,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * stop the items from entering the world, but will not prevent them being
  * removed from the inventory - and thus removed from the system.
  */
-public class ItemTossEvent extends ItemEvent implements ICancellableEvent
-{
+public class ItemTossEvent extends ItemEvent implements ICancellableEvent {
 
     private final Player player;
 
@@ -24,10 +23,9 @@ public class ItemTossEvent extends ItemEvent implements ICancellableEvent
      * Creates a new event for EntityItems tossed by a player.
      * 
      * @param entityItem The EntityItem being tossed.
-     * @param player The player tossing the item.
+     * @param player     The player tossing the item.
      */
-    public ItemTossEvent(ItemEntity entityItem, Player player)
-    {
+    public ItemTossEvent(ItemEntity entityItem, Player player) {
         super(entityItem);
         this.player = player;
     }
@@ -35,8 +33,7 @@ public class ItemTossEvent extends ItemEvent implements ICancellableEvent
     /**
      * The player tossing the item.
      */
-    public Player getPlayer()
-    {
+    public Player getPlayer() {
         return player;
     }
 }

@@ -10,11 +10,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.storage.ChunkSerializer;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * ChunkDataEvent is fired when an event involving chunk data occurs.<br>
@@ -25,24 +25,20 @@ import net.neoforged.bus.api.Event;
  * <br>
  * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
-public abstract class ChunkDataEvent extends ChunkEvent
-{
+public abstract class ChunkDataEvent extends ChunkEvent {
     private final CompoundTag data;
 
-    public ChunkDataEvent(ChunkAccess chunk, CompoundTag data)
-    {
+    public ChunkDataEvent(ChunkAccess chunk, CompoundTag data) {
         super(chunk);
         this.data = data;
     }
 
-    public ChunkDataEvent(ChunkAccess chunk, LevelAccessor world, CompoundTag data)
-    {
+    public ChunkDataEvent(ChunkAccess chunk, LevelAccessor world, CompoundTag data) {
         super(chunk, world);
         this.data = data;
     }
 
-    public CompoundTag getData()
-    {
+    public CompoundTag getData() {
         return data;
     }
 
@@ -57,18 +53,15 @@ public abstract class ChunkDataEvent extends ChunkEvent
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
-    public static class Load extends ChunkDataEvent
-    {
+    public static class Load extends ChunkDataEvent {
         private ChunkStatus.ChunkType status;
 
-        public Load(ChunkAccess chunk, CompoundTag data, ChunkStatus.ChunkType status)
-        {
+        public Load(ChunkAccess chunk, CompoundTag data, ChunkStatus.ChunkType status) {
             super(chunk, data);
             this.status = status;
         }
 
-        public ChunkStatus.ChunkType getStatus()
-        {
+        public ChunkStatus.ChunkType getStatus() {
             return this.status;
         }
     }
@@ -84,10 +77,8 @@ public abstract class ChunkDataEvent extends ChunkEvent
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
-    public static class Save extends ChunkDataEvent
-    {
-        public Save(ChunkAccess chunk, LevelAccessor world, CompoundTag data)
-        {
+    public static class Save extends ChunkDataEvent {
+        public Save(ChunkAccess chunk, LevelAccessor world, CompoundTag data) {
             super(chunk, world, data);
         }
     }

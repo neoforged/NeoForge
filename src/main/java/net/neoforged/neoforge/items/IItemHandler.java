@@ -13,8 +13,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 
 @AutoRegisterCapability
-public interface IItemHandler
-{
+public interface IItemHandler {
     /**
      * Returns the number of slots available
      *
@@ -81,7 +80,7 @@ public interface IItemHandler
      * Retrieves the maximum stack size allowed to exist in the given slot.
      *
      * @param slot Slot to query.
-     * @return     The maximum stack size allowed in the slot.
+     * @return The maximum stack size allowed in the slot.
      */
     int getSlotLimit(int slot);
 
@@ -98,8 +97,9 @@ public interface IItemHandler
      * <li>When isItemValid is true, no assumptions can be made and insertion must be simulated case-by-case.</li>
      * <li>The actual items in the inventory, its fullness, or any other state are <strong>not</strong> considered by isItemValid.</li>
      * </ul>
-     * @param slot    Slot to query for validity
-     * @param stack   Stack to test with for validity
+     * 
+     * @param slot  Slot to query for validity
+     * @param stack Stack to test with for validity
      *
      * @return true if the slot can insert the ItemStack, not considering the current state of the inventory.
      *         false if the slot can never insert the ItemStack in any situation.

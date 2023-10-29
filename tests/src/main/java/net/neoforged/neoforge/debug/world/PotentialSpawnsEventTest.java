@@ -9,9 +9,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.LevelAccessor;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.fml.common.Mod;
 
 /**
  * <p>This tests net.minecraftforge.event.world.World.LevelEvent.PotentialSpawns. If ENABLED is set to true,
@@ -19,27 +19,22 @@ import net.neoforged.fml.common.Mod;
  * game difficulty is set to anything other than hard.</p>
  */
 @Mod("potentialspawnsevent_test")
-public class PotentialSpawnsEventTest
-{
+public class PotentialSpawnsEventTest {
     public static final boolean ENABLED = false;
 
-    public PotentialSpawnsEventTest()
-    {
-        if (ENABLED)
-        {
+    public PotentialSpawnsEventTest() {
+        if (ENABLED) {
             NeoForge.EVENT_BUS.addListener(PotentialSpawnsEventTest::onlySpawnHostileMobs);
         }
     }
 
-    public static void onlySpawnHostileMobs(LevelEvent.PotentialSpawns event)
-    {
+    public static void onlySpawnHostileMobs(LevelEvent.PotentialSpawns event) {
         LevelAccessor level = event.getLevel();
         BlockPos pos = event.getPos();
         Difficulty difficulty = level.getCurrentDifficultyAt(pos).getDifficulty();
         MobCategory category = event.getMobCategory();
 
-        if (category == MobCategory.MONSTER && difficulty != Difficulty.HARD)
-        {
+        if (category == MobCategory.MONSTER && difficulty != Difficulty.HARD) {
             event.setCanceled(true);
         }
     }

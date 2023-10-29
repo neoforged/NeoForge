@@ -5,12 +5,11 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
-import net.minecraft.world.entity.player.Player;
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event.HasResult;
-
-import java.util.Optional;
 
 /**
  * This event is fired when the game checks if players can sleep at this time.<br>
@@ -22,22 +21,20 @@ import java.util.Optional;
  * setResult(DEFAULT) causes game to check !{@link Level#isDay()} instead.
  */
 @HasResult
-public class SleepingTimeCheckEvent extends PlayerEvent
-{
+public class SleepingTimeCheckEvent extends PlayerEvent {
     private final Optional<BlockPos> sleepingLocation;
 
-    public SleepingTimeCheckEvent(Player player, Optional<BlockPos> sleepingLocation)
-    {
+    public SleepingTimeCheckEvent(Player player, Optional<BlockPos> sleepingLocation) {
         super(player);
         this.sleepingLocation = sleepingLocation;
     }
 
     /**
      * Note that the sleeping location may be an approximated one.
+     * 
      * @return The player's sleeping location.
      */
-    public Optional<BlockPos> getSleepingLocation()
-    {
+    public Optional<BlockPos> getSleepingLocation() {
         return sleepingLocation;
     }
 }

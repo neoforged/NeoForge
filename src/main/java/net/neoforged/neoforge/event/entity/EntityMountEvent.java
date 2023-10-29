@@ -7,8 +7,8 @@ package net.neoforged.neoforge.event.entity;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * This event gets fired whenever a entity mounts/dismounts another entity.<br>
@@ -19,13 +19,12 @@ import net.neoforged.bus.api.ICancellableEvent;
  * If this event is canceled, the entity does not mount/dismount the other entity.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
- *<br>
+ * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  *
  */
 
-public class EntityMountEvent extends EntityEvent implements ICancellableEvent
-{
+public class EntityMountEvent extends EntityEvent implements ICancellableEvent {
 
     private final Entity entityMounting;
     private final Entity entityBeingMounted;
@@ -33,8 +32,7 @@ public class EntityMountEvent extends EntityEvent implements ICancellableEvent
 
     private final boolean isMounting;
 
-    public EntityMountEvent(Entity entityMounting, Entity entityBeingMounted, Level level, boolean isMounting)
-    {
+    public EntityMountEvent(Entity entityMounting, Entity entityBeingMounted, Level level, boolean isMounting) {
         super(entityMounting);
         this.entityMounting = entityMounting;
         this.entityBeingMounted = entityBeingMounted;
@@ -42,28 +40,23 @@ public class EntityMountEvent extends EntityEvent implements ICancellableEvent
         this.isMounting = isMounting;
     }
 
-    public boolean isMounting()
-    {
+    public boolean isMounting() {
         return isMounting;
     }
 
-    public boolean isDismounting()
-    {
+    public boolean isDismounting() {
         return !isMounting;
     }
 
-    public Entity getEntityMounting()
-    {
+    public Entity getEntityMounting() {
         return entityMounting;
     }
 
-    public Entity getEntityBeingMounted()
-    {
+    public Entity getEntityBeingMounted() {
         return entityBeingMounted;
     }
 
-    public Level getLevel()
-    {
+    public Level getLevel() {
         return level;
     }
 }

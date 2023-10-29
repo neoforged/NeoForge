@@ -8,7 +8,6 @@ package net.neoforged.neoforge.debug.client;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Button.OnPress;
 import net.minecraft.client.gui.screens.Screen;
@@ -37,51 +36,45 @@ import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.presets.WorldPreset;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.RegisterPresetEditorsEvent;
-import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.Mod.EventBusSubscriber;
 import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
+import net.neoforged.neoforge.client.event.RegisterPresetEditorsEvent;
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 @Mod(CustomPresetEditorTest.MODID)
-public class CustomPresetEditorTest
-{
+public class CustomPresetEditorTest {
     public static final String MODID = "custom_preset_editor_test";
     public static final ResourceKey<WorldPreset> WORLD_PRESET_KEY = ResourceKey.create(Registries.WORLD_PRESET, new ResourceLocation(MODID, MODID));
 
     @EventBusSubscriber(modid = MODID, bus = Bus.MOD)
-    public static class CommonModEvents
-    {
+    public static class CommonModEvents {
         @SubscribeEvent
-        public static void onGatherData(GatherDataEvent event)
-        {
+        public static void onGatherData(GatherDataEvent event) {
             DataGenerator gen = event.getGenerator();
             PackOutput packOutput = gen.getPackOutput();
             CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
-            RegistrySetBuilder registrySetBuilder =  new RegistrySetBuilder()
-                .add(Registries.WORLD_PRESET, context -> context.register(WORLD_PRESET_KEY, makeWorldPreset(context)));
+            RegistrySetBuilder registrySetBuilder = new RegistrySetBuilder()
+                    .add(Registries.WORLD_PRESET, context -> context.register(WORLD_PRESET_KEY, makeWorldPreset(context)));
 
-            gen.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, registrySetBuilder, Set.of(MODID))
-            {
+            gen.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, registrySetBuilder, Set.of(MODID)) {
                 @Override
-                public String getName()
-                {
+                public String getName() {
                     return MODID + ":" + super.getName(); // dataproviders must have unique names
                 }
             });
         }
 
-        private static WorldPreset makeWorldPreset(BootstapContext<WorldPreset> context)
-        {
+        private static WorldPreset makeWorldPreset(BootstapContext<WorldPreset> context) {
             Holder<NoiseGeneratorSettings> overworldNoise = context.lookup(Registries.NOISE_SETTINGS)
-                .getOrThrow(NoiseGeneratorSettings.OVERWORLD);
+                    .getOrThrow(NoiseGeneratorSettings.OVERWORLD);
             Holder<Biome> plains = context.lookup(Registries.BIOME)
-                .getOrThrow(Biomes.PLAINS);
+                    .getOrThrow(Biomes.PLAINS);
             Holder<DimensionType> overworldDimensionType = context.lookup(Registries.DIMENSION_TYPE)
-                .getOrThrow(BuiltinDimensionTypes.OVERWORLD);
+                    .getOrThrow(BuiltinDimensionTypes.OVERWORLD);
             BiomeSource biomeSource = new FixedBiomeSource(plains);
             ChunkGenerator chunkGenerator = new NoiseBasedChunkGenerator(biomeSource, overworldNoise);
             LevelStem levelStem = new LevelStem(overworldDimensionType, chunkGenerator);
@@ -90,55 +83,48 @@ public class CustomPresetEditorTest
     }
 
     @EventBusSubscriber(modid = MODID, value = Dist.CLIENT, bus = Bus.MOD)
-    public static class ClientModEvents
-    {
+    public static class ClientModEvents {
         @SubscribeEvent
-        public static void onRegisterPresetEditors(RegisterPresetEditorsEvent event)
-        {
+        public static void onRegisterPresetEditors(RegisterPresetEditorsEvent event) {
             event.register(WORLD_PRESET_KEY, SwampDesertScreen::new);
         }
     }
 
-    public static class SwampDesertScreen extends Screen
-    {
+    public static class SwampDesertScreen extends Screen {
         private final CreateWorldScreen parent;
 
-        public SwampDesertScreen(CreateWorldScreen parent, WorldCreationContext context)
-        {
+        public SwampDesertScreen(CreateWorldScreen parent, WorldCreationContext context) {
             super(Component.literal(MODID));
             this.parent = parent;
         }
 
         @Override
-        protected void init()
-        {
+        protected void init() {
             // Examples of configuring the world preset via gui controls.
             // These buttons tell the parent create world screen to replace the overworld with a single-biome dimension when clicked.
             this.addRenderableWidget(
-                Button.builder(Component.literal("Swamp"), this.onPressBiomeButton(Biomes.SWAMP))
-                    .bounds(this.width/2 - 155, this.height - 28, 150, 20)
-                    .build());
+                    Button.builder(Component.literal("Swamp"), this.onPressBiomeButton(Biomes.SWAMP))
+                            .bounds(this.width / 2 - 155, this.height - 28, 150, 20)
+                            .build());
             this.addRenderableWidget(
-                Button.builder(Component.literal("Desert"), this.onPressBiomeButton(Biomes.DESERT))
-                    .bounds(this.width/2 + 5, this.height - 28, 150, 20)
-                    .build());
+                    Button.builder(Component.literal("Desert"), this.onPressBiomeButton(Biomes.DESERT))
+                            .bounds(this.width / 2 + 5, this.height - 28, 150, 20)
+                            .build());
         }
 
-        private OnPress onPressBiomeButton(ResourceKey<Biome> biomeKey)
-        {
+        private OnPress onPressBiomeButton(ResourceKey<Biome> biomeKey) {
             return button -> {
                 this.parent.getUiState().updateDimensions(singleBiomeDimension(biomeKey));
                 this.minecraft.setScreen(this.parent);
             };
         }
 
-        private DimensionsUpdater singleBiomeDimension(ResourceKey<Biome> biomeKey)
-        {
+        private DimensionsUpdater singleBiomeDimension(ResourceKey<Biome> biomeKey) {
             // The original dimension list from the world preset json is provided to the DimensionsUpdater lambda here.
             // We can alter which dimensions are present by returning a different list of dimensions.
             return (registries, oldDimensions) -> {
                 Holder<NoiseGeneratorSettings> overworldNoise = registries.registryOrThrow(Registries.NOISE_SETTINGS)
-                    .getHolderOrThrow(NoiseGeneratorSettings.OVERWORLD);
+                        .getHolderOrThrow(NoiseGeneratorSettings.OVERWORLD);
                 Holder<Biome> biome = registries.registryOrThrow(Registries.BIOME).getHolderOrThrow(biomeKey);
                 return oldDimensions.replaceOverworldGenerator(registries, new NoiseBasedChunkGenerator(new FixedBiomeSource(biome), overworldNoise));
             };

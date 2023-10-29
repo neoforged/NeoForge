@@ -17,15 +17,13 @@ import net.neoforged.bus.api.ICancellableEvent;
  * Note: The shield item stack "should" be available from {@link LivingEntity#getUseItem()}
  * at least for players.
  */
-public class ShieldBlockEvent extends LivingEvent implements ICancellableEvent
-{
+public class ShieldBlockEvent extends LivingEvent implements ICancellableEvent {
     private final DamageSource source;
     private final float originalBlocked;
     private float dmgBlocked;
     private boolean shieldTakesDamage = true;
 
-    public ShieldBlockEvent(LivingEntity blocker, DamageSource source, float blocked)
-    {
+    public ShieldBlockEvent(LivingEntity blocker, DamageSource source, float blocked) {
         super(blocker);
         this.source = source;
         this.originalBlocked = blocked;
@@ -35,34 +33,31 @@ public class ShieldBlockEvent extends LivingEvent implements ICancellableEvent
     /**
      * @return The damage source.
      */
-    public DamageSource getDamageSource()
-    {
+    public DamageSource getDamageSource() {
         return this.source;
     }
 
     /**
      * @return The original amount of damage blocked, which is the same as the original
-     * incoming damage value.
+     *         incoming damage value.
      */
-    public float getOriginalBlockedDamage()
-    {
+    public float getOriginalBlockedDamage() {
         return this.originalBlocked;
     }
 
     /**
      * @return The current amount of damage blocked, as a result of this event.
      */
-    public float getBlockedDamage()
-    {
+    public float getBlockedDamage() {
         return this.dmgBlocked;
     }
 
     /**
      * Controls if {@link LivingEntity#hurtCurrentlyUsedShield} is called.
+     * 
      * @return If the shield item will take durability damage or not.
      */
-    public boolean shieldTakesDamage()
-    {
+    public boolean shieldTakesDamage() {
         return this.shieldTakesDamage;
     }
 
@@ -70,16 +65,14 @@ public class ShieldBlockEvent extends LivingEvent implements ICancellableEvent
      * Set how much damage is blocked by this action.<br>
      * Note that initially the blocked amount is the entire attack.<br>
      */
-    public void setBlockedDamage(float blocked)
-    {
+    public void setBlockedDamage(float blocked) {
         this.dmgBlocked = Mth.clamp(blocked, 0, this.originalBlocked);
     }
 
     /**
      * Set if the shield will take durability damage or not.
      */
-    public void setShieldTakesDamage(boolean damage)
-    {
+    public void setShieldTakesDamage(boolean damage) {
         this.shieldTakesDamage = damage;
     }
 

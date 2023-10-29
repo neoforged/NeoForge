@@ -8,12 +8,11 @@ package net.neoforged.neoforge.common;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
+import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
+import net.neoforged.neoforge.common.ModConfigSpec.DoubleValue;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
-
-import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
-import net.neoforged.neoforge.common.ModConfigSpec.DoubleValue;
-import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 
 /**
  * NeoForge's own configuration.
@@ -35,7 +34,7 @@ public class NeoForgeConfig {
 
         Server(ModConfigSpec.Builder builder) {
             builder.comment("Server configuration settings")
-                   .push("server");
+                    .push("server");
 
             removeErroringBlockEntities = builder
                     .comment("Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log. BE WARNED THIS COULD SCREW UP EVERYTHING USE SPARINGLY WE ARE NOT RESPONSIBLE FOR DAMAGES.")
@@ -111,24 +110,24 @@ public class NeoForgeConfig {
 
         Client(ModConfigSpec.Builder builder) {
             builder.comment("Client only settings, mostly things related to rendering")
-                   .push("client");
+                    .push("client");
 
             alwaysSetupTerrainOffThread = builder
-                .comment("Enable NeoForge to queue all chunk updates to the Chunk Update thread.",
-                        "May increase FPS significantly, but may also cause weird rendering lag.",
-                        "Not recommended for computers without a significant number of cores available.")
-                .translation("neoforge.configgui.alwaysSetupTerrainOffThread")
-                .define("alwaysSetupTerrainOffThread", false);
+                    .comment("Enable NeoForge to queue all chunk updates to the Chunk Update thread.",
+                            "May increase FPS significantly, but may also cause weird rendering lag.",
+                            "Not recommended for computers without a significant number of cores available.")
+                    .translation("neoforge.configgui.alwaysSetupTerrainOffThread")
+                    .define("alwaysSetupTerrainOffThread", false);
 
             experimentalForgeLightPipelineEnabled = builder
-                .comment("EXPERIMENTAL: Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.")
-                .translation("neoforge.configgui.forgeLightPipelineEnabled")
-                .define("experimentalForgeLightPipelineEnabled", false);
+                    .comment("EXPERIMENTAL: Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.")
+                    .translation("neoforge.configgui.forgeLightPipelineEnabled")
+                    .define("experimentalForgeLightPipelineEnabled", false);
 
             showLoadWarnings = builder
-                .comment("When enabled, NeoForge will show any warnings that occurred during loading.")
-                .translation("neoforge.configgui.showLoadWarnings")
-                .define("showLoadWarnings", true);
+                    .comment("When enabled, NeoForge will show any warnings that occurred during loading.")
+                    .translation("neoforge.configgui.showLoadWarnings")
+                    .define("showLoadWarnings", true);
 
             useCombinedDepthStencilAttachment = builder
                     .comment("Set to true to use a combined DEPTH_STENCIL attachment instead of two separate ones.")
@@ -152,7 +151,6 @@ public class NeoForgeConfig {
         CLIENT = specPair.getLeft();
     }
 
-
     static final ModConfigSpec commonSpec;
     public static final Common COMMON;
     static {
@@ -160,7 +158,6 @@ public class NeoForgeConfig {
         commonSpec = specPair.getRight();
         COMMON = specPair.getLeft();
     }
-
 
     static final ModConfigSpec serverSpec;
     public static final Server SERVER;

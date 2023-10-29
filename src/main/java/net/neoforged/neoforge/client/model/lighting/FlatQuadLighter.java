@@ -17,8 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 /**
  * Implementation of {@link QuadLighter} that lights {@link BakedQuad quads} with flat lighting.
  */
-public class FlatQuadLighter extends QuadLighter
-{
+public class FlatQuadLighter extends QuadLighter {
     private static final Direction[] SIDES = Direction.values();
 
     private static final float MAX_POSITION = 1f - 1e-2f;
@@ -27,31 +26,26 @@ public class FlatQuadLighter extends QuadLighter
     private boolean isFullCube;
     private final int[] packedLight = new int[7];
 
-    public FlatQuadLighter(BlockColors colors)
-    {
+    public FlatQuadLighter(BlockColors colors) {
         super(colors);
     }
 
     @Override
-    protected void computeLightingAt(BlockAndTintGetter level, BlockPos pos, BlockState state)
-    {
+    protected void computeLightingAt(BlockAndTintGetter level, BlockPos pos, BlockState state) {
         isFullCube = Block.isShapeFullBlock(state.getCollisionShape(level, pos));
-        for (Direction side : SIDES)
-        {
+        for (Direction side : SIDES) {
             packedLight[side.ordinal()] = LevelRenderer.getLightColor(level, state, pos.relative(side));
         }
         packedLight[6] = LevelRenderer.getLightColor(level, state, pos);
     }
 
     @Override
-    protected float calculateBrightness(float[] position)
-    {
+    protected float calculateBrightness(float[] position) {
         return 1.0f; // No shading in flat lighting
     }
 
     @Override
-    protected int calculateLightmap(float[] position, byte[] normal)
-    {
+    protected int calculateLightmap(float[] position, byte[] normal) {
         if ((isFullCube || position[1] < -MAX_POSITION) && normal[1] <= -MAX_NORMAL)
             return packedLight[Direction.DOWN.ordinal()];
 

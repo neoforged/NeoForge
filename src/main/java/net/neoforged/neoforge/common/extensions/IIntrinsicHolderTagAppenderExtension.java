@@ -10,10 +10,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 
-public interface IIntrinsicHolderTagAppenderExtension<T> extends ITagAppenderExtension<T>
-{
-    private IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> self()
-    {
+public interface IIntrinsicHolderTagAppenderExtension<T> extends ITagAppenderExtension<T> {
+    private IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> self() {
         return (IntrinsicHolderTagsProvider.IntrinsicTagAppender<T>) this;
     }
 
@@ -25,8 +23,7 @@ public interface IIntrinsicHolderTagAppenderExtension<T> extends ITagAppenderExt
      * @param entry The entry to remove
      * @return The builder for chaining
      */
-    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(final T entry)
-    {
+    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(final T entry) {
         return remove(this.getKey(entry));
     }
 
@@ -37,8 +34,7 @@ public interface IIntrinsicHolderTagAppenderExtension<T> extends ITagAppenderExt
      * @return The builder for chaining
      */
     @SuppressWarnings("unchecked")
-    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(final T first, final T... entries)
-    {
+    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(final T first, final T... entries) {
         this.remove(first);
         for (T entry : entries)
             this.remove(entry);
@@ -47,66 +43,57 @@ public interface IIntrinsicHolderTagAppenderExtension<T> extends ITagAppenderExt
 
     @Override
     @SuppressWarnings("unchecked")
-    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> addTags(TagKey<T>... values)
-    {
+    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> addTags(TagKey<T>... values) {
         ITagAppenderExtension.super.addTags(values);
         return self();
     }
 
     @Override
-    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> replace()
-    {
+    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> replace() {
         ITagAppenderExtension.super.replace();
         return self();
     }
 
     @Override
-    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> replace(boolean value)
-    {
+    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> replace(boolean value) {
         ITagAppenderExtension.super.replace(value);
         return self();
     }
 
     @Override
-    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(final ResourceLocation location)
-    {
+    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(final ResourceLocation location) {
         ITagAppenderExtension.super.remove(location);
         return self();
     }
 
     @Override
-    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(final ResourceLocation first, final ResourceLocation... locations)
-    {
+    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(final ResourceLocation first, final ResourceLocation... locations) {
         ITagAppenderExtension.super.remove(first, locations);
         return self();
     }
 
     @Override
-    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(final ResourceKey<T> resourceKey)
-    {
+    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(final ResourceKey<T> resourceKey) {
         ITagAppenderExtension.super.remove(resourceKey);
         return self();
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(final ResourceKey<T> firstResourceKey, final ResourceKey<T>... resourceKeys)
-    {
+    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(final ResourceKey<T> firstResourceKey, final ResourceKey<T>... resourceKeys) {
         ITagAppenderExtension.super.remove(firstResourceKey, resourceKeys);
         return self();
     }
 
     @Override
-    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(TagKey<T> tag)
-    {
+    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(TagKey<T> tag) {
         ITagAppenderExtension.super.remove(tag);
         return self();
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(TagKey<T> first, TagKey<T>... tags)
-    {
+    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(TagKey<T> first, TagKey<T>... tags) {
         ITagAppenderExtension.super.remove(first, tags);
         return self();
     }

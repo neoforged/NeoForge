@@ -12,7 +12,6 @@ import net.minecraft.resources.ResourceLocation;
  * A generic lookup for {@link RenderType} implementations that use the specified texture.
  */
 @FunctionalInterface
-public interface ITextureRenderTypeLookup
-{
+public interface ITextureRenderTypeLookup {
     RenderType get(ResourceLocation name);
 }

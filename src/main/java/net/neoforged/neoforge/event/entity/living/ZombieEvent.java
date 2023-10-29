@@ -8,10 +8,10 @@ package net.neoforged.neoforge.event.entity.living;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.EntityEvent;
-import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * ZombieEvent is fired whenever a zombie is spawned for aid.
@@ -23,15 +23,13 @@ import net.neoforged.bus.api.ICancellableEvent;
 public abstract class ZombieEvent extends EntityEvent {
     private final Zombie zombie;
 
-    public ZombieEvent(Zombie zombie)
-    {
+    public ZombieEvent(Zombie zombie) {
         super(zombie);
         this.zombie = zombie;
     }
 
     @Override
-    public Zombie getEntity()
-    {
+    public Zombie getEntity() {
         return this.zombie;
     }
 
@@ -69,8 +67,7 @@ public abstract class ZombieEvent extends EntityEvent {
         private final LivingEntity attacker;
         private final double summonChance;
 
-        public SummonAidEvent(Zombie zombie, Level level, int x, int y, int z, LivingEntity attacker, double summonChance)
-        {
+        public SummonAidEvent(Zombie zombie, Level level, int x, int y, int z, LivingEntity attacker, double summonChance) {
             super(zombie);
             this.level = level;
             this.x = x;
@@ -83,13 +80,36 @@ public abstract class ZombieEvent extends EntityEvent {
         /**
          * Populate this field to have a custom zombie instead of a normal zombie summoned
          */
-        public Zombie getCustomSummonedAid() { return customSummonedAid; }
-        public void setCustomSummonedAid(Zombie customSummonedAid) { this.customSummonedAid = customSummonedAid; }
-        public Level getLevel() { return level; }
-        public int getX() { return x; }
-        public int getY() { return y; }
-        public int getZ() { return z; }
-        public LivingEntity getAttacker() { return attacker; }
-        public double getSummonChance() { return summonChance; }
+        public Zombie getCustomSummonedAid() {
+            return customSummonedAid;
+        }
+
+        public void setCustomSummonedAid(Zombie customSummonedAid) {
+            this.customSummonedAid = customSummonedAid;
+        }
+
+        public Level getLevel() {
+            return level;
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public int getZ() {
+            return z;
+        }
+
+        public LivingEntity getAttacker() {
+            return attacker;
+        }
+
+        public double getSummonChance() {
+            return summonChance;
+        }
     }
 }

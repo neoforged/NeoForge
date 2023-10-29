@@ -9,8 +9,7 @@ import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
 
-public class Properties
-{
+public class Properties {
     /**
      * Property indicating if the model should be rendered in the static renderer or in the TESR. AnimationTESR sets it to false.
      */

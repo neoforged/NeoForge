@@ -5,11 +5,11 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.NotNull;
@@ -24,16 +24,14 @@ import org.jetbrains.annotations.NotNull;
  * setResult(ALLOW) is the same as the old setHandled()
  */
 @Event.HasResult
-public class BonemealEvent extends PlayerEvent implements ICancellableEvent
-{
+public class BonemealEvent extends PlayerEvent implements ICancellableEvent {
 
     private final Level level;
     private final BlockPos pos;
     private final BlockState block;
     private final ItemStack stack;
 
-    public BonemealEvent(@NotNull Player player, @NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState block, @NotNull ItemStack stack)
-    {
+    public BonemealEvent(@NotNull Player player, @NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState block, @NotNull ItemStack stack) {
         super(player);
         this.level = level;
         this.pos = pos;
@@ -41,24 +39,20 @@ public class BonemealEvent extends PlayerEvent implements ICancellableEvent
         this.stack = stack;
     }
 
-    public Level getLevel()
-    {
+    public Level getLevel() {
         return level;
     }
 
-    public BlockPos getPos()
-    {
+    public BlockPos getPos() {
         return pos;
     }
 
-    public BlockState getBlock()
-    {
+    public BlockState getBlock() {
         return block;
     }
 
     @NotNull
-    public ItemStack getStack()
-    {
+    public ItemStack getStack() {
         return stack;
     }
 }

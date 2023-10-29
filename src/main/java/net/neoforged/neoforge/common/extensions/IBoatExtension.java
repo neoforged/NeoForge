@@ -9,10 +9,8 @@ import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.fluids.FluidType;
 
-public interface IBoatExtension
-{
-    private Boat self()
-    {
+public interface IBoatExtension {
+    private Boat self() {
         return (Boat) this;
     }
 
@@ -22,8 +20,7 @@ public interface IBoatExtension
      * @param state the state of the fluid
      * @return {@code true} if the boat can be used, {@code false} otherwise
      */
-    default boolean canBoatInFluid(FluidState state)
-    {
+    default boolean canBoatInFluid(FluidState state) {
         return state.supportsBoating(self());
     }
 
@@ -33,8 +30,7 @@ public interface IBoatExtension
      * @param type the type of the fluid
      * @return {@code true} if the boat can be used, {@code false} otherwise
      */
-    default boolean canBoatInFluid(FluidType type)
-    {
+    default boolean canBoatInFluid(FluidType type) {
         return type.supportsBoating(self());
     }
 }

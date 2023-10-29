@@ -9,9 +9,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * This event is fired whenever an {@link Entity} joins a {@link Level}.
@@ -27,18 +27,15 @@ import net.neoforged.fml.LogicalSide;
  * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
  * on both logical sides.
  **/
-public class EntityJoinLevelEvent extends EntityEvent implements ICancellableEvent
-{
+public class EntityJoinLevelEvent extends EntityEvent implements ICancellableEvent {
     private final Level level;
     private final boolean loadedFromDisk;
 
-    public EntityJoinLevelEvent(Entity entity, Level level)
-    {
+    public EntityJoinLevelEvent(Entity entity, Level level) {
         this(entity, level, false);
     }
 
-    public EntityJoinLevelEvent(Entity entity, Level level, boolean loadedFromDisk)
-    {
+    public EntityJoinLevelEvent(Entity entity, Level level, boolean loadedFromDisk) {
         super(entity);
         this.level = level;
         this.loadedFromDisk = loadedFromDisk;
@@ -47,17 +44,15 @@ public class EntityJoinLevelEvent extends EntityEvent implements ICancellableEve
     /**
      * {@return the level that the entity is set to join}
      */
-    public Level getLevel()
-    {
+    public Level getLevel() {
         return level;
     }
 
     /**
      * @return {@code true} if the entity was loaded from disk, {@code false} otherwise.
-     * On the {@linkplain LogicalSide#CLIENT logical client}, this will always return {@code false}.
+     *         On the {@linkplain LogicalSide#CLIENT logical client}, this will always return {@code false}.
      */
-    public boolean loadedFromDisk()
-    {
+    public boolean loadedFromDisk() {
         return loadedFromDisk;
     }
 }

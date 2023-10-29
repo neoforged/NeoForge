@@ -7,14 +7,13 @@ package net.neoforged.neoforge.client.model.renderable;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A renderable object composed of a hierarchy of parts, each made up of a number of meshes.
@@ -23,42 +22,33 @@ import java.util.List;
  *
  * @see Builder
  */
-public class CompositeRenderable implements IRenderable<CompositeRenderable.Transforms>
-{
+public class CompositeRenderable implements IRenderable<CompositeRenderable.Transforms> {
     private final List<Component> components = new ArrayList<>();
 
-    private CompositeRenderable()
-    {
-    }
+    private CompositeRenderable() {}
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource bufferSource, ITextureRenderTypeLookup textureRenderTypeLookup, int lightmap, int overlay, float partialTick, Transforms context)
-    {
+    public void render(PoseStack poseStack, MultiBufferSource bufferSource, ITextureRenderTypeLookup textureRenderTypeLookup, int lightmap, int overlay, float partialTick, Transforms context) {
         for (var component : components)
             component.render(poseStack, bufferSource, textureRenderTypeLookup, lightmap, overlay, context);
     }
 
-    public static Builder builder()
-    {
+    public static Builder builder() {
         return new Builder();
     }
 
-    private static class Component
-    {
+    private static class Component {
         private final String name;
         private final List<Component> children = new ArrayList<>();
         private final List<Mesh> meshes = new ArrayList<>();
 
-        public Component(String name)
-        {
+        public Component(String name) {
             this.name = name;
         }
 
-        public void render(PoseStack poseStack, MultiBufferSource bufferSource, ITextureRenderTypeLookup textureRenderTypeLookup, int lightmap, int overlay, Transforms context)
-        {
+        public void render(PoseStack poseStack, MultiBufferSource bufferSource, ITextureRenderTypeLookup textureRenderTypeLookup, int lightmap, int overlay, Transforms context) {
             Matrix4f matrix = context.getTransform(name);
-            if (matrix != null)
-            {
+            if (matrix != null) {
                 poseStack.pushPose();
                 poseStack.mulPoseMatrix(matrix);
             }
@@ -74,75 +64,61 @@ public class CompositeRenderable implements IRenderable<CompositeRenderable.Tran
         }
     }
 
-    private static class Mesh
-    {
+    private static class Mesh {
         private final ResourceLocation texture;
         private final List<BakedQuad> quads = new ArrayList<>();
 
-        public Mesh(ResourceLocation texture)
-        {
+        public Mesh(ResourceLocation texture) {
             this.texture = texture;
         }
 
-        public void render(PoseStack poseStack, MultiBufferSource bufferSource, ITextureRenderTypeLookup textureRenderTypeLookup, int lightmap, int overlay)
-        {
+        public void render(PoseStack poseStack, MultiBufferSource bufferSource, ITextureRenderTypeLookup textureRenderTypeLookup, int lightmap, int overlay) {
             var consumer = bufferSource.getBuffer(textureRenderTypeLookup.get(texture));
-            for (var quad : quads)
-            {
+            for (var quad : quads) {
                 consumer.putBulkData(poseStack.last(), quad, 1, 1, 1, 1, lightmap, overlay, true);
             }
         }
     }
 
-    public static class Builder
-    {
+    public static class Builder {
         private final CompositeRenderable renderable = new CompositeRenderable();
 
-        private Builder()
-        {
-        }
+        private Builder() {}
 
-        public PartBuilder<Builder> child(String name)
-        {
+        public PartBuilder<Builder> child(String name) {
             var child = new Component(name);
             renderable.components.add(child);
             return new PartBuilder<>(this, child);
         }
 
-        public CompositeRenderable get()
-        {
+        public CompositeRenderable get() {
             return renderable;
         }
     }
 
-    public static class PartBuilder<T>
-    {
+    public static class PartBuilder<T> {
         private final T parent;
         private final Component component;
 
-        private PartBuilder(T parent, Component component)
-        {
+        private PartBuilder(T parent, Component component) {
             this.parent = parent;
             this.component = component;
         }
 
-        public PartBuilder<PartBuilder<T>> child(String name)
-        {
+        public PartBuilder<PartBuilder<T>> child(String name) {
             var child = new Component(component.name + "/" + name);
             this.component.children.add(child);
             return new PartBuilder<>(this, child);
         }
 
-        public PartBuilder<T> addMesh(ResourceLocation texture, List<BakedQuad> quads)
-        {
+        public PartBuilder<T> addMesh(ResourceLocation texture, List<BakedQuad> quads) {
             var mesh = new Mesh(texture);
             mesh.quads.addAll(quads);
             component.meshes.add(mesh);
             return this;
         }
 
-        public T end()
-        {
+        public T end() {
             return parent;
         }
     }
@@ -150,8 +126,7 @@ public class CompositeRenderable implements IRenderable<CompositeRenderable.Tran
     /**
      * A context value that provides {@link Matrix4f} transforms for certain parts of the model.
      */
-    public static class Transforms
-    {
+    public static class Transforms {
         /**
          * A default instance that has no transforms specified.
          */
@@ -160,21 +135,18 @@ public class CompositeRenderable implements IRenderable<CompositeRenderable.Tran
         /**
          * Builds a MultipartTransforms object with the given mapping.
          */
-        public static Transforms of(ImmutableMap<String, Matrix4f> parts)
-        {
+        public static Transforms of(ImmutableMap<String, Matrix4f> parts) {
             return new Transforms(parts);
         }
 
         private final ImmutableMap<String, Matrix4f> parts;
 
-        private Transforms(ImmutableMap<String, Matrix4f> parts)
-        {
+        private Transforms(ImmutableMap<String, Matrix4f> parts) {
             this.parts = parts;
         }
 
         @Nullable
-        public Matrix4f getTransform(String part)
-        {
+        public Matrix4f getTransform(String part) {
             return parts.get(part);
         }
     }

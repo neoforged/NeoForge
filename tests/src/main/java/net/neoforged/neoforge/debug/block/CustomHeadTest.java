@@ -21,15 +21,15 @@ import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.common.util.Lazy;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryObject;
@@ -41,8 +41,7 @@ import net.neoforged.neoforge.registries.RegistryObject;
  * Should appear identical in shape to vanilla heads such as zombies or skeletons, but use the blaze skin.
  */
 @Mod(CustomHeadTest.MODID)
-public class CustomHeadTest
-{
+public class CustomHeadTest {
     static final String MODID = "custom_head_test";
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
@@ -52,8 +51,7 @@ public class CustomHeadTest
     private static final RegistryObject<Item> BLAZE_HEAD_ITEM = ITEMS.register("blaze_head", () -> new StandingAndWallBlockItem(BLAZE_HEAD.get(), BLAZE_HEAD_WALL.get(), new Item.Properties().rarity(Rarity.UNCOMMON), Direction.DOWN));
     private static final RegistryObject<BlockEntityType<CustomSkullBlockEntity>> CUSTOM_SKULL = BLOCK_ENTITIES.register("custom_skull", () -> BlockEntityType.Builder.of(CustomSkullBlockEntity::new, BLAZE_HEAD.get(), BLAZE_HEAD_WALL.get()).build(null));
 
-    public CustomHeadTest()
-    {
+    public CustomHeadTest() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
@@ -61,85 +59,69 @@ public class CustomHeadTest
         modBus.addListener(this::addCreative);
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)
             event.accept(BLAZE_HEAD_ITEM);
     }
 
-    private static class CustomSkullBlock extends SkullBlock
-    {
-        public CustomSkullBlock(Type type, Properties props)
-        {
+    private static class CustomSkullBlock extends SkullBlock {
+        public CustomSkullBlock(Type type, Properties props) {
             super(type, props);
         }
 
         @Override
-        public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
-        {
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
             return new CustomSkullBlockEntity(pos, state);
         }
     }
 
-    private static class CustomWallSkullBlock extends WallSkullBlock
-    {
-        public CustomWallSkullBlock(SkullBlock.Type type, Properties props)
-        {
+    private static class CustomWallSkullBlock extends WallSkullBlock {
+        public CustomWallSkullBlock(SkullBlock.Type type, Properties props) {
             super(type, props);
         }
 
         @Override
-        public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
-        {
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
             return new CustomSkullBlockEntity(pos, state);
         }
     }
 
-    private static class CustomSkullBlockEntity extends SkullBlockEntity
-    {
-        public CustomSkullBlockEntity(BlockPos pos, BlockState state)
-        {
+    private static class CustomSkullBlockEntity extends SkullBlockEntity {
+        public CustomSkullBlockEntity(BlockPos pos, BlockState state) {
             super(pos, state);
         }
 
         @Override
-        public BlockEntityType<?> getType()
-        {
+        public BlockEntityType<?> getType() {
             return CUSTOM_SKULL.get();
         }
     }
 
-    private enum SkullType implements SkullBlock.Type
-    {
+    private enum SkullType implements SkullBlock.Type {
         BLAZE
     }
 
-    @Mod.EventBusSubscriber(value= Dist.CLIENT, bus = Bus.MOD, modid = MODID)
-    private static class ClientEvents
-    {
+    @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Bus.MOD, modid = MODID)
+    private static class ClientEvents {
         static final ModelLayerLocation BLAZE_HEAD_LAYER = new ModelLayerLocation(BLAZE_HEAD.getId(), "main");
 
         @SubscribeEvent
-        static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event)
-        {
+        static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
             event.registerLayerDefinition(BLAZE_HEAD_LAYER, Lazy.of(SkullModel::createMobHeadLayer));
         }
 
         @SubscribeEvent
-        static void registerLayerDefinitions(EntityRenderersEvent.RegisterRenderers event)
-        {
+        static void registerLayerDefinitions(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(CUSTOM_SKULL.get(), SkullBlockRenderer::new);
         }
 
         @SubscribeEvent
-        static void clientSetupEvent(FMLClientSetupEvent event)
-        {
+        static void clientSetupEvent(FMLClientSetupEvent event) {
             event.enqueueWork(() -> SkullBlockRenderer.SKIN_BY_TYPE.put(SkullType.BLAZE, new ResourceLocation("textures/entity/blaze.png")));
         }
 
         @SubscribeEvent
-        static void registerSkullModel(EntityRenderersEvent.CreateSkullModels event)
-        {
+        static void registerSkullModel(EntityRenderersEvent.CreateSkullModels event) {
             event.registerSkullModel(SkullType.BLAZE, new SkullModel(event.getEntityModelSet().bakeLayer(ClientEvents.BLAZE_HEAD_LAYER)));
         }
     }

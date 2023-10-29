@@ -11,10 +11,10 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -31,8 +31,7 @@ import org.jetbrains.annotations.ApiStatus;
  * @see RenderPlayerEvent
  * @see LivingEntityRenderer
  */
-public abstract class RenderLivingEvent<T extends LivingEntity, M extends EntityModel<T>> extends Event
-{
+public abstract class RenderLivingEvent<T extends LivingEntity, M extends EntityModel<T>> extends Event {
     private final LivingEntity entity;
     private final LivingEntityRenderer<T, M> renderer;
     private final float partialTick;
@@ -42,8 +41,7 @@ public abstract class RenderLivingEvent<T extends LivingEntity, M extends Entity
 
     @ApiStatus.Internal
     protected RenderLivingEvent(LivingEntity entity, LivingEntityRenderer<T, M> renderer, float partialTick, PoseStack poseStack,
-                                MultiBufferSource multiBufferSource, int packedLight)
-    {
+            MultiBufferSource multiBufferSource, int packedLight) {
         this.entity = entity;
         this.renderer = renderer;
         this.partialTick = partialTick;
@@ -55,40 +53,35 @@ public abstract class RenderLivingEvent<T extends LivingEntity, M extends Entity
     /**
      * @return the living entity being rendered
      */
-    public LivingEntity getEntity()
-    {
+    public LivingEntity getEntity() {
         return entity;
     }
 
     /**
      * @return the renderer for the living entity
      */
-    public LivingEntityRenderer<T, M> getRenderer()
-    {
+    public LivingEntityRenderer<T, M> getRenderer() {
         return renderer;
     }
 
     /**
      * {@return the partial tick}
      */
-    public float getPartialTick()
-    {
+    public float getPartialTick() {
         return partialTick;
     }
 
     /**
      * {@return the pose stack used for rendering}
      */
-    public PoseStack getPoseStack()
-    {
+    public PoseStack getPoseStack() {
         return poseStack;
     }
 
     /**
      * {@return the source of rendering buffers}
      */
-    public MultiBufferSource getMultiBufferSource()
-    {
+    public MultiBufferSource getMultiBufferSource() {
         return multiBufferSource;
     }
 
@@ -97,8 +90,7 @@ public abstract class RenderLivingEvent<T extends LivingEntity, M extends Entity
      *
      * @see LightTexture
      */
-    public int getPackedLight()
-    {
+    public int getPackedLight() {
         return packedLight;
     }
 
@@ -116,11 +108,9 @@ public abstract class RenderLivingEvent<T extends LivingEntity, M extends Entity
      * @param <T> the living entity that is being rendered
      * @param <M> the model for the living entity
      */
-    public static class Pre<T extends LivingEntity, M extends EntityModel<T>> extends RenderLivingEvent<T, M> implements ICancellableEvent
-    {
+    public static class Pre<T extends LivingEntity, M extends EntityModel<T>> extends RenderLivingEvent<T, M> implements ICancellableEvent {
         @ApiStatus.Internal
-        public Pre(LivingEntity entity, LivingEntityRenderer<T, M> renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight)
-        {
+        public Pre(LivingEntity entity, LivingEntityRenderer<T, M> renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
             super(entity, renderer, partialTick, poseStack, multiBufferSource, packedLight);
         }
     }
@@ -136,11 +126,9 @@ public abstract class RenderLivingEvent<T extends LivingEntity, M extends Entity
      * @param <T> the living entity that was rendered
      * @param <M> the model for the living entity
      */
-    public static class Post<T extends LivingEntity, M extends EntityModel<T>> extends RenderLivingEvent<T, M>
-    {
+    public static class Post<T extends LivingEntity, M extends EntityModel<T>> extends RenderLivingEvent<T, M> {
         @ApiStatus.Internal
-        public Post(LivingEntity entity, LivingEntityRenderer<T, M> renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight)
-        {
+        public Post(LivingEntity entity, LivingEntityRenderer<T, M> renderer, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
             super(entity, renderer, partialTick, poseStack, multiBufferSource, packedLight);
         }
     }

@@ -11,8 +11,7 @@ import java.util.Objects;
  * A predicate that takes three arguments and returns a boolean.
  */
 @FunctionalInterface
-public interface TriPredicate<T, U, V>
-{
+public interface TriPredicate<T, U, V> {
     boolean test(T t, U u, V v);
 
     default TriPredicate<T, U, V> and(TriPredicate<? super T, ? super U, ? super V> other) {

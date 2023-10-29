@@ -13,11 +13,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
-public interface IDispensibleContainerItemExtension
-{
-    private DispensibleContainerItem self()
-    {
-        return (DispensibleContainerItem)this;
+public interface IDispensibleContainerItemExtension {
+    private DispensibleContainerItem self() {
+        return (DispensibleContainerItem) this;
     }
 
     /**
@@ -30,8 +28,7 @@ public interface IDispensibleContainerItemExtension
      * @param container ItemStack of the container. May be null for backwards compatibility.
      * @return true if emptying the contents of the container was successful, false otherwise
      */
-    default boolean emptyContents(@Nullable Player player, Level level, BlockPos pos, @Nullable BlockHitResult hitResult, @Nullable ItemStack container)
-    {
+    default boolean emptyContents(@Nullable Player player, Level level, BlockPos pos, @Nullable BlockHitResult hitResult, @Nullable ItemStack container) {
         return self().emptyContents(player, level, pos, hitResult);
     }
 }

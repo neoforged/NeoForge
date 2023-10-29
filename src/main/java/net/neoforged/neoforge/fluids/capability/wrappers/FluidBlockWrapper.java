@@ -11,44 +11,36 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.IFluidBlock;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-
 import org.jetbrains.annotations.NotNull;
 
-public class FluidBlockWrapper implements IFluidHandler
-{
+public class FluidBlockWrapper implements IFluidHandler {
     protected final IFluidBlock fluidBlock;
     protected final Level world;
     protected final BlockPos blockPos;
 
-    public FluidBlockWrapper(IFluidBlock fluidBlock, Level world, BlockPos blockPos)
-    {
+    public FluidBlockWrapper(IFluidBlock fluidBlock, Level world, BlockPos blockPos) {
         this.fluidBlock = fluidBlock;
         this.world = world;
         this.blockPos = blockPos;
     }
 
     @Override
-    public int getTanks()
-    {
+    public int getTanks() {
         return 1;
     }
 
     @NotNull
     @Override
-    public FluidStack getFluidInTank(int tank)
-    {
+    public FluidStack getFluidInTank(int tank) {
         return tank == 0 ? fluidBlock.drain(world, blockPos, FluidAction.SIMULATE) : FluidStack.EMPTY;
     }
 
     @Override
-    public int getTankCapacity(int tank)
-    {
+    public int getTankCapacity(int tank) {
         FluidStack stored = getFluidInTank(tank);
-        if (!stored.isEmpty())
-        {
+        if (!stored.isEmpty()) {
             float filledPercentage = fluidBlock.getFilledPercentage(world, blockPos);
-            if (filledPercentage > 0)
-            {
+            if (filledPercentage > 0) {
                 return (int) (stored.getAmount() / filledPercentage);
             }
         }
@@ -56,28 +48,22 @@ public class FluidBlockWrapper implements IFluidHandler
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack)
-    {
+    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
         return stack.getFluid() == fluidBlock.getFluid();
     }
 
     @Override
-    public int fill(FluidStack resource, FluidAction action)
-    {
+    public int fill(FluidStack resource, FluidAction action) {
         return fluidBlock.place(world, blockPos, resource, action);
     }
 
     @NotNull
     @Override
-    public FluidStack drain(FluidStack resource, FluidAction action)
-    {
-        if (!resource.isEmpty() && fluidBlock.canDrain(world, blockPos) && resource.getFluid() == fluidBlock.getFluid())
-        {
+    public FluidStack drain(FluidStack resource, FluidAction action) {
+        if (!resource.isEmpty() && fluidBlock.canDrain(world, blockPos) && resource.getFluid() == fluidBlock.getFluid()) {
             FluidStack simulatedDrained = fluidBlock.drain(world, blockPos, FluidAction.SIMULATE);
-            if (simulatedDrained.getAmount() <= resource.getAmount() && resource.isFluidEqual(simulatedDrained))
-            {
-                if (action.execute())
-                {
+            if (simulatedDrained.getAmount() <= resource.getAmount() && resource.isFluidEqual(simulatedDrained)) {
+                if (action.execute()) {
                     return fluidBlock.drain(world, blockPos, FluidAction.EXECUTE).copy();
                 }
                 return simulatedDrained.copy();
@@ -88,15 +74,11 @@ public class FluidBlockWrapper implements IFluidHandler
 
     @NotNull
     @Override
-    public FluidStack drain(int maxDrain, FluidAction action)
-    {
-        if (maxDrain > 0 && fluidBlock.canDrain(world, blockPos))
-        {
+    public FluidStack drain(int maxDrain, FluidAction action) {
+        if (maxDrain > 0 && fluidBlock.canDrain(world, blockPos)) {
             FluidStack simulatedDrained = fluidBlock.drain(world, blockPos, FluidAction.SIMULATE);
-            if (simulatedDrained.getAmount() <= maxDrain)
-            {
-                if (action.execute())
-                {
+            if (simulatedDrained.getAmount() <= maxDrain) {
+                if (action.execute()) {
                     return fluidBlock.drain(world, blockPos, FluidAction.EXECUTE).copy();
                 }
                 return simulatedDrained.copy();

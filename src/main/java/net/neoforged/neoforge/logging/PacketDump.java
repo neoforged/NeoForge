@@ -7,28 +7,23 @@ package net.neoforged.neoforge.logging;
 
 import io.netty.buffer.ByteBuf;
 
-public class PacketDump
-{
+public class PacketDump {
 
-    public static String getContentDump(ByteBuf buffer)
-    {
+    public static String getContentDump(ByteBuf buffer) {
         int currentLength = buffer.readableBytes();
         StringBuffer returnString = new StringBuffer((currentLength * 3) + // The
-                                                                           // hex
+                                                                          // hex
                 (currentLength) + // The ascii
                 (currentLength / 4) + // The tabs/\n's
                 30); // The text
 
         // returnString.append("Buffer contents:\n");
         int i, j; // Loop variables
-        for (i = 0; i < currentLength; i++)
-        {
-            if ((i != 0) && (i % 16 == 0))
-            {
+        for (i = 0; i < currentLength; i++) {
+            if ((i != 0) && (i % 16 == 0)) {
                 // If it's a multiple of 16 and i isn't null, show the ascii
                 returnString.append('\t');
-                for (j = i - 16; j < i; j++)
-                {
+                for (j = i - 16; j < i; j++) {
                     if (buffer.getByte(j) < 0x20 || buffer.getByte(j) > 0x7F)
                         returnString.append('.');
                     else
@@ -43,10 +38,8 @@ public class PacketDump
         }
 
         // Add padding spaces if it's not a multiple of 16
-        if (i != 0 && i % 16 != 0)
-        {
-            for (j = 0; j < ((16 - (i % 16)) * 3); j++)
-            {
+        if (i != 0 && i % 16 != 0) {
+            for (j = 0; j < ((16 - (i % 16)) * 3); j++) {
                 returnString.append(' ');
             }
         }
@@ -56,16 +49,13 @@ public class PacketDump
         // Add final characters at right, after padding
 
         // If it was at the end of a line, print out the full line
-        if (i > 0 && (i % 16) == 0)
-        {
+        if (i > 0 && (i % 16) == 0) {
             j = i - 16;
-        } else
-        {
+        } else {
             j = (i - (i % 16));
         }
 
-        for (; i >= 0 && j < i; j++)
-        {
+        for (; i >= 0 && j < i; j++) {
             if (buffer.getByte(j) < 0x20 || buffer.getByte(j) > 0x7F)
                 returnString.append('.');
             else

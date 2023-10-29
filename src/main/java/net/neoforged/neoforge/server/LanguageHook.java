@@ -8,38 +8,36 @@ package net.neoforged.neoforge.server;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.I18nExtension;
-import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.GsonHelper;
+import net.neoforged.neoforge.common.I18nExtension;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public class LanguageHook
-{
+public class LanguageHook {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new Gson();
     private static final Pattern PATTERN = Pattern.compile("%(\\d+\\$)?[\\d\\.]*[df]");
     private static List<Map<String, String>> capturedTables = new ArrayList<>(2);
     private static Map<String, String> modTable;
+
     /**
      * Loads lang files on the server
      */
-    public static void captureLanguageMap(Map<String, String> table)
-    {
+    public static void captureLanguageMap(Map<String, String> table) {
         capturedTables.add(table);
         if (modTable != null) {
-            capturedTables.forEach(t->t.putAll(modTable));
+            capturedTables.forEach(t -> t.putAll(modTable));
         }
     }
 
@@ -53,8 +51,7 @@ public class LanguageHook
     }
 
     private static void loadLocaleData(final InputStream inputstream) {
-        try
-        {
+        try {
             JsonElement jsonelement = GSON.fromJson(new InputStreamReader(inputstream, StandardCharsets.UTF_8), JsonElement.class);
             JsonObject jsonobject = GsonHelper.convertToJsonObject(jsonelement, "strings");
 
@@ -62,9 +59,7 @@ public class LanguageHook
                 String s = PATTERN.matcher(GsonHelper.convertToString(entry.getValue(), entry.getKey())).replaceAll("%$1s");
                 modTable.put(entry.getKey(), s);
             });
-        }
-        finally
-        {
+        } finally {
             IOUtils.closeQuietly(inputstream);
         }
     }
@@ -89,7 +84,7 @@ public class LanguageHook
         final InputStream forge = Thread.currentThread().getContextClassLoader().getResourceAsStream("assets/neoforge/lang/en_us.json");
         loadLocaleData(mc);
         loadLocaleData(forge);
-        capturedTables.forEach(t->t.putAll(modTable));
+        capturedTables.forEach(t -> t.putAll(modTable));
         I18nExtension.loadLanguageData(modTable);
     }
 
@@ -99,7 +94,7 @@ public class LanguageHook
         for (String lang : Arrays.asList("en_us")) {
             loadLanguage(lang, server);
         }
-        capturedTables.forEach(t->t.putAll(modTable));
+        capturedTables.forEach(t -> t.putAll(modTable));
         I18nExtension.loadLanguageData(modTable);
     }
 }

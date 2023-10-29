@@ -7,10 +7,9 @@ package net.neoforged.neoforge.common.util;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
+import java.util.Map;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackLinkedSet;
-
-import java.util.Map;
 
 public class ItemStackMap {
 

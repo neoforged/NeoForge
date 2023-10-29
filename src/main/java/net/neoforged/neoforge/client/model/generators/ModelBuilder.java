@@ -5,6 +5,12 @@
 
 package net.neoforged.neoforge.client.model.generators;
 
+import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.mojang.math.Transformation;
+import com.mojang.serialization.JsonOps;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -14,29 +20,21 @@ import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-
-import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.mojang.math.Transformation;
-import com.mojang.serialization.JsonOps;
-
-import net.minecraft.client.renderer.block.model.BlockFaceUV;
-import net.minecraft.client.renderer.block.model.BlockModel.GuiLight;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockElementRotation;
+import net.minecraft.client.renderer.block.model.BlockFaceUV;
+import net.minecraft.client.renderer.block.model.BlockModel.GuiLight;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
 import net.neoforged.neoforge.client.model.ExtraFaceData;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.util.TransformationHelper;
-import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 import org.joml.Quaternionf;
@@ -70,14 +68,15 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
 
     private final RootTransformsBuilder rootTransforms = new RootTransformsBuilder();
 
-    protected ModelBuilder(ResourceLocation outputLocation, ExistingFileHelper existingFileHelper)
-    {
+    protected ModelBuilder(ResourceLocation outputLocation, ExistingFileHelper existingFileHelper) {
         super(outputLocation);
         this.existingFileHelper = existingFileHelper;
     }
 
     @SuppressWarnings("unchecked")
-    private T self() { return (T) this; }
+    private T self() {
+        return (T) this;
+    }
 
     @Override
     protected boolean exists() {
@@ -155,7 +154,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
      * @param renderType the render type. Must be registered via
      *                   {@link RegisterNamedRenderTypesEvent}
      * @return this builder
-     * @throws NullPointerException  if {@code renderType} is {@code null}
+     * @throws NullPointerException if {@code renderType} is {@code null}
      */
     public T renderType(String renderType) {
         Preconditions.checkNotNull(renderType, "Render type must not be null");
@@ -168,7 +167,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
      * @param renderType the render type. Must be registered via
      *                   {@link RegisterNamedRenderTypesEvent}
      * @return this builder
-     * @throws NullPointerException  if {@code renderType} is {@code null}
+     * @throws NullPointerException if {@code renderType} is {@code null}
      */
     public T renderType(ResourceLocation renderType) {
         Preconditions.checkNotNull(renderType, "Render type must not be null");
@@ -213,27 +212,25 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
     /**
      * {@return the number of elements in this model builder}
      */
-    public int getElementCount()
-    {
+    public int getElementCount() {
         return elements.size();
     }
 
     /**
      * Use a custom loader instead of the vanilla elements.
+     * 
      * @param customLoaderFactory function that returns the custom loader to set, given this and the {@link #existingFileHelper}
      * @return the custom loader builder
      */
-    public <L extends CustomLoaderBuilder<T>> L customLoader(BiFunction<T, ExistingFileHelper, L> customLoaderFactory)
-    {
+    public <L extends CustomLoaderBuilder<T>> L customLoader(BiFunction<T, ExistingFileHelper, L> customLoaderFactory) {
         Preconditions.checkState(elements.size() == 0, "Cannot use elements and custom loaders at the same time");
         Preconditions.checkNotNull(customLoaderFactory, "customLoaderFactory must not be null");
-        L customLoader  = customLoaderFactory.apply(self(), existingFileHelper);
+        L customLoader = customLoaderFactory.apply(self(), existingFileHelper);
         this.customLoader = customLoader;
         return customLoader;
     }
 
-    public RootTransformsBuilder rootTransforms()
-    {
+    public RootTransformsBuilder rootTransforms() {
         return rootTransforms;
     }
 
@@ -350,8 +347,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
 
         // If there were any transform properties set, add them to the output.
         JsonObject transform = rootTransforms.toJson();
-        if (transform.size() > 0)
-        {
+        if (transform.size() > 0) {
             root.add("transform", transform);
         }
 
@@ -472,7 +468,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          */
         public ElementBuilder allFaces(BiConsumer<Direction, FaceBuilder> action) {
             Arrays.stream(Direction.values())
-                .forEach(d -> action.accept(d, face(d)));
+                    .forEach(d -> action.accept(d, face(d)));
             return this;
         }
 
@@ -485,7 +481,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          */
         public ElementBuilder faces(BiConsumer<Direction, FaceBuilder> action) {
             faces.entrySet().stream()
-                .forEach(e -> action.accept(e.getKey(), e.getValue()));
+                    .forEach(e -> action.accept(e.getKey(), e.getValue()));
             return this;
         }
 
@@ -530,7 +526,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          * Traditional "emissivity" values were set both of these to the same value.
          *
          * @param blockLight the block light
-         * @param skyLight the sky light
+         * @param skyLight   the sky light
          * @return this builder
          */
         public ElementBuilder emissivity(int blockLight, int skyLight) {
@@ -567,11 +563,15 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
 
         BlockElement build() {
             Map<Direction, BlockElementFace> faces = this.faces.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().build(), (k1, k2) -> { throw new IllegalArgumentException(); }, LinkedHashMap::new));
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().build(), (k1, k2) -> {
+                        throw new IllegalArgumentException();
+                    }, LinkedHashMap::new));
             return new BlockElement(from, to, faces, rotation == null ? null : rotation.build(), shade, new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion));
         }
 
-        public T end() { return self(); }
+        public T end() {
+            return self();
+        }
 
         public class FaceBuilder {
 
@@ -634,7 +634,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
              * Traditional "emissivity" values set both of these to the same value.
              *
              * @param blockLight the block light
-             * @param skyLight the sky light
+             * @param skyLight   the sky light
              * @return this builder
              */
             public FaceBuilder emissivity(int blockLight, int skyLight) {
@@ -672,7 +672,9 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
                 return new BlockElementFace(cullface, tintindex, texture, new BlockFaceUV(uvs, rotation.rotation), new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion));
             }
 
-            public ElementBuilder end() { return ElementBuilder.this; }
+            public ElementBuilder end() {
+                return ElementBuilder.this;
+            }
         }
 
         public class RotationBuilder {
@@ -719,7 +721,9 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
                 return new BlockElementRotation(origin, axis, angle, rescale);
             }
 
-            public ElementBuilder end() { return ElementBuilder.this; }
+            public ElementBuilder end() {
+                return ElementBuilder.this;
+            }
         }
     }
 
@@ -755,10 +759,14 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
 
         Map<ItemDisplayContext, ItemTransform> build() {
             return this.transforms.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().build(), (k1, k2) -> { throw new IllegalArgumentException(); }, LinkedHashMap::new));
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().build(), (k1, k2) -> {
+                        throw new IllegalArgumentException();
+                    }, LinkedHashMap::new));
         }
 
-        public T end() { return self(); }
+        public T end() {
+            return self();
+        }
 
         public class TransformVecBuilder {
 
@@ -803,12 +811,13 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
                 return new ItemTransform(rotation, translation, scale, rightRotation);
             }
 
-            public TransformsBuilder end() { return TransformsBuilder.this; }
+            public TransformsBuilder end() {
+                return TransformsBuilder.this;
+            }
         }
     }
 
-    public class RootTransformsBuilder
-    {
+    public class RootTransformsBuilder {
         private static final Vector3f ONE = new Vector3f(1, 1, 1);
 
         private Vector3f translation = new Vector3f();
@@ -819,9 +828,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         private @Nullable TransformationHelper.TransformOrigin origin;
         private @Nullable Vector3f originVec;
 
-        RootTransformsBuilder()
-        {
-        }
+        RootTransformsBuilder() {}
 
         /**
          * Sets the translation of the root transform.
@@ -830,8 +837,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          * @return this builder
          * @throws NullPointerException if {@code translation} is {@code null}
          */
-        public RootTransformsBuilder translation(Vector3f translation)
-        {
+        public RootTransformsBuilder translation(Vector3f translation) {
             this.translation = Preconditions.checkNotNull(translation, "Translation must not be null");
             return this;
         }
@@ -844,8 +850,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          * @param z z translation
          * @return this builder
          */
-        public RootTransformsBuilder translation(float x, float y, float z)
-        {
+        public RootTransformsBuilder translation(float x, float y, float z) {
             return translation(new Vector3f(x, y, z));
         }
 
@@ -856,8 +861,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          * @return this builder
          * @throws NullPointerException if {@code rotation} is {@code null}
          */
-        public RootTransformsBuilder rotation(Quaternionf rotation)
-        {
+        public RootTransformsBuilder rotation(Quaternionf rotation) {
             this.leftRotation = Preconditions.checkNotNull(rotation, "Rotation must not be null");
             return this;
         }
@@ -865,14 +869,13 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         /**
          * Sets the left rotation of the root transform.
          *
-         * @param x x rotation
-         * @param y y rotation
-         * @param z z rotation
+         * @param x         x rotation
+         * @param y         y rotation
+         * @param z         z rotation
          * @param isDegrees whether the rotation is in degrees or radians
          * @return this builder
          */
-        public RootTransformsBuilder rotation(float x, float y, float z, boolean isDegrees)
-        {
+        public RootTransformsBuilder rotation(float x, float y, float z, boolean isDegrees) {
             return rotation(TransformationHelper.quatFromXYZ(x, y, z, isDegrees));
         }
 
@@ -883,22 +886,20 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          * @return this builder
          * @throws NullPointerException if {@code leftRotation} is {@code null}
          */
-        public RootTransformsBuilder leftRotation(Quaternionf leftRotation)
-        {
+        public RootTransformsBuilder leftRotation(Quaternionf leftRotation) {
             return rotation(leftRotation);
         }
 
         /**
          * Sets the left rotation of the root transform.
          *
-         * @param x x rotation
-         * @param y y rotation
-         * @param z z rotation
+         * @param x         x rotation
+         * @param y         y rotation
+         * @param z         z rotation
          * @param isDegrees whether the rotation is in degrees or radians
          * @return this builder
          */
-        public RootTransformsBuilder leftRotation(float x, float y, float z, boolean isDegrees)
-        {
+        public RootTransformsBuilder leftRotation(float x, float y, float z, boolean isDegrees) {
             return leftRotation(TransformationHelper.quatFromXYZ(x, y, z, isDegrees));
         }
 
@@ -909,8 +910,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          * @return this builder
          * @throws NullPointerException if {@code rightRotation} is {@code null}
          */
-        public RootTransformsBuilder rightRotation(Quaternionf rightRotation)
-        {
+        public RootTransformsBuilder rightRotation(Quaternionf rightRotation) {
             this.rightRotation = Preconditions.checkNotNull(rightRotation, "Rotation must not be null");
             return this;
         }
@@ -918,14 +918,13 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         /**
          * Sets the right rotation of the root transform.
          *
-         * @param x x rotation
-         * @param y y rotation
-         * @param z z rotation
+         * @param x         x rotation
+         * @param y         y rotation
+         * @param z         z rotation
          * @param isDegrees whether the rotation is in degrees or radians
          * @return this builder
          */
-        public RootTransformsBuilder rightRotation(float x, float y, float z, boolean isDegrees)
-        {
+        public RootTransformsBuilder rightRotation(float x, float y, float z, boolean isDegrees) {
             return rightRotation(TransformationHelper.quatFromXYZ(x, y, z, isDegrees));
         }
 
@@ -936,22 +935,20 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          * @return this builder
          * @throws NullPointerException if {@code rightRotation} is {@code null}
          */
-        public RootTransformsBuilder postRotation(Quaternionf postRotation)
-        {
+        public RootTransformsBuilder postRotation(Quaternionf postRotation) {
             return rightRotation(postRotation);
         }
 
         /**
          * Sets the right rotation of the root transform.
          *
-         * @param x x rotation
-         * @param y y rotation
-         * @param z z rotation
+         * @param x         x rotation
+         * @param y         y rotation
+         * @param z         z rotation
          * @param isDegrees whether the rotation is in degrees or radians
          * @return this builder
          */
-        public RootTransformsBuilder postRotation(float x, float y, float z, boolean isDegrees)
-        {
+        public RootTransformsBuilder postRotation(float x, float y, float z, boolean isDegrees) {
             return postRotation(TransformationHelper.quatFromXYZ(x, y, z, isDegrees));
         }
 
@@ -961,8 +958,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          * @param scale the scale
          * @return this builder
          */
-        public RootTransformsBuilder scale(float scale)
-        {
+        public RootTransformsBuilder scale(float scale) {
             return scale(new Vector3f(scale, scale, scale));
         }
 
@@ -974,8 +970,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          * @param zScale z scale
          * @return this builder
          */
-        public RootTransformsBuilder scale(float xScale, float yScale, float zScale)
-        {
+        public RootTransformsBuilder scale(float xScale, float yScale, float zScale) {
             return scale(new Vector3f(xScale, yScale, zScale));
         }
 
@@ -986,8 +981,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          * @return this builder
          * @throws NullPointerException if {@code scale} is {@code null}
          */
-        public RootTransformsBuilder scale(Vector3f scale)
-        {
+        public RootTransformsBuilder scale(Vector3f scale) {
             this.scale = Preconditions.checkNotNull(scale, "Scale must not be null");
             return this;
         }
@@ -999,8 +993,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          * @return this builder
          * @throws NullPointerException if {@code transformation} is {@code null}
          */
-        public RootTransformsBuilder transform(Transformation transformation)
-        {
+        public RootTransformsBuilder transform(Transformation transformation) {
             Preconditions.checkNotNull(transformation, "Transformation must not be null");
             this.translation = transformation.getTranslation();
             this.leftRotation = transformation.getLeftRotation();
@@ -1016,8 +1009,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          * @return this builder
          * @throws NullPointerException if {@code origin} is {@code null}
          */
-        public RootTransformsBuilder origin(Vector3f origin)
-        {
+        public RootTransformsBuilder origin(Vector3f origin) {
             this.originVec = Preconditions.checkNotNull(origin, "Origin must not be null");
             this.origin = null;
             return this;
@@ -1028,11 +1020,10 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
          *
          * @param origin the origin name
          * @return this builder
-         * @throws NullPointerException if {@code origin} is {@code null}
+         * @throws NullPointerException     if {@code origin} is {@code null}
          * @throws IllegalArgumentException if {@code origin} is not {@code center}, {@code corner} or {@code opposing-corner}
          */
-        public RootTransformsBuilder origin(TransformationHelper.TransformOrigin origin)
-        {
+        public RootTransformsBuilder origin(TransformationHelper.TransformOrigin origin) {
             this.origin = Preconditions.checkNotNull(origin, "Origin must not be null");
             this.originVec = null;
             return this;
@@ -1040,10 +1031,10 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
 
         /**
          * Finish configuring the parent builder
+         * 
          * @return the parent block model builder
          */
-        public ModelBuilder<T> end()
-        {
+        public ModelBuilder<T> end() {
             return ModelBuilder.this;
         }
 
@@ -1051,40 +1042,32 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
             // Write the transform to an object
             JsonObject transform = new JsonObject();
 
-            if (!translation.equals(0, 0, 0))
-            {
+            if (!translation.equals(0, 0, 0)) {
                 transform.add("translation", writeVec3(translation));
             }
 
-            if (!scale.equals(ONE))
-            {
+            if (!scale.equals(ONE)) {
                 transform.add("scale", writeVec3(scale));
             }
 
-            if (!leftRotation.equals(0, 0, 0, 1))
-            {
+            if (!leftRotation.equals(0, 0, 0, 1)) {
                 transform.add("rotation", writeQuaternion(leftRotation));
             }
 
-            if (!rightRotation.equals(0, 0, 0, 1))
-            {
+            if (!rightRotation.equals(0, 0, 0, 1)) {
                 transform.add("post_rotation", writeQuaternion(rightRotation));
             }
 
-            if (origin != null)
-            {
+            if (origin != null) {
                 transform.addProperty("origin", origin.getSerializedName());
-            }
-            else if (originVec != null && !originVec.equals(0, 0, 0))
-            {
+            } else if (originVec != null && !originVec.equals(0, 0, 0)) {
                 transform.add("origin", writeVec3(originVec));
             }
 
             return transform;
         }
 
-        private static JsonArray writeVec3(Vector3f vector)
-        {
+        private static JsonArray writeVec3(Vector3f vector) {
             JsonArray array = new JsonArray();
             array.add(vector.x());
             array.add(vector.y());
@@ -1092,8 +1075,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
             return array;
         }
 
-        private static JsonArray writeQuaternion(Quaternionf quaternion)
-        {
+        private static JsonArray writeQuaternion(Quaternionf quaternion) {
             JsonArray array = new JsonArray();
             array.add(quaternion.x());
             array.add(quaternion.y());

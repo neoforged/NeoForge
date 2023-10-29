@@ -5,34 +5,29 @@
 
 package net.neoforged.neoforge.network;
 
-import net.minecraft.core.Registry;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.fml.ModList;
-import net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen;
-import net.neoforged.neoforgespi.language.IModInfo;
-import net.neoforged.neoforge.network.simple.SimpleLoginMessage;
-import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
-import net.neoforged.neoforge.registries.ForgeRegistry;
-import net.neoforged.neoforge.registries.RegistryManager;
-
+import com.google.common.collect.Maps;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import net.minecraft.core.Registry;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen;
+import net.neoforged.neoforge.network.simple.SimpleLoginMessage;
+import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
+import net.neoforged.neoforge.registries.ForgeRegistry;
+import net.neoforged.neoforge.registries.RegistryManager;
+import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.commons.lang3.tuple.Pair;
-
-import com.google.common.collect.Maps;
 import org.jetbrains.annotations.Nullable;
 
-public class HandshakeMessages
-{
-    static abstract class LoginIndexedMessage implements SimpleLoginMessage
-    {
+public class HandshakeMessages {
+    static abstract class LoginIndexedMessage implements SimpleLoginMessage {
         private int loginIndex;
 
         public void setLoginIndex(final int loginIndex) {
@@ -43,34 +38,31 @@ public class HandshakeMessages
             return loginIndex;
         }
     }
+
     /**
      * Server to client "list of mods". Always first handshake message after the data sent by S2CModData.
      */
-    public static class S2CModList extends LoginIndexedMessage
-    {
+    public static class S2CModList extends LoginIndexedMessage {
         private List<String> mods;
         private Map<ResourceLocation, String> channels;
         private List<ResourceLocation> registries;
         private final List<ResourceKey<? extends Registry<?>>> dataPackRegistries;
 
-        public S2CModList()
-        {
+        public S2CModList() {
             this.mods = ModList.get().getMods().stream().map(IModInfo::getModId).collect(Collectors.toList());
             this.channels = NetworkRegistry.buildChannelVersions();
             this.registries = RegistryManager.getRegistryNamesForSyncToClient();
             this.dataPackRegistries = List.copyOf(DataPackRegistriesHooks.getSyncedCustomRegistries());
         }
 
-        private S2CModList(List<String> mods, Map<ResourceLocation, String> channels, List<ResourceLocation> registries, List<ResourceKey<? extends Registry<?>>> dataPackRegistries)
-        {
+        private S2CModList(List<String> mods, Map<ResourceLocation, String> channels, List<ResourceLocation> registries, List<ResourceKey<? extends Registry<?>>> dataPackRegistries) {
             this.mods = mods;
             this.channels = channels;
             this.registries = registries;
             this.dataPackRegistries = dataPackRegistries;
         }
 
-        public static S2CModList decode(FriendlyByteBuf input)
-        {
+        public static S2CModList decode(FriendlyByteBuf input) {
             List<String> mods = new ArrayList<>();
             int len = input.readVarInt();
             for (int x = 0; x < len; x++)
@@ -91,8 +83,7 @@ public class HandshakeMessages
         }
 
         @Override
-        public void encode(FriendlyByteBuf output)
-        {
+        public void encode(FriendlyByteBuf output) {
             output.writeVarInt(mods.size());
             mods.forEach(m -> output.writeUtf(m, 0x100));
 
@@ -133,63 +124,53 @@ public class HandshakeMessages
      * Prefixes S2CModList by sending additional data about the mods installed on the server to the client
      * The mod data is stored as follows: [modId -> [modName, modVersion]]
      */
-    public static class S2CModData extends LoginIndexedMessage
-    {
+    public static class S2CModData extends LoginIndexedMessage {
         private final Map<String, Pair<String, String>> mods;
 
-        public S2CModData()
-        {
+        public S2CModData() {
             this.mods = ModList.get().getMods().stream().collect(Collectors.toMap(IModInfo::getModId, info -> Pair.of(info.getDisplayName(), info.getVersion().toString())));
         }
 
-        private S2CModData(Map<String, Pair<String, String>> mods)
-        {
+        private S2CModData(Map<String, Pair<String, String>> mods) {
             this.mods = mods;
         }
 
-        public static S2CModData decode(FriendlyByteBuf input)
-        {
+        public static S2CModData decode(FriendlyByteBuf input) {
             Map<String, Pair<String, String>> mods = input.readMap(o -> o.readUtf(0x100), o -> Pair.of(o.readUtf(0x100), o.readUtf(0x100)));
             return new S2CModData(mods);
         }
 
         @Override
-        public void encode(FriendlyByteBuf output)
-        {
+        public void encode(FriendlyByteBuf output) {
             output.writeMap(mods, (o, s) -> o.writeUtf(s, 0x100), (o, p) -> {
                 o.writeUtf(p.getLeft(), 0x100);
                 o.writeUtf(p.getRight(), 0x100);
             });
         }
 
-        public Map<String, Pair<String, String>> getMods()
-        {
+        public Map<String, Pair<String, String>> getMods() {
             return mods;
         }
     }
 
-    public static class C2SModListReply extends LoginIndexedMessage
-    {
+    public static class C2SModListReply extends LoginIndexedMessage {
         private List<String> mods;
         private Map<ResourceLocation, String> channels;
         private Map<ResourceLocation, String> registries;
 
-        public C2SModListReply()
-        {
+        public C2SModListReply() {
             this.mods = ModList.get().getMods().stream().map(IModInfo::getModId).collect(Collectors.toList());
             this.channels = NetworkRegistry.buildChannelVersions();
             this.registries = Maps.newHashMap(); //TODO: Fill with known hashes, which requires keeping a file cache
         }
 
-        private C2SModListReply(List<String> mods, Map<ResourceLocation, String> channels, Map<ResourceLocation, String> registries)
-        {
+        private C2SModListReply(List<String> mods, Map<ResourceLocation, String> channels, Map<ResourceLocation, String> registries) {
             this.mods = mods;
             this.channels = channels;
             this.registries = registries;
         }
 
-        public static C2SModListReply decode(FriendlyByteBuf input)
-        {
+        public static C2SModListReply decode(FriendlyByteBuf input) {
             List<String> mods = new ArrayList<>();
             int len = input.readVarInt();
             for (int x = 0; x < len; x++)
@@ -209,8 +190,7 @@ public class HandshakeMessages
         }
 
         @Override
-        public void encode(FriendlyByteBuf output)
-        {
+        public void encode(FriendlyByteBuf output) {
             output.writeVarInt(mods.size());
             mods.forEach(m -> output.writeUtf(m, 0x100));
 
@@ -291,7 +271,6 @@ public class HandshakeMessages
         }
     }
 
-
     public static class S2CConfigData extends LoginIndexedMessage {
         private final String fileName;
         private final byte[] fileData;
@@ -324,29 +303,24 @@ public class HandshakeMessages
      * Notifies the client of a channel mismatch on the server, so a {@link ModMismatchDisconnectedScreen} is used to notify the user of the disconnection.
      * This packet also sends the data of a channel mismatch (currently, the ids and versions of the mismatched channels) to the client for it to display the correct information in said screen.
      */
-    public static class S2CChannelMismatchData extends LoginIndexedMessage
-    {
+    public static class S2CChannelMismatchData extends LoginIndexedMessage {
         private final Map<ResourceLocation, String> mismatchedChannelData;
 
-        public S2CChannelMismatchData(Map<ResourceLocation, String> mismatchedChannelData)
-        {
+        public S2CChannelMismatchData(Map<ResourceLocation, String> mismatchedChannelData) {
             this.mismatchedChannelData = mismatchedChannelData;
         }
 
-        public static S2CChannelMismatchData decode(FriendlyByteBuf input)
-        {
+        public static S2CChannelMismatchData decode(FriendlyByteBuf input) {
             Map<ResourceLocation, String> mismatchedMods = input.readMap(i -> new ResourceLocation(i.readUtf(0x100)), i -> i.readUtf(0x100));
 
             return new S2CChannelMismatchData(mismatchedMods);
         }
 
-        public void encode(FriendlyByteBuf output)
-        {
+        public void encode(FriendlyByteBuf output) {
             output.writeMap(mismatchedChannelData, (o, r) -> o.writeUtf(r.toString(), 0x100), (o, v) -> o.writeUtf(v, 0x100));
         }
 
-        public Map<ResourceLocation, String> getMismatchedChannelData()
-        {
+        public Map<ResourceLocation, String> getMismatchedChannelData() {
             return mismatchedChannelData;
         }
     }

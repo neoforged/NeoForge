@@ -15,8 +15,7 @@ import net.minecraft.util.Unit;
  * @param <T> The type of context object used by the rendering logic
  */
 @FunctionalInterface
-public interface IRenderable<T>
-{
+public interface IRenderable<T> {
     /**
      * Draws the renderable by adding the geometry to the provided {@link MultiBufferSource}
      *
@@ -37,9 +36,7 @@ public interface IRenderable<T>
      * @param context The context used for rendering
      * @return A renderable that accepts {@link Unit#INSTANCE} as context, but uses the provided {@code context} instead
      */
-    default IRenderable<Unit> withContext(T context)
-    {
-        return (poseStack, bufferSource, textureRenderTypeLookup, lightmap, overlay, partialTick, unused) ->
-                this.render(poseStack, bufferSource, textureRenderTypeLookup, lightmap, overlay, partialTick, context);
+    default IRenderable<Unit> withContext(T context) {
+        return (poseStack, bufferSource, textureRenderTypeLookup, lightmap, overlay, partialTick, unused) -> this.render(poseStack, bufferSource, textureRenderTypeLookup, lightmap, overlay, partialTick, context);
     }
 }

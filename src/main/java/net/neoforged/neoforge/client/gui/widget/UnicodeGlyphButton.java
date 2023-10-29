@@ -14,23 +14,19 @@ import net.minecraft.network.chat.Component;
  *
  * @author bspkrs
  */
-public class UnicodeGlyphButton extends ExtendedButton
-{
+public class UnicodeGlyphButton extends ExtendedButton {
     public String glyph;
-    public float  glyphScale;
+    public float glyphScale;
 
-    public UnicodeGlyphButton(int xPos, int yPos, int width, int height, Component displayString, String glyph, float glyphScale, OnPress handler)
-    {
+    public UnicodeGlyphButton(int xPos, int yPos, int width, int height, Component displayString, String glyph, float glyphScale, OnPress handler) {
         super(xPos, yPos, width, height, displayString, handler);
         this.glyph = glyph;
         this.glyphScale = glyphScale;
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick)
-    {
-        if (this.visible)
-        {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        if (this.visible) {
             Minecraft mc = Minecraft.getInstance();
             this.isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
             guiGraphics.blitSprite(SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
@@ -42,7 +38,7 @@ public class UnicodeGlyphButton extends ExtendedButton
             int totalWidth = strWidth + glyphWidth;
 
             if (totalWidth > width - 6 && totalWidth > ellipsisWidth)
-                buttonText = Component.literal(mc.font.substrByWidth(buttonText, width - 6 - ellipsisWidth).getString().trim() + "...") ;
+                buttonText = Component.literal(mc.font.substrByWidth(buttonText, width - 6 - ellipsisWidth).getString().trim() + "...");
 
             strWidth = mc.font.width(buttonText);
             totalWidth = glyphWidth + strWidth;

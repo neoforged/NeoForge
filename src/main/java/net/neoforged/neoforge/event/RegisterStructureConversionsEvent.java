@@ -5,15 +5,13 @@
 
 package net.neoforged.neoforge.event;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.datafix.fixes.StructuresBecomeConfiguredFix;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.bus.api.Event;
-
+import com.google.common.base.Preconditions;
 import java.util.Locale;
 import java.util.Map;
-
-import com.google.common.base.Preconditions;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.datafix.fixes.StructuresBecomeConfiguredFix;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * Fired for registering structure conversions for pre-1.18.2 worlds. This is used by {@link StructuresBecomeConfiguredFix}
@@ -34,15 +32,13 @@ import com.google.common.base.Preconditions;
  * @see StructuresBecomeConfiguredFix
  * @see #register(String, StructuresBecomeConfiguredFix.Conversion)
  */
-public class RegisterStructureConversionsEvent extends Event
-{
+public class RegisterStructureConversionsEvent extends Event {
     private final Map<String, StructuresBecomeConfiguredFix.Conversion> map;
 
     /**
      * @hidden For internal use only.
      */
-    public RegisterStructureConversionsEvent(Map<String, StructuresBecomeConfiguredFix.Conversion> map)
-    {
+    public RegisterStructureConversionsEvent(Map<String, StructuresBecomeConfiguredFix.Conversion> map) {
         this.map = map;
     }
 
@@ -51,34 +47,35 @@ public class RegisterStructureConversionsEvent extends Event
      *
      * <p>A structure conversion can be of two kinds:</p>
      * <ul>
-     *     <li>A <em>trivial</em> conversion, created using {@link StructuresBecomeConfiguredFix.Conversion#trivial(String)},
-     *     contains only the new structure ID and simply converts all mentions of the old structure ID to the new
-     *     structure ID.</li>
-     *     <li>A <em>biome-mapped</em> conversion, created using {@link
-     *     StructuresBecomeConfiguredFix.Conversion#biomeMapped(Map, String)}, contains a fallback structure ID, and a
-     *     biome-specific conversion map. Each entry in the map is composed of a list of biome IDs and the new structure
-     *     ID.
+     * <li>A <em>trivial</em> conversion, created using {@link StructuresBecomeConfiguredFix.Conversion#trivial(String)},
+     * contains only the new structure ID and simply converts all mentions of the old structure ID to the new
+     * structure ID.</li>
+     * <li>A <em>biome-mapped</em> conversion, created using {@link
+     * StructuresBecomeConfiguredFix.Conversion#biomeMapped(Map, String)}, contains a fallback structure ID, and a
+     * biome-specific conversion map. Each entry in the map is composed of a list of biome IDs and the new structure
+     * ID.
      *
-     *     <p>If a structure is in a biome which exists in the map, the
-     *     structure ID in the corresponding entry is used as the new structure ID. If there is no such biome found,
-     *     the new structure ID will be the fallback structure ID.</p>
+     * <p>If a structure is in a biome which exists in the map, the
+     * structure ID in the corresponding entry is used as the new structure ID. If there is no such biome found,
+     * the new structure ID will be the fallback structure ID.</p>
      *
-     *     <p>For example, the following registers a biome-mapped conversion for {@code exampleStructure} with the
-     *     following logic:</p>
-     *     <ul>
-     *         <li>If the structure is within either a {@code minecraft:desert} or a {@code minecraft:jungle} biome,
-     *         it is mapped to {@code examplemod:deserted_structure}.</li>
-     *         <li>If the structure is within a {@code minecraft:ocean} biome, it is mapped to
-     *         {@code examplemod:flooded_structure}.</li>
-     *         <li>Otherwise, the structure is mapped to {@code examplemod:structure}.</li>
-     *     </ul>
-     *     <pre>{@code
+     * <p>For example, the following registers a biome-mapped conversion for {@code exampleStructure} with the
+     * following logic:</p>
+     * <ul>
+     * <li>If the structure is within either a {@code minecraft:desert} or a {@code minecraft:jungle} biome,
+     * it is mapped to {@code examplemod:deserted_structure}.</li>
+     * <li>If the structure is within a {@code minecraft:ocean} biome, it is mapped to
+     * {@code examplemod:flooded_structure}.</li>
+     * <li>Otherwise, the structure is mapped to {@code examplemod:structure}.</li>
+     * </ul>
+     * 
+     * <pre>{@code
      * event.register("exampleStructure", StructuresBecomeConfiguredFix.Conversion.biomeMapped(Map.of(
-     *     List.of("minecraft:desert", "minecraft:jungle"), "examplemod:deserted_structure",
-     *     List.of("minecraft:ocean"), "examplemod:flooded_structure"
-     * ), "examplemod:structure"));
-     *     }</pre>
-     *     </li>
+     *         List.of("minecraft:desert", "minecraft:jungle"), "examplemod:deserted_structure",
+     *         List.of("minecraft:ocean"), "examplemod:flooded_structure"), "examplemod:structure"));
+     * }</pre>
+     * 
+     * </li>
      * </ul>
      *
      * @param oldStructureID the old structure ID, in all lowercase
@@ -88,15 +85,13 @@ public class RegisterStructureConversionsEvent extends Event
      * @throws IllegalArgumentException if the old structure ID is not in full lowercase, or if a conversion for that
      *                                  structure ID has already been registered previously
      */
-    public void register(String oldStructureID, StructuresBecomeConfiguredFix.Conversion conversion)
-    {
+    public void register(String oldStructureID, StructuresBecomeConfiguredFix.Conversion conversion) {
         Preconditions.checkNotNull(oldStructureID, "Original structure ID must not be null");
         Preconditions.checkArgument(oldStructureID.toLowerCase(Locale.ROOT).equals(oldStructureID),
                 "Original structure ID should be in all lowercase");
         Preconditions.checkNotNull(conversion, "Structure conversion must not be null");
         Preconditions.checkNotNull(conversion.fallback(), "Fallback structure ID in structure conversion must not be null");
-        if (map.putIfAbsent(oldStructureID.toLowerCase(Locale.ROOT), conversion) != null)
-        {
+        if (map.putIfAbsent(oldStructureID.toLowerCase(Locale.ROOT), conversion) != null) {
             throw new IllegalArgumentException("Conversion has already been registered for structure " + oldStructureID);
         }
     }

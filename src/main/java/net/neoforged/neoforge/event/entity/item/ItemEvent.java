@@ -14,8 +14,7 @@ import net.neoforged.neoforge.event.entity.EntityEvent;
  * additional useful data from the firing method that isn't already contained
  * within the ItemEntity instance.
  */
-public abstract class ItemEvent extends EntityEvent
-{
+public abstract class ItemEvent extends EntityEvent {
     private final ItemEntity itemEntity;
 
     /**
@@ -23,8 +22,7 @@ public abstract class ItemEvent extends EntityEvent
      *
      * @param itemEntity The ItemEntity for this event
      */
-    public ItemEvent(ItemEntity itemEntity)
-    {
+    public ItemEvent(ItemEntity itemEntity) {
         super(itemEntity);
         this.itemEntity = itemEntity;
     }
@@ -33,8 +31,7 @@ public abstract class ItemEvent extends EntityEvent
      * The relevant {@link ItemEntity} for this event.
      */
     @Override
-    public ItemEntity getEntity()
-    {
+    public ItemEntity getEntity() {
         return itemEntity;
     }
 }

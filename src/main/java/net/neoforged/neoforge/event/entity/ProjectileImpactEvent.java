@@ -7,9 +7,9 @@ package net.neoforged.neoforge.event.entity;
 
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.HitResult;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
@@ -20,25 +20,21 @@ import net.neoforged.bus.api.ICancellableEvent;
  * This event is cancelable. When canceled, the impact will not be processed and the projectile will continue flying.
  * Killing or other handling of the entity after event cancellation is up to the modder.
  */
-public class ProjectileImpactEvent extends EntityEvent implements ICancellableEvent
-{
+public class ProjectileImpactEvent extends EntityEvent implements ICancellableEvent {
     private final HitResult ray;
     private final Projectile projectile;
 
-    public ProjectileImpactEvent(Projectile projectile, HitResult ray)
-    {
+    public ProjectileImpactEvent(Projectile projectile, HitResult ray) {
         super(projectile);
         this.ray = ray;
         this.projectile = projectile;
     }
 
-    public HitResult getRayTraceResult()
-    {
+    public HitResult getRayTraceResult() {
         return ray;
     }
 
-    public Projectile getProjectile()
-    {
+    public Projectile getProjectile() {
         return projectile;
     }
 }

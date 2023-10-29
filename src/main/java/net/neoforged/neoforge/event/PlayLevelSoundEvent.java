@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.event;
 
+import java.util.Objects;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
@@ -12,12 +13,11 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.Objects;
 
 /**
  * PlayLevelSoundEvent is fired when a sound is played on a {@link Level}.
@@ -37,8 +37,7 @@ import java.util.Objects;
  * <p>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
-public class PlayLevelSoundEvent extends Event implements ICancellableEvent
-{
+public class PlayLevelSoundEvent extends Event implements ICancellableEvent {
     private final Level level;
     private final float originalVolume;
     private final float originalPitch;
@@ -47,8 +46,7 @@ public class PlayLevelSoundEvent extends Event implements ICancellableEvent
     private float newVolume;
     private float newPitch;
 
-    public PlayLevelSoundEvent(@NotNull Level level, @NotNull Holder<SoundEvent> sound, @NotNull SoundSource source, float volume, float pitch)
-    {
+    public PlayLevelSoundEvent(@NotNull Level level, @NotNull Holder<SoundEvent> sound, @NotNull SoundSource source, float volume, float pitch) {
         this.level = level;
         this.sound = sound;
         this.source = source;
@@ -62,8 +60,7 @@ public class PlayLevelSoundEvent extends Event implements ICancellableEvent
      * {@return the level the sound is being played in}
      */
     @NotNull
-    public Level getLevel()
-    {
+    public Level getLevel() {
         return this.level;
     }
 
@@ -71,16 +68,14 @@ public class PlayLevelSoundEvent extends Event implements ICancellableEvent
      * {@return the sound event to be played}
      */
     @Nullable
-    public Holder<SoundEvent> getSound()
-    {
+    public Holder<SoundEvent> getSound() {
         return this.sound;
     }
 
     /**
      * Sets the sound event to be played.
      */
-    public void setSound(@Nullable Holder<SoundEvent> sound)
-    {
+    public void setSound(@Nullable Holder<SoundEvent> sound) {
         this.sound = sound;
     }
 
@@ -88,16 +83,14 @@ public class PlayLevelSoundEvent extends Event implements ICancellableEvent
      * {@return the sound source}
      */
     @NotNull
-    public SoundSource getSource()
-    {
+    public SoundSource getSource() {
         return this.source;
     }
 
     /**
      * Sets the sound source.
      */
-    public void setSource(@NotNull SoundSource source)
-    {
+    public void setSource(@NotNull SoundSource source) {
         Objects.requireNonNull(source, "Sound source cannot be null");
         this.source = source;
     }
@@ -105,48 +98,42 @@ public class PlayLevelSoundEvent extends Event implements ICancellableEvent
     /**
      * {@return the original volume for the sound to be played at}
      */
-    public float getOriginalVolume()
-    {
+    public float getOriginalVolume() {
         return this.originalVolume;
     }
 
     /**
      * {@return the original pitch for the sound to be played at}
      */
-    public float getOriginalPitch()
-    {
+    public float getOriginalPitch() {
         return this.originalPitch;
     }
 
     /**
      * {@return the volume the sound will be played at}
      */
-    public float getNewVolume()
-    {
+    public float getNewVolume() {
         return this.newVolume;
     }
 
     /**
      * Sets the volume the sound will be played at.
      */
-    public void setNewVolume(float newVolume)
-    {
+    public void setNewVolume(float newVolume) {
         this.newVolume = newVolume;
     }
 
     /**
      * {@return the pitch the sound will be played at}
      */
-    public float getNewPitch()
-    {
+    public float getNewPitch() {
         return this.newPitch;
     }
 
     /**
      * Sets the pitch the sound will be played at.
      */
-    public void setNewPitch(float newPitch)
-    {
+    public void setNewPitch(float newPitch) {
         this.newPitch = newPitch;
     }
 
@@ -161,12 +148,10 @@ public class PlayLevelSoundEvent extends Event implements ICancellableEvent
      * <p>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.
      */
-    public static class AtEntity extends PlayLevelSoundEvent
-    {
+    public static class AtEntity extends PlayLevelSoundEvent {
         private final Entity entity;
 
-        public AtEntity(Entity entity, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch)
-        {
+        public AtEntity(Entity entity, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch) {
             super(entity.level(), sound, source, volume, pitch);
             this.entity = entity;
         }
@@ -174,8 +159,7 @@ public class PlayLevelSoundEvent extends Event implements ICancellableEvent
         /**
          * {@return the entity the sound is being played on}
          */
-        public Entity getEntity()
-        {
+        public Entity getEntity() {
             return this.entity;
         }
     }
@@ -191,12 +175,10 @@ public class PlayLevelSoundEvent extends Event implements ICancellableEvent
      * <p>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.
      */
-    public static class AtPosition extends PlayLevelSoundEvent
-    {
+    public static class AtPosition extends PlayLevelSoundEvent {
         private final Vec3 position;
 
-        public AtPosition(Level level, Vec3 position, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch)
-        {
+        public AtPosition(Level level, Vec3 position, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch) {
             super(level, sound, source, volume, pitch);
             this.position = position;
         }
@@ -204,8 +186,7 @@ public class PlayLevelSoundEvent extends Event implements ICancellableEvent
         /**
          * {@return the position the sound is being played at}
          */
-        public Vec3 getPosition()
-        {
+        public Vec3 getPosition() {
             return this.position;
         }
     }

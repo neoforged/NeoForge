@@ -21,8 +21,7 @@ import net.minecraft.world.phys.shapes.Shapes;
  * Implementation of {@link QuadLighter} that lights {@link BakedQuad baked quads} using ambient occlusion and
  * light interpolation.
  */
-public class SmoothQuadLighter extends QuadLighter
-{
+public class SmoothQuadLighter extends QuadLighter {
     private static final Direction[] SIDES = Direction.values();
 
     private final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -33,20 +32,15 @@ public class SmoothQuadLighter extends QuadLighter
     private final float[][][][] blockLight = new float[3][2][2][2];
     private final float[][][] ao = new float[3][3][3];
 
-    public SmoothQuadLighter(BlockColors colors)
-    {
+    public SmoothQuadLighter(BlockColors colors) {
         super(colors);
     }
 
     @Override
-    protected void computeLightingAt(BlockAndTintGetter level, BlockPos origin, BlockState state)
-    {
-        for (int x = 0; x <= 2; x++)
-        {
-            for (int y = 0; y <= 2; y++)
-            {
-                for (int z = 0; z <= 2; z++)
-                {
+    protected void computeLightingAt(BlockAndTintGetter level, BlockPos origin, BlockState state) {
+        for (int x = 0; x <= 2; x++) {
+            for (int y = 0; y <= 2; y++) {
+                for (int z = 0; z <= 2; z++) {
                     pos.setWithOffset(origin, x - 1, y - 1, z - 1);
                     BlockState neighborState = level.getBlockState(pos);
                     t[x][y][z] = neighborState.getLightBlock(level, pos) < 15;
@@ -57,16 +51,14 @@ public class SmoothQuadLighter extends QuadLighter
                 }
             }
         }
-        for (Direction side : SIDES)
-        {
+        for (Direction side : SIDES) {
             pos.setWithOffset(origin, side);
             BlockState neighborState = level.getBlockState(pos);
 
             BlockState thisStateShape = state.canOcclude() && state.useShapeForLightOcclusion() ? state : Blocks.AIR.defaultBlockState();
             BlockState otherStateShape = neighborState.canOcclude() && neighborState.useShapeForLightOcclusion() ? neighborState : Blocks.AIR.defaultBlockState();
 
-            if (neighborState.getLightBlock(level, pos) == 15 || Shapes.faceShapeOccludes(thisStateShape.getFaceOcclusionShape(level, origin, side), otherStateShape.getFaceOcclusionShape(level, pos, side.getOpposite())))
-            {
+            if (neighborState.getLightBlock(level, pos) == 15 || Shapes.faceShapeOccludes(thisStateShape.getFaceOcclusionShape(level, origin, side), otherStateShape.getFaceOcclusionShape(level, pos, side.getOpposite()))) {
                 int x = side.getStepX() + 1;
                 int y = side.getStepY() + 1;
                 int z = side.getStepZ() + 1;
@@ -74,12 +66,9 @@ public class SmoothQuadLighter extends QuadLighter
                 b[x][y][z] = Math.max(b[1][1][1] - 1, b[x][y][z]);
             }
         }
-        for (int x = 0; x < 2; x++)
-        {
-            for (int y = 0; y < 2; y++)
-            {
-                for (int z = 0; z < 2; z++)
-                {
+        for (int x = 0; x < 2; x++) {
+            for (int y = 0; y < 2; y++) {
+                for (int z = 0; z < 2; z++) {
                     int x1 = x * 2;
                     int y1 = y * 2;
                     int z1 = z * 2;
@@ -116,8 +105,7 @@ public class SmoothQuadLighter extends QuadLighter
     }
 
     @Override
-    protected float calculateBrightness(float[] position)
-    {
+    protected float calculateBrightness(float[] position) {
         float x = position[0], y = position[1], z = position[2];
         int sx = x < 0 ? 1 : 2;
         int sy = y < 0 ? 1 : 2;
@@ -142,15 +130,13 @@ public class SmoothQuadLighter extends QuadLighter
     }
 
     @Override
-    protected int calculateLightmap(float[] position, byte[] normal)
-    {
+    protected int calculateLightmap(float[] position, byte[] normal) {
         var block = (int) (calcLightmap(blockLight, position[0], position[1], position[2]) * 0xF0);
         var sky = (int) (calcLightmap(skyLight, position[0], position[1], position[2]) * 0xF0);
         return block | (sky << 16);
     }
 
-    private float combine(int c, int s1, int s2, int s3, boolean t0, boolean t1, boolean t2, boolean t3)
-    {
+    private float combine(int c, int s1, int s2, int s3, boolean t0, boolean t1, boolean t2, boolean t3) {
         if (c == 0 && !t0) c = Math.max(0, Math.max(s1, s2) - 1);
         if (s1 == 0 && !t1) s1 = Math.max(0, c - 1);
         if (s2 == 0 && !t2) s2 = Math.max(0, c - 1);
@@ -158,14 +144,12 @@ public class SmoothQuadLighter extends QuadLighter
         return (c + s1 + s2 + s3) / (0xF * 4f);
     }
 
-    protected float calcLightmap(float[][][][] light, float x, float y, float z)
-    {
+    protected float calcLightmap(float[][][][] light, float x, float y, float z) {
         x *= 2;
         y *= 2;
         z *= 2;
         float l2 = x * x + y * y + z * z;
-        if (l2 > 6 - 2e-2f)
-        {
+        if (l2 > 6 - 2e-2f) {
             float s = (float) Math.sqrt((6 - 2e-2f) / l2);
             x *= s;
             y *= s;
@@ -175,41 +159,29 @@ public class SmoothQuadLighter extends QuadLighter
         float ay = y > 0 ? y : -y;
         float az = z > 0 ? z : -z;
         float e1 = 1 + 1e-4f;
-        if (ax > 2 - 1e-4f && ay <= e1 && az <= e1)
-        {
+        if (ax > 2 - 1e-4f && ay <= e1 && az <= e1) {
             x = x < 0 ? -2 + 1e-4f : 2 - 1e-4f;
-        }
-        else if (ay > 2 - 1e-4f && az <= e1 && ax <= e1)
-        {
+        } else if (ay > 2 - 1e-4f && az <= e1 && ax <= e1) {
             y = y < 0 ? -2 + 1e-4f : 2 - 1e-4f;
-        }
-        else if (az > 2 - 1e-4f && ax <= e1 && ay <= e1)
-        {
+        } else if (az > 2 - 1e-4f && ax <= e1 && ay <= e1) {
             z = z < 0 ? -2 + 1e-4f : 2 - 1e-4f;
         }
         ax = x > 0 ? x : -x;
         ay = y > 0 ? y : -y;
         az = z > 0 ? z : -z;
-        if (ax <= e1 && ay + az > 3f - 1e-4f)
-        {
+        if (ax <= e1 && ay + az > 3f - 1e-4f) {
             float s = (3f - 1e-4f) / (ay + az);
             y *= s;
             z *= s;
-        }
-        else if (ay <= e1 && az + ax > 3f - 1e-4f)
-        {
+        } else if (ay <= e1 && az + ax > 3f - 1e-4f) {
             float s = (3f - 1e-4f) / (az + ax);
             z *= s;
             x *= s;
-        }
-        else if (az <= e1 && ax + ay > 3f - 1e-4f)
-        {
+        } else if (az <= e1 && ax + ay > 3f - 1e-4f) {
             float s = (3f - 1e-4f) / (ax + ay);
             x *= s;
             y *= s;
-        }
-        else if (ax + ay + az > 4 - 1e-4f)
-        {
+        } else if (ax + ay + az > 4 - 1e-4f) {
             float s = (4 - 1e-4f) / (ax + ay + az);
             x *= s;
             y *= s;
@@ -219,12 +191,9 @@ public class SmoothQuadLighter extends QuadLighter
         float l = 0;
         float s = 0;
 
-        for (int ix = 0; ix <= 1; ix++)
-        {
-            for (int iy = 0; iy <= 1; iy++)
-            {
-                for (int iz = 0; iz <= 1; iz++)
-                {
+        for (int ix = 0; ix <= 1; ix++) {
+            for (int iy = 0; iy <= 1; iy++) {
+                for (int iz = 0; iz <= 1; iz++) {
                     float vx = x * (1 - ix * 2);
                     float vy = y * (1 - iy * 2);
                     float vz = z * (1 - iz * 2);

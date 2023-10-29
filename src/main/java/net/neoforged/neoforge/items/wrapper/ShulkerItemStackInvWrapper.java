@@ -13,8 +13,8 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.neoforge.common.capabilities.Capability;
 import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.common.capabilities.Capability;
 import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -25,31 +25,28 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
-public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable, ICapabilityProvider
-{
+public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable, ICapabilityProvider {
     @ApiStatus.Internal
     @Nullable
-    public static ICapabilityProvider createDefaultProvider(ItemStack itemStack)
-    {
+    public static ICapabilityProvider createDefaultProvider(ItemStack itemStack) {
         var item = itemStack.getItem();
         if (item == Items.SHULKER_BOX ||
-            item == Items.BLACK_SHULKER_BOX ||
-            item == Items.BLUE_SHULKER_BOX ||
-            item == Items.BROWN_SHULKER_BOX ||
-            item == Items.CYAN_SHULKER_BOX ||
-            item == Items.GRAY_SHULKER_BOX ||
-            item == Items.GREEN_SHULKER_BOX ||
-            item == Items.LIGHT_BLUE_SHULKER_BOX ||
-            item == Items.LIGHT_GRAY_SHULKER_BOX ||
-            item == Items.LIME_SHULKER_BOX ||
-            item == Items.MAGENTA_SHULKER_BOX ||
-            item == Items.ORANGE_SHULKER_BOX ||
-            item == Items.PINK_SHULKER_BOX ||
-            item == Items.PURPLE_SHULKER_BOX ||
-            item == Items.RED_SHULKER_BOX ||
-            item == Items.WHITE_SHULKER_BOX ||
-            item == Items.YELLOW_SHULKER_BOX
-        )
+                item == Items.BLACK_SHULKER_BOX ||
+                item == Items.BLUE_SHULKER_BOX ||
+                item == Items.BROWN_SHULKER_BOX ||
+                item == Items.CYAN_SHULKER_BOX ||
+                item == Items.GRAY_SHULKER_BOX ||
+                item == Items.GREEN_SHULKER_BOX ||
+                item == Items.LIGHT_BLUE_SHULKER_BOX ||
+                item == Items.LIGHT_GRAY_SHULKER_BOX ||
+                item == Items.LIME_SHULKER_BOX ||
+                item == Items.MAGENTA_SHULKER_BOX ||
+                item == Items.ORANGE_SHULKER_BOX ||
+                item == Items.PINK_SHULKER_BOX ||
+                item == Items.PURPLE_SHULKER_BOX ||
+                item == Items.RED_SHULKER_BOX ||
+                item == Items.WHITE_SHULKER_BOX ||
+                item == Items.YELLOW_SHULKER_BOX)
             return new ShulkerItemStackInvWrapper(itemStack);
         return null;
     }
@@ -60,29 +57,25 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable, ICapa
     private CompoundTag cachedTag;
     private NonNullList<ItemStack> itemStacksCache;
 
-    private ShulkerItemStackInvWrapper(ItemStack stack)
-    {
+    private ShulkerItemStackInvWrapper(ItemStack stack) {
         this.stack = stack;
     }
 
     @Override
-    public int getSlots()
-    {
+    public int getSlots() {
         return 27;
     }
 
     @Override
     @NotNull
-    public ItemStack getStackInSlot(int slot)
-    {
+    public ItemStack getStackInSlot(int slot) {
         validateSlotIndex(slot);
         return getItemList().get(slot);
     }
 
     @Override
     @NotNull
-    public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate)
-    {
+    public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
         if (stack.isEmpty())
             return ItemStack.EMPTY;
 
@@ -97,8 +90,7 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable, ICapa
 
         int limit = Math.min(getSlotLimit(slot), stack.getMaxStackSize());
 
-        if (!existing.isEmpty())
-        {
+        if (!existing.isEmpty()) {
             if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
                 return stack;
 
@@ -110,26 +102,21 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable, ICapa
 
         boolean reachedLimit = stack.getCount() > limit;
 
-        if (!simulate)
-        {
-            if (existing.isEmpty())
-            {
+        if (!simulate) {
+            if (existing.isEmpty()) {
                 itemStacks.set(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
-            }
-            else
-            {
+            } else {
                 existing.grow(reachedLimit ? limit : stack.getCount());
             }
             setItemList(itemStacks);
         }
 
-        return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount()- limit) : ItemStack.EMPTY;
+        return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - limit) : ItemStack.EMPTY;
     }
 
     @Override
     @NotNull
-    public ItemStack extractItem(int slot, int amount, boolean simulate)
-    {
+    public ItemStack extractItem(int slot, int amount, boolean simulate) {
         NonNullList<ItemStack> itemStacks = getItemList();
         if (amount == 0)
             return ItemStack.EMPTY;
@@ -143,23 +130,16 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable, ICapa
 
         int toExtract = Math.min(amount, existing.getMaxStackSize());
 
-        if (existing.getCount() <= toExtract)
-        {
-            if (!simulate)
-            {
+        if (existing.getCount() <= toExtract) {
+            if (!simulate) {
                 itemStacks.set(slot, ItemStack.EMPTY);
                 setItemList(itemStacks);
                 return existing;
-            }
-            else
-            {
+            } else {
                 return existing.copy();
             }
-        }
-        else
-        {
-            if (!simulate)
-            {
+        } else {
+            if (!simulate) {
                 itemStacks.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
                 setItemList(itemStacks);
             }
@@ -168,27 +148,23 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable, ICapa
         }
     }
 
-    private void validateSlotIndex(int slot)
-    {
+    private void validateSlotIndex(int slot) {
         if (slot < 0 || slot >= getSlots())
             throw new RuntimeException("Slot " + slot + " not in valid range - [0," + getSlots() + ")");
     }
 
     @Override
-    public int getSlotLimit(int slot)
-    {
+    public int getSlotLimit(int slot) {
         return 64;
     }
 
     @Override
-    public boolean isItemValid(int slot, @NotNull ItemStack stack)
-    {
+    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
         return stack.getItem().canFitInsideContainerItems();
     }
 
     @Override
-    public void setStackInSlot(int slot, @NotNull ItemStack stack)
-    {
+    public void setStackInSlot(int slot, @NotNull ItemStack stack) {
         validateSlotIndex(slot);
         if (!isItemValid(slot, stack)) throw new RuntimeException("Invalid stack " + stack + " for slot " + slot + ")");
         NonNullList<ItemStack> itemStacks = getItemList();
@@ -196,27 +172,23 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable, ICapa
         setItemList(itemStacks);
     }
 
-    private NonNullList<ItemStack> getItemList()
-    {
+    private NonNullList<ItemStack> getItemList() {
         CompoundTag rootTag = BlockItem.getBlockEntityData(this.stack);
         if (cachedTag == null || !cachedTag.equals(rootTag))
             itemStacksCache = refreshItemList(rootTag);
         return itemStacksCache;
     }
 
-    private NonNullList<ItemStack> refreshItemList(CompoundTag rootTag)
-    {
+    private NonNullList<ItemStack> refreshItemList(CompoundTag rootTag) {
         NonNullList<ItemStack> itemStacks = NonNullList.withSize(getSlots(), ItemStack.EMPTY);
-        if (rootTag != null && rootTag.contains("Items", CompoundTag.TAG_LIST))
-        {
+        if (rootTag != null && rootTag.contains("Items", CompoundTag.TAG_LIST)) {
             ContainerHelper.loadAllItems(rootTag, itemStacks);
         }
         cachedTag = rootTag;
         return itemStacks;
     }
 
-    private void setItemList(NonNullList<ItemStack> itemStacks)
-    {
+    private void setItemList(NonNullList<ItemStack> itemStacks) {
         CompoundTag existing = BlockItem.getBlockEntityData(this.stack);
         CompoundTag rootTag = ContainerHelper.saveAllItems(existing == null ? new CompoundTag() : existing, itemStacks);
         BlockItem.setBlockEntityData(this.stack, BlockEntityType.SHULKER_BOX, rootTag);
@@ -225,8 +197,7 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable, ICapa
 
     @Override
     @NotNull
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side)
-    {
+    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         return Capabilities.ITEM_HANDLER.orEmpty(cap, this.holder);
     }
 }

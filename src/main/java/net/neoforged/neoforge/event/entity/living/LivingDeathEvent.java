@@ -6,12 +6,12 @@
 package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.NeoForge;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * LivingDeathEvent is fired when an Entity dies. <br>
@@ -31,17 +31,15 @@ import net.neoforged.bus.api.ICancellableEvent;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class LivingDeathEvent extends LivingEvent implements ICancellableEvent
-{
+public class LivingDeathEvent extends LivingEvent implements ICancellableEvent {
     private final DamageSource source;
-    public LivingDeathEvent(LivingEntity entity, DamageSource source)
-    {
+
+    public LivingDeathEvent(LivingEntity entity, DamageSource source) {
         super(entity);
         this.source = source;
     }
 
-    public DamageSource getSource()
-    {
+    public DamageSource getSource() {
         return source;
     }
 }

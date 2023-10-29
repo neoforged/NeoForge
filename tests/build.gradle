@@ -1,5 +1,6 @@
 apply plugin: 'net.neoforged.gradle.platform'
 apply plugin: 'java'
+apply plugin: 'com.diffplug.spotless'
 apply plugin: 'net.neoforged.licenser'
 
 def neoforgeProject = project(':neoforge')
@@ -93,7 +94,18 @@ afterEvaluate {
 }
 
 license {
-    header = rootProject.file('HEADER.txt')
+    header = rootProject.file('codeformat/HEADER.txt')
     skipExistingHeaders = true
     include '**/*.java'
+}
+
+spotless {
+    java {
+        endWithNewline()
+        indentWithSpaces()
+        removeUnusedImports()
+        toggleOffOn()
+        eclipse().configFile rootProject.file('codeformat/formatter-config.xml')
+        importOrder()
+    }
 }

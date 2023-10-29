@@ -9,59 +9,56 @@ import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
-import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.data.PackOutput;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.Enchantment.Rarity;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantment.Rarity;
+import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
-import net.minecraft.resources.ResourceLocation;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.registries.RegistryObject;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @Mod(GlobalLootModifiersTest.MODID)
 public class GlobalLootModifiersTest {
     public static final String MODID = "global_loot_test";
     public static final boolean ENABLE = true;
 
-    public GlobalLootModifiersTest()
-    {
-        if(ENABLE)
-        {
+    public GlobalLootModifiersTest() {
+        if (ENABLE) {
             GLM.register(FMLJavaModLoadingContext.get().getModEventBus());
             ENCHANTS.register(FMLJavaModLoadingContext.get().getModEventBus());
         }
@@ -79,44 +76,37 @@ public class GlobalLootModifiersTest {
     @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD)
     public static class EventHandlers {
         @SubscribeEvent
-        public static void runData(GatherDataEvent event)
-        {
-            if(ENABLE)
+        public static void runData(GatherDataEvent event) {
+            if (ENABLE)
                 event.getGenerator().addProvider(event.includeServer(), new DataProvider(event.getGenerator().getPackOutput(), MODID));
         }
     }
 
-    private static class DataProvider extends GlobalLootModifierProvider
-    {
-        public DataProvider(PackOutput output, String modid)
-        {
+    private static class DataProvider extends GlobalLootModifierProvider {
+        public DataProvider(PackOutput output, String modid) {
             super(output, modid);
         }
 
         @Override
-        protected void start()
-        {
+        protected void start() {
             add("smelting", new SmeltingEnchantmentModifier(
-                    new LootItemCondition[]{
+                    new LootItemCondition[] {
                             MatchTool.toolMatches(
                                     ItemPredicate.Builder.item().hasEnchantment(
                                             new EnchantmentPredicate(SMELT.get(), MinMaxBounds.Ints.atLeast(1))))
                                     .build()
-                    })
-            );
+                    }));
 
             add("wheat_harvest", new WheatSeedsConverterModifier(
                     new LootItemCondition[] {
                             MatchTool.toolMatches(ItemPredicate.Builder.item().of(Items.SHEARS)).build(),
                             LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.WHEAT).build()
                     },
-                    3, Items.WHEAT_SEEDS, Items.WHEAT)
-            );
+                    3, Items.WHEAT_SEEDS, Items.WHEAT));
 
             add("dungeon_loot", new DungeonLootEnhancerModifier(
                     new LootItemCondition[] { LootTableIdCondition.builder(new ResourceLocation("chests/simple_dungeon")).build() },
-                    2)
-            );
+                    2));
         }
     }
 
@@ -175,7 +165,7 @@ public class GlobalLootModifiersTest {
         public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
             ItemStack ctxTool = context.getParamOrNull(LootContextParams.TOOL);
             //return early if silk-touch is already applied (otherwise we'll get stuck in an infinite loop).
-            if(ctxTool == null || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, ctxTool) > 0) return generatedLoot;
+            if (ctxTool == null || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, ctxTool) > 0) return generatedLoot;
             ItemStack fakeTool = ctxTool.copy();
             fakeTool.enchant(Enchantments.SILK_TOUCH, 1);
             LootParams.Builder builder = new LootParams.Builder(context.getLevel());
@@ -200,13 +190,13 @@ public class GlobalLootModifiersTest {
                 inst.group(
                         Codec.INT.fieldOf("numSeeds").forGetter(m -> m.numSeedsToConvert),
                         ForgeRegistries.ITEMS.getCodec().fieldOf("seedItem").forGetter(m -> m.itemToCheck),
-                        ForgeRegistries.ITEMS.getCodec().fieldOf("replacement").forGetter(m -> m.itemReward)
-                )).apply(inst, WheatSeedsConverterModifier::new)
-        ));
+                        ForgeRegistries.ITEMS.getCodec().fieldOf("replacement").forGetter(m -> m.itemReward)))
+                .apply(inst, WheatSeedsConverterModifier::new)));
 
         private final int numSeedsToConvert;
         private final Item itemToCheck;
         private final Item itemReward;
+
         public WheatSeedsConverterModifier(LootItemCondition[] conditionsIn, int numSeeds, Item itemCheck, Item reward) {
             super(conditionsIn);
             numSeedsToConvert = numSeeds;
@@ -222,15 +212,15 @@ public class GlobalLootModifiersTest {
             // It is better to write a new ILootCondition implementation than to do things here.
             //
             int numSeeds = 0;
-            for(ItemStack stack : generatedLoot) {
-                if(stack.getItem() == itemToCheck)
-                    numSeeds+=stack.getCount();
+            for (ItemStack stack : generatedLoot) {
+                if (stack.getItem() == itemToCheck)
+                    numSeeds += stack.getCount();
             }
-            if(numSeeds >= numSeedsToConvert) {
+            if (numSeeds >= numSeedsToConvert) {
                 generatedLoot.removeIf(x -> x.getItem() == itemToCheck);
-                generatedLoot.add(new ItemStack(itemReward, (numSeeds/numSeedsToConvert)));
-                numSeeds = numSeeds%numSeedsToConvert;
-                if(numSeeds > 0)
+                generatedLoot.add(new ItemStack(itemReward, (numSeeds / numSeedsToConvert)));
+                numSeeds = numSeeds % numSeedsToConvert;
+                if (numSeeds > 0)
                     generatedLoot.add(new ItemStack(itemToCheck, numSeeds));
             }
             return generatedLoot;
@@ -245,8 +235,7 @@ public class GlobalLootModifiersTest {
     private static class DungeonLootEnhancerModifier extends LootModifier {
         public static final Supplier<Codec<DungeonLootEnhancerModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(inst -> codecStart(inst)
                 .and(ExtraCodecs.POSITIVE_INT.optionalFieldOf("multiplication_factor", 2).forGetter(m -> m.multiplicationFactor))
-                .apply(inst, DungeonLootEnhancerModifier::new)
-        ));
+                .apply(inst, DungeonLootEnhancerModifier::new)));
 
         private final int multiplicationFactor;
 

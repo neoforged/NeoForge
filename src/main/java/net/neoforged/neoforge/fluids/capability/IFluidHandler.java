@@ -17,8 +17,7 @@ import org.jetbrains.annotations.NotNull;
  * A reference implementation is provided {@link TileFluidHandler}.
  */
 @AutoRegisterCapability
-public interface IFluidHandler
-{
+public interface IFluidHandler {
     enum FluidAction {
         EXECUTE, SIMULATE;
 
@@ -61,7 +60,7 @@ public interface IFluidHandler
      * Retrieves the maximum fluid amount for a given tank.
      *
      * @param tank Tank to query.
-     * @return     The maximum fluid amount held by the tank.
+     * @return The maximum fluid amount held by the tank.
      */
     int getTankCapacity(int tank);
 
@@ -72,7 +71,7 @@ public interface IFluidHandler
      * @param tank  Tank to query for validity
      * @param stack Stack to test with for validity
      * @return TRUE if the tank can hold the FluidStack, not considering current state.
-     * (Basically, is a given fluid EVER allowed in this tank?) Return FALSE if the answer to that question is 'no.'
+     *         (Basically, is a given fluid EVER allowed in this tank?) Return FALSE if the answer to that question is 'no.'
      */
     boolean isFluidValid(int tank, @NotNull FluidStack stack);
 
@@ -91,7 +90,7 @@ public interface IFluidHandler
      * @param resource FluidStack representing the Fluid and maximum amount of fluid to be drained.
      * @param action   If SIMULATE, drain will only be simulated.
      * @return FluidStack representing the Fluid and amount that was (or would have been, if
-     * simulated) drained.
+     *         simulated) drained.
      */
     @NotNull
     FluidStack drain(FluidStack resource, FluidAction action);
@@ -104,7 +103,7 @@ public interface IFluidHandler
      * @param maxDrain Maximum amount of fluid to drain.
      * @param action   If SIMULATE, drain will only be simulated.
      * @return FluidStack representing the Fluid and amount that was (or would have been, if
-     * simulated) drained.
+     *         simulated) drained.
      */
     @NotNull
     FluidStack drain(int maxDrain, FluidAction action);

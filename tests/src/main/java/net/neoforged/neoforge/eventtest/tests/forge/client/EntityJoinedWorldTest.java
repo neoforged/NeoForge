@@ -17,9 +17,9 @@ import net.neoforged.neoforge.eventtest.internal.EventTest;
  *
  * Event fires during gameplay.
  * Success condition:
- *      EntityJoinWorldEvent fired for Minecraft.getInstance().player
+ * EntityJoinWorldEvent fired for Minecraft.getInstance().player
  * Failure info:
- *      "EntityJoinWorldEvent was not fired"
+ * "EntityJoinWorldEvent was not fired"
  *
  */
 
@@ -37,7 +37,7 @@ public class EntityJoinedWorldTest extends EventTest {
 
         final boolean eventFiredForPlayer = eventEntity == gamePlayer;
 
-        if(eventFiredForPlayer)
+        if (eventFiredForPlayer)
             pass();
     }
 }

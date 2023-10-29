@@ -10,8 +10,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 
-public interface ITagAppenderExtension<T>
-{
+public interface ITagAppenderExtension<T> {
     private TagsProvider.TagAppender<T> self() {
         return (TagsProvider.TagAppender<T>) this;
     }
@@ -36,11 +35,11 @@ public interface ITagAppenderExtension<T>
 
     /**
      * Adds a single element's ID to the tag json's remove list. Callable during datageneration.
+     * 
      * @param location The ID of the element to remove
      * @return The builder for chaining
      */
-    default TagsProvider.TagAppender<T> remove(final ResourceLocation location)
-    {
+    default TagsProvider.TagAppender<T> remove(final ResourceLocation location) {
         TagsProvider.TagAppender<T> builder = self();
         builder.getInternalBuilder().removeElement(location, builder.getModID());
         return builder;
@@ -48,14 +47,13 @@ public interface ITagAppenderExtension<T>
 
     /**
      * Adds multiple elements' IDs to the tag json's remove list. Callable during datageneration.
+     * 
      * @param locations The IDs of the elements to remove
      * @return The builder for chaining
      */
-    default TagsProvider.TagAppender<T> remove(final ResourceLocation first, final ResourceLocation... locations)
-    {
+    default TagsProvider.TagAppender<T> remove(final ResourceLocation first, final ResourceLocation... locations) {
         this.remove(first);
-        for (ResourceLocation location : locations)
-        {
+        for (ResourceLocation location : locations) {
             this.remove(location);
         }
         return self();
@@ -67,8 +65,7 @@ public interface ITagAppenderExtension<T>
      * @param resourceKey The resource key of the element to remove
      * @return The appender for chaining
      */
-    default TagsProvider.TagAppender<T> remove(final ResourceKey<T> resourceKey)
-    {
+    default TagsProvider.TagAppender<T> remove(final ResourceKey<T> resourceKey) {
         this.remove(resourceKey.location());
         return self();
     }
@@ -80,11 +77,9 @@ public interface ITagAppenderExtension<T>
      * @return The appender for chaining
      */
     @SuppressWarnings("unchecked")
-    default TagsProvider.TagAppender<T> remove(final ResourceKey<T> firstResourceKey, final ResourceKey<T>... resourceKeys)
-    {
+    default TagsProvider.TagAppender<T> remove(final ResourceKey<T> firstResourceKey, final ResourceKey<T>... resourceKeys) {
         this.remove(firstResourceKey.location());
-        for (ResourceKey<T> resourceKey : resourceKeys)
-        {
+        for (ResourceKey<T> resourceKey : resourceKeys) {
             this.remove(resourceKey.location());
         }
         return self();
@@ -92,11 +87,11 @@ public interface ITagAppenderExtension<T>
 
     /**
      * Adds a tag to the tag json's remove list. Callable during datageneration.
+     * 
      * @param tag The ID of the tag to remove
      * @return The builder for chaining
      */
-    default TagsProvider.TagAppender<T> remove(TagKey<T> tag)
-    {
+    default TagsProvider.TagAppender<T> remove(TagKey<T> tag) {
         TagsProvider.TagAppender<T> builder = self();
         builder.getInternalBuilder().removeTag(tag.location(), builder.getModID());
         return builder;
@@ -104,15 +99,14 @@ public interface ITagAppenderExtension<T>
 
     /**
      * Adds multiple tags to the tag json's remove list. Callable during datageneration.
+     * 
      * @param tags The IDs of the tags to remove
      * @return The builder for chaining
      */
     @SuppressWarnings("unchecked")
-    default TagsProvider.TagAppender<T> remove(TagKey<T> first, TagKey<T>...tags)
-    {
+    default TagsProvider.TagAppender<T> remove(TagKey<T> first, TagKey<T>... tags) {
         this.remove(first);
-        for (TagKey<T> tag : tags)
-        {
+        for (TagKey<T> tag : tags) {
             this.remove(tag);
         }
         return self();

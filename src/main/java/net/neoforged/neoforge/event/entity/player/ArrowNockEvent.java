@@ -5,14 +5,14 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -25,16 +25,14 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class ArrowNockEvent extends PlayerEvent implements ICancellableEvent
-{
+public class ArrowNockEvent extends PlayerEvent implements ICancellableEvent {
     private final ItemStack bow;
     private final InteractionHand hand;
     private final Level level;
     private final boolean hasAmmo;
     private InteractionResultHolder<ItemStack> action;
 
-    public ArrowNockEvent(Player player, @NotNull ItemStack item, InteractionHand hand, Level level, boolean hasAmmo)
-    {
+    public ArrowNockEvent(Player player, @NotNull ItemStack item, InteractionHand hand, Level level, boolean hasAmmo) {
         super(player);
         this.bow = item;
         this.hand = hand;
@@ -43,17 +41,27 @@ public class ArrowNockEvent extends PlayerEvent implements ICancellableEvent
     }
 
     @NotNull
-    public ItemStack getBow() { return this.bow; }
-    public Level getLevel() { return this.level; }
-    public InteractionHand getHand() { return this.hand; }
-    public boolean hasAmmo() { return this.hasAmmo; }
-    public InteractionResultHolder<ItemStack> getAction()
-    {
+    public ItemStack getBow() {
+        return this.bow;
+    }
+
+    public Level getLevel() {
+        return this.level;
+    }
+
+    public InteractionHand getHand() {
+        return this.hand;
+    }
+
+    public boolean hasAmmo() {
+        return this.hasAmmo;
+    }
+
+    public InteractionResultHolder<ItemStack> getAction() {
         return this.action;
     }
 
-    public void setAction(InteractionResultHolder<ItemStack> action)
-    {
+    public void setAction(InteractionResultHolder<ItemStack> action) {
         this.action = action;
     }
 }

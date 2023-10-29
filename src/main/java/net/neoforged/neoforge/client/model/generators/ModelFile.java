@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.model.generators;
 
 import com.google.common.base.Preconditions;
-
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
@@ -27,6 +26,7 @@ public abstract class ModelFile {
 
     /**
      * Assert that this model exists.
+     * 
      * @throws IllegalStateException if this model does not exist
      */
     public void assertExistence() {
@@ -40,8 +40,9 @@ public abstract class ModelFile {
     public static class UncheckedModelFile extends ModelFile {
 
         public UncheckedModelFile(String location) {
-           this(new ResourceLocation(location));
+            this(new ResourceLocation(location));
         }
+
         public UncheckedModelFile(ResourceLocation location) {
             super(location);
         }

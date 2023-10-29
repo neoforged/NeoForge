@@ -5,38 +5,26 @@
 
 package net.neoforged.neoforge.debug.client;
 
-import java.util.Random;
-
-import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.renderer.texture.*;
-import net.minecraft.client.resources.metadata.animation.FrameSize;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceMetadata;
 import net.minecraft.world.item.Item;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.registries.RegistryObject;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 // TODO: Uncomment and fix once we have custom SpriteSourceType hooks
 @Mod(CustomTASTest.MOD_ID)
-public class CustomTASTest
-{
+public class CustomTASTest {
     private static final boolean ENABLED = true;
     static final String MOD_ID = "custom_tas_test";
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
     private static final RegistryObject<Item> TEST_ITEM = ITEMS.register("test_item", () -> new Item(new Item.Properties()));
 
-    public CustomTASTest()
-    {
-        if (ENABLED)
-        {
-            if (FMLLoader.getDist().isClient())
-            {
+    public CustomTASTest() {
+        if (ENABLED) {
+            if (FMLLoader.getDist().isClient()) {
 //                FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerTextureAtlasSpriteLoaders);
             }
             ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());

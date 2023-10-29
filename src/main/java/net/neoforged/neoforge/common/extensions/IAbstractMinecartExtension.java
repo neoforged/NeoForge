@@ -5,26 +5,24 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
 
-public interface IAbstractMinecartExtension
-{
+public interface IAbstractMinecartExtension {
     public static float DEFAULT_MAX_SPEED_AIR_LATERAL = 0.4f;
     public static float DEFAULT_MAX_SPEED_AIR_VERTICAL = -1.0f;
     public static double DEFAULT_AIR_DRAG = 0.95f;
 
     private AbstractMinecart self() {
-        return (AbstractMinecart)this;
+        return (AbstractMinecart) this;
     }
 
     /**
      * Internal, returns the current spot to look for the attached rail.
      */
-    default BlockPos getCurrentRailPosition()
-    {
+    default BlockPos getCurrentRailPosition() {
         int x = Mth.floor(self().getX());
         int y = Mth.floor(self().getY());
         int z = Mth.floor(self().getZ());
@@ -44,6 +42,7 @@ public interface IAbstractMinecartExtension
     /**
      * Returns true if this cart can currently use rails.
      * This function is mainly used to gracefully detach a minecart from a rail.
+     * 
      * @return True if the minecart can use rails.
      */
     boolean canUseRail();
@@ -51,12 +50,14 @@ public interface IAbstractMinecartExtension
     /**
      * Set whether the minecart can use rails.
      * This function is mainly used to gracefully detach a minecart from a rail.
+     * 
      * @param use Whether the minecart can currently use rails.
      */
     void setCanUseRail(boolean use);
 
     /**
      * Return false if this cart should not call onMinecartPass() and should ignore Powered Rails.
+     * 
      * @return True if this cart should call onMinecartPass().
      */
     default boolean shouldDoRailFunctions() {
@@ -65,6 +66,7 @@ public interface IAbstractMinecartExtension
 
     /**
      * Returns true if this cart is self propelled.
+     * 
      * @return True if powered.
      */
     default boolean isPoweredCart() {
@@ -73,6 +75,7 @@ public interface IAbstractMinecartExtension
 
     /**
      * Returns true if this cart can be ridden by an Entity.
+     * 
      * @return True if this cart can be ridden.
      */
     default boolean canBeRidden() {
@@ -99,12 +102,19 @@ public interface IAbstractMinecartExtension
      * higher than getMaxCartSpeedOnRail().
      */
     float getCurrentCartSpeedCapOnRail();
+
     void setCurrentCartSpeedCapOnRail(float value);
+
     float getMaxSpeedAirLateral();
+
     void setMaxSpeedAirLateral(float value);
+
     float getMaxSpeedAirVertical();
+
     void setMaxSpeedAirVertical(float value);
+
     double getDragAir();
+
     void setDragAir(double value);
 
     default double getSlopeAdjustment() {

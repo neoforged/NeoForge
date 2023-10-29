@@ -5,9 +5,9 @@
 
 package net.neoforged.neoforge.debug.entity.player;
 
-import net.neoforged.neoforge.event.entity.player.PlayerNegotiationEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.player.PlayerNegotiationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,14 +17,12 @@ import org.apache.logging.log4j.Logger;
  */
 @Mod("player_negotiation_event_test")
 @Mod.EventBusSubscriber()
-public class PlayerNegotiationEventTest
-{
+public class PlayerNegotiationEventTest {
     private static final boolean ENABLE = false;
     private static final Logger LOGGER = LogManager.getLogger(PlayerNegotiationEventTest.class);
 
     @SubscribeEvent
-    public static void onPlayerNegotiation(PlayerNegotiationEvent event)
-    {
+    public static void onPlayerNegotiation(PlayerNegotiationEvent event) {
         if (!ENABLE) return;
         LOGGER.info("{} ({})[{}] started negotiation", event.getProfile().getName(), event.getProfile().getId(), event.getConnection().getRemoteAddress());
         event.enqueueWork(() -> {

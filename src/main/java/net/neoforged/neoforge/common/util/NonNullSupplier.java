@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.common.util;
 
-import org.jetbrains.annotations.NotNull;
 import java.util.function.Supplier;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Equivalent to {@link Supplier}, except with nonnull contract.
@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  * @see Supplier
  */
 @FunctionalInterface
-public interface NonNullSupplier<T>
-{
-    @NotNull T get();
+public interface NonNullSupplier<T> {
+    @NotNull
+    T get();
 }

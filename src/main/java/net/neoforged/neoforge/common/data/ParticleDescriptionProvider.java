@@ -8,6 +8,14 @@ package net.neoforged.neoforge.common.data;
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 import net.minecraft.Util;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.ParticleProvider;
@@ -18,19 +26,10 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.VisibleForTesting;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 
 /**
  * A data provider for {@link net.minecraft.client.particle.ParticleDescription}s.
@@ -68,8 +67,7 @@ import java.util.stream.Stream;
  * @see DataProvider
  * @see net.minecraft.client.particle.ParticleDescription
  */
-public abstract class ParticleDescriptionProvider implements DataProvider
-{
+public abstract class ParticleDescriptionProvider implements DataProvider {
 
     private final PackOutput.PathProvider particlesPath;
     @VisibleForTesting
@@ -80,11 +78,10 @@ public abstract class ParticleDescriptionProvider implements DataProvider
     /**
      * Creates an instance of the data provider.
      *
-     * @param output the expected root directory the data generator outputs to
+     * @param output     the expected root directory the data generator outputs to
      * @param fileHelper the helper used to validate a texture's existence
      */
-    protected ParticleDescriptionProvider(PackOutput output, ExistingFileHelper fileHelper)
-    {
+    protected ParticleDescriptionProvider(PackOutput output, ExistingFileHelper fileHelper) {
         this.particlesPath = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "particles");
         this.fileHelper = fileHelper;
         this.descriptions = new HashMap<>();
@@ -103,16 +100,15 @@ public abstract class ParticleDescriptionProvider implements DataProvider
      * <p>Particle types with this description should be attached to a particle provider
      * via {@link RegisterParticleProvidersEvent#registerSprite(ParticleType, ParticleProvider.Sprite)}.
      *
-     * @param type                      the particle type the textures are applied
-     *                                  for
-     * @param texture                   the texture to render for the particle type
+     * @param type    the particle type the textures are applied
+     *                for
+     * @param texture the texture to render for the particle type
      * @throws NullPointerException     if the particle type is not registered
      * @throws IllegalArgumentException if a texture does not have an associated PNG
      *                                  file, or the particle type has already been
      *                                  provided
      */
-    protected void sprite(ParticleType<?> type, ResourceLocation texture)
-    {
+    protected void sprite(ParticleType<?> type, ResourceLocation texture) {
         this.spriteSet(type, texture);
     }
 
@@ -131,34 +127,30 @@ public abstract class ParticleDescriptionProvider implements DataProvider
      * <p>Particle types with this description should be attached to a particle provider
      * via {@link RegisterParticleProvidersEvent#registerSpriteSet(ParticleType, ParticleEngine.SpriteParticleRegistration)}.
      *
-     * @param type                      the particle type the textures are applied
-     *                                  for
-     * @param baseName                  the common name of all the textures
-     * @param numOfTextures             the number of textures within the set
-     * @param reverse                   when {@code true}, the textures will be
-     *                                  listed in descending order
+     * @param type          the particle type the textures are applied
+     *                      for
+     * @param baseName      the common name of all the textures
+     * @param numOfTextures the number of textures within the set
+     * @param reverse       when {@code true}, the textures will be
+     *                      listed in descending order
      * @throws NullPointerException     if the particle type is not registered
      * @throws IllegalArgumentException if a texture does not have an associated PNG
      *                                  file, or the particle type has already been
      *                                  provided
      */
-    protected void spriteSet(ParticleType<?> type, ResourceLocation baseName, int numOfTextures, boolean reverse)
-    {
+    protected void spriteSet(ParticleType<?> type, ResourceLocation baseName, int numOfTextures, boolean reverse) {
         Preconditions.checkArgument(numOfTextures > 0, "The number of textures to generate must be positive");
-        this.spriteSet(type, () -> new Iterator<>()
-        {
+        this.spriteSet(type, () -> new Iterator<>() {
 
             private int counter = 0;
 
             @Override
-            public boolean hasNext()
-            {
+            public boolean hasNext() {
                 return this.counter < numOfTextures;
             }
 
             @Override
-            public ResourceLocation next()
-            {
+            public ResourceLocation next() {
                 var texture = baseName.withSuffix("_" + (reverse ? numOfTextures - this.counter - 1 : this.counter));
                 this.counter++;
                 return texture;
@@ -174,18 +166,17 @@ public abstract class ParticleDescriptionProvider implements DataProvider
      * <p>Particle types with this description should be attached to a particle provider
      * via {@link RegisterParticleProvidersEvent#registerSpriteSet(ParticleType, ParticleEngine.SpriteParticleRegistration)}.
      *
-     * @param type                      the particle type the textures are applied
-     *                                  for
-     * @param texture                   the first texture in the description
-     * @param textures                  a list of subsequent textures to render for
-     *                                  the particle type
+     * @param type     the particle type the textures are applied
+     *                 for
+     * @param texture  the first texture in the description
+     * @param textures a list of subsequent textures to render for
+     *                 the particle type
      * @throws NullPointerException     if the particle type is not registered
      * @throws IllegalArgumentException if a texture does not have an associated PNG
      *                                  file, or the particle type has already been
      *                                  provided
      */
-    protected void spriteSet(ParticleType<?> type, ResourceLocation texture, ResourceLocation... textures)
-    {
+    protected void spriteSet(ParticleType<?> type, ResourceLocation texture, ResourceLocation... textures) {
         this.spriteSet(type, Stream.concat(Stream.of(texture), Arrays.stream(textures))::iterator);
     }
 
@@ -196,24 +187,22 @@ public abstract class ParticleDescriptionProvider implements DataProvider
      * <p>Particle types with this description should be attached to a particle provider
      * via {@link RegisterParticleProvidersEvent#registerSpriteSet(ParticleType, ParticleEngine.SpriteParticleRegistration)}.
      *
-     * @param type                      the particle type the textures are applied
-     *                                  for
-     * @param textures                  a list of textures to render for the
-     *                                  particle type
+     * @param type     the particle type the textures are applied
+     *                 for
+     * @param textures a list of textures to render for the
+     *                 particle type
      * @throws NullPointerException     if the particle type is not registered
      * @throws IllegalArgumentException if there are no textures provided, a texture
      *                                  does not have an associated PNG file, or
      *                                  the particle type has already been provided
      */
-    protected void spriteSet(ParticleType<?> type, Iterable<ResourceLocation> textures)
-    {
+    protected void spriteSet(ParticleType<?> type, Iterable<ResourceLocation> textures) {
         // Make sure particle type is registered
         var particle = Preconditions.checkNotNull(ForgeRegistries.PARTICLE_TYPES.getKey(type), "The particle type is not registered");
 
         // Validate textures
         List<String> desc = new ArrayList<>();
-        for (var texture : textures)
-        {
+        for (var texture : textures) {
             Preconditions.checkArgument(this.fileHelper.exists(texture, PackType.CLIENT_RESOURCES, ".png", "textures/particle"),
                     "Texture '%s' does not exist in any known resource pack", texture);
             desc.add(texture.toString());
@@ -236,15 +225,12 @@ public abstract class ParticleDescriptionProvider implements DataProvider
                     entry.getValue().forEach(textures::add);
                     return DataProvider.saveStable(cache,
                             Util.make(new JsonObject(), obj -> obj.add("textures", textures)),
-                            this.particlesPath.json(entry.getKey())
-                    );
-                }).toArray(CompletableFuture[]::new)
-        );
+                            this.particlesPath.json(entry.getKey()));
+                }).toArray(CompletableFuture[]::new));
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return "Particle Descriptions";
     }
 }

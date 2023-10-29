@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.client.extensions.common;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.HumanoidModel;
@@ -21,30 +22,25 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.IArmPoseTransformer;
-import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Consumer;
 
 /**
  * {@linkplain LogicalSide#CLIENT Client-only} extensions to {@link Item}.
  *
  * @see Item#initializeClient(Consumer)
  */
-public interface IClientItemExtensions
-{
-    IClientItemExtensions DEFAULT = new IClientItemExtensions() { };
+public interface IClientItemExtensions {
+    IClientItemExtensions DEFAULT = new IClientItemExtensions() {};
 
-    static IClientItemExtensions of(ItemStack stack)
-    {
+    static IClientItemExtensions of(ItemStack stack) {
         return of(stack.getItem());
     }
 
-    static IClientItemExtensions of(Item item)
-    {
+    static IClientItemExtensions of(Item item) {
         return item.getRenderPropertiesInternal() instanceof IClientItemExtensions e ? e : DEFAULT;
     }
 
@@ -57,34 +53,32 @@ public interface IClientItemExtensions
      * @return A {@link Font} or null to use the default
      */
     @Nullable
-    default Font getFont(ItemStack stack, FontContext context)
-    {
+    default Font getFont(ItemStack stack, FontContext context) {
         return null;
     }
 
     /**
-      * This method returns an ArmPose that can be defined using the {@link net.minecraft.client.model.HumanoidModel.ArmPose#create(String, boolean, IArmPoseTransformer)} method.
-      * This allows for creating custom item use animations.
-      *
-      * @param entityLiving The entity holding the item
-      * @param hand         The hand the ArmPose will be applied to
-      * @param itemStack    The stack being held
-      * @return A custom ArmPose that can be used to define movement of the arm
-      */
+     * This method returns an ArmPose that can be defined using the {@link net.minecraft.client.model.HumanoidModel.ArmPose#create(String, boolean, IArmPoseTransformer)} method.
+     * This allows for creating custom item use animations.
+     *
+     * @param entityLiving The entity holding the item
+     * @param hand         The hand the ArmPose will be applied to
+     * @param itemStack    The stack being held
+     * @return A custom ArmPose that can be used to define movement of the arm
+     */
     @Nullable
-    default HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack)
-    {
+    default HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
         return null;
     }
 
     /**
      * Called right before when client applies transformations to item in hand and render it.
      *
-     * @param poseStack The pose stack
-     * @param player The player holding the item, it's always main client player
-     * @param arm The arm holding the item
-     * @param itemInHand The held item
-     * @param partialTick Partial tick time, useful for interpolation
+     * @param poseStack    The pose stack
+     * @param player       The player holding the item, it's always main client player
+     * @param arm          The arm holding the item
+     * @param itemInHand   The held item
+     * @param partialTick  Partial tick time, useful for interpolation
      * @param equipProcess Equip process time, Ranging from 0.0 to 1.0. 0.0 when it's done equipping
      * @param swingProcess Swing process time, Ranging from 0.0 to 1.0. 0.0 when it's done swinging
      * @return true if it should skip applying other transforms and go straight to rendering
@@ -104,8 +98,7 @@ public interface IClientItemExtensions
      * @see #getGenericArmorModel(LivingEntity, ItemStack, EquipmentSlot, HumanoidModel)
      */
     @NotNull
-    default HumanoidModel<?> getHumanoidArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original)
-    {
+    default HumanoidModel<?> getHumanoidArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
         return original;
     }
 
@@ -124,11 +117,9 @@ public interface IClientItemExtensions
      * @see #getHumanoidArmorModel(LivingEntity, ItemStack, EquipmentSlot, HumanoidModel)
      */
     @NotNull
-    default Model getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original)
-    {
+    default Model getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
         HumanoidModel<?> replacement = getHumanoidArmorModel(livingEntity, itemStack, equipmentSlot, original);
-        if (replacement != original)
-        {
+        if (replacement != original) {
             ClientHooks.copyModelProperties(original, replacement);
             return replacement;
         }
@@ -146,9 +137,7 @@ public interface IClientItemExtensions
      * @param height      Viewport height
      * @param partialTick Partial tick time, useful for interpolation
      */
-    default void renderHelmetOverlay(ItemStack stack, Player player, int width, int height, float partialTick)
-    {
-    }
+    default void renderHelmetOverlay(ItemStack stack, Player player, int width, int height, float partialTick) {}
 
     /**
      * Queries this item's renderer.
@@ -158,13 +147,11 @@ public interface IClientItemExtensions
      * <p>
      * By default, returns vanilla's block entity renderer.
      */
-    default BlockEntityWithoutLevelRenderer getCustomRenderer()
-    {
+    default BlockEntityWithoutLevelRenderer getCustomRenderer() {
         return Minecraft.getInstance().getItemRenderer().getBlockEntityRenderer();
     }
 
-    enum FontContext
-    {
+    enum FontContext {
         /**
          * Used to display the amount of items in the {@link ItemStack}.
          */

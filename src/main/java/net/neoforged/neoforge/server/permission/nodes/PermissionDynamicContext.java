@@ -16,42 +16,36 @@ import java.util.Objects;
  *
  * @implNote this class could be a record but is not in favor of a package private constructor
  */
-public final class PermissionDynamicContext<T>
-{
+public final class PermissionDynamicContext<T> {
     private PermissionDynamicContextKey<T> dynamic;
     private T value;
 
-    PermissionDynamicContext(PermissionDynamicContextKey<T> dynamic, T value)
-    {
+    PermissionDynamicContext(PermissionDynamicContextKey<T> dynamic, T value) {
         this.dynamic = dynamic;
         this.value = value;
     }
 
-    public PermissionDynamicContextKey<T> getDynamic()
-    {
+    public PermissionDynamicContextKey<T> getDynamic() {
         return dynamic;
     }
 
-    public T getValue()
-    {
+    public T getValue() {
         return value;
     }
 
-    public String getSerializedValue(){
+    public String getSerializedValue() {
         return this.dynamic.serializer().apply(this.value);
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof PermissionDynamicContext otherContext)) return false;
         return dynamic.equals(otherContext.dynamic) && value.equals(otherContext.value);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(dynamic, value);
     }
 }

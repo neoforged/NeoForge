@@ -14,8 +14,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * flagged as dead, thus staying it's removal from the world. If canceled
  * it will add more time to the entities life equal to extraLife.
  */
-public class ItemExpireEvent extends ItemEvent implements ICancellableEvent
-{
+public class ItemExpireEvent extends ItemEvent implements ICancellableEvent {
 
     private int extraLife;
 
@@ -23,21 +22,18 @@ public class ItemExpireEvent extends ItemEvent implements ICancellableEvent
      * Creates a new event for an expiring EntityItem.
      * 
      * @param entityItem The EntityItem being deleted.
-     * @param extraLife The amount of time to be added to this entities lifespan if the event is canceled.
+     * @param extraLife  The amount of time to be added to this entities lifespan if the event is canceled.
      */
-    public ItemExpireEvent(ItemEntity entityItem, int extraLife)
-    {
+    public ItemExpireEvent(ItemEntity entityItem, int extraLife) {
         super(entityItem);
         this.setExtraLife(extraLife);
     }
 
-    public int getExtraLife()
-    {
+    public int getExtraLife() {
         return extraLife;
     }
 
-    public void setExtraLife(int extraLife)
-    {
+    public void setExtraLife(int extraLife) {
         this.extraLife = extraLife;
     }
 }

@@ -9,13 +9,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.common.NeoForge;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * Called whenever the ID mapping might have changed. If you register for this event, you
@@ -29,17 +28,14 @@ import java.util.Map;
  * <p>
  * Fired on the {@link NeoForge#EVENT_BUS forge bus}.
  */
-public class IdMappingEvent extends Event
-{
-    public static class ModRemapping
-    {
+public class IdMappingEvent extends Event {
+    public static class ModRemapping {
         public final ResourceLocation registry;
         public final ResourceLocation key;
         public final int oldId;
         public final int newId;
 
-        private ModRemapping(ResourceLocation registry, ResourceLocation key, int oldId, int newId)
-        {
+        private ModRemapping(ResourceLocation registry, ResourceLocation key, int oldId, int newId) {
             this.registry = registry;
             this.key = key;
             this.oldId = oldId;
@@ -54,12 +50,10 @@ public class IdMappingEvent extends Event
 
     private final boolean isFrozen;
 
-    public IdMappingEvent(Map<ResourceLocation, Map<ResourceLocation, IdRemapping>> remaps, boolean isFrozen)
-    {
+    public IdMappingEvent(Map<ResourceLocation, Map<ResourceLocation, IdRemapping>> remaps, boolean isFrozen) {
         this.isFrozen = isFrozen;
         this.remaps = Maps.newHashMap();
-        remaps.forEach((name, rm) ->
-        {
+        remaps.forEach((name, rm) -> {
             List<ModRemapping> tmp = Lists.newArrayList();
             rm.forEach((key, value) -> tmp.add(new ModRemapping(name, key, value.currId, value.newId)));
             tmp.sort(Comparator.comparingInt(o -> o.newId));
@@ -68,18 +62,15 @@ public class IdMappingEvent extends Event
         this.keys = ImmutableSet.copyOf(this.remaps.keySet());
     }
 
-    public ImmutableSet<ResourceLocation> getRegistries()
-    {
+    public ImmutableSet<ResourceLocation> getRegistries() {
         return this.keys;
     }
 
-    public ImmutableList<ModRemapping> getRemaps(ResourceLocation registry)
-    {
+    public ImmutableList<ModRemapping> getRemaps(ResourceLocation registry) {
         return this.remaps.get(registry);
     }
 
-    public boolean isFrozen()
-    {
+    public boolean isFrozen() {
         return isFrozen;
     }
 }

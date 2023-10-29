@@ -22,20 +22,16 @@ import net.minecraft.network.chat.FormattedText;
  *
  * @author bspkrs
  */
-public class ExtendedButton extends Button
-{
-    public ExtendedButton(int xPos, int yPos, int width, int height, Component displayString, OnPress handler)
-    {
+public class ExtendedButton extends Button {
+    public ExtendedButton(int xPos, int yPos, int width, int height, Component displayString, OnPress handler) {
         this(xPos, yPos, width, height, displayString, handler, DEFAULT_NARRATION);
     }
 
-    public ExtendedButton(int xPos, int yPos, int width, int height, Component displayString, OnPress handler, CreateNarration createNarration)
-    {
+    public ExtendedButton(int xPos, int yPos, int width, int height, Component displayString, OnPress handler, CreateNarration createNarration) {
         super(xPos, yPos, width, height, displayString, handler, createNarration);
     }
 
-    public ExtendedButton(Button.Builder builder)
-    {
+    public ExtendedButton(Button.Builder builder) {
         super(builder);
     }
 
@@ -43,8 +39,7 @@ public class ExtendedButton extends Button
      * Draws this button to the screen.
      */
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick)
-    {
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         Minecraft mc = Minecraft.getInstance();
         guiGraphics.blitSprite(SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
 

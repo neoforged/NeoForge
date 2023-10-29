@@ -18,10 +18,8 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 
-public class Tags
-{
-    public static void init ()
-    {
+public class Tags {
+    public static void init() {
         Blocks.init();
         EntityTypes.init();
         Items.init();
@@ -29,9 +27,8 @@ public class Tags
         Biomes.init();
     }
 
-    public static class Blocks
-    {
-        private static void init(){}
+    public static class Blocks {
+        private static void init() {}
 
         public static final TagKey<Block> BARRELS = tag("barrels");
         public static final TagKey<Block> BARRELS_WOODEN = tag("barrels/wooden");
@@ -175,27 +172,23 @@ public class Tags
         public static final TagKey<Block> NEEDS_GOLD_TOOL = tag("needs_gold_tool");
         public static final TagKey<Block> NEEDS_NETHERITE_TOOL = tag("needs_netherite_tool");
 
-        private static TagKey<Block> tag(String name)
-        {
+        private static TagKey<Block> tag(String name) {
             return BlockTags.create(new ResourceLocation("forge", name));
         }
     }
 
-    public static class EntityTypes
-    {
+    public static class EntityTypes {
         private static void init() {}
 
         public static final TagKey<EntityType<?>> BOSSES = tag("bosses");
 
-        private static TagKey<EntityType<?>> tag(String name)
-        {
+        private static TagKey<EntityType<?>> tag(String name) {
             return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("forge", name));
         }
     }
 
-    public static class Items
-    {
-        private static void init(){}
+    public static class Items {
+        private static void init() {}
 
         public static final TagKey<Item> BARRELS = tag("barrels");
         public static final TagKey<Item> BARRELS_WOODEN = tag("barrels/wooden");
@@ -406,7 +399,7 @@ public class Tags
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_GOLD = tag("storage_blocks/raw_gold");
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
         public static final TagKey<Item> STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
-        public static final TagKey<Item> STRING                  = tag("string");
+        public static final TagKey<Item> STRING = tag("string");
         /**
          * A tag containing all existing tools.
          *
@@ -482,14 +475,12 @@ public class Tags
          */
         public static final TagKey<Item> ARMORS_BOOTS = tag("armors/boots");
 
-        private static TagKey<Item> tag(String name)
-        {
+        private static TagKey<Item> tag(String name) {
             return ItemTags.create(new ResourceLocation("forge", name));
         }
     }
 
-    public static class Fluids
-    {
+    public static class Fluids {
         private static void init() {}
 
         /**
@@ -501,14 +492,12 @@ public class Tags
          */
         public static final TagKey<Fluid> GASEOUS = tag("gaseous");
 
-        private static TagKey<Fluid> tag(String name)
-        {
+        private static TagKey<Fluid> tag(String name) {
             return FluidTags.create(new ResourceLocation("forge", name));
         }
     }
 
-    public static class Biomes
-    {
+    public static class Biomes {
         private static void init() {}
 
         public static final TagKey<Biome> IS_HOT = tag("is_hot");
@@ -565,8 +554,7 @@ public class Tags
         public static final TagKey<Biome> IS_SLOPE = tag("is_slope");
         public static final TagKey<Biome> IS_MOUNTAIN = tag("is_mountain");
 
-        private static TagKey<Biome> tag(String name)
-        {
+        private static TagKey<Biome> tag(String name) {
             return TagKey.create(Registries.BIOME, new ResourceLocation("forge", name));
         }
     }

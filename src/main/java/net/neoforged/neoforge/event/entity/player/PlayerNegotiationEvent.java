@@ -6,13 +6,12 @@
 package net.neoforged.neoforge.event.entity.player;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.network.Connection;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.bus.api.Event;
-
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import net.minecraft.network.Connection;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * This event is fired on the server when a connection has started the Forge handshake,
@@ -22,15 +21,13 @@ import java.util.concurrent.Future;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
-public class PlayerNegotiationEvent extends Event
-{
+public class PlayerNegotiationEvent extends Event {
 
     private final Connection connection;
     private final GameProfile profile;
     private final List<Future<Void>> futures;
 
-    public PlayerNegotiationEvent(Connection connection, GameProfile profile, List<Future<Void>> futures)
-    {
+    public PlayerNegotiationEvent(Connection connection, GameProfile profile, List<Future<Void>> futures) {
         this.connection = connection;
         this.profile = profile;
         this.futures = futures;
@@ -39,26 +36,22 @@ public class PlayerNegotiationEvent extends Event
     /**
      * Enqueue work to be completed asynchronously before the login proceeds.
      */
-    public void enqueueWork(Runnable runnable)
-    {
+    public void enqueueWork(Runnable runnable) {
         enqueueWork(CompletableFuture.runAsync(runnable));
     }
 
     /**
      * Enqueue work to be completed asynchronously before the login proceeds.
      */
-    public void enqueueWork(Future<Void> future)
-    {
+    public void enqueueWork(Future<Void> future) {
         futures.add(future);
     }
 
-    public Connection getConnection()
-    {
+    public Connection getConnection() {
         return connection;
     }
 
-    public GameProfile getProfile()
-    {
+    public GameProfile getProfile() {
         return profile;
     }
 }

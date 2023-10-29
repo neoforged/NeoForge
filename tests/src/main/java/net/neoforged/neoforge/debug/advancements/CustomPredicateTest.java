@@ -7,6 +7,11 @@ package net.neoforged.neoforge.debug.advancements;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.FrameType;
@@ -27,12 +32,6 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 @Mod("custom_predicate_test")
 public class CustomPredicateTest {
     public static final String MOD_ID = "custom_predicate_test";
@@ -42,8 +41,7 @@ public class CustomPredicateTest {
             () -> {
                 Codec<CustomNamePredicate> codec = RecordCodecBuilder.create(g -> g.group(
                         Codec.INT.fieldOf("data1").forGetter(CustomNamePredicate::data1),
-                        Codec.INT.fieldOf("data2").forGetter(CustomNamePredicate::data2)
-                ).apply(g, CustomNamePredicate::new));
+                        Codec.INT.fieldOf("data2").forGetter(CustomNamePredicate::data2)).apply(g, CustomNamePredicate::new));
                 return codec.xmap(Function.identity(), Function.identity());
             });
 

@@ -7,10 +7,10 @@ package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.gui.GuiGraphics;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -20,32 +20,27 @@ import org.jetbrains.annotations.ApiStatus;
  * @see Pre
  * @see Post
  */
-public abstract class RenderGuiEvent extends Event
-{
+public abstract class RenderGuiEvent extends Event {
     private final Window window;
     private final GuiGraphics guiGraphics;
     private final float partialTick;
 
     @ApiStatus.Internal
-    protected RenderGuiEvent(Window window, GuiGraphics guiGraphics, float partialTick)
-    {
+    protected RenderGuiEvent(Window window, GuiGraphics guiGraphics, float partialTick) {
         this.window = window;
         this.guiGraphics = guiGraphics;
         this.partialTick = partialTick;
     }
 
-    public Window getWindow()
-    {
+    public Window getWindow() {
         return window;
     }
 
-    public GuiGraphics getGuiGraphics()
-    {
+    public GuiGraphics getGuiGraphics() {
         return guiGraphics;
     }
 
-    public float getPartialTick()
-    {
+    public float getPartialTick() {
         return partialTick;
     }
 
@@ -61,11 +56,9 @@ public abstract class RenderGuiEvent extends Event
      *
      * @see Post
      */
-    public static class Pre extends RenderGuiEvent implements ICancellableEvent
-    {
+    public static class Pre extends RenderGuiEvent implements ICancellableEvent {
         @ApiStatus.Internal
-        public Pre(Window window, GuiGraphics guiGraphics, float partialTick)
-        {
+        public Pre(Window window, GuiGraphics guiGraphics, float partialTick) {
             super(window, guiGraphics, partialTick);
         }
     }
@@ -78,11 +71,9 @@ public abstract class RenderGuiEvent extends Event
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    public static class Post extends RenderGuiEvent
-    {
+    public static class Post extends RenderGuiEvent {
         @ApiStatus.Internal
-        public Post(Window window, GuiGraphics guiGraphics, float partialTick)
-        {
+        public Post(Window window, GuiGraphics guiGraphics, float partialTick) {
             super(window, guiGraphics, partialTick);
         }
     }

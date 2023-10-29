@@ -13,15 +13,13 @@ import java.lang.ref.WeakReference;
  *
  * @param <T>
  */
-public class ObjectTimings<T>
-{
+public class ObjectTimings<T> {
 
     private WeakReference<T> object;
 
     private int[] rawTimingData;
 
-    public ObjectTimings(T object, int[] rawTimingData)
-    {
+    public ObjectTimings(T object, int[] rawTimingData) {
         this.object = new WeakReference<T>(object);
         this.rawTimingData = rawTimingData;
     }
@@ -31,23 +29,19 @@ public class ObjectTimings<T>
      *
      * @return The object
      */
-    public WeakReference<T> getObject()
-    {
+    public WeakReference<T> getObject() {
         return object;
     }
-
 
     /**
      * Averages the raw timings data collected
      *
      * @return An average of the raw timing data
      */
-    public double getAverageTimings()
-    {
+    public double getAverageTimings() {
         double sum = 0.0;
 
-        for (int data : rawTimingData)
-        {
+        for (int data : rawTimingData) {
             sum += data;
         }
 

@@ -9,12 +9,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import net.minecraft.Util;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.fml.IExtensionPoint;
-import net.neoforged.fml.ModList;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +17,16 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import net.minecraft.Util;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.IExtensionPoint;
+import net.neoforged.fml.ModList;
 
 /**
  * Represents additional data sent by FML when a server is pinged.
  * Previous versions used the following format:
+ * 
  * <pre>{@code
  * {
  *     "fmlNetworkVersion" : FMLNETVERSION,
@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
  *     ]
  * }
  * }</pre>
+ * 
  * <p>
  * Due to size of the ping packet (32767 UTF-16 code points of JSON data) this could exceed this limit and
  * cause issues. To work around this, a truncation mechanism was introduced, to heuristically truncate the size of the
@@ -75,67 +76,60 @@ public record ServerStatusPing(
         Map<ResourceLocation, ChannelData> channels,
         Map<String, String> mods,
         int fmlNetworkVer,
-        boolean truncated
-)
-{
+        boolean truncated) {
+
     private static final Codec<ByteBuf> BYTE_BUF_CODEC = Codec.STRING
             .xmap(ServerStatusPing::decodeOptimized, ServerStatusPing::encodeOptimized);
 
-    public static final Codec<ServerStatusPing> CODEC = RecordCodecBuilder.create(in -> in.group(
-            Codec.INT.fieldOf("fmlNetworkVersion").forGetter(ServerStatusPing::getFMLNetworkVersion),
+    public static final Codec<ServerStatusPing> CODEC = RecordCodecBuilder.create(
+            in -> in
+                    .group(
+                            Codec.INT.fieldOf("fmlNetworkVersion").forGetter(ServerStatusPing::getFMLNetworkVersion),
 
-            ServerStatusPing.BYTE_BUF_CODEC.optionalFieldOf("d").forGetter(ping -> Optional.of(ping.toBuf())),
+                            ServerStatusPing.BYTE_BUF_CODEC.optionalFieldOf("d").forGetter(ping -> Optional.of(ping.toBuf())),
 
-            ChannelData.CODEC.listOf().optionalFieldOf("channels").forGetter(ping -> Optional.of(List.of())),
-            ModInfo.CODEC.listOf().optionalFieldOf("mods").forGetter(ping -> Optional.of(List.of())),
+                            ChannelData.CODEC.listOf().optionalFieldOf("channels").forGetter(ping -> Optional.of(List.of())),
+                            ModInfo.CODEC.listOf().optionalFieldOf("mods").forGetter(ping -> Optional.of(List.of())),
 
-            // legacy versions see truncated lists, modern versions ignore this truncated flag (binary data has its own)
-            Codec.BOOL.optionalFieldOf("truncated").forGetter(ping -> Optional.of(ping.isTruncated()))
-    ).apply(in, (fmlVer, buf, channels, mods, truncated) -> buf.map(byteBuf -> deserializeOptimized(fmlVer, byteBuf))
-            .orElseGet(() -> new ServerStatusPing(
-                    channels.orElseGet(List::of).stream().collect(Collectors.toMap(ChannelData::res, Function.identity())),
-                    mods.orElseGet(List::of).stream().collect(Collectors.toMap(ModInfo::modId, ModInfo::modmarker)),
-                    fmlVer, truncated.orElse(false)
-            ))));
+                            // legacy versions see truncated lists, modern versions ignore this truncated flag (binary data has its own)
+                            Codec.BOOL.optionalFieldOf("truncated").forGetter(ping -> Optional.of(ping.isTruncated())))
+                    .apply(in,
+                            (fmlVer, buf, channels, mods, truncated) -> buf.map(byteBuf -> deserializeOptimized(fmlVer, byteBuf))
+                                    .orElseGet(() -> new ServerStatusPing(
+                                            channels.orElseGet(List::of).stream().collect(Collectors.toMap(ChannelData::res, Function.identity())),
+                                            mods.orElseGet(List::of).stream().collect(Collectors.toMap(ModInfo::modId, ModInfo::modmarker)),
+                                            fmlVer, truncated.orElse(false)))));
 
-
-    public ServerStatusPing()
-    {
+    public ServerStatusPing() {
         this(
                 NetworkRegistry.buildChannelVersionsForListPing(),
-                Util.make(new HashMap<>(), map -> ModList.get().forEachModContainer((modid, mc) ->
-                        map.put(modid, mc.getCustomExtension(IExtensionPoint.DisplayTest.class)
-                                .map(IExtensionPoint.DisplayTest::suppliedVersion)
-                                .map(Supplier::get)
-                                .orElse(NetworkConstants.IGNORESERVERONLY)))),
+                Util.make(new HashMap<>(), map -> ModList.get().forEachModContainer((modid, mc) -> map.put(modid, mc.getCustomExtension(IExtensionPoint.DisplayTest.class)
+                        .map(IExtensionPoint.DisplayTest::suppliedVersion)
+                        .map(Supplier::get)
+                        .orElse(NetworkConstants.IGNORESERVERONLY)))),
                 NetworkConstants.FMLNETVERSION,
-                false
-        );
+                false);
     }
 
     @Override // Don't compare the truncated flag as it is irrelevant
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ServerStatusPing that)) return false;
         return fmlNetworkVer == that.fmlNetworkVer && channels.equals(that.channels) && mods.equals(that.mods);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(channels, mods, fmlNetworkVer);
     }
 
-    private List<Map.Entry<ResourceLocation, ChannelData>> getChannelsForMod(String modId)
-    {
+    private List<Map.Entry<ResourceLocation, ChannelData>> getChannelsForMod(String modId) {
         return channels.entrySet().stream()
                 .filter(c -> c.getKey().getNamespace().equals(modId))
                 .toList();
     }
 
-    private List<Map.Entry<ResourceLocation, ChannelData>> getNonModChannels()
-    {
+    private List<Map.Entry<ResourceLocation, ChannelData>> getNonModChannels() {
         return channels.entrySet().stream()
                 .filter(c -> !mods.containsKey(c.getKey().getNamespace()))
                 .toList();
@@ -161,27 +155,23 @@ public record ServerStatusPing(
         buf.writeBoolean(false); // placeholder for whether we are truncating
         buf.writeShort(mods.size()); // short so that we can replace it later in case of truncation
         int writtenCount = 0;
-        for (var modEntry : mods.entrySet())
-        {
+        for (var modEntry : mods.entrySet()) {
             var isIgnoreServerOnly = modEntry.getValue().equals(NetworkConstants.IGNORESERVERONLY);
 
             var channelsForMod = getChannelsForMod(modEntry.getKey());
             var channelSizeAndVersionFlag = channelsForMod.size() << 1;
-            if (isIgnoreServerOnly)
-            {
+            if (isIgnoreServerOnly) {
                 channelSizeAndVersionFlag |= VERSION_FLAG_IGNORESERVERONLY;
             }
             buf.writeVarInt(channelSizeAndVersionFlag);
 
             buf.writeUtf(modEntry.getKey());
-            if (!isIgnoreServerOnly)
-            {
+            if (!isIgnoreServerOnly) {
                 buf.writeUtf(modEntry.getValue());
             }
 
             // write the channels for this mod, if any
-            for (var entry : channelsForMod)
-            {
+            for (var entry : channelsForMod) {
                 buf.writeUtf(entry.getKey().getPath());
                 buf.writeUtf(entry.getValue().version());
                 buf.writeBoolean(entry.getValue().required());
@@ -189,27 +179,22 @@ public record ServerStatusPing(
 
             writtenCount++;
 
-            if (buf.readableBytes() >= 60000)
-            {
+            if (buf.readableBytes() >= 60000) {
                 reachedSizeLimit = true;
                 break;
             }
         }
 
-        if (!reachedSizeLimit)
-        {
+        if (!reachedSizeLimit) {
             // write any channels that don't match up with a ModID.
             var nonModChannels = getNonModChannels();
             buf.writeVarInt(nonModChannels.size());
-            for (var entry : nonModChannels)
-            {
+            for (var entry : nonModChannels) {
                 buf.writeResourceLocation(entry.getKey());
                 buf.writeUtf(entry.getValue().version());
                 buf.writeBoolean(entry.getValue().required());
             }
-        }
-        else
-        {
+        } else {
             buf.setShort(1, writtenCount);
             buf.writeVarInt(0);
         }
@@ -226,8 +211,7 @@ public record ServerStatusPing(
         Map<ResourceLocation, ChannelData> channels;
         Map<String, String> mods;
 
-        try
-        {
+        try {
             truncated = buf.readBoolean();
             var modsSize = buf.readUnsignedShort();
             mods = new HashMap<>();
@@ -256,9 +240,7 @@ public record ServerStatusPing(
                 var requiredOnClient = buf.readBoolean();
                 channels.put(channelName, new ChannelData(channelName, channelVersion, requiredOnClient));
             }
-        }
-        finally
-        {
+        } finally {
             buf.release();
         }
 
@@ -269,8 +251,7 @@ public record ServerStatusPing(
      * Encode given ByteBuf to a String. This is optimized for UTF-16 Code-Point count.
      * Supports at most 2^30 bytes in length
      */
-    private static String encodeOptimized(ByteBuf buf)
-    {
+    private static String encodeOptimized(ByteBuf buf) {
         var byteLength = buf.readableBytes();
         var sb = new StringBuilder();
         sb.append((char) (byteLength & 0x7FFF));
@@ -278,10 +259,8 @@ public record ServerStatusPing(
 
         int buffer = 0; // we will need at most 8 + 14 = 22 bits of buffer, so an int is enough
         int bitsInBuf = 0;
-        while (buf.isReadable())
-        {
-            if (bitsInBuf >= 15)
-            {
+        while (buf.isReadable()) {
+            if (bitsInBuf >= 15) {
                 char c = (char) (buffer & 0x7FFF);
                 sb.append(c);
                 buffer >>>= 15;
@@ -293,8 +272,7 @@ public record ServerStatusPing(
         }
         buf.release();
 
-        if (bitsInBuf > 0)
-        {
+        if (bitsInBuf > 0) {
             char c = (char) (buffer & 0x7FFF);
             sb.append(c);
         }
@@ -304,8 +282,7 @@ public record ServerStatusPing(
     /**
      * Decode binary data encoded by {@link #encodeOptimized}
      */
-    private static ByteBuf decodeOptimized(String s)
-    {
+    private static ByteBuf decodeOptimized(String s) {
         var size0 = ((int) s.charAt(0));
         var size1 = ((int) s.charAt(1));
         var size = size0 | (size1 << 15);
@@ -315,10 +292,8 @@ public record ServerStatusPing(
         int stringIndex = 2;
         int buffer = 0; // we will need at most 8 + 14 = 22 bits of buffer, so an int is enough
         int bitsInBuf = 0;
-        while (stringIndex < s.length())
-        {
-            while (bitsInBuf >= 8)
-            {
+        while (stringIndex < s.length()) {
+            while (bitsInBuf >= 8) {
                 buf.writeByte(buffer);
                 buffer >>>= 8;
                 bitsInBuf -= 8;
@@ -331,8 +306,7 @@ public record ServerStatusPing(
         }
 
         // write any leftovers
-        while (buf.readableBytes() < size)
-        {
+        while (buf.readableBytes() < size) {
             buf.writeByte(buffer);
             buffer >>>= 8;
             bitsInBuf -= 8;
@@ -340,38 +314,38 @@ public record ServerStatusPing(
         return buf;
     }
 
-    public Map<ResourceLocation, ChannelData> getRemoteChannels()
-    {
+    public Map<ResourceLocation, ChannelData> getRemoteChannels() {
         return this.channels;
     }
 
-    public Map<String,String> getRemoteModData()
-    {
+    public Map<String, String> getRemoteModData() {
         return mods;
     }
 
-    public int getFMLNetworkVersion()
-    {
+    public int getFMLNetworkVersion() {
         return fmlNetworkVer;
     }
 
-    public boolean isTruncated()
-    {
+    public boolean isTruncated() {
         return truncated;
     }
 
     public record ModInfo(String modId, String modmarker) {
-        public static final Codec<ModInfo> CODEC = RecordCodecBuilder.create(in -> in.group(
-                Codec.STRING.fieldOf("modId").forGetter(ModInfo::modId),
-                Codec.STRING.fieldOf("modmarker").forGetter(ModInfo::modmarker)
-        ).apply(in, ModInfo::new));
+        public static final Codec<ModInfo> CODEC = RecordCodecBuilder.create(
+                in -> in
+                        .group(
+                                Codec.STRING.fieldOf("modId").forGetter(ModInfo::modId),
+                                Codec.STRING.fieldOf("modmarker").forGetter(ModInfo::modmarker))
+                        .apply(in, ModInfo::new));
     }
 
     public record ChannelData(ResourceLocation res, String version, boolean required) {
-        public static final Codec<ChannelData> CODEC = RecordCodecBuilder.create(in -> in.group(
-                ResourceLocation.CODEC.fieldOf("res").forGetter(ChannelData::res),
-                Codec.STRING.fieldOf("version").forGetter(ChannelData::version),
-                Codec.BOOL.fieldOf("required").forGetter(ChannelData::required)
-        ).apply(in, ChannelData::new));
+        public static final Codec<ChannelData> CODEC = RecordCodecBuilder.create(
+                in -> in
+                        .group(
+                                ResourceLocation.CODEC.fieldOf("res").forGetter(ChannelData::res),
+                                Codec.STRING.fieldOf("version").forGetter(ChannelData::version),
+                                Codec.BOOL.fieldOf("required").forGetter(ChannelData::required))
+                        .apply(in, ChannelData::new));
     }
 }

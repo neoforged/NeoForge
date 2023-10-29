@@ -5,14 +5,13 @@
 
 package net.neoforged.neoforge.debug.world.item;
 
+import java.util.stream.Stream;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.fml.common.Mod;
-
-import java.util.stream.Stream;
 
 /**
  * This class validates that {@link Ingredient#invalidate()} is called correctly.<br>
@@ -20,8 +19,7 @@ import java.util.stream.Stream;
  * the 2nd world join will trigger an exception.
  */
 @Mod(IngredientInvalidationTest.MOD_ID)
-public class IngredientInvalidationTest
-{
+public class IngredientInvalidationTest {
     public static final String MOD_ID = "ingredient_invalidation";
 
     private static final boolean ENABLED = true;
@@ -29,8 +27,7 @@ public class IngredientInvalidationTest
     private static boolean invalidateExpected = false;
     private static boolean gotInvalidate = false;
 
-    private static final Ingredient TEST_INGREDIENT = new Ingredient(Stream.of(new Ingredient.ItemValue(new ItemStack(Items.WHEAT))))
-    {
+    private static final Ingredient TEST_INGREDIENT = new Ingredient(Stream.of(new Ingredient.ItemValue(new ItemStack(Items.WHEAT)))) {
         // TODO: 
         /*@Override
         protected void invalidate()
@@ -40,16 +37,14 @@ public class IngredientInvalidationTest
         }*/
     };
 
-    public IngredientInvalidationTest()
-    {
+    public IngredientInvalidationTest() {
         if (!ENABLED)
             return;
 
         NeoForge.EVENT_BUS.addListener(IngredientInvalidationTest::worldLoad);
     }
 
-    private static void worldLoad(LevelEvent.Load event)
-    {
+    private static void worldLoad(LevelEvent.Load event) {
         /*if (event.getLevel() instanceof ServerLevel level && level.dimension().equals(Level.OVERWORLD))
         {
             TEST_INGREDIENT.getStackingIds(); // force invalidation if necessary

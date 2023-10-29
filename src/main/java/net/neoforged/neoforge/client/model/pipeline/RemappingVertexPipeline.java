@@ -9,20 +9,18 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import org.joml.Vector3d;
-import org.joml.Vector3f;
-
 import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 /**
  * Vertex pipeline element that remaps incoming data to another format.
  */
-public class RemappingVertexPipeline implements VertexConsumer
-{
+public class RemappingVertexPipeline implements VertexConsumer {
     private static final Set<VertexFormatElement> KNOWN_ELEMENTS = Set.of(DefaultVertexFormat.ELEMENT_POSITION,
             DefaultVertexFormat.ELEMENT_COLOR, DefaultVertexFormat.ELEMENT_UV, DefaultVertexFormat.ELEMENT_UV1,
             DefaultVertexFormat.ELEMENT_UV2, DefaultVertexFormat.ELEMENT_NORMAL, DefaultVertexFormat.ELEMENT_PADDING);
@@ -41,8 +39,7 @@ public class RemappingVertexPipeline implements VertexConsumer
     private final Map<VertexFormatElement, Integer> miscElementIds;
     private final int[][] misc;
 
-    public RemappingVertexPipeline(VertexConsumer parent, VertexFormat targetFormat)
-    {
+    public RemappingVertexPipeline(VertexConsumer parent, VertexFormat targetFormat) {
         this.parent = parent;
         this.targetFormat = targetFormat;
 
@@ -56,22 +53,19 @@ public class RemappingVertexPipeline implements VertexConsumer
     }
 
     @Override
-    public VertexConsumer vertex(double x, double y, double z)
-    {
+    public VertexConsumer vertex(double x, double y, double z) {
         position.set(x, y, z);
         return this;
     }
 
     @Override
-    public VertexConsumer normal(float x, float y, float z)
-    {
+    public VertexConsumer normal(float x, float y, float z) {
         normal.set(x, y, z);
         return this;
     }
 
     @Override
-    public VertexConsumer color(int r, int g, int b, int a)
-    {
+    public VertexConsumer color(int r, int g, int b, int a) {
         color[0] = r;
         color[1] = g;
         color[2] = b;
@@ -80,32 +74,28 @@ public class RemappingVertexPipeline implements VertexConsumer
     }
 
     @Override
-    public VertexConsumer uv(float u, float v)
-    {
+    public VertexConsumer uv(float u, float v) {
         uv0[0] = u;
         uv0[1] = v;
         return this;
     }
 
     @Override
-    public VertexConsumer overlayCoords(int u, int v)
-    {
+    public VertexConsumer overlayCoords(int u, int v) {
         uv1[0] = u;
         uv1[1] = v;
         return this;
     }
 
     @Override
-    public VertexConsumer uv2(int u, int v)
-    {
+    public VertexConsumer uv2(int u, int v) {
         uv2[0] = u;
         uv2[1] = v;
         return this;
     }
 
     @Override
-    public VertexConsumer misc(VertexFormatElement element, int... values)
-    {
+    public VertexConsumer misc(VertexFormatElement element, int... values) {
         Integer id = miscElementIds.get(element);
         if (id != null)
             misc[id] = Arrays.copyOf(values, values.length);
@@ -113,10 +103,8 @@ public class RemappingVertexPipeline implements VertexConsumer
     }
 
     @Override
-    public void endVertex()
-    {
-        for (var element : targetFormat.getElements())
-        {
+    public void endVertex() {
+        for (var element : targetFormat.getElements()) {
             // Ignore padding
             if (element.getUsage() == VertexFormatElement.Usage.PADDING)
                 continue;
@@ -141,14 +129,12 @@ public class RemappingVertexPipeline implements VertexConsumer
     }
 
     @Override
-    public void defaultColor(int r, int g, int b, int a)
-    {
+    public void defaultColor(int r, int g, int b, int a) {
         parent.defaultColor(r, g, b, a);
     }
 
     @Override
-    public void unsetDefaultColor()
-    {
+    public void unsetDefaultColor() {
         parent.unsetDefaultColor();
     }
 }

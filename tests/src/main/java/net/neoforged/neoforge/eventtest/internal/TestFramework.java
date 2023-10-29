@@ -5,13 +5,18 @@
 
 package net.neoforged.neoforge.eventtest.internal;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.LoadingModList;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,12 +28,6 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Type;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * The backend of the "curletest" event testing framework.
@@ -78,7 +77,7 @@ public class TestFramework {
      * Bootstrap events are ignored when updates occur.
      */
     public static void testChangedState(EventTest test) {
-        if(test.isBootstrap()) return;
+        if (test.isBootstrap()) return;
 
         LOGGER.info("Test " + testNames.get(test) + ": " + test.getTestResult());
     }
@@ -117,15 +116,15 @@ public class TestFramework {
     /**
      * At the mark of the end of the bootstrap period, collect and log all test results.
      * the ScreenOpenEvent fired by TitleScreen is the last event fired without user interaction, so it is the
-     *  end of the "automatic" bootstrap time.
+     * end of the "automatic" bootstrap time.
      */
     private void collectBootstrapTests(ScreenEvent.Opening event) {
-        if(!(event.getScreen() instanceof TitleScreen) || bootstrapHandled)
+        if (!(event.getScreen() instanceof TitleScreen) || bootstrapHandled)
             return;
 
         LOGGER.info("Preparing to run bootstrap tests:");
         tests.forEach(test -> {
-            if(test.isBootstrap()) {
+            if (test.isBootstrap()) {
                 LOGGER.info("  - " + testNames.get(test) + ": " + test.getTestResult());
             }
         });
@@ -142,10 +141,7 @@ public class TestFramework {
         LOGGER.info("Test summary processing..");
         tests.forEach(test -> {
             LOGGER.info("\tTest " + testNames.get(test) + ": ");
-            LOGGER.info(test.testResult == EventTest.Result.NOT_PROCESSED ?
-                    "\t\tMISSED - Not fired." :
-                    "\t\t" + test.getTestResult()
-            );
+            LOGGER.info(test.testResult == EventTest.Result.NOT_PROCESSED ? "\t\tMISSED - Not fired." : "\t\t" + test.getTestResult());
         });
         LOGGER.info("Event Test Framework finished.");
     }
@@ -165,11 +161,9 @@ public class TestFramework {
                 .withFilePattern("logs/%d{yyyy-MM-dd}-%i.log.gz")
                 .setLayout(PatternLayout.newBuilder()
                         .withPattern("[%d{ddMMMyyyy HH:mm:ss}] [%logger]: %minecraftFormatting{%msg}{strip}%n%xEx")
-                        .build()
-                )
+                        .build())
                 .withPolicy(
-                        OnStartupTriggeringPolicy.createPolicy(1)
-                )
+                        OnStartupTriggeringPolicy.createPolicy(1))
                 .build();
 
         appender.start();
@@ -179,19 +173,14 @@ public class TestFramework {
         loggerConfig.addAppender(
                 appender,
                 Level.INFO,
-                null
-        );
+                null);
     }
 
-    private static LoggerConfig getLoggerConfiguration(@NotNull final Configuration configuration, @NotNull final String loggerName)
-    {
+    private static LoggerConfig getLoggerConfiguration(@NotNull final Configuration configuration, @NotNull final String loggerName) {
         final LoggerConfig lc = configuration.getLoggerConfig(loggerName);
-        if (lc.getName().equals(loggerName))
-        {
+        if (lc.getName().equals(loggerName)) {
             return lc;
-        }
-        else
-        {
+        } else {
             final LoggerConfig nlc = new LoggerConfig(loggerName, lc.getLevel(), lc.isAdditive());
             nlc.setParent(lc);
             configuration.addLogger(loggerName, nlc);

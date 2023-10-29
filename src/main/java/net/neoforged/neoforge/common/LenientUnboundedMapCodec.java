@@ -15,15 +15,13 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.codecs.BaseMapCodec;
-
 import java.util.Map;
 import java.util.Objects;
 
 /**
  * Key and value decoded independently, unknown set of keys
  */
-public class LenientUnboundedMapCodec<K, V> implements BaseMapCodec<K, V>, Codec<Map<K, V>>
-{
+public class LenientUnboundedMapCodec<K, V> implements BaseMapCodec<K, V>, Codec<Map<K, V>> {
     private final Codec<K> keyCodec;
     private final Codec<V> elementCodec;
 
@@ -43,8 +41,7 @@ public class LenientUnboundedMapCodec<K, V> implements BaseMapCodec<K, V>, Codec
     }
 
     @Override // FORGE: Modified from decode() in BaseMapCodec
-    public <T> DataResult<Map<K, V>> decode(DynamicOps<T> ops, MapLike<T> input)
-    {
+    public <T> DataResult<Map<K, V>> decode(DynamicOps<T> ops, MapLike<T> input) {
         final ImmutableMap.Builder<K, V> read = ImmutableMap.builder();
         final ImmutableList.Builder<Pair<T, T>> failed = ImmutableList.builder();
 
@@ -59,8 +56,7 @@ public class LenientUnboundedMapCodec<K, V> implements BaseMapCodec<K, V>, Codec
                     entry.result().ifPresent(e -> read.put(e.getFirst(), e.getSecond())); // FORGE: This line moved outside the below apply2stable condition
                     return r.apply2stable((u, p) -> u, entry);
                 },
-                (r1, r2) -> r1.apply2stable((u1, u2) -> u1, r2)
-        );
+                (r1, r2) -> r1.apply2stable((u1, u2) -> u1, r2));
 
         final Map<K, V> elements = read.build();
         final T errors = ops.createMap(failed.build().stream());

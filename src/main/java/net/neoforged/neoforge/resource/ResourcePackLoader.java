@@ -5,6 +5,9 @@
 
 package net.neoforged.neoforge.resource;
 
+import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,13 +20,9 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import com.mojang.datafixers.util.Pair;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.server.packs.repository.RepositorySource;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.locating.IModFile;
@@ -33,50 +32,48 @@ public class ResourcePackLoader {
     private static Map<IModFile, PathPackResources> modResourcePacks;
 
     public static Optional<PathPackResources> getPackFor(String modId) {
-        return Optional.ofNullable(ModList.get().getModFileById(modId)).
-                map(IModFileInfo::getFile).map(mf->modResourcePacks.get(mf));
+        return Optional.ofNullable(ModList.get().getModFileById(modId)).map(IModFileInfo::getFile).map(mf -> modResourcePacks.get(mf));
     }
 
     @Deprecated
     public static void loadResourcePacks(PackRepository resourcePacks, BiFunction<Map<IModFile, ? extends PathPackResources>, BiConsumer<? super PathPackResources, Pack>, ? extends RepositorySource> packFinder) {
-        loadResourcePacks(resourcePacks, (map) -> packFinder.apply(map, (rp,p) -> {}));
+        loadResourcePacks(resourcePacks, (map) -> packFinder.apply(map, (rp, p) -> {}));
     }
 
     public static void loadResourcePacks(PackRepository resourcePacks, Function<Map<IModFile, ? extends PathPackResources>, ? extends RepositorySource> packFinder) {
         modResourcePacks = ModList.get().getModFiles().stream()
-                .filter(mf->mf.requiredLanguageLoaders().stream().noneMatch(ls->ls.languageName().equals("minecraft")))
+                .filter(mf -> mf.requiredLanguageLoaders().stream().noneMatch(ls -> ls.languageName().equals("minecraft")))
                 .map(mf -> Pair.of(mf, createPackForMod(mf)))
-                .collect(Collectors.toMap(p -> p.getFirst().getFile(), Pair::getSecond, (u,v) -> { throw new IllegalStateException(String.format(Locale.ENGLISH, "Duplicate key %s", u)); },  LinkedHashMap::new));
+                .collect(Collectors.toMap(p -> p.getFirst().getFile(), Pair::getSecond, (u, v) -> {
+                    throw new IllegalStateException(String.format(Locale.ENGLISH, "Duplicate key %s", u));
+                }, LinkedHashMap::new));
         resourcePacks.addPackFinder(packFinder.apply(modResourcePacks));
     }
 
     @NotNull
-    public static PathPackResources createPackForMod(IModFileInfo mf)
-    {
-        return new PathPackResources(mf.getFile().getFileName(), true, mf.getFile().getFilePath())
-        {
+    public static PathPackResources createPackForMod(IModFileInfo mf) {
+        return new PathPackResources(mf.getFile().getFileName(), true, mf.getFile().getFilePath()) {
             private final IModFile modFile = mf.getFile();
 
             @NotNull
             @Override
-            protected Path resolve(@NotNull String... paths)
-            {
+            protected Path resolve(@NotNull String... paths) {
                 return this.modFile.findResource(paths);
             }
         };
     }
 
     public static List<String> getPackNames() {
-        return ModList.get().applyForEachModFile(mf->"mod:"+mf.getModInfos().get(0).getModId()).filter(n->!n.equals("mod:minecraft")).collect(Collectors.toList());
+        return ModList.get().applyForEachModFile(mf -> "mod:" + mf.getModInfos().get(0).getModId()).filter(n -> !n.equals("mod:minecraft")).collect(Collectors.toList());
     }
 
-    public static <V> Comparator<Map.Entry<String,V>> getSorter() {
+    public static <V> Comparator<Map.Entry<String, V>> getSorter() {
         List<String> order = new ArrayList<>();
         order.add("vanilla");
         order.add("mod_resources");
 
         ModList.get().getModFiles().stream()
-                .filter(mf -> mf.requiredLanguageLoaders().stream().noneMatch(ls->ls.languageName().equals("minecraft")))
+                .filter(mf -> mf.requiredLanguageLoaders().stream().noneMatch(ls -> ls.languageName().equals("minecraft")))
                 .map(e -> e.getMods().get(0).getModId())
                 .map(e -> "mod:" + e)
                 .forEach(order::add);

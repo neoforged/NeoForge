@@ -6,12 +6,12 @@
 package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.NeoForge;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.EntityEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -21,19 +21,16 @@ import org.jetbrains.annotations.Nullable;
  * <br>
  * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
-public abstract class LivingEvent extends EntityEvent
-{
+public abstract class LivingEvent extends EntityEvent {
     private final LivingEntity livingEntity;
 
-    public LivingEvent(LivingEntity entity)
-    {
+    public LivingEvent(LivingEntity entity) {
         super(entity);
         livingEntity = entity;
     }
 
     @Override
-    public LivingEntity getEntity()
-    {
+    public LivingEntity getEntity() {
         return livingEntity;
     }
 
@@ -49,9 +46,10 @@ public abstract class LivingEvent extends EntityEvent
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.
      **/
-    public static class LivingTickEvent extends LivingEvent implements ICancellableEvent
-    {
-        public LivingTickEvent(LivingEntity e){ super(e); }
+    public static class LivingTickEvent extends LivingEvent implements ICancellableEvent {
+        public LivingTickEvent(LivingEntity e) {
+            super(e);
+        }
     }
 
     /**
@@ -68,19 +66,18 @@ public abstract class LivingEvent extends EntityEvent
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.
      **/
-    public static class LivingJumpEvent extends LivingEvent
-    {
-        public LivingJumpEvent(LivingEntity e){ super(e); }
+    public static class LivingJumpEvent extends LivingEvent {
+        public LivingJumpEvent(LivingEntity e) {
+            super(e);
+        }
     }
 
-    public static class LivingVisibilityEvent extends LivingEvent
-    {
+    public static class LivingVisibilityEvent extends LivingEvent {
         private double visibilityModifier;
         @Nullable
         private final Entity lookingEntity;
 
-        public LivingVisibilityEvent(LivingEntity livingEntity, @Nullable Entity lookingEntity, double originalMultiplier)
-        {
+        public LivingVisibilityEvent(LivingEntity livingEntity, @Nullable Entity lookingEntity, double originalMultiplier) {
             super(livingEntity);
             this.visibilityModifier = originalMultiplier;
             this.lookingEntity = lookingEntity;
@@ -89,16 +86,14 @@ public abstract class LivingEvent extends EntityEvent
         /**
          * @param mod Is multiplied with the current modifier
          */
-        public void modifyVisibility(double mod)
-        {
+        public void modifyVisibility(double mod) {
             visibilityModifier *= mod;
         }
 
         /**
          * @return The current modifier
          */
-        public double getVisibilityModifier()
-        {
+        public double getVisibilityModifier() {
             return visibilityModifier;
         }
 
@@ -106,8 +101,7 @@ public abstract class LivingEvent extends EntityEvent
          * @return The entity trying to see this LivingEntity, if available
          */
         @Nullable
-        public Entity getLookingEntity()
-        {
+        public Entity getLookingEntity() {
             return lookingEntity;
         }
     }

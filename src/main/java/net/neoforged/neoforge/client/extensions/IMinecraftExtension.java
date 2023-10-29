@@ -5,19 +5,16 @@
 
 package net.neoforged.neoforge.client.extensions;
 
+import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.neoforged.neoforge.client.ClientHooks;
 
-import java.util.Locale;
-
 /**
  * Extension interface for {@link Minecraft}.
  */
-public interface IMinecraftExtension
-{
-    private Minecraft self()
-    {
+public interface IMinecraftExtension {
+    private Minecraft self() {
         return (Minecraft) this;
     }
 
@@ -26,16 +23,14 @@ public interface IMinecraftExtension
      *
      * @param screen the new GUI layer
      */
-    default void pushGuiLayer(Screen screen)
-    {
+    default void pushGuiLayer(Screen screen) {
         ClientHooks.pushGuiLayer(self(), screen);
     }
 
     /**
      * Pops a GUI layer from the screen.
      */
-    default void popGuiLayer()
-    {
+    default void popGuiLayer() {
         ClientHooks.popGuiLayer(self());
     }
 
@@ -43,8 +38,7 @@ public interface IMinecraftExtension
      * Retrieves the {@link Locale} set by the player.
      * Useful for creating string and number formatters.
      */
-    default Locale getLocale()
-    {
+    default Locale getLocale() {
         return self().getLanguageManager().getJavaLocale();
     }
 }

@@ -9,8 +9,8 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -22,24 +22,20 @@ import org.jetbrains.annotations.ApiStatus;
  * <br>
  * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
-public abstract class ChunkEvent extends LevelEvent
-{
+public abstract class ChunkEvent extends LevelEvent {
     private final ChunkAccess chunk;
 
-    public ChunkEvent(ChunkAccess chunk)
-    {
+    public ChunkEvent(ChunkAccess chunk) {
         super(chunk.getWorldForge());
         this.chunk = chunk;
     }
 
-    public ChunkEvent(ChunkAccess chunk, LevelAccessor level)
-    {
+    public ChunkEvent(ChunkAccess chunk, LevelAccessor level) {
         super(level);
         this.chunk = chunk;
     }
 
-    public ChunkAccess getChunk()
-    {
+    public ChunkAccess getChunk() {
         return chunk;
     }
 
@@ -56,13 +52,11 @@ public abstract class ChunkEvent extends LevelEvent
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
-    public static class Load extends ChunkEvent
-    {
+    public static class Load extends ChunkEvent {
         private final boolean newChunk;
 
         @ApiStatus.Internal
-        public Load(ChunkAccess chunk, boolean newChunk)
-        {
+        public Load(ChunkAccess chunk, boolean newChunk) {
             super(chunk);
             this.newChunk = newChunk;
         }
@@ -74,8 +68,7 @@ public abstract class ChunkEvent extends LevelEvent
          *
          * @return whether the Chunk is newly generated
          */
-        public boolean isNewChunk()
-        {
+        public boolean isNewChunk() {
             return newChunk;
         }
     }
@@ -91,10 +84,8 @@ public abstract class ChunkEvent extends LevelEvent
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
-    public static class Unload extends ChunkEvent
-    {
-        public Unload(ChunkAccess chunk)
-        {
+    public static class Unload extends ChunkEvent {
+        public Unload(ChunkAccess chunk) {
             super(chunk);
         }
     }

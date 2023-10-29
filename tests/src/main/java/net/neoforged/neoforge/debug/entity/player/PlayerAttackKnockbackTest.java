@@ -7,20 +7,19 @@ package net.neoforged.neoforge.debug.entity.player;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import java.util.UUID;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
-
-import java.util.UUID;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 /**
  * Tests if the patch to PlayerEntity to make it utilize Attributes.ATTACK_KNOCKBACK works
@@ -37,19 +36,15 @@ public class PlayerAttackKnockbackTest {
 
     static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 
-    static RegistryObject<Item> KNOCKBACK_SWORD = ITEMS.register("knockback_sword", () ->
-            new KnockbackSwordItem(Tiers.IRON, 3, -2.4F, ATTACK_KNOCKBACK_VALUE, (new Item.Properties()))
-    );
+    static RegistryObject<Item> KNOCKBACK_SWORD = ITEMS.register("knockback_sword", () -> new KnockbackSwordItem(Tiers.IRON, 3, -2.4F, ATTACK_KNOCKBACK_VALUE, (new Item.Properties())));
 
-    public PlayerAttackKnockbackTest()
-    {
+    public PlayerAttackKnockbackTest() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ITEMS.register(modEventBus);
         modEventBus.addListener(this::addCreative);
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.COMBAT)
             event.accept(KNOCKBACK_SWORD);
     }
@@ -66,15 +61,14 @@ public class PlayerAttackKnockbackTest {
 
         @Override
         public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlotType) {
-            if(equipmentSlotType == EquipmentSlot.MAINHAND){
-                if(this.defaultModifiers.isEmpty()){
+            if (equipmentSlotType == EquipmentSlot.MAINHAND) {
+                if (this.defaultModifiers.isEmpty()) {
                     Multimap<Attribute, AttributeModifier> oldAttributeModifiers = super.getDefaultAttributeModifiers(equipmentSlotType);
                     this.defaultModifiers.putAll(oldAttributeModifiers);
-                    this.defaultModifiers.put(Attributes.ATTACK_KNOCKBACK, new AttributeModifier(BASE_ATTACK_KNOCKBACK_UUID, "Weapon modifier", (double)this.attackKnockback, AttributeModifier.Operation.ADDITION));
+                    this.defaultModifiers.put(Attributes.ATTACK_KNOCKBACK, new AttributeModifier(BASE_ATTACK_KNOCKBACK_UUID, "Weapon modifier", (double) this.attackKnockback, AttributeModifier.Operation.ADDITION));
                 }
                 return this.defaultModifiers;
-            }
-            else return super.getDefaultAttributeModifiers(equipmentSlotType);
+            } else return super.getDefaultAttributeModifiers(equipmentSlotType);
         }
     }
 }

@@ -5,15 +5,13 @@
 
 package net.neoforged.neoforge.client.model.generators;
 
+import com.google.common.base.Preconditions;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.base.Preconditions;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
@@ -74,7 +72,9 @@ public class ItemModelBuilder extends ModelBuilder<ItemModelBuilder> {
             return this;
         }
 
-        public ItemModelBuilder end() { return ItemModelBuilder.this; }
+        public ItemModelBuilder end() {
+            return ItemModelBuilder.this;
+        }
 
         JsonObject toJson() {
             JsonObject ret = new JsonObject();

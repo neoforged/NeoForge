@@ -8,51 +8,45 @@ package net.neoforged.neoforge.energy;
 /**
  * Implementation of {@link IEnergyStorage} that cannot store, receive, or provide energy.
  * Use the {@link #INSTANCE}, don't instantiate. Example:
+ * 
  * <pre>{@code
  * ItemStack stack = ...;
  * IEnergyStorage storage = stack.getCapability(ForgeCapabilities.ENERGY).orElse(EmptyEnergyStorage.INSTANCE);
  * // Use storage without checking whether it's present.
  * }</pre>
  */
-public class EmptyEnergyStorage implements IEnergyStorage
-{
+public class EmptyEnergyStorage implements IEnergyStorage {
     public static final EmptyEnergyStorage INSTANCE = new EmptyEnergyStorage();
 
     protected EmptyEnergyStorage() {}
 
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate)
-    {
+    public int receiveEnergy(int maxReceive, boolean simulate) {
         return 0;
     }
 
     @Override
-    public int extractEnergy(int maxExtract, boolean simulate)
-    {
+    public int extractEnergy(int maxExtract, boolean simulate) {
         return 0;
     }
 
     @Override
-    public int getEnergyStored()
-    {
+    public int getEnergyStored() {
         return 0;
     }
 
     @Override
-    public int getMaxEnergyStored()
-    {
+    public int getMaxEnergyStored() {
         return 0;
     }
 
     @Override
-    public boolean canExtract()
-    {
+    public boolean canExtract() {
         return false;
     }
 
     @Override
-    public boolean canReceive()
-    {
+    public boolean canReceive() {
         return false;
     }
 }

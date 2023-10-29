@@ -5,6 +5,9 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
+import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
@@ -19,21 +22,14 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 
-import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-
-public final class NeoForgeItemTagsProvider extends ItemTagsProvider
-{
-    public NeoForgeItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagProvider, ExistingFileHelper existingFileHelper)
-    {
+public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
+    public NeoForgeItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagProvider, ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, blockTagProvider, "neoforge", existingFileHelper);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void addTags(HolderLookup.Provider lookupProvider)
-    {
+    public void addTags(HolderLookup.Provider lookupProvider) {
         copy(Tags.Blocks.BARRELS, Tags.Items.BARRELS);
         copy(Tags.Blocks.BARRELS_WOODEN, Tags.Items.BARRELS_WOODEN);
         tag(Tags.Items.BONES).add(Items.BONE);
@@ -162,8 +158,8 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.TOOLS_FISHING_RODS).add(Items.FISHING_ROD);
         tag(Tags.Items.TOOLS_TRIDENTS).add(Items.TRIDENT);
         tag(Tags.Items.TOOLS)
-            .addTags(ItemTags.SWORDS, ItemTags.AXES, ItemTags.PICKAXES, ItemTags.SHOVELS, ItemTags.HOES)
-            .addTags(Tags.Items.TOOLS_SHIELDS, Tags.Items.TOOLS_BOWS, Tags.Items.TOOLS_CROSSBOWS, Tags.Items.TOOLS_FISHING_RODS, Tags.Items.TOOLS_TRIDENTS);
+                .addTags(ItemTags.SWORDS, ItemTags.AXES, ItemTags.PICKAXES, ItemTags.SHOVELS, ItemTags.HOES)
+                .addTags(Tags.Items.TOOLS_SHIELDS, Tags.Items.TOOLS_BOWS, Tags.Items.TOOLS_CROSSBOWS, Tags.Items.TOOLS_FISHING_RODS, Tags.Items.TOOLS_TRIDENTS);
         tag(Tags.Items.ARMORS_HELMETS).add(Items.LEATHER_HELMET, Items.TURTLE_HELMET, Items.CHAINMAIL_HELMET, Items.IRON_HELMET, Items.GOLDEN_HELMET, Items.DIAMOND_HELMET, Items.NETHERITE_HELMET);
         tag(Tags.Items.ARMORS_CHESTPLATES).add(Items.LEATHER_CHESTPLATE, Items.CHAINMAIL_CHESTPLATE, Items.IRON_CHESTPLATE, Items.GOLDEN_CHESTPLATE, Items.DIAMOND_CHESTPLATE, Items.NETHERITE_CHESTPLATE);
         tag(Tags.Items.ARMORS_LEGGINGS).add(Items.LEATHER_LEGGINGS, Items.CHAINMAIL_LEGGINGS, Items.IRON_LEGGINGS, Items.GOLDEN_LEGGINGS, Items.DIAMOND_LEGGINGS, Items.NETHERITE_LEGGINGS);
@@ -171,27 +167,23 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.ARMORS).addTags(Tags.Items.ARMORS_HELMETS, Tags.Items.ARMORS_CHESTPLATES, Tags.Items.ARMORS_LEGGINGS, Tags.Items.ARMORS_BOOTS);
     }
 
-    private void addColored(Consumer<TagKey<Item>> consumer, TagKey<Item> group, String pattern)
-    {
+    private void addColored(Consumer<TagKey<Item>> consumer, TagKey<Item> group, String pattern) {
         String prefix = group.location().getPath().toUpperCase(Locale.ENGLISH) + '_';
-        for (DyeColor color  : DyeColor.values())
-        {
-            ResourceLocation key = new ResourceLocation("minecraft", pattern.replace("{color}",  color.getName()));
+        for (DyeColor color : DyeColor.values()) {
+            ResourceLocation key = new ResourceLocation("minecraft", pattern.replace("{color}", color.getName()));
             TagKey<Item> tag = getForgeItemTag(prefix + color.getName());
             Item item = ForgeRegistries.ITEMS.getValue(key);
-            if (item == null || item  == Items.AIR)
+            if (item == null || item == Items.AIR)
                 throw new IllegalStateException("Unknown vanilla item: " + key.toString());
             tag(tag).add(item);
             consumer.accept(tag);
         }
     }
 
-    private void copyColored(TagKey<Block> blockGroup, TagKey<Item> itemGroup)
-    {
+    private void copyColored(TagKey<Block> blockGroup, TagKey<Item> itemGroup) {
         String blockPre = blockGroup.location().getPath().toUpperCase(Locale.ENGLISH) + '_';
         String itemPre = itemGroup.location().getPath().toUpperCase(Locale.ENGLISH) + '_';
-        for (DyeColor color  : DyeColor.values())
-        {
+        for (DyeColor color : DyeColor.values()) {
             TagKey<Block> from = getForgeBlockTag(blockPre + color.getName());
             TagKey<Item> to = getForgeItemTag(itemPre + color.getName());
             copy(from, to);
@@ -200,29 +192,21 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider
     }
 
     @SuppressWarnings("unchecked")
-    private TagKey<Block> getForgeBlockTag(String name)
-    {
-        try
-        {
+    private TagKey<Block> getForgeBlockTag(String name) {
+        try {
             name = name.toUpperCase(Locale.ENGLISH);
-            return (TagKey<Block>)Tags.Blocks.class.getDeclaredField(name).get(null);
-        }
-        catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e)
-        {
+            return (TagKey<Block>) Tags.Blocks.class.getDeclaredField(name).get(null);
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
             throw new IllegalStateException(Tags.Blocks.class.getName() + " is missing tag name: " + name);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private TagKey<Item> getForgeItemTag(String name)
-    {
-        try
-        {
+    private TagKey<Item> getForgeItemTag(String name) {
+        try {
             name = name.toUpperCase(Locale.ENGLISH);
-            return (TagKey<Item>)Tags.Items.class.getDeclaredField(name).get(null);
-        }
-        catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e)
-        {
+            return (TagKey<Item>) Tags.Items.class.getDeclaredField(name).get(null);
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
             throw new IllegalStateException(Tags.Items.class.getName() + " is missing tag name: " + name);
         }
     }

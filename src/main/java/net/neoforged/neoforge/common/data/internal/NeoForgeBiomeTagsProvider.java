@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.BiomeTagsProvider;
@@ -16,19 +17,14 @@ import net.minecraft.world.level.biome.Biomes;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
-import java.util.concurrent.CompletableFuture;
+public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
 
-public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider
-{
-
-    public NeoForgeBiomeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper)
-    {
+    public NeoForgeBiomeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, "neoforge", existingFileHelper);
     }
 
     @Override
-    protected void addTags(HolderLookup.Provider lookupProvider)
-    {
+    protected void addTags(HolderLookup.Provider lookupProvider) {
         tag(Biomes.PLAINS, Tags.Biomes.IS_PLAINS);
         tag(Biomes.DESERT, Tags.Biomes.IS_HOT_OVERWORLD, Tags.Biomes.IS_DRY_OVERWORLD, Tags.Biomes.IS_SANDY, Tags.Biomes.IS_DESERT);
         tag(Biomes.TAIGA, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_CONIFEROUS);
@@ -97,10 +93,8 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider
     }
 
     @SafeVarargs
-    private void tag(ResourceKey<Biome> biome, TagKey<Biome>... tags)
-    {
-        for(TagKey<Biome> key : tags)
-        {
+    private void tag(ResourceKey<Biome> biome, TagKey<Biome>... tags) {
+        for (TagKey<Biome> key : tags) {
             tag(key).add(biome);
         }
     }

@@ -29,15 +29,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.tags.TagKey;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.event.TagsUpdatedEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.util.thread.EffectiveSide;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.RegistryObject;
 import org.slf4j.Logger;
@@ -55,8 +55,7 @@ import org.slf4j.Logger;
  * </ul>
  */
 @Mod(DataPackRegistriesTest.MODID)
-public class DataPackRegistriesTest
-{
+public class DataPackRegistriesTest {
     private static final boolean ENABLED = false;
     public static final String MODID = "data_pack_registries_test";
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -65,8 +64,7 @@ public class DataPackRegistriesTest
     //TODO: Fix datapack generation for it.
     private final RegistryObject<Unsyncable> datagenTestObject = null;
 
-    public DataPackRegistriesTest()
-    {
+    public DataPackRegistriesTest() {
         if (!ENABLED)
             return;
 
@@ -81,14 +79,12 @@ public class DataPackRegistriesTest
         modBus.addListener(this::onGatherData);
         forgeBus.addListener(this::onServerStarting);
 
-        if (FMLEnvironment.dist == Dist.CLIENT)
-        {
+        if (FMLEnvironment.dist == Dist.CLIENT) {
             ClientEvents.subscribeClientEvents();
         }
     }
 
-    private void onGatherData(final GatherDataEvent event)
-    {
+    private void onGatherData(final GatherDataEvent event) {
         // Example of how to datagen datapack registry objects.
         // Objects to be datagenerated must be registered (e.g. via DeferredRegister above).
         // This outputs to data/data_pack_registries_test/data_pack_registries_test/unsyncable/datagen_test.json
@@ -99,21 +95,19 @@ public class DataPackRegistriesTest
         final ResourceLocation registryId = Unsyncable.REGISTRY_KEY.location();
         final ResourceLocation id = this.datagenTestObject.getId();
         final Unsyncable element = new Unsyncable("Datagen Success");
-        final String pathString = String.join("/", PackType.SERVER_DATA.getDirectory(), id.getNamespace(), registryId.getNamespace(), registryId.getPath(), id.getPath()+".json");
+        final String pathString = String.join("/", PackType.SERVER_DATA.getDirectory(), id.getNamespace(), registryId.getNamespace(), registryId.getPath(), id.getPath() + ".json");
         final Path path = outputFolder.resolve(pathString);
 
-        generator.addProvider(event.includeServer(), new DataProvider()
-        {
+        generator.addProvider(event.includeServer(), new DataProvider() {
             @Override
-            public CompletableFuture<?> run(final CachedOutput cache)
-            {
+            public CompletableFuture<?> run(final CachedOutput cache) {
                 return providerCompletableFuture.thenCompose(provider -> {
                     final RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, provider);
 
                     Unsyncable.DIRECT_CODEC.encodeStart(ops, element)
                             .resultOrPartial(msg -> LOGGER.error("Failed to encode {}: {}", path, msg)) // Log error on encode failure.
                             .ifPresent(json -> // Output to file on encode success.
-                            {
+                    {
                                 DataProvider.saveStable(cache, json, path);
                             });
 
@@ -122,15 +116,13 @@ public class DataPackRegistriesTest
             }
 
             @Override
-            public String getName()
-            {
+            public String getName() {
                 return String.format("%s provider for %s", registryId, MODID);
             }
         });
     }
 
-    private void onServerStarting(final ServerStartingEvent event)
-    {
+    private void onServerStarting(final ServerStartingEvent event) {
         // Assert existence of json objects and tags.
         final RegistryAccess registries = event.getServer().registryAccess();
         final Registry<Unsyncable> registry = registries.registryOrThrow(Unsyncable.REGISTRY_KEY);
@@ -146,15 +138,12 @@ public class DataPackRegistriesTest
         LOGGER.info("DataPackRegistriesTest server data loaded successfully!");
     }
 
-    public static class ClientEvents
-    {
-        private static void subscribeClientEvents()
-        {
+    public static class ClientEvents {
+        private static void subscribeClientEvents() {
             NeoForge.EVENT_BUS.addListener(ClientEvents::onClientTagsUpdated);
         }
 
-        private static void onClientTagsUpdated(final TagsUpdatedEvent event)
-        {
+        private static void onClientTagsUpdated(final TagsUpdatedEvent event) {
             // We want to check whether tags have been synced after the player logs in.
             // Tags are synced late in the login process and many relevant events fire before tags are synced.
             // TagsUpdatedEvent has the correct timing, but fires on both server and render thread,
@@ -181,38 +170,32 @@ public class DataPackRegistriesTest
         }
     }
 
-    public static class Unsyncable
-    {
+    public static class Unsyncable {
         public static final ResourceKey<Registry<Unsyncable>> REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(MODID, "unsyncable"));
         public static final Codec<Unsyncable> DIRECT_CODEC = Codec.STRING.fieldOf("value").codec().xmap(Unsyncable::new, Unsyncable::value);
 
         private final String value;
 
-        public Unsyncable(final String stringValue)
-        {
+        public Unsyncable(final String stringValue) {
             this.value = stringValue;
         }
 
-        public String value()
-        {
+        public String value() {
             return this.value;
         }
     }
 
-    public static class Syncable
-    {
+    public static class Syncable {
         public static final ResourceKey<Registry<Syncable>> REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(MODID, "syncable"));
         public static final Codec<Syncable> DIRECT_CODEC = Codec.STRING.fieldOf("value").codec().xmap(Syncable::new, Syncable::value);
 
         private final String value;
 
-        public Syncable(final String value)
-        {
+        public Syncable(final String value) {
             this.value = value;
         }
 
-        public String value()
-        {
+        public String value() {
             return this.value;
         }
     }

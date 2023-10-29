@@ -27,7 +27,7 @@ public record SimplePayload(FriendlyByteBuf payload, ResourceLocation id, int pa
         final byte[] payload = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(payload);
         final FriendlyByteBuf innerBuf = new FriendlyByteBuf(Unpooled.copiedBuffer(payload));
-        
+
         return new SimplePayload(innerBuf, id, innerBuf.readVarInt());
     }
 

@@ -5,16 +5,14 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
-import net.neoforged.bus.api.Event.HasResult;
 import net.minecraft.world.entity.Mob;
+import net.neoforged.bus.api.Event.HasResult;
 
 @HasResult
-public class LivingPackSizeEvent extends LivingEvent
-{
+public class LivingPackSizeEvent extends LivingEvent {
     private int maxPackSize;
-    
-    public LivingPackSizeEvent(Mob entity)
-    {
+
+    public LivingPackSizeEvent(Mob entity) {
         super(entity);
     }
 
@@ -26,13 +24,11 @@ public class LivingPackSizeEvent extends LivingEvent
      * If you set the result to 'ALLOW', it means that you want to return
      * the value of maxPackSize as the maximum pack size for current entity.
      */
-    public int getMaxPackSize()
-    {
+    public int getMaxPackSize() {
         return maxPackSize;
     }
 
-    public void setMaxPackSize(int maxPackSize)
-    {
+    public void setMaxPackSize(int maxPackSize) {
         this.maxPackSize = maxPackSize;
     }
 }

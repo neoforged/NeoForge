@@ -42,39 +42,33 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A model composed of multiple sub-models which are picked based on the {@link ItemDisplayContext} being used.
  */
-public class SeparateTransformsModel implements IUnbakedGeometry<SeparateTransformsModel>
-{
+public class SeparateTransformsModel implements IUnbakedGeometry<SeparateTransformsModel> {
     private final BlockModel baseModel;
     private final ImmutableMap<ItemDisplayContext, BlockModel> perspectives;
 
-    public SeparateTransformsModel(BlockModel baseModel, ImmutableMap<ItemDisplayContext, BlockModel> perspectives)
-    {
+    public SeparateTransformsModel(BlockModel baseModel, ImmutableMap<ItemDisplayContext, BlockModel> perspectives) {
         this.baseModel = baseModel;
         this.perspectives = perspectives;
     }
 
     @Override
-    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation)
-    {
+    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
         return new Baked(
                 context.useAmbientOcclusion(), context.isGui3d(), context.useBlockLight(),
                 spriteGetter.apply(context.getMaterial("particle")), overrides,
                 baseModel.bake(baker, baseModel, spriteGetter, modelState, modelLocation, context.useBlockLight()),
                 ImmutableMap.copyOf(Maps.transformValues(perspectives, value -> {
                     return value.bake(baker, value, spriteGetter, modelState, modelLocation, context.useBlockLight());
-                }))
-        );
+                })));
     }
 
     @Override
-    public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context)
-    {
+    public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
         baseModel.resolveParents(modelGetter);
         perspectives.values().forEach(model -> model.resolveParents(modelGetter));
     }
 
-    public static class Baked implements IDynamicBakedModel
-    {
+    public static class Baked implements IDynamicBakedModel {
         private final boolean isAmbientOcclusion;
         private final boolean isGui3d;
         private final boolean isSideLit;
@@ -83,8 +77,7 @@ public class SeparateTransformsModel implements IUnbakedGeometry<SeparateTransfo
         private final BakedModel baseModel;
         private final ImmutableMap<ItemDisplayContext, BakedModel> perspectives;
 
-        public Baked(boolean isAmbientOcclusion, boolean isGui3d, boolean isSideLit, TextureAtlasSprite particle, ItemOverrides overrides, BakedModel baseModel, ImmutableMap<ItemDisplayContext, BakedModel> perspectives)
-        {
+        public Baked(boolean isAmbientOcclusion, boolean isGui3d, boolean isSideLit, TextureAtlasSprite particle, ItemOverrides overrides, BakedModel baseModel, ImmutableMap<ItemDisplayContext, BakedModel> perspectives) {
             this.isAmbientOcclusion = isAmbientOcclusion;
             this.isGui3d = isGui3d;
             this.isSideLit = isSideLit;
@@ -96,58 +89,48 @@ public class SeparateTransformsModel implements IUnbakedGeometry<SeparateTransfo
 
         @NotNull
         @Override
-        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData data, @Nullable RenderType renderType)
-        {
+        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData data, @Nullable RenderType renderType) {
             return baseModel.getQuads(state, side, rand, data, renderType);
         }
 
         @Override
-        public boolean useAmbientOcclusion()
-        {
+        public boolean useAmbientOcclusion() {
             return isAmbientOcclusion;
         }
 
         @Override
-        public boolean isGui3d()
-        {
+        public boolean isGui3d() {
             return isGui3d;
         }
 
         @Override
-        public boolean usesBlockLight()
-        {
+        public boolean usesBlockLight() {
             return isSideLit;
         }
 
         @Override
-        public boolean isCustomRenderer()
-        {
+        public boolean isCustomRenderer() {
             return false;
         }
 
         @Override
-        public TextureAtlasSprite getParticleIcon()
-        {
+        public TextureAtlasSprite getParticleIcon() {
             return particle;
         }
 
         @Override
-        public ItemOverrides getOverrides()
-        {
+        public ItemOverrides getOverrides() {
             return overrides;
         }
 
         @Override
-        public ItemTransforms getTransforms()
-        {
+        public ItemTransforms getTransforms() {
             return ItemTransforms.NO_TRANSFORMS;
         }
 
         @Override
-        public BakedModel applyTransform(ItemDisplayContext cameraTransformType, PoseStack poseStack, boolean applyLeftHandTransform)
-        {
-            if (perspectives.containsKey(cameraTransformType))
-            {
+        public BakedModel applyTransform(ItemDisplayContext cameraTransformType, PoseStack poseStack, boolean applyLeftHandTransform) {
+            if (perspectives.containsKey(cameraTransformType)) {
                 BakedModel p = perspectives.get(cameraTransformType);
                 return p.applyTransform(cameraTransformType, poseStack, applyLeftHandTransform);
             }
@@ -155,32 +138,25 @@ public class SeparateTransformsModel implements IUnbakedGeometry<SeparateTransfo
         }
 
         @Override
-        public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data)
-        {
+        public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
             return baseModel.getRenderTypes(state, rand, data);
         }
     }
 
-    public static final class Loader implements IGeometryLoader<SeparateTransformsModel>
-    {
+    public static final class Loader implements IGeometryLoader<SeparateTransformsModel> {
         public static final Loader INSTANCE = new Loader();
 
-        private Loader()
-        {
-        }
+        private Loader() {}
 
         @Override
-        public SeparateTransformsModel read(JsonObject jsonObject, JsonDeserializationContext deserializationContext)
-        {
+        public SeparateTransformsModel read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) {
             BlockModel baseModel = deserializationContext.deserialize(GsonHelper.getAsJsonObject(jsonObject, "base"), BlockModel.class);
 
             JsonObject perspectiveData = GsonHelper.getAsJsonObject(jsonObject, "perspectives");
 
             Map<ItemDisplayContext, BlockModel> perspectives = new HashMap<>();
-            for (ItemDisplayContext transform : ItemDisplayContext.values())
-            {
-                if (perspectiveData.has(transform.getSerializedName()))
-                {
+            for (ItemDisplayContext transform : ItemDisplayContext.values()) {
+                if (perspectiveData.has(transform.getSerializedName())) {
                     BlockModel perspectiveModel = deserializationContext.deserialize(GsonHelper.getAsJsonObject(perspectiveData, transform.getSerializedName()), BlockModel.class);
                     perspectives.put(transform, perspectiveModel);
                 }

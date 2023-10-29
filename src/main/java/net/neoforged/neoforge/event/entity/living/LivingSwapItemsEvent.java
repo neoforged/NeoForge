@@ -11,12 +11,10 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.ApiStatus;
 
-public abstract class LivingSwapItemsEvent extends LivingEvent
-{
+public abstract class LivingSwapItemsEvent extends LivingEvent {
 
     @ApiStatus.Internal
-    public LivingSwapItemsEvent(LivingEntity entity)
-    {
+    public LivingSwapItemsEvent(LivingEntity entity) {
         super(entity);
     }
 
@@ -26,14 +24,12 @@ public abstract class LivingSwapItemsEvent extends LivingEvent
      *
      * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
      */
-    public static class Hands extends LivingSwapItemsEvent implements ICancellableEvent
-    {
+    public static class Hands extends LivingSwapItemsEvent implements ICancellableEvent {
         private ItemStack toMainHand;
         private ItemStack toOffHand;
 
         @ApiStatus.Internal
-        public Hands(LivingEntity entity)
-        {
+        public Hands(LivingEntity entity) {
             super(entity);
             this.toMainHand = entity.getOffhandItem(); //the main hand will be swapped with the offhand
             this.toOffHand = entity.getMainHandItem(); //the offhand will be swapped with the main hand
@@ -41,37 +37,37 @@ public abstract class LivingSwapItemsEvent extends LivingEvent
 
         /**
          * Gets the item that will be swapped to the main hand of the entity.
+         * 
          * @return The item that will be swapped to the main hand.
          */
-        public ItemStack getItemSwappedToMainHand()
-        {
+        public ItemStack getItemSwappedToMainHand() {
             return toMainHand;
         }
 
         /**
          * Gets the item that will be swapped to the offhand of the entity.
+         * 
          * @return The item that will be swapped to the offhand.
          */
-        public ItemStack getItemSwappedToOffHand()
-        {
+        public ItemStack getItemSwappedToOffHand() {
             return toOffHand;
         }
 
         /**
          * Sets the item that will be swapped to the main hand of the entity.
+         * 
          * @param item The item to swap to the main hand.
          */
-        public void setItemSwappedToMainHand(ItemStack item)
-        {
+        public void setItemSwappedToMainHand(ItemStack item) {
             this.toMainHand = item;
         }
 
         /**
          * Sets the item that will be swapped to the offhand of the entity.
+         * 
          * @param item The item to swap to the offhand.
          */
-        public void setItemSwappedToOffHand(ItemStack item)
-        {
+        public void setItemSwappedToOffHand(ItemStack item) {
             this.toOffHand = item;
         }
     }

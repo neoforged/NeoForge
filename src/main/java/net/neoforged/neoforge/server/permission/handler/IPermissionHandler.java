@@ -5,15 +5,14 @@
 
 package net.neoforged.neoforge.server.permission.handler;
 
+import java.util.Set;
+import java.util.UUID;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.nodes.PermissionDynamicContext;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
-
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * This is the Heart of the PermissionAPI, it manages {@link PermissionNode}s
@@ -24,8 +23,7 @@ import java.util.UUID;
  * @implNote The {@link DefaultPermissionHandler} does forward all permission queries to the PermissionNodes default resolver.
  * @apiNote You can implement your own PermissionHandler using the {@link PermissionGatherEvent.Handler} event.
  */
-public interface IPermissionHandler
-{
+public interface IPermissionHandler {
     /**
      * {@return an identifier for the PermissionHandler}
      */

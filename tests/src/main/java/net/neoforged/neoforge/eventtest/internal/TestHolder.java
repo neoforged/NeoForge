@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  *
  * @author Curle
  */
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 public @interface TestHolder {
     String value();
 }

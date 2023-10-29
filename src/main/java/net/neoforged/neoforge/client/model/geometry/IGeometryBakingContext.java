@@ -21,8 +21,7 @@ import org.jetbrains.annotations.Nullable;
  * @see StandaloneGeometryBakingContext
  * @see BlockGeometryBakingContext
  */
-public interface IGeometryBakingContext
-{
+public interface IGeometryBakingContext {
     /**
      * {@return the name of the model being baked for logging and caching purposes.}
      */
@@ -87,8 +86,7 @@ public interface IGeometryBakingContext
     /**
      * {@return a {@link RenderTypeGroup} with the given name, or the empty group if not found.}
      */
-    default RenderTypeGroup getRenderType(ResourceLocation name)
-    {
+    default RenderTypeGroup getRenderType(ResourceLocation name) {
         return NamedRenderTypeManager.get(name);
     }
 }

@@ -94,7 +94,7 @@ public abstract class LanguageProvider implements DataProvider {
     public void addBiome(Supplier<? extends Biome> key, String name) {
         add(key.get(), name);
     }
-
+    
     public void add(Biome key, String name) {
         add(key.getTranslationKey(), name);
     }

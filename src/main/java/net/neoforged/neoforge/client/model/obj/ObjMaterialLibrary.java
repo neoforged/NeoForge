@@ -6,37 +6,29 @@
 package net.neoforged.neoforge.client.model.obj;
 
 import com.google.common.collect.Maps;
-import joptsimple.internal.Strings;
-import org.joml.Vector4f;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import joptsimple.internal.Strings;
+import org.joml.Vector4f;
 
 /**
  * An OBJ material library (MTL), composed of named {@link Material materials}.
  */
-public class ObjMaterialLibrary
-{
+public class ObjMaterialLibrary {
     public static final ObjMaterialLibrary EMPTY = new ObjMaterialLibrary();
     final Map<String, Material> materials = Maps.newHashMap();
 
-    private ObjMaterialLibrary()
-    {
-    }
+    private ObjMaterialLibrary() {}
 
-    public ObjMaterialLibrary(ObjTokenizer reader) throws IOException
-    {
+    public ObjMaterialLibrary(ObjTokenizer reader) throws IOException {
         Material currentMaterial = null;
 
         String[] line;
-        while ((line = reader.readAndSplitLine(true)) != null)
-        {
-            switch (line[0])
-            {
-                case "newmtl":
-                {
+        while ((line = reader.readAndSplitLine(true)) != null) {
+            switch (line[0]) {
+                case "newmtl": {
                     String name = Strings.join(Arrays.copyOfRange(line, 1, line.length), " ");
                     currentMaterial = new Material(name);
                     materials.put(name, currentMaterial);
@@ -91,15 +83,13 @@ public class ObjMaterialLibrary
         }
     }
 
-    public Material getMaterial(String mat)
-    {
+    public Material getMaterial(String mat) {
         if (!materials.containsKey(mat))
             throw new NoSuchElementException("The material was not found in the library: " + mat);
         return materials.get(mat);
     }
 
-    public static class Material
-    {
+    public static class Material {
         public final String name;
         public Vector4f ambientColor = new Vector4f();
         public String ambientColorMap;
@@ -115,8 +105,7 @@ public class ObjMaterialLibrary
         // non-standard
         public int diffuseTintIndex = 0;
 
-        public Material(String name)
-        {
+        public Material(String name) {
             this.name = name;
         }
     }

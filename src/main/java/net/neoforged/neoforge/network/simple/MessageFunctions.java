@@ -5,10 +5,9 @@
 
 package net.neoforged.neoforge.network.simple;
 
+import java.util.List;
 import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.neoforge.network.NetworkEvent;
-
-import java.util.List;
 
 public final class MessageFunctions {
     /**
@@ -86,6 +85,5 @@ public final class MessageFunctions {
         void setLoginIndex(MSG msg, int index);
     }
 
-    public record LoginPacket<MSG>(String context, MSG msg) {
-    }
+    public record LoginPacket<MSG>(String context, MSG msg) {}
 }

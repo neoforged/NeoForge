@@ -7,9 +7,9 @@ package net.neoforged.neoforge.client.event;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -22,21 +22,18 @@ import org.jetbrains.annotations.ApiStatus;
  * @see Render.Foreground
  * @see Render.Background
  */
-public abstract class ContainerScreenEvent extends Event
-{
+public abstract class ContainerScreenEvent extends Event {
     private final AbstractContainerScreen<?> containerScreen;
 
     @ApiStatus.Internal
-    protected ContainerScreenEvent(AbstractContainerScreen<?> containerScreen)
-    {
+    protected ContainerScreenEvent(AbstractContainerScreen<?> containerScreen) {
         this.containerScreen = containerScreen;
     }
 
     /**
      * {@return the container screen}
      */
-    public AbstractContainerScreen<?> getContainerScreen()
-    {
+    public AbstractContainerScreen<?> getContainerScreen() {
         return containerScreen;
     }
 
@@ -50,15 +47,13 @@ public abstract class ContainerScreenEvent extends Event
      * @see Foreground
      * @see Background
      */
-    public static abstract class Render extends ContainerScreenEvent
-    {
+    public static abstract class Render extends ContainerScreenEvent {
         private final GuiGraphics guiGraphics;
         private final int mouseX;
         private final int mouseY;
 
         @ApiStatus.Internal
-        protected Render(AbstractContainerScreen<?> guiContainer, GuiGraphics guiGraphics, int mouseX, int mouseY)
-        {
+        protected Render(AbstractContainerScreen<?> guiContainer, GuiGraphics guiGraphics, int mouseX, int mouseY) {
             super(guiContainer);
             this.guiGraphics = guiGraphics;
             this.mouseX = mouseX;
@@ -68,24 +63,21 @@ public abstract class ContainerScreenEvent extends Event
         /**
          * {@return the gui graphics used for rendering}
          */
-        public GuiGraphics getGuiGraphics()
-        {
+        public GuiGraphics getGuiGraphics() {
             return guiGraphics;
         }
 
         /**
          * {@return the X coordinate of the mouse pointer}
          */
-        public int getMouseX()
-        {
+        public int getMouseX() {
             return mouseX;
         }
 
         /**
          * {@return the Y coordinate of the mouse pointer}
          */
-        public int getMouseY()
-        {
+        public int getMouseY() {
             return mouseY;
         }
 
@@ -101,11 +93,9 @@ public abstract class ContainerScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Foreground extends Render
-        {
+        public static class Foreground extends Render {
             @ApiStatus.Internal
-            public Foreground(AbstractContainerScreen<?> guiContainer, GuiGraphics guiGraphics, int mouseX, int mouseY)
-            {
+            public Foreground(AbstractContainerScreen<?> guiContainer, GuiGraphics guiGraphics, int mouseX, int mouseY) {
                 super(guiContainer, guiGraphics, mouseX, mouseY);
             }
         }
@@ -119,11 +109,9 @@ public abstract class ContainerScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Background extends Render
-        {
+        public static class Background extends Render {
             @ApiStatus.Internal
-            public Background(AbstractContainerScreen<?> guiContainer, GuiGraphics guiGraphics, int mouseX, int mouseY)
-            {
+            public Background(AbstractContainerScreen<?> guiContainer, GuiGraphics guiGraphics, int mouseX, int mouseY) {
                 super(guiContainer, guiGraphics, mouseX, mouseY);
             }
         }

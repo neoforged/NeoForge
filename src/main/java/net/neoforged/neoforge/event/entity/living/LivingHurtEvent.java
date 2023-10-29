@@ -7,9 +7,9 @@ package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * LivingHurtEvent is fired when an Entity is set to be hurt. <br>
@@ -28,22 +28,28 @@ import net.neoforged.bus.api.ICancellableEvent;
  * This event does not have a result. {@link HasResult}<br>
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
+ * 
  * @see LivingDamageEvent
  **/
-public class LivingHurtEvent extends LivingEvent implements ICancellableEvent
-{
+public class LivingHurtEvent extends LivingEvent implements ICancellableEvent {
     private final DamageSource source;
     private float amount;
-    public LivingHurtEvent(LivingEntity entity, DamageSource source, float amount)
-    {
+
+    public LivingHurtEvent(LivingEntity entity, DamageSource source, float amount) {
         super(entity);
         this.source = source;
         this.amount = amount;
     }
 
-    public DamageSource getSource() { return source; }
+    public DamageSource getSource() {
+        return source;
+    }
 
-    public float getAmount() { return amount; }
+    public float getAmount() {
+        return amount;
+    }
 
-    public void setAmount(float amount) { this.amount = amount; }
+    public void setAmount(float amount) {
+        this.amount = amount;
+    }
 }

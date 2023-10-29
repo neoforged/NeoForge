@@ -26,8 +26,7 @@ import org.apache.logging.log4j.Logger;
  * Data provider for the {@code sounds.json} file, which identifies sound definitions
  * for the various sound events in Minecraft.
  */
-public abstract class SoundDefinitionsProvider implements DataProvider
-{
+public abstract class SoundDefinitionsProvider implements DataProvider {
     private static final Logger LOGGER = LogManager.getLogger();
     private final PackOutput output;
     private final String modId;
@@ -39,11 +38,10 @@ public abstract class SoundDefinitionsProvider implements DataProvider
      * Creates a new instance of this data provider.
      *
      * @param output The {@linkplain PackOutput} instance provided by the data generator.
-     * @param modId The mod ID of the current mod.
+     * @param modId  The mod ID of the current mod.
      * @param helper The existing file helper provided by the event you are initializing this provider in.
      */
-    protected SoundDefinitionsProvider(final PackOutput output, final String modId, final ExistingFileHelper helper)
-    {
+    protected SoundDefinitionsProvider(final PackOutput output, final String modId, final ExistingFileHelper helper) {
         this.output = output;
         this.modId = modId;
         this.helper = helper;
@@ -55,13 +53,11 @@ public abstract class SoundDefinitionsProvider implements DataProvider
     public abstract void registerSounds();
 
     @Override
-    public CompletableFuture<?> run(CachedOutput cache)
-    {
+    public CompletableFuture<?> run(CachedOutput cache) {
         this.sounds.clear();
         this.registerSounds();
         this.validate();
-        if (!this.sounds.isEmpty())
-        {
+        if (!this.sounds.isEmpty()) {
             return this.save(cache, this.output.getOutputFolder(PackOutput.Target.RESOURCE_PACK).resolve(this.modId).resolve("sounds.json"));
         }
 
@@ -69,8 +65,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return "Sound Definitions";
     }
 
@@ -79,8 +74,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider
      * Creates a new {@link SoundDefinition}, which will host a set of
      * {@link SoundDefinition.Sound}s and the necessary parameters.
      */
-    protected static SoundDefinition definition()
-    {
+    protected static SoundDefinition definition() {
         return SoundDefinition.definition();
     }
 
@@ -90,8 +84,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider
      * @param name The name of the sound to create.
      * @param type The type of sound to create.
      */
-    protected static SoundDefinition.Sound sound(final ResourceLocation name, final SoundDefinition.SoundType type)
-    {
+    protected static SoundDefinition.Sound sound(final ResourceLocation name, final SoundDefinition.SoundType type) {
         return SoundDefinition.Sound.sound(name, type);
     }
 
@@ -101,8 +94,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider
      *
      * @param name The name of the sound to create.
      */
-    protected static SoundDefinition.Sound sound(final ResourceLocation name)
-    {
+    protected static SoundDefinition.Sound sound(final ResourceLocation name) {
         return sound(name, SoundDefinition.SoundType.SOUND);
     }
 
@@ -112,8 +104,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider
      * @param name The name of the sound to create.
      * @param type The type of sound to create.
      */
-    protected static SoundDefinition.Sound sound(final String name, final SoundDefinition.SoundType type)
-    {
+    protected static SoundDefinition.Sound sound(final String name, final SoundDefinition.SoundType type) {
         return sound(new ResourceLocation(name), type);
     }
 
@@ -123,8 +114,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider
      *
      * @param name The name of the sound to create.
      */
-    protected static SoundDefinition.Sound sound(final String name)
-    {
+    protected static SoundDefinition.Sound sound(final String name) {
         return sound(new ResourceLocation(name));
     }
 
@@ -139,8 +129,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider
      * @param soundEvent A {@code Supplier} for the given {@link SoundEvent}.
      * @param definition A {@link SoundDefinition} that defines the given sound.
      */
-    protected void add(final Supplier<SoundEvent> soundEvent, final SoundDefinition definition)
-    {
+    protected void add(final Supplier<SoundEvent> soundEvent, final SoundDefinition definition) {
         this.add(soundEvent.get(), definition);
     }
 
@@ -155,8 +144,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider
      * @param soundEvent A {@link SoundEvent}.
      * @param definition The {@link SoundDefinition} that defines the given event.
      */
-    protected void add(final SoundEvent soundEvent, final SoundDefinition definition)
-    {
+    protected void add(final SoundEvent soundEvent, final SoundDefinition definition) {
         this.add(soundEvent.getLocation(), definition);
     }
 
@@ -167,8 +155,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider
      * @param soundEvent The {@link ResourceLocation} that identifies the event.
      * @param definition The {@link SoundDefinition} that defines the given event.
      */
-    protected void add(final ResourceLocation soundEvent, final SoundDefinition definition)
-    {
+    protected void add(final ResourceLocation soundEvent, final SoundDefinition definition) {
         this.addSounds(soundEvent.getPath(), definition);
     }
 
@@ -184,44 +171,38 @@ public abstract class SoundDefinitionsProvider implements DataProvider
      * @param soundEvent The name of the {@link SoundEvent}.
      * @param definition The {@link SoundDefinition} that defines the given event.
      */
-    protected void add(final String soundEvent, final SoundDefinition definition)
-    {
+    protected void add(final String soundEvent, final SoundDefinition definition) {
         this.add(new ResourceLocation(soundEvent), definition);
     }
 
-    private void addSounds(final String soundEvent, final SoundDefinition definition)
-    {
-        if (this.sounds.put(soundEvent, definition) != null)
-        {
+    private void addSounds(final String soundEvent, final SoundDefinition definition) {
+        if (this.sounds.put(soundEvent, definition) != null) {
             throw new IllegalStateException("Sound event '" + this.modId + ":" + soundEvent + "' already exists");
         }
     }
 
     // Internal handling stuff
-    private void validate()
-    {
+    private void validate() {
         final List<String> notValid = this.sounds.entrySet().stream()
                 .filter(it -> !this.validate(it.getKey(), it.getValue()))
                 .map(Map.Entry::getKey)
                 .map(it -> this.modId + ":" + it)
                 .toList();
-        if (!notValid.isEmpty())
-        {
+        if (!notValid.isEmpty()) {
             throw new IllegalStateException("Found invalid sound events: " + notValid);
         }
     }
 
-    private boolean validate(final String name, final SoundDefinition def)
-    {
-        return def.soundList().stream().allMatch(it -> this.validate(name,it));
+    private boolean validate(final String name, final SoundDefinition def) {
+        return def.soundList().stream().allMatch(it -> this.validate(name, it));
     }
 
-    private boolean validate(final String name, final SoundDefinition.Sound sound)
-    {
-        switch (sound.type())
-        {
-            case SOUND: return this.validateSound(name, sound.name());
-            case EVENT: return this.validateEvent(name, sound.name());
+    private boolean validate(final String name, final SoundDefinition.Sound sound) {
+        switch (sound.type()) {
+            case SOUND:
+                return this.validateSound(name, sound.name());
+            case EVENT:
+                return this.validateEvent(name, sound.name());
         }
         // Differently from all the other errors, this is not a 'missing sound' but rather something completely different
         // that has broken the invariants of this sound definition's provider. In fact, a sound may only be either of
@@ -230,34 +211,28 @@ public abstract class SoundDefinitionsProvider implements DataProvider
         throw new IllegalArgumentException("The given sound '" + sound.name() + "' does not have a valid type: expected either SOUND or EVENT, but found " + sound.type());
     }
 
-    private boolean validateSound(final String soundName, final ResourceLocation name)
-    {
+    private boolean validateSound(final String soundName, final ResourceLocation name) {
         final boolean valid = this.helper.exists(name, PackType.CLIENT_RESOURCES, ".ogg", "sounds");
-        if (!valid)
-        {
+        if (!valid) {
             final String path = name.getNamespace() + ":sounds/" + name.getPath() + ".ogg";
             LOGGER.warn("Unable to find corresponding OGG file '{}' for sound event '{}'", path, soundName);
         }
         return valid;
     }
 
-    private boolean validateEvent(final String soundName, final ResourceLocation name)
-    {
+    private boolean validateEvent(final String soundName, final ResourceLocation name) {
         final boolean valid = this.sounds.containsKey(soundName) || ForgeRegistries.SOUND_EVENTS.containsKey(name);
-        if (!valid)
-        {
+        if (!valid) {
             LOGGER.warn("Unable to find event '{}' referenced from '{}'", name, soundName);
         }
         return valid;
     }
 
-    private CompletableFuture<?> save(final CachedOutput cache, final Path targetFile)
-    {
+    private CompletableFuture<?> save(final CachedOutput cache, final Path targetFile) {
         return DataProvider.saveStable(cache, this.mapToJson(this.sounds), targetFile);
     }
 
-    private JsonObject mapToJson(final Map<String, SoundDefinition> map)
-    {
+    private JsonObject mapToJson(final Map<String, SoundDefinition> map) {
         final JsonObject obj = new JsonObject();
         // namespaces are ignored when serializing
         map.forEach((k, v) -> obj.add(k, v.serialize()));

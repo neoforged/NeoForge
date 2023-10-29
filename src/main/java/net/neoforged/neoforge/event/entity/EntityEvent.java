@@ -9,8 +9,8 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.Pose;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * EntityEvent is fired when an event involving any Entity occurs.<br>
@@ -21,17 +21,14 @@ import net.neoforged.bus.api.Event;
  * <br>
  * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
-public abstract class EntityEvent extends Event
-{
+public abstract class EntityEvent extends Event {
     private final Entity entity;
 
-    public EntityEvent(Entity entity)
-    {
+    public EntityEvent(Entity entity) {
         this.entity = entity;
     }
 
-    public Entity getEntity()
-    {
+    public Entity getEntity() {
         return entity;
     }
 
@@ -45,10 +42,8 @@ public abstract class EntityEvent extends Event
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
-    public static class EntityConstructing extends EntityEvent
-    {
-        public EntityConstructing(Entity entity)
-        {
+    public static class EntityConstructing extends EntityEvent {
+        public EntityConstructing(Entity entity) {
             super(entity);
         }
     }
@@ -65,14 +60,12 @@ public abstract class EntityEvent extends Event
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
-    public static class EnteringSection extends EntityEvent
-    {
+    public static class EnteringSection extends EntityEvent {
 
         private final long packedOldPos;
         private final long packedNewPos;
 
-        public EnteringSection(Entity entity, long packedOldPos, long packedNewPos)
-        {
+        public EnteringSection(Entity entity, long packedOldPos, long packedNewPos) {
             super(entity);
             this.packedOldPos = packedOldPos;
             this.packedNewPos = packedNewPos;
@@ -81,36 +74,34 @@ public abstract class EntityEvent extends Event
         /**
          * A packed version of the old section's position. This is to be used with the various methods in {@link SectionPos},
          * such as {@link SectionPos#of(long)} or {@link SectionPos#x(long)} to avoid allocation.
+         * 
          * @return the packed position of the old section
          */
-        public long getPackedOldPos()
-        {
+        public long getPackedOldPos() {
             return packedOldPos;
         }
 
         /**
          * A packed version of the new section's position. This is to be used with the various methods in {@link SectionPos},
          * such as {@link SectionPos#of(long)} or {@link SectionPos#x(long)} to avoid allocation.
+         * 
          * @return the packed position of the new section
          */
-        public long getPackedNewPos()
-        {
+        public long getPackedNewPos() {
             return packedNewPos;
         }
 
         /**
          * @return the position of the old section
          */
-        public SectionPos getOldPos()
-        {
+        public SectionPos getOldPos() {
             return SectionPos.of(packedOldPos);
         }
 
         /**
          * @return the position of the new section
          */
-        public SectionPos getNewPos()
-        {
+        public SectionPos getNewPos() {
             return SectionPos.of(packedNewPos);
         }
 
@@ -118,8 +109,7 @@ public abstract class EntityEvent extends Event
          * Whether the chunk has changed as part of this event. If this method returns false, only the Y position of the
          * section has changed.
          */
-        public boolean didChunkChange()
-        {
+        public boolean didChunkChange() {
             return SectionPos.x(packedOldPos) != SectionPos.x(packedNewPos) || SectionPos.z(packedOldPos) != SectionPos.z(packedNewPos);
         }
 
@@ -136,21 +126,18 @@ public abstract class EntityEvent extends Event
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
-    public static class Size extends EntityEvent
-    {
+    public static class Size extends EntityEvent {
         private final Pose pose;
         private final EntityDimensions oldSize;
         private EntityDimensions newSize;
         private final float oldEyeHeight;
         private float newEyeHeight;
 
-        public Size(Entity entity, Pose pose, EntityDimensions size, float defaultEyeHeight)
-        {
+        public Size(Entity entity, Pose pose, EntityDimensions size, float defaultEyeHeight) {
             this(entity, pose, size, size, defaultEyeHeight, defaultEyeHeight);
         }
 
-        public Size(Entity entity, Pose pose, EntityDimensions oldSize, EntityDimensions newSize, float oldEyeHeight, float newEyeHeight)
-        {
+        public Size(Entity entity, Pose pose, EntityDimensions oldSize, EntityDimensions newSize, float oldEyeHeight, float newEyeHeight) {
             super(entity);
             this.pose = pose;
             this.oldSize = oldSize;
@@ -159,28 +146,42 @@ public abstract class EntityEvent extends Event
             this.newEyeHeight = newEyeHeight;
         }
 
+        public Pose getPose() {
+            return pose;
+        }
 
-        public Pose getPose() { return pose; }
-        public EntityDimensions getOldSize() { return oldSize; }
-        public EntityDimensions getNewSize() { return newSize; }
-        public void setNewSize(EntityDimensions size)
-        {
+        public EntityDimensions getOldSize() {
+            return oldSize;
+        }
+
+        public EntityDimensions getNewSize() {
+            return newSize;
+        }
+
+        public void setNewSize(EntityDimensions size) {
             setNewSize(size, false);
         }
 
         /**
          * Set the new size of the entity. Set updateEyeHeight to true to also update the eye height according to the new size.
          */
-        public void setNewSize(EntityDimensions size, boolean updateEyeHeight)
-        {
+        public void setNewSize(EntityDimensions size, boolean updateEyeHeight) {
             this.newSize = size;
-            if (updateEyeHeight)
-            {
+            if (updateEyeHeight) {
                 this.newEyeHeight = this.getEntity().getEyeHeightAccess(this.getPose(), this.newSize);
             }
         }
-        public float getOldEyeHeight() { return oldEyeHeight; }
-        public float getNewEyeHeight() { return newEyeHeight; }
-        public void setNewEyeHeight(float newHeight) { this.newEyeHeight = newHeight; }
+
+        public float getOldEyeHeight() {
+            return oldEyeHeight;
+        }
+
+        public float getNewEyeHeight() {
+            return newEyeHeight;
+        }
+
+        public void setNewEyeHeight(float newHeight) {
+            this.newEyeHeight = newHeight;
+        }
     }
 }

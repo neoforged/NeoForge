@@ -16,10 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>
  * Users should not be instantiating this themselves. Retrieve from {@link GuiOverlayManager}.
  */
-public record NamedGuiOverlay(ResourceLocation id, IGuiOverlay overlay)
-{
+public record NamedGuiOverlay(ResourceLocation id, IGuiOverlay overlay) {
     @ApiStatus.Internal
-    public NamedGuiOverlay
-    {
-    }
+    public NamedGuiOverlay {}
 }

@@ -16,10 +16,8 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
  *
  * @author cpw
  */
-public class ServerStartingEvent extends ServerLifecycleEvent
-{
-    public ServerStartingEvent(final MinecraftServer server)
-    {
+public class ServerStartingEvent extends ServerLifecycleEvent {
+    public ServerStartingEvent(final MinecraftServer server) {
         super(server);
     }
 

@@ -5,14 +5,14 @@
 
 package net.neoforged.neoforge.event.level;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * This event is fired whenever a chunk has a watch-related action.
@@ -25,14 +25,12 @@ import net.neoforged.fml.LogicalSide;
  * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
  * only on the {@linkplain LogicalSide#SERVER logical server}.
  **/
-public abstract class ChunkWatchEvent extends Event
-{
+public abstract class ChunkWatchEvent extends Event {
     private final ServerLevel level;
     private final ServerPlayer player;
     private final ChunkPos pos;
 
-    public ChunkWatchEvent(ServerPlayer player, ChunkPos pos, ServerLevel level)
-    {
+    public ChunkWatchEvent(ServerPlayer player, ChunkPos pos, ServerLevel level) {
         this.player = player;
         this.pos = pos;
         this.level = level;
@@ -41,24 +39,21 @@ public abstract class ChunkWatchEvent extends Event
     /**
      * {@return the server player involved with the watch action}
      */
-    public ServerPlayer getPlayer()
-    {
+    public ServerPlayer getPlayer() {
         return this.player;
     }
 
     /**
      * {@return the chunk position this watch event is affecting}
      */
-    public ChunkPos getPos()
-    {
+    public ChunkPos getPos() {
         return this.pos;
     }
 
     /**
      * {@return the server level containing the chunk}
      */
-    public ServerLevel getLevel()
-    {
+    public ServerLevel getLevel() {
         return this.level;
     }
 
@@ -76,18 +71,15 @@ public abstract class ChunkWatchEvent extends Event
      * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      **/
-    public static class Watch extends ChunkWatchEvent
-    {
+    public static class Watch extends ChunkWatchEvent {
         private final LevelChunk chunk;
 
-        public Watch(ServerPlayer player, LevelChunk chunk, ServerLevel level)
-        {
+        public Watch(ServerPlayer player, LevelChunk chunk, ServerLevel level) {
             super(player, chunk.getPos(), level);
             this.chunk = chunk;
         }
 
-        public LevelChunk getChunk()
-        {
+        public LevelChunk getChunk() {
             return this.chunk;
         }
     }
@@ -103,8 +95,9 @@ public abstract class ChunkWatchEvent extends Event
      * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      **/
-    public static class UnWatch extends ChunkWatchEvent
-    {
-        public UnWatch(ServerPlayer player, ChunkPos pos, ServerLevel level) {super(player, pos, level);}
+    public static class UnWatch extends ChunkWatchEvent {
+        public UnWatch(ServerPlayer player, ChunkPos pos, ServerLevel level) {
+            super(player, pos, level);
+        }
     }
 }

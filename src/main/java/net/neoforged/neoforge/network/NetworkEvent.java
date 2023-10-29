@@ -8,47 +8,41 @@ package net.neoforged.neoforge.network;
 import io.netty.buffer.Unpooled;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
-
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.network.PacketListener;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.network.Connection;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.thread.BlockableEventLoop;
-import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.common.util.LogicalSidedProvider;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import net.minecraft.network.Connection;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.PacketListener;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.util.thread.BlockableEventLoop;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.util.LogicalSidedProvider;
+import org.jetbrains.annotations.Nullable;
 
-public class NetworkEvent extends Event
-{
+public class NetworkEvent extends Event {
     private final FriendlyByteBuf payload;
     private final Context source;
     private final int loginIndex;
 
-    private NetworkEvent(final ICustomPacketPayloadWithBuffer payload, final Context source)
-    {
+    private NetworkEvent(final ICustomPacketPayloadWithBuffer payload, final Context source) {
         this.payload = payload.buffer();
         this.source = source;
         this.loginIndex = payload.packetIndex();
     }
 
-    private NetworkEvent(final ICustomQueryPayloadWithBuffer payload, final Context source)
-    {
+    private NetworkEvent(final ICustomQueryPayloadWithBuffer payload, final Context source) {
         this.payload = payload.buffer();
         this.source = source;
         this.loginIndex = payload.packetIndex();
     }
 
-    private NetworkEvent(final FriendlyByteBuf payload, final Context source, final int loginIndex)
-    {
+    private NetworkEvent(final FriendlyByteBuf payload, final Context source, final int loginIndex) {
         this.payload = payload;
         this.source = source;
         this.loginIndex = loginIndex;
@@ -60,23 +54,19 @@ public class NetworkEvent extends Event
         this.loginIndex = -1;
     }
 
-    public FriendlyByteBuf getPayload()
-    {
+    public FriendlyByteBuf getPayload() {
         return payload;
     }
 
-    public Context getSource()
-    {
+    public Context getSource() {
         return source;
     }
 
-    public int getLoginIndex()
-    {
+    public int getLoginIndex() {
         return loginIndex;
     }
 
-    public static class ServerCustomPayloadEvent extends NetworkEvent
-    {
+    public static class ServerCustomPayloadEvent extends NetworkEvent {
         ServerCustomPayloadEvent(final ICustomPacketPayloadWithBuffer payload, final Context source) {
             super(payload, source);
         }
@@ -85,33 +75,33 @@ public class NetworkEvent extends Event
             super(payload, source);
         }
     }
-    public static class ClientCustomPayloadEvent extends NetworkEvent
-    {
+
+    public static class ClientCustomPayloadEvent extends NetworkEvent {
         ClientCustomPayloadEvent(final ICustomQueryPayloadWithBuffer payload, final Context source) {
             super(payload, source);
         }
+
         ClientCustomPayloadEvent(final ICustomPacketPayloadWithBuffer payload, final Context source) {
             super(payload, source);
         }
     }
+
     public static class ServerCustomPayloadLoginEvent extends ServerCustomPayloadEvent {
-        ServerCustomPayloadLoginEvent(final ICustomPacketPayloadWithBuffer payload, final Context source)
-        {
+        ServerCustomPayloadLoginEvent(final ICustomPacketPayloadWithBuffer payload, final Context source) {
             super(payload, source);
         }
-        ServerCustomPayloadLoginEvent(final ICustomQueryPayloadWithBuffer payload, final Context source)
-        {
+
+        ServerCustomPayloadLoginEvent(final ICustomQueryPayloadWithBuffer payload, final Context source) {
             super(payload, source);
         }
     }
 
     public static class ClientCustomPayloadLoginEvent extends ClientCustomPayloadEvent {
-        ClientCustomPayloadLoginEvent(final ICustomPacketPayloadWithBuffer payload, final Context source)
-        {
+        ClientCustomPayloadLoginEvent(final ICustomPacketPayloadWithBuffer payload, final Context source) {
             super(payload, source);
         }
-        ClientCustomPayloadLoginEvent(final ICustomQueryPayloadWithBuffer payload, final Context source)
-        {
+
+        ClientCustomPayloadLoginEvent(final ICustomQueryPayloadWithBuffer payload, final Context source) {
             super(payload, source);
         }
     }
@@ -129,8 +119,7 @@ public class NetworkEvent extends Event
             collected.add(new NetworkRegistry.LoginPayload(buffer, channelName, context));
         }
 
-        public void add(FriendlyByteBuf buffer, ResourceLocation channelName, String context, boolean needsResponse)
-        {
+        public void add(FriendlyByteBuf buffer, ResourceLocation channelName, String context, boolean needsResponse) {
             collected.add(new NetworkRegistry.LoginPayload(buffer, channelName, context, needsResponse));
         }
 
@@ -168,11 +157,11 @@ public class NetworkEvent extends Event
             return this.changeType;
         }
     }
+
     /**
      * Context for {@link NetworkEvent}
      */
-    public static class Context
-    {
+    public static class Context {
         /**
          * The {@link Connection} for this message.
          */
@@ -189,8 +178,7 @@ public class NetworkEvent extends Event
         private final PacketDispatcher packetDispatcher;
         private boolean packetHandled;
 
-        Context(Connection netHandler, INetworkDirection<?> networkDirection, int index)
-        {
+        Context(Connection netHandler, INetworkDirection<?> networkDirection, int index) {
             this(netHandler, networkDirection, new PacketDispatcher.NetworkManagerDispatcher(netHandler, index, ((INetworkDirection<?>) networkDirection.reply())::buildPacket));
         }
 
@@ -220,8 +208,7 @@ public class NetworkEvent extends Event
             this.packetHandled = packetHandled;
         }
 
-        public boolean getPacketHandled()
-        {
+        public boolean getPacketHandled() {
             return packetHandled;
         }
 
@@ -241,11 +228,9 @@ public class NetworkEvent extends Event
          * When available, gets the sender for packets that are sent from a client to the server.
          */
         @Nullable
-        public ServerPlayer getSender()
-        {
+        public ServerPlayer getSender() {
             PacketListener netHandler = networkManager.getPacketListener();
-            if (netHandler instanceof ServerGamePacketListenerImpl)
-            {
+            if (netHandler instanceof ServerGamePacketListenerImpl) {
                 ServerGamePacketListenerImpl netHandlerPlayServer = (ServerGamePacketListenerImpl) netHandler;
                 return netHandlerPlayServer.player;
             }
@@ -282,8 +267,7 @@ public class NetworkEvent extends Event
             packetSink.accept(resourceLocation, buffer);
         }
 
-        static class NetworkManagerDispatcher extends PacketDispatcher
-        {
+        static class NetworkManagerDispatcher extends PacketDispatcher {
             private final Connection manager;
             private final int packetIndex;
             private final BiFunction<INetworkDirection.PacketData, ResourceLocation, Packet<?>> customPacketSupplier;

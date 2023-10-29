@@ -5,20 +5,18 @@
 
 package net.neoforged.neoforge.server.command;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -26,43 +24,36 @@ import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.registries.ForgeRegistries;
-
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-class EntityCommand
-{
-    static ArgumentBuilder<CommandSourceStack, ?> register()
-    {
+class EntityCommand {
+    static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("entity")
                 .then(EntityListCommand.register()); //TODO: //Kill, spawn, etc..
     }
 
-    private static class EntityListCommand
-    {
+    private static class EntityListCommand {
         private static final SimpleCommandExceptionType INVALID_FILTER = new SimpleCommandExceptionType(Component.translatable("commands.neoforge.entity.list.invalid"));
         private static final DynamicCommandExceptionType INVALID_DIMENSION = new DynamicCommandExceptionType(dim -> Component.translatable("commands.neoforge.entity.list.invalidworld", dim));
         private static final SimpleCommandExceptionType NO_ENTITIES = new SimpleCommandExceptionType(Component.translatable("commands.neoforge.entity.list.none"));
-        static ArgumentBuilder<CommandSourceStack, ?> register()
-        {
+
+        static ArgumentBuilder<CommandSourceStack, ?> register() {
             return Commands.literal("list")
-                .requires(cs->cs.hasPermission(2)) //permission
-                .then(Commands.argument("filter", StringArgumentType.string())
-                    .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(ForgeRegistries.ENTITY_TYPES.getKeys().stream().map(ResourceLocation::toString).map(StringArgumentType::escapeIfRequired), builder))
-                    .then(Commands.argument("dim", DimensionArgument.dimension())
-                        .executes(ctx -> execute(ctx.getSource(), StringArgumentType.getString(ctx, "filter"), DimensionArgument.getDimension(ctx, "dim").dimension()))
-                    )
-                    .executes(ctx -> execute(ctx.getSource(), StringArgumentType.getString(ctx, "filter"), ctx.getSource().getLevel().dimension()))
-                )
-                .executes(ctx -> execute(ctx.getSource(), "*", ctx.getSource().getLevel().dimension()));
+                    .requires(cs -> cs.hasPermission(2)) //permission
+                    .then(Commands.argument("filter", StringArgumentType.string())
+                            .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(ForgeRegistries.ENTITY_TYPES.getKeys().stream().map(ResourceLocation::toString).map(StringArgumentType::escapeIfRequired), builder))
+                            .then(Commands.argument("dim", DimensionArgument.dimension())
+                                    .executes(ctx -> execute(ctx.getSource(), StringArgumentType.getString(ctx, "filter"), DimensionArgument.getDimension(ctx, "dim").dimension())))
+                            .executes(ctx -> execute(ctx.getSource(), StringArgumentType.getString(ctx, "filter"), ctx.getSource().getLevel().dimension())))
+                    .executes(ctx -> execute(ctx.getSource(), "*", ctx.getSource().getLevel().dimension()));
         }
 
-        private static int execute(CommandSourceStack sender, String filter, ResourceKey<Level> dim) throws CommandSyntaxException
-        {
+        private static int execute(CommandSourceStack sender, String filter, ResourceKey<Level> dim) throws CommandSyntaxException {
             final String cleanFilter = filter.replace("?", ".?").replace("*", ".*?");
 
             Set<ResourceLocation> names = ForgeRegistries.ENTITY_TYPES.getKeys().stream().filter(n -> n.toString().matches(cleanFilter)).collect(Collectors.toSet());
@@ -82,8 +73,7 @@ class EntityCommand
                 info.right.put(chunk, info.right.getOrDefault(chunk, 0) + 1);
             });
 
-            if (names.size() == 1)
-            {
+            if (names.size() == 1) {
                 ResourceLocation name = names.iterator().next();
                 Pair<Integer, Map<ChunkPos, Integer>> info = list.get(name);
                 if (info == null)
@@ -100,20 +90,16 @@ class EntityCommand
                 });
 
                 long limit = 10;
-                for (Map.Entry<ChunkPos, Integer> e : toSort)
-                {
+                for (Map.Entry<ChunkPos, Integer> e : toSort) {
                     if (limit-- == 0) break;
                     sender.sendSuccess(() -> Component.literal("  " + e.getValue() + ": " + e.getKey().x + ", " + e.getKey().z), false);
                 }
                 return toSort.size();
-            }
-            else
-            {
+            } else {
 
                 List<Pair<ResourceLocation, Integer>> info = new ArrayList<>();
                 list.forEach((key, value) -> {
-                    if (names.contains(key))
-                    {
+                    if (names.contains(key)) {
                         Pair<ResourceLocation, Integer> of = Pair.of(key, value.left);
                         info.add(of);
                     }

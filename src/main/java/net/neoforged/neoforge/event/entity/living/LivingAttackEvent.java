@@ -5,12 +5,12 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
-import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.NeoForge;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * LivingAttackEvent is fired when a living Entity is attacked. <br>
@@ -27,20 +27,24 @@ import net.neoforged.bus.api.ICancellableEvent;
  * If this event is canceled, the Entity does not take attack damage.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
- *<br>
+ * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class LivingAttackEvent extends LivingEvent implements ICancellableEvent
-{
+public class LivingAttackEvent extends LivingEvent implements ICancellableEvent {
     private final DamageSource source;
     private final float amount;
-    public LivingAttackEvent(LivingEntity entity, DamageSource source, float amount)
-    {
+
+    public LivingAttackEvent(LivingEntity entity, DamageSource source, float amount) {
         super(entity);
         this.source = source;
         this.amount = amount;
     }
 
-    public DamageSource getSource() { return source; }
-    public float getAmount() { return amount; }
+    public DamageSource getSource() {
+        return source;
+    }
+
+    public float getAmount() {
+        return amount;
+    }
 }

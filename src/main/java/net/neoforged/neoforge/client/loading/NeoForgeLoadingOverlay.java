@@ -15,6 +15,9 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexSorting;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,10 +33,6 @@ import net.neoforged.fml.loading.progress.ProgressMeter;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL30C;
-
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * This is an implementation of the LoadingOverlay that calls back into the early window rendering, as part of the
@@ -62,14 +61,14 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
     }
 
     public static Supplier<LoadingOverlay> newInstance(Supplier<Minecraft> mc, Supplier<ReloadInstance> ri, Consumer<Optional<Throwable>> handler, DisplayWindow window) {
-        return ()->new NeoForgeLoadingOverlay(mc.get(), ri.get(), handler, window);
+        return () -> new NeoForgeLoadingOverlay(mc.get(), ri.get(), handler, window);
     }
 
     @Override
     public void render(final @NotNull GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTick) {
         long millis = Util.getMillis();
-        float fadeouttimer = this.fadeOutStart > -1L ? (float)(millis - this.fadeOutStart) / 1000.0F : -1.0F;
-        progress.setAbsolute(Mth.clamp((int)(this.reload.getActualProgress() * 100f), 0, 100));
+        float fadeouttimer = this.fadeOutStart > -1L ? (float) (millis - this.fadeOutStart) / 1000.0F : -1.0F;
+        progress.setAbsolute(Mth.clamp((int) (this.reload.getActualProgress() * 100f), 0, 100));
         var fade = 1.0F - Mth.clamp(fadeouttimer - 1.0F, 0.0F, 1.0F);
         var colour = this.displayWindow.context().colourScheme().background();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, fade);
@@ -90,8 +89,8 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         GL30C.glViewport(0, 0, fbWidth, fbHeight);
         final var twidth = this.displayWindow.context().width();
         final var theight = this.displayWindow.context().height();
-        var wscale = (float)fbWidth / twidth;
-        var hscale = (float)fbHeight / theight;
+        var wscale = (float) fbWidth / twidth;
+        var hscale = (float) fbHeight / theight;
         var scale = this.displayWindow.context().scale() * Math.min(wscale, hscale) / 2f;
         var wleft = Mth.clamp(fbWidth * 0.5f - scale * twidth, 0, fbWidth);
         var wtop = Mth.clamp(fbHeight * 0.5f - scale * theight, 0, fbHeight);

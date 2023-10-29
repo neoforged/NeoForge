@@ -5,11 +5,6 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
-import net.neoforged.bus.api.ICancellableEvent;
-import net.neoforged.neoforge.event.EventHooks;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.WorldGenRegion;
@@ -23,12 +18,16 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.neoforged.neoforge.common.NeoForgeEventHandler;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeEventHandler;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
-import net.neoforged.bus.api.Event;
-import net.neoforged.fml.LogicalSide;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This class holds all events relating to the entire flow of mob spawns.<br>
@@ -41,16 +40,14 @@ import net.neoforged.fml.LogicalSide;
  * <p>
  * {@link AllowDespawn} is not related to the mob spawn event flow, as it fires when a despawn is attempted.
  */
-public abstract class MobSpawnEvent extends EntityEvent
-{
+public abstract class MobSpawnEvent extends EntityEvent {
     private final ServerLevelAccessor level;
     private final double x;
     private final double y;
     private final double z;
 
     @ApiStatus.Internal
-    protected MobSpawnEvent(Mob mob, ServerLevelAccessor level, double x, double y, double z)
-    {
+    protected MobSpawnEvent(Mob mob, ServerLevelAccessor level, double x, double y, double z) {
         super(mob);
         this.level = level;
         this.x = x;
@@ -59,40 +56,35 @@ public abstract class MobSpawnEvent extends EntityEvent
     }
 
     @Override
-    public Mob getEntity()
-    {
+    public Mob getEntity() {
         return (Mob) super.getEntity();
     }
 
     /**
      * @return The level relating to the mob spawn action
      */
-    public ServerLevelAccessor getLevel()
-    {
+    public ServerLevelAccessor getLevel() {
         return this.level;
     }
 
     /**
      * @return The x-coordinate relating to the mob spawn action
      */
-    public double getX()
-    {
+    public double getX() {
         return this.x;
     }
 
     /**
      * @return The y-coordinate relating to the mob spawn action
      */
-    public double getY()
-    {
+    public double getY() {
         return this.y;
     }
 
     /**
      * @return The z-coordinate relating to the mob spawn action
      */
-    public double getZ()
-    {
+    public double getZ() {
         return this.z;
     }
 
@@ -112,12 +104,12 @@ public abstract class MobSpawnEvent extends EntityEvent
      * only on the {@linkplain LogicalSide#SERVER logical server}.
      * <p>
      * This event is not fired for mob spawners which utilize {@link CustomSpawnRules}, as they do not check spawn placements.
+     * 
      * @apiNote If your modifications are for a single entity, and do not vary at runtime, use {@link SpawnPlacementRegisterEvent}.
      * @see SpawnPlacementRegisterEvent
      */
     @HasResult
-    public static class SpawnPlacementCheck extends Event
-    {
+    public static class SpawnPlacementCheck extends Event {
         private final EntityType<?> entityType;
         private final ServerLevelAccessor level;
         private final MobSpawnType spawnType;
@@ -127,11 +119,11 @@ public abstract class MobSpawnEvent extends EntityEvent
 
         /**
          * Internal.
+         * 
          * @see {@link SpawnPlacements#checkSpawnRules} for the single call site of this event.
          */
         @ApiStatus.Internal
-        public SpawnPlacementCheck(EntityType<?> entityType, ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random, boolean defaultResult)
-        {
+        public SpawnPlacementCheck(EntityType<?> entityType, ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random, boolean defaultResult) {
             this.entityType = entityType;
             this.level = level;
             this.spawnType = spawnType;
@@ -143,52 +135,49 @@ public abstract class MobSpawnEvent extends EntityEvent
         /**
          * @return The type of entity that checks are being performed for.
          */
-        public EntityType<?> getEntityType()
-        {
+        public EntityType<?> getEntityType() {
             return this.entityType;
         }
 
         /**
          * @return The level relating to the mob spawn action
          */
-        public ServerLevelAccessor getLevel()
-        {
+        public ServerLevelAccessor getLevel() {
             return this.level;
         }
 
         /**
          * Retrieves the type of mob spawn that is happening.
+         * 
          * @return The mob spawn type.
          * @see MobSpawnType
          */
-        public MobSpawnType getSpawnType()
-        {
+        public MobSpawnType getSpawnType() {
             return this.spawnType;
         }
 
         /**
          * @return The position where checks are being evaluated.
          */
-        public BlockPos getPos()
-        {
+        public BlockPos getPos() {
             return this.pos;
         }
 
         /**
          * In all vanilla cases, this is equal to {@link ServerLevelAccessor#getRandom()}.
+         * 
          * @return The random source being used.
          */
-        public RandomSource getRandom()
-        {
+        public RandomSource getRandom() {
             return this.random;
         }
 
         /**
          * The default vanilla result is useful if an additional check wants to force {@link Result#ALLOW} only if the vanilla check would succeed.
+         * 
          * @return The result of the vanilla spawn placement check.
          */
-        public boolean getDefaultResult()
-        {
+        public boolean getDefaultResult() {
             return this.defaultResult;
         }
     }
@@ -221,14 +210,12 @@ public abstract class MobSpawnEvent extends EntityEvent
      * @see {@link SpawnPlacementCheck} To modify the result of spawn placements at runtime.
      */
     @HasResult
-    public static class PositionCheck extends MobSpawnEvent
-    {
+    public static class PositionCheck extends MobSpawnEvent {
         @Nullable
         private final BaseSpawner spawner;
         private final MobSpawnType spawnType;
 
-        public PositionCheck(Mob mob, ServerLevelAccessor level, MobSpawnType spawnType, @Nullable BaseSpawner spawner)
-        {
+        public PositionCheck(Mob mob, ServerLevelAccessor level, MobSpawnType spawnType, @Nullable BaseSpawner spawner) {
             super(mob, level, mob.getX(), mob.getY(), mob.getZ());
             this.spawnType = spawnType;
             this.spawner = spawner;
@@ -237,21 +224,21 @@ public abstract class MobSpawnEvent extends EntityEvent
         /**
          * Retrieves the underlying {@link BaseSpawner} instance if this mob was created by a Mob Spawner of some form.
          * This is always null unless {@link #getSpawnType()} is {@link MobSpawnType#SPAWNER}, and may still be null even then.
+         * 
          * @return The BaseSpawner responsible for triggering the spawn, or null if none is available.
          */
         @Nullable
-        public BaseSpawner getSpawner()
-        {
+        public BaseSpawner getSpawner() {
             return spawner;
         }
 
         /**
          * Retrieves the type of mob spawn that is happening.
+         * 
          * @return The mob spawn type.
          * @see MobSpawnType
          */
-        public MobSpawnType getSpawnType()
-        {
+        public MobSpawnType getSpawnType() {
             return this.spawnType;
         }
     }
@@ -265,11 +252,11 @@ public abstract class MobSpawnEvent extends EntityEvent
      * The entity will still be spawned. If you want to prevent the spawn, use {@link FinalizeSpawn#setSpawnCancelled}, which will cause Forge to prevent the spawn.
      * <p>
      * This event is fired on {@link NeoForge#EVENT_BUS}, and is only fired on the logical server.
+     * 
      * @see EventHooks#onFinalizeSpawn
      * @apiNote Callers do not need to check if the entity's spawn was cancelled, as the spawn will be blocked by Forge.
      */
-    public static class FinalizeSpawn extends MobSpawnEvent implements ICancellableEvent
-    {
+    public static class FinalizeSpawn extends MobSpawnEvent implements ICancellableEvent {
         private final MobSpawnType spawnType;
         @Nullable
         private final BaseSpawner spawner;
@@ -284,8 +271,7 @@ public abstract class MobSpawnEvent extends EntityEvent
          * @apiNote Do not construct directly. Access via {@link EventHooks#onFinalizeSpawn} / {@link EventHooks#onFinalizeSpawnSpawner}.
          */
         @ApiStatus.Internal
-        public FinalizeSpawn(Mob entity, ServerLevelAccessor level, double x, double y, double z, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag spawnTag, @Nullable BaseSpawner spawner)
-        {
+        public FinalizeSpawn(Mob entity, ServerLevelAccessor level, double x, double y, double z, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag spawnTag, @Nullable BaseSpawner spawner) {
             super(entity, level, x, y, z);
             this.difficulty = difficulty;
             this.spawnType = spawnType;
@@ -296,83 +282,83 @@ public abstract class MobSpawnEvent extends EntityEvent
 
         /**
          * Retrieves the {@link DifficultyInstance} for the chunk where the mob is about to be spawned.
+         * 
          * @return The local difficulty instance
          */
-        public DifficultyInstance getDifficulty()
-        {
+        public DifficultyInstance getDifficulty() {
             return this.difficulty;
         }
 
         /**
          * Sets the difficulty instance for this event, which will be propagated to {@link Mob#finalizeSpawn} unless cancelled.
          * The difficulty instance controls how likely certain random effects are to occur, or if certain mob abilities are enabled.
+         * 
          * @param inst The new difficulty instance.
          */
-        public void setDifficulty(DifficultyInstance inst)
-        {
+        public void setDifficulty(DifficultyInstance inst) {
             this.difficulty = inst;
         }
 
         /**
          * Retrieves the type of mob spawn that happened (the event that caused the spawn). The enum names are self-explanatory.
+         * 
          * @return The mob spawn type.
          * @see MobSpawnType
          */
-        public MobSpawnType getSpawnType()
-        {
+        public MobSpawnType getSpawnType() {
             return this.spawnType;
         }
 
         /**
          * Retrieves the {@link SpawnGroupData} for this entity. When spawning mobs in a loop, this group data is used for the entire group and impacts future spawns.
          * This is how entities like horses ensure that the whole group spawns as a single variant. How this is used varies on a per-entity basis.
+         * 
          * @return The spawn group data.
          */
         @Nullable
-        public SpawnGroupData getSpawnData()
-        {
+        public SpawnGroupData getSpawnData() {
             return this.spawnData;
         }
 
         /**
          * Sets the spawn data for this entity. If this event is cancelled, this value is not used, since {@link Mob#finalizeSpawn} will not be called.
+         * 
          * @param data The new spawn data
          * @see FinalizeSpawn#getSpawnData
          */
-        public void setSpawnData(@Nullable SpawnGroupData data)
-        {
+        public void setSpawnData(@Nullable SpawnGroupData data) {
             this.spawnData = data;
         }
 
         /**
          * This is the NBT data the entity was loaded from, if applicable. It is unknown if the entity has already been loaded from this data, or if it will be loaded later.
          * Callers should not modify this data. If you need to change the data, you can create a copy, modify it, and set it via {@link FinalizeSpawn#setSpawnTag}
+         * 
          * @return The spawn data this entity was or will be loaded from, if any.
          */
         @Nullable
-        public CompoundTag getSpawnTag()
-        {
+        public CompoundTag getSpawnTag() {
             return this.spawnTag;
         }
 
         /**
          * Sets the spawn data for this event, which will be propagated to {@link Mob#finalizeSpawn} unless cancelled.
          * The only vanilla mob known to use this tag for anything in finalize is tropical fish for setting the variant when spawned via bucket.
+         * 
          * @param tag The new spawn tag
          */
-        public void setSpawnTag(@Nullable CompoundTag tag)
-        {
+        public void setSpawnTag(@Nullable CompoundTag tag) {
             this.spawnTag = tag;
         }
 
         /**
          * Retrieves the underlying {@link BaseSpawner} instance if this mob was created by a Mob Spawner of some form.
          * This is always null unless {@link #getSpawnType()} is {@link MobSpawnType#SPAWNER}, and may still be null even then.
+         * 
          * @return The BaseSpawner responsible for triggering the spawn, or null if none is available.
          */
         @Nullable
-        public BaseSpawner getSpawner()
-        {
+        public BaseSpawner getSpawner() {
             return spawner;
         }
 
@@ -381,20 +367,20 @@ public abstract class MobSpawnEvent extends EntityEvent
          * This method must be used if you want to block the spawn, as canceling the event only blocks the call to {@link Mob#finalizeSpawn}.<p>
          * Note that if the spawn is cancelled, but the event is not, then {@link Mob#finalizeSpawn} will still be called, but the entity will not be spawned.
          * Usually that has no side effects, but callers should be aware.
+         * 
          * @param cancel If the spawn should be cancelled (or not).
          */
-        public void setSpawnCancelled(boolean cancel)
-        {
+        public void setSpawnCancelled(boolean cancel) {
             this.getEntity().setSpawnCancelled(cancel);
         }
 
         /**
          * Returns the current spawn cancellation status, which can be changed via {@link FinalizeSpawn#setSpawnCancelled(boolean)}.
+         * 
          * @return If this mob's spawn is cancelled or not.
          * @implNote This is enforced in {@link NeoForgeEventHandler#builtinMobSpawnBlocker} and a patch in {@link WorldGenRegion#addEntity}
          */
-        public boolean isSpawnCancelled()
-        {
+        public boolean isSpawnCancelled() {
             return this.getEntity().isSpawnCancelled();
         }
     }
@@ -418,10 +404,8 @@ public abstract class MobSpawnEvent extends EntityEvent
     // TODO: 1.20 Move to standalone class, as it is unrelated to the complex mob spawning flow.
     // Such a refactor will allow the BaseSpawner and MobSpawnType params to be hoisted to MobSpawnEvent.
     @HasResult
-    public static class AllowDespawn extends MobSpawnEvent
-    {
-        public AllowDespawn(Mob mob, ServerLevelAccessor level)
-        {
+    public static class AllowDespawn extends MobSpawnEvent {
+        public AllowDespawn(Mob mob, ServerLevelAccessor level) {
             super(mob, level, mob.getX(), mob.getY(), mob.getZ());
         }
     }

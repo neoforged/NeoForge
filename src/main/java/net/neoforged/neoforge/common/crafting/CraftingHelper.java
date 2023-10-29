@@ -9,6 +9,7 @@ import com.google.gson.*;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import java.util.function.Function;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.Container;
@@ -27,10 +28,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.function.Function;
-
-public class CraftingHelper
-{
+public class CraftingHelper {
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LogManager.getLogger();
     @SuppressWarnings("unused")
@@ -70,18 +68,14 @@ public class CraftingHelper
 
     @ApiStatus.Internal
     public static Codec<Ingredient> makeIngredientCodec(boolean allowEmpty, Codec<Ingredient> vanillaCodec) {
-        var compoundIngredientCodec = ExtraCodecs.lazyInitializedCodec(() ->
-                allowEmpty ? CompoundIngredient.DIRECT_CODEC : CompoundIngredient.DIRECT_CODEC_NONEMPTY);
+        var compoundIngredientCodec = ExtraCodecs.lazyInitializedCodec(() -> allowEmpty ? CompoundIngredient.DIRECT_CODEC : CompoundIngredient.DIRECT_CODEC_NONEMPTY);
         return NeoForgeExtraCodecs.withAlternative(
                 // Compound ingredient handling
                 compoundIngredientCodec.flatComapMap(
                         Function.identity(),
-                        i -> i instanceof CompoundIngredient c ?
-                                DataResult.success(c) :
-                                DataResult.error(() -> "Not a compound ingredient")),
+                        i -> i instanceof CompoundIngredient c ? DataResult.success(c) : DataResult.error(() -> "Not a compound ingredient")),
                 // Otherwise choose between custom and vanilla
-                makeIngredientCodec0(true, vanillaCodec)
-        );
+                makeIngredientCodec0(true, vanillaCodec));
     }
 
     // Choose between dispatch codec for custom ingredients and vanilla codec
@@ -96,8 +90,7 @@ public class CraftingHelper
         // Either codec to combine with the vanilla ingredient codec:
         Codec<Either<Ingredient, Ingredient>> eitherCodec = ExtraCodecs.either(
                 dispatchCodec,
-                vanillaCodec
-        );
+                vanillaCodec);
         return eitherCodec.xmap(either -> either.map(i -> i, i -> i), ingredient -> {
             // Prefer writing without the "type" field if possible:
             if (ingredient.getType() == NeoForgeMod.VANILLA_INGREDIENT_TYPE.get()) {

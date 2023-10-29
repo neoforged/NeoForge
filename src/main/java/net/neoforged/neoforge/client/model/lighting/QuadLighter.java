@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.model.lighting;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import java.util.Objects;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -15,10 +16,7 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.IQuadTransformer;
-
 import org.joml.Vector3f;
-
-import java.util.Objects;
 
 /**
  * Base class for all quad lighting providers.
@@ -28,8 +26,7 @@ import java.util.Objects;
  * @see FlatQuadLighter
  * @see SmoothQuadLighter
  */
-public abstract class QuadLighter
-{
+public abstract class QuadLighter {
     private static final float[] WHITE = new float[] { 1.0f, 1.0f, 1.0f };
 
     private final BlockColors colors;
@@ -48,8 +45,7 @@ public abstract class QuadLighter
     private final byte[][] normals = new byte[4][3];
     private final int[] packedLightmaps = new int[4];
 
-    protected QuadLighter(BlockColors colors)
-    {
+    protected QuadLighter(BlockColors colors) {
         this.colors = colors;
     }
 
@@ -59,11 +55,9 @@ public abstract class QuadLighter
 
     protected abstract int calculateLightmap(float[] position, byte[] normal);
 
-    public final void setup(BlockAndTintGetter level, BlockPos pos, BlockState state)
-    {
+    public final void setup(BlockAndTintGetter level, BlockPos pos, BlockState state) {
         var hash = Objects.hash(level, pos, state);
-        if (this.level != null && this.currentHash == hash)
-        {
+        if (this.level != null && this.currentHash == hash) {
             return; // If we are drawing a block at the same position as before, don't re-compute anything
         }
         this.currentHash = hash;
@@ -74,16 +68,13 @@ public abstract class QuadLighter
         computeLightingAt(level, pos, state);
     }
 
-    public final void reset()
-    {
+    public final void reset() {
         this.level = null; // Invalidates part of the state to force a re-computation
     }
 
-    public final void process(VertexConsumer consumer, PoseStack.Pose pose, BakedQuad quad, int overlay)
-    {
+    public final void process(VertexConsumer consumer, PoseStack.Pose pose, BakedQuad quad, int overlay) {
         var vertices = quad.getVertices();
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++) {
             int offset = i * IQuadTransformer.STRIDE;
             positions[i][0] = Float.intBitsToFloat(vertices[offset + IQuadTransformer.POSITION]);
             positions[i][1] = Float.intBitsToFloat(vertices[offset + IQuadTransformer.POSITION + 1]);
@@ -94,8 +85,7 @@ public abstract class QuadLighter
             normals[i][2] = (byte) ((packedNormal >> 16) & 0xFF);
             packedLightmaps[i] = vertices[offset + IQuadTransformer.UV2];
         }
-        if (normals[0][0] == 0 && normals[0][1] == 0 && normals[0][2] == 0)
-        {
+        if (normals[0][0] == 0 && normals[0][1] == 0 && normals[0][2] == 0) {
             Vector3f a = new Vector3f(positions[0]);
             Vector3f ab = new Vector3f(positions[1]);
             Vector3f ac = new Vector3f(positions[2]);
@@ -103,16 +93,14 @@ public abstract class QuadLighter
             ab.sub(a);
             ab.cross(ac);
             ab.normalize();
-            for (int v = 0; v < 4; v++)
-            {
+            for (int v = 0; v < 4; v++) {
                 normals[v][0] = (byte) (ab.x() * 127);
                 normals[v][1] = (byte) (ab.y() * 127);
                 normals[v][2] = (byte) (ab.z() * 127);
             }
         }
 
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++) {
             var position = positions[i];
             var normal = normals[i];
             int packedLightmap = packedLightmaps[i];
@@ -127,17 +115,15 @@ public abstract class QuadLighter
             brightness[i] = calculateBrightness(adjustedPosition) * shade;
             int newLightmap = calculateLightmap(adjustedPosition, normal);
             lightmap[i] = Math.max(packedLightmap & 0xFFFF, newLightmap & 0xFFFF) |
-                          (Math.max((packedLightmap >> 16) & 0xFFFF, (newLightmap >> 16) & 0xFFFF) << 16);
+                    (Math.max((packedLightmap >> 16) & 0xFFFF, (newLightmap >> 16) & 0xFFFF) << 16);
         }
 
         var color = quad.isTinted() ? getColorFast(quad.getTintIndex()) : WHITE;
         consumer.putBulkData(pose, quad, brightness, color[0], color[1], color[2], lightmap, overlay, true);
     }
 
-    private float[] getColorFast(int tintIndex)
-    {
-        if (tintIndex != cachedTintIndex)
-        {
+    private float[] getColorFast(int tintIndex) {
+        if (tintIndex != cachedTintIndex) {
             var packedColor = colors.getColor(state, level, pos, tintIndex);
             cachedTintIndex = tintIndex;
             cachedTintColor[0] = ((packedColor >> 16) & 0xFF) / 255F;
@@ -147,8 +133,7 @@ public abstract class QuadLighter
         return cachedTintColor;
     }
 
-    public static float calculateShade(float normalX, float normalY, float normalZ, boolean constantAmbientLight)
-    {
+    public static float calculateShade(float normalX, float normalY, float normalZ, boolean constantAmbientLight) {
         float yFactor = constantAmbientLight ? 0.9F : ((3.0F + normalY) / 4.0F);
         return Math.min(normalX * normalX * 0.6F + normalY * normalY * yFactor + normalZ * normalZ * 0.8F, 1.0F);
     }
@@ -159,10 +144,8 @@ public abstract class QuadLighter
      * light emission.
      */
     @Deprecated(forRemoval = true, since = "1.20.1")
-    protected static int getLightColor(BlockAndTintGetter level, BlockPos pos, BlockState state)
-    {
-        if (state.emissiveRendering(level, pos))
-        {
+    protected static int getLightColor(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        if (state.emissiveRendering(level, pos)) {
             return LightTexture.FULL_BRIGHT;
         }
         int skyLight = level.getBrightness(LightLayer.SKY, pos);

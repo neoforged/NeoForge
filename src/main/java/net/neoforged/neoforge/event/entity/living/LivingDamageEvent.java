@@ -5,10 +5,10 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
-import net.neoforged.neoforge.common.CommonHooks;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.CommonHooks;
 
 /**
  * LivingDamageEvent is fired just before damage is applied to entity.<br>
@@ -27,22 +27,28 @@ import net.neoforged.bus.api.ICancellableEvent;
  * If this event is canceled, the Entity is not hurt. Used resources WILL NOT be restored.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
+ * 
  * @see LivingHurtEvent
  **/
-public class LivingDamageEvent extends LivingEvent implements ICancellableEvent
-{
+public class LivingDamageEvent extends LivingEvent implements ICancellableEvent {
     private final DamageSource source;
     private float amount;
-    public LivingDamageEvent(LivingEntity entity, DamageSource source, float amount)
-    {
+
+    public LivingDamageEvent(LivingEntity entity, DamageSource source, float amount) {
         super(entity);
         this.source = source;
         this.amount = amount;
     }
 
-    public DamageSource getSource() { return source; }
+    public DamageSource getSource() {
+        return source;
+    }
 
-    public float getAmount() { return amount; }
+    public float getAmount() {
+        return amount;
+    }
 
-    public void setAmount(float amount) { this.amount = amount; }
+    public void setAmount(float amount) {
+        this.amount = amount;
+    }
 }

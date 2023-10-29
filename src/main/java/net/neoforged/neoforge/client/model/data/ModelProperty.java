@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.model.data;
 
 import com.google.common.base.Predicates;
-
 import java.util.function.Predicate;
 
 /**
@@ -16,23 +15,19 @@ import java.util.function.Predicate;
  *
  * @see ModelData
  */
-public class ModelProperty<T> implements Predicate<T>
-{
+public class ModelProperty<T> implements Predicate<T> {
     private final Predicate<T> predicate;
 
-    public ModelProperty()
-    {
+    public ModelProperty() {
         this(Predicates.alwaysTrue());
     }
 
-    public ModelProperty(Predicate<T> predicate)
-    {
+    public ModelProperty(Predicate<T> predicate) {
         this.predicate = predicate;
     }
 
     @Override
-    public boolean test(T value)
-    {
+    public boolean test(T value) {
         return predicate.test(value);
     }
 }

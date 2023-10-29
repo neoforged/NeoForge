@@ -9,9 +9,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.event.entity.living.ShieldBlockEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.living.ShieldBlockEvent;
 
 /**
  * The ShieldBlockTest is the test mod for the ShieldBlockEvent.
@@ -21,15 +21,12 @@ import net.neoforged.fml.common.Mod;
  */
 @Mod(ShieldBlockTest.MOD_ID)
 @Mod.EventBusSubscriber
-public class ShieldBlockTest
-{
+public class ShieldBlockTest {
     static final String MOD_ID = "shield_block_event";
 
     @SubscribeEvent
-    public static void shieldBlock(ShieldBlockEvent event)
-    {
-        if (event.getDamageSource().getDirectEntity() instanceof AbstractArrow arrow && event.getEntity() instanceof Player player)
-        {
+    public static void shieldBlock(ShieldBlockEvent event) {
+        if (event.getDamageSource().getDirectEntity() instanceof AbstractArrow arrow && event.getEntity() instanceof Player player) {
             player.getInventory().add(new ItemStack(Items.ARROW));
             event.setBlockedDamage(event.getOriginalBlockedDamage() / 2);
             arrow.discard();

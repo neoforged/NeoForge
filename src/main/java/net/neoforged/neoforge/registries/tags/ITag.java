@@ -5,11 +5,10 @@
 
 package net.neoforged.neoforge.registries.tags;
 
-import net.minecraft.tags.TagKey;
-import net.minecraft.util.RandomSource;
-
 import java.util.Optional;
 import java.util.stream.Stream;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
 
 /**
  * A tag is a collection of elements with an identifying {@link TagKey tag key}.
@@ -19,8 +18,7 @@ import java.util.stream.Stream;
  * This means that the same tag instance will be rebound across reloads assuming the same registry instance is in use.
  * It is safe to store instances of this class for long periods of time.
  */
-public interface ITag<V> extends Iterable<V>
-{
+public interface ITag<V> extends Iterable<V> {
     TagKey<V> getKey();
 
     Stream<V> stream();
@@ -35,7 +33,7 @@ public interface ITag<V> extends Iterable<V>
 
     /**
      * @return {@code true} if this tag was loaded with a value (including empty),
-     * otherwise the tag is always empty and this returns {@code false}
+     *         otherwise the tag is always empty and this returns {@code false}
      */
     boolean isBound();
 }

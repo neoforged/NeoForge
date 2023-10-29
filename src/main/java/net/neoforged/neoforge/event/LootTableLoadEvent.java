@@ -7,10 +7,10 @@ package net.neoforged.neoforge.event;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * Fired when a {@link LootTable} is loaded from JSON.
@@ -23,29 +23,24 @@ import net.neoforged.fml.LogicalSide;
  * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#SERVER logical server}.</p>
  */
-public class LootTableLoadEvent extends Event implements ICancellableEvent
-{
+public class LootTableLoadEvent extends Event implements ICancellableEvent {
     private final ResourceLocation name;
     private LootTable table;
 
-    public LootTableLoadEvent(ResourceLocation name, LootTable table)
-    {
+    public LootTableLoadEvent(ResourceLocation name, LootTable table) {
         this.name = name;
         this.table = table;
     }
 
-    public ResourceLocation getName()
-    {
+    public ResourceLocation getName() {
         return this.name;
     }
 
-    public LootTable getTable()
-    {
+    public LootTable getTable() {
         return this.table;
     }
 
-    public void setTable(LootTable table)
-    {
+    public void setTable(LootTable table) {
         this.table = table;
     }
 }

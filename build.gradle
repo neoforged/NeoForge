@@ -1,4 +1,5 @@
 plugins {
+    id 'com.diffplug.spotless' version '6.22.0' apply false
     id 'net.neoforged.licenser' version '0.7.2' apply false
 }
 
@@ -10,10 +11,16 @@ allprojects {
     }
 }
 
+apply plugin: 'com.diffplug.spotless'
 apply plugin: 'net.neoforged.licenser'
 
+repositories {
+    mavenCentral()
+}
+
+// Put licenser here otherwise it tries to license all source sets including decompiled MC sources
 license {
-    header = file('HEADER.txt')
+    header = file('codeformat/HEADER.txt')
     skipExistingHeaders = true
     tasks {
         neoforge {
@@ -22,5 +29,21 @@ license {
                 include "**/*.java"
             })
         }
+    }
+}
+
+// Put spotless here because it wants the files to live inside the project root
+spotless {
+    java {
+        target rootProject.fileTree("src", {
+            include "**/*.java"
+        })
+
+        endWithNewline()
+        indentWithSpaces()
+        removeUnusedImports()
+        toggleOffOn()
+        eclipse().configFile file('codeformat/formatter-config.xml')
+        importOrder()
     }
 }

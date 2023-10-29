@@ -20,8 +20,7 @@ import org.apache.logging.log4j.Logger;
  * after construction, if registries are already populated.
  */
 @Mod(RegistryObjectTest.MODID)
-public class RegistryObjectTest
-{
+public class RegistryObjectTest {
 
     static final String MODID = "registry_object_test";
 
@@ -29,16 +28,14 @@ public class RegistryObjectTest
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public RegistryObjectTest()
-    {
+    public RegistryObjectTest() {
         if (!ENABLED) return;
 
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(this::commonSetup);
     }
 
-    public void commonSetup(FMLCommonSetupEvent event)
-    {
+    public void commonSetup(FMLCommonSetupEvent event) {
         LOGGER.info("Stone 1: {}", RegistryObject.create(new ResourceLocation("minecraft", "stone"), ForgeRegistries.BLOCKS).get());
         LOGGER.info("Stone 2: {}", RegistryObject.create(new ResourceLocation("minecraft", "stone"), ForgeRegistries.Keys.BLOCKS, MODID).get());
     }

@@ -8,9 +8,9 @@ package net.neoforged.neoforge.client.event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -23,15 +23,13 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @see ViewportEvent.ComputeFov
  */
-public class ComputeFovModifierEvent extends Event
-{
+public class ComputeFovModifierEvent extends Event {
     private final Player player;
     private final float fovModifier;
     private float newFovModifier;
 
     @ApiStatus.Internal
-    public ComputeFovModifierEvent(Player player, float fovModifier)
-    {
+    public ComputeFovModifierEvent(Player player, float fovModifier) {
         this.player = player;
         this.fovModifier = fovModifier;
         this.setNewFovModifier((float) Mth.lerp(Minecraft.getInstance().options.fovEffectScale().get(), 1.0F, fovModifier));
@@ -40,24 +38,21 @@ public class ComputeFovModifierEvent extends Event
     /**
      * {@return the player affected by this event}
      */
-    public Player getPlayer()
-    {
+    public Player getPlayer() {
         return player;
     }
 
     /**
      * {@return the original field of vision (FOV) of the player, before any modifications or interpolation}
      */
-    public float getFovModifier()
-    {
+    public float getFovModifier() {
         return fovModifier;
     }
 
     /**
      * {@return the current field of vision (FOV) of the player}
      */
-    public float getNewFovModifier()
-    {
+    public float getNewFovModifier() {
         return newFovModifier;
     }
 
@@ -66,8 +61,7 @@ public class ComputeFovModifierEvent extends Event
      *
      * @param newFovModifier the new field of vision (FOV)
      */
-    public void setNewFovModifier(float newFovModifier)
-    {
+    public void setNewFovModifier(float newFovModifier) {
         this.newFovModifier = newFovModifier;
     }
 }

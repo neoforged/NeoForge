@@ -7,40 +7,35 @@ package net.neoforged.neoforge.debug.world;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import java.util.UUID;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.UUID;
-
 @Mod(ChunkWatchEventTest.MODID)
-public class ChunkWatchEventTest
-{
+public class ChunkWatchEventTest {
     public static final String MODID = "chunkwatchworldtest";
 
     private static final boolean ENABLED = false;
     private static Logger logger;
     private static Object2IntMap<UUID> watchedByPlayer = new Object2IntOpenHashMap<>();
 
-    public ChunkWatchEventTest()
-    {
+    public ChunkWatchEventTest() {
         logger = LogManager.getLogger();
 
-        if (ENABLED)
-        {
+        if (ENABLED) {
             NeoForge.EVENT_BUS.register(ChunkWatchEventTest.class);
         }
     }
 
     @SubscribeEvent
-    public static void onUnwatch(ChunkWatchEvent.UnWatch event)
-    {
+    public static void onUnwatch(ChunkWatchEvent.UnWatch event) {
         int watched = watchedByPlayer.getInt(event.getPlayer().getUUID());
         --watched;
         watchedByPlayer.put(event.getPlayer().getUUID(), watched);
@@ -50,8 +45,7 @@ public class ChunkWatchEventTest
     }
 
     @SubscribeEvent
-    public static void onWatch(ChunkWatchEvent.Watch event)
-    {
+    public static void onWatch(ChunkWatchEvent.Watch event) {
         int watched = watchedByPlayer.getInt(event.getPlayer().getUUID());
         ++watched;
         watchedByPlayer.put(event.getPlayer().getUUID(), watched);
@@ -61,8 +55,7 @@ public class ChunkWatchEventTest
     }
 
     @Nullable
-    private static ResourceLocation getDimensionName(Level w)
-    {
+    private static ResourceLocation getDimensionName(Level w) {
         return w.dimension().location();
     }
 }

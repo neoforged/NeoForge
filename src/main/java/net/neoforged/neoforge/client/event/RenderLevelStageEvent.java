@@ -5,13 +5,10 @@
 
 package net.neoforged.neoforge.client.event;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.Nullable;
-
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -19,12 +16,12 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.NeoForgeRenderTypes;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.client.NeoForgeRenderTypes;
+import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Matrix4f;
 
 /**
@@ -36,8 +33,7 @@ import org.joml.Matrix4f;
  * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}. </p>
  */
-public class RenderLevelStageEvent extends Event
-{
+public class RenderLevelStageEvent extends Event {
     private final Stage stage;
     private final LevelRenderer levelRenderer;
     private final PoseStack poseStack;
@@ -47,8 +43,7 @@ public class RenderLevelStageEvent extends Event
     private final Camera camera;
     private final Frustum frustum;
 
-    public RenderLevelStageEvent(Stage stage, LevelRenderer levelRenderer, PoseStack poseStack, Matrix4f projectionMatrix, int renderTick, float partialTick, Camera camera, Frustum frustum)
-    {
+    public RenderLevelStageEvent(Stage stage, LevelRenderer levelRenderer, PoseStack poseStack, Matrix4f projectionMatrix, int renderTick, float partialTick, Camera camera, Frustum frustum) {
         this.stage = stage;
         this.levelRenderer = levelRenderer;
         this.poseStack = poseStack;
@@ -63,64 +58,56 @@ public class RenderLevelStageEvent extends Event
      * {@return the current {@linkplain Stage stage} that is being rendered. Check this before doing rendering to ensure
      * that rendering happens at the appropriate time.}
      */
-    public Stage getStage()
-    {
+    public Stage getStage() {
         return stage;
     }
 
     /**
      * {@return the level renderer}
      */
-    public LevelRenderer getLevelRenderer()
-    {
+    public LevelRenderer getLevelRenderer() {
         return levelRenderer;
     }
 
     /**
      * {@return the pose stack used for rendering}
      */
-    public PoseStack getPoseStack()
-    {
+    public PoseStack getPoseStack() {
         return poseStack;
     }
 
     /**
      * {@return the projection matrix}
      */
-    public Matrix4f getProjectionMatrix()
-    {
+    public Matrix4f getProjectionMatrix() {
         return projectionMatrix;
     }
 
     /**
      * {@return the current "ticks" value in the {@linkplain LevelRenderer level renderer}}
      */
-    public int getRenderTick()
-    {
+    public int getRenderTick() {
         return renderTick;
     }
 
     /**
      * {@return the current partialTick value used for rendering}
      */
-    public float getPartialTick()
-    {
+    public float getPartialTick() {
         return partialTick;
     }
 
     /**
      * {@return the camera}
      */
-    public Camera getCamera()
-    {
+    public Camera getCamera() {
         return camera;
     }
 
     /**
      * {@return the frustum}
      */
-    public Frustum getFrustum()
-    {
+    public Frustum getFrustum() {
         return frustum;
     }
 
@@ -133,28 +120,26 @@ public class RenderLevelStageEvent extends Event
      * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}. </p>
      */
-    public static class RegisterStageEvent extends Event implements IModBusEvent
-    {
+    public static class RegisterStageEvent extends Event implements IModBusEvent {
         /**
-         * @param name The name of your Stage.
+         * @param name       The name of your Stage.
          * @param renderType
-         *     If not null, called automatically by LevelRenderer.renderChunkLayer if the RenderType passed into it matches this one.
-         *     If null, needs to be called manually by whoever implements it.
+         *                   If not null, called automatically by LevelRenderer.renderChunkLayer if the RenderType passed into it matches this one.
+         *                   If null, needs to be called manually by whoever implements it.
          *
          * @throws IllegalArgumentException if the RenderType passed is already mapped to a Stage.
          */
-        public Stage register(ResourceLocation name, @Nullable RenderType renderType) throws IllegalArgumentException
-        {
+        public Stage register(ResourceLocation name, @Nullable RenderType renderType) throws IllegalArgumentException {
             return Stage.register(name, renderType);
         }
     }
 
     /**
      * A time during level rendering for you to render custom things into the world.
+     * 
      * @see RegisterStageEvent
      */
-    public static class Stage
-    {
+    public static class Stage {
         private static final Map<RenderType, Stage> RENDER_TYPE_STAGES = new HashMap<>();
 
         /**
@@ -214,27 +199,23 @@ public class RenderLevelStageEvent extends Event
 
         private final String name;
 
-        private Stage(String name)
-        {
+        private Stage(String name) {
             this.name = name;
         }
 
-        private static Stage register(ResourceLocation name, @Nullable RenderType renderType) throws IllegalArgumentException
-        {
+        private static Stage register(ResourceLocation name, @Nullable RenderType renderType) throws IllegalArgumentException {
             Stage stage = new Stage(name.toString());
             if (renderType != null && RENDER_TYPE_STAGES.putIfAbsent(renderType, stage) != null)
                 throw new IllegalArgumentException("Attempted to replace an existing RenderLevelStageEvent.Stage for a RenderType: Stage = " + stage + ", RenderType = " + renderType);
             return stage;
         }
 
-        private static Stage register(String name, @Nullable RenderType renderType) throws IllegalArgumentException
-        {
+        private static Stage register(String name, @Nullable RenderType renderType) throws IllegalArgumentException {
             return register(new ResourceLocation(name), renderType);
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return this.name;
         }
 
@@ -242,8 +223,7 @@ public class RenderLevelStageEvent extends Event
          * {@return the {@linkplain Stage stage} bound to the {@linkplain RenderType render type}, or null if no value is present}
          */
         @Nullable
-        public static Stage fromRenderType(RenderType renderType)
-        {
+        public static Stage fromRenderType(RenderType renderType) {
             return RENDER_TYPE_STAGES.get(renderType);
         }
     }

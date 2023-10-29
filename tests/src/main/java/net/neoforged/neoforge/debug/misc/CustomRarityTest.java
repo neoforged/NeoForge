@@ -26,19 +26,15 @@ public class CustomRarityTest {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
     private static final RegistryObject<Item> CUSTOM_ITEM = ITEMS.register(
             "test",
-            () -> new Item(new Item.Properties())
-            {
+            () -> new Item(new Item.Properties()) {
                 @Override
-                public Rarity getRarity(ItemStack p_41461_)
-                {
+                public Rarity getRarity(ItemStack p_41461_) {
                     return CUSTOM_RARITY;
                 }
-            }
-    );
+            });
 
     public CustomRarityTest() {
-        if (ENABLED)
-        {
+        if (ENABLED) {
             ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         }
     }

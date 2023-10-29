@@ -5,6 +5,11 @@
 
 package net.neoforged.neoforge.client.model.generators;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.gson.JsonObject;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,13 +24,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.JsonObject;
-
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -51,8 +49,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @see BlockStateProvider
  */
-public class VariantBlockStateBuilder implements IGeneratedBlockState
-{
+public class VariantBlockStateBuilder implements IGeneratedBlockState {
 
     private final Block owner;
     private final Map<PartialBlockstate, ConfiguredModelList> models = new LinkedHashMap<>();
@@ -77,8 +74,8 @@ public class VariantBlockStateBuilder implements IGeneratedBlockState
         Preconditions.checkState(missingStates.isEmpty(), "Blockstate for block %s does not cover all states. Missing: %s", owner, missingStates);
         JsonObject variants = new JsonObject();
         getModels().entrySet().stream()
-            .sorted(Entry.comparingByKey(PartialBlockstate.comparingByProperties()))
-            .forEach(entry -> variants.add(entry.getKey().toString(), entry.getValue().toJSON()));
+                .sorted(Entry.comparingByKey(PartialBlockstate.comparingByProperties()))
+                .forEach(entry -> variants.add(entry.getKey().toString(), entry.getValue().toJSON()));
         JsonObject main = new JsonObject();
         main.add("variants", variants);
         return main;
@@ -121,8 +118,8 @@ public class VariantBlockStateBuilder implements IGeneratedBlockState
      * throwing an exception if the state has already been configured. Otherwise,
      * simply calls {@link #addModels(PartialBlockstate, ConfiguredModel...)}.
      *
-     * @param state  The {@link PartialBlockstate partial state} for which to set
-     *               the models
+     * @param state The {@link PartialBlockstate partial state} for which to set
+     *              the models
      * @param model A set of models to assign to this state
      * @return this builder
      * @throws IllegalArgumentException if {@code state} has already been configured
@@ -312,7 +309,7 @@ public class VariantBlockStateBuilder implements IGeneratedBlockState
                         return -1;
                     } else if (val2 == null && val1 != null) {
                         return 1;
-                    } else if (val1 != null && val2 != null){
+                    } else if (val1 != null && val2 != null) {
                         int cmp = val1.compareTo(val2);
                         if (cmp != 0) {
                             return cmp;

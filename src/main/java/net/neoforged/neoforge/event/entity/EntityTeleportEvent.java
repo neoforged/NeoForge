@@ -5,16 +5,16 @@
 
 package net.neoforged.neoforge.event.entity;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,8 +28,7 @@ import org.jetbrains.annotations.Nullable;
  * <br>
  * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.<br>
  **/
-public class EntityTeleportEvent extends EntityEvent implements ICancellableEvent
-{
+public class EntityTeleportEvent extends EntityEvent implements ICancellableEvent {
     protected double targetX;
     protected double targetY;
     protected double targetZ;
@@ -41,17 +40,49 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
         this.targetZ = targetZ;
     }
 
-    public double getTargetX() { return targetX; }
-    public void setTargetX(double targetX) { this.targetX = targetX; }
-    public double getTargetY() { return targetY; }
-    public void setTargetY(double targetY) { this.targetY = targetY; }
-    public double getTargetZ() { return targetZ; }
-    public void setTargetZ(double targetZ) { this.targetZ = targetZ; }
-    public Vec3 getTarget() { return new Vec3(this.targetX, this.targetY, this.targetZ); }
-    public double getPrevX() { return getEntity().getX(); }
-    public double getPrevY() { return getEntity().getY(); }
-    public double getPrevZ() { return getEntity().getZ(); }
-    public Vec3 getPrev() { return getEntity().position(); }
+    public double getTargetX() {
+        return targetX;
+    }
+
+    public void setTargetX(double targetX) {
+        this.targetX = targetX;
+    }
+
+    public double getTargetY() {
+        return targetY;
+    }
+
+    public void setTargetY(double targetY) {
+        this.targetY = targetY;
+    }
+
+    public double getTargetZ() {
+        return targetZ;
+    }
+
+    public void setTargetZ(double targetZ) {
+        this.targetZ = targetZ;
+    }
+
+    public Vec3 getTarget() {
+        return new Vec3(this.targetX, this.targetY, this.targetZ);
+    }
+
+    public double getPrevX() {
+        return getEntity().getX();
+    }
+
+    public double getPrevY() {
+        return getEntity().getY();
+    }
+
+    public double getPrevZ() {
+        return getEntity().getZ();
+    }
+
+    public Vec3 getPrev() {
+        return getEntity().position();
+    }
 
     /**
      * EntityTeleportEvent.TeleportCommand is fired before a living entity is teleported
@@ -68,10 +99,8 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * If this event is canceled, the entity will not be teleported.
      */
-    public static class TeleportCommand extends EntityTeleportEvent implements ICancellableEvent
-    {
-        public TeleportCommand(Entity entity, double targetX, double targetY, double targetZ)
-        {
+    public static class TeleportCommand extends EntityTeleportEvent implements ICancellableEvent {
+        public TeleportCommand(Entity entity, double targetX, double targetY, double targetZ) {
             super(entity, targetX, targetY, targetZ);
         }
     }
@@ -91,10 +120,8 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * If this event is canceled, the entity will not be teleported.
      */
-    public static class SpreadPlayersCommand extends EntityTeleportEvent implements ICancellableEvent
-    {
-        public SpreadPlayersCommand(Entity entity, double targetX, double targetY, double targetZ)
-        {
+    public static class SpreadPlayersCommand extends EntityTeleportEvent implements ICancellableEvent {
+        public SpreadPlayersCommand(Entity entity, double targetX, double targetY, double targetZ) {
             super(entity, targetX, targetY, targetZ);
         }
     }
@@ -113,18 +140,15 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * If this event is canceled, the entity will not be teleported.
      */
-    public static class EnderEntity extends EntityTeleportEvent implements ICancellableEvent
-    {
+    public static class EnderEntity extends EntityTeleportEvent implements ICancellableEvent {
         private final LivingEntity entityLiving;
 
-        public EnderEntity(LivingEntity entity, double targetX, double targetY, double targetZ)
-        {
+        public EnderEntity(LivingEntity entity, double targetX, double targetY, double targetZ) {
             super(entity, targetX, targetY, targetZ);
             this.entityLiving = entity;
         }
 
-        public LivingEntity getEntityLiving()
-        {
+        public LivingEntity getEntityLiving() {
             return entityLiving;
         }
     }
@@ -143,16 +167,14 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * If this event is canceled, the entity will not be teleported.
      */
-    public static class EnderPearl extends EntityTeleportEvent implements ICancellableEvent
-    {
+    public static class EnderPearl extends EntityTeleportEvent implements ICancellableEvent {
         private final ServerPlayer player;
         private final ThrownEnderpearl pearlEntity;
         private float attackDamage;
         private final HitResult hitResult;
 
         @ApiStatus.Internal
-        public EnderPearl(ServerPlayer entity, double targetX, double targetY, double targetZ, ThrownEnderpearl pearlEntity, float attackDamage, HitResult hitResult)
-        {
+        public EnderPearl(ServerPlayer entity, double targetX, double targetY, double targetZ, ThrownEnderpearl pearlEntity, float attackDamage, HitResult hitResult) {
             super(entity, targetX, targetY, targetZ);
             this.pearlEntity = pearlEntity;
             this.player = entity;
@@ -160,29 +182,24 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
             this.hitResult = hitResult;
         }
 
-        public ThrownEnderpearl getPearlEntity()
-        {
+        public ThrownEnderpearl getPearlEntity() {
             return pearlEntity;
         }
 
-        public ServerPlayer getPlayer()
-        {
+        public ServerPlayer getPlayer() {
             return player;
         }
 
         @Nullable
-        public HitResult getHitResult()
-        {
+        public HitResult getHitResult() {
             return this.hitResult;
         }
 
-        public float getAttackDamage()
-        {
+        public float getAttackDamage() {
             return attackDamage;
         }
 
-        public void setAttackDamage(float attackDamage)
-        {
+        public void setAttackDamage(float attackDamage) {
             this.attackDamage = attackDamage;
         }
     }
@@ -201,18 +218,15 @@ public class EntityTeleportEvent extends EntityEvent implements ICancellableEven
      * <br>
      * If this event is canceled, the entity will not be teleported.
      */
-    public static class ChorusFruit extends EntityTeleportEvent implements ICancellableEvent
-    {
+    public static class ChorusFruit extends EntityTeleportEvent implements ICancellableEvent {
         private final LivingEntity entityLiving;
 
-        public ChorusFruit(LivingEntity entity, double targetX, double targetY, double targetZ)
-        {
+        public ChorusFruit(LivingEntity entity, double targetX, double targetY, double targetZ) {
             super(entity, targetX, targetY, targetZ);
             this.entityLiving = entity;
         }
 
-        public LivingEntity getEntityLiving()
-        {
+        public LivingEntity getEntityLiving() {
             return entityLiving;
         }
     }

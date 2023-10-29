@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.common.data.internal;
 
 import com.google.gson.JsonObject;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.HolderLookup;
@@ -27,42 +29,33 @@ import net.minecraft.world.item.crafting.Ingredient.TagValue;
 import net.minecraft.world.item.crafting.Ingredient.Value;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.Tags;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-
-public final class NeoForgeRecipeProvider extends VanillaRecipeProvider
-{
+public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     private final Map<Item, TagKey<Item>> replacements = new HashMap<>();
     private final Set<ResourceLocation> excludes = new HashSet<>();
 
-    public NeoForgeRecipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider)
-    {
+    public NeoForgeRecipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
         super(packOutput, lookupProvider);
     }
 
-    private void exclude(ItemLike item)
-    {
+    private void exclude(ItemLike item) {
         excludes.add(ForgeRegistries.ITEMS.getKey(item.asItem()));
     }
 
-    private void exclude(String name)
-    {
+    private void exclude(String name) {
         excludes.add(new ResourceLocation(name));
     }
 
-    private void replace(ItemLike item, TagKey<Item> tag)
-    {
+    private void replace(ItemLike item, TagKey<Item> tag) {
         replacements.put(item.asItem(), tag);
     }
 
     @Override
-    protected void buildRecipes(RecipeOutput recipeOutput)
-    {
+    protected void buildRecipes(RecipeOutput recipeOutput) {
         replace(Items.STICK, Tags.Items.RODS_WOODEN);
         replace(Items.GOLD_INGOT, Tags.Items.INGOTS_GOLD);
         replace(Items.IRON_INGOT, Tags.Items.INGOTS_IRON);
@@ -102,12 +95,12 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider
                 if (modified != null)
                     recipeOutput.accept(modified);
             }
-            
+
             @Override
             public Advancement.Builder advancement() {
                 return recipeOutput.advancement();
             }
-            
+
             @Override
             public HolderLookup.Provider provider() {
                 return recipeOutput.provider();
@@ -116,8 +109,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider
     }
 
     @Nullable
-    private FinishedRecipe enhance(FinishedRecipe vanilla)
-    {
+    private FinishedRecipe enhance(FinishedRecipe vanilla) {
         if (vanilla instanceof ShapelessRecipeBuilder.Result shapeless)
             return enhance(shapeless);
         if (vanilla instanceof ShapedRecipeBuilder.Result shaped)
@@ -126,16 +118,13 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider
     }
 
     @Nullable
-    private FinishedRecipe enhance(ShapelessRecipeBuilder.Result vanilla)
-    {
+    private FinishedRecipe enhance(ShapelessRecipeBuilder.Result vanilla) {
         List<Ingredient> ingredients = ObfuscationReflectionHelper.getPrivateValue(ShapelessRecipeBuilder.Result.class, vanilla, "ingredients");
         if (ingredients == null) throw new IllegalStateException(ShapelessRecipeBuilder.Result.class.getName() + " has no field ingredients");
         boolean modified = false;
-        for (int x = 0; x < ingredients.size(); x++)
-        {
+        for (int x = 0; x < ingredients.size(); x++) {
             Ingredient ing = enhance(vanilla.id(), ingredients.get(x));
-            if (ing != null)
-            {
+            if (ing != null) {
                 ingredients.set(x, ing);
                 modified = true;
             }
@@ -145,8 +134,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider
 
     @Nullable
     @Override
-    protected CompletableFuture<?> saveAdvancement(CachedOutput output, FinishedRecipe recipe, JsonObject json)
-    {
+    protected CompletableFuture<?> saveAdvancement(CachedOutput output, FinishedRecipe recipe, JsonObject json) {
         // NOOP - We don't replace any of the advancement things yet...
         return null;
     }
@@ -156,18 +144,15 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider
         // NOOP - We don't replace any of the advancement things yet...
         return CompletableFuture.allOf();
     }
-    
+
     @Nullable
-    private FinishedRecipe enhance(ShapedRecipeBuilder.Result vanilla)
-    {
+    private FinishedRecipe enhance(ShapedRecipeBuilder.Result vanilla) {
         Map<Character, Ingredient> ingredients = ObfuscationReflectionHelper.getPrivateValue(ShapedRecipeBuilder.Result.class, vanilla, "key");
         if (ingredients == null) throw new IllegalStateException(ShapedRecipeBuilder.Result.class.getName() + " has no field key");
         boolean modified = false;
-        for (Character x : ingredients.keySet())
-        {
+        for (Character x : ingredients.keySet()) {
             Ingredient ing = enhance(vanilla.id(), ingredients.get(x));
-            if (ing != null)
-            {
+            if (ing != null) {
                 ingredients.put(x, ing);
                 modified = true;
             }
@@ -176,29 +161,23 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider
     }
 
     @Nullable
-    private Ingredient enhance(ResourceLocation name, Ingredient vanilla)
-    {
+    private Ingredient enhance(ResourceLocation name, Ingredient vanilla) {
         if (excludes.contains(name))
             return null;
 
         boolean modified = false;
         List<Value> items = new ArrayList<>();
         Value[] vanillaItems = vanilla.getValues();
-        for (Value entry : vanillaItems)
-        {
-            if (entry instanceof ItemValue)
-            {
+        for (Value entry : vanillaItems) {
+            if (entry instanceof ItemValue) {
                 ItemStack stack = entry.getItems().stream().findFirst().orElse(ItemStack.EMPTY);
                 TagKey<Item> replacement = replacements.get(stack.getItem());
-                if (replacement != null)
-                {
+                if (replacement != null) {
                     items.add(new TagValue(replacement));
                     modified = true;
-                }
-                else
+                } else
                     items.add(entry);
-            }
-            else
+            } else
                 items.add(entry);
         }
         return modified ? Ingredient.fromValues(items.stream()) : null;

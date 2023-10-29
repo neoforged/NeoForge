@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.model.geometry;
 
 import com.mojang.math.Transformation;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -27,8 +26,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * Users should not be instantiating this themselves.
  */
-public class BlockGeometryBakingContext implements IGeometryBakingContext
-{
+public class BlockGeometryBakingContext implements IGeometryBakingContext {
     public final BlockModel owner;
     public final VisibilityData visibilityData = new VisibilityData();
     @Nullable
@@ -40,111 +38,91 @@ public class BlockGeometryBakingContext implements IGeometryBakingContext
     private boolean gui3d = true;
 
     @ApiStatus.Internal
-    public BlockGeometryBakingContext(BlockModel owner)
-    {
+    public BlockGeometryBakingContext(BlockModel owner) {
         this.owner = owner;
     }
 
     @Override
-    public String getModelName()
-    {
+    public String getModelName() {
         return owner.name;
     }
 
-    public boolean hasCustomGeometry()
-    {
+    public boolean hasCustomGeometry() {
         return getCustomGeometry() != null;
     }
 
     @Nullable
-    public IUnbakedGeometry<?> getCustomGeometry()
-    {
+    public IUnbakedGeometry<?> getCustomGeometry() {
         return owner.parent != null && customGeometry == null ? owner.parent.customData.getCustomGeometry() : customGeometry;
     }
 
-    public void setCustomGeometry(IUnbakedGeometry<?> geometry)
-    {
+    public void setCustomGeometry(IUnbakedGeometry<?> geometry) {
         this.customGeometry = geometry;
     }
 
     @Override
-    public boolean isComponentVisible(String part, boolean fallback)
-    {
-        return owner.parent != null && !visibilityData.hasCustomVisibility(part) ?
-                owner.parent.customData.isComponentVisible(part, fallback) :
-                visibilityData.isVisible(part, fallback);
+    public boolean isComponentVisible(String part, boolean fallback) {
+        return owner.parent != null && !visibilityData.hasCustomVisibility(part) ? owner.parent.customData.isComponentVisible(part, fallback) : visibilityData.isVisible(part, fallback);
     }
 
     @Override
-    public boolean hasMaterial(String name)
-    {
+    public boolean hasMaterial(String name) {
         return owner.hasTexture(name);
     }
 
     @Override
-    public Material getMaterial(String name)
-    {
+    public Material getMaterial(String name) {
         return owner.getMaterial(name);
     }
 
     @Override
-    public boolean isGui3d()
-    {
+    public boolean isGui3d() {
         return gui3d;
     }
 
     @Override
-    public boolean useBlockLight()
-    {
+    public boolean useBlockLight() {
         return owner.getGuiLight().lightLikeBlock();
     }
 
     @Override
-    public boolean useAmbientOcclusion()
-    {
+    public boolean useAmbientOcclusion() {
         return owner.hasAmbientOcclusion();
     }
 
     @Override
-    public ItemTransforms getTransforms()
-    {
+    public ItemTransforms getTransforms() {
         return owner.getTransforms();
     }
 
     @Override
-    public Transformation getRootTransform()
-    {
+    public Transformation getRootTransform() {
         if (rootTransform != null)
             return rootTransform;
         return owner.parent != null ? owner.parent.customData.getRootTransform() : Transformation.identity();
     }
 
-    public void setRootTransform(Transformation rootTransform)
-    {
+    public void setRootTransform(Transformation rootTransform) {
         this.rootTransform = rootTransform;
     }
 
     @Nullable
     @Override
-    public ResourceLocation getRenderTypeHint()
-    {
+    public ResourceLocation getRenderTypeHint() {
         if (renderTypeHint != null)
             return renderTypeHint;
         return owner.parent != null ? owner.parent.customData.getRenderTypeHint() : null;
     }
 
-    public void setRenderTypeHint(ResourceLocation renderTypeHint)
-    {
+    public void setRenderTypeHint(ResourceLocation renderTypeHint) {
         this.renderTypeHint = renderTypeHint;
     }
 
-    public void setGui3d(boolean gui3d)
-    {
+    public void setGui3d(boolean gui3d) {
         this.gui3d = gui3d;
     }
 
-    public void copyFrom(BlockGeometryBakingContext other)
-    {
+    public void copyFrom(BlockGeometryBakingContext other) {
         this.customGeometry = other.customGeometry;
         this.rootTransform = other.rootTransform;
         this.visibilityData.copyFrom(other.visibilityData);
@@ -152,35 +130,29 @@ public class BlockGeometryBakingContext implements IGeometryBakingContext
         this.gui3d = other.gui3d;
     }
 
-    public BakedModel bake(ModelBaker baker, Function<Material, TextureAtlasSprite> bakedTextureGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation)
-    {
+    public BakedModel bake(ModelBaker baker, Function<Material, TextureAtlasSprite> bakedTextureGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
         IUnbakedGeometry<?> geometry = getCustomGeometry();
         if (geometry == null)
             throw new IllegalStateException("Can not use custom baking without custom geometry");
         return geometry.bake(this, baker, bakedTextureGetter, modelTransform, overrides, modelLocation);
     }
 
-    public static class VisibilityData
-    {
+    public static class VisibilityData {
         private final Map<String, Boolean> data = new HashMap<>();
 
-        public boolean hasCustomVisibility(String part)
-        {
+        public boolean hasCustomVisibility(String part) {
             return data.containsKey(part);
         }
 
-        public boolean isVisible(String part, boolean fallback)
-        {
+        public boolean isVisible(String part, boolean fallback) {
             return data.getOrDefault(part, fallback);
         }
 
-        public void setVisibilityState(String partName, boolean type)
-        {
+        public void setVisibilityState(String partName, boolean type) {
             data.put(partName, type);
         }
 
-        public void copyFrom(VisibilityData visibilityData)
-        {
+        public void copyFrom(VisibilityData visibilityData) {
             data.clear();
             data.putAll(visibilityData.data);
         }

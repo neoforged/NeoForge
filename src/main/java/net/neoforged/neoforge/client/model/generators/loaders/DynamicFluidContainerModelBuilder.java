@@ -7,17 +7,15 @@ package net.neoforged.neoforge.client.model.generators.loaders;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 
-public class DynamicFluidContainerModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T>
-{
-    public static <T extends ModelBuilder<T>> DynamicFluidContainerModelBuilder<T> begin(T parent, ExistingFileHelper existingFileHelper)
-    {
+public class DynamicFluidContainerModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
+    public static <T extends ModelBuilder<T>> DynamicFluidContainerModelBuilder<T> begin(T parent, ExistingFileHelper existingFileHelper) {
         return new DynamicFluidContainerModelBuilder<>(parent, existingFileHelper);
     }
 
@@ -27,45 +25,38 @@ public class DynamicFluidContainerModelBuilder<T extends ModelBuilder<T>> extend
     private Boolean coverIsMask;
     private Boolean applyFluidLuminosity;
 
-    protected DynamicFluidContainerModelBuilder(T parent, ExistingFileHelper existingFileHelper)
-    {
+    protected DynamicFluidContainerModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
         super(new ResourceLocation("neoforge:fluid_container"), parent, existingFileHelper);
     }
 
-    public DynamicFluidContainerModelBuilder<T> fluid(Fluid fluid)
-    {
+    public DynamicFluidContainerModelBuilder<T> fluid(Fluid fluid) {
         Preconditions.checkNotNull(fluid, "fluid must not be null");
         this.fluid = ForgeRegistries.FLUIDS.getKey(fluid);
         return this;
     }
 
-    public DynamicFluidContainerModelBuilder<T> flipGas(boolean flip)
-    {
+    public DynamicFluidContainerModelBuilder<T> flipGas(boolean flip) {
         this.flipGas = flip;
         return this;
     }
 
-    public DynamicFluidContainerModelBuilder<T> applyTint(boolean tint)
-    {
+    public DynamicFluidContainerModelBuilder<T> applyTint(boolean tint) {
         this.applyTint = tint;
         return this;
     }
 
-    public DynamicFluidContainerModelBuilder<T> coverIsMask(boolean coverIsMask)
-    {
+    public DynamicFluidContainerModelBuilder<T> coverIsMask(boolean coverIsMask) {
         this.coverIsMask = coverIsMask;
         return this;
     }
 
-    public DynamicFluidContainerModelBuilder<T> applyFluidLuminosity(boolean applyFluidLuminosity)
-    {
+    public DynamicFluidContainerModelBuilder<T> applyFluidLuminosity(boolean applyFluidLuminosity) {
         this.applyFluidLuminosity = applyFluidLuminosity;
         return this;
     }
 
     @Override
-    public JsonObject toJson(JsonObject json)
-    {
+    public JsonObject toJson(JsonObject json) {
         json = super.toJson(json);
 
         Preconditions.checkNotNull(fluid, "fluid must not be null");

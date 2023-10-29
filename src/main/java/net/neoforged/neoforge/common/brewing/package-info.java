@@ -7,6 +7,5 @@
 @MethodsReturnNonnullByDefault
 package net.neoforged.neoforge.common.brewing;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
-
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;

@@ -9,18 +9,16 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Contains all the data to completely define a sound event.
  */
-public final class SoundDefinition
-{
+public final class SoundDefinition {
     /**
      * Identifies a specific sound that has to be played in a sound event, along with
      * all the necessary parameters.
@@ -30,16 +28,15 @@ public final class SoundDefinition
      * used instead. The list of defaults is available in the text that follows:</p>
      *
      * <ul>
-     *     <li>Volume: 1.0F</li>
-     *     <li>Pitch: 1.0F</li>
-     *     <li>Weight: 1</li>
-     *     <li>Stream: false</li>
-     *     <li>Attenuation Distance: 16</li>
-     *     <li>Preload: false</li>
+     * <li>Volume: 1.0F</li>
+     * <li>Pitch: 1.0F</li>
+     * <li>Weight: 1</li>
+     * <li>Stream: false</li>
+     * <li>Attenuation Distance: 16</li>
+     * <li>Preload: false</li>
      * </ul>
      */
-    public static final class Sound
-    {
+    public static final class Sound {
         private static final SoundType DEFAULT_TYPE = SoundType.SOUND;
         private static final float DEFAULT_VOLUME = 1.0F;
         private static final float DEFAULT_PITCH = 1.0F;
@@ -59,8 +56,7 @@ public final class SoundDefinition
         private int attenuationDistance = DEFAULT_ATTENUATION_DISTANCE;
         private boolean preload = DEFAULT_PRELOAD;
 
-        private Sound(final ResourceLocation name, final SoundType type)
-        {
+        private Sound(final ResourceLocation name, final SoundType type) {
             this.name = name;
             this.type = type;
         }
@@ -71,8 +67,7 @@ public final class SoundDefinition
          * @param name The name of the sound to create.
          * @param type The type of sound to create.
          */
-        public static Sound sound(final ResourceLocation name, final SoundType type)
-        {
+        public static Sound sound(final ResourceLocation name, final SoundType type) {
             return new Sound(name, type);
         }
 
@@ -84,8 +79,7 @@ public final class SoundDefinition
          * @param volume The volume to set. It must be higher than 0.
          * @return This sound for chaining.
          */
-        public Sound volume(final double volume)
-        {
+        public Sound volume(final double volume) {
             return this.volume((float) volume);
         }
 
@@ -97,8 +91,7 @@ public final class SoundDefinition
          * @param volume The volume to set. It must be higher than 0.
          * @return This sound for chaining.
          */
-        public Sound volume(final float volume)
-        {
+        public Sound volume(final float volume) {
             // Wiki specifies that volume cannot be higher than 1.0F, but I don't see any checks in vanilla nor in the
             // original specs (https://www.reddit.com/r/Minecraft/comments/1ont25/snapshot_13w42a_has_been_released/cctryvp/)
             // Set at own risk
@@ -118,8 +111,7 @@ public final class SoundDefinition
          * @param pitch The pitch to set. It must be higher than 0.
          * @return This sound for chaining.
          */
-        public Sound pitch(final double pitch)
-        {
+        public Sound pitch(final double pitch) {
             return this.pitch((float) pitch);
         }
 
@@ -132,10 +124,8 @@ public final class SoundDefinition
          * @param pitch The pitch to set. It must be higher than 0.
          * @return This sound for chaining.
          */
-        public Sound pitch(final float pitch)
-        {
-            if (pitch <= 0.0F)
-            {
+        public Sound pitch(final float pitch) {
+            if (pitch <= 0.0F) {
                 throw new IllegalArgumentException("Pitch must be positive for sound " + this.name + ", but instead got " + pitch);
             }
             this.pitch = pitch;
@@ -151,10 +141,8 @@ public final class SoundDefinition
          * @param weight The weight to set. It must be higher than 0.
          * @return This sound for chaining.
          */
-        public Sound weight(final int weight)
-        {
-            if (weight <= 0)
-            {
+        public Sound weight(final int weight) {
+            if (weight <= 0) {
                 throw new IllegalArgumentException("Weight has to be a positive number in sound " + this.name + ", but instead got " + weight);
             }
             this.weight = weight;
@@ -172,8 +160,7 @@ public final class SoundDefinition
          *
          * @return This sound for chaining
          */
-        public Sound stream()
-        {
+        public Sound stream() {
             return this.stream(true);
         }
 
@@ -187,8 +174,7 @@ public final class SoundDefinition
          * @param stream Whether the sound should be streamed or not.
          * @return This sound for chaining.
          */
-        public Sound stream(final boolean stream)
-        {
+        public Sound stream(final boolean stream) {
             this.stream = stream;
             return this;
         }
@@ -202,8 +188,7 @@ public final class SoundDefinition
          * @param attenuationDistance The attenuation distance to set.
          * @return This sound for chaining.
          */
-        public Sound attenuationDistance(final int attenuationDistance)
-        {
+        public Sound attenuationDistance(final int attenuationDistance) {
             this.attenuationDistance = attenuationDistance;
             return this;
         }
@@ -220,8 +205,7 @@ public final class SoundDefinition
          *
          * @return This sound for chaining.
          */
-        public Sound preload()
-        {
+        public Sound preload() {
             return this.preload(true);
         }
 
@@ -236,26 +220,21 @@ public final class SoundDefinition
          * @param preload Whether the sound should be preloaded or not.
          * @return This sound for chaining.
          */
-        public Sound preload(final boolean preload)
-        {
+        public Sound preload(final boolean preload) {
             this.preload = preload;
             return this;
         }
 
-        ResourceLocation name()
-        {
+        ResourceLocation name() {
             return this.name;
         }
 
-        SoundType type()
-        {
+        SoundType type() {
             return this.type;
         }
 
-        JsonElement serialize()
-        {
-            if (this.canBeInShortForm())
-            {
+        JsonElement serialize() {
+            if (this.canBeInShortForm()) {
                 return new JsonPrimitive(this.stripMcPrefix(this.name));
             }
 
@@ -271,8 +250,7 @@ public final class SoundDefinition
             return object;
         }
 
-        private boolean canBeInShortForm()
-        {
+        private boolean canBeInShortForm() {
             return this.type == DEFAULT_TYPE &&
                     this.volume == DEFAULT_VOLUME &&
                     this.pitch == DEFAULT_PITCH &&
@@ -282,8 +260,7 @@ public final class SoundDefinition
                     this.preload == DEFAULT_PRELOAD;
         }
 
-        private String stripMcPrefix(final ResourceLocation name)
-        {
+        private String stripMcPrefix(final ResourceLocation name) {
             return "minecraft".equals(name.getNamespace()) ? name.getPath() : name.toString();
         }
     }
@@ -291,8 +268,7 @@ public final class SoundDefinition
     /**
      * Represents the type of sound that the {@link Sound} object represents.
      */
-    public enum SoundType
-    {
+    public enum SoundType {
         /**
          * Identifies a "normal" sound.
          *
@@ -311,8 +287,7 @@ public final class SoundDefinition
 
         private final String jsonString;
 
-        SoundType(final String jsonString)
-        {
+        SoundType(final String jsonString) {
             this.jsonString = jsonString;
         }
     }
@@ -327,8 +302,7 @@ public final class SoundDefinition
      * Creates a new {@link SoundDefinition}, which will host a set of
      * {@link Sound}s and the necessary parameters.
      */
-    public static SoundDefinition definition()
-    {
+    public static SoundDefinition definition() {
         return new SoundDefinition();
     }
 
@@ -339,8 +313,7 @@ public final class SoundDefinition
      * @param replace Whether this definition replaces or not.
      * @return This definition for chaining.
      */
-    public SoundDefinition replace(final boolean replace)
-    {
+    public SoundDefinition replace(final boolean replace) {
         this.replace = replace;
         return this;
     }
@@ -355,8 +328,7 @@ public final class SoundDefinition
      * @param subtitle The subtitle to display, or null to disable.
      * @return This definition for chaining.
      */
-    public SoundDefinition subtitle(@Nullable final String subtitle)
-    {
+    public SoundDefinition subtitle(@Nullable final String subtitle) {
         this.subtitle = subtitle;
         return this;
     }
@@ -367,8 +339,7 @@ public final class SoundDefinition
      * @param sound The sound to add.
      * @return This definition for chaining.
      */
-    public SoundDefinition with(final Sound sound)
-    {
+    public SoundDefinition with(final Sound sound) {
         this.sounds.add(sound);
         return this;
     }
@@ -379,21 +350,17 @@ public final class SoundDefinition
      * @param sounds The sounds to add.
      * @return This definition for chaining.
      */
-    public SoundDefinition with(final Sound... sounds)
-    {
+    public SoundDefinition with(final Sound... sounds) {
         this.sounds.addAll(Arrays.asList(sounds));
         return this;
     }
 
-    List<Sound> soundList()
-    {
+    List<Sound> soundList() {
         return this.sounds;
     }
 
-    JsonObject serialize()
-    {
-        if (this.sounds.isEmpty())
-        {
+    JsonObject serialize() {
+        if (this.sounds.isEmpty()) {
             throw new IllegalStateException("Unable to serialize a sound definition that has no sounds!");
         }
 

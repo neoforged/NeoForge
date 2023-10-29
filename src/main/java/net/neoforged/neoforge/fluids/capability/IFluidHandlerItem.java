@@ -7,7 +7,6 @@ package net.neoforged.neoforge.fluids.capability;
 
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.capabilities.AutoRegisterCapability;
-
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,8 +14,7 @@ import org.jetbrains.annotations.NotNull;
  * users of the fluid handler to get the container after it has been used.
  */
 @AutoRegisterCapability
-public interface IFluidHandlerItem extends IFluidHandler
-{
+public interface IFluidHandlerItem extends IFluidHandler {
     /**
      * Get the container currently acted on by this fluid handler.
      * The ItemStack may be different from its initial state, in the case of fluid containers that have different items

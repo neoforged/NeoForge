@@ -6,6 +6,10 @@
 package net.neoforged.neoforge.network;
 
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceArrayMap;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
@@ -13,11 +17,6 @@ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.network.custom.payload.SimplePayload;
-
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public enum PlayNetworkDirection implements INetworkDirection<PlayNetworkDirection> {
     PLAY_TO_SERVER(NetworkEvent.ClientCustomPayloadEvent::new, LogicalSide.CLIENT, ServerboundCustomPayloadPacket.class, 1, (d, i, n) -> new ServerboundCustomPayloadPacket(SimplePayload.outbound(d, i, n))),
@@ -32,12 +31,10 @@ public enum PlayNetworkDirection implements INetworkDirection<PlayNetworkDirecti
     private static final Reference2ReferenceArrayMap<Class<? extends Packet<?>>, PlayNetworkDirection> packetLookup;
 
     static {
-        packetLookup = Stream.of(values()).
-                collect(Collectors.toMap(PlayNetworkDirection::getPacketClass, Function.identity(), (m1, m2)->m1, Reference2ReferenceArrayMap::new));
+        packetLookup = Stream.of(values()).collect(Collectors.toMap(PlayNetworkDirection::getPacketClass, Function.identity(), (m1, m2) -> m1, Reference2ReferenceArrayMap::new));
     }
 
-    private PlayNetworkDirection(BiFunction<ICustomPacketPayloadWithBuffer, NetworkEvent.Context, NetworkEvent> eventSupplier, LogicalSide logicalSide, Class<? extends Packet<?>> clazz, int i, Factory<?> factory)
-    {
+    private PlayNetworkDirection(BiFunction<ICustomPacketPayloadWithBuffer, NetworkEvent.Context, NetworkEvent> eventSupplier, LogicalSide logicalSide, Class<? extends Packet<?>> clazz, int i, Factory<?> factory) {
         this.eventSupplier = eventSupplier;
         this.logicalSide = logicalSide;
         this.packetClass = clazz;
@@ -49,8 +46,7 @@ public enum PlayNetworkDirection implements INetworkDirection<PlayNetworkDirecti
         return packetClass;
     }
 
-    public static <T extends Packet<?>> PlayNetworkDirection directionForPayload(Class<T> customPacket)
-    {
+    public static <T extends Packet<?>> PlayNetworkDirection directionForPayload(Class<T> customPacket) {
         return packetLookup.get(customPacket);
     }
 
@@ -58,22 +54,23 @@ public enum PlayNetworkDirection implements INetworkDirection<PlayNetworkDirecti
     public PlayNetworkDirection reply() {
         return PlayNetworkDirection.values()[this.otherWay];
     }
+
     public NetworkEvent getEvent(final ICustomPacketPayloadWithBuffer buffer, final NetworkEvent.Context manager) {
         return this.eventSupplier.apply(buffer, manager);
     }
 
     @Override
-    public LogicalSide getOriginationSide()
-    {
+    public LogicalSide getOriginationSide() {
         return logicalSide;
     }
 
     @Override
-    public LogicalSide getReceptionSide() { return reply().logicalSide; };
+    public LogicalSide getReceptionSide() {
+        return reply().logicalSide;
+    };
 
     @Override
-    public Packet<?> buildPacket(PacketData packetData, ResourceLocation channelName)
-    {
+    public Packet<?> buildPacket(PacketData packetData, ResourceLocation channelName) {
         return this.factory.create(packetData.buffer(), packetData.index(), channelName);
     }
 

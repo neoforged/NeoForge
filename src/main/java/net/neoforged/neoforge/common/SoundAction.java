@@ -12,8 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Defines an action which produces a sound.
  */
 @SuppressWarnings("ClassCanBeRecord")
-public final class SoundAction
-{
+public final class SoundAction {
     private static final Map<String, SoundAction> ACTIONS = new ConcurrentHashMap<>();
 
     /**
@@ -22,15 +21,13 @@ public final class SoundAction
      * @param name the name of the action
      * @return the existing {@code SoundAction}, or a new one if not present
      */
-    public static SoundAction get(String name)
-    {
+    public static SoundAction get(String name) {
         return ACTIONS.computeIfAbsent(name, SoundAction::new);
     }
 
     private final String name;
 
-    private SoundAction(final String name)
-    {
+    private SoundAction(final String name) {
         this.name = name;
     }
 

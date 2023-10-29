@@ -19,14 +19,12 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#SERVER logical server}.</p>
  */
-public class TradeWithVillagerEvent extends PlayerEvent
-{
+public class TradeWithVillagerEvent extends PlayerEvent {
     private final MerchantOffer offer;
     private final AbstractVillager abstractVillager;
 
     @ApiStatus.Internal
-    public TradeWithVillagerEvent(Player player, MerchantOffer offer, AbstractVillager abstractVillager)
-    {
+    public TradeWithVillagerEvent(Player player, MerchantOffer offer, AbstractVillager abstractVillager) {
         super(player);
         this.offer = offer;
         this.abstractVillager = abstractVillager;
@@ -35,16 +33,14 @@ public class TradeWithVillagerEvent extends PlayerEvent
     /**
      * {@return the {@link MerchantOffer} selected by the player to trade with}
      */
-    public MerchantOffer getMerchantOffer()
-    {
+    public MerchantOffer getMerchantOffer() {
         return offer;
     }
 
     /**
      * {@return the villager the player traded with}
      */
-    public AbstractVillager getAbstractVillager()
-    {
+    public AbstractVillager getAbstractVillager() {
         return abstractVillager;
     }
 }

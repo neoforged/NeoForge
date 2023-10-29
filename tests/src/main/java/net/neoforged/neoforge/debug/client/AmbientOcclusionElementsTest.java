@@ -11,10 +11,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryObject;
@@ -23,8 +23,7 @@ import net.neoforged.neoforge.registries.RegistryObject;
  * Test mod that demos disabling ambient occlusion on specific faces of "elements" models.
  */
 @Mod(AmbientOcclusionElementsTest.MOD_ID)
-public class AmbientOcclusionElementsTest
-{
+public class AmbientOcclusionElementsTest {
     private static final boolean ENABLED = false;
 
     public static final String MOD_ID = "ambient_occlusion_elements_test";
@@ -40,8 +39,7 @@ public class AmbientOcclusionElementsTest
     public static final RegistryObject<Item> NO_AO_BLOCK_SHADE_ITEM = ITEMS.register("no_ambient_occlusion_shade", () -> new BlockItem(NO_AO_BLOCK_SHADE.get(), new Item.Properties()));
     public static final RegistryObject<Item> NO_AO_BLOCK_NO_SHADE_ITEM = ITEMS.register("no_ambient_occlusion_no_shade", () -> new BlockItem(NO_AO_BLOCK_NO_SHADE.get(), new Item.Properties()));
 
-    public AmbientOcclusionElementsTest()
-    {
+    public AmbientOcclusionElementsTest() {
         if (!ENABLED)
             return;
 
@@ -51,10 +49,8 @@ public class AmbientOcclusionElementsTest
         modEventBus.addListener(this::addCreative);
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
-        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)
-        {
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             event.accept(AO_BLOCK_SHADE_ITEM);
             event.accept(AO_BLOCK_NO_SHADE_ITEM);
             event.accept(NO_AO_BLOCK_SHADE_ITEM);

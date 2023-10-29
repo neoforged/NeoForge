@@ -15,6 +15,12 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.datafixers.util.Pair;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -31,13 +37,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 /**
  * The {@code /forge tags} command for listing a registry's tags, getting the elements of tags, and querying the tags of a
  * registry object.
@@ -49,27 +48,21 @@ import java.util.stream.Stream;
  *
  * <p>The command has three subcommands:</p>
  * <ul>
- *     <li>{@code /forge tags &lt;registry> list [page]} - Lists all available tags in the given registry.</li>
- *     <li>{@code /forge tags &lt;registry> get &lt;tag> [page]} - Gets all elements of the given tag in the given registry.</li>
- *     <li>{@code /forge tags &lt;registry> query &lt;element> [page]} - Queries for all tags in the given registry which
- *     contain the given registry object.</li>
+ * <li>{@code /forge tags &lt;registry> list [page]} - Lists all available tags in the given registry.</li>
+ * <li>{@code /forge tags &lt;registry> get &lt;tag> [page]} - Gets all elements of the given tag in the given registry.</li>
+ * <li>{@code /forge tags &lt;registry> query &lt;element> [page]} - Queries for all tags in the given registry which
+ * contain the given registry object.</li>
  * </ul>
  */
-class TagsCommand
-{
+class TagsCommand {
     private static final long PAGE_SIZE = 8;
-    private static final ResourceKey<Registry<Registry<?>>> ROOT_REGISTRY_KEY =
-            ResourceKey.createRegistryKey(new ResourceLocation("root"));
+    private static final ResourceKey<Registry<Registry<?>>> ROOT_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation("root"));
 
-    private static final DynamicCommandExceptionType UNKNOWN_REGISTRY = new DynamicCommandExceptionType(key ->
-            Component.translatable("commands.forge.tags.error.unknown_registry", key));
-    private static final Dynamic2CommandExceptionType UNKNOWN_TAG = new Dynamic2CommandExceptionType((tag, registry) ->
-            Component.translatable("commands.forge.tags.error.unknown_tag", tag, registry));
-    private static final Dynamic2CommandExceptionType UNKNOWN_ELEMENT = new Dynamic2CommandExceptionType((tag, registry) ->
-            Component.translatable("commands.forge.tags.error.unknown_element", tag, registry));
+    private static final DynamicCommandExceptionType UNKNOWN_REGISTRY = new DynamicCommandExceptionType(key -> Component.translatable("commands.forge.tags.error.unknown_registry", key));
+    private static final Dynamic2CommandExceptionType UNKNOWN_TAG = new Dynamic2CommandExceptionType((tag, registry) -> Component.translatable("commands.forge.tags.error.unknown_tag", tag, registry));
+    private static final Dynamic2CommandExceptionType UNKNOWN_ELEMENT = new Dynamic2CommandExceptionType((tag, registry) -> Component.translatable("commands.forge.tags.error.unknown_element", tag, registry));
 
-    public static ArgumentBuilder<CommandSourceStack, ?> register()
-    {
+    public static ArgumentBuilder<CommandSourceStack, ?> register() {
         /*
          * /forge tags <registry> list [page]
          * /forge tags <registry> get <tag> [page]
@@ -82,32 +75,22 @@ class TagsCommand
                         .then(Commands.literal("list")
                                 .executes(ctx -> listTags(ctx, 1))
                                 .then(Commands.argument("page", IntegerArgumentType.integer(1))
-                                        .executes(ctx -> listTags(ctx, IntegerArgumentType.getInteger(ctx, "page")))
-                                )
-                        )
+                                        .executes(ctx -> listTags(ctx, IntegerArgumentType.getInteger(ctx, "page")))))
                         .then(Commands.literal("get")
                                 .then(Commands.argument("tag", ResourceLocationArgument.id())
                                         .suggests(suggestFromRegistry(r -> r.getTagNames().map(TagKey::location)::iterator))
                                         .executes(ctx -> listTagElements(ctx, 1))
                                         .then(Commands.argument("page", IntegerArgumentType.integer(1))
-                                                .executes(ctx -> listTagElements(ctx, IntegerArgumentType.getInteger(ctx, "page")))
-                                        )
-                                )
-                        )
+                                                .executes(ctx -> listTagElements(ctx, IntegerArgumentType.getInteger(ctx, "page"))))))
                         .then(Commands.literal("query")
                                 .then(Commands.argument("element", ResourceLocationArgument.id())
                                         .suggests(suggestFromRegistry(Registry::keySet))
                                         .executes(ctx -> queryElementTags(ctx, 1))
                                         .then(Commands.argument("page", IntegerArgumentType.integer(1))
-                                                .executes(ctx -> queryElementTags(ctx, IntegerArgumentType.getInteger(ctx, "page")))
-                                        )
-                                )
-                        )
-                );
+                                                .executes(ctx -> queryElementTags(ctx, IntegerArgumentType.getInteger(ctx, "page")))))));
     }
 
-    private static int listTags(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException
-    {
+    private static int listTags(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException {
         final ResourceKey<? extends Registry<?>> registryKey = getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .orElseThrow(); // Expect to be always retrieve a resource key for the root registry (registry key)
         final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
@@ -124,14 +107,13 @@ class TagsCommand
                 ChatFormatting.DARK_GREEN,
                 () -> registry.getTags()
                         .map(Pair::getSecond)
-                        .map(s -> s.unwrap().map(k -> k.location().toString(), Object::toString))
-        ), false);
+                        .map(s -> s.unwrap().map(k -> k.location().toString(), Object::toString))),
+                false);
 
         return (int) tagCount;
     }
 
-    private static int listTagElements(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException
-    {
+    private static int listTagElements(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException {
         final ResourceKey<? extends Registry<?>> registryKey = getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .orElseThrow(); // Expect to be always retrieve a resource key for the root registry (registry key)
         final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
@@ -152,14 +134,12 @@ class TagsCommand
                 tag.size(),
                 page,
                 ChatFormatting.YELLOW,
-                () -> tag.stream().map(s -> s.unwrap().map(k -> k.location().toString(), Object::toString))
-        ), false);
+                () -> tag.stream().map(s -> s.unwrap().map(k -> k.location().toString(), Object::toString))), false);
 
         return tag.size();
     }
 
-    private static int queryElementTags(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException
-    {
+    private static int queryElementTags(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException {
         final ResourceKey<? extends Registry<?>> registryKey = getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .orElseThrow(); // Expect to be always retrieve a resource key for the root registry (registry key)
         final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
@@ -182,8 +162,7 @@ class TagsCommand
                 containingTagsCount,
                 page,
                 ChatFormatting.DARK_GREEN,
-                () -> elementHolder.tags().map(k -> k.location().toString())
-        ), false);
+                () -> elementHolder.tags().map(k -> k.location().toString())), false);
 
         return (int) containingTagsCount;
     }
@@ -194,8 +173,7 @@ class TagsCommand
             final long count,
             final long currentPage,
             final ChatFormatting elementColor,
-            final Supplier<Stream<String>> names)
-    {
+            final Supplier<Stream<String>> names) {
         final String allElementNames = names.get().sorted().collect(Collectors.joining("\n"));
         final long totalPages = (count - 1) / PAGE_SIZE + 1;
         final long actualPage = (long) Mth.clamp(currentPage, 1, totalPages);
@@ -226,8 +204,7 @@ class TagsCommand
     }
 
     private static CompletableFuture<Suggestions> suggestRegistries(final CommandContext<CommandSourceStack> ctx,
-            final SuggestionsBuilder builder)
-    {
+            final SuggestionsBuilder builder) {
         ctx.getSource().registryAccess().registries()
                 .map(RegistryAccess.RegistryEntry::key)
                 .map(ResourceKey::location)
@@ -237,8 +214,7 @@ class TagsCommand
     }
 
     private static SuggestionProvider<CommandSourceStack> suggestFromRegistry(
-            final Function<Registry<?>, Iterable<ResourceLocation>> namesFunction)
-    {
+            final Function<Registry<?>, Iterable<ResourceLocation>> namesFunction) {
         return (ctx, builder) -> getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .flatMap(key -> ctx.getSource().registryAccess().registry(key).map(registry -> {
                     SharedSuggestionProvider.suggestResource(namesFunction.apply(registry), builder);
@@ -250,17 +226,14 @@ class TagsCommand
     @SuppressWarnings("SameParameterValue")
     private static <T> Optional<ResourceKey<T>> getResourceKey(final CommandContext<CommandSourceStack> ctx,
             final String name,
-            final ResourceKey<Registry<T>> registryKey)
-    {
+            final ResourceKey<Registry<T>> registryKey) {
         // Don't inline to avoid an unchecked cast warning due to raw types
         final ResourceKey<?> key = ctx.getArgument(name, ResourceKey.class);
         return key.cast(registryKey);
     }
 
     @SuppressWarnings("unchecked")
-    private static <O> O cast(final Object input)
-    {
+    private static <O> O cast(final Object input) {
         return (O) input;
     }
 }
-

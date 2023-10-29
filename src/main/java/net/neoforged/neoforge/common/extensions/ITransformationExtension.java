@@ -5,9 +5,8 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import net.minecraft.core.Direction;
-
 import com.mojang.math.Transformation;
+import net.minecraft.core.Direction;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -15,10 +14,8 @@ import org.joml.Vector4f;
 /**
  * Extension interface for {@link Transformation}.
  */
-public interface ITransformationExtension
-{
-    private Transformation self()
-    {
+public interface ITransformationExtension {
+    private Transformation self() {
         return (Transformation) this;
     }
 
@@ -27,8 +24,7 @@ public interface ITransformationExtension
      *
      * @see Transformation#identity()
      */
-    default boolean isIdentity()
-    {
+    default boolean isIdentity() {
         return self().equals(Transformation.identity());
     }
 
@@ -37,8 +33,7 @@ public interface ITransformationExtension
      *
      * @param position the position to transform
      */
-    default void transformPosition(Vector4f position)
-    {
+    default void transformPosition(Vector4f position) {
         position.mul(self().getMatrix());
     }
 
@@ -47,8 +42,7 @@ public interface ITransformationExtension
      *
      * @param normal the normal to transform
      */
-    default void transformNormal(Vector3f normal)
-    {
+    default void transformNormal(Vector3f normal) {
         normal.mul(self().getNormalMatrix());
         normal.normalize();
     }
@@ -61,8 +55,7 @@ public interface ITransformationExtension
      * @return the {@code Direction} value nearest to the resulting transformed direction
      * @see Direction#rotate(Matrix4f, Direction)
      */
-    default Direction rotateTransform(Direction facing)
-    {
+    default Direction rotateTransform(Direction facing) {
         return Direction.rotate(self().getMatrix(), facing);
     }
 
@@ -72,8 +65,7 @@ public interface ITransformationExtension
      *
      * @return a new transformation using the opposing-corner-block system
      */
-    default Transformation blockCenterToCorner()
-    {
+    default Transformation blockCenterToCorner() {
         return applyOrigin(new Vector3f(.5f, .5f, .5f));
     }
 
@@ -83,8 +75,7 @@ public interface ITransformationExtension
      *
      * @return a new transformation using the center-block system
      */
-    default Transformation blockCornerToCenter()
-    {
+    default Transformation blockCornerToCenter() {
         return applyOrigin(new Vector3f(-.5f, -.5f, -.5f));
     }
 
@@ -95,8 +86,7 @@ public interface ITransformationExtension
      * @param origin the new origin as relative to the current origin
      * @return a new transformation with a changed origin
      */
-    default Transformation applyOrigin(Vector3f origin)
-    {
+    default Transformation applyOrigin(Vector3f origin) {
         Transformation transform = self();
         if (transform.isIdentity()) return Transformation.identity();
 

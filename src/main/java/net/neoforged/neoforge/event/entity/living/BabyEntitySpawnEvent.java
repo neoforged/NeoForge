@@ -11,8 +11,8 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Fox;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -35,24 +35,21 @@ import org.jetbrains.annotations.Nullable;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class BabyEntitySpawnEvent extends net.neoforged.bus.api.Event implements ICancellableEvent
-{
+public class BabyEntitySpawnEvent extends net.neoforged.bus.api.Event implements ICancellableEvent {
     private final Mob parentA;
     private final Mob parentB;
     private final Player causedByPlayer;
     private AgeableMob child;
 
-    public BabyEntitySpawnEvent(Mob parentA, Mob parentB, @Nullable AgeableMob proposedChild)
-    {
+    public BabyEntitySpawnEvent(Mob parentA, Mob parentB, @Nullable AgeableMob proposedChild) {
         //causedByPlayer calculated here to simplify the patch.
         Player causedByPlayer = null;
         if (parentA instanceof Animal) {
-            causedByPlayer = ((Animal)parentA).getLoveCause();
+            causedByPlayer = ((Animal) parentA).getLoveCause();
         }
 
-        if (causedByPlayer == null && parentB instanceof Animal)
-        {
-            causedByPlayer = ((Animal)parentB).getLoveCause();
+        if (causedByPlayer == null && parentB instanceof Animal) {
+            causedByPlayer = ((Animal) parentB).getLoveCause();
         }
 
         this.parentA = parentA;
@@ -61,30 +58,25 @@ public class BabyEntitySpawnEvent extends net.neoforged.bus.api.Event implements
         this.child = proposedChild;
     }
 
-    public Mob getParentA()
-    {
+    public Mob getParentA() {
         return parentA;
     }
 
-    public Mob getParentB()
-    {
+    public Mob getParentB() {
         return parentB;
     }
 
     @Nullable
-    public Player getCausedByPlayer()
-    {
+    public Player getCausedByPlayer() {
         return causedByPlayer;
     }
 
     @Nullable
-    public AgeableMob getChild()
-    {
+    public AgeableMob getChild() {
         return child;
     }
 
-    public void setChild(AgeableMob proposedChild)
-    {
+    public void setChild(AgeableMob proposedChild) {
         child = proposedChild;
     }
 }

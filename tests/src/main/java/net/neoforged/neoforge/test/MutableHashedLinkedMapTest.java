@@ -5,13 +5,14 @@
 
 package net.neoforged.neoforge.test;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import it.unimi.dsi.fastutil.Hash.Strategy;
-import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
-
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-
 import java.util.ConcurrentModificationException;
 import java.util.Map;
 import java.util.function.BiPredicate;
@@ -19,20 +20,16 @@ import java.util.function.ToIntFunction;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class MutableHashedLinkedMapTest {
     private static final Strategy<? super String> FIRST_CHARACTER = strat(
-        k -> k == null ? 0 : Character.hashCode(k.charAt(0)),
-        (a, b) -> a == null ? b == null : b == null ? false : a.charAt(0) == b.charAt(0)
-    );
+            k -> k == null ? 0 : Character.hashCode(k.charAt(0)),
+            (a, b) -> a == null ? b == null : b == null ? false : a.charAt(0) == b.charAt(0));
 
     @Test
     void retainsInsertOrder() {
@@ -72,7 +69,6 @@ public class MutableHashedLinkedMapTest {
         assertArrayEquals(arr("first", "second", "third"), keysArray(map));
         assertArrayEquals(arr(1, 5, 3), valuesArray(map));
     }
-
 
     @Test
     void strategyCollisionDoesNotOverwriteKey() {
@@ -485,39 +481,45 @@ public class MutableHashedLinkedMapTest {
     void paintingsTest() {
         var map = new MutableHashedLinkedMap<Character, Integer>();
         for (char x = 'a'; x <= 'z'; x++)
-            map.put(x, (int)x);
+            map.put(x, (int) x);
         map.remove('i');
         map.remove('j');
         map.remove('k');
         map.remove('l');
-        var keys = stream(map).map(e->e.getKey()).collect(Collector.of(StringBuilder::new, StringBuilder::append, StringBuilder::append, StringBuilder::toString));
+        var keys = stream(map).map(e -> e.getKey()).collect(Collector.of(StringBuilder::new, StringBuilder::append, StringBuilder::append, StringBuilder::toString));
         assertEquals("abcdefghmnopqrstuvwxyz", keys);
     }
 
-
-
-    private static <K> Strategy<K> strat(ToIntFunction<K> hash, BiPredicate<K,K> equals) {
+    private static <K> Strategy<K> strat(ToIntFunction<K> hash, BiPredicate<K, K> equals) {
         return new Strategy<K>() {
-            @Override public int hashCode(K o) { return hash.applyAsInt(o); }
-            @Override public boolean equals(K a, K b) { return equals.test(a, b); }
+            @Override
+            public int hashCode(K o) {
+                return hash.applyAsInt(o);
+            }
+
+            @Override
+            public boolean equals(K a, K b) {
+                return equals.test(a, b);
+            }
         };
     }
 
     @SafeVarargs
     private static <T> T[] arr(T... values) {
-         return values;
+        return values;
     }
 
-    private static <K,V> Stream<Map.Entry<K,V>> stream(MutableHashedLinkedMap<K,V> map) {
+    private static <K, V> Stream<Map.Entry<K, V>> stream(MutableHashedLinkedMap<K, V> map) {
         return StreamSupport.stream(map.spliterator(), false);
     }
 
     @SuppressWarnings("unchecked")
     private static <K> K[] keysArray(MutableHashedLinkedMap<K, ?> map) {
-        return (K[])stream(map).map(e -> e.getKey()).toArray();
+        return (K[]) stream(map).map(e -> e.getKey()).toArray();
     }
+
     @SuppressWarnings("unchecked")
     private static <V> V[] valuesArray(MutableHashedLinkedMap<?, V> map) {
-        return (V[])stream(map).map(e -> e.getValue()).toArray();
+        return (V[]) stream(map).map(e -> e.getValue()).toArray();
     }
 }

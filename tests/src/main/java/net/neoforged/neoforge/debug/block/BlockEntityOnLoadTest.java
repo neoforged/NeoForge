@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.block;
 
 import com.mojang.logging.LogUtils;
+import java.util.Locale;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -18,21 +19,18 @@ import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.util.Locale;
-
 @Mod("be_onload_test")
-public class BlockEntityOnLoadTest
-{
+public class BlockEntityOnLoadTest {
     private static final boolean ENABLED = true;
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -44,10 +42,8 @@ public class BlockEntityOnLoadTest
     private static final RegistryObject<Item> TEST_BLOCK_ITEM = ITEMS.register("be_onload_testblock", () -> new BlockItem(TEST_BLOCK.get(), new Item.Properties()));
     private static final RegistryObject<BlockEntityType<TestBlockEntity>> TEST_BE_TYPE = BE_TYPES.register("be_onload_testbe", () -> BlockEntityType.Builder.of(TestBlockEntity::new, TEST_BLOCK.get()).build(null));
 
-    public BlockEntityOnLoadTest()
-    {
-        if (ENABLED)
-        {
+    public BlockEntityOnLoadTest() {
+        if (ENABLED) {
             IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
             BLOCKS.register(modBus);
             ITEMS.register(modBus);
@@ -56,64 +52,56 @@ public class BlockEntityOnLoadTest
         }
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)
             event.accept(TEST_BLOCK_ITEM);
     }
 
-    private static class TestBlock extends Block implements EntityBlock
-    {
-        public TestBlock(Properties props) { super(props); }
+    private static class TestBlock extends Block implements EntityBlock {
+        public TestBlock(Properties props) {
+            super(props);
+        }
 
         @Override
-        public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
-        {
+        public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
             LOGGER.info("[BE_ONLOAD] Block#use at pos {} for {}", pos, level.getBlockEntity(pos));
             return super.use(state, level, pos, player, hand, hit);
         }
 
         @Override
         @Nullable
-        public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
-        {
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
             return new TestBlockEntity(pos, state);
         }
 
         @Nullable
         @Override
-        public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type)
-        {
+        public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
             return (beLevel, bePos, beState, be) -> ((TestBlockEntity) be).tick();
         }
     }
 
-    private static class TestBlockEntity extends BlockEntity
-    {
+    private static class TestBlockEntity extends BlockEntity {
         private boolean loaded = false;
 
-        public TestBlockEntity(BlockPos pos, BlockState state)
-        {
+        public TestBlockEntity(BlockPos pos, BlockState state) {
             super(TEST_BE_TYPE.get(), pos, state);
         }
 
         @Override
-        public void onLoad()
-        {
+        public void onLoad() {
             LOGGER.info("[BE_ONLOAD] BlockEntity#onLoad at pos {} for {}", worldPosition, this);
             getLevel().setBlockAndUpdate(worldPosition.above(), Blocks.SAND.defaultBlockState());
             loaded = true;
         }
 
         private boolean first = true;
-        public void tick()
-        {
-            if (first)
-            {
+
+        public void tick() {
+            if (first) {
                 first = false;
                 LOGGER.info("[BE_ONLOAD] TestBlockEntity#tick at pos {} for {}", worldPosition, this);
-                if (!loaded)
-                {
+                if (!loaded) {
                     throw new IllegalStateException(String.format(Locale.ENGLISH, "BlockEntity at %s ticked before onLoad()!", getBlockPos()));
                 }
             }

@@ -10,27 +10,22 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
-
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.I18nExtension;
-import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.internal.versions.neoform.NeoFormVersion;
 
-
-public class BrandingControl
-{
+public class BrandingControl {
     private static List<String> brandings;
     private static List<String> brandingsNoMC;
     private static List<String> overCopyrightBrandings;
 
-    private static void computeBranding()
-    {
-        if (brandings == null)
-        {
+    private static void computeBranding() {
+        if (brandings == null) {
             ImmutableList.Builder<String> brd = ImmutableList.builder();
             brd.add(ForgeSnapshotsMod.BRANDING_NAME + ' ' + NeoForgeVersion.getVersion());
             brd.add("Minecraft " + NeoFormVersion.getMCVersion());
@@ -41,8 +36,7 @@ public class BrandingControl
         }
     }
 
-    private static List<String> getBrandings(boolean includeMC, boolean reverse)
-    {
+    private static List<String> getBrandings(boolean includeMC, boolean reverse) {
         computeBranding();
         if (includeMC) {
             return reverse ? Lists.reverse(brandings) : brandings;
@@ -66,7 +60,7 @@ public class BrandingControl
 
     public static void forEachAboveCopyrightLine(BiConsumer<Integer, String> lineConsumer) {
         computeOverCopyrightBrandings();
-        IntStream.range(0, overCopyrightBrandings.size()).boxed().forEachOrdered(idx->lineConsumer.accept(idx, overCopyrightBrandings.get(idx)));
+        IntStream.range(0, overCopyrightBrandings.size()).boxed().forEachOrdered(idx -> lineConsumer.accept(idx, overCopyrightBrandings.get(idx)));
     }
 
     public static String getClientBranding() {

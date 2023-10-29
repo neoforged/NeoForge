@@ -6,24 +6,23 @@
 package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * Fired on different events/actions when a {@link Screen} is active and visible.
@@ -39,21 +38,18 @@ import java.util.function.Consumer;
  * @see KeyInput
  */
 @OnlyIn(Dist.CLIENT)
-public abstract class ScreenEvent extends Event
-{
+public abstract class ScreenEvent extends Event {
     private final Screen screen;
 
     @ApiStatus.Internal
-    protected ScreenEvent(Screen screen)
-    {
+    protected ScreenEvent(Screen screen) {
         this.screen = Objects.requireNonNull(screen);
     }
 
     /**
      * {@return the screen that caused this event}
      */
-    public Screen getScreen()
-    {
+    public Screen getScreen() {
         return screen;
     }
 
@@ -68,16 +64,14 @@ public abstract class ScreenEvent extends Event
      * @see Init.Pre
      * @see Init.Post
      */
-    public static abstract class Init extends ScreenEvent
-    {
+    public static abstract class Init extends ScreenEvent {
         private final Consumer<GuiEventListener> add;
         private final Consumer<GuiEventListener> remove;
 
         private final List<GuiEventListener> listenerList;
 
         @ApiStatus.Internal
-        protected Init(Screen screen, List<GuiEventListener> listenerList, Consumer<GuiEventListener> add, Consumer<GuiEventListener> remove)
-        {
+        protected Init(Screen screen, List<GuiEventListener> listenerList, Consumer<GuiEventListener> add, Consumer<GuiEventListener> remove) {
             super(screen);
             this.listenerList = Collections.unmodifiableList(listenerList);
             this.add = add;
@@ -87,8 +81,7 @@ public abstract class ScreenEvent extends Event
         /**
          * {@return unmodifiable view of list of event listeners on the screen}
          */
-        public List<GuiEventListener> getListenersList()
-        {
+        public List<GuiEventListener> getListenersList() {
             return listenerList;
         }
 
@@ -97,8 +90,7 @@ public abstract class ScreenEvent extends Event
          *
          * @param listener the listener to add
          */
-        public void addListener(GuiEventListener listener)
-        {
+        public void addListener(GuiEventListener listener) {
             add.accept(listener);
         }
 
@@ -107,8 +99,7 @@ public abstract class ScreenEvent extends Event
          *
          * @param listener the listener to remove
          */
-        public void removeListener(GuiEventListener listener)
-        {
+        public void removeListener(GuiEventListener listener) {
             remove.accept(listener);
         }
 
@@ -122,11 +113,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Pre extends Init implements ICancellableEvent
-        {
+        public static class Pre extends Init implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, List<GuiEventListener> list, Consumer<GuiEventListener> add, Consumer<GuiEventListener> remove)
-            {
+            public Pre(Screen screen, List<GuiEventListener> list, Consumer<GuiEventListener> add, Consumer<GuiEventListener> remove) {
                 super(screen, list, add, remove);
             }
         }
@@ -139,11 +128,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Post extends Init
-        {
+        public static class Post extends Init {
             @ApiStatus.Internal
-            public Post(Screen screen, List<GuiEventListener> list, Consumer<GuiEventListener> add, Consumer<GuiEventListener> remove)
-            {
+            public Post(Screen screen, List<GuiEventListener> list, Consumer<GuiEventListener> add, Consumer<GuiEventListener> remove) {
                 super(screen, list, add, remove);
             }
         }
@@ -156,16 +143,14 @@ public abstract class ScreenEvent extends Event
      * @see Render.Pre
      * @see Render.Post
      */
-    public static abstract class Render extends ScreenEvent
-    {
+    public static abstract class Render extends ScreenEvent {
         private final GuiGraphics guiGraphics;
         private final int mouseX;
         private final int mouseY;
         private final float partialTick;
 
         @ApiStatus.Internal
-        protected Render(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick)
-        {
+        protected Render(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
             super(screen);
             this.guiGraphics = guiGraphics;
             this.mouseX = mouseX;
@@ -176,32 +161,28 @@ public abstract class ScreenEvent extends Event
         /**
          * {@return the gui graphics used for rendering}
          */
-        public GuiGraphics getGuiGraphics()
-        {
+        public GuiGraphics getGuiGraphics() {
             return guiGraphics;
         }
 
         /**
          * {@return the X coordinate of the mouse pointer}
          */
-        public int getMouseX()
-        {
+        public int getMouseX() {
             return mouseX;
         }
 
         /**
          * {@return the Y coordinate of the mouse pointer}
          */
-        public int getMouseY()
-        {
+        public int getMouseY() {
             return mouseY;
         }
 
         /**
          * {@return the partial tick}
          */
-        public float getPartialTick()
-        {
+        public float getPartialTick() {
             return partialTick;
         }
 
@@ -214,11 +195,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Pre extends Render implements ICancellableEvent
-        {
+        public static class Pre extends Render implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick)
-            {
+            public Pre(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
                 super(screen, guiGraphics, mouseX, mouseY, partialTick);
             }
         }
@@ -231,11 +210,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Post extends Render
-        {
+        public static class Post extends Render {
             @ApiStatus.Internal
-            public Post(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick)
-            {
+            public Post(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
                 super(screen, guiGraphics, mouseX, mouseY, partialTick);
             }
         }
@@ -250,13 +227,11 @@ public abstract class ScreenEvent extends Event
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    public static class BackgroundRendered extends ScreenEvent
-    {
+    public static class BackgroundRendered extends ScreenEvent {
         private final GuiGraphics guiGraphics;
 
         @ApiStatus.Internal
-        public BackgroundRendered(Screen screen, GuiGraphics guiGraphics)
-        {
+        public BackgroundRendered(Screen screen, GuiGraphics guiGraphics) {
             super(screen);
             this.guiGraphics = guiGraphics;
         }
@@ -264,8 +239,7 @@ public abstract class ScreenEvent extends Event
         /**
          * {@return the gui graphics used for rendering}
          */
-        public GuiGraphics getGuiGraphics()
-        {
+        public GuiGraphics getGuiGraphics() {
             return guiGraphics;
         }
     }
@@ -281,15 +255,13 @@ public abstract class ScreenEvent extends Event
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    public static class RenderInventoryMobEffects extends ScreenEvent implements ICancellableEvent
-    {
+    public static class RenderInventoryMobEffects extends ScreenEvent implements ICancellableEvent {
         private final int availableSpace;
         private boolean compact;
         private int horizontalOffset;
 
         @ApiStatus.Internal
-        public RenderInventoryMobEffects(Screen screen, int availableSpace, boolean compact, int horizontalOffset)
-        {
+        public RenderInventoryMobEffects(Screen screen, int availableSpace, boolean compact, int horizontalOffset) {
             super(screen);
             this.availableSpace = availableSpace;
             this.compact = compact;
@@ -299,48 +271,42 @@ public abstract class ScreenEvent extends Event
         /**
          * The available space to the right of the inventory.
          */
-        public int getAvailableSpace()
-        {
+        public int getAvailableSpace() {
             return availableSpace;
         }
 
         /**
          * Whether the effects should be rendered in compact mode (only icons, no text), or the default full size.
          */
-        public boolean isCompact()
-        {
+        public boolean isCompact() {
             return compact;
         }
 
         /**
          * The distance from the left side of the screen that the effect stack is rendered. Positive values shift this more to the right.
          */
-        public int getHorizontalOffset()
-        {
+        public int getHorizontalOffset() {
             return horizontalOffset;
         }
 
         /**
          * Replaces the horizontal offset of the effect stack
          */
-        public void setHorizontalOffset(int offset)
-        {
+        public void setHorizontalOffset(int offset) {
             horizontalOffset = offset;
         }
 
         /**
          * Adds to the horizontal offset of the effect stack. Negative values are acceptable.
          */
-        public void addHorizontalOffset(int offset)
-        {
+        public void addHorizontalOffset(int offset) {
             horizontalOffset += offset;
         }
 
         /**
          * Sets whether the effects should be rendered in compact mode (only icons, no text), or the default full size.
          */
-        public void setCompact(boolean compact)
-        {
+        public void setCompact(boolean compact) {
             this.compact = compact;
         }
     }
@@ -354,14 +320,12 @@ public abstract class ScreenEvent extends Event
      * @see MouseDragged
      * @see MouseScrolled
      */
-    private static abstract class MouseInput extends ScreenEvent
-    {
+    private static abstract class MouseInput extends ScreenEvent {
         private final double mouseX;
         private final double mouseY;
 
         @ApiStatus.Internal
-        protected MouseInput(Screen screen, double mouseX, double mouseY)
-        {
+        protected MouseInput(Screen screen, double mouseX, double mouseY) {
             super(screen);
             this.mouseX = mouseX;
             this.mouseY = mouseY;
@@ -370,16 +334,14 @@ public abstract class ScreenEvent extends Event
         /**
          * {@return the X position of the mouse cursor, relative to the screen}
          */
-        public double getMouseX()
-        {
+        public double getMouseX() {
             return mouseX;
         }
 
         /**
          * {@return the Y position of the mouse cursor, relative to the screen}
          */
-        public double getMouseY()
-        {
+        public double getMouseY() {
             return mouseY;
         }
     }
@@ -391,13 +353,11 @@ public abstract class ScreenEvent extends Event
      * @see MouseButtonPressed.Pre
      * @see MouseButtonPressed.Post
      */
-    public static abstract class MouseButtonPressed extends MouseInput
-    {
+    public static abstract class MouseButtonPressed extends MouseInput {
         private final int button;
 
         @ApiStatus.Internal
-        public MouseButtonPressed(Screen screen, double mouseX, double mouseY, int button)
-        {
+        public MouseButtonPressed(Screen screen, double mouseX, double mouseY, int button) {
             super(screen, mouseX, mouseY);
             this.button = button;
         }
@@ -408,8 +368,7 @@ public abstract class ScreenEvent extends Event
          * @see GLFW mouse constants starting with 'GLFW_MOUSE_BUTTON_'
          * @see <a href="https://www.glfw.org/docs/latest/group__buttons.html" target="_top">the online GLFW documentation</a>
          */
-        public int getButton()
-        {
+        public int getButton() {
             return button;
         }
 
@@ -423,11 +382,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Pre extends MouseButtonPressed implements ICancellableEvent
-        {
+        public static class Pre extends MouseButtonPressed implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, double mouseX, double mouseY, int button)
-            {
+            public Pre(Screen screen, double mouseX, double mouseY, int button) {
                 super(screen, mouseX, mouseY, button);
             }
         }
@@ -438,23 +395,21 @@ public abstract class ScreenEvent extends Event
          *
          * <p>This event is not {@linkplain ICancellableEvent cancellable}, {@linkplain HasResult has a result}.</p>
          * <ul>
-         *   <li>{@link Result#ALLOW} - forcibly sets the mouse click as handled</li>
-         *   <li>{@link Result#DEFAULT} - defaults to the return value of
-         *   {@link Screen#mouseClicked(double, double, int)} from the screen (see {@link #wasHandled()}.</li>
-         *   <li>{@link Result#DENY} - forcibly sets the mouse click as not handled.</li>
+         * <li>{@link Result#ALLOW} - forcibly sets the mouse click as handled</li>
+         * <li>{@link Result#DEFAULT} - defaults to the return value of
+         * {@link Screen#mouseClicked(double, double, int)} from the screen (see {@link #wasHandled()}.</li>
+         * <li>{@link Result#DENY} - forcibly sets the mouse click as not handled.</li>
          * </ul>
          *
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         @HasResult
-        public static class Post extends MouseButtonPressed
-        {
+        public static class Post extends MouseButtonPressed {
             private final boolean handled;
 
             @ApiStatus.Internal
-            public Post(Screen screen, double mouseX, double mouseY, int button, boolean handled)
-            {
+            public Post(Screen screen, double mouseX, double mouseY, int button, boolean handled) {
                 super(screen, mouseX, mouseY, button);
                 this.handled = handled;
             }
@@ -462,8 +417,7 @@ public abstract class ScreenEvent extends Event
             /**
              * {@return {@code true} if the mouse click was already handled by its screen}
              */
-            public boolean wasHandled()
-            {
+            public boolean wasHandled() {
                 return handled;
             }
         }
@@ -476,13 +430,11 @@ public abstract class ScreenEvent extends Event
      * @see MouseButtonReleased.Pre
      * @see MouseButtonReleased.Post
      */
-    public static abstract class MouseButtonReleased extends MouseInput
-    {
+    public static abstract class MouseButtonReleased extends MouseInput {
         private final int button;
 
         @ApiStatus.Internal
-        public MouseButtonReleased(Screen screen, double mouseX, double mouseY, int button)
-        {
+        public MouseButtonReleased(Screen screen, double mouseX, double mouseY, int button) {
             super(screen, mouseX, mouseY);
             this.button = button;
         }
@@ -493,8 +445,7 @@ public abstract class ScreenEvent extends Event
          * @see GLFW mouse constants starting with 'GLFW_MOUSE_BUTTON_'
          * @see <a href="https://www.glfw.org/docs/latest/group__buttons.html" target="_top">the online GLFW documentation</a>
          */
-        public int getButton()
-        {
+        public int getButton() {
             return button;
         }
 
@@ -508,11 +459,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Pre extends MouseButtonReleased implements ICancellableEvent
-        {
+        public static class Pre extends MouseButtonReleased implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, double mouseX, double mouseY, int button)
-            {
+            public Pre(Screen screen, double mouseX, double mouseY, int button) {
                 super(screen, mouseX, mouseY, button);
             }
         }
@@ -523,23 +472,21 @@ public abstract class ScreenEvent extends Event
          *
          * <p>This event is not {@linkplain ICancellableEvent cancellable}, {@linkplain HasResult has a result}.</p>
          * <ul>
-         *   <li>{@link Result#ALLOW} - forcibly sets the mouse release as handled</li>
-         *   <li>{@link Result#DEFAULT} - defaults to the return value of
-         *   {@link Screen#mouseReleased(double, double, int)} from the screen (see {@link #wasHandled()}.</li>
-         *   <li>{@link Result#DENY} - forcibly sets the mouse release as not handled.</li>
+         * <li>{@link Result#ALLOW} - forcibly sets the mouse release as handled</li>
+         * <li>{@link Result#DEFAULT} - defaults to the return value of
+         * {@link Screen#mouseReleased(double, double, int)} from the screen (see {@link #wasHandled()}.</li>
+         * <li>{@link Result#DENY} - forcibly sets the mouse release as not handled.</li>
          * </ul>
          *
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
         @HasResult
-        public static class Post extends MouseButtonReleased
-        {
+        public static class Post extends MouseButtonReleased {
             private final boolean handled;
 
             @ApiStatus.Internal
-            public Post(Screen screen, double mouseX, double mouseY, int button, boolean handled)
-            {
+            public Post(Screen screen, double mouseX, double mouseY, int button, boolean handled) {
                 super(screen, mouseX, mouseY, button);
                 this.handled = handled;
             }
@@ -547,8 +494,7 @@ public abstract class ScreenEvent extends Event
             /**
              * @return {@code true} if the mouse release was already handled by its screen
              */
-            public boolean wasHandled()
-            {
+            public boolean wasHandled() {
                 return handled;
             }
         }
@@ -561,15 +507,13 @@ public abstract class ScreenEvent extends Event
      * @see MouseDragged.Pre
      * @see MouseDragged.Post
      */
-    public static abstract class MouseDragged extends MouseInput
-    {
+    public static abstract class MouseDragged extends MouseInput {
         private final int mouseButton;
         private final double dragX;
         private final double dragY;
 
         @ApiStatus.Internal
-        public MouseDragged(Screen screen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY)
-        {
+        public MouseDragged(Screen screen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
             super(screen, mouseX, mouseY);
             this.mouseButton = mouseButton;
             this.dragX = dragX;
@@ -582,24 +526,21 @@ public abstract class ScreenEvent extends Event
          * @see GLFW mouse constants starting with 'GLFW_MOUSE_BUTTON_'
          * @see <a href="https://www.glfw.org/docs/latest/group__buttons.html" target="_top">the online GLFW documentation</a>
          */
-        public int getMouseButton()
-        {
+        public int getMouseButton() {
             return mouseButton;
         }
 
         /**
          * {@return amount of mouse drag along the X axis}
          */
-        public double getDragX()
-        {
+        public double getDragX() {
             return dragX;
         }
 
         /**
          * {@return amount of mouse drag along the Y axis}
          */
-        public double getDragY()
-        {
+        public double getDragY() {
             return dragY;
         }
 
@@ -613,11 +554,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Pre extends MouseDragged implements ICancellableEvent
-        {
+        public static class Pre extends MouseDragged implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY)
-            {
+            public Pre(Screen screen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
                 super(screen, mouseX, mouseY, mouseButton, dragX, dragY);
             }
         }
@@ -632,11 +571,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Post extends MouseDragged
-        {
+        public static class Post extends MouseDragged {
             @ApiStatus.Internal
-            public Post(Screen screen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY)
-            {
+            public Post(Screen screen, double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
                 super(screen, mouseX, mouseY, mouseButton, dragX, dragY);
             }
         }
@@ -649,13 +586,11 @@ public abstract class ScreenEvent extends Event
      * @see MouseScrolled.Pre
      * @see MouseScrolled.Post
      */
-    public static abstract class MouseScrolled extends MouseInput
-    {
+    public static abstract class MouseScrolled extends MouseInput {
         private final double scrollDelta;
 
         @ApiStatus.Internal
-        public MouseScrolled(Screen screen, double mouseX, double mouseY, double scrollDelta)
-        {
+        public MouseScrolled(Screen screen, double mouseX, double mouseY, double scrollDelta) {
             super(screen, mouseX, mouseY);
             this.scrollDelta = scrollDelta;
         }
@@ -663,8 +598,7 @@ public abstract class ScreenEvent extends Event
         /**
          * {@return the amount of change / delta of the mouse scroll}
          */
-        public double getScrollDelta()
-        {
+        public double getScrollDelta() {
             return scrollDelta;
         }
 
@@ -678,11 +612,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Pre extends MouseScrolled implements ICancellableEvent
-        {
+        public static class Pre extends MouseScrolled implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, double mouseX, double mouseY, double scrollDelta)
-            {
+            public Pre(Screen screen, double mouseX, double mouseY, double scrollDelta) {
                 super(screen, mouseX, mouseY, scrollDelta);
             }
         }
@@ -697,11 +629,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Post extends MouseScrolled
-        {
+        public static class Post extends MouseScrolled {
             @ApiStatus.Internal
-            public Post(Screen screen, double mouseX, double mouseY, double scrollDelta)
-            {
+            public Post(Screen screen, double mouseX, double mouseY, double scrollDelta) {
                 super(screen, mouseX, mouseY, scrollDelta);
             }
         }
@@ -716,15 +646,13 @@ public abstract class ScreenEvent extends Event
      * @see InputConstants
      * @see <a href="https://www.glfw.org/docs/latest/input_guide.html#input_key" target="_top">the online GLFW documentation</a>
      */
-    private static abstract class KeyInput extends ScreenEvent
-    {
+    private static abstract class KeyInput extends ScreenEvent {
         private final int keyCode;
         private final int scanCode;
         private final int modifiers;
 
         @ApiStatus.Internal
-        protected KeyInput(Screen screen, int keyCode, int scanCode, int modifiers)
-        {
+        protected KeyInput(Screen screen, int keyCode, int scanCode, int modifiers) {
             super(screen);
             this.keyCode = keyCode;
             this.scanCode = scanCode;
@@ -738,8 +666,7 @@ public abstract class ScreenEvent extends Event
          * @see GLFW key constants starting with {@code GLFW_KEY_}
          * @see <a href="https://www.glfw.org/docs/latest/group__keys.html" target="_top">the online GLFW documentation</a>
          */
-        public int getKeyCode()
-        {
+        public int getKeyCode() {
             return keyCode;
         }
 
@@ -752,8 +679,7 @@ public abstract class ScreenEvent extends Event
          *
          * @see InputConstants#getKey(int, int)
          */
-        public int getScanCode()
-        {
+        public int getScanCode() {
             return scanCode;
         }
 
@@ -768,8 +694,7 @@ public abstract class ScreenEvent extends Event
          * @see GLFW#GLFW_KEY_NUM_LOCK NUM LOCK modifier key bit
          * @see <a href="https://www.glfw.org/docs/latest/group__mods.html" target="_top">the online GLFW documentation</a>
          */
-        public int getModifiers()
-        {
+        public int getModifiers() {
             return modifiers;
         }
     }
@@ -781,11 +706,9 @@ public abstract class ScreenEvent extends Event
      * @see KeyPressed.Pre
      * @see KeyPressed.Post
      */
-    public static abstract class KeyPressed extends KeyInput
-    {
+    public static abstract class KeyPressed extends KeyInput {
         @ApiStatus.Internal
-        public KeyPressed(Screen screen, int keyCode, int scanCode, int modifiers)
-        {
+        public KeyPressed(Screen screen, int keyCode, int scanCode, int modifiers) {
             super(screen, keyCode, scanCode, modifiers);
         }
 
@@ -799,11 +722,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Pre extends KeyPressed implements ICancellableEvent
-        {
+        public static class Pre extends KeyPressed implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, int keyCode, int scanCode, int modifiers)
-            {
+            public Pre(Screen screen, int keyCode, int scanCode, int modifiers) {
                 super(screen, keyCode, scanCode, modifiers);
             }
         }
@@ -818,11 +739,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Post extends KeyPressed implements ICancellableEvent
-        {
+        public static class Post extends KeyPressed implements ICancellableEvent {
             @ApiStatus.Internal
-            public Post(Screen screen, int keyCode, int scanCode, int modifiers)
-            {
+            public Post(Screen screen, int keyCode, int scanCode, int modifiers) {
                 super(screen, keyCode, scanCode, modifiers);
             }
         }
@@ -835,11 +754,9 @@ public abstract class ScreenEvent extends Event
      * @see KeyReleased.Pre
      * @see KeyReleased.Post
      */
-    public static abstract class KeyReleased extends KeyInput
-    {
+    public static abstract class KeyReleased extends KeyInput {
         @ApiStatus.Internal
-        public KeyReleased(Screen screen, int keyCode, int scanCode, int modifiers)
-        {
+        public KeyReleased(Screen screen, int keyCode, int scanCode, int modifiers) {
             super(screen, keyCode, scanCode, modifiers);
         }
 
@@ -853,11 +770,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Pre extends KeyReleased implements ICancellableEvent
-        {
+        public static class Pre extends KeyReleased implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, int keyCode, int scanCode, int modifiers)
-            {
+            public Pre(Screen screen, int keyCode, int scanCode, int modifiers) {
                 super(screen, keyCode, scanCode, modifiers);
             }
         }
@@ -872,11 +787,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Post extends KeyReleased implements ICancellableEvent
-        {
+        public static class Post extends KeyReleased implements ICancellableEvent {
             @ApiStatus.Internal
-            public Post(Screen screen, int keyCode, int scanCode, int modifiers)
-            {
+            public Post(Screen screen, int keyCode, int scanCode, int modifiers) {
                 super(screen, keyCode, scanCode, modifiers);
             }
         }
@@ -890,14 +803,12 @@ public abstract class ScreenEvent extends Event
      * @see CharacterTyped.Post
      * @see <a href="https://www.glfw.org/docs/latest/input_guide.html#input_char" target="_top">the online GLFW documentation</a>
      */
-    public static abstract class CharacterTyped extends ScreenEvent
-    {
+    public static abstract class CharacterTyped extends ScreenEvent {
         private final char codePoint;
         private final int modifiers;
 
         @ApiStatus.Internal
-        public CharacterTyped(Screen screen, char codePoint, int modifiers)
-        {
+        public CharacterTyped(Screen screen, char codePoint, int modifiers) {
             super(screen);
             this.codePoint = codePoint;
             this.modifiers = modifiers;
@@ -906,8 +817,7 @@ public abstract class ScreenEvent extends Event
         /**
          * {@return the character code point}
          */
-        public char getCodePoint()
-        {
+        public char getCodePoint() {
             return codePoint;
         }
 
@@ -922,8 +832,7 @@ public abstract class ScreenEvent extends Event
          * @see GLFW#GLFW_KEY_NUM_LOCK NUM LOCK modifier key bit
          * @see <a href="https://www.glfw.org/docs/latest/group__mods.html" target="_top">the online GLFW documentation</a>
          */
-        public int getModifiers()
-        {
+        public int getModifiers() {
             return modifiers;
         }
 
@@ -937,11 +846,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Pre extends CharacterTyped implements ICancellableEvent
-        {
+        public static class Pre extends CharacterTyped implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, char codePoint, int modifiers)
-            {
+            public Pre(Screen screen, char codePoint, int modifiers) {
                 super(screen, codePoint, modifiers);
             }
         }
@@ -956,11 +863,9 @@ public abstract class ScreenEvent extends Event
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          */
-        public static class Post extends CharacterTyped
-        {
+        public static class Post extends CharacterTyped {
             @ApiStatus.Internal
-            public Post(Screen screen, char codePoint, int modifiers)
-            {
+            public Post(Screen screen, char codePoint, int modifiers) {
                 super(screen, codePoint, modifiers);
             }
         }
@@ -978,15 +883,13 @@ public abstract class ScreenEvent extends Event
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    public static class Opening extends ScreenEvent implements ICancellableEvent
-    {
+    public static class Opening extends ScreenEvent implements ICancellableEvent {
         @Nullable
         private final Screen currentScreen;
         private Screen newScreen;
 
         @ApiStatus.Internal
-        public Opening(@Nullable Screen currentScreen, Screen screen)
-        {
+        public Opening(@Nullable Screen currentScreen, Screen screen) {
             super(screen);
             this.currentScreen = currentScreen;
             this.newScreen = screen;
@@ -998,8 +901,7 @@ public abstract class ScreenEvent extends Event
          * May be null if no screen was open.
          */
         @Nullable
-        public Screen getCurrentScreen()
-        {
+        public Screen getCurrentScreen() {
             return currentScreen;
         }
 
@@ -1007,16 +909,14 @@ public abstract class ScreenEvent extends Event
          * @return The screen that will be opened if the event is not cancelled. May be null.
          */
         @Nullable
-        public Screen getNewScreen()
-        {
+        public Screen getNewScreen() {
             return newScreen;
         }
 
         /**
          * Sets the new screen to be opened if the event is not cancelled. May be null.
          */
-        public void setNewScreen(Screen newScreen)
-        {
+        public void setNewScreen(Screen newScreen) {
             this.newScreen = newScreen;
         }
     }
@@ -1030,11 +930,9 @@ public abstract class ScreenEvent extends Event
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    public static class Closing extends ScreenEvent
-    {
+    public static class Closing extends ScreenEvent {
         @ApiStatus.Internal
-        public Closing(Screen screen)
-        {
+        public Closing(Screen screen) {
             super(screen);
         }
     }

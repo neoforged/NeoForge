@@ -7,8 +7,7 @@ package net.neoforged.neoforge.client;
 
 import java.util.BitSet;
 
-public final class StencilManager
-{
+public final class StencilManager {
     private static final BitSet BITS = new BitSet(8);
 
     /**
@@ -19,8 +18,7 @@ public final class StencilManager
      *
      * @return A bit, or -1 if no further stencil bits are available
      */
-    public static int reserveBit()
-    {
+    public static int reserveBit() {
         int bit = BITS.nextClearBit(0);
         if (bit >= 0)
             BITS.set(bit);
@@ -32,13 +30,10 @@ public final class StencilManager
      *
      * @param bit The bit obtained from {@link #reserveBit()}
      */
-    public static void releaseBit(int bit)
-    {
+    public static void releaseBit(int bit) {
         if (bit >= 0 && bit < BITS.length())
             BITS.clear(bit);
     }
 
-    private StencilManager()
-    {
-    }
+    private StencilManager() {}
 }

@@ -18,21 +18,18 @@ import org.jetbrains.annotations.ApiStatus;
  * @see TextureStitchEvent.Post
  * @see TextureAtlas
  */
-public abstract class TextureStitchEvent extends Event implements IModBusEvent
-{
+public abstract class TextureStitchEvent extends Event implements IModBusEvent {
     private final TextureAtlas atlas;
 
     @ApiStatus.Internal
-    public TextureStitchEvent(TextureAtlas atlas)
-    {
+    public TextureStitchEvent(TextureAtlas atlas) {
         this.atlas = atlas;
     }
 
     /**
      * {@return the texture atlas}
      */
-    public TextureAtlas getAtlas()
-    {
+    public TextureAtlas getAtlas() {
         return atlas;
     }
 
@@ -79,11 +76,9 @@ public abstract class TextureStitchEvent extends Event implements IModBusEvent
      * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus()} mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    public static class Post extends TextureStitchEvent
-    {
+    public static class Post extends TextureStitchEvent {
         @ApiStatus.Internal
-        public Post(TextureAtlas map)
-        {
+        public Post(TextureAtlas map) {
             super(map);
         }
     }

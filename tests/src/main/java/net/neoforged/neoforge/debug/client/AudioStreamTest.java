@@ -5,6 +5,9 @@
 
 package net.neoforged.neoforge.debug.client;
 
+import java.nio.ByteBuffer;
+import java.util.concurrent.CompletableFuture;
+import javax.sound.sampled.AudioFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.client.resources.sounds.Sound;
@@ -14,16 +17,12 @@ import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.event.ClientChatEvent;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.client.event.ClientChatEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
-
-import javax.sound.sampled.AudioFormat;
-import java.nio.ByteBuffer;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Tests support for custom {@link AudioStream}s ({@link SoundInstance#getStream(SoundBufferLibrary, Sound, boolean)}.
@@ -31,25 +30,19 @@ import java.util.concurrent.CompletableFuture;
  * When the message "sine wave" is sent in chat, this should play a sine wave of 220Hz at the player's current position.
  */
 @Mod(AudioStreamTest.MOD_ID)
-public class AudioStreamTest
-{
+public class AudioStreamTest {
     private static final boolean ENABLED = true;
     static final String MOD_ID = "audio_stream_test";
 
-    public AudioStreamTest()
-    {
-        if (ENABLED && FMLLoader.getDist().isClient())
-        {
+    public AudioStreamTest() {
+        if (ENABLED && FMLLoader.getDist().isClient()) {
             NeoForge.EVENT_BUS.addListener(ClientHandler::onClientChatEvent);
         }
     }
 
-    public static class ClientHandler
-    {
-        public static void onClientChatEvent(ClientChatEvent event)
-        {
-            if (event.getMessage().equalsIgnoreCase("sine wave"))
-            {
+    public static class ClientHandler {
+        public static void onClientChatEvent(ClientChatEvent event) {
+            if (event.getMessage().equalsIgnoreCase("sine wave")) {
                 event.setCanceled(true);
                 var mc = Minecraft.getInstance();
                 mc.getSoundManager().play(new SineSound(mc.player.position()));
@@ -57,10 +50,8 @@ public class AudioStreamTest
         }
     }
 
-    public static class SineSound extends AbstractSoundInstance
-    {
-        protected SineSound(Vec3 position)
-        {
+    public static class SineSound extends AbstractSoundInstance {
+        protected SineSound(Vec3 position) {
             super(new ResourceLocation(MOD_ID, "sine_wave"), SoundSource.BLOCKS, SoundInstance.createUnseededRandom());
             x = position.x;
             y = position.y;
@@ -69,14 +60,12 @@ public class AudioStreamTest
 
         @NotNull
         @Override
-        public CompletableFuture<AudioStream> getStream(@NotNull SoundBufferLibrary soundBuffers, @NotNull Sound sound, boolean looping)
-        {
+        public CompletableFuture<AudioStream> getStream(@NotNull SoundBufferLibrary soundBuffers, @NotNull Sound sound, boolean looping) {
             return CompletableFuture.completedFuture(new SineStream());
         }
     }
 
-    public static class SineStream implements AudioStream
-    {
+    public static class SineStream implements AudioStream {
         private static final AudioFormat FORMAT = new AudioFormat(44100, 8, 1, false, false);
         private static final double DT = 2 * Math.PI * 220 / 44100;
 
@@ -84,18 +73,15 @@ public class AudioStreamTest
 
         @NotNull
         @Override
-        public AudioFormat getFormat()
-        {
+        public AudioFormat getFormat() {
             return FORMAT;
         }
 
         @NotNull
         @Override
-        public ByteBuffer read(int capacity)
-        {
+        public ByteBuffer read(int capacity) {
             ByteBuffer buffer = BufferUtils.createByteBuffer(capacity);
-            for(int i = 0; i < capacity; i++)
-            {
+            for (int i = 0; i < capacity; i++) {
                 buffer.put(i, (byte) (Math.sin(value) * 127));
                 value = (value + DT) % Math.PI;
             }
@@ -103,8 +89,6 @@ public class AudioStreamTest
         }
 
         @Override
-        public void close()
-        {
-        }
+        public void close() {}
     }
 }

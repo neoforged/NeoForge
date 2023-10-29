@@ -6,6 +6,13 @@
 package net.neoforged.neoforge.client.model.geometry;
 
 import com.mojang.math.Transformation;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockElement;
@@ -36,46 +43,35 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Helper for dealing with unbaked models and geometries.
  */
-public class UnbakedGeometryHelper
-{
+public class UnbakedGeometryHelper {
     private static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
     private static final FaceBakery FACE_BAKERY = new FaceBakery();
 
     /**
      * Explanation:
      * This takes anything that looks like a valid resourcepack texture location, and tries to extract a resourcelocation out of it.
-     *  1. it will ignore anything up to and including an /assets/ folder,
-     *  2. it will take the next path component as a namespace,
-     *  3. it will match but skip the /textures/ part of the path,
-     *  4. it will take the rest of the path up to but excluding the .png extension as the resource path
+     * 1. it will ignore anything up to and including an /assets/ folder,
+     * 2. it will take the next path component as a namespace,
+     * 3. it will match but skip the /textures/ part of the path,
+     * 4. it will take the rest of the path up to but excluding the .png extension as the resource path
      * It's a best-effort situation, to allow model files exported by modelling software to be used without post-processing.
      * Example:
-     *   C:\Something\Or Other\src\main\resources\assets\mymodid\textures\item\my_thing.png
-     *   ........................................--------_______----------_____________----
-     *                                                 <namespace>        <path>
+     * C:\Something\Or Other\src\main\resources\assets\mymodid\textures\item\my_thing.png
+     * ........................................--------_______----------_____________----
+     * <namespace> <path>
      * Result after replacing '\' to '/': mymodid:item/my_thing
      */
-    private static final Pattern FILESYSTEM_PATH_TO_RESLOC =
-            Pattern.compile("(?:.*[\\\\/]assets[\\\\/](?<namespace>[a-z_-]+)[\\\\/]textures[\\\\/])?(?<path>[a-z_\\\\/-]+)\\.png");
+    private static final Pattern FILESYSTEM_PATH_TO_RESLOC = Pattern.compile("(?:.*[\\\\/]assets[\\\\/](?<namespace>[a-z_-]+)[\\\\/]textures[\\\\/])?(?<path>[a-z_\\\\/-]+)\\.png");
 
     /**
      * Resolves a material that may have been defined with a filesystem path instead of a proper {@link ResourceLocation}.
      * <p>
      * The target atlas will always be {@link TextureAtlas#LOCATION_BLOCKS}.
      */
-    public static Material resolveDirtyMaterial(@Nullable String tex, IGeometryBakingContext owner)
-    {
+    public static Material resolveDirtyMaterial(@Nullable String tex, IGeometryBakingContext owner) {
         if (tex == null)
             return new Material(TextureAtlas.LOCATION_BLOCKS, MissingTextureAtlasSprite.getLocation());
         if (tex.startsWith("#"))
@@ -84,8 +80,7 @@ public class UnbakedGeometryHelper
         // Attempt to convert a common (windows/linux/mac) filesystem path to a ResourceLocation.
         // This makes no promises, if it doesn't work, too bad, fix your mtl file.
         Matcher match = FILESYSTEM_PATH_TO_RESLOC.matcher(tex);
-        if (match.matches())
-        {
+        if (match.matches()) {
             String namespace = match.group("namespace");
             String path = match.group("path").replace("\\", "/");
             tex = namespace != null ? namespace + ":" + path : path;
@@ -98,8 +93,7 @@ public class UnbakedGeometryHelper
      * Helper for baking {@link BlockModel} instances. Handles baking custom geometries and deferring item model baking.
      */
     @ApiStatus.Internal
-    public static BakedModel bake(BlockModel blockModel, ModelBaker modelBaker, BlockModel owner, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ResourceLocation modelLocation, boolean guiLight3d)
-    {
+    public static BakedModel bake(BlockModel blockModel, ModelBaker modelBaker, BlockModel owner, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ResourceLocation modelLocation, boolean guiLight3d) {
         IUnbakedGeometry<?> customModel = blockModel.customData.getCustomGeometry();
         if (customModel != null)
             return customModel.bake(blockModel.customData, modelBaker, spriteGetter, modelState, blockModel.getOverrides(modelBaker, owner, spriteGetter), modelLocation);
@@ -108,8 +102,7 @@ public class UnbakedGeometryHelper
         if (blockModel.getRootModel() == ModelBakery.GENERATION_MARKER)
             return ITEM_MODEL_GENERATOR.generateBlockModel(spriteGetter, blockModel).bakeVanilla(modelBaker, blockModel, spriteGetter, modelState, modelLocation, guiLight3d);
 
-        if (blockModel.getRootModel() == ModelBakery.BLOCK_ENTITY_MARKER)
-        {
+        if (blockModel.getRootModel() == ModelBakery.BLOCK_ENTITY_MARKER) {
             var particleSprite = spriteGetter.apply(blockModel.getMaterial("particle"));
             return new BuiltInModel(blockModel.getTransforms(), blockModel.getOverrides(modelBaker, owner, spriteGetter), particleSprite, blockModel.getGuiLight().lightLikeBlock());
         }
@@ -121,8 +114,7 @@ public class UnbakedGeometryHelper
     /**
      * @see #createUnbakedItemElements(int, SpriteContents, ExtraFaceData)
      */
-    public static List<BlockElement> createUnbakedItemElements(int layerIndex, SpriteContents spriteContents)
-    {
+    public static List<BlockElement> createUnbakedItemElements(int layerIndex, SpriteContents spriteContents) {
         return createUnbakedItemElements(layerIndex, spriteContents, null);
     }
 
@@ -132,11 +124,9 @@ public class UnbakedGeometryHelper
      * <p>
      * The {@link Direction#NORTH} and {@link Direction#SOUTH} faces take up the whole surface.
      */
-    public static List<BlockElement> createUnbakedItemElements(int layerIndex, SpriteContents spriteContents, @Nullable ExtraFaceData faceData)
-    {
+    public static List<BlockElement> createUnbakedItemElements(int layerIndex, SpriteContents spriteContents, @Nullable ExtraFaceData faceData) {
         var elements = ITEM_MODEL_GENERATOR.processFrames(layerIndex, "layer" + layerIndex, spriteContents);
-        if(faceData != null)
-        {
+        if (faceData != null) {
             elements.forEach(element -> element.setFaceData(faceData));
         }
         return elements;
@@ -145,8 +135,7 @@ public class UnbakedGeometryHelper
     /**
      * @see #createUnbakedItemMaskElements(int, SpriteContents, ExtraFaceData)
      */
-    public static List<BlockElement> createUnbakedItemMaskElements(int layerIndex, SpriteContents spriteContents)
-    {
+    public static List<BlockElement> createUnbakedItemMaskElements(int layerIndex, SpriteContents spriteContents) {
         return createUnbakedItemMaskElements(layerIndex, spriteContents, null);
     }
 
@@ -156,8 +145,7 @@ public class UnbakedGeometryHelper
      * <p>
      * The {@link Direction#NORTH} and {@link Direction#SOUTH} faces take up only the pixels the texture uses.
      */
-    public static List<BlockElement> createUnbakedItemMaskElements(int layerIndex, SpriteContents spriteContents, @Nullable ExtraFaceData faceData)
-    {
+    public static List<BlockElement> createUnbakedItemMaskElements(int layerIndex, SpriteContents spriteContents, @Nullable ExtraFaceData faceData) {
         var elements = createUnbakedItemElements(layerIndex, spriteContents, faceData);
         elements.remove(0); // Remove north and south faces
 
@@ -173,16 +161,13 @@ public class UnbakedGeometryHelper
         });
 
         // Scan in search of opaque pixels
-        for (int y = 0; y < height; y++)
-        {
+        for (int y = 0; y < height; y++) {
             int xStart = -1;
-            for (int x = 0; x < width; x++)
-            {
+            for (int x = 0; x < width; x++) {
                 var opaque = bits.get(x + y * width);
                 if (opaque == (xStart == -1)) // (opaque && -1) || (!opaque && !-1)
                 {
-                    if (xStart == -1)
-                    {
+                    if (xStart == -1) {
                         // We have found the start of a new segment, continue
                         xStart = x;
                         continue;
@@ -210,8 +195,7 @@ public class UnbakedGeometryHelper
                                     map.put(direction, new BlockElementFace(null, layerIndex, "layer" + layerIndex, new BlockFaceUV(null, 0)));
                             }),
                             null,
-                            true
-                    ));
+                            true));
 
                     // Reset xStart
                     xStart = -1;
@@ -224,10 +208,8 @@ public class UnbakedGeometryHelper
     /**
      * Bakes a list of {@linkplain BlockElement block elements} and feeds the baked quads to a {@linkplain IModelBuilder model builder}.
      */
-    public static void bakeElements(IModelBuilder<?> builder, List<BlockElement> elements, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ResourceLocation modelLocation)
-    {
-        for (BlockElement element : elements)
-        {
+    public static void bakeElements(IModelBuilder<?> builder, List<BlockElement> elements, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ResourceLocation modelLocation) {
+        for (BlockElement element : elements) {
             element.faces.forEach((side, face) -> {
                 var sprite = spriteGetter.apply(new Material(TextureAtlas.LOCATION_BLOCKS, new ResourceLocation(face.texture)));
                 var quad = bakeElementFace(element, face, sprite, side, modelState, modelLocation);
@@ -242,8 +224,7 @@ public class UnbakedGeometryHelper
     /**
      * Bakes a list of {@linkplain BlockElement block elements} and returns the list of baked quads.
      */
-    public static List<BakedQuad> bakeElements(List<BlockElement> elements, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ResourceLocation modelLocation)
-    {
+    public static List<BakedQuad> bakeElements(List<BlockElement> elements, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ResourceLocation modelLocation) {
         if (elements.isEmpty())
             return List.of();
         var list = new ArrayList<BakedQuad>();
@@ -254,8 +235,7 @@ public class UnbakedGeometryHelper
     /**
      * Turns a single {@link BlockElementFace} into a {@link BakedQuad}.
      */
-    public static BakedQuad bakeElementFace(BlockElement element, BlockElementFace face, TextureAtlasSprite sprite, Direction direction, ModelState state, ResourceLocation modelLocation)
-    {
+    public static BakedQuad bakeElementFace(BlockElement element, BlockElementFace face, TextureAtlasSprite sprite, Direction direction, ModelState state, ResourceLocation modelLocation) {
         return FACE_BAKERY.bakeQuad(element.from, element.to, face, sprite, direction, state, element.rotation, element.shade, modelLocation);
     }
 
@@ -265,10 +245,9 @@ public class UnbakedGeometryHelper
      * blockstate transform.
      *
      * @return an {@code IQuadTransformer} that applies the root transform to a baked quad that already has the
-     * transformation of the given {@code ModelState} applied to it
+     *         transformation of the given {@code ModelState} applied to it
      */
-    public static IQuadTransformer applyRootTransform(ModelState modelState, Transformation rootTransform)
-    {
+    public static IQuadTransformer applyRootTransform(ModelState modelState, Transformation rootTransform) {
         // Move the origin of the ModelState transform and its inverse from the negative corner to the block center
         // to replicate the way the ModelState transform is applied in the FaceBakery by moving the vertices such that
         // the negative corner acts as the block center
@@ -279,8 +258,7 @@ public class UnbakedGeometryHelper
     /**
      * {@return a {@link ModelState} that combines the existing model state and the {@linkplain Transformation root transform}}
      */
-    public static ModelState composeRootTransformIntoModelState(ModelState modelState, Transformation rootTransform)
-    {
+    public static ModelState composeRootTransformIntoModelState(ModelState modelState, Transformation rootTransform) {
         // Move the origin of the root transform as if the negative corner were the block center to match the way the
         // ModelState transform is applied in the FaceBakery by moving the vertices to be centered on that corner
         rootTransform = rootTransform.applyOrigin(new Vector3f(-.5F, -.5F, -.5F));

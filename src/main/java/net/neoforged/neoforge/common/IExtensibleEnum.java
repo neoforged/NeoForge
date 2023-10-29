@@ -8,10 +8,9 @@ package net.neoforged.neoforge.common;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import net.minecraft.util.StringRepresentable;
-
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.util.StringRepresentable;
 
 /**
  * To be implemented on vanilla enums that should be enhanced with ASM to be
@@ -23,8 +22,7 @@ import java.util.function.Supplier;
  * require the method:
  *
  * <pre>
- * public static MyEnum create(String name, Object foo)
- * {
+ * public static MyEnum create(String name, Object foo) {
  *     throw new IllegalStateException("Enum not extended");
  * }
  * </pre>
@@ -33,8 +31,7 @@ import java.util.function.Supplier;
  * {@code create} methods <strong>can</strong> be defined as long as each
  * matches a constructor.
  */
-public interface IExtensibleEnum
-{
+public interface IExtensibleEnum {
     /**
      * Called by generated factory code to do any post-constructor setup required by
      * the enum. Should not be called manually.
@@ -55,9 +52,7 @@ public interface IExtensibleEnum
                         num -> {
                             var values = valuesSupplier.get();
                             return num >= 0 && num < values.length ? DataResult.success(values[num]) : DataResult.error(() -> "Unknown enum id: " + num);
-                        }
-                ),
-                value -> Either.left(value.getSerializedName())
-        );
+                        }),
+                value -> Either.left(value.getSerializedName()));
     }
 }

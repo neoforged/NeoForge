@@ -5,6 +5,9 @@
 
 package net.neoforged.neoforge.registries;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -12,43 +15,34 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-
 /**
  * Fired on the {@link NeoForge#EVENT_BUS forge bus}.
  */
-public class MissingMappingsEvent extends Event
-{
+public class MissingMappingsEvent extends Event {
     private final ResourceKey<? extends Registry<?>> key;
     private final IForgeRegistry<?> registry;
     private final List<Mapping<?>> mappings;
 
-    public MissingMappingsEvent(ResourceKey<? extends Registry<?>> key, IForgeRegistry<?> registry, Collection<Mapping<?>> missed)
-    {
+    public MissingMappingsEvent(ResourceKey<? extends Registry<?>> key, IForgeRegistry<?> registry, Collection<Mapping<?>> missed) {
         this.key = key;
         this.registry = registry;
         this.mappings = List.copyOf(missed);
     }
 
-    public ResourceKey<? extends Registry<?>> getKey()
-    {
+    public ResourceKey<? extends Registry<?>> getKey() {
         return this.key;
     }
 
-    public IForgeRegistry<?> getRegistry()
-    {
+    public IForgeRegistry<?> getRegistry() {
         return this.registry;
     }
 
     /**
      * @return An immutable list of missing mappings for the given namespace.
-     * Empty if the registry key doesn't match {@link #getKey()}.
+     *         Empty if the registry key doesn't match {@link #getKey()}.
      */
     @SuppressWarnings("unchecked")
-    public <T> List<Mapping<T>> getMappings(ResourceKey<? extends Registry<T>> registryKey, String namespace)
-    {
+    public <T> List<Mapping<T>> getMappings(ResourceKey<? extends Registry<T>> registryKey, String namespace) {
         return registryKey == this.key
                 ? (List<Mapping<T>>) (List<?>) this.mappings.stream().filter(e -> e.key.getNamespace().equals(namespace)).toList()
                 : List.of();
@@ -56,11 +50,10 @@ public class MissingMappingsEvent extends Event
 
     /**
      * @return An immutable list of all missing mappings.
-     * Empty if the registry key doesn't match {@link #getKey()}.
+     *         Empty if the registry key doesn't match {@link #getKey()}.
      */
     @SuppressWarnings("unchecked")
-    public <T> List<Mapping<T>> getAllMappings(ResourceKey<? extends Registry<T>> registryKey)
-    {
+    public <T> List<Mapping<T>> getAllMappings(ResourceKey<? extends Registry<T>> registryKey) {
         return registryKey == this.key ? (List<Mapping<T>>) (List<?>) this.mappings : List.of();
     }
 
@@ -72,8 +65,7 @@ public class MissingMappingsEvent extends Event
      * <li>{@link #FAIL} means this missing mapping will prevent the world from loading.
      * </ul>
      */
-    public enum Action
-    {
+    public enum Action {
         /**
          * Take the default action
          */
@@ -96,8 +88,7 @@ public class MissingMappingsEvent extends Event
         REMAP
     }
 
-    public static class Mapping<T> implements Comparable<Mapping<T>>
-    {
+    public static class Mapping<T> implements Comparable<Mapping<T>> {
         private final IForgeRegistry<T> registry;
         private final IForgeRegistry<T> pool;
         final ResourceLocation key;
@@ -105,8 +96,7 @@ public class MissingMappingsEvent extends Event
         Action action = Action.DEFAULT;
         T target;
 
-        public Mapping(IForgeRegistry<T> registry, IForgeRegistry<T> pool, ResourceLocation key, int id)
-        {
+        public Mapping(IForgeRegistry<T> registry, IForgeRegistry<T> pool, ResourceLocation key, int id) {
             this.registry = registry;
             this.pool = pool;
             this.key = key;
@@ -116,24 +106,21 @@ public class MissingMappingsEvent extends Event
         /**
          * Ignore the missing item.
          */
-        public void ignore()
-        {
+        public void ignore() {
             action = Action.IGNORE;
         }
 
         /**
          * Warn the user about the missing item.
          */
-        public void warn()
-        {
+        public void warn() {
             action = Action.WARN;
         }
 
         /**
          * Prevent the world from loading due to the missing item.
          */
-        public void fail()
-        {
+        public void fail() {
             action = Action.FAIL;
         }
 
@@ -145,8 +132,7 @@ public class MissingMappingsEvent extends Event
          *
          * @param target Entry to remap to.
          */
-        public void remap(T target)
-        {
+        public void remap(T target) {
             Validate.notNull(target, "Remap target can not be null");
             Validate.isTrue(pool.getKey(target) != null,
                     String.format(Locale.ENGLISH, "The specified entry %s hasn't been registered in registry yet.", target));
@@ -154,24 +140,20 @@ public class MissingMappingsEvent extends Event
             this.target = target;
         }
 
-        public IForgeRegistry<T> getRegistry()
-        {
+        public IForgeRegistry<T> getRegistry() {
             return this.registry;
         }
 
-        public ResourceLocation getKey()
-        {
+        public ResourceLocation getKey() {
             return key;
         }
 
-        public int getId()
-        {
+        public int getId() {
             return this.id;
         }
 
         @Override
-        public int compareTo(Mapping<T> o)
-        {
+        public int compareTo(Mapping<T> o) {
             int ret = this.registry.getRegistryName().compareNamespaced(o.registry.getRegistryName());
             if (ret == 0)
                 ret = this.key.compareNamespaced(o.key);

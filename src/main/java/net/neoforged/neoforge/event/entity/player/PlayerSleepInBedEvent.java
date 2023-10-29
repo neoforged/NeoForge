@@ -5,12 +5,11 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
+import java.util.Optional;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Player.BedSleepingProblem;
-import net.minecraft.core.BlockPos;
 import net.neoforged.neoforge.common.NeoForge;
-
-import java.util.Optional;
 
 /**
  * PlayerSleepInBedEvent is fired when a player sleeps in a bed.
@@ -24,29 +23,24 @@ import java.util.Optional;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class PlayerSleepInBedEvent extends PlayerEvent
-{
+public class PlayerSleepInBedEvent extends PlayerEvent {
     private BedSleepingProblem result = null;
     private final Optional<BlockPos> pos;
 
-    public PlayerSleepInBedEvent(Player player, Optional<BlockPos> pos)
-    {
+    public PlayerSleepInBedEvent(Player player, Optional<BlockPos> pos) {
         super(player);
         this.pos = pos;
     }
 
-    public BedSleepingProblem getResultStatus()
-    {
+    public BedSleepingProblem getResultStatus() {
         return result;
     }
 
-    public void setResult(BedSleepingProblem result)
-    {
+    public void setResult(BedSleepingProblem result) {
         this.result = result;
     }
 
-    public BlockPos getPos()
-    {
+    public BlockPos getPos() {
         return pos.orElse(null);
     }
 

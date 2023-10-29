@@ -14,8 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-public class NeoForgeVersion
-{
+public class NeoForgeVersion {
     private static final Logger LOGGER = LogManager.getLogger();
     // This is Forge's Mod Id, used for the NeoForgeMod and resource locations
     public static final String MOD_ID = "neoforge";
@@ -42,19 +41,16 @@ public class NeoForgeVersion
         LOGGER.debug(Logging.CORE, "Found NeoForge group {}", neoForgeGroup);
     }
 
-    public static String getVersion()
-    {
+    public static String getVersion() {
         return neoForgeVersion;
     }
 
-    public static VersionChecker.Status getStatus()
-    {
+    public static VersionChecker.Status getStatus() {
         return VersionChecker.getResult(ModList.get().getModFileById(MOD_ID).getMods().get(0)).status();
     }
 
     @Nullable
-    public static String getTarget()
-    {
+    public static String getTarget() {
         VersionChecker.CheckResult res = VersionChecker.getResult(ModList.get().getModFileById(MOD_ID).getMods().get(0));
         return res.target() == null ? "" : res.target().toString();
     }
@@ -67,4 +63,3 @@ public class NeoForgeVersion
         return neoForgeGroup;
     }
 }
-

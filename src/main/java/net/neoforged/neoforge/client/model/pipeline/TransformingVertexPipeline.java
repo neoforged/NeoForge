@@ -13,19 +13,16 @@ import org.joml.Vector4f;
 /**
  * Vertex pipeline element that applies a transformation to incoming geometry.
  */
-public class TransformingVertexPipeline extends VertexConsumerWrapper
-{
+public class TransformingVertexPipeline extends VertexConsumerWrapper {
     private final Transformation transformation;
 
-    public TransformingVertexPipeline(VertexConsumer parent, Transformation transformation)
-    {
+    public TransformingVertexPipeline(VertexConsumer parent, Transformation transformation) {
         super(parent);
         this.transformation = transformation;
     }
 
     @Override
-    public VertexConsumer vertex(double x, double y, double z)
-    {
+    public VertexConsumer vertex(double x, double y, double z) {
         var vec = new Vector4f((float) x, (float) y, (float) z, 1);
         transformation.transformPosition(vec);
         vec.div(vec.w);
@@ -33,8 +30,7 @@ public class TransformingVertexPipeline extends VertexConsumerWrapper
     }
 
     @Override
-    public VertexConsumer normal(float x, float y, float z)
-    {
+    public VertexConsumer normal(float x, float y, float z) {
         var vec = new Vector3f(x, y, z);
         transformation.transformNormal(vec);
         vec.normalize();

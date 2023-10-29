@@ -13,10 +13,8 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
-public class BiomeGenerationSettingsBuilder extends BiomeGenerationSettings.PlainBuilder
-{
-    public BiomeGenerationSettingsBuilder(BiomeGenerationSettings orig)
-    {
+public class BiomeGenerationSettingsBuilder extends BiomeGenerationSettings.PlainBuilder {
+    public BiomeGenerationSettingsBuilder(BiomeGenerationSettings orig) {
         orig.getCarvingStages().forEach(k -> {
             carvers.put(k, new ArrayList<>());
             orig.getCarvers(k).forEach(v -> carvers.get(k).add(v));

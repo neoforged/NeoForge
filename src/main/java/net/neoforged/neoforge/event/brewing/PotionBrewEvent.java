@@ -5,39 +5,33 @@
 
 package net.neoforged.neoforge.event.brewing;
 
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.NonNullList;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class PotionBrewEvent extends Event
-{
+public abstract class PotionBrewEvent extends Event {
     private NonNullList<ItemStack> stacks;
 
-    protected PotionBrewEvent(NonNullList<ItemStack> stacks)
-    {
+    protected PotionBrewEvent(NonNullList<ItemStack> stacks) {
         this.stacks = stacks;
     }
 
     @NotNull
-    public ItemStack getItem(int index)
-    {
+    public ItemStack getItem(int index) {
         if (index < 0 || index >= stacks.size()) return ItemStack.EMPTY;
         return stacks.get(index);
     }
 
-    public void setItem(int index, @NotNull ItemStack stack)
-    {
-        if (index < stacks.size())
-        {
+    public void setItem(int index, @NotNull ItemStack stack) {
+        if (index < stacks.size()) {
             stacks.set(index, stack);
         }
     }
 
-    public int getLength()
-    {
+    public int getLength() {
         return stacks.size();
     }
 
@@ -58,10 +52,8 @@ public abstract class PotionBrewEvent extends Event
      * <br>
      * If this event is canceled, and items have been modified, PotionBrewEvent.Post will automatically be fired.
      **/
-    public static class Pre extends PotionBrewEvent implements ICancellableEvent
-    {
-        public Pre(NonNullList<ItemStack> stacks)
-        {
+    public static class Pre extends PotionBrewEvent implements ICancellableEvent {
+        public Pre(NonNullList<ItemStack> stacks) {
             super(stacks);
         }
     }
@@ -79,10 +71,8 @@ public abstract class PotionBrewEvent extends Event
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
-    public static class Post extends PotionBrewEvent
-    {
-        public Post(NonNullList<ItemStack> stacks)
-        {
+    public static class Post extends PotionBrewEvent {
+        public Post(NonNullList<ItemStack> stacks) {
             super(stacks);
         }
     }

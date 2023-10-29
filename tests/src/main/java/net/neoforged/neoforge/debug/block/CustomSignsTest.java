@@ -5,44 +5,42 @@
 
 package net.neoforged.neoforge.debug.block;
 
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
+import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.HangingSignItem;
-import net.minecraft.world.level.block.CeilingHangingSignBlock;
-import net.minecraft.world.level.block.WallHangingSignBlock;
-import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
-import net.minecraft.world.level.block.state.properties.BlockSetType;
-import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SignItem;
-import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CeilingHangingSignBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.StandingSignBlock;
+import net.minecraft.world.level.block.WallHangingSignBlock;
+import net.minecraft.world.level.block.WallSignBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.RegistryObject;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
-
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.StandingSignBlock;
-import net.minecraft.world.level.block.WallSignBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.WoodType;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(CustomSignsTest.MODID)
-public class CustomSignsTest
-{
+public class CustomSignsTest {
     public static final boolean ENABLE = false; // TODO fix
     public static final String MODID = "custom_signs_test";
 
@@ -62,10 +60,8 @@ public class CustomSignsTest
     public static final RegistryObject<BlockEntityType<CustomSignBlockEntity>> CUSTOM_SIGN = BLOCK_ENTITIES.register("custom_sign", () -> BlockEntityType.Builder.of(CustomSignBlockEntity::new, TEST_WALL_SIGN.get(), TEST_STANDING_SIGN.get()).build(null));
     public static final RegistryObject<BlockEntityType<CustomHangingSignBlockEntity>> CUSTOM_HANGING_SIGN = BLOCK_ENTITIES.register("custom_hanging_sign", () -> BlockEntityType.Builder.of(CustomHangingSignBlockEntity::new, TEST_WALL_HANGING_SIGN.get(), TEST_CEILING_HANGING_SIGN.get()).build(null));
 
-    public CustomSignsTest()
-    {
-        if (ENABLE)
-        {
+    public CustomSignsTest() {
+        if (ENABLE) {
             final IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
             BLOCKS.register(eventBus);
             ITEMS.register(eventBus);
@@ -77,114 +73,92 @@ public class CustomSignsTest
         }
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
-        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)
-        {
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             event.accept(TEST_SIGN);
             event.accept(TEST_HANGING_SIGN);
         }
     }
 
-    private void clientSetup(final FMLClientSetupEvent event)
-    {
+    private void clientSetup(final FMLClientSetupEvent event) {
         BlockEntityRenderers.register(CUSTOM_SIGN.get(), SignRenderer::new);
         BlockEntityRenderers.register(CUSTOM_HANGING_SIGN.get(), HangingSignRenderer::new);
         event.enqueueWork(() -> {
-           Sheets.addWoodType(TEST_WOOD_TYPE);
+            Sheets.addWoodType(TEST_WOOD_TYPE);
         });
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event)
-    {
+    private void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> WoodType.register(TEST_WOOD_TYPE));
     }
 
-    public static class CustomStandingSignBlock extends StandingSignBlock
-    {
+    public static class CustomStandingSignBlock extends StandingSignBlock {
 
-        public CustomStandingSignBlock(Properties propertiesIn, WoodType woodTypeIn)
-        {
+        public CustomStandingSignBlock(Properties propertiesIn, WoodType woodTypeIn) {
             super(propertiesIn, woodTypeIn);
         }
 
         @Override
-        public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
-        {
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
             return new CustomSignBlockEntity(pos, state);
         }
     }
 
-    public static class CustomWallSignBlock extends WallSignBlock
-    {
+    public static class CustomWallSignBlock extends WallSignBlock {
 
-        public CustomWallSignBlock(Properties propertiesIn, WoodType woodTypeIn)
-        {
+        public CustomWallSignBlock(Properties propertiesIn, WoodType woodTypeIn) {
             super(propertiesIn, woodTypeIn);
         }
 
         @Override
-        public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
-        {
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
             return new CustomSignBlockEntity(pos, state);
         }
     }
 
-    public static class CustomSignBlockEntity extends SignBlockEntity
-    {
-        public CustomSignBlockEntity(BlockPos pos, BlockState state)
-        {
+    public static class CustomSignBlockEntity extends SignBlockEntity {
+        public CustomSignBlockEntity(BlockPos pos, BlockState state) {
             super(pos, state);
         }
 
         @Override
-        public BlockEntityType<CustomSignBlockEntity> getType()
-        {
+        public BlockEntityType<CustomSignBlockEntity> getType() {
             return CUSTOM_SIGN.get();
         }
     }
 
-    public static class CustomCeilingHangingSignBlock extends CeilingHangingSignBlock
-    {
+    public static class CustomCeilingHangingSignBlock extends CeilingHangingSignBlock {
 
-        public CustomCeilingHangingSignBlock(Properties propertiesIn, WoodType woodTypeIn)
-        {
+        public CustomCeilingHangingSignBlock(Properties propertiesIn, WoodType woodTypeIn) {
             super(propertiesIn, woodTypeIn);
         }
 
         @Override
-        public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
-        {
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
             return new CustomHangingSignBlockEntity(pos, state);
         }
     }
 
-    public static class CustomWallHangingSignBlock extends WallHangingSignBlock
-    {
+    public static class CustomWallHangingSignBlock extends WallHangingSignBlock {
 
-        public CustomWallHangingSignBlock(Properties propertiesIn, WoodType woodTypeIn)
-        {
+        public CustomWallHangingSignBlock(Properties propertiesIn, WoodType woodTypeIn) {
             super(propertiesIn, woodTypeIn);
         }
 
         @Override
-        public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
-        {
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
             return new CustomHangingSignBlockEntity(pos, state);
         }
     }
 
-    public static class CustomHangingSignBlockEntity extends HangingSignBlockEntity
-    {
+    public static class CustomHangingSignBlockEntity extends HangingSignBlockEntity {
 
-        public CustomHangingSignBlockEntity(BlockPos pos, BlockState state)
-        {
+        public CustomHangingSignBlockEntity(BlockPos pos, BlockState state) {
             super(pos, state);
         }
 
         @Override
-        public BlockEntityType<CustomHangingSignBlockEntity> getType()
-        {
+        public BlockEntityType<CustomHangingSignBlockEntity> getType() {
             return CUSTOM_HANGING_SIGN.get();
         }
     }

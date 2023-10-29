@@ -26,8 +26,7 @@ public interface SimpleMessage {
      *
      * @param context the network context
      */
-    default void handleMainThread(NetworkEvent.Context context) {
-    }
+    default void handleMainThread(NetworkEvent.Context context) {}
 
     /**
      * Called on the network thread, in order to handle this packet. Accessing game state is <strong>not</strong> safe here,
@@ -36,6 +35,5 @@ public interface SimpleMessage {
      *
      * @param context the network context
      */
-    default void handleNetworkThread(NetworkEvent.Context context) {
-    }
+    default void handleNetworkThread(NetworkEvent.Context context) {}
 }

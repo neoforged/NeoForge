@@ -14,7 +14,6 @@ import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
  * @see RegisterGuiOverlaysEvent
  */
 @FunctionalInterface
-public interface IGuiOverlay
-{
+public interface IGuiOverlay {
     void render(ExtendedGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight);
 }

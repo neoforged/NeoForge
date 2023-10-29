@@ -17,7 +17,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -31,27 +39,17 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.CreativeModeTabSearchRegistry;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.toposort.TopologicalSort;
+import net.neoforged.neoforge.client.CreativeModeTabSearchRegistry;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-public final class CreativeModeTabRegistry
-{
+public final class CreativeModeTabRegistry {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final ResourceLocation CREATIVE_MODE_TAB_ORDERING_JSON = new ResourceLocation("neoforge", "creative_mode_tab_ordering.json");
     private static final List<CreativeModeTab> SORTED_TABS = new ArrayList<>();
@@ -61,8 +59,7 @@ public final class CreativeModeTabRegistry
     /**
      * {@return an unmodifiable view of the sorted list of creative mode tabs in ascending order}
      */
-    public static List<CreativeModeTab> getSortedCreativeModeTabs()
-    {
+    public static List<CreativeModeTab> getSortedCreativeModeTabs() {
         return SORTED_TABS_VIEW;
     }
 
@@ -76,8 +73,7 @@ public final class CreativeModeTabRegistry
      * @param name the name to look up
      */
     @Nullable
-    public static CreativeModeTab getTab(ResourceLocation name)
-    {
+    public static CreativeModeTab getTab(ResourceLocation name) {
         return BuiltInRegistries.CREATIVE_MODE_TAB.get(name);
     }
 
@@ -87,49 +83,38 @@ public final class CreativeModeTabRegistry
      * @param tab the tab to look up
      */
     @Nullable
-    public static ResourceLocation getName(CreativeModeTab tab)
-    {
+    public static ResourceLocation getName(CreativeModeTab tab) {
         return BuiltInRegistries.CREATIVE_MODE_TAB.getKey(tab);
     }
 
     private static final Multimap<ResourceLocation, ResourceLocation> edges = HashMultimap.create();
 
-    static PreparableReloadListener getReloadListener()
-    {
-        return new SimplePreparableReloadListener<JsonObject>()
-        {
+    static PreparableReloadListener getReloadListener() {
+        return new SimplePreparableReloadListener<JsonObject>() {
             final Gson gson = new GsonBuilder().create();
 
             @NotNull
             @Override
-            protected JsonObject prepare(@NotNull ResourceManager resourceManager, ProfilerFiller profiler)
-            {
+            protected JsonObject prepare(@NotNull ResourceManager resourceManager, ProfilerFiller profiler) {
                 Optional<Resource> res = resourceManager.getResource(CREATIVE_MODE_TAB_ORDERING_JSON);
                 if (res.isEmpty())
                     return new JsonObject();
 
-                try (Reader reader = res.get().openAsReader())
-                {
+                try (Reader reader = res.get().openAsReader()) {
                     return this.gson.fromJson(reader, JsonObject.class);
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     LOGGER.error("Could not read CreativeModeTab sorting file " + CREATIVE_MODE_TAB_ORDERING_JSON, e);
                     return new JsonObject();
                 }
             }
 
             @Override
-            protected void apply(@NotNull JsonObject data, @NotNull ResourceManager resourceManager, ProfilerFiller p)
-            {
-                try
-                {
-                    if (data.size() > 0)
-                    {
+            protected void apply(@NotNull JsonObject data, @NotNull ResourceManager resourceManager, ProfilerFiller p) {
+                try {
+                    if (data.size() > 0) {
                         JsonArray order = GsonHelper.getAsJsonArray(data, "order");
                         List<CreativeModeTab> customOrder = new ArrayList<>();
-                        for (JsonElement entry : order)
-                        {
+                        for (JsonElement entry : order) {
                             ResourceLocation id = new ResourceLocation(entry.getAsString());
                             CreativeModeTab CreativeModeTab = getTab(id);
                             if (CreativeModeTab == null)
@@ -145,9 +130,7 @@ public final class CreativeModeTabRegistry
                         setCreativeModeTabOrder(customOrder);
                         return;
                     }
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     LOGGER.error("Error parsing CreativeModeTab sorting file " + CREATIVE_MODE_TAB_ORDERING_JSON, e);
                 }
 
@@ -157,17 +140,14 @@ public final class CreativeModeTabRegistry
     }
 
     @SuppressWarnings("UnstableApiUsage")
-    private static void recalculateItemCreativeModeTabs()
-    {
+    private static void recalculateItemCreativeModeTabs() {
         final MutableGraph<CreativeModeTab> graph = GraphBuilder.directed().nodeOrder(ElementOrder.<CreativeModeTab>insertion()).build();
 
-        for (CreativeModeTab tab : BuiltInRegistries.CREATIVE_MODE_TAB)
-        {
+        for (CreativeModeTab tab : BuiltInRegistries.CREATIVE_MODE_TAB) {
             if (!DEFAULT_TABS.contains(tab))
                 graph.addNode(tab);
         }
-        edges.forEach((key, value) ->
-        {
+        edges.forEach((key, value) -> {
             final CreativeModeTab keyC = getTab(key);
             final CreativeModeTab valueC = getTab(value);
             if (keyC != null && valueC != null)
@@ -180,17 +160,14 @@ public final class CreativeModeTabRegistry
         setCreativeModeTabOrder(tierList);
     }
 
-    private static void setCreativeModeTabOrder(List<CreativeModeTab> tierList)
-    {
-        runInServerThreadIfPossible(hasServer ->
-        {
+    private static void setCreativeModeTabOrder(List<CreativeModeTab> tierList) {
+        runInServerThreadIfPossible(hasServer -> {
             SORTED_TABS.clear();
             SORTED_TABS.addAll(tierList);
         });
     }
 
-    private static void runInServerThreadIfPossible(BooleanConsumer runnable)
-    {
+    private static void runInServerThreadIfPossible(BooleanConsumer runnable) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server != null)
             server.execute(() -> runnable.accept(true));
@@ -199,8 +176,7 @@ public final class CreativeModeTabRegistry
     }
 
     @ApiStatus.Internal
-    public static void sortTabs()
-    {
+    public static void sortTabs() {
         edges.clear();
 
         DEFAULT_TABS.add(BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabs.HOTBAR));
@@ -220,8 +196,7 @@ public final class CreativeModeTabRegistry
 
             if (!tab.tabsBefore.isEmpty() || !tab.tabsAfter.isEmpty())
                 addTabOrder(tab, name);
-            else
-            {
+            else {
                 // If there is no order specified ensure vanilla ordering by specifying the previous and next indexed tab as edges
                 if (i != 0)
                     edges.put(indexed.get(i - 1).unwrapKey().orElseThrow().location(), name);
@@ -231,8 +206,7 @@ public final class CreativeModeTabRegistry
         }
 
         ResourceLocation lastVanilla = indexed.get(vanillaTabs - 1).unwrapKey().orElseThrow().location();
-        for (int i = vanillaTabs; i < indexed.size(); i++)
-        {
+        for (int i = vanillaTabs; i < indexed.size(); i++) {
             final Holder<CreativeModeTab> value = indexed.get(i);
             final CreativeModeTab tab = value.get();
             final ResourceLocation name = value.unwrapKey().orElseThrow().location();
@@ -249,15 +223,12 @@ public final class CreativeModeTabRegistry
             CreativeModeTabSearchRegistry.createSearchTrees();
     }
 
-    private static void addTabOrder(CreativeModeTab tab, ResourceLocation name)
-    {
-        for (final ResourceLocation after : tab.tabsAfter)
-        {
+    private static void addTabOrder(CreativeModeTab tab, ResourceLocation name) {
+        for (final ResourceLocation after : tab.tabsAfter) {
             edges.put(name, after);
         }
 
-        for (final ResourceLocation before : tab.tabsBefore)
-        {
+        for (final ResourceLocation before : tab.tabsBefore) {
             edges.put(before, name);
         }
     }

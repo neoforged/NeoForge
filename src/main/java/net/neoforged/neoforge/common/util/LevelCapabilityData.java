@@ -9,15 +9,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.Nullable;
 
-public class LevelCapabilityData extends SavedData
-{
+public class LevelCapabilityData extends SavedData {
     public static final String ID = "capabilities";
 
     private INBTSerializable<CompoundTag> serializable;
     private CompoundTag capNBT = null;
 
-    public LevelCapabilityData(@Nullable INBTSerializable<CompoundTag> serializable)
-    {
+    public LevelCapabilityData(@Nullable INBTSerializable<CompoundTag> serializable) {
         this.serializable = serializable;
     }
 
@@ -27,35 +25,29 @@ public class LevelCapabilityData extends SavedData
         return data;
     }
 
-    public void read(CompoundTag nbt)
-    {
+    public void read(CompoundTag nbt) {
         this.capNBT = nbt;
-        if (serializable != null)
-        {
+        if (serializable != null) {
             serializable.deserializeNBT(this.capNBT);
             this.capNBT = null;
         }
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt)
-    {
+    public CompoundTag save(CompoundTag nbt) {
         if (serializable != null)
             nbt = serializable.serializeNBT();
         return nbt;
     }
 
     @Override
-    public boolean isDirty()
-    {
+    public boolean isDirty() {
         return true;
     }
 
-    public void setCapabilities(INBTSerializable<CompoundTag> capabilities)
-    {
+    public void setCapabilities(INBTSerializable<CompoundTag> capabilities) {
         this.serializable = capabilities;
-        if (this.capNBT != null && serializable != null)
-        {
+        if (this.capNBT != null && serializable != null) {
             serializable.deserializeNBT(this.capNBT);
             this.capNBT = null;
         }

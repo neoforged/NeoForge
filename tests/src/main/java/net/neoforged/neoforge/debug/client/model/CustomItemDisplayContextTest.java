@@ -36,15 +36,15 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -61,17 +61,15 @@ import org.jetbrains.annotations.Nullable;
  * Editing that model json will reflect ingame after a resource reload (F3+T).
  */
 @Mod(CustomItemDisplayContextTest.MODID)
-public class CustomItemDisplayContextTest
-{
+public class CustomItemDisplayContextTest {
     public static final String MODID = "custom_transformtype_test";
 
-     @Mod.EventBusSubscriber(value= Dist.CLIENT, modid = MODID, bus= Mod.EventBusSubscriber.Bus.MOD)
-    private static class RendererEvents
-    {
-        public static final ItemDisplayContext HANGING = ItemDisplayContext.create("custom_transformtype_test_hanging",  new ResourceLocation("custom_transformtype_test", "hanging"), null);
+    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    private static class RendererEvents {
+        public static final ItemDisplayContext HANGING = ItemDisplayContext.create("custom_transformtype_test_hanging", new ResourceLocation("custom_transformtype_test", "hanging"), null);
+
         @SubscribeEvent
-        public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event)
-        {
+        public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(ITEM_HANGER_BE.get(), ItemHangerBlockEntityRenderer::new);
         }
 
@@ -81,24 +79,20 @@ public class CustomItemDisplayContextTest
         }
 
         private static class ItemHangerBlockEntityRenderer
-                implements BlockEntityRenderer<ItemHangerBlockEntity>
-        {
-            public ItemHangerBlockEntityRenderer(BlockEntityRendererProvider.Context context)
-            {
-            }
+                implements BlockEntityRenderer<ItemHangerBlockEntity> {
+            public ItemHangerBlockEntityRenderer(BlockEntityRendererProvider.Context context) {}
 
             @Override
-            public void render(ItemHangerBlockEntity blocken, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int overlayCoord)
-            {
+            public void render(ItemHangerBlockEntity blocken, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int overlayCoord) {
                 var state = blocken.getBlockState();
 
                 if (!(state.getBlock() instanceof ItemHangerBlock)) return;
 
                 poseStack.pushPose();
 
-                poseStack.translate(0.5,0.5,0.5);
+                poseStack.translate(0.5, 0.5, 0.5);
                 poseStack.mulPose(state.getValue(ItemHangerBlock.FACING).getRotation());
-                poseStack.translate(-0.5,-0.5,-0.5);
+                poseStack.translate(-0.5, -0.5, -0.5);
 
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 
@@ -115,15 +109,11 @@ public class CustomItemDisplayContextTest
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MODID);
 
-    public static final RegistryObject<Block>
-            ITEM_HANGER_BLOCK = BLOCKS.register("item_hanger", () -> new ItemHangerBlock(BlockBehaviour.Properties.of().noCollission().noOcclusion().noLootTable()));
-    public static final RegistryObject<BlockEntityType<ItemHangerBlockEntity>>
-            ITEM_HANGER_BE = BLOCK_ENTITY_TYPES.register("item_hanger", () -> BlockEntityType.Builder.of(ItemHangerBlockEntity::new, ITEM_HANGER_BLOCK.get()).build(null));
-    public static final RegistryObject<Item>
-            ITEM_HANGER_ITEM = ITEMS.register("item_hanger", () -> new ItemHangerItem(ITEM_HANGER_BLOCK.get(), new Item.Properties()));
+    public static final RegistryObject<Block> ITEM_HANGER_BLOCK = BLOCKS.register("item_hanger", () -> new ItemHangerBlock(BlockBehaviour.Properties.of().noCollission().noOcclusion().noLootTable()));
+    public static final RegistryObject<BlockEntityType<ItemHangerBlockEntity>> ITEM_HANGER_BE = BLOCK_ENTITY_TYPES.register("item_hanger", () -> BlockEntityType.Builder.of(ItemHangerBlockEntity::new, ITEM_HANGER_BLOCK.get()).build(null));
+    public static final RegistryObject<Item> ITEM_HANGER_ITEM = ITEMS.register("item_hanger", () -> new ItemHangerItem(ITEM_HANGER_BLOCK.get(), new Item.Properties()));
 
-    public CustomItemDisplayContextTest()
-    {
+    public CustomItemDisplayContextTest() {
         var modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(this::gatherData);
         BLOCKS.register(modBus);
@@ -132,14 +122,12 @@ public class CustomItemDisplayContextTest
         modBus.addListener(this::addCreative);
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
             event.accept(ITEM_HANGER_ITEM);
     }
 
-    public void gatherData(GatherDataEvent event)
-    {
+    public void gatherData(GatherDataEvent event) {
         DataGenerator gen = event.getGenerator();
         final PackOutput output = gen.getPackOutput();
 
@@ -147,17 +135,14 @@ public class CustomItemDisplayContextTest
         gen.addProvider(event.includeClient(), new BlockStateModels(output, event.getExistingFileHelper()));
     }
 
-    public static class BlockStateModels extends BlockStateProvider
-    {
+    public static class BlockStateModels extends BlockStateProvider {
 
-        public BlockStateModels(PackOutput output, ExistingFileHelper exFileHelper)
-        {
+        public BlockStateModels(PackOutput output, ExistingFileHelper exFileHelper) {
             super(output, MODID, exFileHelper);
         }
 
         @Override
-        protected void registerStatesAndModels()
-        {
+        protected void registerStatesAndModels() {
             {
                 Block block = ITEM_HANGER_BLOCK.get();
                 horizontalBlock(block, models().getExistingFile(ModelLocationUtils.getModelLocation(block)));
@@ -165,32 +150,27 @@ public class CustomItemDisplayContextTest
         }
     }
 
-    public static class ItemModels extends ItemModelProvider
-    {
-        public ItemModels(PackOutput output, ExistingFileHelper existingFileHelper)
-        {
+    public static class ItemModels extends ItemModelProvider {
+        public ItemModels(PackOutput output, ExistingFileHelper existingFileHelper) {
             super(output, MODID, existingFileHelper);
         }
 
         @Override
-        protected void registerModels()
-        {
+        protected void registerModels() {
             basicItem(ITEM_HANGER_ITEM.get());
 
             basicItem(Items.STICK)
-                   .transforms()
-                       .transform(RendererEvents.HANGING)
-                           .rotation(62, 180 - 33, 40)
-                           .translation(-2.25f, 1.5f, -0.25f).scale(0.48f)
-                       .end()
-                   .end();
+                    .transforms()
+                    .transform(RendererEvents.HANGING)
+                    .rotation(62, 180 - 33, 40)
+                    .translation(-2.25f, 1.5f, -0.25f).scale(0.48f)
+                    .end()
+                    .end();
         }
     }
 
-    private static class ItemHangerBlock extends HorizontalDirectionalBlock implements EntityBlock
-    {
-        public ItemHangerBlock(BlockBehaviour.Properties properties)
-        {
+    private static class ItemHangerBlock extends HorizontalDirectionalBlock implements EntityBlock {
+        public ItemHangerBlock(BlockBehaviour.Properties properties) {
             super(properties);
             registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
         }
@@ -202,109 +182,90 @@ public class CustomItemDisplayContextTest
 
         @Nullable
         @Override
-        public BlockState getStateForPlacement(BlockPlaceContext ctx)
-        {
+        public BlockState getStateForPlacement(BlockPlaceContext ctx) {
             return defaultBlockState().setValue(FACING, ctx.getHorizontalDirection());
         }
 
         @Nullable
         @Override
-        public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
-        {
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
             return new ItemHangerBlockEntity(pos, state);
         }
 
         @Deprecated
         @Override
-        public RenderShape getRenderShape(BlockState state)
-        {
+        public RenderShape getRenderShape(BlockState state) {
             return RenderShape.ENTITYBLOCK_ANIMATED;
         }
     }
 
-    private static class ItemHangerBlockEntity extends BlockEntity
-    {
+    private static class ItemHangerBlockEntity extends BlockEntity {
         private ItemStack heldItem;
 
-        public ItemHangerBlockEntity(BlockEntityType<?> type, BlockPos blockPos, BlockState blockState)
-        {
+        public ItemHangerBlockEntity(BlockEntityType<?> type, BlockPos blockPos, BlockState blockState) {
             super(type, blockPos, blockState);
         }
 
-        public ItemHangerBlockEntity(BlockPos blockPos, BlockState blockState)
-        {
+        public ItemHangerBlockEntity(BlockPos blockPos, BlockState blockState) {
             this(ITEM_HANGER_BE.get(), blockPos, blockState);
         }
 
         @Override
-        public CompoundTag getUpdateTag()
-        {
+        public CompoundTag getUpdateTag() {
             return saveWithoutMetadata();
         }
 
         @Nullable
         @Override
-        public Packet<ClientGamePacketListener> getUpdatePacket()
-        {
+        public Packet<ClientGamePacketListener> getUpdatePacket() {
             return ClientboundBlockEntityDataPacket.create(this, BlockEntity::getUpdateTag);
         }
 
         @Override
-        public void handleUpdateTag(CompoundTag tag)
-        {
+        public void handleUpdateTag(CompoundTag tag) {
             load(tag);
         }
 
         @Override
-        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt)
-        {
+        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
             handleUpdateTag(pkt.getTag());
         }
 
         @Override
-        protected void saveAdditional(CompoundTag tag)
-        {
+        protected void saveAdditional(CompoundTag tag) {
             var c = new CompoundTag();
-            if (heldItem != null)
-            {
+            if (heldItem != null) {
                 heldItem.save(c);
                 tag.put("item", c);
             }
         }
 
         @Override
-        public void load(CompoundTag tag)
-        {
-            if (tag.contains("item"))
-            {
+        public void load(CompoundTag tag) {
+            if (tag.contains("item")) {
                 var c = tag.getCompound("item");
                 heldItem = ItemStack.of(c);
             }
         }
     }
 
-    private static class ItemHangerItem extends BlockItem
-    {
-        public ItemHangerItem(Block block, Item.Properties properties)
-        {
+    private static class ItemHangerItem extends BlockItem {
+        public ItemHangerItem(Block block, Item.Properties properties) {
             super(block, properties);
         }
 
         @Override
-        protected boolean placeBlock(BlockPlaceContext ctx, BlockState state)
-        {
+        protected boolean placeBlock(BlockPlaceContext ctx, BlockState state) {
             Player player = ctx.getPlayer();
             if (player == null)
                 return false;
             var hand = ctx.getHand();
-            if (hand != InteractionHand.MAIN_HAND)
-            {
+            if (hand != InteractionHand.MAIN_HAND) {
                 return false;
             }
             if (!super.placeBlock(ctx, state))
                 return false;
-            if (ctx.getLevel().getBlockEntity(ctx.getClickedPos()) instanceof ItemHangerBlockEntity be)
-            {
+            if (ctx.getLevel().getBlockEntity(ctx.getClickedPos()) instanceof ItemHangerBlockEntity be) {
                 be.heldItem = player.getItemInHand(InteractionHand.OFF_HAND);
             }
             return true;

@@ -6,13 +6,12 @@
 package net.neoforged.neoforge.event.entity.living;
 
 import java.util.Collection;
-
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * LivingDropsEvent is fired when an Entity's death causes dropped items to appear.<br>
@@ -33,15 +32,13 @@ import net.neoforged.bus.api.ICancellableEvent;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class LivingDropsEvent extends LivingEvent implements ICancellableEvent
-{
+public class LivingDropsEvent extends LivingEvent implements ICancellableEvent {
     private final DamageSource source;
     private final Collection<ItemEntity> drops;
     private final int lootingLevel;
     private final boolean recentlyHit;
 
-    public LivingDropsEvent(LivingEntity entity, DamageSource source, Collection<ItemEntity> drops, int lootingLevel, boolean recentlyHit)
-    {
+    public LivingDropsEvent(LivingEntity entity, DamageSource source, Collection<ItemEntity> drops, int lootingLevel, boolean recentlyHit) {
         super(entity);
         this.source = source;
         this.drops = drops;
@@ -49,23 +46,19 @@ public class LivingDropsEvent extends LivingEvent implements ICancellableEvent
         this.recentlyHit = recentlyHit;
     }
 
-    public DamageSource getSource()
-    {
+    public DamageSource getSource() {
         return source;
     }
 
-    public Collection<ItemEntity> getDrops()
-    {
+    public Collection<ItemEntity> getDrops() {
         return drops;
     }
 
-    public int getLootingLevel()
-    {
+    public int getLootingLevel() {
         return lootingLevel;
     }
 
-    public boolean isRecentlyHit()
-    {
+    public boolean isRecentlyHit() {
         return recentlyHit;
     }
 }

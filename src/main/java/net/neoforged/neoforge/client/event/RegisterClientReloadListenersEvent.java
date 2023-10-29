@@ -8,11 +8,11 @@ package net.neoforged.neoforge.client.event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -26,13 +26,11 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-public class RegisterClientReloadListenersEvent extends Event implements IModBusEvent
-{
+public class RegisterClientReloadListenersEvent extends Event implements IModBusEvent {
     private final ReloadableResourceManager resourceManager;
 
     @ApiStatus.Internal
-    public RegisterClientReloadListenersEvent(ReloadableResourceManager resourceManager)
-    {
+    public RegisterClientReloadListenersEvent(ReloadableResourceManager resourceManager) {
         this.resourceManager = resourceManager;
     }
 
@@ -41,8 +39,7 @@ public class RegisterClientReloadListenersEvent extends Event implements IModBus
      *
      * @param reloadListener the reload listener
      */
-    public void registerReloadListener(PreparableReloadListener reloadListener)
-    {
+    public void registerReloadListener(PreparableReloadListener reloadListener) {
         resourceManager.registerReloadListener(reloadListener);
     }
 }

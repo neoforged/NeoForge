@@ -31,40 +31,32 @@ import net.neoforged.neoforge.client.textures.UnitTextureAtlasSprite;
  * <p>
  * You can access it as a {@link BakedModel}, an {@link IUnbakedGeometry} or an {@link IGeometryLoader}.
  */
-public class EmptyModel extends SimpleUnbakedGeometry<EmptyModel>
-{
+public class EmptyModel extends SimpleUnbakedGeometry<EmptyModel> {
     public static final BakedModel BAKED = new Baked();
     public static final EmptyModel INSTANCE = new EmptyModel();
     public static final IGeometryLoader<EmptyModel> LOADER = (json, ctx) -> INSTANCE;
 
-    private EmptyModel()
-    {
-    }
+    private EmptyModel() {}
 
     @Override
-    protected void addQuads(IGeometryBakingContext owner, IModelBuilder<?> modelBuilder, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ResourceLocation modelLocation)
-    {
+    protected void addQuads(IGeometryBakingContext owner, IModelBuilder<?> modelBuilder, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ResourceLocation modelLocation) {
         // NO-OP
     }
 
     @Override
-    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation)
-    {
+    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
         return BAKED;
     }
 
-    private static class Baked extends SimpleBakedModel
-    {
+    private static class Baked extends SimpleBakedModel {
         private static final Material MISSING_TEXTURE = new Material(TextureAtlas.LOCATION_BLOCKS, MissingTextureAtlasSprite.getLocation());
 
-        public Baked()
-        {
+        public Baked() {
             super(List.of(), Map.of(), false, false, false, UnitTextureAtlasSprite.INSTANCE, ItemTransforms.NO_TRANSFORMS, ItemOverrides.EMPTY, RenderTypeGroup.EMPTY);
         }
 
         @Override
-        public TextureAtlasSprite getParticleIcon()
-        {
+        public TextureAtlasSprite getParticleIcon() {
             return MISSING_TEXTURE.sprite();
         }
     }

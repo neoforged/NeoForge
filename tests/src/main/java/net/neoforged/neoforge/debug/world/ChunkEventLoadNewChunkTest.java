@@ -7,9 +7,9 @@ package net.neoforged.neoforge.debug.world;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerLevel;
-import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.level.ChunkEvent;
 import org.slf4j.Logger;
 
 /**
@@ -32,22 +32,18 @@ import org.slf4j.Logger;
  */
 @Mod(ChunkEventLoadNewChunkTest.MODID)
 @Mod.EventBusSubscriber
-public class ChunkEventLoadNewChunkTest
-{
+public class ChunkEventLoadNewChunkTest {
     static final String MODID = "chunk_event_load_new_chunk_test";
     private static final boolean ENABLED = true;
     private static final Logger LOGGER = LogUtils.getLogger();
 
     @SubscribeEvent
-    public static void onChunkLoad(final ChunkEvent.Load event)
-    {
-        if (!ENABLED)
-        {
+    public static void onChunkLoad(final ChunkEvent.Load event) {
+        if (!ENABLED) {
             return;
         }
 
-        if (!event.isNewChunk())
-        {
+        if (!event.isNewChunk()) {
             return;
         }
 

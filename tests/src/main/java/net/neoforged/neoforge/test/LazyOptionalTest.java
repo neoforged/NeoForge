@@ -6,36 +6,30 @@
 package net.neoforged.neoforge.test;
 
 import com.mojang.datafixers.util.Unit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public class LazyOptionalTest
-{
+public class LazyOptionalTest {
     @Test
     public void testConcurrentResolve() throws InterruptedException {
         AtomicInteger supplierCalls = new AtomicInteger();
         LazyOptional<Unit> slowLazy = LazyOptional.of(() -> {
             supplierCalls.incrementAndGet();
-            try
-            {
+            try {
                 Thread.sleep(1000);
-            }
-            catch(InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             return Unit.INSTANCE;
         });
         List<Thread> threads = new ArrayList<>();
         AtomicInteger successfulThreads = new AtomicInteger();
-        for (int i = 0; i < 2; ++i)
-        {
+        for (int i = 0; i < 2; ++i) {
             threads.add(new Thread(() -> {
                 // Resolve uses getValueUnsafe, so it throws if the value is unexpectedly absent
                 if (slowLazy.resolve().isPresent()) {
@@ -44,8 +38,7 @@ public class LazyOptionalTest
             }));
         }
         threads.forEach(Thread::start);
-        for (Thread thread : threads)
-        {
+        for (Thread thread : threads) {
             thread.join();
         }
         Assertions.assertEquals(threads.size(), successfulThreads.get());

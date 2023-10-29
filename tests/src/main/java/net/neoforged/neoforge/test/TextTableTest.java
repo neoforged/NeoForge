@@ -5,22 +5,20 @@
 
 package net.neoforged.neoforge.test;
 
+import static net.neoforged.neoforge.common.util.TextTable.column;
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.google.common.collect.Lists;
 import net.neoforged.neoforge.common.util.TextTable;
 import net.neoforged.neoforge.common.util.TextTable.Column;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
-import static net.neoforged.neoforge.common.util.TextTable.column;
-
-public class TextTableTest
-{
+public class TextTableTest {
     private static final String WIDTH_REFERENCE = "StringOfWidth15";
     private static final int WIDTH_REFERENCE_LENGTH = WIDTH_REFERENCE.length();
 
     @Test
-    public void testColumnWidthAdjustment()
-    {
+    public void testColumnWidthAdjustment() {
         Column column = column("Column", TextTable.Alignment.LEFT);
         column.fit(WIDTH_REFERENCE);
         String paddedHeader = column.formatHeader("-");
@@ -33,8 +31,7 @@ public class TextTableTest
     }
 
     @Test
-    public void testLeftAlignment()
-    {
+    public void testLeftAlignment() {
         Column column = column("Left", TextTable.Alignment.LEFT);
         column.fit(WIDTH_REFERENCE);
 
@@ -44,20 +41,18 @@ public class TextTableTest
     }
 
     @Test
-    public void testCenterAlignment()
-    {
+    public void testCenterAlignment() {
         Column column = column("Centered", TextTable.Alignment.CENTER);
         column.fit(WIDTH_REFERENCE);
 
         assertEquals("---Centered----", column.formatHeader("-"), "Centered header should be padded equally on both sides");
         assertEquals(WIDTH_REFERENCE, column.format(WIDTH_REFERENCE, "-"), "Centered reference should'nt be padded");
-        assertEquals("-----Value-----",  column.format("Value", "-"), "Centered value should be padded equally on both sides");
+        assertEquals("-----Value-----", column.format("Value", "-"), "Centered value should be padded equally on both sides");
         assertNotEquals("-----Value1----", column.format("Value1", "-"), "Center padding should be left-biased");
     }
 
     @Test
-    public void testRightAlignment()
-    {
+    public void testRightAlignment() {
         Column column = column("Right", TextTable.Alignment.RIGHT);
         column.fit(WIDTH_REFERENCE);
 
@@ -67,22 +62,20 @@ public class TextTableTest
     }
 
     @Test
-    public void testMarkdownCompliance()
-    {
+    public void testMarkdownCompliance() {
         TextTable table = new TextTable(Lists.newArrayList(
-            column("Left", TextTable.Alignment.LEFT),
-            column("Center", TextTable.Alignment.CENTER),
-            column("Right", TextTable.Alignment.RIGHT)
-        ));
+                column("Left", TextTable.Alignment.LEFT),
+                column("Center", TextTable.Alignment.CENTER),
+                column("Right", TextTable.Alignment.RIGHT)));
         table.add("Long Value 1", "Value 2", "Value 3");
         table.add("Value 1", "Long Value 2", "Value 3");
         table.add("Value 1", "Value 2", "Long Value 3");
         int[] columnWidths = table.getColumns().stream().mapToInt(Column::getWidth).toArray();
-        assertArrayEquals(new int[]{12, 12, 12}, columnWidths, "Column widths should adjust for long values");
+        assertArrayEquals(new int[] { 12, 12, 12 }, columnWidths, "Column widths should adjust for long values");
 
         String[] result = table.build("\n").split("\n");
         assertEquals(5, result.length, "Header row + separator row + value rows should result in 5 lines");
-        assertEquals("| Left         |    Center    |        Right |", result[0],  "Column headers should be properly formatted");
+        assertEquals("| Left         |    Center    |        Right |", result[0], "Column headers should be properly formatted");
         assertEquals("|:------------ |:------------:| ------------:|", result[1], "Header-body separators should contain markdown alignment information");
     }
 }

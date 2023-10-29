@@ -21,11 +21,9 @@ import net.neoforged.neoforge.client.model.IModelBuilder;
  * Base class for implementations of {@link IUnbakedGeometry} which do not wish to handle model creation themselves,
  * instead supplying {@linkplain BakedQuad baked quads} through a builder.
  */
-public abstract class SimpleUnbakedGeometry<T extends SimpleUnbakedGeometry<T>> implements IUnbakedGeometry<T>
-{
+public abstract class SimpleUnbakedGeometry<T extends SimpleUnbakedGeometry<T>> implements IUnbakedGeometry<T> {
     @Override
-    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation)
-    {
+    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
         TextureAtlasSprite particle = spriteGetter.apply(context.getMaterial("particle"));
 
         var renderTypeHint = context.getRenderTypeHint();

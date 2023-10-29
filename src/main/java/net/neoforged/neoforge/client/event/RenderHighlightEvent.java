@@ -12,10 +12,10 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -25,8 +25,7 @@ import org.jetbrains.annotations.ApiStatus;
  * @see Block
  * @see Entity
  */
-public abstract class RenderHighlightEvent extends Event
-{
+public abstract class RenderHighlightEvent extends Event {
     private final LevelRenderer levelRenderer;
     private final Camera camera;
     private final HitResult target;
@@ -35,8 +34,7 @@ public abstract class RenderHighlightEvent extends Event
     private final MultiBufferSource multiBufferSource;
 
     @ApiStatus.Internal
-    protected RenderHighlightEvent(LevelRenderer levelRenderer, Camera camera, HitResult target, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource)
-    {
+    protected RenderHighlightEvent(LevelRenderer levelRenderer, Camera camera, HitResult target, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource) {
         this.levelRenderer = levelRenderer;
         this.camera = camera;
         this.target = target;
@@ -48,48 +46,42 @@ public abstract class RenderHighlightEvent extends Event
     /**
      * {@return the level renderer}
      */
-    public LevelRenderer getLevelRenderer()
-    {
+    public LevelRenderer getLevelRenderer() {
         return levelRenderer;
     }
 
     /**
      * {@return the camera information}
      */
-    public Camera getCamera()
-    {
+    public Camera getCamera() {
         return camera;
     }
 
     /**
      * {@return the hit result which triggered the selection highlight}
      */
-    public HitResult getTarget()
-    {
+    public HitResult getTarget() {
         return target;
     }
 
     /**
      * {@return the partial tick}
      */
-    public float getPartialTick()
-    {
+    public float getPartialTick() {
         return partialTick;
     }
 
     /**
      * {@return the pose stack used for rendering}
      */
-    public PoseStack getPoseStack()
-    {
+    public PoseStack getPoseStack() {
         return poseStack;
     }
 
     /**
      * {@return the source of rendering buffers}
      */
-    public MultiBufferSource getMultiBufferSource()
-    {
+    public MultiBufferSource getMultiBufferSource() {
         return multiBufferSource;
     }
 
@@ -102,11 +94,9 @@ public abstract class RenderHighlightEvent extends Event
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    public static class Block extends RenderHighlightEvent implements ICancellableEvent
-    {
+    public static class Block extends RenderHighlightEvent implements ICancellableEvent {
         @ApiStatus.Internal
-        public Block(LevelRenderer levelRenderer, Camera camera, BlockHitResult target, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource)
-        {
+        public Block(LevelRenderer levelRenderer, Camera camera, BlockHitResult target, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource) {
             super(levelRenderer, camera, target, partialTick, poseStack, bufferSource);
         }
 
@@ -114,8 +104,7 @@ public abstract class RenderHighlightEvent extends Event
          * {@return the block hit result}
          */
         @Override
-        public BlockHitResult getTarget()
-        {
+        public BlockHitResult getTarget() {
             return (BlockHitResult) super.target;
         }
     }
@@ -128,11 +117,9 @@ public abstract class RenderHighlightEvent extends Event
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    public static class Entity extends RenderHighlightEvent
-    {
+    public static class Entity extends RenderHighlightEvent {
         @ApiStatus.Internal
-        public Entity(LevelRenderer levelRenderer, Camera camera, EntityHitResult target, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource)
-        {
+        public Entity(LevelRenderer levelRenderer, Camera camera, EntityHitResult target, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource) {
             super(levelRenderer, camera, target, partialTick, poseStack, bufferSource);
         }
 
@@ -140,8 +127,7 @@ public abstract class RenderHighlightEvent extends Event
          * {@return the entity hit result}
          */
         @Override
-        public EntityHitResult getTarget()
-        {
+        public EntityHitResult getTarget() {
             return (EntityHitResult) super.target;
         }
     }

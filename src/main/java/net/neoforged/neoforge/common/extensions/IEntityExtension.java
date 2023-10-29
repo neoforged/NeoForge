@@ -7,72 +7,69 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.Collection;
 import java.util.function.BiPredicate;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.capabilities.ICapabilitySerializable;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
-public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
-{
-    private Entity self() { return (Entity) this; }
+public interface IEntityExtension extends ICapabilitySerializable<CompoundTag> {
+    private Entity self() {
+        return (Entity) this;
+    }
 
-    default void deserializeNBT(CompoundTag nbt)
-    {
+    default void deserializeNBT(CompoundTag nbt) {
         self().load(nbt);
     }
 
-    default CompoundTag serializeNBT()
-    {
+    default CompoundTag serializeNBT() {
         CompoundTag ret = new CompoundTag();
         String id = self().getEncodeId();
-        if (id != null)
-        {
+        if (id != null) {
             ret.putString("id", self().getEncodeId());
         }
         return self().saveWithoutId(ret);
     }
 
     boolean canUpdate();
+
     void canUpdate(boolean value);
 
     @Nullable
     Collection<ItemEntity> captureDrops();
-    Collection<ItemEntity> captureDrops(@Nullable Collection<ItemEntity> captureDrops);
 
+    Collection<ItemEntity> captureDrops(@Nullable Collection<ItemEntity> captureDrops);
 
     /**
      * Returns a NBTTagCompound that can be used to store custom data for this entity.
      * It will be written, and read from disc, so it persists over world saves.
+     * 
      * @return A NBTTagCompound
      */
     CompoundTag getPersistentData();
 
     /**
      * Used in model rendering to determine if the entity riding this entity should be in the 'sitting' position.
+     * 
      * @return false to prevent an entity that is mounted to this entity from displaying the 'sitting' animation.
      */
-    default boolean shouldRiderSit()
-    {
+    default boolean shouldRiderSit() {
         return true;
     }
 
@@ -83,8 +80,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      * @return A ItemStack to add to the player's inventory, null ItemStack if nothing should be added.
      */
     @Nullable
-    default ItemStack getPickedResult(HitResult target)
-    {
+    default ItemStack getPickedResult(HitResult target) {
         return self().getPickResult();
     }
 
@@ -94,28 +90,26 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      *
      * @return if the entity can be interacted with from a rider
      */
-    default boolean canRiderInteract()
-    {
+    default boolean canRiderInteract() {
         return false;
     }
 
     /**
      * Returns whether the entity can ride in this vehicle under the fluid.
      *
-     * @param type the type of the fluid
+     * @param type  the type of the fluid
      * @param rider the entity riding the vehicle
      * @return {@code true} if the vehicle can be ridden in under this fluid,
      *         {@code false} otherwise
      */
-    default boolean canBeRiddenUnderFluidType(FluidType type, Entity rider)
-    {
+    default boolean canBeRiddenUnderFluidType(FluidType type, Entity rider) {
         return type.canRideVehicleUnder(self(), rider);
     }
 
     /**
      * Checks if this {@link Entity} can trample a {@link Block}.
      *
-     * @param pos The block pos
+     * @param pos          The block pos
      * @param fallDistance The fall distance
      * @return {@code true} if this entity can trample, {@code false} otherwise
      */
@@ -123,11 +117,11 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
 
     /**
      * Returns The classification of this entity
+     * 
      * @param forSpawnCount If this is being invoked to check spawn count caps.
      * @return If the creature is of the type provided
      */
-    default MobCategory getClassification(boolean forSpawnCount)
-    {
+    default MobCategory getClassification(boolean forSpawnCount) {
         return self().getType().getCategory();
     }
 
@@ -164,15 +158,14 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      */
     void revive();
 
-
     /**
      * This is used to specify that your entity has multiple individual parts, such as the Vanilla Ender Dragon.
      *
      * See {@link EnderDragon} for an example implementation.
+     * 
      * @return true if this is a multipart entity.
      */
-    default boolean isMultipartEntity()
-    {
+    default boolean isMultipartEntity() {
         return false;
     }
 
@@ -186,28 +179,25 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      * Only used if {@link #isMultipartEntity()} returns true.
      *
      * See {@link EnderDragon} for an example implementation.
+     * 
      * @return The child parts of this entity. The value to be returned here should be cached.
      */
     @Nullable
-    default PartEntity<?>[] getParts()
-    {
+    default PartEntity<?>[] getParts() {
         return null;
     }
 
     /**
      * @return Return the height in blocks the Entity can step up without needing to jump
-     * This is the sum of vanilla's {@link Entity#maxUpStep()} method and the current value
-     * of the {@link NeoForgeMod#STEP_HEIGHT} attribute
-     * (if this Entity is a {@link LivingEntity} and has the attribute), clamped at 0.
+     *         This is the sum of vanilla's {@link Entity#maxUpStep()} method and the current value
+     *         of the {@link NeoForgeMod#STEP_HEIGHT} attribute
+     *         (if this Entity is a {@link LivingEntity} and has the attribute), clamped at 0.
      */
-    default float getStepHeight()
-    {
+    default float getStepHeight() {
         float vanillaStep = self().maxUpStep();
-        if (self() instanceof LivingEntity living)
-        {
+        if (self() instanceof LivingEntity living) {
             AttributeInstance stepHeightAttribute = living.getAttribute(NeoForgeMod.STEP_HEIGHT.get());
-            if (stepHeightAttribute != null)
-            {
+            if (stepHeightAttribute != null) {
                 return (float) Math.max(0, vanillaStep + stepHeightAttribute.getValue());
             }
         }
@@ -240,8 +230,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      * @return {@code true} if the entity is within the fluid type of the
      *         state, {@code false} otherwise
      */
-    default boolean isInFluidType(FluidState state)
-    {
+    default boolean isInFluidType(FluidState state) {
         return this.isInFluidType(state.getFluidType());
     }
 
@@ -252,8 +241,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      * @return {@code true} if the entity is within the fluid type,
      *         {@code false} otherwise
      */
-    default boolean isInFluidType(FluidType type)
-    {
+    default boolean isInFluidType(FluidType type) {
         return this.getFluidTypeHeight(type) > 0.0D;
     }
 
@@ -265,8 +253,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      * @return {@code true} if a fluid type meets the condition, {@code false}
      *         otherwise
      */
-    default boolean isInFluidType(BiPredicate<FluidType, Double> predicate)
-    {
+    default boolean isInFluidType(BiPredicate<FluidType, Double> predicate) {
         return isInFluidType(predicate, false);
     }
 
@@ -274,7 +261,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      * Returns whether the fluid type the entity is currently in matches
      * the specified condition.
      *
-     * @param predicate a test taking in the fluid type and its height
+     * @param predicate   a test taking in the fluid type and its height
      * @param forAllTypes {@code true} if all fluid types should match the
      *                    condition instead of at least one
      * @return {@code true} if a fluid type meets the condition, {@code false}
@@ -301,8 +288,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      *
      * @return {@code true} if the fluid is on the entity's eyes, {@code false} otherwise
      */
-    default boolean isEyeInFluidType(FluidType type)
-    {
+    default boolean isEyeInFluidType(FluidType type) {
         return type == this.getEyeInFluidType();
     }
 
@@ -311,8 +297,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      *
      * @return {@code true} if the entity can start swimming, {@code false} otherwise
      */
-    default boolean canStartSwimming()
-    {
+    default boolean canStartSwimming() {
         return !this.getEyeInFluidType().isAir() && this.canSwimInFluidType(this.getEyeInFluidType());
     }
 
@@ -323,8 +308,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      * @param type the type of the fluid
      * @return a scalar to multiply to the fluid velocity
      */
-    default double getFluidMotionScale(FluidType type)
-    {
+    default double getFluidMotionScale(FluidType type) {
         return type.motionScale(self());
     }
 
@@ -334,8 +318,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      * @param type the type of the fluid
      * @return {@code true} if the entity can be pushed by the fluid, {@code false} otherwise
      */
-    default boolean isPushedByFluid(FluidType type)
-    {
+    default boolean isPushedByFluid(FluidType type) {
         return self().isPushedByFluid() && type.canPushEntity(self());
     }
 
@@ -345,8 +328,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      * @param type the type of the fluid
      * @return {@code true} if the entity can swim in the fluid, {@code false} otherwise
      */
-    default boolean canSwimInFluidType(FluidType type)
-    {
+    default boolean canSwimInFluidType(FluidType type) {
         return type.canSwim(self());
     }
 
@@ -356,8 +338,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      * @param type the type of the fluid
      * @return {@code true} if the entity can be extinguished, {@code false} otherwise
      */
-    default boolean canFluidExtinguish(FluidType type)
-    {
+    default boolean canFluidExtinguish(FluidType type) {
         return type.canExtinguish(self());
     }
 
@@ -371,8 +352,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      * @param type the type of the fluid
      * @return a scalar to multiply to the fall damage
      */
-    default float getFluidFallDistanceModifier(FluidType type)
-    {
+    default float getFluidFallDistanceModifier(FluidType type) {
         return type.getFallDistanceModifier(self());
     }
 
@@ -385,8 +365,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      * @return {@code true} if the entity can be hydrated, {@code false}
      *         otherwise
      */
-    default boolean canHydrateInFluidType(FluidType type)
-    {
+    default boolean canHydrateInFluidType(FluidType type) {
         return type.canHydrate(self());
     }
 
@@ -395,13 +374,12 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      * entity in the fluid. If no sound is present, then the sound will be
      * {@code null}.
      *
-     * @param type the type of the fluid
+     * @param type   the type of the fluid
      * @param action the action being performed
      * @return the sound to play when performing the action
      */
     @Nullable
-    default SoundEvent getSoundFromFluidType(FluidType type, SoundAction action)
-    {
+    default SoundEvent getSoundFromFluidType(FluidType type, SoundAction action) {
         return type.getSound(self(), action);
     }
 
@@ -413,8 +391,7 @@ public interface IEntityExtension extends ICapabilitySerializable<CompoundTag>
      * @param player the local player currently viewing this {@code Entity}
      * @return {@code true} to enable outline processing
      */
-    default boolean hasCustomOutlineRendering(Player player)
-    {
+    default boolean hasCustomOutlineRendering(Player player) {
         return false;
     }
 }

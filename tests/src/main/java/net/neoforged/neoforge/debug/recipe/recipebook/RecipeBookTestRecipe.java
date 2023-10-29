@@ -9,6 +9,10 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
@@ -21,20 +25,13 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.CommonHooks;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.RecipeBookTestContainer>
-{
+public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.RecipeBookTestContainer> {
     public final Ingredients ingredients;
     private final int width;
     private final int height;
     private final NonNullList<Ingredient> items;
 
-    public RecipeBookTestRecipe(Ingredients ingredients)
-    {
+    public RecipeBookTestRecipe(Ingredients ingredients) {
         this.ingredients = ingredients;
         this.width = ingredients.pattern.get(0).length();
         this.height = ingredients.pattern.size();
@@ -42,7 +39,7 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
         while (pattern.size() != 4)
             pattern.add("  ");
         this.items = pattern.stream()
-                .flatMap(s -> Stream.of(s.substring(0,1), s.substring(1, 2)))
+                .flatMap(s -> Stream.of(s.substring(0, 1), s.substring(1, 2)))
                 .map(s -> s.equals(" ") ? Ingredient.EMPTY : ingredients.recipe.get(s))
                 .peek(i -> Objects.requireNonNull(i, "A key in sculpting pattern was not defined!"))
                 .collect(Collectors.toCollection(NonNullList::create));
@@ -52,12 +49,9 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
      * Taken from {@link ShapedRecipe}
      */
     @Override
-    public boolean matches(RecipeBookExtensionTest.RecipeBookTestContainer container, Level level)
-    {
-        for (int i = 0; i <= 2 - this.width; ++i)
-        {
-            for (int j = 0; j <= 4 - this.height; ++j)
-            {
+    public boolean matches(RecipeBookExtensionTest.RecipeBookTestContainer container, Level level) {
+        for (int i = 0; i <= 2 - this.width; ++i) {
+            for (int j = 0; j <= 4 - this.height; ++j) {
                 if (this.matches(container, i, j, true) || this.matches(container, i, j, false))
                     return true;
             }
@@ -68,15 +62,12 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
 
     private boolean matches(RecipeBookExtensionTest.RecipeBookTestContainer container, int x, int y, boolean mirror) //unsure about the last boolean
     {
-        for (int i = 0; i < 2; ++i)
-        {
-            for (int j = 0; j < 4; ++j)
-            {
+        for (int i = 0; i < 2; ++i) {
+            for (int j = 0; j < 4; ++j) {
                 int curX = i - x;
                 int curY = j - y;
                 Ingredient ingredient = Ingredient.EMPTY;
-                if (curX >= 0 && curY >= 0 && curX < this.width && curY < this.height)
-                {
+                if (curX >= 0 && curY >= 0 && curX < this.width && curY < this.height) {
                     int idx = mirror ? this.width - curX - 1 + curY * this.width : curX + curY * this.width;
                     ingredient = this.items.get(idx);
                 }
@@ -90,50 +81,42 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
     }
 
     @Override
-    public ItemStack assemble(RecipeBookExtensionTest.RecipeBookTestContainer p_44001_, RegistryAccess registryAccess)
-    {
+    public ItemStack assemble(RecipeBookExtensionTest.RecipeBookTestContainer p_44001_, RegistryAccess registryAccess) {
         return this.getResultItem(registryAccess).copy();
     }
 
     @Override
-    public boolean canCraftInDimensions(int p_43999_, int p_44000_)
-    {
+    public boolean canCraftInDimensions(int p_43999_, int p_44000_) {
         return this.width <= p_43999_ && this.height <= p_44000_; //used for recipe book
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess registryAccess)
-    {
+    public ItemStack getResultItem(RegistryAccess registryAccess) {
         return this.ingredients.result();
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer()
-    {
+    public RecipeSerializer<?> getSerializer() {
         return RecipeBookExtensionTest.RECIPE_BOOK_TEST_RECIPE_SERIALIZER.get();
     }
 
     @Override
-    public RecipeType<?> getType()
-    {
+    public RecipeType<?> getType() {
         return RecipeBookExtensionTest.RECIPE_BOOK_TEST_RECIPE_TYPE.get();
     }
 
     @Override
-    public String getGroup()
-    {
+    public String getGroup() {
         return this.ingredients.group;
     }
 
     @Override
-    public NonNullList<Ingredient> getIngredients()
-    {
+    public NonNullList<Ingredient> getIngredients() {
         return this.items;
     }
 
     @Override
-    public boolean isIncomplete()
-    {
+    public boolean isIncomplete() {
         return this.getIngredients().isEmpty() ||
                 this.getIngredients().stream()
                         .filter((ingredient) -> !ingredient.isEmpty())
@@ -141,35 +124,26 @@ public class RecipeBookTestRecipe implements Recipe<RecipeBookExtensionTest.Reci
     }
 
     @Override
-    public ItemStack getToastSymbol()
-    {
+    public ItemStack getToastSymbol() {
         return new ItemStack(Items.NETHERITE_BLOCK);
     }
 
-    public record Ingredients(String group, List<String> pattern, Map<String, Ingredient> recipe, ItemStack result)
-    {
-        private static final Function<String, DataResult<String>> VERIFY_LENGTH_2 = s -> s.length() == 2 ? DataResult.success(s) :
-                DataResult.error(() -> "Key row length must be of 2!");
-        private static final Function<List<String>, DataResult<List<String>>> VERIFY_SIZE = l ->
-        {
-            if (l.size() <= 4 && l.size() >= 1)
-            {
+    public record Ingredients(String group, List<String> pattern, Map<String, Ingredient> recipe, ItemStack result) {
+        private static final Function<String, DataResult<String>> VERIFY_LENGTH_2 = s -> s.length() == 2 ? DataResult.success(s) : DataResult.error(() -> "Key row length must be of 2!");
+        private static final Function<List<String>, DataResult<List<String>>> VERIFY_SIZE = l -> {
+            if (l.size() <= 4 && l.size() >= 1) {
                 List<String> temp = new ArrayList<>(l);
                 Collections.reverse(temp); //reverse so the first row is at the bottom in the json.
                 return DataResult.success(ImmutableList.copyOf(temp));
             }
             return DataResult.error(() -> "Pattern must have between 1 and 4 rows of keys");
         };
-        private static final Function<String, DataResult<String>> VERIFY_LENGTH_1 = s -> s.length() == 1 ? DataResult.success(s) :
-                DataResult.error(() -> "Key must be a single character!");
+        private static final Function<String, DataResult<String>> VERIFY_LENGTH_1 = s -> s.length() == 1 ? DataResult.success(s) : DataResult.error(() -> "Key must be a single character!");
 
-        public static final Codec<Ingredients> CODEC = RecordCodecBuilder.create(inst ->
-                inst.group(
-                        Codec.STRING.fieldOf("group").forGetter(Ingredients::group),
-                        Codec.STRING.flatXmap(VERIFY_LENGTH_2, VERIFY_LENGTH_2).listOf().flatXmap(VERIFY_SIZE, VERIFY_SIZE).fieldOf("pattern").forGetter(Ingredients::pattern),
-                        Codec.unboundedMap(Codec.STRING.flatXmap(VERIFY_LENGTH_1, VERIFY_LENGTH_1), Ingredient.CODEC).fieldOf("key").forGetter(Ingredients::recipe),
-                        ItemStack.CODEC.fieldOf("result").forGetter(Ingredients::result)
-                ).apply(inst, Ingredients::new)
-        );
+        public static final Codec<Ingredients> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                Codec.STRING.fieldOf("group").forGetter(Ingredients::group),
+                Codec.STRING.flatXmap(VERIFY_LENGTH_2, VERIFY_LENGTH_2).listOf().flatXmap(VERIFY_SIZE, VERIFY_SIZE).fieldOf("pattern").forGetter(Ingredients::pattern),
+                Codec.unboundedMap(Codec.STRING.flatXmap(VERIFY_LENGTH_1, VERIFY_LENGTH_1), Ingredient.CODEC).fieldOf("key").forGetter(Ingredients::recipe),
+                ItemStack.CODEC.fieldOf("result").forGetter(Ingredients::result)).apply(inst, Ingredients::new));
     }
 }

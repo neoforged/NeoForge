@@ -18,18 +18,14 @@ import org.jetbrains.annotations.ApiStatus;
  * Wrapper for custom login packets. Transforms unnamed login channel messages into channels dispatched the same
  * as regular custom packets.
  */
-public class LoginWrapper
-{
+public class LoginWrapper {
     private static final Logger LOGGER = LogManager.getLogger();
     @ApiStatus.Internal
     public static final ResourceLocation WRAPPER = new ResourceLocation("fml:loginwrapper");
     private EventNetworkChannel wrapperChannel;
 
     LoginWrapper() {
-        wrapperChannel = NetworkRegistry.ChannelBuilder.named(LoginWrapper.WRAPPER).
-                clientAcceptedVersions(a->true).
-                serverAcceptedVersions(a->true).
-                networkProtocolVersion(()-> NetworkConstants.NETVERSION)
+        wrapperChannel = NetworkRegistry.ChannelBuilder.named(LoginWrapper.WRAPPER).clientAcceptedVersions(a -> true).serverAcceptedVersions(a -> true).networkProtocolVersion(() -> NetworkConstants.NETVERSION)
                 .eventNetworkChannel();
         wrapperChannel.addListener(this::wrapperReceived);
     }

@@ -11,22 +11,18 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
-public class TestScreen extends Screen
-{
-    public static int open()
-    {
+public class TestScreen extends Screen {
+    public static int open() {
         Minecraft.getInstance().setScreen(new TestScreen());
         return Command.SINGLE_SUCCESS;
     }
 
-    public TestScreen()
-    {
+    public TestScreen() {
         super(Component.literal("testscreen"));
     }
 
     @Override
-    public void render(GuiGraphics graphics, int MouseX, int MouseY, float PartialTick)
-    {
+    public void render(GuiGraphics graphics, int MouseX, int MouseY, float PartialTick) {
         renderTransparentBackground(graphics);
     }
 }

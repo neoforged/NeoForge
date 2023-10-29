@@ -10,49 +10,42 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class LivingEntityUseItemEvent extends LivingEvent
-{
+public class LivingEntityUseItemEvent extends LivingEvent {
     private final ItemStack item;
     private int duration;
 
-    private LivingEntityUseItemEvent(LivingEntity entity, @NotNull ItemStack item, int duration)
-    {
+    private LivingEntityUseItemEvent(LivingEntity entity, @NotNull ItemStack item, int duration) {
         super(entity);
         this.item = item;
         this.setDuration(duration);
     }
 
     @NotNull
-    public ItemStack getItem()
-    {
+    public ItemStack getItem() {
         return item;
     }
 
-    public int getDuration()
-    {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration)
-    {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
     /**
      * Fired when a player starts 'using' an item, typically when they hold right mouse.
      * Examples:
-     *   Drawing a bow
-     *   Eating Food
-     *   Drinking Potions/Milk
-     *   Guarding with a sword
+     * Drawing a bow
+     * Eating Food
+     * Drinking Potions/Milk
+     * Guarding with a sword
      *
      * Cancel the event, or set the duration or {@literal <=} 0 to prevent it from processing.
      *
      */
-    public static class Start extends LivingEntityUseItemEvent implements ICancellableEvent
-    {
-        public Start(LivingEntity entity, @NotNull ItemStack item, int duration)
-        {
+    public static class Start extends LivingEntityUseItemEvent implements ICancellableEvent {
+        public Start(LivingEntity entity, @NotNull ItemStack item, int duration) {
             super(entity, item, duration);
         }
     }
@@ -63,10 +56,8 @@ public class LivingEntityUseItemEvent extends LivingEvent
      * Cancel the event, or set the duration to {@literal <=} 0 to cause the player to stop using the item.
      *
      */
-    public static class Tick extends LivingEntityUseItemEvent implements ICancellableEvent
-    {
-        public Tick(LivingEntity entity, @NotNull ItemStack item, int duration)
-        {
+    public static class Tick extends LivingEntityUseItemEvent implements ICancellableEvent {
+        public Tick(LivingEntity entity, @NotNull ItemStack item, int duration) {
             super(entity, item, duration);
         }
     }
@@ -74,19 +65,17 @@ public class LivingEntityUseItemEvent extends LivingEvent
     /**
      * Fired when a player stops using an item without the use duration timing out.
      * Example:
-     *   Stop eating 1/2 way through
-     *   Stop defending with sword
-     *   Stop drawing bow. This case would fire the arrow
+     * Stop eating 1/2 way through
+     * Stop defending with sword
+     * Stop drawing bow. This case would fire the arrow
      *
      * Duration on this event is how long the item had left in it's count down before 'finishing'
      *
      * Canceling this event will prevent the Item from being notified that it has stopped being used,
      * The only vanilla item this would effect are bows, and it would cause them NOT to fire there arrow.
      */
-    public static class Stop extends LivingEntityUseItemEvent implements ICancellableEvent
-    {
-        public Stop(LivingEntity entity, @NotNull ItemStack item, int duration)
-        {
+    public static class Stop extends LivingEntityUseItemEvent implements ICancellableEvent {
+        public Stop(LivingEntity entity, @NotNull ItemStack item, int duration) {
             super(entity, item, duration);
         }
     }
@@ -103,23 +92,20 @@ public class LivingEntityUseItemEvent extends LivingEvent
      * The result item stack is the stack that is placed in the player's inventory in replacement of the stack that is currently being used.
      *
      */
-    public static class Finish extends LivingEntityUseItemEvent
-    {
+    public static class Finish extends LivingEntityUseItemEvent {
         private ItemStack result;
-        public Finish(LivingEntity entity, @NotNull ItemStack item, int duration, @NotNull ItemStack result)
-        {
+
+        public Finish(LivingEntity entity, @NotNull ItemStack item, int duration, @NotNull ItemStack result) {
             super(entity, item, duration);
             this.setResultStack(result);
         }
 
         @NotNull
-        public ItemStack getResultStack()
-        {
+        public ItemStack getResultStack() {
             return result;
         }
 
-        public void setResultStack(@NotNull ItemStack result)
-        {
+        public void setResultStack(@NotNull ItemStack result) {
             this.result = result;
         }
     }

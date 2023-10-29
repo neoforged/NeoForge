@@ -11,16 +11,13 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidType;
 
-public interface ILivingEntityExtension extends IEntityExtension
-{
-    default LivingEntity self()
-    {
+public interface ILivingEntityExtension extends IEntityExtension {
+    default LivingEntity self() {
         return (LivingEntity) this;
     }
 
     @Override
-    default boolean canSwimInFluidType(FluidType type)
-    {
+    default boolean canSwimInFluidType(FluidType type) {
         if (type == NeoForgeMod.WATER_TYPE.get()) return !self().isSensitiveToWater();
         else return IEntityExtension.super.canSwimInFluidType(type);
     }
@@ -30,9 +27,8 @@ public interface ILivingEntityExtension extends IEntityExtension
      *
      * @param type the type of the fluid
      */
-    default void jumpInFluid(FluidType type)
-    {
-        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double)0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED.get()), 0.0D));
+    default void jumpInFluid(FluidType type) {
+        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) 0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED.get()), 0.0D));
     }
 
     /**
@@ -40,9 +36,8 @@ public interface ILivingEntityExtension extends IEntityExtension
      *
      * @param type the type of the fluid
      */
-    default void sinkInFluid(FluidType type)
-    {
-        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double)-0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED.get()), 0.0D));
+    default void sinkInFluid(FluidType type) {
+        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) -0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED.get()), 0.0D));
     }
 
     /**
@@ -51,8 +46,7 @@ public interface ILivingEntityExtension extends IEntityExtension
      * @param type the type of the fluid
      * @return {@code true} if the entity can drown in the fluid, {@code false} otherwise
      */
-    default boolean canDrownInFluidType(FluidType type)
-    {
+    default boolean canDrownInFluidType(FluidType type) {
         if (type == NeoForgeMod.WATER_TYPE.get()) return !self().canBreatheUnderwater();
         return type.canDrownIn(self());
     }
@@ -62,13 +56,12 @@ public interface ILivingEntityExtension extends IEntityExtension
      * movement logic, the method should return {@code true}. Otherwise, the
      * movement logic will default to water.
      *
-     * @param state the state of the fluid
+     * @param state          the state of the fluid
      * @param movementVector the velocity of how the entity wants to move
-     * @param gravity the gravity to apply to the entity
+     * @param gravity        the gravity to apply to the entity
      * @return {@code true} if custom movement logic is performed, {@code false} otherwise
      */
-    default boolean moveInFluid(FluidState state, Vec3 movementVector, double gravity)
-    {
+    default boolean moveInFluid(FluidState state, Vec3 movementVector, double gravity) {
         return state.move(self(), movementVector, gravity);
     }
 }

@@ -7,13 +7,12 @@ package net.neoforged.neoforge.client.model;
 
 import com.google.common.base.Preconditions;
 import com.mojang.math.Transformation;
+import java.util.Arrays;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-
-import java.util.Arrays;
 
 /**
  * A collection of {@link IQuadTransformer} implementations.
@@ -30,22 +29,19 @@ public final class QuadTransformers {
     /**
      * {@return a {@link BakedQuad} transformer that does nothing}
      */
-    public static IQuadTransformer empty()
-    {
+    public static IQuadTransformer empty() {
         return EMPTY;
     }
 
     /**
      * {@return a new {@link BakedQuad} transformer that applies the specified {@link Transformation}}
      */
-    public static IQuadTransformer applying(Transformation transform)
-    {
+    public static IQuadTransformer applying(Transformation transform) {
         if (transform.isIdentity())
             return empty();
         return quad -> {
             var vertices = quad.getVertices();
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 int offset = i * IQuadTransformer.STRIDE + IQuadTransformer.POSITION;
                 float x = Float.intBitsToFloat(vertices[offset]);
                 float y = Float.intBitsToFloat(vertices[offset + 1]);
@@ -60,8 +56,7 @@ public final class QuadTransformers {
                 vertices[offset + 2] = Float.floatToRawIntBits(pos.z());
             }
 
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 int offset = i * IQuadTransformer.STRIDE + IQuadTransformer.NORMAL;
                 int normalIn = vertices[offset];
                 if ((normalIn & 0x00FFFFFF) != 0) // The ignored byte is padding and may be filled with user data
@@ -85,8 +80,7 @@ public final class QuadTransformers {
     /**
      * @return A new {@link BakedQuad} transformer that applies the specified packed light value.
      */
-    public static IQuadTransformer applyingLightmap(int packedLight)
-    {
+    public static IQuadTransformer applyingLightmap(int packedLight) {
         return quad -> {
             var vertices = quad.getVertices();
             for (int i = 0; i < 4; i++)
@@ -97,16 +91,14 @@ public final class QuadTransformers {
     /**
      * @return A new {@link BakedQuad} transformer that applies the specified block and sky light values.
      */
-    public static IQuadTransformer applyingLightmap(int blockLight, int skyLight)
-    {
+    public static IQuadTransformer applyingLightmap(int blockLight, int skyLight) {
         return applyingLightmap(LightTexture.pack(blockLight, skyLight));
     }
 
     /**
      * @return A {@link BakedQuad} transformer that sets the lightmap to the given emissivity (0-15)
      */
-    public static IQuadTransformer settingEmissivity(int emissivity)
-    {
+    public static IQuadTransformer settingEmissivity(int emissivity) {
         Preconditions.checkArgument(emissivity >= 0 && emissivity < 16, "Emissivity must be between 0 and 15.");
         return EMISSIVE_TRANSFORMERS[emissivity];
     }
@@ -114,8 +106,7 @@ public final class QuadTransformers {
     /**
      * @return A {@link BakedQuad} transformer that sets the lightmap to its max value
      */
-    public static IQuadTransformer settingMaxEmissivity()
-    {
+    public static IQuadTransformer settingMaxEmissivity() {
         return EMISSIVE_TRANSFORMERS[15];
     }
 
@@ -123,8 +114,7 @@ public final class QuadTransformers {
      * @param color The color in ARGB format.
      * @return A {@link BakedQuad} transformer that sets the color to the specified value.
      */
-    public static IQuadTransformer applyingColor(int color)
-    {
+    public static IQuadTransformer applyingColor(int color) {
         final int fixedColor = toABGR(color);
         return quad -> {
             var vertices = quad.getVertices();
@@ -135,42 +125,39 @@ public final class QuadTransformers {
 
     /**
      * This method supplies a default alpha value of 255 (no transparency)
-     * @param red The red value (0-255)
+     * 
+     * @param red   The red value (0-255)
      * @param green The green value (0-255)
-     * @param blue The blue value (0-255)
+     * @param blue  The blue value (0-255)
      * @return A {@link BakedQuad} transformer that sets the color to the specified value.
      */
-    public static IQuadTransformer applyingColor(int red, int green, int blue)
-    {
+    public static IQuadTransformer applyingColor(int red, int green, int blue) {
         return applyingColor(255, red, green, blue);
     }
 
     /**
      * @param alpha The alpha value (0-255)
-     * @param red The red value (0-255)
+     * @param red   The red value (0-255)
      * @param green The green value (0-255)
-     * @param blue The blue value (0-255)
+     * @param blue  The blue value (0-255)
      * @return A {@link BakedQuad} transformer that sets the color to the specified value.
      */
-    public static IQuadTransformer applyingColor(int alpha, int red, int green, int blue)
-    {
+    public static IQuadTransformer applyingColor(int alpha, int red, int green, int blue) {
         return applyingColor(alpha << 24 | red << 16 | green << 8 | blue);
     }
 
     /**
      * Converts an ARGB color to an ABGR color, as the commonly used color format is not the format colors end up packed into.
      * This function doubles as its own inverse.
+     * 
      * @param color ARGB color
      * @return ABGR color
      */
-    public static int toABGR(int argb)
-    {
+    public static int toABGR(int argb) {
         return (argb & 0xFF00FF00) // alpha and green same spot
-             | ((argb >> 16) & 0x000000FF) // red moves to blue
-             | ((argb << 16) & 0x00FF0000); // blue moves to red
+                | ((argb >> 16) & 0x000000FF) // red moves to blue
+                | ((argb << 16) & 0x00FF0000); // blue moves to red
     }
 
-    private QuadTransformers()
-    {
-    }
+    private QuadTransformers() {}
 }

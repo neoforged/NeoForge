@@ -12,19 +12,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TickEvent;
 
 @Mod("keymapping_test")
-public class KeyMappingTest
-{
+public class KeyMappingTest {
     @Mod.EventBusSubscriber(modid = "keymapping_test", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class ClientStuff
-    {
+    public static class ClientStuff {
         // these are two separate keys to stand in for keys added by different
         // mods that each do something similar with a held item from the
         // respective mod, so the user wants them on the same physical key.
@@ -32,29 +30,24 @@ public class KeyMappingTest
         static KeyMapping rockKey = new KeyMapping("rock_key", InputConstants.KEY_BACKSLASH, KeyMapping.CATEGORY_MISC);
 
         @SubscribeEvent
-        public static void init(FMLConstructModEvent event)
-        {
+        public static void init(FMLConstructModEvent event) {
             NeoForge.EVENT_BUS.addListener(ClientStuff::tick);
         }
 
         @SubscribeEvent
-        public static void initKeys(RegisterKeyMappingsEvent event)
-        {
+        public static void initKeys(RegisterKeyMappingsEvent event) {
             event.register(stickKey);
             event.register(rockKey);
         }
 
-        public static void tick(TickEvent.ClientTickEvent event)
-        {
+        public static void tick(TickEvent.ClientTickEvent event) {
             if (event.phase != TickEvent.Phase.START) return;
-            if (stickKey.consumeClick())
-            {
+            if (stickKey.consumeClick()) {
                 Player player = Minecraft.getInstance().player;
                 if (player != null && player.getMainHandItem().is(Items.STICK))
                     player.sendSystemMessage(Component.literal("stick found!"));
             }
-            if (rockKey.consumeClick())
-            {
+            if (rockKey.consumeClick()) {
                 Player player = Minecraft.getInstance().player;
                 if (player != null && player.getMainHandItem().is(Items.COBBLESTONE))
                     player.sendSystemMessage(Component.literal("rock found!"));

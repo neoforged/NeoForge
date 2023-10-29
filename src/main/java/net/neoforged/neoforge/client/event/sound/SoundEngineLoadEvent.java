@@ -20,11 +20,9 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-public class SoundEngineLoadEvent extends SoundEvent implements IModBusEvent
-{
+public class SoundEngineLoadEvent extends SoundEvent implements IModBusEvent {
     @ApiStatus.Internal
-    public SoundEngineLoadEvent(SoundEngine manager)
-    {
+    public SoundEngineLoadEvent(SoundEngine manager) {
         super(manager);
     }
 }

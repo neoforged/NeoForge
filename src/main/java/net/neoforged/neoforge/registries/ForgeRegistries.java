@@ -6,62 +6,62 @@
 package net.neoforged.neoforge.registries;
 
 import com.mojang.serialization.Codec;
+import java.util.function.Supplier;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.syncher.EntityDataSerializer;
-import net.minecraft.world.entity.decoration.PaintingVariant;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.Bootstrap;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.stats.StatType;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.sensing.SensorType;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.entity.decoration.PaintingVariant;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.entity.schedule.Schedule;
-import net.minecraft.world.entity.ai.sensing.SensorType;
-import net.minecraft.world.entity.npc.VillagerProfession;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.server.Bootstrap;
-import net.minecraft.core.Registry;
-import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.core.particles.ParticleType;
-import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.stats.StatType;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.chunk.ChunkStatus;
-import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProviderType;
 import net.minecraft.world.level.levelgen.carver.WorldCarver;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.foliageplacers.FoliagePlacerType;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProviderType;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecoratorType;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate;
-import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.world.BiomeModifier;
+import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.holdersets.HolderSetType;
-
-import java.util.function.Supplier;
-import net.neoforged.neoforge.common.world.StructureModifier;
 
 /**
  * A class that exposes static references to all vanilla and Forge registries.
  * Created to have a central place to access the registries directly if modders need.
  * It is still advised that if you are registering things to use {@link RegisterEvent} or {@link DeferredRegister}, but queries and iterations can use this.
  */
-public class ForgeRegistries
-{
-    static { init(); } // This must be above the fields so we guarantee it's run before getRegistry is called. Yay static initializers
+public class ForgeRegistries {
+    static {
+        init();
+    } // This must be above the fields so we guarantee it's run before getRegistry is called. Yay static initializers
 
     // Game objects
     public static final IForgeRegistry<Block> BLOCKS = RegistryManager.ACTIVE.getRegistry(Keys.BLOCKS);
@@ -169,9 +169,9 @@ public class ForgeRegistries
 
     public static final class Keys {
         //Vanilla
-        public static final ResourceKey<Registry<Block>>  BLOCKS  = key("block");
-        public static final ResourceKey<Registry<Fluid>>  FLUIDS  = key("fluid");
-        public static final ResourceKey<Registry<Item>>   ITEMS   = key("item");
+        public static final ResourceKey<Registry<Block>> BLOCKS = key("block");
+        public static final ResourceKey<Registry<Fluid>> FLUIDS = key("fluid");
+        public static final ResourceKey<Registry<Item>> ITEMS = key("item");
         public static final ResourceKey<Registry<MobEffect>> MOB_EFFECTS = key("mob_effect");
         public static final ResourceKey<Registry<Potion>> POTIONS = key("potion");
         public static final ResourceKey<Registry<Attribute>> ATTRIBUTES = key("attribute");
@@ -218,18 +218,17 @@ public class ForgeRegistries
         public static final ResourceKey<Registry<BiomeModifier>> BIOME_MODIFIERS = key("neoforge:biome_modifier");
         public static final ResourceKey<Registry<StructureModifier>> STRUCTURE_MODIFIERS = key("neoforge:structure_modifier");
 
-        private static <T> ResourceKey<Registry<T>> key(String name)
-        {
+        private static <T> ResourceKey<Registry<T>> key(String name) {
             return ResourceKey.createRegistryKey(new ResourceLocation(name));
         }
+
         private static void init() {}
     }
 
     /**
      * This function is just to make sure static initializers in other classes have run and setup their registries before we query them.
      */
-    private static void init()
-    {
+    private static void init() {
         Keys.init();
         GameData.init();
         Bootstrap.bootStrap();

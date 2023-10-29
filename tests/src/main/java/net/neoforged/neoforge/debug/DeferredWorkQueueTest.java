@@ -17,19 +17,16 @@ import org.slf4j.Logger;
  */
 @Mod(DeferredWorkQueueTest.MOD_ID)
 @Mod.EventBusSubscriber(modid = DeferredWorkQueueTest.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class DeferredWorkQueueTest
-{
+public class DeferredWorkQueueTest {
     public static final String MOD_ID = "deferred_work_queue_test";
     private static final boolean ENABLE = false;
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public DeferredWorkQueueTest() { }
+    public DeferredWorkQueueTest() {}
 
     @SubscribeEvent
-    public static void onCommonSetup(final FMLCommonSetupEvent event)
-    {
-        if (!ENABLE)
-        {
+    public static void onCommonSetup(final FMLCommonSetupEvent event) {
+        if (!ENABLE) {
             return;
         }
 
@@ -37,19 +34,15 @@ public class DeferredWorkQueueTest
         event.enqueueWork(() -> "Enqueued supplier ran").thenAccept(LOGGER::info);
 
         event.enqueueWork(DeferredWorkQueueTest::executeThrowingRunnable);
-        event.enqueueWork(DeferredWorkQueueTest::executeThrowingSupplier).thenAccept(s ->
-                LOGGER.error("This must not be printed")
-        );
+        event.enqueueWork(DeferredWorkQueueTest::executeThrowingSupplier).thenAccept(s -> LOGGER.error("This must not be printed"));
     }
 
-    private static void executeThrowingRunnable()
-    {
+    private static void executeThrowingRunnable() {
         LOGGER.info("Enqueued throwing runnable ran");
         throw new IllegalStateException("Throwing runnable ran");
     }
 
-    private static String executeThrowingSupplier()
-    {
+    private static String executeThrowingSupplier() {
         LOGGER.info("Enqueued throwing supplier ran");
         throw new IllegalStateException("Throwing supplier ran");
     }

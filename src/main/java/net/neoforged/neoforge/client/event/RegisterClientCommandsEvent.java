@@ -10,9 +10,9 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ObjectiveArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -34,14 +34,12 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @see RegisterCommandsEvent
  */
-public class RegisterClientCommandsEvent extends Event
-{
+public class RegisterClientCommandsEvent extends Event {
     private final CommandDispatcher<CommandSourceStack> dispatcher;
     private final CommandBuildContext context;
 
     @ApiStatus.Internal
-    public RegisterClientCommandsEvent(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context)
-    {
+    public RegisterClientCommandsEvent(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {
         this.dispatcher = dispatcher;
         this.context = context;
     }
@@ -49,16 +47,14 @@ public class RegisterClientCommandsEvent extends Event
     /**
      * {@return the command dispatcher for registering commands to be executed on the client}
      */
-    public CommandDispatcher<CommandSourceStack> getDispatcher()
-    {
+    public CommandDispatcher<CommandSourceStack> getDispatcher() {
         return dispatcher;
     }
 
     /**
      * {@return the context to build the commands for}
      */
-    public CommandBuildContext getBuildContext()
-    {
+    public CommandBuildContext getBuildContext() {
         return context;
     }
 }

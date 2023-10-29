@@ -5,54 +5,50 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import com.google.common.collect.Multimap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
-
-import com.google.common.collect.Multimap;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.*;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.items.wrapper.ShulkerItemStackInvWrapper;
 import net.neoforged.neoforge.registries.IForgeRegistry;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 // TODO systemic review of all extension functions. lots of unused -C
-public interface IItemExtension
-{
-    private Item self()
-    {
+public interface IItemExtension {
+    private Item self() {
         return (Item) this;
     }
 
@@ -60,8 +56,7 @@ public interface IItemExtension
      * ItemStack sensitive version of getItemAttributeModifiers
      */
     @SuppressWarnings("deprecation")
-    default Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack)
-    {
+    default Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
         return self().getDefaultAttributeModifiers(slot);
     }
 
@@ -73,8 +68,7 @@ public interface IItemExtension
      * @param player The player that dropped the item
      * @param item   The item stack, before the item is removed.
      */
-    default boolean onDroppedByPlayer(ItemStack item, Player player)
-    {
+    default boolean onDroppedByPlayer(ItemStack item, Player player) {
         return true;
     }
 
@@ -87,8 +81,7 @@ public interface IItemExtension
      * @param displayName the name that will be displayed unless it is changed in
      *                    this method.
      */
-    default Component getHighlightTip(ItemStack item, Component displayName)
-    {
+    default Component getHighlightTip(ItemStack item, Component displayName) {
         return displayName;
     }
 
@@ -97,8 +90,7 @@ public interface IItemExtension
      *
      * @return Return PASS to allow vanilla handling, any other to skip normal code.
      */
-    default InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context)
-    {
+    default InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         return InteractionResult.PASS;
     }
 
@@ -107,8 +99,7 @@ public interface IItemExtension
      *
      * @return True if this item can be used as "currency" by piglins
      */
-    default boolean isPiglinCurrency(ItemStack stack)
-    {
+    default boolean isPiglinCurrency(ItemStack stack) {
         return stack.getItem() == PiglinAi.BARTERING_ITEM;
     }
 
@@ -120,8 +111,7 @@ public interface IItemExtension
      *
      * @return True if piglins are neutral to players wearing this item in an armor slot
      */
-    default boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer)
-    {
+    default boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
         return stack.getItem() instanceof ArmorItem && ((ArmorItem) stack.getItem()).getMaterial() == ArmorMaterials.GOLD;
     }
 
@@ -133,11 +123,10 @@ public interface IItemExtension
     boolean isRepairable(ItemStack stack);
 
     /**
-    * Determines the amount of durability the mending enchantment
-    * will repair, on average, per point of experience.
-    */
-    default float getXpRepairRatio(ItemStack stack)
-    {
+     * Determines the amount of durability the mending enchantment
+     * will repair, on average, per point of experience.
+     */
+    default float getXpRepairRatio(ItemStack stack) {
         return 2f;
     }
 
@@ -148,18 +137,17 @@ public interface IItemExtension
      *
      * Note that this will sometimes be applied multiple times, the following MUST
      * be supported:
-     *   Item item = stack.getItem();
-     *   NBTTagCompound nbtShare1 = item.getNBTShareTag(stack);
-     *   stack.setTagCompound(nbtShare1);
-     *   NBTTagCompound nbtShare2 = item.getNBTShareTag(stack);
-     *   assert nbtShare1.equals(nbtShare2);
+     * Item item = stack.getItem();
+     * NBTTagCompound nbtShare1 = item.getNBTShareTag(stack);
+     * stack.setTagCompound(nbtShare1);
+     * NBTTagCompound nbtShare2 = item.getNBTShareTag(stack);
+     * assert nbtShare1.equals(nbtShare2);
      *
      * @param stack The stack to send the NBT tag for
      * @return The NBT tag
      */
     @Nullable
-    default CompoundTag getShareTag(ItemStack stack)
-    {
+    default CompoundTag getShareTag(ItemStack stack) {
         return stack.getTag();
     }
 
@@ -170,8 +158,7 @@ public interface IItemExtension
      * @param stack The stack that received NBT
      * @param nbt   Received NBT, can be null
      */
-    default void readShareTag(ItemStack stack, @Nullable CompoundTag nbt)
-    {
+    default void readShareTag(ItemStack stack, @Nullable CompoundTag nbt) {
         stack.setTag(nbt);
     }
 
@@ -186,8 +173,7 @@ public interface IItemExtension
      * @param player    The Player that is wielding the item
      * @return True to prevent harvesting, false to continue as normal
      */
-    default boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, Player player)
-    {
+    default boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, Player player) {
         return false;
     }
 
@@ -201,17 +187,15 @@ public interface IItemExtension
      *
      * For most uses, you likely want one of the following:
      * <ul>
-     *   <li>{@link Item#finishUsingItem(ItemStack, Level, LivingEntity)} for when the player releases and enough ticks have passed
-     *   <li>{@link Item#releaseUsing(ItemStack, Level, LivingEntity, int)} (ItemStack, Level, LivingEntity)} for when the player releases but the full timer has not passed
+     * <li>{@link Item#finishUsingItem(ItemStack, Level, LivingEntity)} for when the player releases and enough ticks have passed
+     * <li>{@link Item#releaseUsing(ItemStack, Level, LivingEntity, int)} (ItemStack, Level, LivingEntity)} for when the player releases but the full timer has not passed
      * </ul>
      *
      * @param stack  The Item being used
      * @param entity The entity using the item, typically a player
      * @param count  The amount of time in tick the item has been used for continuously
      */
-    default void onStopUsing(ItemStack stack, LivingEntity entity, int count)
-    {
-    }
+    default void onStopUsing(ItemStack stack, LivingEntity entity, int count) {}
 
     /**
      * Called when the player Left Clicks (attacks) an entity. Processed before
@@ -223,8 +207,7 @@ public interface IItemExtension
      * @param entity The entity being attacked
      * @return True to cancel the rest of the interaction.
      */
-    default boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity)
-    {
+    default boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         return false;
     }
 
@@ -236,10 +219,8 @@ public interface IItemExtension
      * @return The resulting ItemStack
      */
     @SuppressWarnings("deprecation")
-    default ItemStack getCraftingRemainingItem(ItemStack itemStack)
-    {
-        if (!hasCraftingRemainingItem(itemStack))
-        {
+    default ItemStack getCraftingRemainingItem(ItemStack itemStack) {
+        if (!hasCraftingRemainingItem(itemStack)) {
             return ItemStack.EMPTY;
         }
         return new ItemStack(self().getCraftingRemainingItem());
@@ -252,8 +233,7 @@ public interface IItemExtension
      * @return True if this item has a crafting remaining item
      */
     @SuppressWarnings("deprecation")
-    default boolean hasCraftingRemainingItem(ItemStack stack)
-    {
+    default boolean hasCraftingRemainingItem(ItemStack stack) {
         return self().hasCraftingRemainingItem();
     }
 
@@ -265,8 +245,7 @@ public interface IItemExtension
      * @param level     The level the entity is in
      * @return The normal lifespan in ticks.
      */
-    default int getEntityLifespan(ItemStack itemStack, Level level)
-    {
+    default int getEntityLifespan(ItemStack itemStack, Level level) {
         return 6000;
     }
 
@@ -280,8 +259,7 @@ public interface IItemExtension
      * @return True of the item has a custom entity, If true,
      *         Item#createCustomEntity will be called
      */
-    default boolean hasCustomEntity(ItemStack stack)
-    {
+    default boolean hasCustomEntity(ItemStack stack) {
         return false;
     }
 
@@ -290,15 +268,14 @@ public interface IItemExtension
      * Returning null here will not kill the EntityItem and will leave it to
      * function normally. Called when the item it placed in a level.
      *
-     * @param level     The level object
-     * @param location  The EntityItem object, useful for getting the position of
-     *                  the entity
-     * @param stack The current item stack
+     * @param level    The level object
+     * @param location The EntityItem object, useful for getting the position of
+     *                 the entity
+     * @param stack    The current item stack
      * @return A new Entity object to spawn or null
      */
     @Nullable
-    default Entity createEntity(Level level, Entity location, ItemStack stack)
-    {
+    default Entity createEntity(Level level, Entity location, ItemStack stack) {
         return null;
     }
 
@@ -310,8 +287,7 @@ public interface IItemExtension
      * @param entity The entity Item
      * @return Return true to skip any further update code.
      */
-    default boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity)
-    {
+    default boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
         return false;
     }
 
@@ -324,17 +300,14 @@ public interface IItemExtension
      * @param pos    Block position in level
      * @param player The Player that is wielding the item
      */
-    default boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.level.LevelReader level, BlockPos pos, Player player)
-    {
+    default boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.level.LevelReader level, BlockPos pos, Player player) {
         return false;
     }
 
     /**
      * Called to tick armor in the armor slot. Override to do something
      */
-    default void onArmorTick(ItemStack stack, Level level, Player player)
-    {
-    }
+    default void onArmorTick(ItemStack stack, Level level, Player player) {}
 
     /**
      * Determines if the specific ItemStack can be placed in the specified armor
@@ -345,8 +318,7 @@ public interface IItemExtension
      * @param entity    The entity trying to equip the armor
      * @return True if the given ItemStack can be inserted in the slot
      */
-    default boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity)
-    {
+    default boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) {
         return Mob.getEquipmentSlotForItem(stack) == armorType;
     }
 
@@ -361,8 +333,7 @@ public interface IItemExtension
      *         decide
      */
     @Nullable
-    default EquipmentSlot getEquipmentSlot(ItemStack stack)
-    {
+    default EquipmentSlot getEquipmentSlot(ItemStack stack) {
         return null;
     }
 
@@ -373,8 +344,7 @@ public interface IItemExtension
      * @param book  The book
      * @return if the enchantment is allowed
      */
-    default boolean isBookEnchantable(ItemStack stack, ItemStack book)
-    {
+    default boolean isBookEnchantable(ItemStack stack, ItemStack book) {
         return true;
     }
 
@@ -392,8 +362,7 @@ public interface IItemExtension
      * @return Path of texture to bind, or null to use default
      */
     @Nullable
-    default String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type)
-    {
+    default String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
         return null;
     }
 
@@ -403,8 +372,7 @@ public interface IItemExtension
      * @param entity The entity swinging the item.
      * @return True to cancel any further processing by EntityLiving
      */
-    default boolean onEntitySwing(ItemStack stack, LivingEntity entity)
-    {
+    default boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         return false;
     }
 
@@ -415,8 +383,7 @@ public interface IItemExtension
      * @param stack The itemstack that is damaged
      * @return the damage value
      */
-    default int getDamage(ItemStack stack)
-    {
+    default int getDamage(ItemStack stack) {
         return !stack.hasTag() ? 0 : stack.getTag().getInt("Damage");
     }
 
@@ -428,8 +395,7 @@ public interface IItemExtension
      * @return the damage value
      */
     @SuppressWarnings("deprecation")
-    default int getMaxDamage(ItemStack stack)
-    {
+    default int getMaxDamage(ItemStack stack) {
         return self().getMaxDamage();
     }
 
@@ -440,8 +406,7 @@ public interface IItemExtension
      * @param stack the stack
      * @return if the stack is damaged
      */
-    default boolean isDamaged(ItemStack stack)
-    {
+    default boolean isDamaged(ItemStack stack) {
         return stack.getDamageValue() > 0;
     }
 
@@ -452,20 +417,19 @@ public interface IItemExtension
      * @param stack  the stack
      * @param damage the new damage value
      */
-    default void setDamage(ItemStack stack, int damage)
-    {
+    default void setDamage(ItemStack stack, int damage) {
         stack.getOrCreateTag().putInt("Damage", Math.max(0, damage));
     }
 
     /**
      * Queries if an item can perform the given action.
      * See {@link ToolActions} for a description of each stock action
-     * @param stack The stack being used
+     * 
+     * @param stack      The stack being used
      * @param toolAction The action being queried
      * @return True if the stack can perform the action
      */
-    default boolean canPerformAction(ItemStack stack, ToolAction toolAction)
-    {
+    default boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
         return false;
     }
 
@@ -476,8 +440,7 @@ public interface IItemExtension
      * @param state The block trying to harvest
      * @return true if the stack can harvest the block
      */
-    default boolean isCorrectToolForDrops(ItemStack stack, BlockState state)
-    {
+    default boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
         return self().isCorrectToolForDrops(state);
     }
 
@@ -489,8 +452,7 @@ public interface IItemExtension
      * @return The maximum size this item can be stacked to
      */
     @SuppressWarnings("deprecation")
-    default int getMaxStackSize(ItemStack stack)
-    {
+    default int getMaxStackSize(ItemStack stack) {
         return self().getMaxStackSize();
     }
 
@@ -500,8 +462,7 @@ public interface IItemExtension
      * @param stack The ItemStack
      * @return the enchantment value
      */
-    default int getEnchantmentValue(ItemStack stack)
-    {
+    default int getEnchantmentValue(ItemStack stack) {
         return self().getEnchantmentValue();
     }
 
@@ -518,8 +479,7 @@ public interface IItemExtension
      * @param enchantment the enchantment to be applied
      * @return true if the enchantment can be applied to this item
      */
-    default boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment)
-    {
+    default boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
         return enchantment.category.canEnchant(stack.getItem());
     }
 
@@ -528,13 +488,12 @@ public interface IItemExtension
      * Most enchantment implementations rely upon this method.
      * For consistency, results of this method should be the same as getting the enchantment from {@link #getAllEnchantments(ItemStack)}
      *
-     * @param stack        the item stack being checked
-     * @param enchantment  the enchantment being checked for
-     * @return  Level of the enchantment, or 0 if not present
+     * @param stack       the item stack being checked
+     * @param enchantment the enchantment being checked for
+     * @return Level of the enchantment, or 0 if not present
      * @see #getAllEnchantments(ItemStack)
      */
-    default int getEnchantmentLevel(ItemStack stack, Enchantment enchantment)
-    {
+    default int getEnchantmentLevel(ItemStack stack, Enchantment enchantment) {
         return EnchantmentHelper.getTagEnchantmentLevel(enchantment, stack);
     }
 
@@ -543,12 +502,11 @@ public interface IItemExtension
      * Used in several places in code including armor enchantment hooks.
      * For consistency, any enchantments in the returned map should include the same level in {@link #getEnchantmentLevel(ItemStack, Enchantment)}
      *
-     * @param stack        the item stack being checked
-     * @return  Map of all enchantments on the stack, empty if no enchantments are present
+     * @param stack the item stack being checked
+     * @return Map of all enchantments on the stack, empty if no enchantments are present
      * @see #getEnchantmentLevel(ItemStack, Enchantment)
      */
-    default Map<Enchantment, Integer> getAllEnchantments(ItemStack stack)
-    {
+    default Map<Enchantment, Integer> getAllEnchantments(ItemStack stack) {
         return EnchantmentHelper.deserializeEnchantments(stack.getEnchantmentTags());
     }
 
@@ -562,8 +520,7 @@ public interface IItemExtension
      *                    hold the exact same item.
      * @return True to play the item change animation
      */
-    default boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged)
-    {
+    default boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return !oldStack.equals(newStack); // !ItemStack.areItemStacksEqual(oldStack, newStack);
     }
 
@@ -576,8 +533,7 @@ public interface IItemExtension
      * @param newStack The new stack
      * @return True to reset block break progress
      */
-    default boolean shouldCauseBlockBreakReset(ItemStack oldStack, ItemStack newStack)
-    {
+    default boolean shouldCauseBlockBreakReset(ItemStack oldStack, ItemStack newStack) {
         // Fix MC-176559 mending resets mining progress / breaking animation
         if (!newStack.is(oldStack.getItem()))
             return true;
@@ -614,8 +570,7 @@ public interface IItemExtension
      * @param newStack the stack currently in the active hand
      * @return true to set the new stack to active and continue using it
      */
-    default boolean canContinueUsing(ItemStack oldStack, ItemStack newStack)
-    {
+    default boolean canContinueUsing(ItemStack oldStack, ItemStack newStack) {
         if (oldStack == newStack) {
             return true;
         } else {
@@ -638,8 +593,7 @@ public interface IItemExtension
      *         associated mod and {@link IForgeRegistry#getKey(Object)} would return null.
      */
     @Nullable
-    default String getCreatorModId(ItemStack itemStack)
-    {
+    default String getCreatorModId(ItemStack itemStack) {
         return CommonHooks.getDefaultCreatorModId(itemStack);
     }
 
@@ -658,8 +612,7 @@ public interface IItemExtension
      *         capabilities for the life of this item.
      */
     @Nullable
-    default ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt)
-    {
+    default ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
         var ret = ShulkerItemStackInvWrapper.createDefaultProvider(stack);
         return ret;
     }
@@ -673,8 +626,7 @@ public interface IItemExtension
      * @param attacker The LivingEntity holding the ItemStack
      * @return True if this ItemStack can disable the shield in question.
      */
-    default boolean canDisableShield(ItemStack stack, ItemStack shield, LivingEntity entity, LivingEntity attacker)
-    {
+    default boolean canDisableShield(ItemStack stack, ItemStack shield, LivingEntity entity, LivingEntity attacker) {
         return this instanceof AxeItem;
     }
 
@@ -683,8 +635,7 @@ public interface IItemExtension
      *         it not act as a fuel. Return -1 to let the default vanilla logic
      *         decide.
      */
-    default int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType)
-    {
+    default int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
         return -1;
     }
 
@@ -696,17 +647,15 @@ public interface IItemExtension
      * @param level the level the horse is in
      * @param horse the horse wearing this armor
      */
-    default void onHorseArmorTick(ItemStack stack, Level level, Mob horse)
-    {
-    }
+    default void onHorseArmorTick(ItemStack stack, Level level, Mob horse) {}
 
     /**
      * Reduce the durability of this item by the amount given.
      * This can be used to e.g. consume power from NBT before durability.
      *
-     * @param stack The itemstack to damage
-     * @param amount The amount to damage
-     * @param entity The entity damaging the item
+     * @param stack    The itemstack to damage
+     * @param amount   The amount to damage
+     * @param entity   The entity damaging the item
      * @param onBroken The on-broken callback from vanilla
      * @return The amount of damage to pass to the vanilla logic
      */
@@ -720,21 +669,19 @@ public interface IItemExtension
      * @param itemEntity   The item entity that was destroyed.
      * @param damageSource Damage source that caused the item entity to "die".
      */
-    default void onDestroyed(ItemEntity itemEntity, DamageSource damageSource)
-    {
+    default void onDestroyed(ItemEntity itemEntity, DamageSource damageSource) {
         self().onDestroyed(itemEntity);
     }
 
     /**
      * Whether this Item can be used to hide player head for enderman.
      *
-     * @param stack the ItemStack
-     * @param player The player watching the enderman
+     * @param stack          the ItemStack
+     * @param player         The player watching the enderman
      * @param endermanEntity The enderman that the player look
      * @return true if this Item can be used to hide player head for enderman
      */
-    default boolean isEnderMask(ItemStack stack, Player player, EnderMan endermanEntity)
-    {
+    default boolean isEnderMask(ItemStack stack, Player player, EnderMan endermanEntity) {
         return stack.getItem() == Blocks.CARVED_PUMPKIN.asItem();
     }
 
@@ -742,12 +689,11 @@ public interface IItemExtension
      * Used to determine if the player can use Elytra flight.
      * This is called Client and Server side.
      *
-     * @param stack The ItemStack in the Chest slot of the entity.
+     * @param stack  The ItemStack in the Chest slot of the entity.
      * @param entity The entity trying to fly.
      * @return True if the entity can use Elytra flight.
      */
-    default boolean canElytraFly(ItemStack stack, LivingEntity entity)
-    {
+    default boolean canElytraFly(ItemStack stack, LivingEntity entity) {
         return false;
     }
 
@@ -763,8 +709,7 @@ public interface IItemExtension
      * @param flightTicks The number of ticks the entity has been Elytra flying for.
      * @return True if the entity should continue Elytra flight or False to stop.
      */
-    default boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks)
-    {
+    default boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
         return false;
     }
 
@@ -777,8 +722,7 @@ public interface IItemExtension
      *
      * @return True if the entity can walk on powdered snow
      */
-    default boolean canWalkOnPowderedSnow(ItemStack stack, LivingEntity wearer)
-    {
+    default boolean canWalkOnPowderedSnow(ItemStack stack, LivingEntity wearer) {
         return stack.is(Items.LEATHER_BOOTS);
     }
 
@@ -786,35 +730,33 @@ public interface IItemExtension
      * Used to test if this item can be damaged, but with the ItemStack in question.
      * Please note that in some cases no ItemStack is available, so the stack-less method will be used.
      *
-     * @param stack       ItemStack in the Chest slot of the entity.
+     * @param stack ItemStack in the Chest slot of the entity.
      */
-    default boolean isDamageable(ItemStack stack)
-    {
+    default boolean isDamageable(ItemStack stack) {
         return self().canBeDepleted();
     }
 
     /**
      * Get a bounding box ({@link AABB}) of a sweep attack.
      *
-     * @param stack the stack held by the player.
+     * @param stack  the stack held by the player.
      * @param player the performing the attack the attack.
      * @param target the entity targeted by the attack.
      * @return the bounding box.
      */
     @NotNull
-    default AABB getSweepHitBox(@NotNull ItemStack stack, @NotNull Player player, @NotNull Entity target)
-    {
+    default AABB getSweepHitBox(@NotNull ItemStack stack, @NotNull Player player, @NotNull Entity target) {
         return target.getBoundingBox().inflate(1.0D, 0.25D, 1.0D);
     }
 
     /**
      * Get the tooltip parts that should be hidden by default on the given stack if the {@code HideFlags} tag is not set.
+     * 
      * @see ItemStack.TooltipPart
      * @param stack the stack
      * @return the default hide flags
      */
-    default int getDefaultTooltipHideFlags(@NotNull ItemStack stack)
-    {
+    default int getDefaultTooltipHideFlags(@NotNull ItemStack stack) {
         return 0;
     }
 
@@ -825,13 +767,12 @@ public interface IItemExtension
      * The @Nullable annotation was only added, due to the default method, also being @Nullable.
      * Use this with a grain of salt, as if you return null here and true at {@link Item#isEdible()}, NPEs will occur!
      *
-     * @param stack The ItemStack the entity wants to eat.
+     * @param stack  The ItemStack the entity wants to eat.
      * @param entity The entity which wants to eat the food. Be aware that this can be null!
      * @return The current FoodProperties for the item.
      */
     @Nullable // read javadoc to find a potential problem
-    default FoodProperties getFoodProperties(ItemStack stack, @Nullable LivingEntity entity)
-    {
+    default FoodProperties getFoodProperties(ItemStack stack, @Nullable LivingEntity entity) {
         return self().getFoodProperties();
     }
 
@@ -840,20 +781,18 @@ public interface IItemExtension
      * By default, this returns true for enchanted stacks.
      *
      * @see Inventory#getSuitableHotbarSlot()
-     * @param player the player performing the picking
+     * @param player        the player performing the picking
      * @param inventorySlot the inventory slot of the item being up for replacement
      * @return true to leave this stack in the hotbar if possible
      */
-    default boolean isNotReplaceableByPickAction(ItemStack stack, Player player, int inventorySlot)
-    {
+    default boolean isNotReplaceableByPickAction(ItemStack stack, Player player, int inventorySlot) {
         return stack.isEnchanted();
     }
 
     /**
      * {@return true if the given ItemStack can be put into a grindstone to be repaired and/or stripped of its enchantments}
      */
-    default boolean canGrindstoneRepair(ItemStack stack)
-    {
+    default boolean canGrindstoneRepair(ItemStack stack) {
         return false;
     }
 }

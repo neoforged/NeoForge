@@ -10,13 +10,11 @@ import net.minecraft.world.entity.raid.Raid;
 import net.neoforged.fml.common.Mod;
 
 @Mod("raid_enum_test")
-public class RaidEnumTest 
-{
+public class RaidEnumTest {
     private static final boolean ENABLE = false;
-	
-    public RaidEnumTest()
-    {
+
+    public RaidEnumTest() {
         if (ENABLE)
-            Raid.RaiderType.create("thebluemengroup", EntityType.ILLUSIONER, new int[]{0, 5, 0, 1, 0, 1, 0, 2});
+            Raid.RaiderType.create("thebluemengroup", EntityType.ILLUSIONER, new int[] { 0, 5, 0, 1, 0, 1, 0, 2 });
     }
 }

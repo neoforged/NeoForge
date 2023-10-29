@@ -10,9 +10,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * LivingKnockBackEvent is fired when a living entity is about to be knocked back. <br>
@@ -32,39 +32,55 @@ import net.neoforged.bus.api.ICancellableEvent;
  * If this event is canceled, the entity is not knocked back.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
- *<br>
+ * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class LivingKnockBackEvent extends LivingEvent implements ICancellableEvent
-{
+public class LivingKnockBackEvent extends LivingEvent implements ICancellableEvent {
     protected float strength;
     protected double ratioX, ratioZ;
     protected final float originalStrength;
     protected final double originalRatioX, originalRatioZ;
 
-    public LivingKnockBackEvent(LivingEntity target, float strength, double ratioX, double ratioZ)
-    {
+    public LivingKnockBackEvent(LivingEntity target, float strength, double ratioX, double ratioZ) {
         super(target);
         this.strength = this.originalStrength = strength;
         this.ratioX = this.originalRatioX = ratioX;
         this.ratioZ = this.originalRatioZ = ratioZ;
     }
 
-    public float getStrength() {return this.strength;}
+    public float getStrength() {
+        return this.strength;
+    }
 
-    public double getRatioX() {return this.ratioX;}
+    public double getRatioX() {
+        return this.ratioX;
+    }
 
-    public double getRatioZ() {return this.ratioZ;}
+    public double getRatioZ() {
+        return this.ratioZ;
+    }
 
-    public float getOriginalStrength() {return this.originalStrength;}
+    public float getOriginalStrength() {
+        return this.originalStrength;
+    }
 
-    public double getOriginalRatioX() {return this.originalRatioX;}
+    public double getOriginalRatioX() {
+        return this.originalRatioX;
+    }
 
-    public double getOriginalRatioZ() {return this.originalRatioZ;}
+    public double getOriginalRatioZ() {
+        return this.originalRatioZ;
+    }
 
-    public void setStrength(float strength) {this.strength = strength;}
+    public void setStrength(float strength) {
+        this.strength = strength;
+    }
 
-    public void setRatioX(double ratioX) {this.ratioX = ratioX;}
+    public void setRatioX(double ratioX) {
+        this.ratioX = ratioX;
+    }
 
-    public void setRatioZ(double ratioZ) {this.ratioZ = ratioZ;}
+    public void setRatioZ(double ratioZ) {
+        this.ratioZ = ratioZ;
+    }
 }

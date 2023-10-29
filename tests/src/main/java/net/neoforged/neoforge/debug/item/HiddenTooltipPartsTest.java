@@ -15,55 +15,48 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
 @Mod(HiddenTooltipPartsTest.MOD_ID)
-public class HiddenTooltipPartsTest
-{
+public class HiddenTooltipPartsTest {
     public static final String MOD_ID = "hidden_tooltip_parts";
     public static final boolean ENABLED = true;
     private static final AttributeModifier MODIFIER = new AttributeModifier(MOD_ID, 10f, Operation.ADDITION);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
     private static final RegistryObject<Item> TEST_ITEM = ITEMS.register("test_item", () -> new TestItem(new Item.Properties()));
 
-    public HiddenTooltipPartsTest()
-    {
+    public HiddenTooltipPartsTest() {
         var modBus = FMLJavaModLoadingContext.get().getModEventBus();
         ITEMS.register(modBus);
         modBus.addListener(this::addCreative);
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
             event.accept(TEST_ITEM);
     }
 
-    static class TestItem extends Item
-    {
+    static class TestItem extends Item {
 
-        public TestItem(Properties properties)
-        {
+        public TestItem(Properties properties) {
             super(properties);
         }
 
         @Override
-        public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack)
-        {
+        public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
             return ImmutableMultimap.<Attribute, AttributeModifier>builder()
                     .put(Attributes.ARMOR, MODIFIER)
                     .build();
         }
 
         @Override
-        public int getDefaultTooltipHideFlags(@NotNull ItemStack stack)
-        {
+        public int getDefaultTooltipHideFlags(@NotNull ItemStack stack) {
             return ItemStack.TooltipPart.MODIFIERS.getMask();
         }
     }

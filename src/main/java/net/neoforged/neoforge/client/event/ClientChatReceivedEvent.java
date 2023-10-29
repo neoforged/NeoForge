@@ -5,16 +5,16 @@
 
 package net.neoforged.neoforge.client.event;
 
+import java.util.UUID;
 import net.minecraft.Util;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.PlayerChatMessage;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
-import java.util.UUID;
 
 /**
  * Fired when a chat message is received on the client.
@@ -28,15 +28,13 @@ import java.util.UUID;
  *
  * @see ChatType
  */
-public class ClientChatReceivedEvent extends Event implements ICancellableEvent
-{
+public class ClientChatReceivedEvent extends Event implements ICancellableEvent {
     private Component message;
     private final ChatType.Bound boundChatType;
     private final UUID sender;
 
     @ApiStatus.Internal
-    public ClientChatReceivedEvent(ChatType.Bound boundChatType, Component message, UUID sender)
-    {
+    public ClientChatReceivedEvent(ChatType.Bound boundChatType, Component message, UUID sender) {
         this.boundChatType = boundChatType;
         this.message = message;
         this.sender = sender;
@@ -45,8 +43,7 @@ public class ClientChatReceivedEvent extends Event implements ICancellableEvent
     /**
      * {@return the message that will be displayed in the chat message window, if the event is not cancelled}
      */
-    public Component getMessage()
-    {
+    public Component getMessage() {
         return message;
     }
 
@@ -55,8 +52,7 @@ public class ClientChatReceivedEvent extends Event implements ICancellableEvent
      *
      * @param message the new message to be displayed
      */
-    public void setMessage(Component message)
-    {
+    public void setMessage(Component message) {
         this.message = message;
     }
 
@@ -64,8 +60,7 @@ public class ClientChatReceivedEvent extends Event implements ICancellableEvent
      * {@return the bound chat type of the chat message}.
      * This contains the chat type, display name of the sender, and nullable target name depending on the chat type.
      */
-    public ChatType.Bound getBoundChatType()
-    {
+    public ChatType.Bound getBoundChatType() {
         return this.boundChatType;
     }
 
@@ -73,16 +68,14 @@ public class ClientChatReceivedEvent extends Event implements ICancellableEvent
      * {@return the message sender}.
      * This will be {@link Util#NIL_UUID} if the message is a system message.
      */
-    public UUID getSender()
-    {
+    public UUID getSender() {
         return this.sender;
     }
 
     /**
      * {@return {@code true} if the message was sent by the system, {@code false} otherwise}
      */
-    public boolean isSystem()
-    {
+    public boolean isSystem() {
         return this.sender.equals(Util.NIL_UUID);
     }
 
@@ -97,13 +90,11 @@ public class ClientChatReceivedEvent extends Event implements ICancellableEvent
      *
      * @see ChatType
      */
-    public static class Player extends ClientChatReceivedEvent
-    {
+    public static class Player extends ClientChatReceivedEvent {
         private final PlayerChatMessage playerChatMessage;
 
         @ApiStatus.Internal
-        public Player(ChatType.Bound boundChatType, Component message, PlayerChatMessage playerChatMessage, UUID sender)
-        {
+        public Player(ChatType.Bound boundChatType, Component message, PlayerChatMessage playerChatMessage, UUID sender) {
             super(boundChatType, message, sender);
             this.playerChatMessage = playerChatMessage;
         }
@@ -112,8 +103,7 @@ public class ClientChatReceivedEvent extends Event implements ICancellableEvent
          * {@return the full player chat message}.
          * This contains the sender UUID, various signing data, and the optional unsigned contents.
          */
-        public PlayerChatMessage getPlayerChatMessage()
-        {
+        public PlayerChatMessage getPlayerChatMessage() {
             return this.playerChatMessage;
         }
     }
@@ -127,13 +117,11 @@ public class ClientChatReceivedEvent extends Event implements ICancellableEvent
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    public static class System extends ClientChatReceivedEvent
-    {
+    public static class System extends ClientChatReceivedEvent {
         private final boolean overlay;
 
         @ApiStatus.Internal
-        public System(ChatType.Bound boundChatType, Component message, boolean overlay)
-        {
+        public System(ChatType.Bound boundChatType, Component message, boolean overlay) {
             super(boundChatType, message, Util.NIL_UUID);
             this.overlay = overlay;
         }
@@ -141,8 +129,7 @@ public class ClientChatReceivedEvent extends Event implements ICancellableEvent
         /**
          * {@return whether the message goes to the overlay}
          */
-        public boolean isOverlay()
-        {
+        public boolean isOverlay() {
             return this.overlay;
         }
     }

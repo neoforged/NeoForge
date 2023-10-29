@@ -19,12 +19,10 @@ import net.neoforged.neoforge.common.NeoForge;
  * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
  * on both logical sides.
  **/
-public class EntityLeaveLevelEvent extends EntityEvent
-{
+public class EntityLeaveLevelEvent extends EntityEvent {
     private final Level level;
 
-    public EntityLeaveLevelEvent(Entity entity, Level level)
-    {
+    public EntityLeaveLevelEvent(Entity entity, Level level) {
         super(entity);
         this.level = level;
     }
@@ -32,8 +30,7 @@ public class EntityLeaveLevelEvent extends EntityEvent
     /**
      * {@return the level the entity is set to leave}
      */
-    public Level getLevel()
-    {
+    public Level getLevel() {
         return level;
     }
 }

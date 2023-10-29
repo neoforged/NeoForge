@@ -11,8 +11,7 @@ import net.minecraft.network.chat.FormattedText;
 /**
  * Extension interface for {@link Font}.
  */
-public interface IFontExtension
-{
+public interface IFontExtension {
     FormattedText ELLIPSIS = FormattedText.of("...");
 
     Font self();
@@ -24,18 +23,15 @@ public interface IFontExtension
      * @param maxWidth the maximum width of the text
      * @return the ellipsized text
      */
-    default FormattedText ellipsize(FormattedText text, int maxWidth)
-    {
+    default FormattedText ellipsize(FormattedText text, int maxWidth) {
         final Font self = self();
         final int strWidth = self.width(text);
         final int ellipsisWidth = self.width(ELLIPSIS);
-        if (strWidth > maxWidth)
-        {
+        if (strWidth > maxWidth) {
             if (ellipsisWidth >= maxWidth) return self.substrByWidth(text, maxWidth);
             return FormattedText.composite(
                     self.substrByWidth(text, maxWidth - ellipsisWidth),
-                    ELLIPSIS
-            );
+                    ELLIPSIS);
         }
         return text;
     }

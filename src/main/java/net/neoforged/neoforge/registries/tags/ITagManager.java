@@ -5,23 +5,21 @@
 
 package net.neoforged.neoforge.registries.tags;
 
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
 /**
  * A tag manager holds information about all tags currently bound to a forge registry.
  * This should be preferred to any {@link Holder}-related methods.
  */
-public interface ITagManager<V> extends Iterable<ITag<V>>
-{
+public interface ITagManager<V> extends Iterable<ITag<V>> {
     /**
      * Queries this tag manager for a tag with the given tag key.
      * If it does not exist, this will create an empty tag and return it.
@@ -29,7 +27,8 @@ public interface ITagManager<V> extends Iterable<ITag<V>>
      * @apiNote This method guarantees that all future calls to this method on the same tag manager instance with the same tag key will return the same tag.
      * @see #isKnownTagName(TagKey)
      */
-    @NotNull ITag<V> getTag(@NotNull TagKey<V> name);
+    @NotNull
+    ITag<V> getTag(@NotNull TagKey<V> name);
 
     /**
      * Queries a reverse tag for a given value from the forge registry linked to this tag manager.
@@ -38,7 +37,8 @@ public interface ITagManager<V> extends Iterable<ITag<V>>
      * @param value A value currently registered to the forge registry linked to this tag manager
      * @return A reverse tag for the given value, or an empty optional if the value is not registered
      */
-    @NotNull Optional<IReverseTag<V>> getReverseTag(@NotNull V value);
+    @NotNull
+    Optional<IReverseTag<V>> getReverseTag(@NotNull V value);
 
     /**
      * Checks whether the given tag key exists in this tag manager and is bound.
@@ -51,12 +51,14 @@ public interface ITagManager<V> extends Iterable<ITag<V>>
     /**
      * @return A stream of all tags stored in this tag manager, bound or unbound.
      */
-    @NotNull Stream<ITag<V>> stream();
+    @NotNull
+    Stream<ITag<V>> stream();
 
     /**
      * @return A stream of all tag keys stored in this tag manager, bound or unbound.
      */
-    @NotNull Stream<TagKey<V>> getTagNames();
+    @NotNull
+    Stream<TagKey<V>> getTagNames();
 
     /**
      * Creates a tag key based on the location and the forge registry linked to this tag manager.
@@ -65,7 +67,8 @@ public interface ITagManager<V> extends Iterable<ITag<V>>
      * @see #createOptionalTagKey(ResourceLocation, Set)
      * @see DeferredRegister#createTagKey(ResourceLocation)
      */
-    @NotNull TagKey<V> createTagKey(@NotNull ResourceLocation location);
+    @NotNull
+    TagKey<V> createTagKey(@NotNull ResourceLocation location);
 
     /**
      * Creates a tag key that will use the set of defaults if the tag is not loaded from any datapacks.
@@ -76,7 +79,8 @@ public interface ITagManager<V> extends Iterable<ITag<V>>
      * @see #addOptionalTagDefaults(TagKey, Set)
      * @see DeferredRegister#createOptionalTagKey(ResourceLocation, Set)
      */
-    @NotNull TagKey<V> createOptionalTagKey(@NotNull ResourceLocation location, @NotNull Set<? extends Supplier<V>> defaults);
+    @NotNull
+    TagKey<V> createOptionalTagKey(@NotNull ResourceLocation location, @NotNull Set<? extends Supplier<V>> defaults);
 
     /**
      * Adds defaults to an existing tag key.

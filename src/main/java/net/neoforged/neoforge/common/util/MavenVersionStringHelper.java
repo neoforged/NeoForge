@@ -5,14 +5,13 @@
 
 package net.neoforged.neoforge.common.util;
 
+import java.util.Objects;
+import java.util.stream.Collectors;
 import net.neoforged.neoforge.common.I18nExtension;
 import net.neoforged.neoforgespi.locating.ForgeFeature;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.Restriction;
 import org.apache.maven.artifact.versioning.VersionRange;
-
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class MavenVersionStringHelper {
     public static String artifactVersionToString(final ArtifactVersion artifactVersion) {
@@ -24,55 +23,32 @@ public class MavenVersionStringHelper {
     }
 
     public static String restrictionToString(final Restriction restriction) {
-        if ( restriction.getLowerBound() == null && restriction.getUpperBound() == null )
-        {
+        if (restriction.getLowerBound() == null && restriction.getUpperBound() == null) {
             return I18nExtension.parseMessage("fml.messages.version.restriction.any");
-        }
-        else if ( restriction.getLowerBound() != null && restriction.getUpperBound() != null )
-        {
-            if (Objects.equals(artifactVersionToString(restriction.getLowerBound()), artifactVersionToString(restriction.getUpperBound())))
-            {
+        } else if (restriction.getLowerBound() != null && restriction.getUpperBound() != null) {
+            if (Objects.equals(artifactVersionToString(restriction.getLowerBound()), artifactVersionToString(restriction.getUpperBound()))) {
                 return artifactVersionToString(restriction.getLowerBound());
-            }
-            else
-            {
-                if (restriction.isLowerBoundInclusive() && restriction.isUpperBoundInclusive())
-                {
+            } else {
+                if (restriction.isLowerBoundInclusive() && restriction.isUpperBoundInclusive()) {
                     return I18nExtension.parseMessage("fml.messages.version.restriction.bounded.inclusive", restriction.getLowerBound(), restriction.getUpperBound());
-                }
-                else if (restriction.isLowerBoundInclusive())
-                {
+                } else if (restriction.isLowerBoundInclusive()) {
                     return I18nExtension.parseMessage("fml.messages.version.restriction.bounded.upperexclusive", restriction.getLowerBound(), restriction.getUpperBound());
-                }
-                else if (restriction.isUpperBoundInclusive())
-                {
+                } else if (restriction.isUpperBoundInclusive()) {
                     return I18nExtension.parseMessage("fml.messages.version.restriction.bounded.lowerexclusive", restriction.getLowerBound(), restriction.getUpperBound());
-                }
-                else
-                {
+                } else {
                     return I18nExtension.parseMessage("fml.messages.version.restriction.bounded.exclusive", restriction.getLowerBound(), restriction.getUpperBound());
                 }
             }
-        }
-        else if ( restriction.getLowerBound() != null )
-        {
-            if ( restriction.isLowerBoundInclusive() )
-            {
+        } else if (restriction.getLowerBound() != null) {
+            if (restriction.isLowerBoundInclusive()) {
                 return I18nExtension.parseMessage("fml.messages.version.restriction.lower.inclusive", restriction.getLowerBound());
-            }
-            else
-            {
+            } else {
                 return I18nExtension.parseMessage("fml.messages.version.restriction.lower.exclusive", restriction.getLowerBound());
             }
-        }
-        else
-        {
-            if ( restriction.isUpperBoundInclusive() )
-            {
+        } else {
+            if (restriction.isUpperBoundInclusive()) {
                 return I18nExtension.parseMessage("fml.messages.version.restriction.upper.inclusive", restriction.getUpperBound());
-            }
-            else
-            {
+            } else {
                 return I18nExtension.parseMessage("fml.messages.version.restriction.upper.exclusive", restriction.getUpperBound());
             }
         }

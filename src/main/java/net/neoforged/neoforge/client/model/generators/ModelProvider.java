@@ -58,7 +58,7 @@ public abstract class ModelProvider<T extends ModelBuilder<T>> implements DataPr
     }
 
     public ModelProvider(PackOutput output, String modid, String folder, BiFunction<ResourceLocation, ExistingFileHelper, T> builderFromModId, ExistingFileHelper existingFileHelper) {
-        this(output, modid, folder, loc->builderFromModId.apply(loc, existingFileHelper), existingFileHelper);
+        this(output, modid, folder, loc -> builderFromModId.apply(loc, existingFileHelper), existingFileHelper);
     }
 
     public T getBuilder(String path) {
@@ -371,8 +371,7 @@ public abstract class ModelProvider<T extends ModelBuilder<T>> implements DataPr
     /**
      * {@return a model builder that's not directly saved to disk. Meant for use in custom model loaders.}
      */
-    public T nested()
-    {
+    public T nested() {
         return factory.apply(new ResourceLocation("dummy:dummy"));
     }
 

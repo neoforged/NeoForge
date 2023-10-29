@@ -5,19 +5,17 @@
 
 package net.neoforged.neoforge.common;
 
+import java.util.function.Supplier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Supplier;
-
 /**
  * Helper class to define a custom tier
  */
-public final class SimpleTier implements Tier
-{
+public final class SimpleTier implements Tier {
     private final int level;
     private final int uses;
     private final float speed;
@@ -29,8 +27,7 @@ public final class SimpleTier implements Tier
     private final Supplier<Ingredient> repairIngredient;
 
     public SimpleTier(int level, int uses, float speed, float attackDamageBonus, int enchantmentValue,
-                      @NotNull TagKey<Block> tag, @NotNull Supplier<Ingredient> repairIngredient)
-    {
+            @NotNull TagKey<Block> tag, @NotNull Supplier<Ingredient> repairIngredient) {
         this.level = level;
         this.uses = uses;
         this.speed = speed;
@@ -41,51 +38,43 @@ public final class SimpleTier implements Tier
     }
 
     @Override
-    public int getUses()
-    {
+    public int getUses() {
         return this.uses;
     }
 
     @Override
-    public float getSpeed()
-    {
+    public float getSpeed() {
         return this.speed;
     }
 
     @Override
-    public float getAttackDamageBonus()
-    {
+    public float getAttackDamageBonus() {
         return this.attackDamageBonus;
     }
 
     @Override
-    public int getLevel()
-    {
+    public int getLevel() {
         return this.level;
     }
 
     @Override
-    public int getEnchantmentValue()
-    {
+    public int getEnchantmentValue() {
         return this.enchantmentValue;
     }
 
     @NotNull
-    public TagKey<Block> getTag()
-    {
+    public TagKey<Block> getTag() {
         return this.tag;
     }
 
     @NotNull
     @Override
-    public Ingredient getRepairIngredient()
-    {
+    public Ingredient getRepairIngredient() {
         return this.repairIngredient.get();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "SimpleTier[" +
                 "level=" + level + ", " +
                 "uses=" + uses + ", " +

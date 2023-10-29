@@ -5,13 +5,13 @@
 
 package net.neoforged.neoforge.common.util;
 
+import java.util.function.Consumer;
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.StringBuilderFormattable;
 
-import java.util.function.Consumer;
-
 public record LogMessageAdapter(Consumer<StringBuilder> builder) implements Message, StringBuilderFormattable {
     private static final Object[] EMPTY = new Object[0];
+
     @Override
     public String getFormattedMessage() {
         return "";

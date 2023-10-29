@@ -7,8 +7,8 @@ package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.extensions.IItemExtension;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.extensions.IItemExtension;
 
 /**
  * This event is fired on the forge bus before an Enderman detects that a player is looking at them.
@@ -19,12 +19,10 @@ import net.neoforged.bus.api.ICancellableEvent;
  * <p>
  * This event does not have a {@link Result}.
  */
-public class EnderManAngerEvent extends LivingEvent implements ICancellableEvent
-{
+public class EnderManAngerEvent extends LivingEvent implements ICancellableEvent {
     private final Player player;
 
-    public EnderManAngerEvent(EnderMan enderman, Player player)
-    {
+    public EnderManAngerEvent(EnderMan enderman, Player player) {
         super(enderman);
         this.player = player;
     }
@@ -32,14 +30,12 @@ public class EnderManAngerEvent extends LivingEvent implements ICancellableEvent
     /**
      * The player that is being checked.
      */
-    public Player getPlayer()
-    {
+    public Player getPlayer() {
         return player;
     }
 
     @Override
-    public EnderMan getEntity()
-    {
+    public EnderMan getEntity() {
         return (EnderMan) super.getEntity();
     }
 }

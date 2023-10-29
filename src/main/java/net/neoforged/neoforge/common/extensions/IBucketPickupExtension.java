@@ -10,11 +10,9 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.state.BlockState;
 
-public interface IBucketPickupExtension
-{
+public interface IBucketPickupExtension {
 
-    private BucketPickup self()
-    {
+    private BucketPickup self() {
         return (BucketPickup) this;
     }
 
@@ -27,8 +25,7 @@ public interface IBucketPickupExtension
      *
      * @return Sound event for pickup sound or empty if there isn't a pickup sound.
      */
-    default Optional<SoundEvent> getPickupSound(BlockState state)
-    {
+    default Optional<SoundEvent> getPickupSound(BlockState state) {
         return self().getPickupSound();
     }
 }

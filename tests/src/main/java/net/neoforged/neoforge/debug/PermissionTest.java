@@ -9,10 +9,10 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.nodes.PermissionDynamicContext;
@@ -22,8 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod("permissiontest")
-public class PermissionTest
-{
+public class PermissionTest {
     private static final boolean ENABLED = true;
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -34,43 +33,38 @@ public class PermissionTest
 
     private static final PermissionNode<Boolean> unregisteredPerm = new PermissionNode<>("permissiontest", "test.unregistered", PermissionTypes.BOOLEAN, (player, playerUUID, context) -> false);
 
-
-    public PermissionTest()
-    {
-        if (ENABLED)
-        {
+    public PermissionTest() {
+        if (ENABLED) {
             NeoForge.EVENT_BUS.register(this);
         }
     }
 
     @SubscribeEvent
-    public void registerNodes(PermissionGatherEvent.Nodes event)
-    {
+    public void registerNodes(PermissionGatherEvent.Nodes event) {
         event.addNodes(boolPerm, stringPerm, intPerm, componentPerm);
     }
 
     @SubscribeEvent
-    public void registerCommands(RegisterCommandsEvent event)
-    {
+    public void registerCommands(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("permtest")
-            .requires(src -> canUseCommand(src, boolPerm))
-            .executes(context -> {
-                context.getSource().sendSuccess(() -> Component.literal("Blob"), false);
-                context.getSource().sendSuccess(() -> Component.literal("String:" + PermissionAPI.getPermission((ServerPlayer) context.getSource().getEntity(), stringPerm)), false);
-                context.getSource().sendSuccess(() -> Component.literal("Int: " + PermissionAPI.getPermission((ServerPlayer) context.getSource().getEntity(), intPerm)), false);
-                context.getSource().sendSuccess(() -> PermissionAPI.getPermission((ServerPlayer) context.getSource().getEntity(), componentPerm), false);
+                .requires(src -> canUseCommand(src, boolPerm))
+                .executes(context -> {
+                    context.getSource().sendSuccess(() -> Component.literal("Blob"), false);
+                    context.getSource().sendSuccess(() -> Component.literal("String:" + PermissionAPI.getPermission((ServerPlayer) context.getSource().getEntity(), stringPerm)), false);
+                    context.getSource().sendSuccess(() -> Component.literal("Int: " + PermissionAPI.getPermission((ServerPlayer) context.getSource().getEntity(), intPerm)), false);
+                    context.getSource().sendSuccess(() -> PermissionAPI.getPermission((ServerPlayer) context.getSource().getEntity(), componentPerm), false);
 
-                return 1;
-            }));
+                    return 1;
+                }));
 
         //This command should not be usable as the command isn't registered.
         //It should also print an error
         event.getDispatcher().register(Commands.literal("permtesterr")
-            .requires(src -> canUseCommand(src, unregisteredPerm))
-            .executes(context -> {
-                context.getSource().sendSuccess(() -> Component.literal("Blob"), false);
-                return 1;
-            }));
+                .requires(src -> canUseCommand(src, unregisteredPerm))
+                .executes(context -> {
+                    context.getSource().sendSuccess(() -> Component.literal("Blob"), false);
+                    return 1;
+                }));
     }
 
     /**
@@ -78,13 +72,10 @@ public class PermissionTest
      * Without that, the expected UnregisteredPermissionNode exception, triggers further exceptions and therefore isn't visible anymore.
      * This is only required to handle the intended error in the permission API, and should not be necessary with correct use.
      */
-    private static boolean canUseCommand(CommandSourceStack src, PermissionNode<Boolean> booleanPermission, PermissionDynamicContext<?>... context)
-    {
-        try
-        {
+    private static boolean canUseCommand(CommandSourceStack src, PermissionNode<Boolean> booleanPermission, PermissionDynamicContext<?>... context) {
+        try {
             return src.getEntity() != null && src.getEntity() instanceof ServerPlayer && PermissionAPI.getPermission((ServerPlayer) src.getEntity(), booleanPermission, context);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage());
             return false;
         }

@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.common.world;
 
 import java.util.Optional;
-
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.Music;
 import net.minecraft.sounds.SoundEvent;
@@ -19,10 +18,8 @@ import net.minecraft.world.level.biome.BiomeSpecialEffects;
  * Extension of the vanilla builder but also provides read access and a copy-from-existing-data helper.
  * Also, the base builder crashes if certain values aren't specified on build, so this enforces the setting of those.
  */
-public class BiomeSpecialEffectsBuilder extends BiomeSpecialEffects.Builder
-{
-    public static BiomeSpecialEffectsBuilder copyOf(BiomeSpecialEffects baseEffects)
-    {
+public class BiomeSpecialEffectsBuilder extends BiomeSpecialEffects.Builder {
+    public static BiomeSpecialEffectsBuilder copyOf(BiomeSpecialEffects baseEffects) {
         BiomeSpecialEffectsBuilder builder = BiomeSpecialEffectsBuilder.create(baseEffects.getFogColor(), baseEffects.getWaterColor(), baseEffects.getWaterFogColor(), baseEffects.getSkyColor());
         builder.grassColorModifier = baseEffects.getGrassColorModifier();
         baseEffects.getFoliageColorOverride().ifPresent(builder::foliageColorOverride);
@@ -35,13 +32,11 @@ public class BiomeSpecialEffectsBuilder extends BiomeSpecialEffects.Builder
         return builder;
     }
 
-    public static BiomeSpecialEffectsBuilder create(int fogColor, int waterColor, int waterFogColor, int skyColor)
-    {
+    public static BiomeSpecialEffectsBuilder create(int fogColor, int waterColor, int waterFogColor, int skyColor) {
         return new BiomeSpecialEffectsBuilder(fogColor, waterColor, waterFogColor, skyColor);
     }
 
-    protected BiomeSpecialEffectsBuilder(int fogColor, int waterColor, int waterFogColor, int skyColor)
-    {
+    protected BiomeSpecialEffectsBuilder(int fogColor, int waterColor, int waterFogColor, int skyColor) {
         super();
         this.fogColor(fogColor);
         this.waterColor(waterColor);
@@ -49,63 +44,51 @@ public class BiomeSpecialEffectsBuilder extends BiomeSpecialEffects.Builder
         this.skyColor(skyColor);
     }
 
-    public int getFogColor()
-    {
+    public int getFogColor() {
         return this.fogColor.getAsInt();
     }
 
-    public int waterColor()
-    {
+    public int waterColor() {
         return this.waterColor.getAsInt();
     }
 
-    public int getWaterFogColor()
-    {
+    public int getWaterFogColor() {
         return this.waterFogColor.getAsInt();
     }
 
-    public int getSkyColor()
-    {
+    public int getSkyColor() {
         return this.skyColor.getAsInt();
     }
 
-    public BiomeSpecialEffects.GrassColorModifier getGrassColorModifier()
-    {
+    public BiomeSpecialEffects.GrassColorModifier getGrassColorModifier() {
         return this.grassColorModifier;
     }
 
-    public Optional<Integer> getFoliageColorOverride()
-    {
+    public Optional<Integer> getFoliageColorOverride() {
         return this.foliageColorOverride;
     }
 
-    public Optional<Integer> getGrassColorOverride()
-    {
+    public Optional<Integer> getGrassColorOverride() {
         return this.grassColorOverride;
     }
 
-    public Optional<AmbientParticleSettings> getAmbientParticle()
-    {
+    public Optional<AmbientParticleSettings> getAmbientParticle() {
         return this.ambientParticle;
     }
 
-    public Optional<Holder<SoundEvent>> getAmbientLoopSound()
-    {
+    public Optional<Holder<SoundEvent>> getAmbientLoopSound() {
         return this.ambientLoopSoundEvent;
     }
 
-    public Optional<AmbientMoodSettings> getAmbientMoodSound()
-    {
+    public Optional<AmbientMoodSettings> getAmbientMoodSound() {
         return this.ambientMoodSettings;
     }
 
-    public Optional<AmbientAdditionsSettings> getAmbientAdditionsSound()
-    {
+    public Optional<AmbientAdditionsSettings> getAmbientAdditionsSound() {
         return this.ambientAdditionsSettings;
     }
 
-    public Optional<Music> getBackgroundMusic()
-    {
+    public Optional<Music> getBackgroundMusic() {
         return this.backgroundMusic;
     }
 }

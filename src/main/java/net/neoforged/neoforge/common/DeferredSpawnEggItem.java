@@ -5,6 +5,11 @@
 
 package net.neoforged.neoforge.common;
 
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.nbt.CompoundTag;
@@ -16,28 +21,20 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
-
-public class DeferredSpawnEggItem extends SpawnEggItem
-{
+public class DeferredSpawnEggItem extends SpawnEggItem {
     private static final List<DeferredSpawnEggItem> MOD_EGGS = new ArrayList<>();
     private static final Map<EntityType<? extends Mob>, DeferredSpawnEggItem> TYPE_MAP = new IdentityHashMap<>();
     private final Supplier<? extends EntityType<? extends Mob>> typeSupplier;
 
-    public DeferredSpawnEggItem(Supplier<? extends EntityType<? extends Mob>> type, int backgroundColor, int highlightColor, Properties props)
-    {
+    public DeferredSpawnEggItem(Supplier<? extends EntityType<? extends Mob>> type, int backgroundColor, int highlightColor, Properties props) {
         super((EntityType<? extends Mob>) null, backgroundColor, highlightColor, props);
         this.typeSupplier = type;
 
@@ -45,22 +42,19 @@ public class DeferredSpawnEggItem extends SpawnEggItem
     }
 
     @Override
-    public EntityType<?> getType(@Nullable CompoundTag tag)
-    {
+    public EntityType<?> getType(@Nullable CompoundTag tag) {
         EntityType<?> type = super.getType(tag);
         return type != null ? type : typeSupplier.get();
     }
 
     @Nullable
-    protected DispenseItemBehavior createDispenseBehavior()
-    {
+    protected DispenseItemBehavior createDispenseBehavior() {
         return DEFAULT_DISPENSE_BEHAVIOR;
     }
 
     @ApiStatus.Internal
     @Nullable
-    public static SpawnEggItem deferredOnlyById(@Nullable EntityType<?> type)
-    {
+    public static SpawnEggItem deferredOnlyById(@Nullable EntityType<?> type) {
         return TYPE_MAP.get(type);
     }
 
@@ -69,17 +63,13 @@ public class DeferredSpawnEggItem extends SpawnEggItem
         return this.typeSupplier.get();
     }
 
-    private static final DispenseItemBehavior DEFAULT_DISPENSE_BEHAVIOR = (source, stack) ->
-    {
+    private static final DispenseItemBehavior DEFAULT_DISPENSE_BEHAVIOR = (source, stack) -> {
         Direction face = source.state().getValue(DispenserBlock.FACING);
-        EntityType<?> type = ((SpawnEggItem)stack.getItem()).getType(stack.getTag());
+        EntityType<?> type = ((SpawnEggItem) stack.getItem()).getType(stack.getTag());
 
-        try
-        {
+        try {
             type.spawn(source.level(), stack, null, source.pos().relative(face), MobSpawnType.DISPENSER, face != Direction.UP, false);
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             DispenseItemBehavior.LOGGER.error("Error while dispensing spawn egg from dispenser at {}", source.pos(), exception);
             return ItemStack.EMPTY;
         }
@@ -90,16 +80,12 @@ public class DeferredSpawnEggItem extends SpawnEggItem
     };
 
     @Mod.EventBusSubscriber(modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
-    private static class CommonHandler
-    {
+    private static class CommonHandler {
         @SubscribeEvent
-        public static void onCommonSetup(FMLCommonSetupEvent event)
-        {
-            MOD_EGGS.forEach(egg ->
-            {
+        public static void onCommonSetup(FMLCommonSetupEvent event) {
+            MOD_EGGS.forEach(egg -> {
                 DispenseItemBehavior dispenseBehavior = egg.createDispenseBehavior();
-                if (dispenseBehavior != null)
-                {
+                if (dispenseBehavior != null) {
                     DispenserBlock.registerBehavior(egg, dispenseBehavior);
                 }
 
@@ -109,14 +95,10 @@ public class DeferredSpawnEggItem extends SpawnEggItem
     }
 
     @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
-    private static class ColorRegisterHandler
-    {
+    private static class ColorRegisterHandler {
         @SubscribeEvent(priority = EventPriority.HIGHEST)
-        public static void registerSpawnEggColors(RegisterColorHandlersEvent.Item event)
-        {
-            MOD_EGGS.forEach(egg ->
-                    event.getItemColors().register((stack, layer) -> egg.getColor(layer), egg)
-            );
+        public static void registerSpawnEggColors(RegisterColorHandlersEvent.Item event) {
+            MOD_EGGS.forEach(egg -> event.getItemColors().register((stack, layer) -> egg.getColor(layer), egg));
         }
     }
 }

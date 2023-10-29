@@ -9,18 +9,15 @@ import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Objects;
-
-import net.neoforged.neoforge.event.EventHooks;
-import org.jetbrains.annotations.ApiStatus;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.feature.treedecorators.AlterGroundDecorator;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecorator;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * This event is fired when {@link AlterGroundDecorator#placeBlockAt(TreeDecorator.Context, BlockPos)} attempts to alter a ground block when generating a feature.<br>
@@ -33,8 +30,7 @@ import net.neoforged.bus.api.Event;
  * This event is fired on worker threads, meaning it is unsafe to access external global state.<br>
  * Doing so may induce {@link ConcurrentModificationException} or deadlocks.
  */
-public class AlterGroundEvent extends Event
-{
+public class AlterGroundEvent extends Event {
     private final TreeDecorator.Context ctx;
     private final List<BlockPos> positions;
 
@@ -44,8 +40,7 @@ public class AlterGroundEvent extends Event
      * @see {@link EventHooks#alterGround} as the API endpoint for firing this event.
      */
     @ApiStatus.Internal
-    public AlterGroundEvent(TreeDecorator.Context ctx, List<BlockPos> positions, StateProvider provider)
-    {
+    public AlterGroundEvent(TreeDecorator.Context ctx, List<BlockPos> positions, StateProvider provider) {
         this.ctx = ctx;
         this.positions = Collections.unmodifiableList(positions);
         this.provider = provider;
@@ -54,8 +49,7 @@ public class AlterGroundEvent extends Event
     /**
      * Gets the tree decoration context for the current alteration.
      */
-    public TreeDecorator.Context getContext()
-    {
+    public TreeDecorator.Context getContext() {
         return this.ctx;
     }
 
@@ -72,8 +66,7 @@ public class AlterGroundEvent extends Event
      * 
      * @return The list of positions that will be used for alteration placement.
      */
-    public List<BlockPos> getPositions()
-    {
+    public List<BlockPos> getPositions() {
         return positions;
     }
 
@@ -82,8 +75,7 @@ public class AlterGroundEvent extends Event
      * 
      * @return The (possibly event-modified) state provider.
      */
-    public StateProvider getStateProvider()
-    {
+    public StateProvider getStateProvider() {
         return this.provider;
     }
 
@@ -91,24 +83,26 @@ public class AlterGroundEvent extends Event
      * Sets the {@link BlockStateProvider} that will be used by the {@link AlterGroundDecorator}.<br>
      * Because this may be modified by multiple mods, it is advisable to wrap {@linkplain #getStateProvider() the current provider}.
      * <p>
-     * An example of wrapping the current provider is shown below: <code><pre>
+     * An example of wrapping the current provider is shown below: <code>
+     * 
+     * <pre>
      * StateProvider old = event.getStateProvider();
      * event.setStateProvider((rand, pos) -> {
      *     BlockState state = old.getState(rand, pos);
      *     return state.is(Blocks.PODZOL) ? Blocks.REDSTONE_BLOCK.defaultBlockState() : state;
      * });
-     * </pre></code>
+     * </pre>
+     * 
+     * </code>
      * 
      * @param provider The new state provider.
      */
-    public void setStateProvider(StateProvider provider)
-    {
+    public void setStateProvider(StateProvider provider) {
         this.provider = Objects.requireNonNull(provider);
     }
 
     @FunctionalInterface
-    public interface StateProvider
-    {
+    public interface StateProvider {
         /**
          * Gets the BlockState that will be placed at the passed position.
          */

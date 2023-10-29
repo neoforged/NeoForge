@@ -7,16 +7,14 @@ package net.neoforged.neoforge.client.model.generators.loaders;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
-public class ObjModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T>
-{
-    public static <T extends ModelBuilder<T>> ObjModelBuilder<T> begin(T parent, ExistingFileHelper existingFileHelper)
-    {
+public class ObjModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
+    public static <T extends ModelBuilder<T>> ObjModelBuilder<T> begin(T parent, ExistingFileHelper existingFileHelper) {
         return new ObjModelBuilder<>(parent, existingFileHelper);
     }
 
@@ -27,13 +25,11 @@ public class ObjModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuil
     private Boolean emissiveAmbient;
     private ResourceLocation mtlOverride;
 
-    protected ObjModelBuilder(T parent, ExistingFileHelper existingFileHelper)
-    {
+    protected ObjModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
         super(new ResourceLocation("neoforge:obj"), parent, existingFileHelper);
     }
 
-    public ObjModelBuilder<T> modelLocation(ResourceLocation modelLocation)
-    {
+    public ObjModelBuilder<T> modelLocation(ResourceLocation modelLocation) {
         Preconditions.checkNotNull(modelLocation, "modelLocation must not be null");
         Preconditions.checkArgument(existingFileHelper.exists(modelLocation, PackType.CLIENT_RESOURCES),
                 "OBJ Model %s does not exist in any known resource pack", modelLocation);
@@ -41,32 +37,27 @@ public class ObjModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuil
         return this;
     }
 
-    public ObjModelBuilder<T> automaticCulling(boolean automaticCulling)
-    {
+    public ObjModelBuilder<T> automaticCulling(boolean automaticCulling) {
         this.automaticCulling = automaticCulling;
         return this;
     }
 
-    public ObjModelBuilder<T> shadeQuads(boolean shadeQuads)
-    {
+    public ObjModelBuilder<T> shadeQuads(boolean shadeQuads) {
         this.shadeQuads = shadeQuads;
         return this;
     }
 
-    public ObjModelBuilder<T> flipV(boolean flipV)
-    {
+    public ObjModelBuilder<T> flipV(boolean flipV) {
         this.flipV = flipV;
         return this;
     }
 
-    public ObjModelBuilder<T> emissiveAmbient(boolean ambientEmissive)
-    {
+    public ObjModelBuilder<T> emissiveAmbient(boolean ambientEmissive) {
         this.emissiveAmbient = ambientEmissive;
         return this;
     }
 
-    public ObjModelBuilder<T> overrideMaterialLibrary(ResourceLocation mtlOverride)
-    {
+    public ObjModelBuilder<T> overrideMaterialLibrary(ResourceLocation mtlOverride) {
         Preconditions.checkNotNull(mtlOverride, "mtlOverride must not be null");
         Preconditions.checkArgument(existingFileHelper.exists(mtlOverride, PackType.CLIENT_RESOURCES),
                 "OBJ Model %s does not exist in any known resource pack", mtlOverride);
@@ -75,8 +66,7 @@ public class ObjModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuil
     }
 
     @Override
-    public JsonObject toJson(JsonObject json)
-    {
+    public JsonObject toJson(JsonObject json) {
         json = super.toJson(json);
 
         Preconditions.checkNotNull(modelLocation, "modelLocation must not be null");

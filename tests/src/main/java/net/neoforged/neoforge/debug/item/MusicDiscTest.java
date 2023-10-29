@@ -5,21 +5,20 @@
 
 package net.neoforged.neoforge.debug.item;
 
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.RecordItem;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.RecordItem;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.RegistryObject;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(MusicDiscTest.MOD_ID)
-public class MusicDiscTest
-{
+public class MusicDiscTest {
     static final String MOD_ID = "music_disc_test";
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
@@ -31,8 +30,7 @@ public class MusicDiscTest
     private static final RegistryObject<Item> TEST_MUSIC_DISC = ITEMS.register("test_music_disc",
             () -> new RecordItem(1, TEST_SOUND_EVENT, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 20));
 
-    public MusicDiscTest()
-    {
+    public MusicDiscTest() {
         final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         ITEMS.register(modBus);
         SOUND_EVENTS.register(modBus);

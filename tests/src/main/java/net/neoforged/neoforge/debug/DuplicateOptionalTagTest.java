@@ -6,21 +6,20 @@
 package net.neoforged.neoforge.debug;
 
 import com.google.common.collect.Sets;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Tests that the values for defaulted optional tags defined in multiple places are combined.
@@ -31,8 +30,7 @@ import java.util.stream.Stream;
  * @see <a href="https://github.com/MinecraftForge/MinecraftForge/issues/7570">MinecraftForge/MinecraftForge#7570</>
  */
 @Mod(DuplicateOptionalTagTest.MODID)
-public class DuplicateOptionalTagTest
-{
+public class DuplicateOptionalTagTest {
     private static final Logger LOGGER = LogManager.getLogger();
 
     static final String MODID = "duplicate_optional_tag_test";
@@ -48,18 +46,15 @@ public class DuplicateOptionalTagTest
     private static final TagKey<Block> TAG_A = ForgeRegistries.BLOCKS.tags().createOptionalTagKey(TAG_NAME, TAG_A_DEFAULTS);
     private static final TagKey<Block> TAG_B = ForgeRegistries.BLOCKS.tags().createOptionalTagKey(TAG_NAME, TAG_B_DEFAULTS);
 
-    public DuplicateOptionalTagTest()
-    {
+    public DuplicateOptionalTagTest() {
         NeoForge.EVENT_BUS.addListener(this::onServerStarted);
     }
 
-    private void onServerStarted(ServerStartedEvent event)
-    {
+    private void onServerStarted(ServerStartedEvent event) {
         Set<Block> tagAValues = ForgeRegistries.BLOCKS.tags().getTag(TAG_A).stream().collect(Collectors.toUnmodifiableSet());
         Set<Block> tagBValues = ForgeRegistries.BLOCKS.tags().getTag(TAG_B).stream().collect(Collectors.toUnmodifiableSet());
 
-        if (!tagAValues.equals(tagBValues))
-        {
+        if (!tagAValues.equals(tagBValues)) {
             LOGGER.error("Values of both optional tag instances are not the same: first instance: {}, second instance: {}", tagAValues, tagBValues);
             return;
         }
@@ -67,8 +62,7 @@ public class DuplicateOptionalTagTest
         final Set<Block> expected = Sets.union(TAG_A_DEFAULTS, TAG_B_DEFAULTS).stream()
                 .map(Supplier::get)
                 .collect(Collectors.toUnmodifiableSet());
-        if (!tagAValues.equals(expected))
-        {
+        if (!tagAValues.equals(expected)) {
             IllegalStateException e = new IllegalStateException("Optional tag values do not match!");
             LOGGER.error("Values of the optional tag do not match the expected union of their defaults: expected {}, got {}", expected, tagAValues, e);
             return;

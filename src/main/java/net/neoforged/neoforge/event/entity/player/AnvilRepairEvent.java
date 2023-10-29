@@ -16,8 +16,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * ItemStacks are the inputs/output from the anvil. They cannot be edited.
  */
-public class AnvilRepairEvent extends PlayerEvent
-{
+public class AnvilRepairEvent extends PlayerEvent {
     @NotNull
     private final ItemStack left; // The left side of the input
     @NotNull
@@ -26,8 +25,7 @@ public class AnvilRepairEvent extends PlayerEvent
     private final ItemStack output; // Set this to set the output stack
     private float breakChance; // Anvil's chance to break (reduced by 1 durability) when this is complete. Default is 12% (0.12f)
 
-    public AnvilRepairEvent(Player player, @NotNull ItemStack left, @NotNull ItemStack right, @NotNull ItemStack output)
-    {
+    public AnvilRepairEvent(Player player, @NotNull ItemStack left, @NotNull ItemStack right, @NotNull ItemStack output) {
         super(player);
         this.output = output;
         this.left = left;
@@ -37,25 +35,39 @@ public class AnvilRepairEvent extends PlayerEvent
 
     /**
      * Get the output result from the anvil
+     * 
      * @return the output
      */
     @NotNull
-    public ItemStack getOutput() { return output; }
+    public ItemStack getOutput() {
+        return output;
+    }
 
     /**
      * Get the first item input into the anvil
+     * 
      * @return the first input slot
      */
     @NotNull
-    public ItemStack getLeft() { return left; }
+    public ItemStack getLeft() {
+        return left;
+    }
 
     /**
      * Get the second item input into the anvil
+     * 
      * @return the second input slot
      */
     @NotNull
-    public ItemStack getRight() { return right; }
+    public ItemStack getRight() {
+        return right;
+    }
 
-    public float getBreakChance() { return breakChance; }
-    public void setBreakChance(float breakChance) { this.breakChance = breakChance; }
+    public float getBreakChance() {
+        return breakChance;
+    }
+
+    public void setBreakChance(float breakChance) {
+        this.breakChance = breakChance;
+    }
 }

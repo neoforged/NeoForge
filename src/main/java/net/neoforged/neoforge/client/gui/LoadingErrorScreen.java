@@ -6,30 +6,29 @@
 package net.neoforged.neoforge.client.gui;
 
 import com.google.common.base.Strings;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.ErrorScreen;
-import net.minecraft.client.gui.components.ObjectSelectionList;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.Util;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
-import net.neoforged.neoforge.common.I18nExtension;
-import net.neoforged.fml.LoadingFailedException;
-import net.neoforged.fml.ModLoadingException;
-import net.neoforged.fml.ModLoadingWarning;
-import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
-import net.neoforged.fml.loading.FMLPaths;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.screens.ErrorScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
+import net.neoforged.fml.LoadingFailedException;
+import net.neoforged.fml.ModLoadingException;
+import net.neoforged.fml.ModLoadingWarning;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
+import net.neoforged.neoforge.common.I18nExtension;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LoadingErrorScreen extends ErrorScreen {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -42,19 +41,17 @@ public class LoadingErrorScreen extends ErrorScreen {
     private Component errorHeader;
     private Component warningHeader;
 
-    public LoadingErrorScreen(LoadingFailedException loadingException, List<ModLoadingWarning> warnings, final File dumpedLocation)
-    {
+    public LoadingErrorScreen(LoadingFailedException loadingException, List<ModLoadingWarning> warnings, final File dumpedLocation) {
         super(Component.literal("Loading Error"), null);
         this.modLoadWarnings = warnings;
         this.modLoadErrors = loadingException == null ? Collections.emptyList() : loadingException.getErrors();
         this.modsDir = FMLPaths.MODSDIR.get();
-        this.logFile = FMLPaths.GAMEDIR.get().resolve(Paths.get("logs","latest.log"));
+        this.logFile = FMLPaths.GAMEDIR.get().resolve(Paths.get("logs", "latest.log"));
         this.dumpedLocation = dumpedLocation != null ? dumpedLocation.toPath() : null;
     }
 
     @Override
-    public void init()
-    {
+    public void init() {
         super.init();
         this.clearWidgets();
 
@@ -78,8 +75,7 @@ public class LoadingErrorScreen extends ErrorScreen {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick)
-    {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         this.entryList.render(guiGraphics, mouseX, mouseY, partialTick);
         drawMultiLineCenteredString(guiGraphics, font, this.modLoadErrors.isEmpty() ? warningHeader : errorHeader, this.width / 2, 10);
@@ -89,37 +85,35 @@ public class LoadingErrorScreen extends ErrorScreen {
     private void drawMultiLineCenteredString(GuiGraphics guiGraphics, Font fr, Component str, int x, int y) {
         for (FormattedCharSequence s : fr.split(str, this.width)) {
             guiGraphics.drawString(fr, s, (float) (x - fr.width(s) / 2.0), (float) y, 0xFFFFFF, true);
-            y+=fr.lineHeight;
+            y += fr.lineHeight;
         }
     }
+
     public static class LoadingEntryList extends ObjectSelectionList<LoadingEntryList.LoadingMessageEntry> {
         LoadingEntryList(final LoadingErrorScreen parent, final List<ModLoadingException> errors, final List<ModLoadingWarning> warnings) {
             super(Objects.requireNonNull(parent.minecraft), parent.width, parent.height, 35, parent.height - 50,
-              Math.max(
-                errors.stream().mapToInt(error -> parent.font.split(Component.literal(error.getMessage() != null ? error.getMessage() : ""), parent.width - 20).size()).max().orElse(0),
-                warnings.stream().mapToInt(warning -> parent.font.split(Component.literal(warning.formatToString() != null ? warning.formatToString() : ""), parent.width - 20).size()).max().orElse(0)
-              ) * parent.minecraft.font.lineHeight + 8);
+                    Math.max(
+                            errors.stream().mapToInt(error -> parent.font.split(Component.literal(error.getMessage() != null ? error.getMessage() : ""), parent.width - 20).size()).max().orElse(0),
+                            warnings.stream().mapToInt(warning -> parent.font.split(Component.literal(warning.formatToString() != null ? warning.formatToString() : ""), parent.width - 20).size()).max().orElse(0)) * parent.minecraft.font.lineHeight + 8);
             boolean both = !errors.isEmpty() && !warnings.isEmpty();
             if (both)
                 addEntry(new LoadingMessageEntry(parent.errorHeader, true));
-            errors.forEach(e->addEntry(new LoadingMessageEntry(Component.literal(e.formatToString()))));
+            errors.forEach(e -> addEntry(new LoadingMessageEntry(Component.literal(e.formatToString()))));
             if (both) {
                 int maxChars = (this.width - 10) / parent.minecraft.font.width("-");
                 addEntry(new LoadingMessageEntry(Component.literal("\n" + Strings.repeat("-", maxChars) + "\n")));
                 addEntry(new LoadingMessageEntry(parent.warningHeader, true));
             }
-            warnings.forEach(w->addEntry(new LoadingMessageEntry(Component.literal(w.formatToString()))));
+            warnings.forEach(w -> addEntry(new LoadingMessageEntry(Component.literal(w.formatToString()))));
         }
 
         @Override
-        protected int getScrollbarPosition()
-        {
+        protected int getScrollbarPosition() {
             return this.getRight() - 6;
         }
 
         @Override
-        public int getRowWidth()
-        {
+        public int getRowWidth() {
             return this.width;
         }
 
@@ -146,8 +140,7 @@ public class LoadingErrorScreen extends ErrorScreen {
                 Font font = Minecraft.getInstance().font;
                 final List<FormattedCharSequence> strings = font.split(message, LoadingEntryList.this.width - 20);
                 int y = top + 2;
-                for (FormattedCharSequence string : strings)
-                {
+                for (FormattedCharSequence string : strings) {
                     if (center)
                         guiGraphics.drawString(font, string, left + (width) - font.width(string) / 2F, (float) y, 0xFFFFFF, false);
                     else

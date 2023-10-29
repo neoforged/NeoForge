@@ -8,10 +8,10 @@ package net.neoforged.neoforge.event;
 import com.mojang.brigadier.ParseResults;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -24,27 +24,23 @@ import org.jetbrains.annotations.Nullable;
  * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#SERVER logical server}.
  **/
-public class CommandEvent extends Event implements ICancellableEvent
-{
+public class CommandEvent extends Event implements ICancellableEvent {
     private ParseResults<CommandSourceStack> parse;
     @Nullable
     private Throwable exception;
 
-    public CommandEvent(ParseResults<CommandSourceStack> parse)
-    {
+    public CommandEvent(ParseResults<CommandSourceStack> parse) {
         this.parse = parse;
     }
 
     /**
      * {@return the parsed command results}
      */
-    public ParseResults<CommandSourceStack> getParseResults()
-    {
+    public ParseResults<CommandSourceStack> getParseResults() {
         return this.parse;
     }
 
-    public void setParseResults(ParseResults<CommandSourceStack> parse)
-    {
+    public void setParseResults(ParseResults<CommandSourceStack> parse) {
         this.parse = parse;
     }
 
@@ -52,13 +48,11 @@ public class CommandEvent extends Event implements ICancellableEvent
      * {@return an exception to be thrown when performing the command, starts null}
      */
     @Nullable
-    public Throwable getException()
-    {
+    public Throwable getException() {
         return this.exception;
     }
 
-    public void setException(@Nullable Throwable exception)
-    {
+    public void setException(@Nullable Throwable exception) {
         this.exception = exception;
     }
 }

@@ -12,14 +12,12 @@ import net.minecraft.world.entity.player.Player;
  * This is merely for purposes of listening for this to happen.<br/>
  * There is nothing that can be manipulated with this event.
  */
-public class PlayerWakeUpEvent extends PlayerEvent
-{
+public class PlayerWakeUpEvent extends PlayerEvent {
     private final boolean wakeImmediately;
 
     private final boolean updateLevel;
 
-    public PlayerWakeUpEvent(Player player, boolean wakeImmediately, boolean updateLevel)
-    {
+    public PlayerWakeUpEvent(Player player, boolean wakeImmediately, boolean updateLevel) {
         super(player);
         this.wakeImmediately = wakeImmediately;
         this.updateLevel = updateLevel;
@@ -29,11 +27,15 @@ public class PlayerWakeUpEvent extends PlayerEvent
      * Used for the 'wake up animation'.
      * This is false if the player is considered 'sleepy' and the overlay should slowly fade away.
      */
-    public boolean wakeImmediately() { return wakeImmediately; }
+    public boolean wakeImmediately() {
+        return wakeImmediately;
+    }
 
     /**
      * Indicates if the server should be notified of sleeping changes.
      * This will only be false if the server is considered 'up to date' already, because, for example, it initiated the call.
      */
-    public boolean updateLevel() { return updateLevel; }
+    public boolean updateLevel() {
+        return updateLevel;
+    }
 }

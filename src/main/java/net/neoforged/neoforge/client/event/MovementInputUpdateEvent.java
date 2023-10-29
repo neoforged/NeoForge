@@ -7,10 +7,10 @@ package net.neoforged.neoforge.client.event;
 
 import net.minecraft.client.player.Input;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -21,13 +21,11 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-public class MovementInputUpdateEvent extends PlayerEvent
-{
+public class MovementInputUpdateEvent extends PlayerEvent {
     private final Input input;
 
     @ApiStatus.Internal
-    public MovementInputUpdateEvent(Player player, Input input)
-    {
+    public MovementInputUpdateEvent(Player player, Input input) {
         super(player);
         this.input = input;
     }
@@ -35,8 +33,7 @@ public class MovementInputUpdateEvent extends PlayerEvent
     /**
      * {@return the player's movement inputs}
      */
-    public Input getInput()
-    {
+    public Input getInput() {
         return input;
     }
 }

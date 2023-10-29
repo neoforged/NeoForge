@@ -5,11 +5,11 @@
 
 package net.neoforged.neoforge.debug;
 
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,15 +17,12 @@ import org.apache.logging.log4j.Logger;
  * Created to host any custom codecs forge may be adding.
  */
 @Mod("forge_codecs_test")
-public class CodecsTest
-{
+public class CodecsTest {
     public static final boolean ENABLE = true;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public CodecsTest()
-    {
-        if (ENABLE)
-        {
+    public CodecsTest() {
+        if (ENABLE) {
             testFluidStackCodec();
         }
     }
@@ -33,8 +30,7 @@ public class CodecsTest
     /**
      * Makes sure FluidStack.CODEC produces the same data as FluidStack.write
      */
-    private void testFluidStackCodec()
-    {
+    private void testFluidStackCodec() {
         FluidStack noTag = new FluidStack(Fluids.WATER, 10);
         FluidStack withTag = new FluidStack(Fluids.LAVA, 10);
         withTag.getOrCreateChildTag("test").putString("value", "This is a test");
@@ -42,10 +38,10 @@ public class CodecsTest
         CompoundTag noTag_write = noTag.writeToNBT(new CompoundTag());
         CompoundTag withTag_write = withTag.writeToNBT(new CompoundTag());
 
-        CompoundTag noTag_encode = (CompoundTag)FluidStack.CODEC.encodeStart(NbtOps.INSTANCE, noTag).getOrThrow(false, error -> {
+        CompoundTag noTag_encode = (CompoundTag) FluidStack.CODEC.encodeStart(NbtOps.INSTANCE, noTag).getOrThrow(false, error -> {
             LOGGER.error("Error encoding noTag: {}", error);
         });
-        CompoundTag withTag_encode = (CompoundTag)FluidStack.CODEC.encodeStart(NbtOps.INSTANCE, withTag).getOrThrow(false, error -> {
+        CompoundTag withTag_encode = (CompoundTag) FluidStack.CODEC.encodeStart(NbtOps.INSTANCE, withTag).getOrThrow(false, error -> {
             LOGGER.error("Error encoding withTag: {}", error);
         });
 

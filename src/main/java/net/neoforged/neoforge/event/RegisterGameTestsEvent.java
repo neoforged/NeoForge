@@ -5,15 +5,14 @@
 
 package net.neoforged.neoforge.event;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Set;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.gametest.GameTestHooks;
-
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Set;
 
 /**
  * Game tests are registered on client or server startup.
@@ -22,12 +21,10 @@ import java.util.Set;
  * <p>
  * Fired on the Mod bus, see {@link IModBusEvent}.
  */
-public class RegisterGameTestsEvent extends Event implements IModBusEvent
-{
+public class RegisterGameTestsEvent extends Event implements IModBusEvent {
     private final Set<Method> gameTestMethods;
 
-    public RegisterGameTestsEvent(Set<Method> gameTestMethods)
-    {
+    public RegisterGameTestsEvent(Set<Method> gameTestMethods) {
         this.gameTestMethods = gameTestMethods;
     }
 
@@ -39,8 +36,7 @@ public class RegisterGameTestsEvent extends Event implements IModBusEvent
      *
      * @param testClass the test class to register to the game test registry
      */
-    public void register(Class<?> testClass)
-    {
+    public void register(Class<?> testClass) {
         Arrays.stream(testClass.getDeclaredMethods()).forEach(this::register);
     }
 
@@ -52,8 +48,7 @@ public class RegisterGameTestsEvent extends Event implements IModBusEvent
      *
      * @param testMethod the test method to register to the game test registry
      */
-    public void register(Method testMethod)
-    {
+    public void register(Method testMethod) {
         this.gameTestMethods.add(testMethod);
     }
 }

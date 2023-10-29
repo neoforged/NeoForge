@@ -6,10 +6,10 @@
 package net.neoforged.neoforge.client.event;
 
 import net.minecraft.client.gui.components.toasts.Toast;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * Fired when the client queues a {@link Toast} message to be shown onscreen.
@@ -21,17 +21,14 @@ import net.neoforged.fml.LogicalSide;
  * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-public class ToastAddEvent extends Event implements ICancellableEvent
-{
+public class ToastAddEvent extends Event implements ICancellableEvent {
     private final Toast toast;
 
-    public ToastAddEvent(Toast toast)
-    {
+    public ToastAddEvent(Toast toast) {
         this.toast = toast;
     }
 
-    public Toast getToast()
-    {
+    public Toast getToast() {
         return toast;
     }
 }

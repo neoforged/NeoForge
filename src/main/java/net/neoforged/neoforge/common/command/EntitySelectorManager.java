@@ -8,18 +8,16 @@ package net.neoforged.neoforge.common.command;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.commands.arguments.selector.EntitySelector;
-import net.minecraft.commands.arguments.selector.EntitySelectorParser;
-
 import java.util.Arrays;
 import java.util.HashMap;
+import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 
 /**
  * Allows modders to register custom entity selectors by assigning an {@link IEntitySelectorType} to a String token. <br>
  * The token "test", for example, corresponds to @test[...] in a command.
  */
-public class EntitySelectorManager
-{
+public class EntitySelectorManager {
     private static final HashMap<String, IEntitySelectorType> REGISTRY = new HashMap<>();
 
     /**
@@ -27,20 +25,16 @@ public class EntitySelectorManager
      *
      * @param token Defines the name of the selector
      */
-    public static void register(String token, IEntitySelectorType type)
-    {
-        if (token.isEmpty())
-        {
+    public static void register(String token, IEntitySelectorType type) {
+        if (token.isEmpty()) {
             throw new IllegalArgumentException("Token must not be empty");
         }
 
-        if (Arrays.asList("p", "a", "r", "s", "e").contains(token))
-        {
+        if (Arrays.asList("p", "a", "r", "s", "e").contains(token)) {
             throw new IllegalArgumentException("Token clashes with vanilla @" + token);
         }
 
-        for (char c : token.toCharArray())
-        {
+        for (char c : token.toCharArray()) {
             if (!StringReader.isAllowedInUnquotedString(c)) {
                 throw new IllegalArgumentException("Token must only contain allowed characters");
             }
@@ -55,15 +49,12 @@ public class EntitySelectorManager
      * If the REGISTRY does not contain a custom selector for the command being parsed,
      * this method returns {@code null} and the vanilla logic in {@code EntitySelectorParser#parseSelector()} is used.
      */
-    public static EntitySelector parseSelector(EntitySelectorParser parser) throws CommandSyntaxException
-    {
-        if (parser.getReader().canRead())
-        {
+    public static EntitySelector parseSelector(EntitySelectorParser parser) throws CommandSyntaxException {
+        if (parser.getReader().canRead()) {
             int i = parser.getReader().getCursor();
             String token = parser.getReader().readUnquotedString();
             IEntitySelectorType type = REGISTRY.get(token);
-            if (type != null)
-            {
+            if (type != null) {
                 return type.build(parser);
             }
 
@@ -76,8 +67,7 @@ public class EntitySelectorManager
     /**
      * This method is called in {@code EntitySelectorParser#fillSelectorSuggestions(SuggestionsBuilder)}
      */
-    public static void fillSelectorSuggestions(SuggestionsBuilder suggestionBuilder)
-    {
+    public static void fillSelectorSuggestions(SuggestionsBuilder suggestionBuilder) {
         REGISTRY.forEach((token, type) -> suggestionBuilder.suggest("@" + token, type.getSuggestionTooltip()));
     }
 }

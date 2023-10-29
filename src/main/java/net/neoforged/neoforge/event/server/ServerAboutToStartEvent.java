@@ -13,12 +13,12 @@ import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
  * server, and after the player has hit "Play Selected World" in the client. Called before {@link ServerStartingEvent}.
  *
  * You can obtain a reference to the server with this event.
+ * 
  * @author cpw
  */
 public class ServerAboutToStartEvent extends ServerLifecycleEvent {
 
-    public ServerAboutToStartEvent(MinecraftServer server)
-    {
+    public ServerAboutToStartEvent(MinecraftServer server) {
         super(server);
     }
 }

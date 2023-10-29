@@ -37,8 +37,7 @@ import net.neoforged.neoforge.registries.RegistryObject;
  * to test whether level/pos-sensitive light sources work correctly
  */
 @Mod(LevelSensitiveLightBlockTest.MOD_ID)
-public class LevelSensitiveLightBlockTest
-{
+public class LevelSensitiveLightBlockTest {
     static final String MOD_ID = "level_sensitive_light_block_test";
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
@@ -46,121 +45,99 @@ public class LevelSensitiveLightBlockTest
 
     private static final RegistryObject<Block> LIGHT_BLOCK = BLOCKS.register("light_block", LightBlock::new);
     private static final RegistryObject<Item> LIGHT_BLOCK_ITEM = ITEMS.register(
-            "light_block", () -> new BlockItem(LIGHT_BLOCK.get(), new Item.Properties())
-    );
+            "light_block", () -> new BlockItem(LIGHT_BLOCK.get(), new Item.Properties()));
     private static final RegistryObject<BlockEntityType<LightBlockEntity>> LIGHT_BLOCK_ENTITY = BLOCK_ENTITIES.register(
-            "light_block", () -> BlockEntityType.Builder.of(LightBlockEntity::new, LIGHT_BLOCK.get()).build(null)
-    );
+            "light_block", () -> BlockEntityType.Builder.of(LightBlockEntity::new, LIGHT_BLOCK.get()).build(null));
 
-    public LevelSensitiveLightBlockTest()
-    {
+    public LevelSensitiveLightBlockTest() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         BLOCKS.register(bus);
         ITEMS.register(bus);
         BLOCK_ENTITIES.register(bus);
     }
 
-    private static class LightBlock extends Block implements EntityBlock
-    {
-        public LightBlock()
-        {
+    private static class LightBlock extends Block implements EntityBlock {
+        public LightBlock() {
             super(BlockBehaviour.Properties.of());
         }
 
         @Override
         @SuppressWarnings("deprecation")
-        public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
-        {
-            if (!level.isClientSide() && level.getBlockEntity(pos) instanceof LightBlockEntity be)
-            {
+        public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+            if (!level.isClientSide() && level.getBlockEntity(pos) instanceof LightBlockEntity be) {
                 be.switchLight();
             }
             return InteractionResult.SUCCESS;
         }
 
         @Override
-        public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos)
-        {
-            if (pos == BlockPos.ZERO || (level.getExistingBlockEntity(pos) instanceof LightBlockEntity be && be.lit))
-            {
+        public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
+            if (pos == BlockPos.ZERO || (level.getExistingBlockEntity(pos) instanceof LightBlockEntity be && be.lit)) {
                 return 15;
             }
             return 0;
         }
 
         @Override
-        public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
-        {
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
             return new LightBlockEntity(pos, state);
         }
     }
 
-    private static class LightBlockEntity extends BlockEntity
-    {
+    private static class LightBlockEntity extends BlockEntity {
         private boolean lit = false;
 
-        public LightBlockEntity(BlockPos pos, BlockState state)
-        {
+        public LightBlockEntity(BlockPos pos, BlockState state) {
             super(LIGHT_BLOCK_ENTITY.get(), pos, state);
         }
 
-        public void switchLight()
-        {
+        public void switchLight() {
             setLit(!lit);
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
             setChanged();
         }
 
-        private void setLit(boolean lit)
-        {
-            if (lit != this.lit)
-            {
+        private void setLit(boolean lit) {
+            if (lit != this.lit) {
                 this.lit = lit;
                 level.getLightEngine().checkBlock(worldPosition);
             }
         }
 
         @Override
-        public Packet<ClientGamePacketListener> getUpdatePacket()
-        {
+        public Packet<ClientGamePacketListener> getUpdatePacket() {
             return ClientboundBlockEntityDataPacket.create(this);
         }
 
         @Override
-        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt)
-        {
+        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
             CompoundTag tag = pkt.getTag();
-            if (tag != null)
-            {
+            if (tag != null) {
                 setLit(tag.getBoolean("lit"));
             }
         }
 
         @Override
-        public CompoundTag getUpdateTag()
-        {
+        public CompoundTag getUpdateTag() {
             CompoundTag tag = super.getUpdateTag();
             tag.putBoolean("lit", lit);
             return tag;
         }
 
         @Override
-        public void handleUpdateTag(CompoundTag tag)
-        {
+        public void handleUpdateTag(CompoundTag tag) {
             super.handleUpdateTag(tag);
             lit = tag.getBoolean("lit");
         }
 
         @Override
-        public void load(CompoundTag tag)
-        {
+        public void load(CompoundTag tag) {
             super.load(tag);
             lit = tag.getBoolean("lit");
         }
 
         @Override
-        protected void saveAdditional(CompoundTag tag)
-        {
+        protected void saveAdditional(CompoundTag tag) {
             super.saveAdditional(tag);
             tag.putBoolean("lit", lit);
         }

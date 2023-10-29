@@ -7,10 +7,9 @@ package net.neoforged.neoforge.common;
 
 import java.util.Collections;
 import java.util.List;
-
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,19 +23,17 @@ import org.jetbrains.annotations.Nullable;
  *
  * TODO: reconsider this system, currently it is implemented but not checked for, for blocks.
  */
-public interface IShearable
-{
+public interface IShearable {
     /**
      * Checks if the object is currently shearable
      * Example: Sheep return false when they have no wool
      *
-     * @param item The ItemStack that is being used, may be empty.
+     * @param item  The ItemStack that is being used, may be empty.
      * @param level The current level.
-     * @param pos Block's position in level.
+     * @param pos   Block's position in level.
      * @return If this is shearable, and onSheared should be called.
      */
-    default boolean isShearable(@NotNull ItemStack item, Level level, BlockPos pos)
-    {
+    default boolean isShearable(@NotNull ItemStack item, Level level, BlockPos pos) {
         return true;
     }
 
@@ -52,15 +49,14 @@ public interface IShearable
      * For entities, they should trust there internal location information
      * over the values passed into this function.
      *
-     * @param item The ItemStack that is being used, may be empty.
-     * @param level The current level.
-     * @param pos If this is a block, the block's position in level.
+     * @param item    The ItemStack that is being used, may be empty.
+     * @param level   The current level.
+     * @param pos     If this is a block, the block's position in level.
      * @param fortune The fortune level of the shears being used.
      * @return A List containing all items from this shearing. May be empty.
      */
     @NotNull
-    default List<ItemStack> onSheared(@Nullable Player player, @NotNull ItemStack item, Level level, BlockPos pos, int fortune)
-    {
+    default List<ItemStack> onSheared(@Nullable Player player, @NotNull ItemStack item, Level level, BlockPos pos, int fortune) {
         return Collections.emptyList();
     }
 }

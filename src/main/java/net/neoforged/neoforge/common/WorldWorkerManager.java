@@ -8,16 +8,13 @@ package net.neoforged.neoforge.common;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorldWorkerManager
-{
+public class WorldWorkerManager {
     private static List<IWorker> workers = new ArrayList<IWorker>();
     private static long startTime = -1;
     private static int index = 0;
 
-    public static void tick(boolean start)
-    {
-        if (start)
-        {
+    public static void tick(boolean start) {
+        if (start) {
             startTime = System.currentTimeMillis();
             return;
         }
@@ -32,46 +29,37 @@ public class WorldWorkerManager
             time = 10; //If ticks are lagging, give us at least 10ms to do something.
         time += System.currentTimeMillis();
 
-        while (System.currentTimeMillis() < time && task != null)
-        {
+        while (System.currentTimeMillis() < time && task != null) {
             boolean again = task.doWork();
 
-            if (!task.hasWork())
-            {
+            if (!task.hasWork()) {
                 remove(task);
                 task = getNext();
-            }
-            else if (!again)
-            {
+            } else if (!again) {
                 task = getNext();
             }
         }
     }
 
-    public static synchronized void addWorker(IWorker worker)
-    {
+    public static synchronized void addWorker(IWorker worker) {
         workers.add(worker);
     }
 
-    private static synchronized IWorker getNext()
-    {
+    private static synchronized IWorker getNext() {
         return workers.size() > index ? workers.get(index++) : null;
     }
 
-    private static synchronized void remove(IWorker worker)
-    {
+    private static synchronized void remove(IWorker worker) {
         workers.remove(worker);
         index--;
     }
 
     //Internal only, used to clear everything when the server shuts down.
-    public static synchronized void clear()
-    {
+    public static synchronized void clear() {
         workers.clear();
     }
 
-    public static interface IWorker
-    {
+    public static interface IWorker {
         boolean hasWork();
 
         /**

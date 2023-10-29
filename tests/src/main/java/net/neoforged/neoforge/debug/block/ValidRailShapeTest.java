@@ -29,8 +29,7 @@ import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(ValidRailShapeTest.MOD_ID)
-public class ValidRailShapeTest
-{
+public class ValidRailShapeTest {
     public static final String MOD_ID = "valid_railshape_test";
     public static final boolean ENABLED = true;
 
@@ -40,36 +39,29 @@ public class ValidRailShapeTest
     private static final RegistryObject<Block> RAIL_SLOPE_BLOCK = BLOCKS.register("rail_slope", RailSlopeBlock::new);
     private static final RegistryObject<Item> RAIL_SLOPE_ITEM = ITEMS.register("rail_slope", () -> new BlockItem(RAIL_SLOPE_BLOCK.get(), new Item.Properties()));
 
-    public ValidRailShapeTest()
-    {
-        if (ENABLED)
-        {
+    public ValidRailShapeTest() {
+        if (ENABLED) {
             IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
             BLOCKS.register(bus);
             ITEMS.register(bus);
         }
     }
 
-    private static class RailSlopeBlock extends BaseRailBlock
-    {
+    private static class RailSlopeBlock extends BaseRailBlock {
         private static final EnumProperty<RailShape> ASCENDING_RAIL_SHAPE = EnumProperty.create("shape", RailShape.class, RailShape::isAscending);
 
-        protected RailSlopeBlock()
-        {
+        protected RailSlopeBlock() {
             super(true, Properties.of().noCollission().strength(0.7F).sound(SoundType.METAL));
         }
 
         @Override
-        protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
-        {
+        protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
             builder.add(ASCENDING_RAIL_SHAPE, BaseRailBlock.WATERLOGGED);
         }
 
         @Override
-        public BlockState getStateForPlacement(BlockPlaceContext context)
-        {
-            RailShape shape = switch (context.getHorizontalDirection())
-            {
+        public BlockState getStateForPlacement(BlockPlaceContext context) {
+            RailShape shape = switch (context.getHorizontalDirection()) {
                 case NORTH -> RailShape.ASCENDING_NORTH;
                 case EAST -> RailShape.ASCENDING_EAST;
                 case SOUTH -> RailShape.ASCENDING_SOUTH;
@@ -85,11 +77,9 @@ public class ValidRailShapeTest
         }
 
         @Override
-        public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos)
-        {
+        public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
             RailShape shape = state.getValue(ASCENDING_RAIL_SHAPE);
-            Direction dir = switch (shape)
-            {
+            Direction dir = switch (shape) {
                 case ASCENDING_NORTH -> Direction.NORTH;
                 case ASCENDING_EAST -> Direction.EAST;
                 case ASCENDING_SOUTH -> Direction.SOUTH;
@@ -97,8 +87,7 @@ public class ValidRailShapeTest
                 default -> throw new IllegalArgumentException("Invalid shape " + shape);
             };
 
-            if (!canSupportRigidBlock(level, pos.relative(dir)))
-            {
+            if (!canSupportRigidBlock(level, pos.relative(dir))) {
                 return false;
             }
 
@@ -106,14 +95,12 @@ public class ValidRailShapeTest
         }
 
         @Override
-        public boolean isValidRailShape(RailShape shape)
-        {
+        public boolean isValidRailShape(RailShape shape) {
             return shape.isAscending();
         }
 
         @Override
-        public Property<RailShape> getShapeProperty()
-        {
+        public Property<RailShape> getShapeProperty() {
             return ASCENDING_RAIL_SHAPE;
         }
     }

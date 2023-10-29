@@ -6,29 +6,28 @@
 package net.neoforged.neoforge.network.simple;
 
 import io.netty.buffer.Unpooled;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.function.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.neoforged.neoforge.network.INetworkDirection;
-import net.neoforged.neoforge.network.PlayNetworkDirection;
 import net.neoforged.neoforge.network.NetworkEvent;
 import net.neoforged.neoforge.network.NetworkInstance;
 import net.neoforged.neoforge.network.PacketDistributor;
-
+import net.neoforged.neoforge.network.PlayNetworkDirection;
 import net.neoforged.neoforge.network.simple.MessageFunctions.*;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.function.*;
-
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-public class SimpleChannel
-{
+public class SimpleChannel {
     private final NetworkInstance instance;
     private final IndexedMessageCodec indexedCodec;
     private final Optional<Consumer<NetworkEvent.ChannelRegistrationChangeEvent>> registryChangeConsumer;
+
     private record LoginPacketEntry(LoginPacketGenerator<?> generator, boolean needsResponse) {}
+
     private final List<LoginPacketEntry> loginPackets = new ArrayList<>();
 
     public SimpleChannel(NetworkInstance instance) {
@@ -48,16 +47,16 @@ public class SimpleChannel
     }
 
     private void networkLoginGather(final NetworkEvent.GatherLoginPayloadsEvent gatherEvent) {
-        loginPackets.forEach(packetGenerator-> packetGenerator.generator.generate(gatherEvent.isLocal()).forEach(p->{
+        loginPackets.forEach(packetGenerator -> packetGenerator.generator.generate(gatherEvent.isLocal()).forEach(p -> {
             FriendlyByteBuf pb = new FriendlyByteBuf(Unpooled.buffer());
             this.indexedCodec.build(p.msg(), pb);
             gatherEvent.add(pb, this.instance.getChannelName(), p.context(), packetGenerator.needsResponse);
         }));
     }
-    private void networkEventListener(final NetworkEvent networkEvent)
-    {
+
+    private void networkEventListener(final NetworkEvent networkEvent) {
         if (networkEvent instanceof NetworkEvent.ChannelRegistrationChangeEvent) {
-            this.registryChangeConsumer.ifPresent(l->l.accept(((NetworkEvent.ChannelRegistrationChangeEvent) networkEvent)));
+            this.registryChangeConsumer.ifPresent(l -> l.accept(((NetworkEvent.ChannelRegistrationChangeEvent) networkEvent)));
         } else {
             this.indexedCodec.consume(networkEvent.getPayload(), networkEvent.getLoginIndex(), networkEvent.getSource());
         }
@@ -81,13 +80,11 @@ public class SimpleChannel
         return new INetworkDirection.PacketData(bufIn, index);
     }
 
-    public <MSG> void sendToServer(MSG message)
-    {
+    public <MSG> void sendToServer(MSG message) {
         sendTo(message, Minecraft.getInstance().getConnection().getConnection(), PlayNetworkDirection.PLAY_TO_SERVER);
     }
 
-    public <MSG> void sendTo(MSG message, Connection manager, PlayNetworkDirection direction)
-    {
+    public <MSG> void sendTo(MSG message, Connection manager, PlayNetworkDirection direction) {
         manager.send(toVanillaPacket(message, direction));
     }
 
@@ -95,24 +92,22 @@ public class SimpleChannel
      * Send a message to the {@link PacketDistributor.PacketTarget} from a {@link PacketDistributor} instance.
      *
      * <pre>
-     *     channel.send(PacketDistributor.PLAYER.with(()->player), message)
+     * channel.send(PacketDistributor.PLAYER.with(() -> player), message)
      * </pre>
      *
-     * @param target The curried target from a PacketDistributor
+     * @param target  The curried target from a PacketDistributor
      * @param message The message to send
-     * @param <MSG> The type of the message
+     * @param <MSG>   The type of the message
      */
     public <MSG> void send(PacketDistributor.PacketTarget target, MSG message) {
         target.send(toVanillaPacket(message, target.getDirection()));
     }
 
-    public <MSG> Packet<?> toVanillaPacket(MSG message, PlayNetworkDirection direction)
-    {
+    public <MSG> Packet<?> toVanillaPacket(MSG message, PlayNetworkDirection direction) {
         return direction.buildPacket(toBuffer(message), instance.getChannelName());
     }
 
-    public <MSG> void reply(MSG msgToReply, NetworkEvent.Context context)
-    {
+    public <MSG> void reply(MSG msgToReply, NetworkEvent.Context context) {
         context.getPacketDispatcher().sendPacket(instance.getChannelName(), toBuffer(msgToReply).buffer());
     }
 
@@ -126,9 +121,10 @@ public class SimpleChannel
     /**
      * Build a new MessageBuilder. The type should implement {@link java.util.function.IntSupplier} if it is a login
      * packet.
+     * 
      * @param type Type of message
-     * @param id id in the indexed codec
-     * @param <M> Type of type
+     * @param id   id in the indexed codec
+     * @param <M>  Type of type
      * @return a MessageBuilder
      */
     public <M> MessageBuilder<M> messageBuilder(final Class<M> type, int id) {
@@ -138,11 +134,12 @@ public class SimpleChannel
     /**
      * Build a new MessageBuilder. The type should implement {@link java.util.function.IntSupplier} if it is a login
      * packet.
-     * @param type Type of message
-     * @param id id in the indexed codec
+     * 
+     * @param type      Type of message
+     * @param id        id in the indexed codec
      * @param direction a impl direction which will be asserted before any processing of this message occurs. Use to
      *                  enforce strict sided handling to prevent spoofing.
-     * @param <M> Type of type
+     * @param <M>       Type of type
      * @return a MessageBuilder
      */
     public <M> MessageBuilder<M> messageBuilder(final Class<M> type, int id, INetworkDirection<?> direction) {
@@ -152,9 +149,10 @@ public class SimpleChannel
     /**
      * Build a new MessageBuilder for a message that implements {@link SimpleMessage}. This will automatically set the
      * {@link MessageBuilder#encoder(MessageEncoder) encoder} and the handler.
+     * 
      * @param type the type of message
-     * @param id the id in the indexed codec
-     * @param <M> the type of the message
+     * @param id   the id in the indexed codec
+     * @param <M>  the type of the message
      * @return a MessageBuilder
      */
     public <M extends SimpleMessage> MessageBuilder<M> simpleMessageBuilder(final Class<M> type, int id) {
@@ -164,11 +162,12 @@ public class SimpleChannel
     /**
      * Build a new MessageBuilder for a message that implements {@link SimpleMessage}. This will automatically set the
      * {@link MessageBuilder#encoder(MessageEncoder) encoder} and the handler.
-     * @param type the type of message
-     * @param id the id in the indexed codec
+     * 
+     * @param type      the type of message
+     * @param id        the id in the indexed codec
      * @param direction a impl direction which will be asserted before any processing of this message occurs. Use to
      *                  enforce strict sided handling to prevent spoofing.
-     * @param <M> the type of the message
+     * @param <M>       the type of the message
      * @return a MessageBuilder
      */
     public <M extends SimpleMessage> MessageBuilder<M> simpleMessageBuilder(final Class<M> type, int id, INetworkDirection<?> direction) {
@@ -183,9 +182,10 @@ public class SimpleChannel
     /**
      * Build a new MessageBuilder for a login message that implements {@link SimpleLoginMessage}. This will automatically set the
      * {@link MessageBuilder#encoder(MessageEncoder) encoder}, the handler and the {@link MessageBuilder#loginIndex(LoginIndexGetter, LoginIndexSetter) login index setter and getter}.
+     * 
      * @param type the type of message
-     * @param id the id in the indexed codec
-     * @param <M> the type of the message
+     * @param id   the id in the indexed codec
+     * @param <M>  the type of the message
      * @return a MessageBuilder
      */
     public <M extends SimpleLoginMessage> MessageBuilder<M> simpleLoginMessageBuilder(final Class<M> type, int id) {
@@ -195,11 +195,12 @@ public class SimpleChannel
     /**
      * Build a new MessageBuilder for a login message that implements {@link SimpleLoginMessage}. This will automatically set the
      * {@link MessageBuilder#encoder(MessageEncoder) encoder}, the handler and the {@link MessageBuilder#loginIndex(LoginIndexGetter, LoginIndexSetter) login index setter and getter}.
-     * @param type the type of message
-     * @param id the id in the indexed codec
+     * 
+     * @param type      the type of message
+     * @param id        the id in the indexed codec
      * @param direction a impl direction which will be asserted before any processing of this message occurs. Use to
      *                  enforce strict sided handling to prevent spoofing.
-     * @param <M> the type of the message
+     * @param <M>       the type of the message
      * @return a MessageBuilder
      */
     public <M extends SimpleLoginMessage> MessageBuilder<M> simpleLoginMessageBuilder(final Class<M> type, int id, INetworkDirection<?> direction) {
@@ -207,7 +208,7 @@ public class SimpleChannel
                 .loginIndex(SimpleLoginMessage::getLoginIndex, SimpleLoginMessage::setLoginIndex);
     }
 
-    public static class MessageBuilder<MSG>  {
+    public static class MessageBuilder<MSG> {
         private SimpleChannel channel;
         private Class<MSG> type;
         private int id;
@@ -278,7 +279,7 @@ public class SimpleChannel
                 try {
                     return Collections.singletonList(new LoginPacket<>(type.getName(), type.getConstructor().newInstance()));
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    throw new RuntimeException("Inaccessible no-arg constructor for message "+type.getName(), e);
+                    throw new RuntimeException("Inaccessible no-arg constructor for message " + type.getName(), e);
                 }
             };
             return this;
@@ -306,7 +307,7 @@ public class SimpleChannel
          *
          * @param consumer The message consumer.
          * @return The message builder, for chaining.
-         * @see #consumerMainThread(MessageConsumer) 
+         * @see #consumerMainThread(MessageConsumer)
          */
         public MessageBuilder<MSG> consumerNetworkThread(MessageConsumer<MSG> consumer) {
             this.consumer = consumer;
@@ -325,7 +326,7 @@ public class SimpleChannel
          *
          * @param consumer The message consumer.
          * @return The message builder, for chaining.
-         * @see #consumerNetworkThread(MessageConsumer) 
+         * @see #consumerNetworkThread(MessageConsumer)
          */
         public MessageBuilder<MSG> consumerMainThread(MessageConsumer<MSG> consumer) {
             this.consumer = (msg, context) -> context.enqueueWork(() -> consumer.handle(msg, context));

@@ -8,8 +8,7 @@ package net.neoforged.neoforge.items;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public interface IItemHandlerModifiable extends IItemHandler
-{
+public interface IItemHandlerModifiable extends IItemHandler {
     /**
      * Overrides the stack in the given slot. This method is used by the
      * standard Forge helper methods and classes. It is not intended for
@@ -19,7 +18,7 @@ public interface IItemHandlerModifiable extends IItemHandler
      * @param slot  Slot to modify
      * @param stack ItemStack to set slot to (may be empty).
      * @throws RuntimeException if the handler is called in a way that the handler
-     * was not expecting.
+     *                          was not expecting.
      **/
     void setStackInSlot(int slot, @NotNull ItemStack stack);
 }

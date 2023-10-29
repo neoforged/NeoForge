@@ -5,14 +5,14 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.bus.api.Event.HasResult;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
 /**
  * This event is fired when game checks, if sleeping player should be still considered "in bed".<br>
@@ -24,19 +24,16 @@ import net.neoforged.bus.api.Event.HasResult;
  * setResult(DEFAULT) causes game to check {@link Block#isBed(BlockState, BlockGetter, BlockPos, Entity)} instead
  */
 @HasResult
-public class SleepingLocationCheckEvent extends LivingEvent
-{
+public class SleepingLocationCheckEvent extends LivingEvent {
 
     private final BlockPos sleepingLocation;
 
-    public SleepingLocationCheckEvent(LivingEntity player, BlockPos sleepingLocation)
-    {
+    public SleepingLocationCheckEvent(LivingEntity player, BlockPos sleepingLocation) {
         super(player);
         this.sleepingLocation = sleepingLocation;
     }
 
-    public BlockPos getSleepingLocation()
-    {
+    public BlockPos getSleepingLocation() {
         return sleepingLocation;
     }
 }

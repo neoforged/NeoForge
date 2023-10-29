@@ -6,17 +6,15 @@
 package net.neoforged.neoforge.common.command;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import java.util.function.Predicate;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.network.chat.Component;
 
-import java.util.function.Predicate;
-
 /**
  * Implementations of this interface can be registered using {@link EntitySelectorManager#register}
  */
-public interface IEntitySelectorType
-{
+public interface IEntitySelectorType {
     /**
      * Returns an {@link EntitySelector} based on the given {@link EntitySelectorParser}. <br>
      *

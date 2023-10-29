@@ -6,6 +6,9 @@
 package net.neoforged.neoforge.fluids;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -42,10 +45,6 @@ import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-
 /**
  * A definition of common attributes, properties, and methods that is applied
  * to a {@link Fluid}. This is used to link a flowing and source fluid together
@@ -57,8 +56,7 @@ import java.util.function.Consumer;
  * can be implemented by overriding methods further in the call chain (on fluids,
  * entities, etc.).
  */
-public class FluidType
-{
+public class FluidType {
     /**
      * The number of fluid units that a bucket represents.
      */
@@ -98,8 +96,7 @@ public class FluidType
      *
      * @param properties the general properties of the fluid type
      */
-    public FluidType(final Properties properties)
-    {
+    public FluidType(final Properties properties) {
         this.descriptionId = properties.descriptionId;
         this.motionScale = properties.motionScale;
         this.canPushEntity = properties.canPushEntity;
@@ -129,8 +126,7 @@ public class FluidType
      *
      * @return the component representing the name of the fluid type
      */
-    public Component getDescription()
-    {
+    public Component getDescription() {
         return Component.translatable(this.getDescriptionId());
     }
 
@@ -141,8 +137,7 @@ public class FluidType
      *
      * @return the identifier representing the name of the fluid type
      */
-    public String getDescriptionId()
-    {
+    public String getDescriptionId() {
         if (this.descriptionId == null)
             this.descriptionId = Util.makeDescriptionId("fluid_type", ForgeRegistries.FLUID_TYPES.get().getKey(this));
         return this.descriptionId;
@@ -159,8 +154,7 @@ public class FluidType
      *
      * @return the light level emitted by the fluid
      */
-    public int getLightLevel()
-    {
+    public int getLightLevel() {
         return this.lightLevel;
     }
 
@@ -173,8 +167,7 @@ public class FluidType
      *
      * @return the density of the fluid
      */
-    public int getDensity()
-    {
+    public int getDensity() {
         return this.density;
     }
 
@@ -187,8 +180,7 @@ public class FluidType
      *
      * @return the temperature of the fluid
      */
-    public int getTemperature()
-    {
+    public int getTemperature() {
         return this.temperature;
     }
 
@@ -202,8 +194,7 @@ public class FluidType
      *
      * @return the viscosity of the fluid
      */
-    public int getViscosity()
-    {
+    public int getViscosity() {
         return this.viscosity;
     }
 
@@ -214,8 +205,7 @@ public class FluidType
      *
      * @return the rarity of the fluid
      */
-    public Rarity getRarity()
-    {
+    public Rarity getRarity() {
         return this.rarity;
     }
 
@@ -227,8 +217,7 @@ public class FluidType
      * @return the sound to play when performing the action
      */
     @Nullable
-    public SoundEvent getSound(SoundAction action)
-    {
+    public SoundEvent getSound(SoundAction action) {
         return this.sounds.get(action);
     }
 
@@ -241,8 +230,7 @@ public class FluidType
      * @param entity the entity in the fluid
      * @return a scalar to multiply to the fluid velocity
      */
-    public double motionScale(Entity entity)
-    {
+    public double motionScale(Entity entity) {
         return this.motionScale;
     }
 
@@ -252,8 +240,7 @@ public class FluidType
      * @param entity the entity in the fluid
      * @return {@code true} if the entity can be pushed by the fluid, {@code false} otherwise
      */
-    public boolean canPushEntity(Entity entity)
-    {
+    public boolean canPushEntity(Entity entity) {
         return this.canPushEntity;
     }
 
@@ -263,8 +250,7 @@ public class FluidType
      * @param entity the entity in the fluid
      * @return {@code true} if the entity can swim in the fluid, {@code false} otherwise
      */
-    public boolean canSwim(Entity entity)
-    {
+    public boolean canSwim(Entity entity) {
         return this.canSwim;
     }
 
@@ -278,8 +264,7 @@ public class FluidType
      * @param entity the entity in the fluid
      * @return a scalar to multiply to the fall damage
      */
-    public float getFallDistanceModifier(Entity entity)
-    {
+    public float getFallDistanceModifier(Entity entity) {
         return this.fallDistanceModifier;
     }
 
@@ -289,8 +274,7 @@ public class FluidType
      * @param entity the entity in the fluid
      * @return {@code true} if the entity can be extinguished, {@code false} otherwise
      */
-    public boolean canExtinguish(Entity entity)
-    {
+    public boolean canExtinguish(Entity entity) {
         return this.canExtinguish;
     }
 
@@ -299,14 +283,13 @@ public class FluidType
      * movement logic, the method should return {@code true}. Otherwise, the
      * movement logic will default to water.
      *
-     * @param state the state of the fluid
-     * @param entity the entity moving within the fluid
+     * @param state          the state of the fluid
+     * @param entity         the entity moving within the fluid
      * @param movementVector the velocity of how the entity wants to move
-     * @param gravity the gravity to apply to the entity
+     * @param gravity        the gravity to apply to the entity
      * @return {@code true} if custom movement logic is performed, {@code false} otherwise
      */
-    public boolean move(FluidState state, LivingEntity entity, Vec3 movementVector, double gravity)
-    {
+    public boolean move(FluidState state, LivingEntity entity, Vec3 movementVector, double gravity) {
         return false;
     }
 
@@ -316,8 +299,7 @@ public class FluidType
      * @param entity the entity in the fluid
      * @return {@code true} if the entity can drown in the fluid, {@code false} otherwise
      */
-    public boolean canDrownIn(LivingEntity entity)
-    {
+    public boolean canDrownIn(LivingEntity entity) {
         return this.canDrown;
     }
 
@@ -326,10 +308,9 @@ public class FluidType
      *
      * @param entity the item in the fluid
      */
-    public void setItemMovement(ItemEntity entity)
-    {
+    public void setItemMovement(ItemEntity entity) {
         Vec3 vec3 = entity.getDeltaMovement();
-        entity.setDeltaMovement(vec3.x * (double)0.99F, vec3.y + (double)(vec3.y < (double)0.06F ? 5.0E-4F : 0.0F), vec3.z * (double)0.99F);
+        entity.setDeltaMovement(vec3.x * (double) 0.99F, vec3.y + (double) (vec3.y < (double) 0.06F ? 5.0E-4F : 0.0F), vec3.z * (double) 0.99F);
     }
 
     /**
@@ -338,8 +319,7 @@ public class FluidType
      * @param boat the boat trying to be used on the fluid
      * @return {@code true} if the boat can be used, {@code false} otherwise
      */
-    public boolean supportsBoating(Boat boat)
-    {
+    public boolean supportsBoating(Boat boat) {
         return this.supportsBoating;
     }
 
@@ -347,11 +327,10 @@ public class FluidType
      * Returns whether the boat can be used on the fluid.
      *
      * @param state the state of the fluid
-     * @param boat the boat trying to be used on the fluid
+     * @param boat  the boat trying to be used on the fluid
      * @return {@code true} if the boat can be used, {@code false} otherwise
      */
-    public boolean supportsBoating(FluidState state, Boat boat)
-    {
+    public boolean supportsBoating(FluidState state, Boat boat) {
         return this.supportsBoating(boat);
     }
 
@@ -359,12 +338,11 @@ public class FluidType
      * Returns whether the entity can ride in this vehicle under the fluid.
      *
      * @param vehicle the vehicle being ridden in
-     * @param rider the entity riding the vehicle
+     * @param rider   the entity riding the vehicle
      * @return {@code true} if the vehicle can be ridden in under this fluid,
      *         {@code false} otherwise
      */
-    public boolean canRideVehicleUnder(Entity vehicle, Entity rider)
-    {
+    public boolean canRideVehicleUnder(Entity vehicle, Entity rider) {
         if (this == NeoForgeMod.WATER_TYPE.get()) return !vehicle.dismountsUnderwater();
         return true;
     }
@@ -378,8 +356,7 @@ public class FluidType
      * @return {@code true} if the entity can be hydrated, {@code false}
      *         otherwise
      */
-    public boolean canHydrate(Entity entity)
-    {
+    public boolean canHydrate(Entity entity) {
         return this.canHydrate;
     }
 
@@ -393,8 +370,7 @@ public class FluidType
      * @return the sound to play when performing the action
      */
     @Nullable
-    public SoundEvent getSound(Entity entity, SoundAction action)
-    {
+    public SoundEvent getSound(Entity entity, SoundAction action) {
         return this.getSound(action);
     }
 
@@ -403,26 +379,24 @@ public class FluidType
     /**
      * Returns whether the block can be extinguished by this fluid.
      *
-     * @param state the state of the fluid
+     * @param state  the state of the fluid
      * @param getter the getter which can get the fluid
-     * @param pos the position of the fluid
+     * @param pos    the position of the fluid
      * @return {@code true} if the block can be extinguished, {@code false} otherwise
      */
-    public boolean canExtinguish(FluidState state, BlockGetter getter, BlockPos pos)
-    {
+    public boolean canExtinguish(FluidState state, BlockGetter getter, BlockPos pos) {
         return this.canExtinguish;
     }
 
     /**
      * Returns whether the fluid can create a source.
      *
-     * @param state the state of the fluid
+     * @param state  the state of the fluid
      * @param reader the reader that can get the fluid
-     * @param pos the location of the fluid
+     * @param pos    the location of the fluid
      * @return {@code true} if the fluid can create a source, {@code false} otherwise
      */
-    public boolean canConvertToSource(FluidState state, LevelReader reader, BlockPos pos)
-    {
+    public boolean canConvertToSource(FluidState state, LevelReader reader, BlockPos pos) {
         return this.canConvertToSource;
     }
 
@@ -430,17 +404,16 @@ public class FluidType
      * Gets the path type of this fluid when an entity is pathfinding. When
      * {@code null}, uses vanilla behavior.
      *
-     * @param state the state of the fluid
-     * @param level the level which contains this fluid
-     * @param pos the position of the fluid
-     * @param mob the mob currently pathfinding, may be {@code null}
+     * @param state       the state of the fluid
+     * @param level       the level which contains this fluid
+     * @param pos         the position of the fluid
+     * @param mob         the mob currently pathfinding, may be {@code null}
      * @param canFluidLog {@code true} if the path is being applied for fluids that can log blocks,
      *                    should be checked against if the fluid can log a block
      * @return the path type of this fluid
      */
     @Nullable
-    public BlockPathTypes getBlockPathType(FluidState state, BlockGetter level, BlockPos pos, @Nullable Mob mob, boolean canFluidLog)
-    {
+    public BlockPathTypes getBlockPathType(FluidState state, BlockGetter level, BlockPos pos, @Nullable Mob mob, boolean canFluidLog) {
         return this.pathType;
     }
 
@@ -450,16 +423,15 @@ public class FluidType
      * Pathfinding entities will favor paths consisting of a lower malus.
      * When {@code null}, uses vanilla behavior.
      *
-     * @param state the state of the fluid
-     * @param level the level which contains this fluid
-     * @param pos the position of the fluid
-     * @param mob the mob currently pathfinding, may be {@code null}
+     * @param state        the state of the fluid
+     * @param level        the level which contains this fluid
+     * @param pos          the position of the fluid
+     * @param mob          the mob currently pathfinding, may be {@code null}
      * @param originalType the path type of the source the entity is on
      * @return the path type of this fluid
      */
     @Nullable
-    public BlockPathTypes getAdjacentBlockPathType(FluidState state, BlockGetter level, BlockPos pos, @Nullable Mob mob, BlockPathTypes originalType)
-    {
+    public BlockPathTypes getAdjacentBlockPathType(FluidState state, BlockGetter level, BlockPos pos, @Nullable Mob mob, BlockPathTypes originalType) {
         return this.adjacentPathType;
     }
 
@@ -469,13 +441,12 @@ public class FluidType
      *
      * @param player the player listening to the sound
      * @param getter the getter which can get the fluid
-     * @param pos the position of the fluid
+     * @param pos    the position of the fluid
      * @param action the action being performed
      * @return the sound to play when performing the action
      */
     @Nullable
-    public SoundEvent getSound(@Nullable Player player, BlockGetter getter, BlockPos pos, SoundAction action)
-    {
+    public SoundEvent getSound(@Nullable Player player, BlockGetter getter, BlockPos pos, SoundAction action) {
         return this.getSound(action);
     }
 
@@ -484,20 +455,19 @@ public class FluidType
      *
      * <p>Hydration is an arbitrary word which depends on the block.
      * <ul>
-     *     <li>A farmland has moisture</li>
-     *     <li>A sponge can soak up the liquid</li>
-     *     <li>A coral can live</li>
+     * <li>A farmland has moisture</li>
+     * <li>A sponge can soak up the liquid</li>
+     * <li>A coral can live</li>
      * </ul>
      *
-     * @param state the state of the fluid
-     * @param getter the getter which can get the fluid
-     * @param pos the position of the fluid
-     * @param source the state of the block being hydrated
+     * @param state     the state of the fluid
+     * @param getter    the getter which can get the fluid
+     * @param pos       the position of the fluid
+     * @param source    the state of the block being hydrated
      * @param sourcePos the position of the block being hydrated
      * @return {@code true} if the block can be hydrated, {@code false} otherwise
      */
-    public boolean canHydrate(FluidState state, BlockGetter getter, BlockPos pos, BlockState source, BlockPos sourcePos)
-    {
+    public boolean canHydrate(FluidState state, BlockGetter getter, BlockPos pos, BlockState source, BlockPos sourcePos) {
         return this.canHydrate;
     }
 
@@ -507,13 +477,12 @@ public class FluidType
      * <p>Note: This should be a value between {@code [0,15]}. If not specified, the
      * light level is {@code 0} as most fluids do not emit light.
      *
-     * @param state the state of the fluid
+     * @param state  the state of the fluid
      * @param getter the getter which can get the fluid
-     * @param pos the position of the fluid
+     * @param pos    the position of the fluid
      * @return the light level emitted by the fluid
      */
-    public int getLightLevel(FluidState state, BlockAndTintGetter getter, BlockPos pos)
-    {
+    public int getLightLevel(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
         return this.getLightLevel();
     }
 
@@ -524,13 +493,12 @@ public class FluidType
      * that the fluid is lighter than air. If not specified, the density is
      * approximately equivalent to the real-life density of water in {@code kg/m^3}.
      *
-     * @param state the state of the fluid
+     * @param state  the state of the fluid
      * @param getter the getter which can get the fluid
-     * @param pos the position of the fluid
+     * @param pos    the position of the fluid
      * @return the density of the fluid
      */
-    public int getDensity(FluidState state, BlockAndTintGetter getter, BlockPos pos)
-    {
+    public int getDensity(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
         return this.getDensity();
     }
 
@@ -541,13 +509,12 @@ public class FluidType
      * that the fluid is hotter. If not specified, the temperature is approximately
      * equivalent to the real-life room temperature of water in {@code Kelvin}.
      *
-     * @param state the state of the fluid
+     * @param state  the state of the fluid
      * @param getter the getter which can get the fluid
-     * @param pos the position of the fluid
+     * @param pos    the position of the fluid
      * @return the temperature of the fluid
      */
-    public int getTemperature(FluidState state, BlockAndTintGetter getter, BlockPos pos)
-    {
+    public int getTemperature(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
         return this.getTemperature();
     }
 
@@ -559,13 +526,12 @@ public class FluidType
      * specified, the viscosity is approximately equivalent to the real-life
      * viscosity of water in {@code m/s^2}.
      *
-     * @param state the state of the fluid
+     * @param state  the state of the fluid
      * @param getter the getter which can get the fluid
-     * @param pos the position of the fluid
+     * @param pos    the position of the fluid
      * @return the viscosity of the fluid
      */
-    public int getViscosity(FluidState state, BlockAndTintGetter getter, BlockPos pos)
-    {
+    public int getViscosity(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
         return this.getViscosity();
     }
 
@@ -577,8 +543,7 @@ public class FluidType
      * @param stack the stack holding the fluid
      * @return {@code true} if the fluid can create a source, {@code false} otherwise
      */
-    public boolean canConvertToSource(FluidStack stack)
-    {
+    public boolean canConvertToSource(FluidStack stack) {
         return this.canConvertToSource;
     }
 
@@ -586,13 +551,12 @@ public class FluidType
      * Returns a sound to play when a certain action is performed. If no
      * sound is present, then the sound will be {@code null}.
      *
-     * @param stack the stack holding the fluid
+     * @param stack  the stack holding the fluid
      * @param action the action being performed
      * @return the sound to play when performing the action
      */
     @Nullable
-    public SoundEvent getSound(FluidStack stack, SoundAction action)
-    {
+    public SoundEvent getSound(FluidStack stack, SoundAction action) {
         return this.getSound(action);
     }
 
@@ -602,8 +566,7 @@ public class FluidType
      * @param stack the stack holding the fluid
      * @return the component representing the name of the fluid type
      */
-    public Component getDescription(FluidStack stack)
-    {
+    public Component getDescription(FluidStack stack) {
         return Component.translatable(this.getDescriptionId(stack));
     }
 
@@ -615,8 +578,7 @@ public class FluidType
      * @param stack the stack holding the fluid
      * @return the identifier representing the name of the fluid
      */
-    public String getDescriptionId(FluidStack stack)
-    {
+    public String getDescriptionId(FluidStack stack) {
         return this.getDescriptionId();
     }
 
@@ -628,8 +590,7 @@ public class FluidType
      * @param stack the stack holding the fluid
      * @return {@code true} if the fluid can hydrate, {@code false} otherwise
      */
-    public boolean canHydrate(FluidStack stack)
-    {
+    public boolean canHydrate(FluidStack stack) {
         return this.canHydrate;
     }
 
@@ -642,8 +603,7 @@ public class FluidType
      * @param stack the stack holding the fluid
      * @return the light level emitted by the fluid
      */
-    public int getLightLevel(FluidStack stack)
-    {
+    public int getLightLevel(FluidStack stack) {
         return this.getLightLevel();
     }
 
@@ -657,8 +617,7 @@ public class FluidType
      * @param stack the stack holding the fluid
      * @return the density of the fluid
      */
-    public int getDensity(FluidStack stack)
-    {
+    public int getDensity(FluidStack stack) {
         return this.getDensity();
     }
 
@@ -672,8 +631,7 @@ public class FluidType
      * @param stack the stack holding the fluid
      * @return the temperature of the fluid
      */
-    public int getTemperature(FluidStack stack)
-    {
+    public int getTemperature(FluidStack stack) {
         return this.getTemperature();
     }
 
@@ -688,8 +646,7 @@ public class FluidType
      * @param stack the stack holding the fluid
      * @return the viscosity of the fluid
      */
-    public int getViscosity(FluidStack stack)
-    {
+    public int getViscosity(FluidStack stack) {
         return this.getViscosity();
     }
 
@@ -701,8 +658,7 @@ public class FluidType
      * @param stack the stack holding the fluid
      * @return the rarity of the fluid
      */
-    public Rarity getRarity(FluidStack stack)
-    {
+    public Rarity getRarity(FluidStack stack) {
         return this.getRarity();
     }
 
@@ -713,8 +669,7 @@ public class FluidType
      *
      * @return {@code true} if the type represents air, {@code false} otherwise
      */
-    public final boolean isAir()
-    {
+    public final boolean isAir() {
         return this == NeoForgeMod.EMPTY_TYPE.get();
     }
 
@@ -723,8 +678,7 @@ public class FluidType
      *
      * @return {@code true} if the type is from vanilla, {@code false} otherwise
      */
-    public final boolean isVanilla()
-    {
+    public final boolean isVanilla() {
         return this == NeoForgeMod.LAVA_TYPE.get() || this == NeoForgeMod.WATER_TYPE.get();
     }
 
@@ -734,8 +688,7 @@ public class FluidType
      * @param stack the stack holding the fluid
      * @return the bucket containing the fluid
      */
-    public ItemStack getBucket(FluidStack stack)
-    {
+    public ItemStack getBucket(FluidStack stack) {
         return new ItemStack(stack.getFluid().getBucket());
     }
 
@@ -743,12 +696,11 @@ public class FluidType
      * Returns the associated {@link BlockState} for a {@link FluidState}.
      *
      * @param getter the getter which can get the level data
-     * @param pos the position of where the fluid would be
-     * @param state the state of the fluid
+     * @param pos    the position of where the fluid would be
+     * @param state  the state of the fluid
      * @return the {@link BlockState} of a fluid
      */
-    public BlockState getBlockForFluidState(BlockAndTintGetter getter, BlockPos pos, FluidState state)
-    {
+    public BlockState getBlockForFluidState(BlockAndTintGetter getter, BlockPos pos, FluidState state) {
         return state.createLegacyBlock();
     }
 
@@ -757,12 +709,11 @@ public class FluidType
      * place it.
      *
      * @param getter the getter which can get the level data
-     * @param pos the position of where the fluid is being placed
-     * @param stack the stack holding the fluid
+     * @param pos    the position of where the fluid is being placed
+     * @param stack  the stack holding the fluid
      * @return the {@link FluidState} being placed
      */
-    public FluidState getStateForPlacement(BlockAndTintGetter getter, BlockPos pos, FluidStack stack)
-    {
+    public FluidState getStateForPlacement(BlockAndTintGetter getter, BlockPos pos, FluidStack stack) {
         return stack.getFluid().defaultFluidState();
     }
 
@@ -770,12 +721,11 @@ public class FluidType
      * Returns whether the fluid can be placed in the level.
      *
      * @param getter the getter which can get the level data
-     * @param pos the position of where the fluid is being placed
-     * @param state the state of the fluid being placed
+     * @param pos    the position of where the fluid is being placed
+     * @param state  the state of the fluid being placed
      * @return {@code true} if the fluid can be placed, {@code false} otherwise
      */
-    public final boolean canBePlacedInLevel(BlockAndTintGetter getter, BlockPos pos, FluidState state)
-    {
+    public final boolean canBePlacedInLevel(BlockAndTintGetter getter, BlockPos pos, FluidState state) {
         return !this.getBlockForFluidState(getter, pos, state).isAir();
     }
 
@@ -783,12 +733,11 @@ public class FluidType
      * Returns whether the fluid can be placed in the level.
      *
      * @param getter the getter which can get the level data
-     * @param pos the position of where the fluid is being placed
-     * @param stack the stack holding the fluid
+     * @param pos    the position of where the fluid is being placed
+     * @param stack  the stack holding the fluid
      * @return {@code true} if the fluid can be placed, {@code false} otherwise
      */
-    public final boolean canBePlacedInLevel(BlockAndTintGetter getter, BlockPos pos, FluidStack stack)
-    {
+    public final boolean canBePlacedInLevel(BlockAndTintGetter getter, BlockPos pos, FluidStack stack) {
         return this.canBePlacedInLevel(getter, pos, this.getStateForPlacement(getter, pos, stack));
     }
 
@@ -803,8 +752,7 @@ public class FluidType
      *
      * @return {@code true} if the fluid is lighter than air, {@code false} otherwise
      */
-    public final boolean isLighterThanAir()
-    {
+    public final boolean isLighterThanAir() {
         return this.getDensity() <= 0;
     }
 
@@ -815,16 +763,14 @@ public class FluidType
      * the nether to preserve the intentions of vanilla.
      *
      * @param level the level the fluid is being placed in
-     * @param pos the position to place the fluid at
+     * @param pos   the position to place the fluid at
      * @param stack the stack holding the fluid being placed
      * @return {@code true} if this fluid should be vaporized on placement, {@code false} otherwise
      *
      * @see BucketItem#emptyContents(Player, Level, BlockPos, BlockHitResult)
      */
-    public boolean isVaporizedOnPlacement(Level level, BlockPos pos, FluidStack stack)
-    {
-        if (level.dimensionType().ultraWarm())
-        {
+    public boolean isVaporizedOnPlacement(Level level, BlockPos pos, FluidStack stack) {
+        if (level.dimensionType().ultraWarm()) {
             return this == NeoForgeMod.WATER_TYPE.get() || this.getStateForPlacement(level, pos, stack).is(FluidTags.WATER);
         }
         return false;
@@ -836,14 +782,13 @@ public class FluidType
      * <p>Note: The fluid will already have been drained from the stack.
      *
      * @param player the player placing the fluid, may be {@code null} for blocks like dispensers
-     * @param level the level the fluid is vaporized in
-     * @param pos the position the fluid is vaporized at
-     * @param stack the stack holding the fluid being vaporized
+     * @param level  the level the fluid is vaporized in
+     * @param pos    the position the fluid is vaporized at
+     * @param stack  the stack holding the fluid being vaporized
      *
      * @see BucketItem#emptyContents(Player, Level, BlockPos, BlockHitResult)
      */
-    public void onVaporize(@Nullable Player player, Level level, BlockPos pos, FluidStack stack)
-    {
+    public void onVaporize(@Nullable Player player, Level level, BlockPos pos, FluidStack stack) {
         SoundEvent sound = this.getSound(player, level, pos, SoundActions.FLUID_VAPORIZE);
         level.playSound(player, pos, sound != null ? sound : SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5F, 2.6F + (level.random.nextFloat() - level.random.nextFloat()) * 0.8F);
 
@@ -853,7 +798,8 @@ public class FluidType
 
     @Override
     public String toString() {
-        @Nullable ResourceLocation name = ForgeRegistries.FLUID_TYPES.get().getKey(this);
+        @Nullable
+        ResourceLocation name = ForgeRegistries.FLUID_TYPES.get().getKey(this);
         return name != null ? name.toString() : "Unregistered FluidType";
     }
 
@@ -863,18 +809,14 @@ public class FluidType
        DO NOT CALL, IT WILL DISAPPEAR IN THE FUTURE
        Call RenderProperties.get instead
      */
-    public Object getRenderPropertiesInternal()
-    {
+    public Object getRenderPropertiesInternal() {
         return renderProperties;
     }
 
-    private void initClient()
-    {
+    private void initClient() {
         // Minecraft instance isn't available in datagen, so don't call initializeClient if in datagen
-        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT && !net.neoforged.fml.loading.FMLLoader.getLaunchHandler().isData())
-        {
-            initializeClient(properties ->
-            {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT && !net.neoforged.fml.loading.FMLLoader.getLaunchHandler().isData()) {
+            initializeClient(properties -> {
                 if (properties == this)
                     throw new IllegalStateException("Don't extend IFluidTypeRenderProperties in your fluid type, use an anonymous class instead.");
                 this.renderProperties = properties;
@@ -882,16 +824,13 @@ public class FluidType
         }
     }
 
-    public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer)
-    {
-    }
+    public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {}
 
     /**
      * The properties of the fluid. The simple forms of each property can
      * be specified while more complex logic can be overridden in the {@link FluidType}.
      */
-    public static final class Properties
-    {
+    public static final class Properties {
         private String descriptionId;
         private double motionScale = 0.014D;
         private boolean canPushEntity = true;
@@ -919,19 +858,17 @@ public class FluidType
          *
          * @return the property holder instance
          */
-        public static Properties create()
-        {
+        public static Properties create() {
             return new Properties();
         }
 
         /**
          * Sets the identifier representing the name of the fluid type.
          *
-         * @param descriptionId  the identifier representing the name of the fluid type
+         * @param descriptionId the identifier representing the name of the fluid type
          * @return the property holder instance
          */
-        public Properties descriptionId(String descriptionId)
-        {
+        public Properties descriptionId(String descriptionId) {
             this.descriptionId = descriptionId;
             return this;
         }
@@ -942,8 +879,7 @@ public class FluidType
          * @param motionScale a scalar to multiply to the fluid velocity
          * @return the property holder instance
          */
-        public Properties motionScale(double motionScale)
-        {
+        public Properties motionScale(double motionScale) {
             this.motionScale = motionScale;
             return this;
         }
@@ -954,8 +890,7 @@ public class FluidType
          * @param canPushEntity if the fluid can push an entity
          * @return the property holder instance
          */
-        public Properties canPushEntity(boolean canPushEntity)
-        {
+        public Properties canPushEntity(boolean canPushEntity) {
             this.canPushEntity = canPushEntity;
             return this;
         }
@@ -966,8 +901,7 @@ public class FluidType
          * @param canSwim if the fluid can be swum in
          * @return the property holder instance
          */
-        public Properties canSwim(boolean canSwim)
-        {
+        public Properties canSwim(boolean canSwim) {
             this.canSwim = canSwim;
             return this;
         }
@@ -978,8 +912,7 @@ public class FluidType
          * @param canDrown if the fluid can drown something
          * @return the property holder instance
          */
-        public Properties canDrown(boolean canDrown)
-        {
+        public Properties canDrown(boolean canDrown) {
             this.canDrown = canDrown;
             return this;
         }
@@ -991,8 +924,7 @@ public class FluidType
          * @param fallDistanceModifier a scalar to multiply to the fall damage
          * @return the property holder instance
          */
-        public Properties fallDistanceModifier(float fallDistanceModifier)
-        {
+        public Properties fallDistanceModifier(float fallDistanceModifier) {
             this.fallDistanceModifier = fallDistanceModifier;
             return this;
         }
@@ -1003,8 +935,7 @@ public class FluidType
          * @param canExtinguish if the fluid can extinguish
          * @return the property holder instance
          */
-        public Properties canExtinguish(boolean canExtinguish)
-        {
+        public Properties canExtinguish(boolean canExtinguish) {
             this.canExtinguish = canExtinguish;
             return this;
         }
@@ -1015,8 +946,7 @@ public class FluidType
          * @param canConvertToSource if the fluid can create a source
          * @return the property holder instance
          */
-        public Properties canConvertToSource(boolean canConvertToSource)
-        {
+        public Properties canConvertToSource(boolean canConvertToSource) {
             this.canConvertToSource = canConvertToSource;
             return this;
         }
@@ -1027,8 +957,7 @@ public class FluidType
          * @param supportsBoating if the fluid supports boating
          * @return the property holder instance
          */
-        public Properties supportsBoating(boolean supportsBoating)
-        {
+        public Properties supportsBoating(boolean supportsBoating) {
             this.supportsBoating = supportsBoating;
             return this;
         }
@@ -1039,8 +968,7 @@ public class FluidType
          * @param pathType the path type of this fluid
          * @return the property holder instance
          */
-        public Properties pathType(@Nullable BlockPathTypes pathType)
-        {
+        public Properties pathType(@Nullable BlockPathTypes pathType) {
             this.pathType = pathType;
             return this;
         }
@@ -1053,8 +981,7 @@ public class FluidType
          * @param adjacentPathType the path type of this fluid
          * @return the property holder instance
          */
-        public Properties adjacentPathType(@Nullable BlockPathTypes adjacentPathType)
-        {
+        public Properties adjacentPathType(@Nullable BlockPathTypes adjacentPathType) {
             this.adjacentPathType = adjacentPathType;
             return this;
         }
@@ -1063,11 +990,10 @@ public class FluidType
          * Sets a sound to play when a certain action is performed.
          *
          * @param action the action being performed
-         * @param sound the sound to play when performing the action
+         * @param sound  the sound to play when performing the action
          * @return the property holder instance
          */
-        public Properties sound(SoundAction action, SoundEvent sound)
-        {
+        public Properties sound(SoundAction action, SoundEvent sound) {
             this.sounds.put(action, sound);
             return this;
         }
@@ -1080,8 +1006,7 @@ public class FluidType
          * @param canHydrate if the fluid can hydrate
          * @return the property holder instance
          */
-        public Properties canHydrate(boolean canHydrate)
-        {
+        public Properties canHydrate(boolean canHydrate) {
             this.canHydrate = canHydrate;
             return this;
         }
@@ -1093,8 +1018,7 @@ public class FluidType
          * @return the property holder instance
          * @throws IllegalArgumentException if light level is not between [0,15]
          */
-        public Properties lightLevel(int lightLevel)
-        {
+        public Properties lightLevel(int lightLevel) {
             if (lightLevel < 0 || lightLevel > 15)
                 throw new IllegalArgumentException("The light level should be between [0,15].");
             this.lightLevel = lightLevel;
@@ -1107,8 +1031,7 @@ public class FluidType
          * @param density the density of the fluid
          * @return the property holder instance
          */
-        public Properties density(int density)
-        {
+        public Properties density(int density) {
             this.density = density;
             return this;
         }
@@ -1119,8 +1042,7 @@ public class FluidType
          * @param temperature the temperature of the fluid
          * @return the property holder instance
          */
-        public Properties temperature(int temperature)
-        {
+        public Properties temperature(int temperature) {
             this.temperature = temperature;
             return this;
         }
@@ -1132,8 +1054,7 @@ public class FluidType
          * @return the property holder instance
          * @throws IllegalArgumentException if viscosity is negative
          */
-        public Properties viscosity(int viscosity)
-        {
+        public Properties viscosity(int viscosity) {
             if (viscosity < 0)
                 throw new IllegalArgumentException("The viscosity should never be negative.");
             this.viscosity = viscosity;
@@ -1146,8 +1067,7 @@ public class FluidType
          * @param rarity the rarity of the fluid
          * @return the property holder instance
          */
-        public Properties rarity(Rarity rarity)
-        {
+        public Properties rarity(Rarity rarity) {
             this.rarity = rarity;
             return this;
         }

@@ -6,23 +6,19 @@
 package net.neoforged.neoforge.server.console;
 
 import net.minecraft.server.dedicated.DedicatedServer;
-import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.minecrell.terminalconsole.TerminalConsoleAppender;
+import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 
-public final class TerminalHandler
-{
+public final class TerminalHandler {
 
-    private TerminalHandler()
-    {
-    }
+    private TerminalHandler() {}
 
-    public static boolean handleCommands(DedicatedServer server)
-    {
+    public static boolean handleCommands(DedicatedServer server) {
         final Terminal terminal = TerminalConsoleAppender.getTerminal();
         if (terminal == null)
             return false;
@@ -37,17 +33,12 @@ public final class TerminalHandler
 
         TerminalConsoleAppender.setReader(reader);
 
-        try
-        {
+        try {
             String line;
-            while (!server.isStopped() && server.isRunning())
-            {
-                try
-                {
+            while (!server.isStopped() && server.isRunning()) {
+                try {
                     line = reader.readLine("> ");
-                }
-                catch (EndOfFileException ignored)
-                {
+                } catch (EndOfFileException ignored) {
                     // Continue reading after EOT
                     continue;
                 }
@@ -56,18 +47,13 @@ public final class TerminalHandler
                     break;
 
                 line = line.trim();
-                if (!line.isEmpty())
-                {
+                if (!line.isEmpty()) {
                     server.handleConsoleInput(line, server.createCommandSourceStack());
                 }
             }
-        }
-        catch (UserInterruptException e)
-        {
+        } catch (UserInterruptException e) {
             server.halt(true);
-        }
-        finally
-        {
+        } finally {
             TerminalConsoleAppender.setReader(null);
         }
 

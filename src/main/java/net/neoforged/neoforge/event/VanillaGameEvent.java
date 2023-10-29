@@ -9,9 +9,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -23,15 +23,13 @@ import org.jetbrains.annotations.Nullable;
  * <br>
  * Cancel this event to prevent Vanilla from posting the {@link GameEvent} to all nearby {@link net.minecraft.world.level.gameevent.GameEventListener GameEventListeners}.
  **/
-public class VanillaGameEvent extends Event implements ICancellableEvent
-{
+public class VanillaGameEvent extends Event implements ICancellableEvent {
     private final Level level;
     private final GameEvent vanillaEvent;
     private final Vec3 position;
     private final GameEvent.Context context;
 
-    public VanillaGameEvent(Level level, GameEvent vanillaEvent, Vec3 position, GameEvent.Context context)
-    {
+    public VanillaGameEvent(Level level, GameEvent vanillaEvent, Vec3 position, GameEvent.Context context) {
         this.level = level;
         this.vanillaEvent = vanillaEvent;
         this.position = position;
@@ -41,8 +39,7 @@ public class VanillaGameEvent extends Event implements ICancellableEvent
     /**
      * @return The level the Vanilla {@link GameEvent} occurred.
      */
-    public Level getLevel()
-    {
+    public Level getLevel() {
         return level;
     }
 
@@ -50,32 +47,28 @@ public class VanillaGameEvent extends Event implements ICancellableEvent
      * @return The entity that was the source or "cause" of the {@link GameEvent}.
      */
     @Nullable
-    public Entity getCause()
-    {
+    public Entity getCause() {
         return context.sourceEntity();
     }
 
     /**
      * @return The Vanilla event.
      */
-    public GameEvent getVanillaEvent()
-    {
+    public GameEvent getVanillaEvent() {
         return vanillaEvent;
     }
 
     /**
      * @return The position the event took place at.
      */
-    public Vec3 getEventPosition()
-    {
+    public Vec3 getEventPosition() {
         return position;
     }
 
     /**
      * @return the context of the vanilla event
      */
-    public GameEvent.Context getContext()
-    {
+    public GameEvent.Context getContext() {
         return context;
     }
 }

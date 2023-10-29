@@ -17,16 +17,13 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
  * @see ModelProvider
  * @see ModelBuilder
  */
-public class BlockModelBuilder extends ModelBuilder<BlockModelBuilder>
-{
-    public BlockModelBuilder(ResourceLocation outputLocation, ExistingFileHelper existingFileHelper)
-    {
+public class BlockModelBuilder extends ModelBuilder<BlockModelBuilder> {
+    public BlockModelBuilder(ResourceLocation outputLocation, ExistingFileHelper existingFileHelper) {
         super(outputLocation, existingFileHelper);
     }
 
     @Override
-    public JsonObject toJson()
-    {
+    public JsonObject toJson() {
         return super.toJson();
     }
 }

@@ -14,60 +14,53 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.entity.PartEntity;
-import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.entity.PartEntity;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(value = PartEntityTest.MOD_ID)
-public class PartEntityTest
-{
+public class PartEntityTest {
     static final String MOD_ID = "part_entity_test";
     static final boolean ENABLED = true;
 
     private static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MOD_ID);
     private static final RegistryObject<EntityType<TestEntity>> TEST_ENTITY = ENTITIES.register("test_entity", () -> EntityType.Builder.of(TestEntity::new, MobCategory.CREATURE).sized(16.0F, 8.0F).clientTrackingRange(10).build("test_entity"));
 
-    public PartEntityTest()
-    {
-        if (ENABLED)
-        {
+    public PartEntityTest() {
+        if (ENABLED) {
             ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
             FMLJavaModLoadingContext.get().getModEventBus().register(this);
         }
     }
 
     @SubscribeEvent
-    public void onRegisterAttributes(final EntityAttributeCreationEvent event)
-    {
+    public void onRegisterAttributes(final EntityAttributeCreationEvent event) {
         event.put(TEST_ENTITY.get(), Pig.createAttributes().build());
     }
 
     @Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-    private static class ClientEvents
-    {
+    private static class ClientEvents {
         @SubscribeEvent
-        public static void onRegisterRenderers(final EntityRenderersEvent.RegisterRenderers event)
-        {
+        public static void onRegisterRenderers(final EntityRenderersEvent.RegisterRenderers event) {
             if (!ENABLED) return;
 
             event.registerEntityRenderer(TEST_ENTITY.get(), PigRenderer::new);
         }
     }
 
-    private static class TestEntity extends Pig
-    {
+    private static class TestEntity extends Pig {
         private final TestEntityPart[] subEntities;
         public final TestEntityPart head;
         private final TestEntityPart neck;
@@ -78,8 +71,7 @@ public class PartEntityTest
         private final TestEntityPart wing1;
         private final TestEntityPart wing2;
 
-        public TestEntity(EntityType<? extends Pig> entity, Level world)
-        {
+        public TestEntity(EntityType<? extends Pig> entity, Level world) {
             super(entity, world);
             this.head = new TestEntityPart(this, 1.0F, 1.0F);
             this.neck = new TestEntityPart(this, 3.0F, 3.0F);
@@ -89,27 +81,23 @@ public class PartEntityTest
             this.tail3 = new TestEntityPart(this, 2.0F, 2.0F);
             this.wing1 = new TestEntityPart(this, 4.0F, 2.0F);
             this.wing2 = new TestEntityPart(this, 4.0F, 2.0F);
-            this.subEntities = new TestEntityPart[]{this.head, this.neck, this.body, this.tail1, this.tail2, this.tail3, this.wing1, this.wing2};
+            this.subEntities = new TestEntityPart[] { this.head, this.neck, this.body, this.tail1, this.tail2, this.tail3, this.wing1, this.wing2 };
         }
 
         @Override
-        public void aiStep()
-        {
+        public void aiStep() {
             super.aiStep();
 
-            for (TestEntityPart part : this.subEntities)
-            {
+            for (TestEntityPart part : this.subEntities) {
                 part.setPos(this.getX(), this.getY(), this.getZ());
             }
 
             Vec3[] vec3 = new Vec3[this.subEntities.length];
-            for(int j = 0; j < this.subEntities.length; ++j)
-            {
+            for (int j = 0; j < this.subEntities.length; ++j) {
                 vec3[j] = new Vec3(this.subEntities[j].getX(), this.subEntities[j].getY(), this.subEntities[j].getZ());
             }
 
-            for(int l = 0; l < this.subEntities.length; ++l)
-            {
+            for (int l = 0; l < this.subEntities.length; ++l) {
                 this.subEntities[l].xo = vec3[l].x;
                 this.subEntities[l].yo = vec3[l].y;
                 this.subEntities[l].zo = vec3[l].z;
@@ -120,38 +108,32 @@ public class PartEntityTest
         }
 
         @Override
-        public boolean isMultipartEntity()
-        {
+        public boolean isMultipartEntity() {
             return true;
         }
 
         @Override
-        public PartEntity<?>[] getParts()
-        {
+        public PartEntity<?>[] getParts() {
             return this.subEntities;
         }
 
         @Override
-        public void recreateFromPacket(ClientboundAddEntityPacket packet)
-        {
+        public void recreateFromPacket(ClientboundAddEntityPacket packet) {
             super.recreateFromPacket(packet);
             PartEntity<?>[] parts = this.getParts();
 
-            for(int i = 0; i < parts.length; ++i)
-            {
+            for (int i = 0; i < parts.length; ++i) {
                 parts[i].setId(i + packet.getId());
             }
 
         }
     }
 
-    private static class TestEntityPart extends PartEntity<TestEntity>
-    {
+    private static class TestEntityPart extends PartEntity<TestEntity> {
         public final TestEntity parent;
         private final EntityDimensions size;
 
-        public TestEntityPart(TestEntity parent, float width, float height)
-        {
+        public TestEntityPart(TestEntity parent, float width, float height) {
             super(parent);
             this.size = EntityDimensions.scalable(width, height);
             this.refreshDimensions();
@@ -164,33 +146,27 @@ public class PartEntityTest
 
         protected void addAdditionalSaveData(CompoundTag nbt) {}
 
-        public boolean isPickable()
-        {
+        public boolean isPickable() {
             return true;
         }
 
-        public boolean hurt(DamageSource source, float amount)
-        {
+        public boolean hurt(DamageSource source, float amount) {
             return !this.isInvulnerableTo(source) && this.parent.hurt(source, amount);
         }
 
-        public boolean is(Entity entity)
-        {
+        public boolean is(Entity entity) {
             return this == entity || this.parent == entity;
         }
 
-        public Packet<ClientGamePacketListener> getAddEntityPacket()
-        {
+        public Packet<ClientGamePacketListener> getAddEntityPacket() {
             throw new UnsupportedOperationException();
         }
 
-        public EntityDimensions getDimensions(Pose matrix)
-        {
+        public EntityDimensions getDimensions(Pose matrix) {
             return this.size;
         }
 
-        public boolean shouldBeSaved()
-        {
+        public boolean shouldBeSaved() {
             return false;
         }
     }

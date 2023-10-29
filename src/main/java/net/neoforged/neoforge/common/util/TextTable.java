@@ -6,40 +6,34 @@
 package net.neoforged.neoforge.common.util;
 
 import com.google.common.collect.Streams;
-import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Utility to format data into a textual (markdown-compliant) table.
  */
-public class TextTable
-{
-    public static Column column(String header)
-    {
+public class TextTable {
+    public static Column column(String header) {
         return new Column(header);
     }
 
-    public static Column column(String header, Alignment alignment)
-    {
+    public static Column column(String header, Alignment alignment) {
         return new Column(header, alignment);
     }
 
     private final List<Column> columns;
     private final List<Row> rows = new ArrayList<>();
 
-    public TextTable(List<Column> columns)
-    {
+    public TextTable(List<Column> columns) {
         this.columns = columns;
     }
 
-    public String build(String lineEnding)
-    {
+    public String build(String lineEnding) {
         StringBuilder destination = new StringBuilder();
         append(destination, lineEnding);
         return destination.toString();
@@ -56,24 +50,20 @@ public class TextTable
      * @param destination a string builder to append the table to
      * @param lineEnding  the line ending to use for each row of the table
      */
-    public void append(StringBuilder destination, String lineEnding)
-    {
+    public void append(StringBuilder destination, String lineEnding) {
         List<String> headers = columns.stream().map(c -> c.formatHeader(" ")).collect(Collectors.toList());
         printRow(destination, headers);
         destination.append(lineEnding);
         printSeparators(destination);
-        for (Row row : rows)
-        {
+        for (Row row : rows) {
             destination.append(lineEnding);
             printRow(destination, row.format(columns, " "));
         }
     }
 
-    private void printSeparators(StringBuilder destination)
-    {
+    private void printSeparators(StringBuilder destination) {
         destination.append('|');
-        for (Column column : columns)
-        {
+        for (Column column : columns) {
             destination.append(column.alignment != Alignment.RIGHT ? ':' : ' ');
             destination.append(column.getSeparator('-'));
             destination.append(column.alignment != Alignment.LEFT ? ':' : ' ');
@@ -81,11 +71,9 @@ public class TextTable
         }
     }
 
-    private void printRow(StringBuilder destination, List<String> values)
-    {
+    private void printRow(StringBuilder destination, List<String> values) {
         destination.append('|');
-        for (String value : values)
-        {
+        for (String value : values) {
             destination.append(' ');
             destination.append(value);
             destination.append(' ');
@@ -93,15 +81,12 @@ public class TextTable
         }
     }
 
-    public void add(@NotNull Object... values)
-    {
-        if (values.length != columns.size())
-        {
+    public void add(@NotNull Object... values) {
+        if (values.length != columns.size()) {
             throw new IllegalArgumentException("Received wrong amount of values for table row, expected " + columns.size() + ", received " + columns.size() + ".");
         }
         Row row = new Row();
-        for (int i = 0; i < values.length; i++)
-        {
+        for (int i = 0; i < values.length; i++) {
             String value = Objects.toString(values[i]);
             row.values.add(value);
             columns.get(i).fit(value);
@@ -109,47 +94,38 @@ public class TextTable
         rows.add(row);
     }
 
-    public void clear()
-    {
-        for (Column column : columns)
-        {
+    public void clear() {
+        for (Column column : columns) {
             column.resetWidth();
         }
         rows.clear();
     }
 
-    public List<Column> getColumns()
-    {
+    public List<Column> getColumns() {
         return Collections.unmodifiableList(columns);
     }
 
-    public static class Column
-    {
+    public static class Column {
         private String header;
         private int width;
         private Alignment alignment;
 
-        public Column(String header)
-        {
+        public Column(String header) {
             this(header, Alignment.LEFT);
         }
 
-        public Column(String header, Alignment alignment)
-        {
+        public Column(String header, Alignment alignment) {
             this.header = header;
             this.width = header.length();
             this.alignment = alignment;
         }
 
-        public String formatHeader(String padding)
-        {
+        public String formatHeader(String padding) {
             return format(header, padding);
         }
 
-        public String format(String value, String padding)
-        {
-            switch (alignment)
-            {
+        public String format(String value, String padding) {
+            switch (alignment) {
                 case LEFT:
                     return StringUtils.rightPad(value, width, padding);
                 case RIGHT:
@@ -162,46 +138,37 @@ public class TextTable
             }
         }
 
-        public String getSeparator(char character)
-        {
+        public String getSeparator(char character) {
             return StringUtils.leftPad("", width, character);
         }
 
-        public void fit(String value)
-        {
-            if (value.length() > width)
-            {
+        public void fit(String value) {
+            if (value.length() > width) {
                 width = value.length();
             }
         }
 
-        public void resetWidth()
-        {
+        public void resetWidth() {
             this.width = header.length();
         }
 
-        public int getWidth()
-        {
+        public int getWidth() {
             return width;
         }
     }
 
-    public static class Row
-    {
+    public static class Row {
         private final ArrayList<String> values = new ArrayList<>();
 
-        public List<String> format(List<Column> columns, String padding)
-        {
-            if (columns.size() != values.size())
-            {
+        public List<String> format(List<Column> columns, String padding) {
+            if (columns.size() != values.size()) {
                 throw new IllegalArgumentException("Received wrong amount of columns for table row, expected " + columns.size() + ", received " + columns.size() + ".");
             }
             return Streams.zip(values.stream(), columns.stream(), (v, c) -> c.format(v, padding)).collect(Collectors.toList());
         }
     }
 
-    public enum Alignment
-    {
+    public enum Alignment {
         LEFT, CENTER, RIGHT
     }
 }

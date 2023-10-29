@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.block;
 
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -25,16 +26,13 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.registries.RegistryObject;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
 @Mod(CustomRespawnTest.MODID)
-public class CustomRespawnTest
-{
+public class CustomRespawnTest {
     public static final boolean ENABLE = true;
     public static final String MODID = "custom_respawn_test";
 
@@ -44,37 +42,30 @@ public class CustomRespawnTest
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     public static final RegistryObject<Item> TEST_RESPAWN_BLOCK_ITEM = ITEMS.register("test_respawn_block", () -> new BlockItem(TEST_RESPAWN_BLOCK.get(), (new Item.Properties())));
 
-    public CustomRespawnTest()
-    {
-        if (ENABLE)
-        {
+    public CustomRespawnTest() {
+        if (ENABLE) {
             final IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
             BLOCKS.register(eventBus);
             ITEMS.register(eventBus);
         }
     }
 
-    public static class CustomRespawnBlock extends Block
-    {
+    public static class CustomRespawnBlock extends Block {
 
-        public CustomRespawnBlock(Properties propertiesIn)
-        {
+        public CustomRespawnBlock(Properties propertiesIn) {
             super(propertiesIn);
         }
 
         @Override
-        public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult blockHitResult)
-        {
-            if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
-            {
+        public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult blockHitResult) {
+            if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) {
                 serverPlayer.setRespawnPosition(world.dimension(), pos, 0, false, true);
             }
             return InteractionResult.sidedSuccess(world.isClientSide);
         }
 
         @Override
-        public Optional<Vec3> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation, @Nullable LivingEntity entity)
-        {
+        public Optional<Vec3> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation, @Nullable LivingEntity entity) {
             return RespawnAnchorBlock.findStandUpPosition(type, levelReader, pos);
         }
     }

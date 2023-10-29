@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.common.data;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
@@ -12,28 +14,24 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
 import net.minecraft.client.resources.ClientPackSource;
 import net.minecraft.client.resources.IndexedAssetSource;
 import net.minecraft.data.DataProvider;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.FilePackResources;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.VanillaPackResources;
 import net.minecraft.server.packs.repository.ServerPacksSource;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.VanillaPackResources;
-import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.client.model.generators.ModelBuilder;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.fml.ModList;
-import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
+import net.neoforged.neoforgespi.language.IModFileInfo;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -59,6 +57,7 @@ public class ExistingFileHelper {
 
         final PackType packType;
         final String suffix, prefix;
+
         public ResourceType(PackType type, String suffix, String prefix) {
             this.packType = type;
             this.suffix = suffix;
@@ -66,13 +65,19 @@ public class ExistingFileHelper {
         }
 
         @Override
-        public PackType getPackType() { return packType; }
+        public PackType getPackType() {
+            return packType;
+        }
 
         @Override
-        public String getSuffix() { return suffix; }
+        public String getSuffix() {
+            return suffix;
+        }
 
         @Override
-        public String getPrefix() { return prefix; }
+        public String getPrefix() {
+            return prefix;
+        }
     }
 
     private final MultiPackResourceManager clientResources, serverData;
@@ -86,18 +91,18 @@ public class ExistingFileHelper {
      * <p>
      * Only create a new helper if you intentionally want to ignore the existence of
      * other generated files.
+     * 
      * @param existingPacks a collection of paths to existing packs
-     * @param existingMods a set of mod IDs for existing mods
-     * @param enable {@code true} if validation is enabled
-     * @param assetIndex the identifier for the asset index, generally Minecraft's current major version
-     * @param assetsDir the directory in which to find vanilla assets and indexes
+     * @param existingMods  a set of mod IDs for existing mods
+     * @param enable        {@code true} if validation is enabled
+     * @param assetIndex    the identifier for the asset index, generally Minecraft's current major version
+     * @param assetsDir     the directory in which to find vanilla assets and indexes
      */
     public ExistingFileHelper(Collection<Path> existingPacks, final Set<String> existingMods, boolean enable, @Nullable final String assetIndex, @Nullable final File assetsDir) {
         List<PackResources> candidateClientResources = new ArrayList<>();
         List<PackResources> candidateServerResources = new ArrayList<>();
 
-        if (assetIndex != null && assetsDir != null && assetsDir.exists())
-        {
+        if (assetIndex != null && assetsDir != null && assetsDir.exists()) {
             candidateClientResources.add(ClientPackSource.createVanillaPackSource(IndexedAssetSource.createIndexFs(assetsDir.toPath(), assetIndex)));
         }
         candidateServerResources.add(ServerPacksSource.createVanillaPackSource());

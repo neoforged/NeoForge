@@ -5,13 +5,11 @@
 
 package net.neoforged.neoforge.debug.misc;
 
-import net.neoforged.neoforge.common.NeoForge;
-import org.slf4j.Logger;
-
 import com.mojang.logging.LogUtils;
-
-import net.neoforged.neoforge.event.AnvilUpdateEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AnvilUpdateEvent;
+import org.slf4j.Logger;
 
 /**
  * This class provides a way to test the AnvilUpdateEvent. <br>
@@ -19,22 +17,18 @@ import net.neoforged.fml.common.Mod;
  * "AnvilUpdateEvent is fired whenever the input stacks (left or right) or the name in an anvil changed."
  */
 @Mod(AnvilUpdateEventTest.MOD_ID)
-public class AnvilUpdateEventTest
-{
+public class AnvilUpdateEventTest {
     private static final boolean ENABLED = false;
     private static final Logger LOGGER = LogUtils.getLogger();
     static final String MOD_ID = "anvil_update_event_fix";
 
-    public AnvilUpdateEventTest()
-    {
-        if (ENABLED)
-        {
+    public AnvilUpdateEventTest() {
+        if (ENABLED) {
             NeoForge.EVENT_BUS.addListener(this::anvilUpdate);
         }
     }
 
-    private void anvilUpdate(AnvilUpdateEvent event)
-    {
+    private void anvilUpdate(AnvilUpdateEvent event) {
         LOGGER.info("Anvil input or name changed!");
     }
 }

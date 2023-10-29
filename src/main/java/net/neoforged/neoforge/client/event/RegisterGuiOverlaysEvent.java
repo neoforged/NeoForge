@@ -6,20 +6,19 @@
 package net.neoforged.neoforge.client.event;
 
 import com.google.common.base.Preconditions;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
-import net.neoforged.neoforge.client.gui.overlay.VanillaGuiOverlay;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
+import net.neoforged.neoforge.client.gui.overlay.VanillaGuiOverlay;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Allows users to register custom {@link IGuiOverlay GUI overlays}.
@@ -29,14 +28,12 @@ import java.util.Map;
  * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent
-{
+public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent {
     private final Map<ResourceLocation, IGuiOverlay> overlays;
     private final List<ResourceLocation> orderedOverlays;
 
     @ApiStatus.Internal
-    public RegisterGuiOverlaysEvent(Map<ResourceLocation, IGuiOverlay> overlays, List<ResourceLocation> orderedOverlays)
-    {
+    public RegisterGuiOverlaysEvent(Map<ResourceLocation, IGuiOverlay> overlays, List<ResourceLocation> orderedOverlays) {
         this.overlays = overlays;
         this.orderedOverlays = orderedOverlays;
     }
@@ -47,8 +44,7 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
      */
-    public void registerBelowAll(@NotNull String id, @NotNull IGuiOverlay overlay)
-    {
+    public void registerBelowAll(@NotNull String id, @NotNull IGuiOverlay overlay) {
         register(Ordering.BEFORE, null, id, overlay);
     }
 
@@ -60,8 +56,7 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
      */
-    public void registerBelow(@NotNull ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay)
-    {
+    public void registerBelow(@NotNull ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay) {
         register(Ordering.BEFORE, other, id, overlay);
     }
 
@@ -73,8 +68,7 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
      */
-    public void registerAbove(@NotNull ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay)
-    {
+    public void registerAbove(@NotNull ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay) {
         register(Ordering.AFTER, other, id, overlay);
     }
 
@@ -84,23 +78,18 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
      */
-    public void registerAboveAll(@NotNull String id, @NotNull IGuiOverlay overlay)
-    {
+    public void registerAboveAll(@NotNull String id, @NotNull IGuiOverlay overlay) {
         register(Ordering.AFTER, null, id, overlay);
     }
 
-    private void register(@NotNull Ordering ordering, @Nullable ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay)
-    {
+    private void register(@NotNull Ordering ordering, @Nullable ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay) {
         var key = new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), id);
         Preconditions.checkArgument(!overlays.containsKey(key), "Overlay already registered: " + key);
 
         int insertPosition;
-        if (other == null)
-        {
+        if (other == null) {
             insertPosition = ordering == Ordering.BEFORE ? 0 : overlays.size();
-        }
-        else
-        {
+        } else {
             int otherIndex = orderedOverlays.indexOf(other);
             Preconditions.checkState(otherIndex >= 0, "Attempted to order against an unregistered overlay. Only order against vanilla's and your own.");
             insertPosition = otherIndex + (ordering == Ordering.BEFORE ? 0 : 1);
@@ -110,8 +99,7 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent
         orderedOverlays.add(insertPosition, key);
     }
 
-    private enum Ordering
-    {
+    private enum Ordering {
         BEFORE, AFTER
     }
 }

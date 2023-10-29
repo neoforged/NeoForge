@@ -5,6 +5,9 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
+import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -19,24 +22,16 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-
 // We typically don't do static imports as S2S can't remap them {as they are not qualified}, however this conflicts with vanilla and our tag class names, and our tags don't get obfed so its one line of warning.
 
-
-public final class NeoForgeBlockTagsProvider extends BlockTagsProvider
-{
-    public NeoForgeBlockTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper)
-    {
+public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
+    public NeoForgeBlockTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, "neoforge", existingFileHelper);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void addTags(HolderLookup.Provider p_256380_)
-    {
+    public void addTags(HolderLookup.Provider p_256380_) {
         tag(Tags.Blocks.BARRELS).addTag(Tags.Blocks.BARRELS_WOODEN);
         tag(Tags.Blocks.BARRELS_WOODEN).add(Blocks.BARREL);
         tag(Tags.Blocks.BOOKSHELVES).add(Blocks.BOOKSHELF);
@@ -109,15 +104,13 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider
         tag(Tags.Blocks.STORAGE_BLOCKS_NETHERITE).add(Blocks.NETHERITE_BLOCK);
     }
 
-    private void addColored(Consumer<Block> consumer, TagKey<Block> group, String pattern)
-    {
+    private void addColored(Consumer<Block> consumer, TagKey<Block> group, String pattern) {
         String prefix = group.location().getPath().toUpperCase(Locale.ENGLISH) + '_';
-        for (DyeColor color  : DyeColor.values())
-        {
-            ResourceLocation key = new ResourceLocation("minecraft", pattern.replace("{color}",  color.getName()));
+        for (DyeColor color : DyeColor.values()) {
+            ResourceLocation key = new ResourceLocation("minecraft", pattern.replace("{color}", color.getName()));
             TagKey<Block> tag = getForgeTag(prefix + color.getName());
             Block block = ForgeRegistries.BLOCKS.getValue(key);
-            if (block == null || block  == Blocks.AIR)
+            if (block == null || block == Blocks.AIR)
                 throw new IllegalStateException("Unknown vanilla block: " + key.toString());
             tag(tag).add(block);
             consumer.accept(block);
@@ -125,15 +118,11 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider
     }
 
     @SuppressWarnings("unchecked")
-    private TagKey<Block> getForgeTag(String name)
-    {
-        try
-        {
+    private TagKey<Block> getForgeTag(String name) {
+        try {
             name = name.toUpperCase(Locale.ENGLISH);
             return (TagKey<Block>) Tags.Blocks.class.getDeclaredField(name).get(null);
-        }
-        catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e)
-        {
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
             throw new IllegalStateException(Tags.Blocks.class.getName() + " is missing tag name: " + name);
         }
     }

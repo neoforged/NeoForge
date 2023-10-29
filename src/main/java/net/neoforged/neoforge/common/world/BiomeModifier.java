@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.world;
 
 import com.mojang.serialization.Codec;
+import java.util.function.Function;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
@@ -14,24 +15,24 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.biome.Biome;
 import net.neoforged.neoforge.registries.ForgeRegistries;
-import java.util.function.Function;
 
 /**
  * JSON-serializable biome modifier.
  * Requires a {@link Codec} to deserialize biome modifiers from biome modifier jsons.
  * <p>
  * Biome modifier jsons have the following json format:
+ * 
  * <pre>
  * {
  *   "type": "yourmod:yourserializer", // Indicates a registered biome modifier serializer
  *   // Additional fields can be specified here according to the codec
  * }
  * </pre>
+ * 
  * <p>
  * Datapacks can also disable a biome modifier by overriding the json and using {@code "type": "neoforge:none"}.</p>
  */
-public interface BiomeModifier
-{
+public interface BiomeModifier {
     /**
      * Codec for (de)serializing biome modifiers inline.
      * Mods can use this for data generation.
@@ -56,8 +57,8 @@ public interface BiomeModifier
      * Allows mob spawns and world-gen features to be added or removed,
      * and climate and client effects to be modified.
      *
-     * @param biome the named biome being modified (with original data readable).
-     * @param phase biome modification phase. Biome modifiers apply in each phase in order of the enum constants.
+     * @param biome   the named biome being modified (with original data readable).
+     * @param phase   biome modification phase. Biome modifiers apply in each phase in order of the enum constants.
      * @param builder mutable biome info builder. Apply changes to this.
      */
     void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder);
@@ -67,8 +68,7 @@ public interface BiomeModifier
      */
     Codec<? extends BiomeModifier> codec();
 
-    enum Phase
-    {
+    enum Phase {
         /**
          * Catch-all for anything that needs to run before standard phases.
          */

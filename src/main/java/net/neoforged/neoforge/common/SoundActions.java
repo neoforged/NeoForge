@@ -8,10 +8,8 @@ package net.neoforged.neoforge.common;
 /**
  * A utility holding common sound actions.
  */
-public final class SoundActions
-{
-    private SoundActions()
-    {
+public final class SoundActions {
+    private SoundActions() {
         throw new AssertionError("SoundActions should not be instantiated.");
     }
 

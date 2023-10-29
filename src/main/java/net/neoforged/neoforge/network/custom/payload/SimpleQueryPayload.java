@@ -6,12 +6,11 @@
 package net.neoforged.neoforge.network.custom.payload;
 
 import io.netty.buffer.Unpooled;
+import java.util.Objects;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.ICustomQueryPayloadWithBuffer;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 public final class SimpleQueryPayload implements ICustomQueryPayloadWithBuffer {
     private final FriendlyByteBuf payload;
@@ -42,7 +41,7 @@ public final class SimpleQueryPayload implements ICustomQueryPayloadWithBuffer {
         final byte[] payload = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(payload);
         final FriendlyByteBuf innerBuf = new FriendlyByteBuf(Unpooled.copiedBuffer(payload));
-        
+
         return new SimpleQueryPayload(innerBuf, innerBuf.readVarInt(), innerBuf.readResourceLocation());
     }
 

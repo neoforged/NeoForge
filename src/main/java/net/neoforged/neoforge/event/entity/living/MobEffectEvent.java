@@ -9,8 +9,8 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,20 +19,17 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.
  */
-public abstract class MobEffectEvent extends LivingEvent
-{
+public abstract class MobEffectEvent extends LivingEvent {
     @Nullable
     protected final MobEffectInstance effectInstance;
 
-    public MobEffectEvent(LivingEntity living, MobEffectInstance effectInstance)
-    {
+    public MobEffectEvent(LivingEntity living, MobEffectInstance effectInstance) {
         super(living);
         this.effectInstance = effectInstance;
     }
 
     @Nullable
-    public MobEffectInstance getEffectInstance()
-    {
+    public MobEffectInstance getEffectInstance() {
         return effectInstance;
     }
 
@@ -41,18 +38,15 @@ public abstract class MobEffectEvent extends LivingEvent
      * This Event is {@link ICancellableEvent}. If canceled, the effect will not be removed.
      * This Event does not have a result.
      */
-    public static class Remove extends MobEffectEvent implements ICancellableEvent
-    {
+    public static class Remove extends MobEffectEvent implements ICancellableEvent {
         private final MobEffect effect;
 
-        public Remove(LivingEntity living, MobEffect effect)
-        {
+        public Remove(LivingEntity living, MobEffect effect) {
             super(living, living.getEffect(effect));
             this.effect = effect;
         }
 
-        public Remove(LivingEntity living, MobEffectInstance effectInstance)
-        {
+        public Remove(LivingEntity living, MobEffectInstance effectInstance) {
             super(living, effectInstance);
             this.effect = effectInstance.getEffect();
         }
@@ -60,8 +54,7 @@ public abstract class MobEffectEvent extends LivingEvent
         /**
          * @return the {@link MobEffectEvent} which is being removed from the entity
          */
-        public MobEffect getEffect()
-        {
+        public MobEffect getEffect() {
             return this.effect;
         }
 
@@ -70,8 +63,7 @@ public abstract class MobEffectEvent extends LivingEvent
          */
         @Override
         @Nullable
-        public MobEffectInstance getEffectInstance()
-        {
+        public MobEffectInstance getEffectInstance() {
             return super.getEffectInstance();
         }
     }
@@ -86,17 +78,14 @@ public abstract class MobEffectEvent extends LivingEvent
      * {@link Result#DEFAULT DEFAULT} will run vanilla logic to determine if this mob effect is applicable in {@link LivingEntity#canBeAffected}.
      */
     @HasResult
-    public static class Applicable extends MobEffectEvent
-    {
-        public Applicable(LivingEntity living, @NotNull MobEffectInstance effectInstance)
-        {
+    public static class Applicable extends MobEffectEvent {
+        public Applicable(LivingEntity living, @NotNull MobEffectInstance effectInstance) {
             super(living, effectInstance);
         }
 
         @Override
         @NotNull
-        public MobEffectInstance getEffectInstance()
-        {
+        public MobEffectInstance getEffectInstance() {
             return super.getEffectInstance();
         }
     }
@@ -107,13 +96,11 @@ public abstract class MobEffectEvent extends LivingEvent
      * This event is not {@link ICancellableEvent}.
      * This event does not have a result.
      */
-    public static class Added extends MobEffectEvent
-    {
+    public static class Added extends MobEffectEvent {
         private final MobEffectInstance oldEffectInstance;
         private final Entity source;
 
-        public Added(LivingEntity living, MobEffectInstance oldEffectInstance, MobEffectInstance newEffectInstance, Entity source)
-        {
+        public Added(LivingEntity living, MobEffectInstance oldEffectInstance, MobEffectInstance newEffectInstance, Entity source) {
             super(living, newEffectInstance);
             this.oldEffectInstance = oldEffectInstance;
             this.source = source;
@@ -124,8 +111,7 @@ public abstract class MobEffectEvent extends LivingEvent
          */
         @Override
         @NotNull
-        public MobEffectInstance getEffectInstance()
-        {
+        public MobEffectInstance getEffectInstance() {
             return super.getEffectInstance();
         }
 
@@ -133,8 +119,7 @@ public abstract class MobEffectEvent extends LivingEvent
          * @return the old {@link MobEffectInstance}. This can be null if the entity did not have an effect of this kind before.
          */
         @Nullable
-        public MobEffectInstance getOldEffectInstance()
-        {
+        public MobEffectInstance getOldEffectInstance() {
             return oldEffectInstance;
         }
 
@@ -142,8 +127,7 @@ public abstract class MobEffectEvent extends LivingEvent
          * @return the entity source of the effect, or {@code null} if none exists
          */
         @Nullable
-        public Entity getEffectSource()
-        {
+        public Entity getEffectSource() {
             return source;
         }
     }
@@ -153,10 +137,8 @@ public abstract class MobEffectEvent extends LivingEvent
      * This event is {@link ICancellableEvent}.
      * This event does not have a result.
      */
-    public static class Expired extends MobEffectEvent implements ICancellableEvent
-    {
-        public Expired(LivingEntity living, MobEffectInstance effectInstance)
-        {
+    public static class Expired extends MobEffectEvent implements ICancellableEvent {
+        public Expired(LivingEntity living, MobEffectInstance effectInstance) {
             super(living, effectInstance);
         }
     }

@@ -5,14 +5,13 @@
 
 package net.neoforged.neoforge.common.util;
 
+import java.util.function.Supplier;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.sounds.SoundEvent;
-import net.neoforged.neoforge.registries.RegistryObject;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Supplier;
 
 /**
  * A subclass of {@link SoundType} that uses {@link Supplier<SoundEvent>}s.
@@ -33,16 +32,14 @@ import java.util.function.Supplier;
  *
  * @see SoundType
  */
-public class DeferredSoundType extends SoundType
-{
+public class DeferredSoundType extends SoundType {
     private final Supplier<SoundEvent> breakSound;
     private final Supplier<SoundEvent> stepSound;
     private final Supplier<SoundEvent> placeSound;
     private final Supplier<SoundEvent> hitSound;
     private final Supplier<SoundEvent> fallSound;
 
-    public DeferredSoundType(float volumeIn, float pitchIn, Supplier<SoundEvent> breakSoundIn, Supplier<SoundEvent> stepSoundIn, Supplier<SoundEvent> placeSoundIn, Supplier<SoundEvent> hitSoundIn, Supplier<SoundEvent> fallSoundIn)
-    {
+    public DeferredSoundType(float volumeIn, float pitchIn, Supplier<SoundEvent> breakSoundIn, Supplier<SoundEvent> stepSoundIn, Supplier<SoundEvent> placeSoundIn, Supplier<SoundEvent> hitSoundIn, Supplier<SoundEvent> fallSoundIn) {
         super(volumeIn, pitchIn, (SoundEvent) null, (SoundEvent) null, (SoundEvent) null, (SoundEvent) null, (SoundEvent) null);
         this.breakSound = breakSoundIn;
         this.stepSound = stepSoundIn;
@@ -53,36 +50,31 @@ public class DeferredSoundType extends SoundType
 
     @NotNull
     @Override
-    public SoundEvent getBreakSound()
-    {
+    public SoundEvent getBreakSound() {
         return breakSound.get();
     }
 
     @NotNull
     @Override
-    public SoundEvent getStepSound()
-    {
+    public SoundEvent getStepSound() {
         return stepSound.get();
     }
 
     @NotNull
     @Override
-    public SoundEvent getPlaceSound()
-    {
+    public SoundEvent getPlaceSound() {
         return placeSound.get();
     }
 
     @NotNull
     @Override
-    public SoundEvent getHitSound()
-    {
+    public SoundEvent getHitSound() {
         return hitSound.get();
     }
 
     @NotNull
     @Override
-    public SoundEvent getFallSound()
-    {
+    public SoundEvent getFallSound() {
         return fallSound.get();
     }
 }

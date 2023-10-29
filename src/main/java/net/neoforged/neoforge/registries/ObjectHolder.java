@@ -5,13 +5,12 @@
 
 package net.neoforged.neoforge.registries;
 
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.fml.common.Mod;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.common.Mod;
 
 /**
  * ObjectHolder can be used to automatically populate public static final fields with entries
@@ -19,8 +18,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ObjectHolder
-{
+public @interface ObjectHolder {
     /**
      * The name of the registry to load registry entries from.
      * This string is parsed as a {@link ResourceLocation} and can contain a namespace.

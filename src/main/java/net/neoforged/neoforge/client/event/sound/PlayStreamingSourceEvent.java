@@ -8,9 +8,9 @@ package net.neoforged.neoforge.client.event.sound;
 import com.mojang.blaze3d.audio.Channel;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
+import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.client.event.sound.SoundEvent.SoundSourceEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -25,11 +25,9 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @see PlayStreamingSourceEvent
  */
-public class PlayStreamingSourceEvent extends SoundSourceEvent
-{
+public class PlayStreamingSourceEvent extends SoundSourceEvent {
     @ApiStatus.Internal
-    public PlayStreamingSourceEvent(SoundEngine engine, SoundInstance sound, Channel channel)
-    {
+    public PlayStreamingSourceEvent(SoundEngine engine, SoundInstance sound, Channel channel) {
         super(engine, sound, channel);
     }
 }

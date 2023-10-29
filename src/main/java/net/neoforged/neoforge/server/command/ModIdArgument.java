@@ -11,15 +11,13 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-
-import net.minecraft.commands.SharedSuggestionProvider;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModList;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 
 public class ModIdArgument implements ArgumentType<String> {
     private static final List<String> EXAMPLES = Arrays.asList("neoforge", "inventorysorter");

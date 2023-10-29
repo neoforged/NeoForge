@@ -7,6 +7,8 @@ package net.neoforged.neoforge.debug.fluid;
 
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -23,19 +25,19 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.fluids.FluidInteractionRegistry;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.fml.DistExecutor;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.neoforged.neoforge.fluids.FluidInteractionRegistry;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryObject;
@@ -44,24 +46,20 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
 /**
  * A test case used to define and test fluid type integration into fluids.
  *
  * <ul>
- *     <li>Checks that each fluid has a fluid type</li>
- *     <li>Adds a new fluid with its type, source/flowing, block, and bucket</li>
- *     <li>Sets properties to test out fluid logic</li>
- *     <li>Overrides fluid rendering methods</li>
- *     <li>Adds block color and render layer</li>
- *     <li>Adds fluid interaction definitions</li>
+ * <li>Checks that each fluid has a fluid type</li>
+ * <li>Adds a new fluid with its type, source/flowing, block, and bucket</li>
+ * <li>Sets properties to test out fluid logic</li>
+ * <li>Overrides fluid rendering methods</li>
+ * <li>Adds block color and render layer</li>
+ * <li>Adds fluid interaction definitions</li>
  * </ul>
  */
 @Mod(FluidTypeTest.ID)
-public class FluidTypeTest
-{
+public class FluidTypeTest {
     private static final boolean ENABLE = true;
 
     protected static final String ID = "fluid_type_test";
@@ -72,95 +70,76 @@ public class FluidTypeTest
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ID);
 
-    private static BaseFlowingFluid.Properties fluidProperties()
-    {
+    private static BaseFlowingFluid.Properties fluidProperties() {
         return new BaseFlowingFluid.Properties(TEST_FLUID_TYPE, TEST_FLUID, TEST_FLUID_FLOWING)
                 .block(TEST_FLUID_BLOCK)
                 .bucket(TEST_FLUID_BUCKET);
     }
 
-    private static final RegistryObject<FluidType> TEST_FLUID_TYPE = FLUID_TYPES.register("test_fluid", () ->
-            new FluidType(FluidType.Properties.create().supportsBoating(true).canHydrate(true))
-            {
+    private static final RegistryObject<FluidType> TEST_FLUID_TYPE = FLUID_TYPES.register("test_fluid", () -> new FluidType(FluidType.Properties.create().supportsBoating(true).canHydrate(true)) {
+        @Override
+        public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
+            consumer.accept(new IClientFluidTypeExtensions() {
+                private static final ResourceLocation STILL = new ResourceLocation("block/water_still"),
+                        FLOW = new ResourceLocation("block/water_flow"),
+                        OVERLAY = new ResourceLocation("block/obsidian"),
+                        VIEW_OVERLAY = new ResourceLocation("textures/block/obsidian.png");
+
                 @Override
-                public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer)
-                {
-                    consumer.accept(new IClientFluidTypeExtensions()
-                    {
-                        private static final ResourceLocation STILL = new ResourceLocation("block/water_still"),
-                                FLOW = new ResourceLocation("block/water_flow"),
-                                OVERLAY = new ResourceLocation("block/obsidian"),
-                                VIEW_OVERLAY = new ResourceLocation("textures/block/obsidian.png");
+                public ResourceLocation getStillTexture() {
+                    return STILL;
+                }
 
-                        @Override
-                        public ResourceLocation getStillTexture()
-                        {
-                            return STILL;
-                        }
+                @Override
+                public ResourceLocation getFlowingTexture() {
+                    return FLOW;
+                }
 
-                        @Override
-                        public ResourceLocation getFlowingTexture()
-                        {
-                            return FLOW;
-                        }
+                @Override
+                public ResourceLocation getOverlayTexture() {
+                    return OVERLAY;
+                }
 
-                        @Override
-                        public ResourceLocation getOverlayTexture()
-                        {
-                            return OVERLAY;
-                        }
+                @Override
+                public ResourceLocation getRenderOverlayTexture(Minecraft mc) {
+                    return VIEW_OVERLAY;
+                }
 
-                        @Override
-                        public ResourceLocation getRenderOverlayTexture(Minecraft mc)
-                        {
-                            return VIEW_OVERLAY;
-                        }
+                @Override
+                public int getTintColor() {
+                    return 0xAF7FFFD4;
+                }
 
-                        @Override
-                        public int getTintColor()
-                        {
-                            return 0xAF7FFFD4;
-                        }
+                @Override
+                public @NotNull Vector3f modifyFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, Vector3f fluidFogColor) {
+                    int color = this.getTintColor();
+                    return new Vector3f((color >> 16 & 0xFF) / 255F, (color >> 8 & 0xFF) / 255F, (color & 0xFF) / 255F);
+                }
 
-                        @Override
-                        public @NotNull Vector3f modifyFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, Vector3f fluidFogColor)
-                        {
-                            int color = this.getTintColor();
-                            return new Vector3f((color >> 16 & 0xFF) / 255F, (color >> 8 & 0xFF) / 255F, (color & 0xFF) / 255F);
-                        }
+                @Override
+                public void modifyFogRender(Camera camera, FogRenderer.FogMode mode, float renderDistance, float partialTick, float nearDistance, float farDistance, FogShape shape) {
+                    nearDistance = -8F;
+                    farDistance = 24F;
 
-                        @Override
-                        public void modifyFogRender(Camera camera, FogRenderer.FogMode mode, float renderDistance, float partialTick, float nearDistance, float farDistance, FogShape shape)
-                        {
-                            nearDistance = -8F;
-                            farDistance = 24F;
+                    if (farDistance > renderDistance) {
+                        farDistance = renderDistance;
+                        shape = FogShape.CYLINDER;
+                    }
 
-                            if (farDistance > renderDistance)
-                            {
-                                farDistance = renderDistance;
-                                shape = FogShape.CYLINDER;
-                            }
-
-                            RenderSystem.setShaderFogStart(nearDistance);
-                            RenderSystem.setShaderFogEnd(farDistance);
-                            RenderSystem.setShaderFogShape(shape);
-                        }
-                    });
+                    RenderSystem.setShaderFogStart(nearDistance);
+                    RenderSystem.setShaderFogEnd(farDistance);
+                    RenderSystem.setShaderFogShape(shape);
                 }
             });
-    private static final RegistryObject<FlowingFluid> TEST_FLUID = FLUIDS.register("test_fluid", () ->
-            new BaseFlowingFluid.Source(fluidProperties()));
-    private static final RegistryObject<Fluid> TEST_FLUID_FLOWING = FLUIDS.register("test_fluid_flowing", () ->
-            new BaseFlowingFluid.Flowing(fluidProperties()));
-    private static final RegistryObject<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.register("test_fluid_block", () ->
-            new LiquidBlock(TEST_FLUID, BlockBehaviour.Properties.of().noCollission().strength(100.0F).noLootTable()));
-    private static final RegistryObject<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () ->
-            new BucketItem(TEST_FLUID, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
+        }
+    });
+    private static final RegistryObject<FlowingFluid> TEST_FLUID = FLUIDS.register("test_fluid", () -> new BaseFlowingFluid.Source(fluidProperties()));
+    private static final RegistryObject<Fluid> TEST_FLUID_FLOWING = FLUIDS.register("test_fluid_flowing", () -> new BaseFlowingFluid.Flowing(fluidProperties()));
+    private static final RegistryObject<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.register("test_fluid_block", () -> new LiquidBlock(TEST_FLUID, BlockBehaviour.Properties.of().noCollission().strength(100.0F).noLootTable()));
+    private static final RegistryObject<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> new BucketItem(TEST_FLUID, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
 
-    public FluidTypeTest()
-    {
-        if (ENABLE)
-        {
+    public FluidTypeTest() {
+        if (ENABLE) {
             logger = LogManager.getLogger();
             NeoForgeMod.enableMilkFluid();
 
@@ -178,45 +157,34 @@ public class FluidTypeTest
         }
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
             event.accept(TEST_FLUID_BUCKET);
     }
 
-    private void commonSetup(FMLCommonSetupEvent event)
-    {
+    private void commonSetup(FMLCommonSetupEvent event) {
         // Add Interactions for sources
         FluidInteractionRegistry.addInteraction(TEST_FLUID_TYPE.get(), new FluidInteractionRegistry.InteractionInformation(NeoForgeMod.LAVA_TYPE.get(), Blocks.GOLD_BLOCK.defaultBlockState()));
         FluidInteractionRegistry.addInteraction(NeoForgeMod.WATER_TYPE.get(), new FluidInteractionRegistry.InteractionInformation(TEST_FLUID_TYPE.get(), state -> state.isSource() ? Blocks.DIAMOND_BLOCK.defaultBlockState() : Blocks.IRON_BLOCK.defaultBlockState()));
 
         // Log Fluid Types for all fluids
-        event.enqueueWork(() ->
-                ForgeRegistries.FLUIDS.forEach(fluid ->
-                        logger.info("Fluid {} has FluidType {}", ForgeRegistries.FLUIDS.getKey(fluid), ForgeRegistries.FLUID_TYPES.get().getKey(fluid.getFluidType())))
-        );
+        event.enqueueWork(() -> ForgeRegistries.FLUIDS.forEach(fluid -> logger.info("Fluid {} has FluidType {}", ForgeRegistries.FLUIDS.getKey(fluid), ForgeRegistries.FLUID_TYPES.get().getKey(fluid.getFluidType()))));
     }
 
-    private static class FluidTypeTestClient
-    {
-        private FluidTypeTestClient(IEventBus modEventBus)
-        {
+    private static class FluidTypeTestClient {
+        private FluidTypeTestClient(IEventBus modEventBus) {
             modEventBus.addListener(this::clientSetup);
             modEventBus.addListener(this::registerBlockColors);
         }
 
-        private void clientSetup(FMLClientSetupEvent event)
-        {
+        private void clientSetup(FMLClientSetupEvent event) {
             Stream.of(TEST_FLUID, TEST_FLUID_FLOWING).map(RegistryObject::get)
                     .forEach(fluid -> ItemBlockRenderTypes.setRenderLayer(fluid, RenderType.translucent()));
         }
 
-        private void registerBlockColors(RegisterColorHandlersEvent.Block event)
-        {
-            event.register((state, getter, pos, index) ->
-            {
-                if (getter != null && pos != null)
-                {
+        private void registerBlockColors(RegisterColorHandlersEvent.Block event) {
+            event.register((state, getter, pos, index) -> {
+                if (getter != null && pos != null) {
                     FluidState fluidState = getter.getFluidState(pos);
                     return IClientFluidTypeExtensions.of(fluidState).getTintColor(fluidState, getter, pos);
                 } else return 0xAF7FFFD4;

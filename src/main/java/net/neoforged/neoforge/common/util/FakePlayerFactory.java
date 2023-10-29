@@ -5,24 +5,21 @@
 
 package net.neoforged.neoforge.common.util;
 
-import java.util.Map;
-import java.util.UUID;
-
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
-
+import java.util.Map;
+import java.util.UUID;
 import net.minecraft.server.level.ServerLevel;
 
-//To be expanded for generic Mod fake players?
-public class FakePlayerFactory
-{
+// To be expanded for generic Mod fake players?
+public class FakePlayerFactory {
     private static final GameProfile MINECRAFT = new GameProfile(UUID.fromString("41C82C87-7AfB-4024-BA57-13D2C99CAE77"), "[Minecraft]");
     // Map of all active fake player usernames to their entities
     private static final Map<FakePlayerKey, FakePlayer> fakePlayers = Maps.newHashMap();
-    private record FakePlayerKey(ServerLevel level, GameProfile username) { }
 
-    public static FakePlayer getMinecraft(ServerLevel level)
-    {
+    private record FakePlayerKey(ServerLevel level, GameProfile username) {}
+
+    public static FakePlayer getMinecraft(ServerLevel level) {
         return get(level, MINECRAFT);
     }
 
@@ -32,14 +29,12 @@ public class FakePlayerFactory
      * WorldEvent.Unload and kill all references to prevent worlds staying in memory,
      * or call this function every time and let Forge take care of the cleanup.
      */
-    public static FakePlayer get(ServerLevel level, GameProfile username)
-    {
+    public static FakePlayer get(ServerLevel level, GameProfile username) {
         FakePlayerKey key = new FakePlayerKey(level, username);
         return fakePlayers.computeIfAbsent(key, k -> new FakePlayer(k.level(), k.username()));
     }
 
-    public static void unloadLevel(ServerLevel level)
-    {
+    public static void unloadLevel(ServerLevel level) {
         fakePlayers.entrySet().removeIf(entry -> entry.getValue().level() == level);
     }
 }

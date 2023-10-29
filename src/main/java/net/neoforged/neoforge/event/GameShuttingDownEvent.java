@@ -17,7 +17,6 @@ import net.neoforged.bus.api.Event;
  *
  * @author Curle
  */
-public class GameShuttingDownEvent extends Event
-{
+public class GameShuttingDownEvent extends Event {
     public GameShuttingDownEvent() {}
 }

@@ -11,10 +11,10 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemFrameRenderer;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -29,8 +29,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @see ItemFrameRenderer
  */
-public class RenderItemInFrameEvent extends Event implements ICancellableEvent
-{
+public class RenderItemInFrameEvent extends Event implements ICancellableEvent {
     private final ItemStack itemStack;
     private final ItemFrame itemFrameEntity;
     private final ItemFrameRenderer<?> renderer;
@@ -40,8 +39,7 @@ public class RenderItemInFrameEvent extends Event implements ICancellableEvent
 
     @ApiStatus.Internal
     public RenderItemInFrameEvent(ItemFrame itemFrame, ItemFrameRenderer<?> renderItemFrame, PoseStack poseStack,
-                                  MultiBufferSource multiBufferSource, int packedLight)
-    {
+            MultiBufferSource multiBufferSource, int packedLight) {
         itemStack = itemFrame.getItem();
         itemFrameEntity = itemFrame;
         renderer = renderItemFrame;
@@ -53,40 +51,35 @@ public class RenderItemInFrameEvent extends Event implements ICancellableEvent
     /**
      * {@return the item stack being rendered}
      */
-    public ItemStack getItemStack()
-    {
+    public ItemStack getItemStack() {
         return itemStack;
     }
 
     /**
      * {@return the item frame entity}
      */
-    public ItemFrame getItemFrameEntity()
-    {
+    public ItemFrame getItemFrameEntity() {
         return itemFrameEntity;
     }
 
     /**
      * {@return the renderer for the item frame entity}
      */
-    public ItemFrameRenderer<?> getRenderer()
-    {
+    public ItemFrameRenderer<?> getRenderer() {
         return renderer;
     }
 
     /**
      * {@return the pose stack used for rendering}
      */
-    public PoseStack getPoseStack()
-    {
+    public PoseStack getPoseStack() {
         return poseStack;
     }
 
     /**
      * {@return the source of rendering buffers}
      */
-    public MultiBufferSource getMultiBufferSource()
-    {
+    public MultiBufferSource getMultiBufferSource() {
         return multiBufferSource;
     }
 
@@ -95,8 +88,7 @@ public class RenderItemInFrameEvent extends Event implements ICancellableEvent
      *
      * @see LightTexture
      */
-    public int getPackedLight()
-    {
+    public int getPackedLight() {
         return packedLight;
     }
 }

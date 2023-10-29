@@ -13,13 +13,11 @@ import net.neoforged.bus.api.ICancellableEvent;
  * <p>
  * This event is cancelable which will stop the op or deop from happening.
  */
-public class PermissionsChangedEvent extends PlayerEvent implements ICancellableEvent
-{
+public class PermissionsChangedEvent extends PlayerEvent implements ICancellableEvent {
     private final int newLevel;
     private final int oldLevel;
 
-    public PermissionsChangedEvent(ServerPlayer player, int newLevel, int oldLevel)
-    {
+    public PermissionsChangedEvent(ServerPlayer player, int newLevel, int oldLevel) {
         super(player);
         this.oldLevel = oldLevel;
         this.newLevel = newLevel;
@@ -28,15 +26,14 @@ public class PermissionsChangedEvent extends PlayerEvent implements ICancellable
     /**
      * @return The new permission level.
      */
-    public int getNewLevel()
-    {
+    public int getNewLevel() {
         return newLevel;
     }
+
     /**
      * @return The old permission level.
      */
-    public int getOldLevel()
-    {
+    public int getOldLevel() {
         return oldLevel;
     }
 }

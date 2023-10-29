@@ -6,10 +6,10 @@
 package net.neoforged.neoforge.client.event;
 
 import com.google.common.base.Strings;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -21,14 +21,12 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  **/
-public class ClientChatEvent extends Event implements ICancellableEvent
-{
+public class ClientChatEvent extends Event implements ICancellableEvent {
     private String message;
     private final String originalMessage;
 
     @ApiStatus.Internal
-    public ClientChatEvent(String message)
-    {
+    public ClientChatEvent(String message) {
         this.setMessage(message);
         this.originalMessage = Strings.nullToEmpty(message);
         this.message = this.originalMessage;
@@ -37,8 +35,7 @@ public class ClientChatEvent extends Event implements ICancellableEvent
     /**
      * {@return the message that will be sent to the server, if the event is not cancelled. This can be changed by mods}
      */
-    public String getMessage()
-    {
+    public String getMessage() {
         return this.message;
     }
 
@@ -47,16 +44,14 @@ public class ClientChatEvent extends Event implements ICancellableEvent
      *
      * @param message the new message to be sent
      */
-    public void setMessage(String message)
-    {
+    public void setMessage(String message) {
         this.message = Strings.nullToEmpty(message);
     }
 
     /**
      * {@return the original message that was to be sent to the server. This cannot be changed by mods}
      */
-    public String getOriginalMessage()
-    {
+    public String getOriginalMessage() {
         return this.originalMessage;
     }
 }

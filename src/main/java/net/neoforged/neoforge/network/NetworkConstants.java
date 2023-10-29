@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.network;
 
 import io.netty.util.AttributeKey;
+import java.util.List;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.IExtensionPoint.DisplayTest;
 import net.neoforged.neoforge.network.ConnectionData.ModMismatchData;
@@ -15,12 +16,10 @@ import net.neoforged.neoforge.network.simple.SimpleChannel;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
-import java.util.List;
 /**
  * Constants related to networking
  */
-public class NetworkConstants
-{
+public class NetworkConstants {
     public static final String FMLNETMARKER = "FML";
     /**
      * Netversion 3: {@link S2CModList} packet may include a list of non-vanilla synced datapack registry ids.

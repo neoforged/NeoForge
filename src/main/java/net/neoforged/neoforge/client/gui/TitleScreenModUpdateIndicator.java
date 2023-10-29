@@ -7,20 +7,19 @@ package net.neoforged.neoforge.client.gui;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.fml.loading.FMLConfig;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
-import net.neoforged.fml.VersionChecker;
-import net.neoforged.neoforge.client.loading.ClientModLoader;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.VersionChecker;
+import net.neoforged.fml.loading.FMLConfig;
+import net.neoforged.neoforge.client.loading.ClientModLoader;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
 @OnlyIn(Dist.CLIENT)
-public class TitleScreenModUpdateIndicator extends Screen
-{
+public class TitleScreenModUpdateIndicator extends Screen {
 
     private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation(NeoForgeVersion.MOD_ID, "textures/gui/version_check_icons.png");
 
@@ -28,19 +27,15 @@ public class TitleScreenModUpdateIndicator extends Screen
     private VersionChecker.Status showNotification = null;
     private boolean hasCheckedForUpdates = false;
 
-    public TitleScreenModUpdateIndicator(Button modButton)
-    {
+    public TitleScreenModUpdateIndicator(Button modButton) {
         super(Component.translatable("neoforge.menu.updatescreen.title"));
         this.modButton = modButton;
     }
 
     @Override
-    public void init()
-    {
-        if (!hasCheckedForUpdates)
-        {
-            if (modButton != null)
-            {
+    public void init() {
+        if (!hasCheckedForUpdates) {
+            if (modButton != null) {
                 showNotification = ClientModLoader.checkForUpdates();
             }
             hasCheckedForUpdates = true;
@@ -48,10 +43,8 @@ public class TitleScreenModUpdateIndicator extends Screen
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick)
-    {
-        if (showNotification == null || !showNotification.shouldDraw() || !FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK))
-        {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        if (showNotification == null || !showNotification.shouldDraw() || !FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK)) {
             return;
         }
 
@@ -63,8 +56,7 @@ public class TitleScreenModUpdateIndicator extends Screen
         guiGraphics.blit(VERSION_CHECK_ICONS, x + w - (h / 2 + 4), y + (h / 2 - 4), showNotification.getSheetOffset() * 8, (showNotification.isAnimated() && ((System.currentTimeMillis() / 800 & 1) == 1)) ? 8 : 0, 8, 8, 64, 16);
     }
 
-    public static TitleScreenModUpdateIndicator init(TitleScreen guiMainMenu, Button modButton)
-    {
+    public static TitleScreenModUpdateIndicator init(TitleScreen guiMainMenu, Button modButton) {
         TitleScreenModUpdateIndicator titleScreenModUpdateIndicator = new TitleScreenModUpdateIndicator(modButton);
         titleScreenModUpdateIndicator.resize(guiMainMenu.getMinecraft(), guiMainMenu.width, guiMainMenu.height);
         titleScreenModUpdateIndicator.init();

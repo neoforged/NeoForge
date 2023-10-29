@@ -5,22 +5,19 @@
 
 package net.neoforged.neoforge.client.gui;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.world.item.CreativeModeTab;
 import net.neoforged.neoforge.common.CreativeModeTabRegistry;
 import net.neoforged.neoforge.common.util.ConcatenatedListView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public final class CreativeTabsScreenPage
-{
+public final class CreativeTabsScreenPage {
     private final List<CreativeModeTab> tabs;
     private final List<CreativeModeTab> topTabs;
     private final List<CreativeModeTab> bottomTabs;
     private final List<CreativeModeTab> visibleTabs;
 
-    public CreativeTabsScreenPage(List<CreativeModeTab> tabs)
-    {
+    public CreativeTabsScreenPage(List<CreativeModeTab> tabs) {
         this.tabs = tabs;
         this.topTabs = new ArrayList<>();
         this.bottomTabs = new ArrayList<>();
@@ -30,28 +27,24 @@ public final class CreativeTabsScreenPage
         int topLength = maxLength / 2;
         int length = tabs.size();
 
-        for (int i = 0; i < length; i++)
-        {
+        for (int i = 0; i < length; i++) {
             CreativeModeTab tab = tabs.get(i);
             (i < topLength ? this.topTabs : this.bottomTabs).add(tab);
         }
     }
 
-    public List<CreativeModeTab> getVisibleTabs()
-    {
+    public List<CreativeModeTab> getVisibleTabs() {
         return this.visibleTabs.stream().filter(CreativeModeTab::shouldDisplay).toList();
     }
 
-    public boolean isTop(CreativeModeTab tab)
-    {
+    public boolean isTop(CreativeModeTab tab) {
         if (!this.tabs.contains(tab))
             return CreativeModeTabRegistry.getDefaultTabs().indexOf(tab) < (CreativeModeTabRegistry.getDefaultTabs().size() / 2);
 
         return this.topTabs.contains(tab);
     }
 
-    public int getColumn(CreativeModeTab tab)
-    {
+    public int getColumn(CreativeModeTab tab) {
 //        if (!this.tabs.contains(tab)) {
 //            return CreativeModeTabs.tabs().indexOf(tab) % 6;
 //        }
@@ -62,8 +55,7 @@ public final class CreativeTabsScreenPage
         return this.topTabs.contains(tab) ? this.topTabs.indexOf(tab) : this.bottomTabs.indexOf(tab);
     }
 
-    public CreativeModeTab getDefaultTab()
-    {
+    public CreativeModeTab getDefaultTab() {
         return this.tabs.get(0);
     }
 }

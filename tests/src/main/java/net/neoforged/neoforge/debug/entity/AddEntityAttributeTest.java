@@ -7,13 +7,13 @@ package net.neoforged.neoforge.debug.entity;
 
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
-import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod("add_entity_attribute_test")
 public class AddEntityAttributeTest {
@@ -31,7 +31,7 @@ public class AddEntityAttributeTest {
     @SubscribeEvent
     public void entityAttributeSetup(EntityAttributeModificationEvent event) {
         event.getTypes().forEach(entityType -> {
-            if (!event.has(entityType, TEST_ATTR.get())){
+            if (!event.has(entityType, TEST_ATTR.get())) {
                 event.add(entityType, TEST_ATTR.get());
             }
         });

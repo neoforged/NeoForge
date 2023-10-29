@@ -5,16 +5,13 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
+import java.util.function.Consumer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
 
-import java.util.function.Consumer;
-
-public abstract class LivingConversionEvent extends LivingEvent
-{
-    public LivingConversionEvent(LivingEntity entity)
-    {
+public abstract class LivingConversionEvent extends LivingEvent {
+    public LivingConversionEvent(LivingEntity entity) {
         super(entity);
     }
 
@@ -29,13 +26,11 @@ public abstract class LivingConversionEvent extends LivingEvent
      * This event is {@link ICancellableEvent}
      * If cancelled, the replacement will not occur
      */
-    public static class Pre extends LivingConversionEvent implements ICancellableEvent
-    {
+    public static class Pre extends LivingConversionEvent implements ICancellableEvent {
         private final EntityType<? extends LivingEntity> outcome;
         private final Consumer<Integer> timer;
 
-        public Pre(LivingEntity entity, EntityType<? extends LivingEntity> outcome, Consumer<Integer> timer)
-        {
+        public Pre(LivingEntity entity, EntityType<? extends LivingEntity> outcome, Consumer<Integer> timer) {
             super(entity);
             this.outcome = outcome;
             this.timer = timer;
@@ -44,10 +39,10 @@ public abstract class LivingConversionEvent extends LivingEvent
         /**
          * Gets the entity type of the new entity this living entity is
          * converting to
+         * 
          * @return the entity type of the new entity
          */
-        public EntityType<? extends LivingEntity> getOutcome()
-        {
+        public EntityType<? extends LivingEntity> getOutcome() {
             return outcome;
         }
 
@@ -57,10 +52,10 @@ public abstract class LivingConversionEvent extends LivingEvent
          * Do note the timer of some of the entities are increments, but
          * some of them are decrements
          * Not every conversion is applicable for this
+         * 
          * @param ticks timer ticks
          */
-        public void setConversionTimer(int ticks)
-        {
+        public void setConversionTimer(int ticks) {
             timer.accept(ticks);
         }
     }
@@ -70,12 +65,10 @@ public abstract class LivingConversionEvent extends LivingEvent
      * itself with another entity.
      * The old living entity is likely to be removed right after this event.
      */
-    public static class Post extends LivingConversionEvent
-    {
+    public static class Post extends LivingConversionEvent {
         private final LivingEntity outcome;
 
-        public Post(LivingEntity entity, LivingEntity outcome)
-        {
+        public Post(LivingEntity entity, LivingEntity outcome) {
             super(entity);
             this.outcome = outcome;
         }
@@ -83,10 +76,10 @@ public abstract class LivingConversionEvent extends LivingEvent
         /**
          * Gets the finalized new entity (with all data like potion
          * effect and equipments set)
+         * 
          * @return the finalized new entity
          */
-        public LivingEntity getOutcome()
-        {
+        public LivingEntity getOutcome() {
             return outcome;
         }
     }

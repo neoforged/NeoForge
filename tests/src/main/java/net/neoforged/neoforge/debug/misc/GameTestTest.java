@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.misc;
 
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -22,17 +23,17 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
-import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.common.capabilities.Capability;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
@@ -40,11 +41,8 @@ import net.neoforged.neoforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 @Mod(GameTestTest.MODID)
-public class GameTestTest
-{
+public class GameTestTest {
     public static final String MODID = "gametest_test";
     public static final boolean ENABLED = true;
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
@@ -58,10 +56,8 @@ public class GameTestTest
     private static final RegistryObject<BlockEntityType<EnergyBlockEntity>> ENERGY_BLOCK_ENTITY = BLOCK_ENTITIES.register("energy",
             () -> BlockEntityType.Builder.of(EnergyBlockEntity::new, ENERGY_BLOCK.get()).build(null));
 
-    public GameTestTest()
-    {
-        if (ENABLED)
-        {
+    public GameTestTest() {
+        if (ENABLED) {
             IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
             modBus.register(this);
 
@@ -72,15 +68,13 @@ public class GameTestTest
         }
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
             event.accept(ENERGY_BLOCK_ITEM);
     }
 
     @SubscribeEvent
-    public void onRegisterGameTests(RegisterGameTestsEvent event)
-    {
+    public void onRegisterGameTests(RegisterGameTestsEvent event) {
         // Registers all methods in this class annotated with @GameTest or @GameTestGenerator to the GameTestRegistry
         event.register(this.getClass());
     }
@@ -97,8 +91,7 @@ public class GameTestTest
      * In this example, the structure name would be "gametesttest.testwood" under the "gametest_test" namespace.
      */
     @GameTest(templateNamespace = MODID)
-    public static void testWood(GameTestHelper helper)
-    {
+    public static void testWood(GameTestHelper helper) {
         // The woodPos is in the bottom center of the 3x3x3 structure
         BlockPos woodPos = new BlockPos(1, 1, 1);
 
@@ -127,8 +120,7 @@ public class GameTestTest
      * </ul>
      */
     @GameTestGenerator
-    public static List<TestFunction> generateTests()
-    {
+    public static List<TestFunction> generateTests() {
         // An example test function, run in the default batch, with the test name "teststone", and the structure name "gametesttest.teststone" under the "gametest_test" namespace.
         // No rotation, 100 ticks until the test times out if it does not fail or succeed, 0 ticks for setup time, and the actual code to run.
         TestFunction testStone = new TestFunction("defaultBatch", "teststone", new ResourceLocation(MODID, "gametesttest.teststone").toString(), Rotation.NONE,
@@ -147,8 +139,7 @@ public class GameTestTest
 
     @PrefixGameTestTemplate(false)
     @GameTest(templateNamespace = MODID, template = "empty3x3x3")
-    public static void testHopperPickup(GameTestHelper helper)
-    {
+    public static void testHopperPickup(GameTestHelper helper) {
         BlockPos hopperPos = new BlockPos(1, 1, 1);
 
         // Sets (1,1,1) to a hopper and spawns a golden apple one block above it
@@ -164,8 +155,7 @@ public class GameTestTest
 
     @PrefixGameTestTemplate(false)
     @GameTest(templateNamespace = MODID, template = "empty3x3x3")
-    public static void testEnergyStorage(GameTestHelper helper)
-    {
+    public static void testEnergyStorage(GameTestHelper helper) {
         BlockPos energyPos = new BlockPos(1, 1, 1);
 
         // Sets (1,1,1) to our custom energy block
@@ -180,43 +170,36 @@ public class GameTestTest
         // Fails test if stored energy is not equal to 1000 FE
         int energy = energyHolder.map(IEnergyStorage::getEnergyStored).orElse(0);
         int target = 1000;
-        if (energy != target)
-        {
+        if (energy != target) {
             helper.fail("Expected energy=" + target + " but it was energy=" + energy, energyPos);
         }
 
         helper.succeed();
     }
 
-    private static class EnergyBlock extends Block implements EntityBlock
-    {
-        public EnergyBlock(Properties properties)
-        {
+    private static class EnergyBlock extends Block implements EntityBlock {
+        public EnergyBlock(Properties properties) {
             super(properties);
         }
 
         @Nullable
         @Override
-        public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
-        {
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
             return new EnergyBlockEntity(pos, state);
         }
     }
 
-    private static class EnergyBlockEntity extends BlockEntity
-    {
+    private static class EnergyBlockEntity extends BlockEntity {
         private final EnergyStorage energyStorage = new EnergyStorage(1000);
         private final LazyOptional<IEnergyStorage> energyHolder = LazyOptional.of(() -> energyStorage);
 
-        public EnergyBlockEntity(BlockPos pos, BlockState state)
-        {
+        public EnergyBlockEntity(BlockPos pos, BlockState state) {
             super(ENERGY_BLOCK_ENTITY.get(), pos, state);
         }
 
         @NotNull
         @Override
-        public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing)
-        {
+        public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing) {
             if (capability == Capabilities.ENERGY)
                 return energyHolder.cast();
 

@@ -6,13 +6,13 @@
 package net.neoforged.neoforge.event.entity.player;
 
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.BowItem;
-import net.neoforged.neoforge.common.NeoForge;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -31,15 +31,13 @@ import org.jetbrains.annotations.NotNull;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class ArrowLooseEvent extends PlayerEvent implements ICancellableEvent
-{
+public class ArrowLooseEvent extends PlayerEvent implements ICancellableEvent {
     private final ItemStack bow;
     private final Level level;
     private final boolean hasAmmo;
     private int charge;
 
-    public ArrowLooseEvent(Player player, @NotNull ItemStack bow, Level level, int charge, boolean hasAmmo)
-    {
+    public ArrowLooseEvent(Player player, @NotNull ItemStack bow, Level level, int charge, boolean hasAmmo) {
         super(player);
         this.bow = bow;
         this.level = level;
@@ -48,9 +46,23 @@ public class ArrowLooseEvent extends PlayerEvent implements ICancellableEvent
     }
 
     @NotNull
-    public ItemStack getBow() { return this.bow; }
-    public Level getLevel() { return this.level; }
-    public boolean hasAmmo() { return this.hasAmmo; }
-    public int getCharge() { return this.charge; }
-    public void setCharge(int charge) { this.charge = charge; }
+    public ItemStack getBow() {
+        return this.bow;
+    }
+
+    public Level getLevel() {
+        return this.level;
+    }
+
+    public boolean hasAmmo() {
+        return this.hasAmmo;
+    }
+
+    public int getCharge() {
+        return this.charge;
+    }
+
+    public void setCharge(int charge) {
+        this.charge = charge;
+    }
 }

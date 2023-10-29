@@ -6,93 +6,91 @@
 package net.neoforged.neoforge.common;
 
 import com.google.common.collect.Sets;
-import net.neoforged.neoforge.common.extensions.IBlockExtension;
-import net.neoforged.neoforge.common.extensions.IItemExtension;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.neoforged.neoforge.common.extensions.IBlockExtension;
+import net.neoforged.neoforge.common.extensions.IItemExtension;
 
-public class ToolActions
-{
+public class ToolActions {
     /**
-     *  Exposed by axes to allow querying tool behaviours
+     * Exposed by axes to allow querying tool behaviours
      */
     public static final ToolAction AXE_DIG = ToolAction.get("axe_dig");
 
     /**
-     *  Exposed by pickaxes to allow querying tool behaviours
+     * Exposed by pickaxes to allow querying tool behaviours
      */
     public static final ToolAction PICKAXE_DIG = ToolAction.get("pickaxe_dig");
 
     /**
-     *  Exposed by shovels to allow querying tool behaviours
+     * Exposed by shovels to allow querying tool behaviours
      */
     public static final ToolAction SHOVEL_DIG = ToolAction.get("shovel_dig");
 
     /**
-     *  Exposed by hoes to allow querying tool behaviours
+     * Exposed by hoes to allow querying tool behaviours
      */
     public static final ToolAction HOE_DIG = ToolAction.get("hoe_dig");
 
     /**
-     *  Exposed by swords to allow querying tool behaviours
+     * Exposed by swords to allow querying tool behaviours
      */
     public static final ToolAction SWORD_DIG = ToolAction.get("sword_dig");
 
     /**
-     *  Exposed by shears to allow querying tool behaviours
+     * Exposed by shears to allow querying tool behaviours
      */
     public static final ToolAction SHEARS_DIG = ToolAction.get("shears_dig");
 
     /**
-     *  Passed onto {@link IBlockExtension#getToolModifiedState} when an axe wants to strip a log
+     * Passed onto {@link IBlockExtension#getToolModifiedState} when an axe wants to strip a log
      */
     public static final ToolAction AXE_STRIP = ToolAction.get("axe_strip");
 
     /**
-     *  Passed onto {@link IBlockExtension#getToolModifiedState} when an axe wants to scrape oxidization off copper
+     * Passed onto {@link IBlockExtension#getToolModifiedState} when an axe wants to scrape oxidization off copper
      */
     public static final ToolAction AXE_SCRAPE = ToolAction.get("axe_scrape");
 
     /**
-     *  Passed onto {@link IBlockExtension#getToolModifiedState} when an axe wants to remove wax out of copper
+     * Passed onto {@link IBlockExtension#getToolModifiedState} when an axe wants to remove wax out of copper
      */
     public static final ToolAction AXE_WAX_OFF = ToolAction.get("axe_wax_off");
 
     /**
-     *  Passed onto {@link IBlockExtension#getToolModifiedState} when a shovel wants to turn dirt into path
+     * Passed onto {@link IBlockExtension#getToolModifiedState} when a shovel wants to turn dirt into path
      */
     public static final ToolAction SHOVEL_FLATTEN = ToolAction.get("shovel_flatten");
 
     /**
-     *  Used during player attack to figure out if a sweep attack should be performed
-     *  
-     *  @see IItemExtension#getSweepHitBox
+     * Used during player attack to figure out if a sweep attack should be performed
+     * 
+     * @see IItemExtension#getSweepHitBox
      */
     public static final ToolAction SWORD_SWEEP = ToolAction.get("sword_sweep");
 
     /**
-     *  This action is exposed by shears and corresponds to a harvest action that is triggered with a right click on a block that supports such behaviour.
-     *  Example: Right click with shears on a beehive with honey level 5 to harvest it
+     * This action is exposed by shears and corresponds to a harvest action that is triggered with a right click on a block that supports such behaviour.
+     * Example: Right click with shears on a beehive with honey level 5 to harvest it
      */
     public static final ToolAction SHEARS_HARVEST = ToolAction.get("shears_harvest");
 
     /**
-     *  This action is exposed by shears and corresponds to a carve action that is triggered with a right click on a block that supports such behaviour.
-     *  Example: Right click with shears o a pumpkin to carve it
+     * This action is exposed by shears and corresponds to a carve action that is triggered with a right click on a block that supports such behaviour.
+     * Example: Right click with shears o a pumpkin to carve it
      */
     public static final ToolAction SHEARS_CARVE = ToolAction.get("shears_carve");
 
     /**
-     *  This action is exposed by shears and corresponds to a disarm action that is triggered by breaking a block that supports such behaviour.
-     *  Example: Breaking a trip wire with shears to disarm it.
+     * This action is exposed by shears and corresponds to a disarm action that is triggered by breaking a block that supports such behaviour.
+     * Example: Breaking a trip wire with shears to disarm it.
      */
     public static final ToolAction SHEARS_DISARM = ToolAction.get("shears_disarm");
 
     /**
-    *  Passed onto {@link IBlockExtension#getToolModifiedState} when a hoe wants to turn dirt into soil
-    */
+     * Passed onto {@link IBlockExtension#getToolModifiedState} when a hoe wants to turn dirt into soil
+     */
     public static final ToolAction HOE_TILL = ToolAction.get("till");
 
     /**

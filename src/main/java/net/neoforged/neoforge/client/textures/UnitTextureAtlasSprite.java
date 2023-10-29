@@ -17,25 +17,21 @@ import net.minecraft.server.packs.resources.ResourceMetadata;
  * <p>
  * Useful for baking quads that won't be used with an atlas.
  */
-public class UnitTextureAtlasSprite extends TextureAtlasSprite
-{
+public class UnitTextureAtlasSprite extends TextureAtlasSprite {
     public static final ResourceLocation LOCATION = new ResourceLocation("neoforge", "unit");
     public static final UnitTextureAtlasSprite INSTANCE = new UnitTextureAtlasSprite();
 
-    private UnitTextureAtlasSprite()
-    {
+    private UnitTextureAtlasSprite() {
         super(LOCATION, new SpriteContents(LOCATION, new FrameSize(1, 1), new NativeImage(1, 1, false), ResourceMetadata.EMPTY), 1, 1, 0, 0);
     }
 
     @Override
-    public float getU(float u)
-    {
+    public float getU(float u) {
         return u / 16;
     }
 
     @Override
-    public float getV(float v)
-    {
+    public float getV(float v) {
         return v / 16;
     }
 }

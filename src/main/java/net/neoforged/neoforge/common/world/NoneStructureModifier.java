@@ -10,19 +10,16 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
-public class NoneStructureModifier implements StructureModifier
-{
+public class NoneStructureModifier implements StructureModifier {
     public static final NoneStructureModifier INSTANCE = new NoneStructureModifier();
 
     @Override
-    public void modify(Holder<Structure> structure, Phase phase, ModifiableStructureInfo.StructureInfo.Builder builder)
-    {
+    public void modify(Holder<Structure> structure, Phase phase, ModifiableStructureInfo.StructureInfo.Builder builder) {
         // NOOP - intended for datapack makers who want to disable a structure modifier
     }
 
     @Override
-    public Codec<? extends StructureModifier> codec()
-    {
+    public Codec<? extends StructureModifier> codec() {
         return NeoForgeMod.NONE_STRUCTURE_MODIFIER_TYPE.get();
     }
 }

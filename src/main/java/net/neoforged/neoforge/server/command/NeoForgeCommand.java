@@ -11,19 +11,16 @@ import net.minecraft.commands.CommandSourceStack;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public class NeoForgeCommand
-{
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher)
-    {
+public class NeoForgeCommand {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
-            LiteralArgumentBuilder.<CommandSourceStack>literal("neoforge")
-            .then(TPSCommand.register())
-            .then(TrackCommand.register())
-            .then(EntityCommand.register())
-            .then(GenerateCommand.register())
-            .then(DimensionsCommand.register())
-            .then(ModListCommand.register())
-            .then(TagsCommand.register())
-        );
+                LiteralArgumentBuilder.<CommandSourceStack>literal("neoforge")
+                        .then(TPSCommand.register())
+                        .then(TrackCommand.register())
+                        .then(EntityCommand.register())
+                        .then(GenerateCommand.register())
+                        .then(DimensionsCommand.register())
+                        .then(ModListCommand.register())
+                        .then(TagsCommand.register()));
     }
 }

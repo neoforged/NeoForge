@@ -10,6 +10,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 
 public class DummySavedData extends SavedData {
     public static final DummySavedData DUMMY = new DummySavedData();
+
     private DummySavedData() {
         super();
     }

@@ -7,6 +7,17 @@ package net.neoforged.neoforge.debug;
 
 import com.google.common.collect.*;
 import com.google.gson.*;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import net.minecraft.DetectedVersion;
 import net.minecraft.Util;
 import net.minecraft.advancements.Advancement;
@@ -51,38 +62,25 @@ import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.client.model.generators.*;
 import net.neoforged.neoforge.client.model.generators.ModelFile.UncheckedModelFile;
 import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 import net.neoforged.neoforge.common.crafting.*;
 import net.neoforged.neoforge.common.data.*;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 @SuppressWarnings("deprecation")
 @Mod(DataGeneratorTest.MODID)
 @Mod.EventBusSubscriber(bus = Bus.MOD)
-public class DataGeneratorTest
-{
+public class DataGeneratorTest {
     static final String MODID = "data_gen_test";
 
     private static Gson GSON = null;
@@ -95,8 +93,7 @@ public class DataGeneratorTest
             .add(Registries.LEVEL_STEM, DataGeneratorTest::levelStem);
 
     @SubscribeEvent
-    public static void gatherData(GatherDataEvent event)
-    {
+    public static void gatherData(GatherDataEvent event) {
         GSON = new GsonBuilder()
                 .registerTypeAdapter(Variant.class, new Variant.Deserializer())
                 .registerTypeAdapter(ItemTransforms.class, new ItemTransforms.Deserializer())
@@ -111,9 +108,7 @@ public class DataGeneratorTest
                 .add(PackMetadataSection.TYPE, new PackMetadataSection(
                         Component.literal("Forge tests resource pack"),
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
-                        Arrays.stream(PackType.values()).collect(Collectors.toMap(Function.identity(), DetectedVersion.BUILT_IN::getPackVersion))
-                ))
-        );
+                        Arrays.stream(PackType.values()).collect(Collectors.toMap(Function.identity(), DetectedVersion.BUILT_IN::getPackVersion)))));
         gen.addProvider(event.includeClient(), new Lang(packOutput));
         // Let blockstate provider see generated item models by passing its existing file helper
         ItemModelProvider itemModels = new ItemModels(packOutput, event.getExistingFileHelper());
@@ -138,173 +133,154 @@ public class DataGeneratorTest
         context.register(TEST_LEVEL_STEM, levelStem);
     }
 
-    public static class Recipes extends RecipeProvider implements IConditionBuilder
-    {
-        public Recipes(PackOutput gen, CompletableFuture<HolderLookup.Provider> lookupProvider)
-        {
+    public static class Recipes extends RecipeProvider implements IConditionBuilder {
+        public Recipes(PackOutput gen, CompletableFuture<HolderLookup.Provider> lookupProvider) {
             super(gen, lookupProvider);
         }
 
         @Override
-        protected void buildRecipes(RecipeOutput consumer)
-        {
+        protected void buildRecipes(RecipeOutput consumer) {
             // conditional recipe
             new ConditionalRecipeBuilder()
-                .withCondition(
-                    and(
-                        not(modLoaded("minecraft")),
-                        itemExists("minecraft", "dirt"),
-                        FALSE()
+                    .withCondition(
+                            and(
+                                    not(modLoaded("minecraft")),
+                                    itemExists("minecraft", "dirt"),
+                                    FALSE()))
+                    .withRecipe(
+                            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
+                                    .pattern("XXX")
+                                    .pattern("XXX")
+                                    .pattern("XXX")
+                                    .define('X', Blocks.DIRT)
+                                    .group("")
+                                    .unlockedBy("has_dirt", has(Blocks.DIRT)) // DUMMY: Necessary, but not used when a custom advancement is provided through setAdvancement
                     )
-                )
-                .withRecipe(
-                    ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
-                        .pattern("XXX")
-                        .pattern("XXX")
-                        .pattern("XXX")
-                        .define('X', Blocks.DIRT)
-                        .group("")
-                        .unlockedBy("has_dirt", has(Blocks.DIRT)) // DUMMY: Necessary, but not used when a custom advancement is provided through setAdvancement
-                )
-                .save(consumer, new ResourceLocation("data_gen_test", "conditional"));
+                    .save(consumer, new ResourceLocation("data_gen_test", "conditional"));
 
             new ConditionalRecipeBuilder()
-                .withCondition(
-                    not(
-                        and(
-                            not(modLoaded("minecraft")),
-                            itemExists("minecraft", "dirt"),
-                            FALSE()
-                        )
-                    )
-                )
-                .withRecipe(
-                    ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
-                        .pattern("XXX")
-                        .pattern("XXX")
-                        .pattern("XXX")
-                        .define('X', Blocks.DIRT)
-                        .group("")
-                        .unlockedBy("has_dirt", has(Blocks.DIRT))
-                )
-                .save(consumer, new ResourceLocation("data_gen_test", "conditional2"));
+                    .withCondition(
+                            not(
+                                    and(
+                                            not(modLoaded("minecraft")),
+                                            itemExists("minecraft", "dirt"),
+                                            FALSE())))
+                    .withRecipe(
+                            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
+                                    .pattern("XXX")
+                                    .pattern("XXX")
+                                    .pattern("XXX")
+                                    .define('X', Blocks.DIRT)
+                                    .group("")
+                                    .unlockedBy("has_dirt", has(Blocks.DIRT)))
+                    .save(consumer, new ResourceLocation("data_gen_test", "conditional2"));
 
             new ConditionalRecipeBuilder()
-                .withCondition(
-                    tagEmpty(ItemTags.PLANKS)
-                )
-                .withRecipe(
-                    ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 1)
-                        .pattern("XX")
-                        .pattern("XX")
-                        .define('X', Blocks.DIAMOND_BLOCK)
-                        .group("")
-                        .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK))
-                )
-                .save(consumer, new ResourceLocation("data_gen_test", "conditional3"));
+                    .withCondition(
+                            tagEmpty(ItemTags.PLANKS))
+                    .withRecipe(
+                            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 1)
+                                    .pattern("XX")
+                                    .pattern("XX")
+                                    .define('X', Blocks.DIAMOND_BLOCK)
+                                    .group("")
+                                    .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK)))
+                    .save(consumer, new ResourceLocation("data_gen_test", "conditional3"));
 
             new ConditionalRecipeBuilder()
-                .withCondition(
-                    not(tagEmpty(ItemTags.PLANKS))
-                )
-                .withRecipe(
-                    ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 9)
-                        .pattern("XX")
-                        .pattern("XX")
-                        .define('X', Blocks.DIAMOND_BLOCK)
-                        .group("")
-                        .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK))
-                )
-                .save(consumer, new ResourceLocation("data_gen_test", "conditional4"));
+                    .withCondition(
+                            not(tagEmpty(ItemTags.PLANKS)))
+                    .withRecipe(
+                            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 9)
+                                    .pattern("XX")
+                                    .pattern("XX")
+                                    .define('X', Blocks.DIAMOND_BLOCK)
+                                    .group("")
+                                    .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK)))
+                    .save(consumer, new ResourceLocation("data_gen_test", "conditional4"));
 
             // ingredient tests
             // strict NBT match - should match an unnamed iron pickaxe that lost 3 durability
-            Ingredient nbtIngredient = StrictNBTIngredient.of(Util.make(() ->
-                {
-                    ItemStack stack = new ItemStack(Items.IRON_PICKAXE);
-                    stack.setDamageValue(3);
-                    return stack;
-                }));
+            Ingredient nbtIngredient = StrictNBTIngredient.of(Util.make(() -> {
+                ItemStack stack = new ItemStack(Items.IRON_PICKAXE);
+                stack.setDamageValue(3);
+                return stack;
+            }));
             ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.GOLDEN_PICKAXE)
-                                  .requires(nbtIngredient)
-                                  .unlockedBy("has_pickaxe", has(Items.IRON_PICKAXE))
-                                  .save(consumer, new ResourceLocation("data_gen_test", "exact_nbt_ingredient"));
+                    .requires(nbtIngredient)
+                    .unlockedBy("has_pickaxe", has(Items.IRON_PICKAXE))
+                    .save(consumer, new ResourceLocation("data_gen_test", "exact_nbt_ingredient"));
 
             // ingredient tests
             // contains NBT match - should match a stone pickaxe that lost 3 durability, regardless of setting its name
             ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.IRON_PICKAXE)
-                                  .requires(PartialNBTIngredient.of(Items.STONE_PICKAXE, Util.make(() ->
-                                      {
-                                        CompoundTag nbt = new CompoundTag();
-                                        nbt.putInt(ItemStack.TAG_DAMAGE, 3);
-                                        return nbt;
-                                      })))
-                                  .unlockedBy("has_pickaxe", has(Items.STONE_PICKAXE))
-                                  .save(consumer, new ResourceLocation("data_gen_test", "contains_nbt_ingredient_single_item"));
+                    .requires(PartialNBTIngredient.of(Items.STONE_PICKAXE, Util.make(() -> {
+                        CompoundTag nbt = new CompoundTag();
+                        nbt.putInt(ItemStack.TAG_DAMAGE, 3);
+                        return nbt;
+                    })))
+                    .unlockedBy("has_pickaxe", has(Items.STONE_PICKAXE))
+                    .save(consumer, new ResourceLocation("data_gen_test", "contains_nbt_ingredient_single_item"));
 
             // contains NBT match - should match a wood, stone, or iron pickaxe that was named "Diamond Pickaxe", regardless of damage
             ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.DIAMOND_PICKAXE)
-                                  .requires(PartialNBTIngredient.of(Util.make(() ->
-                                      {
-                                          CompoundTag nbt = new CompoundTag();
-                                          CompoundTag display = new CompoundTag();
-                                          display.putString(ItemStack.TAG_DISPLAY_NAME, "{\"text\":\"Diamond Pickaxe\"}");
-                                          nbt.put(ItemStack.TAG_DISPLAY, display);
-                                          return nbt;
-                                      }), Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.IRON_PICKAXE))
-                                  .unlockedBy("has_pickaxe", has(Items.WOODEN_PICKAXE))
-                                  .save(consumer, new ResourceLocation("data_gen_test", "contains_nbt_ingredient_item_set"));
+                    .requires(PartialNBTIngredient.of(Util.make(() -> {
+                        CompoundTag nbt = new CompoundTag();
+                        CompoundTag display = new CompoundTag();
+                        display.putString(ItemStack.TAG_DISPLAY_NAME, "{\"text\":\"Diamond Pickaxe\"}");
+                        nbt.put(ItemStack.TAG_DISPLAY, display);
+                        return nbt;
+                    }), Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.IRON_PICKAXE))
+                    .unlockedBy("has_pickaxe", has(Items.WOODEN_PICKAXE))
+                    .save(consumer, new ResourceLocation("data_gen_test", "contains_nbt_ingredient_item_set"));
 
             // intersection - should match all non-flammable planks
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERRACK)
-                               .pattern("###")
-                               .pattern("###")
-                               .pattern(" # ")
-                               .define('#', IntersectionIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.NON_FLAMMABLE_WOOD)))
-                               .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
-                               .save(consumer, new ResourceLocation("data_gen_test", "intersection_ingredient"));
+                    .pattern("###")
+                    .pattern("###")
+                    .pattern(" # ")
+                    .define('#', IntersectionIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.NON_FLAMMABLE_WOOD)))
+                    .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
+                    .save(consumer, new ResourceLocation("data_gen_test", "intersection_ingredient"));
 
             // difference - should match all flammable fences
             ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Items.FLINT_AND_STEEL)
-                               .pattern(" # ")
-                               .pattern("###")
-                               .pattern(" # ")
-                               .define('#', DifferenceIngredient.of(Ingredient.of(ItemTags.FENCES), Ingredient.of(ItemTags.NON_FLAMMABLE_WOOD)))
-                               .unlockedBy("has_fence", has(Items.CRIMSON_FENCE))
-                               .save(consumer, new ResourceLocation("data_gen_test", "difference_ingredient"));
+                    .pattern(" # ")
+                    .pattern("###")
+                    .pattern(" # ")
+                    .define('#', DifferenceIngredient.of(Ingredient.of(ItemTags.FENCES), Ingredient.of(ItemTags.NON_FLAMMABLE_WOOD)))
+                    .unlockedBy("has_fence", has(Items.CRIMSON_FENCE))
+                    .save(consumer, new ResourceLocation("data_gen_test", "difference_ingredient"));
 
             // compound - should match planks, logs, or bedrock
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIRT)
-                               .pattern("###")
-                               .pattern(" # ")
-                               .define('#', CompoundIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.LOGS), Ingredient.of(Blocks.BEDROCK)))
-                               .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
-                               .save(consumer, new ResourceLocation("data_gen_test", "compound_ingredient_only_vanilla"));
+                    .pattern("###")
+                    .pattern(" # ")
+                    .define('#', CompoundIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.LOGS), Ingredient.of(Blocks.BEDROCK)))
+                    .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
+                    .save(consumer, new ResourceLocation("data_gen_test", "compound_ingredient_only_vanilla"));
 
             // compound - should match planks, logs, or a stone pickaxe with 3 damage
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.GOLD_BLOCK)
-                               .pattern("#")
-                               .pattern("#")
-                               .define('#', CompoundIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.LOGS), nbtIngredient))
-                               .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
-                               .save(consumer, new ResourceLocation("data_gen_test", "compound_ingredient_custom_types"));
+                    .pattern("#")
+                    .pattern("#")
+                    .define('#', CompoundIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.LOGS), nbtIngredient))
+                    .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
+                    .save(consumer, new ResourceLocation("data_gen_test", "compound_ingredient_custom_types"));
         }
     }
 
-    public static class SoundDefinitions extends SoundDefinitionsProvider
-    {
+    public static class SoundDefinitions extends SoundDefinitionsProvider {
         private static final Logger LOGGER = LogManager.getLogger();
         private final ExistingFileHelper helper;
 
-        public SoundDefinitions(final PackOutput output, final ExistingFileHelper helper)
-        {
+        public SoundDefinitions(final PackOutput output, final ExistingFileHelper helper) {
             super(output, MODID, helper);
             this.helper = helper;
         }
 
         @Override
-        public void registerSounds()
-        {
+        public void registerSounds() {
             // ambient.underwater.loop.additions
             this.add(SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS, definition().with(
                     sound("ambient/underwater/additions/bubbles1"),
@@ -314,8 +290,7 @@ public class DataGeneratorTest
                     sound("ambient/underwater/additions/bubbles5"),
                     sound("ambient/underwater/additions/bubbles6"),
                     sound("ambient/underwater/additions/water1"),
-                    sound("ambient/underwater/additions/water2")
-            ));
+                    sound("ambient/underwater/additions/water2")));
 
             //ambient.underwater.loop.additions.ultra_rare
             this.add(SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_ULTRA_RARE, definition().with(
@@ -323,8 +298,7 @@ public class DataGeneratorTest
                     sound("ambient/underwater/additions/dark1"),
                     sound("ambient/underwater/additions/dark2").volume(0.7),
                     sound("ambient/underwater/additions/dark3"),
-                    sound("ambient/underwater/additions/dark4")
-            ));
+                    sound("ambient/underwater/additions/dark4")));
 
             //block.lava.ambient
             this.add(SoundEvents.LAVA_AMBIENT, definition().with(sound("liquid/lava")).subtitle("subtitles.block.lava.ambient"));
@@ -340,13 +314,11 @@ public class DataGeneratorTest
                     sound("mob/dolphin/idle_water7").volume(0.75),
                     sound("mob/dolphin/idle_water8").volume(0.75),
                     sound("mob/dolphin/idle_water9"),
-                    sound("mob/dolphin/idle_water10").volume(0.8)
-            ).subtitle("subtitles.entity.dolphin.ambient_water"));
+                    sound("mob/dolphin/idle_water10").volume(0.8)).subtitle("subtitles.entity.dolphin.ambient_water"));
 
             //entity.parrot.imitate.drowned
             this.add(SoundEvents.PARROT_IMITATE_DROWNED, definition().with(
-                    sound("entity.drowned.ambient", SoundDefinition.SoundType.EVENT).pitch(1.8).volume(0.6)
-            ).subtitle("subtitles.entity.parrot.imitate.drowned"));
+                    sound("entity.drowned.ambient", SoundDefinition.SoundType.EVENT).pitch(1.8).volume(0.6)).subtitle("subtitles.entity.parrot.imitate.drowned"));
 
             //item.trident.return
             this.add(SoundEvents.TRIDENT_RETURN, definition().with(
@@ -358,28 +330,22 @@ public class DataGeneratorTest
                     sound("item/trident/return3").volume(0.8),
                     sound("item/trident/return3").pitch(0.8).volume(0.8),
                     sound("item/trident/return3").pitch(0.8).volume(0.8),
-                    sound("item/trident/return3").pitch(1.2).volume(0.8)
-            ).subtitle("subtitles.item.trident.return"));
+                    sound("item/trident/return3").pitch(1.2).volume(0.8)).subtitle("subtitles.item.trident.return"));
 
             //music_disc.blocks
             this.add(SoundEvents.MUSIC_DISC_BLOCKS, definition().with(sound("records/blocks").stream()));
         }
 
         @Override
-        public CompletableFuture<?> run(CachedOutput cache)
-        {
+        public CompletableFuture<?> run(CachedOutput cache) {
             return super.run(cache).thenRun(this::test);
         }
 
-        private void test()
-        {
+        private void test() {
             final JsonObject generated;
-            try
-            {
+            try {
                 generated = reflect();
-            }
-            catch (ReflectiveOperationException e)
-            {
+            } catch (ReflectiveOperationException e) {
                 throw new RuntimeException("Unable to test for errors due to reflection error", e);
             }
             final JsonObject actual;
@@ -391,8 +357,7 @@ public class DataGeneratorTest
                 Resource vanillaSoundResource = resourceStack.get(0);
                 actual = GSON.fromJson(
                         vanillaSoundResource.openAsReader(),
-                        JsonObject.class
-                );
+                        JsonObject.class);
             } catch (IOException e) {
                 throw new RuntimeException("Unable to test for errors due to missing sounds.json", e);
             }
@@ -411,8 +376,7 @@ public class DataGeneratorTest
             }
         }
 
-        private JsonObject reflect() throws ReflectiveOperationException
-        {
+        private JsonObject reflect() throws ReflectiveOperationException {
             // This is not supposed to be done by client code, so we just run with reflection to avoid exposing
             // something that shouldn't be exposed in the first place
             final Method mapToJson = this.getClass().getSuperclass().getDeclaredMethod("mapToJson", Map.class);
@@ -423,70 +387,50 @@ public class DataGeneratorTest
             return (JsonObject) mapToJson.invoke(this, map.get(this));
         }
 
-        private List<String> compareAndGatherErrors(final Triple<String, JsonElement, JsonElement> triple)
-        {
+        private List<String> compareAndGatherErrors(final Triple<String, JsonElement, JsonElement> triple) {
             return this.compare(triple.getMiddle(), triple.getRight()).stream().map(it -> triple.getLeft() + ": " + it).collect(Collectors.toList());
         }
 
-        private List<String> compare(final JsonElement vanilla, @Nullable final JsonElement generated)
-        {
-            if (generated == null)
-            {
+        private List<String> compare(final JsonElement vanilla, @Nullable final JsonElement generated) {
+            if (generated == null) {
                 return Collections.singletonList("vanilla element has no generated counterpart");
-            }
-            else if (vanilla.isJsonPrimitive())
-            {
+            } else if (vanilla.isJsonPrimitive()) {
                 return this.comparePrimitives(vanilla.getAsJsonPrimitive(), generated);
-            }
-            else if (vanilla.isJsonObject())
-            {
+            } else if (vanilla.isJsonObject()) {
                 return this.compareObjects(vanilla.getAsJsonObject(), generated);
-            }
-            else if (vanilla.isJsonArray())
-            {
+            } else if (vanilla.isJsonArray()) {
                 return this.compareArrays(vanilla.getAsJsonArray(), generated);
-            }
-            else if (vanilla.isJsonNull() && !generated.isJsonNull())
-            {
+            } else if (vanilla.isJsonNull() && !generated.isJsonNull()) {
                 return Collections.singletonList("null value in vanilla doesn't match non-null value in generated");
             }
             throw new RuntimeException("Unable to match " + vanilla + " to any JSON type");
         }
 
-        private List<String> comparePrimitives(final JsonPrimitive vanilla, final JsonElement generated)
-        {
+        private List<String> comparePrimitives(final JsonPrimitive vanilla, final JsonElement generated) {
             if (!generated.isJsonPrimitive()) return Collections.singletonList("Primitive in vanilla isn't matched by generated " + generated);
 
             final JsonPrimitive generatedPrimitive = generated.getAsJsonPrimitive();
 
-            if (vanilla.isBoolean())
-            {
+            if (vanilla.isBoolean()) {
                 if (!generatedPrimitive.isBoolean()) return Collections.singletonList("Boolean in vanilla isn't matched by non-boolean " + generatedPrimitive);
 
-                if (vanilla.getAsBoolean() != generated.getAsBoolean())
-                {
+                if (vanilla.getAsBoolean() != generated.getAsBoolean()) {
                     return Collections.singletonList("Boolean '" + vanilla.getAsBoolean() + "' does not match generated '" + generatedPrimitive.getAsBoolean() + "'");
                 }
-            }
-            else if (vanilla.isNumber())
-            {
+            } else if (vanilla.isNumber()) {
                 if (!generatedPrimitive.isNumber()) return Collections.singletonList("Number in vanilla isn't matched by non-number " + generatedPrimitive);
 
                 // Handle numbers via big decimal so we are sure there isn't any sort of errors due to float/long
                 final BigDecimal vanillaNumber = vanilla.getAsBigDecimal();
                 final BigDecimal generatedNumber = vanilla.getAsBigDecimal();
 
-                if (vanillaNumber.compareTo(generatedNumber) != 0)
-                {
+                if (vanillaNumber.compareTo(generatedNumber) != 0) {
                     return Collections.singletonList("Number '" + vanillaNumber + "' does not match generated '" + generatedNumber + "'");
                 }
-            }
-            else if (vanilla.isString())
-            {
+            } else if (vanilla.isString()) {
                 if (!generatedPrimitive.isString()) return Collections.singletonList("String in vanilla isn't matched by non-string " + generatedPrimitive);
 
-                if (!vanilla.getAsString().equals(generatedPrimitive.getAsString()))
-                {
+                if (!vanilla.getAsString().equals(generatedPrimitive.getAsString())) {
                     return Collections.singletonList("String '" + vanilla.getAsString() + "' does not match generated '" + generatedPrimitive.getAsString() + "'");
                 }
             }
@@ -494,8 +438,7 @@ public class DataGeneratorTest
             return new ArrayList<>();
         }
 
-        private List<String> compareObjects(final JsonObject vanilla, final JsonElement generated)
-        {
+        private List<String> compareObjects(final JsonObject vanilla, final JsonElement generated) {
             if (!generated.isJsonObject()) return Collections.singletonList("Object in vanilla isn't matched by generated " + generated);
 
             final JsonObject generatedObject = generated.getAsJsonObject();
@@ -507,8 +450,7 @@ public class DataGeneratorTest
                     .collect(Collectors.toList());
         }
 
-        private List<String> compareArrays(final JsonArray vanilla, final JsonElement generated)
-        {
+        private List<String> compareArrays(final JsonArray vanilla, final JsonElement generated) {
             if (!generated.isJsonArray()) return Collections.singletonList("Array in vanilla isn't matched by generated " + generated);
 
             final JsonArray generatedArray = generated.getAsJsonArray();
@@ -521,22 +463,19 @@ public class DataGeneratorTest
         }
     }
 
-    public static class Tags extends BlockTagsProvider
-    {
-        public Tags(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper)
-        {
+    public static class Tags extends BlockTagsProvider {
+        public Tags(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
             super(output, lookupProvider, MODID, existingFileHelper);
         }
 
         @Override
-        protected void addTags(HolderLookup.Provider provider)
-        {
+        protected void addTags(HolderLookup.Provider provider) {
             tag(BlockTags.create(new ResourceLocation(MODID, "test")))
-                .add(Blocks.DIAMOND_BLOCK)
-                .addTag(BlockTags.STONE_BRICKS)
-                .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONE)
-                .addOptional(new ResourceLocation("chisel", "marble/raw"))
-                .addOptionalTag(new ResourceLocation("forge", "storage_blocks/ruby"));
+                    .add(Blocks.DIAMOND_BLOCK)
+                    .addTag(BlockTags.STONE_BRICKS)
+                    .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONE)
+                    .addOptional(new ResourceLocation("chisel", "marble/raw"))
+                    .addOptionalTag(new ResourceLocation("forge", "storage_blocks/ruby"));
 
             // Hopefully sorting issues
             tag(BlockTags.create(new ResourceLocation(MODID, "thing/one")))
@@ -553,16 +492,13 @@ public class DataGeneratorTest
         }
     }
 
-    public static class Lang extends LanguageProvider
-    {
-        public Lang(PackOutput gen)
-        {
+    public static class Lang extends LanguageProvider {
+        public Lang(PackOutput gen) {
             super(gen, MODID, "en_us");
         }
 
         @Override
-        protected void addTranslations()
-        {
+        protected void addTranslations() {
             add(Blocks.STONE, "Stone");
             add(Items.DIAMOND, "Diamond");
             //add(Biomes.BEACH, "Beach");
@@ -573,18 +509,15 @@ public class DataGeneratorTest
         }
     }
 
-    public static class ItemModels extends ItemModelProvider
-    {
+    public static class ItemModels extends ItemModelProvider {
         private static final Logger LOGGER = LogManager.getLogger();
 
-        public ItemModels(PackOutput generator, ExistingFileHelper existingFileHelper)
-        {
+        public ItemModels(PackOutput generator, ExistingFileHelper existingFileHelper) {
             super(generator, MODID, existingFileHelper);
         }
 
         @Override
-        protected void registerModels()
-        {
+        protected void registerModels() {
             getBuilder("test_generated_model")
                     .parent(new UncheckedModelFile("item/generated"))
                     .texture("layer0", mcLoc("block/stone"));
@@ -618,11 +551,10 @@ public class DataGeneratorTest
 
         private static final Set<String> IGNORED_MODELS = ImmutableSet.of("test_generated_model", "test_block_model",
                 "fishing_rod", "fishing_rod_cast" // Vanilla doesn't generate these yet, so they don't match due to having the minecraft domain
-                );
+        );
 
         @Override
-        public CompletableFuture<?> run(CachedOutput cache)
-        {
+        public CompletableFuture<?> run(CachedOutput cache) {
             var output = super.run(cache);
             List<String> errors = testModelResults(this.generatedModels, existingFileHelper, IGNORED_MODELS.stream().map(s -> new ResourceLocation(MODID, folder + "/" + s)).collect(Collectors.toSet()));
             if (!errors.isEmpty()) {
@@ -637,24 +569,20 @@ public class DataGeneratorTest
         }
 
         @Override
-        public String getName()
-        {
+        public String getName() {
             return "Forge Test Item Models";
         }
     }
 
-    public static class BlockStates extends BlockStateProvider
-    {
+    public static class BlockStates extends BlockStateProvider {
         private static final Logger LOGGER = LogManager.getLogger();
 
-        public BlockStates(PackOutput output, ExistingFileHelper exFileHelper)
-        {
+        public BlockStates(PackOutput output, ExistingFileHelper exFileHelper) {
             super(output, MODID, exFileHelper);
         }
 
         @Override
-        protected void registerStatesAndModels()
-        {
+        protected void registerStatesAndModels() {
             // Unnecessarily complicated example to showcase how manual building works
             ModelFile birchFenceGate = models().fenceGate("birch_fence_gate", mcLoc("block/birch_planks"));
             ModelFile birchFenceGateOpen = models().fenceGateOpen("birch_fence_gate_open", mcLoc("block/birch_planks"));
@@ -754,8 +682,7 @@ public class DataGeneratorTest
                     .forAllStates(state -> ConfiguredModel.builder()
                             .modelFile(state.getValue(FurnaceBlock.LIT) ? furnaceLit : furnace)
                             .rotationY((int) state.getValue(FurnaceBlock.FACING).getOpposite().toYRot())
-                            .build()
-                    );
+                            .build());
 
             ModelFile barrel = models().cubeBottomTop("barrel", mcLoc("block/barrel_side"), mcLoc("block/barrel_bottom"), mcLoc("block/barrel_top"));
             ModelFile barrelOpen = models().cubeBottomTop("barrel_open", mcLoc("block/barrel_side"), mcLoc("block/barrel_bottom"), mcLoc("block/barrel_top_open"));
@@ -803,8 +730,7 @@ public class DataGeneratorTest
         private List<String> errors = new ArrayList<>();
 
         @Override
-        public CompletableFuture<?> run(CachedOutput cache)
-        {
+        public CompletableFuture<?> run(CachedOutput cache) {
             return super.run(cache).thenRun(() -> {
                 this.errors.addAll(testModelResults(models().generatedModels, models().existingFileHelper, Sets.union(IGNORED_MODELS, CUSTOM_MODELS)));
                 this.registeredBlocks.forEach((block, state) -> {
@@ -982,31 +908,29 @@ public class DataGeneratorTest
         }
     }
 
-    private static class Advancements implements AdvancementProvider.AdvancementGenerator
-    {
+    private static class Advancements implements AdvancementProvider.AdvancementGenerator {
 
         @Override
-        public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper)
-        {
+        public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
             Advancement.Builder.advancement().display(Items.DIRT,
-                            Component.translatable(Items.DIRT.getDescriptionId()),
-                            Component.translatable("dirt_description"),
-                            new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
-                            FrameType.TASK,
-                            true,
-                            true,
-                            false)
+                    Component.translatable(Items.DIRT.getDescriptionId()),
+                    Component.translatable("dirt_description"),
+                    new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
+                    FrameType.TASK,
+                    true,
+                    true,
+                    false)
                     .addCriterion("has_dirt", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIRT))
                     .save(saver, new ResourceLocation(MODID, "obtain_dirt"), existingFileHelper);
 
             Advancement.Builder.advancement().display(Items.DIAMOND_BLOCK,
-                            Component.translatable(Items.DIAMOND_BLOCK.getDescriptionId()),
-                            Component.literal("You obtained a DiamondBlock"),
-                            new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
-                            FrameType.CHALLENGE,
-                            true,
-                            true,
-                            false)
+                    Component.translatable(Items.DIAMOND_BLOCK.getDescriptionId()),
+                    Component.literal("You obtained a DiamondBlock"),
+                    new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
+                    FrameType.CHALLENGE,
+                    true,
+                    true,
+                    false)
                     .addCriterion("obtained_diamond_block", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND_BLOCK))
                     .save(saver, new ResourceLocation("obtain_diamond_block"), existingFileHelper);
 
@@ -1024,42 +948,39 @@ public class DataGeneratorTest
 
             // This should cause an error because of the parent not existing
 /*            Advancement.Builder.advancement().display(Blocks.COBBLESTONE,
-                    new TranslationTextComponent(Items.COBBLESTONE.getDescriptionId()),
-                    new StringTextComponent("You got cobblestone"),
+        new TranslationTextComponent(Items.COBBLESTONE.getDescriptionId()),
+        new StringTextComponent("You got cobblestone"),
+        new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
+        FrameType.TASK,
+        false,
+        false,
+        false)
+        .addCriterion("get_cobbleStone", InventoryChangeTrigger.Instance.hasItems(Items.COBBLESTONE))
+        .parent(new ResourceLocation("not_there/not_here"))
+        .save(consumer, new ResourceLocation("illegal_parent"), fileHelper);*/
+
+            Advancement.Builder.advancement().display(Blocks.COBBLESTONE,
+                    Component.translatable(Items.COBBLESTONE.getDescriptionId()),
+                    Component.literal("You got cobblestone"),
                     new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
                     FrameType.TASK,
                     false,
                     false,
                     false)
-                    .addCriterion("get_cobbleStone", InventoryChangeTrigger.Instance.hasItems(Items.COBBLESTONE))
-                    .parent(new ResourceLocation("not_there/not_here"))
-                    .save(consumer, new ResourceLocation("illegal_parent"), fileHelper);*/
-
-            Advancement.Builder.advancement().display(Blocks.COBBLESTONE,
-                            Component.translatable(Items.COBBLESTONE.getDescriptionId()),
-                            Component.literal("You got cobblestone"),
-                            new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
-                            FrameType.TASK,
-                            false,
-                            false,
-                            false)
                     .addCriterion("get_cobbleStone", InventoryChangeTrigger.TriggerInstance.hasItems(Items.COBBLESTONE))
                     .parent(new ResourceLocation("forge", "dummy_parent"))
                     .save(saver, new ResourceLocation("good_parent"), existingFileHelper);
         }
     }
 
-    private static class ParticleDescriptions extends ParticleDescriptionProvider
-    {
+    private static class ParticleDescriptions extends ParticleDescriptionProvider {
 
-        public ParticleDescriptions(PackOutput output, ExistingFileHelper fileHelper)
-        {
+        public ParticleDescriptions(PackOutput output, ExistingFileHelper fileHelper) {
             super(output, fileHelper);
         }
 
         @Override
-        protected void addDescriptions()
-        {
+        protected void addDescriptions() {
             this.sprite(ParticleTypes.DRIPPING_LAVA, new ResourceLocation("drip_hang"));
 
             this.spriteSet(ParticleTypes.CLOUD, new ResourceLocation("generic"), 8, true);
@@ -1068,11 +989,9 @@ public class DataGeneratorTest
                     new ResourceLocation("splash_0"),
                     new ResourceLocation("splash_1"),
                     new ResourceLocation("splash_2"),
-                    new ResourceLocation("splash_3")
-            );
+                    new ResourceLocation("splash_3"));
 
-            this.spriteSet(ParticleTypes.ENCHANT, () -> new Iterator<>()
-            {
+            this.spriteSet(ParticleTypes.ENCHANT, () -> new Iterator<>() {
 
                 private final ResourceLocation base = new ResourceLocation("sga");
                 private char suffix = 'a';
@@ -1090,47 +1009,38 @@ public class DataGeneratorTest
         }
 
         @Override
-        public CompletableFuture<?> run(CachedOutput cache)
-        {
+        public CompletableFuture<?> run(CachedOutput cache) {
             return super.run(cache).thenRun(this::validateResults);
         }
 
-        private void validateResults()
-        {
+        private void validateResults() {
             var errors = Stream.of(ParticleTypes.DRIPPING_LAVA, ParticleTypes.CLOUD, ParticleTypes.FISHING, ParticleTypes.ENCHANT)
                     .map(ForgeRegistries.PARTICLE_TYPES::getKey).map(particle -> {
-                        try (var resource = this.fileHelper.getResource(particle, PackType.CLIENT_RESOURCES, ".json", "particles").openAsReader())
-                        {
+                        try (var resource = this.fileHelper.getResource(particle, PackType.CLIENT_RESOURCES, ".json", "particles").openAsReader()) {
                             var existingTextures = GSON.fromJson(resource, JsonObject.class).get("textures").getAsJsonArray();
                             var generatedTextures = this.descriptions.get(particle);
 
                             // Check texture size
-                            if (existingTextures.size() != generatedTextures.size())
-                            {
+                            if (existingTextures.size() != generatedTextures.size()) {
                                 LOGGER.error("%s had a different number of sprites, expected %s, actual %s", particle, existingTextures.size(), generatedTextures.size());
                                 return particle;
                             }
 
                             boolean error = false;
-                            for (int i = 0; i < generatedTextures.size(); ++i)
-                            {
-                                if (!existingTextures.get(i).getAsString().equals(generatedTextures.get(i)))
-                                {
+                            for (int i = 0; i < generatedTextures.size(); ++i) {
+                                if (!existingTextures.get(i).getAsString().equals(generatedTextures.get(i))) {
                                     LOGGER.error("%s index %s: expected %s, actual %s", particle, i, existingTextures.get(i).getAsString(), generatedTextures.get(i));
                                     error = true;
                                 }
                             }
 
                             return error ? particle : null;
-                        }
-                        catch (IOException e)
-                        {
+                        } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
                     }).filter(Objects::nonNull).toList();
 
-            if (!errors.isEmpty())
-            {
+            if (!errors.isEmpty()) {
                 throw new AssertionError(String.format("Validation errors found in %s; see above for details", errors.stream().reduce("", (str, rl) -> str + ", " + rl, (str1, str2) -> str1 + ", " + str2)));
             }
         }
@@ -1161,7 +1071,7 @@ public class DataGeneratorTest
                     ItemTransforms vanillaTransforms = GSON.fromJson(vanillaDisplay, ItemTransforms.class);
                     for (ItemDisplayContext type : ItemDisplayContext.values()) {
                         if (!generatedTransforms.getTransform(type).equals(vanillaTransforms.getTransform(type))) {
-                            ret.add("Model " + loc  + " has transforms that differ from vanilla equivalent for perspective " + type.name());
+                            ret.add("Model " + loc + " has transforms that differ from vanilla equivalent for perspective " + type.name());
                             return;
                         }
                     }

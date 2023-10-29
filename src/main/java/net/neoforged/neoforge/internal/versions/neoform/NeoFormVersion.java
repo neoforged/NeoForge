@@ -5,12 +5,11 @@
 
 package net.neoforged.neoforge.internal.versions.neoform;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.JarVersionLookupHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class NeoFormVersion {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -27,6 +26,7 @@ public class NeoFormVersion {
         LOGGER.debug(Logging.CORE, "Found MC version information {}", mcVersion);
         LOGGER.debug(Logging.CORE, "Found NeoForm version information {}", neoFormVersion);
     }
+
     public static String getMCVersion() {
         return mcVersion;
     }

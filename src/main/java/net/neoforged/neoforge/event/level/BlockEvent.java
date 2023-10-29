@@ -5,58 +5,52 @@
 
 package net.neoforged.neoforge.event.level;
 
+import com.google.common.collect.ImmutableList;
 import java.util.EnumSet;
 import java.util.List;
-
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.block.BaseFireBlock;
-import net.minecraft.world.level.portal.PortalShape;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.portal.PortalShape;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
-import net.neoforged.bus.api.Event;
-
-import com.google.common.collect.ImmutableList;
-import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class BlockEvent extends Event
-{
+public abstract class BlockEvent extends Event {
     private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("neoforge.debugBlockEvent", "false"));
 
     private final LevelAccessor level;
     private final BlockPos pos;
     private final BlockState state;
-    public BlockEvent(LevelAccessor level, BlockPos pos, BlockState state)
-    {
+
+    public BlockEvent(LevelAccessor level, BlockPos pos, BlockState state) {
         this.pos = pos;
         this.level = level;
         this.state = state;
     }
 
-    public LevelAccessor getLevel()
-    {
+    public LevelAccessor getLevel() {
         return level;
     }
 
-    public BlockPos getPos()
-    {
+    public BlockPos getPos() {
         return pos;
     }
 
-    public BlockState getState()
-    {
+    public BlockState getState() {
         return state;
     }
 
@@ -64,31 +58,26 @@ public abstract class BlockEvent extends Event
      * Event that is fired when an Block is about to be broken by a player
      * Canceling this event will prevent the Block from being broken.
      */
-    public static class BreakEvent extends BlockEvent implements ICancellableEvent
-    {
+    public static class BreakEvent extends BlockEvent implements ICancellableEvent {
         /** Reference to the Player who broke the block. If no player is available, use a EntityFakePlayer */
         private final Player player;
         private int exp;
 
-        public BreakEvent(Level level, BlockPos pos, BlockState state, Player player)
-        {
+        public BreakEvent(Level level, BlockPos pos, BlockState state, Player player) {
             super(level, pos, state);
             this.player = player;
 
             if (state == null || !CommonHooks.isCorrectToolForDrops(state, player)) // Handle empty block or player unable to break block scenario
             {
                 this.exp = 0;
-            }
-            else
-            {
+            } else {
                 int fortuneLevel = player.getMainHandItem().getEnchantmentLevel(Enchantments.BLOCK_FORTUNE);
                 int silkTouchLevel = player.getMainHandItem().getEnchantmentLevel(Enchantments.SILK_TOUCH);
                 this.exp = state.getExpDrop(level, level.random, pos, fortuneLevel, silkTouchLevel);
             }
         }
 
-        public Player getPlayer()
-        {
+        public Player getPlayer() {
             return player;
         }
 
@@ -97,8 +86,7 @@ public abstract class BlockEvent extends Event
          *
          * @return The experience to drop or 0 if the event was canceled
          */
-        public int getExpToDrop()
-        {
+        public int getExpToDrop() {
             return this.isCanceled() ? 0 : exp;
         }
 
@@ -107,8 +95,7 @@ public abstract class BlockEvent extends Event
          *
          * @param exp 1 or higher to drop experience, else nothing will drop
          */
-        public void setExpToDrop(int exp)
-        {
+        public void setExpToDrop(int exp) {
             this.exp = exp;
         }
     }
@@ -118,32 +105,40 @@ public abstract class BlockEvent extends Event
      *
      * If a Block Place event is cancelled, the block will not be placed.
      */
-    public static class EntityPlaceEvent extends BlockEvent implements ICancellableEvent
-    {
+    public static class EntityPlaceEvent extends BlockEvent implements ICancellableEvent {
         private final Entity entity;
         private final BlockSnapshot blockSnapshot;
         private final BlockState placedBlock;
         private final BlockState placedAgainst;
 
-        public EntityPlaceEvent(@NotNull BlockSnapshot blockSnapshot, @NotNull BlockState placedAgainst, @Nullable Entity entity)
-        {
+        public EntityPlaceEvent(@NotNull BlockSnapshot blockSnapshot, @NotNull BlockState placedAgainst, @Nullable Entity entity) {
             super(blockSnapshot.getLevel(), blockSnapshot.getPos(), !(entity instanceof Player) ? blockSnapshot.getReplacedBlock() : blockSnapshot.getCurrentBlock());
             this.entity = entity;
             this.blockSnapshot = blockSnapshot;
             this.placedBlock = !(entity instanceof Player) ? blockSnapshot.getReplacedBlock() : blockSnapshot.getCurrentBlock();
             this.placedAgainst = placedAgainst;
 
-            if (DEBUG)
-            {
+            if (DEBUG) {
                 System.out.printf("Created EntityPlaceEvent - [PlacedBlock: %s ][PlacedAgainst: %s ][Entity: %s ]\n", getPlacedBlock(), placedAgainst, entity);
             }
         }
 
         @Nullable
-        public Entity getEntity() { return entity; }
-        public BlockSnapshot getBlockSnapshot() { return blockSnapshot; }
-        public BlockState getPlacedBlock() { return placedBlock; }
-        public BlockState getPlacedAgainst() { return placedAgainst; }
+        public Entity getEntity() {
+            return entity;
+        }
+
+        public BlockSnapshot getBlockSnapshot() {
+            return blockSnapshot;
+        }
+
+        public BlockState getPlacedBlock() {
+            return placedBlock;
+        }
+
+        public BlockState getPlacedAgainst() {
+            return placedAgainst;
+        }
     }
 
     /**
@@ -153,15 +148,13 @@ public abstract class BlockEvent extends Event
      * the placed block would exist if the placement only affected a single
      * block.
      */
-    public static class EntityMultiPlaceEvent extends EntityPlaceEvent implements ICancellableEvent
-    {
+    public static class EntityMultiPlaceEvent extends EntityPlaceEvent implements ICancellableEvent {
         private final List<BlockSnapshot> blockSnapshots;
 
         public EntityMultiPlaceEvent(@NotNull List<BlockSnapshot> blockSnapshots, @NotNull BlockState placedAgainst, @Nullable Entity entity) {
             super(blockSnapshots.get(0), placedAgainst, entity);
             this.blockSnapshots = ImmutableList.copyOf(blockSnapshots);
-            if (DEBUG)
-            {
+            if (DEBUG) {
                 System.out.printf("Created EntityMultiPlaceEvent - [PlacedAgainst: %s ][Entity: %s ]\n", placedAgainst, entity);
             }
         }
@@ -172,8 +165,7 @@ public abstract class BlockEvent extends Event
          *
          * @return immutable list of replaced BlockSnapshots
          */
-        public List<BlockSnapshot> getReplacedBlockSnapshots()
-        {
+        public List<BlockSnapshot> getReplacedBlockSnapshots() {
             return blockSnapshots;
         }
     }
@@ -183,13 +175,11 @@ public abstract class BlockEvent extends Event
      * a way for mods to detect physics updates, in the same way a BUD switch
      * does. This event is only called on the server.
      */
-    public static class NeighborNotifyEvent extends BlockEvent implements ICancellableEvent
-    {
+    public static class NeighborNotifyEvent extends BlockEvent implements ICancellableEvent {
         private final EnumSet<Direction> notifiedSides;
         private final boolean forceRedstoneUpdate;
 
-        public NeighborNotifyEvent(Level level, BlockPos pos, BlockState state, EnumSet<Direction> notifiedSides, boolean forceRedstoneUpdate)
-        {
+        public NeighborNotifyEvent(Level level, BlockPos pos, BlockState state, EnumSet<Direction> notifiedSides, boolean forceRedstoneUpdate) {
             super(level, pos, state);
             this.notifiedSides = notifiedSides;
             this.forceRedstoneUpdate = forceRedstoneUpdate;
@@ -200,17 +190,16 @@ public abstract class BlockEvent extends Event
          *
          * @return list of notified directions
          */
-        public EnumSet<Direction> getNotifiedSides()
-        {
+        public EnumSet<Direction> getNotifiedSides() {
             return notifiedSides;
         }
 
         /**
          * Get if redstone update was forced during setBlock call (0x16 to flags)
+         * 
          * @return if the flag was set
          */
-        public boolean getForceRedstoneUpdate()
-        {
+        public boolean getForceRedstoneUpdate() {
             return forceRedstoneUpdate;
         }
     }
@@ -222,51 +211,44 @@ public abstract class BlockEvent extends Event
      * even if the liquid usually does do that (like water).
      */
     @HasResult
-    public static class CreateFluidSourceEvent extends Event
-    {
+    public static class CreateFluidSourceEvent extends Event {
         private final Level level;
         private final BlockPos pos;
         private final BlockState state;
 
-        public CreateFluidSourceEvent(Level level, BlockPos pos, BlockState state)
-        {
+        public CreateFluidSourceEvent(Level level, BlockPos pos, BlockState state) {
             this.level = level;
             this.pos = pos;
             this.state = state;
         }
 
-        public Level getLevel()
-        {
+        public Level getLevel() {
             return level;
         }
 
-        public BlockPos getPos()
-        {
+        public BlockPos getPos() {
             return pos;
         }
 
-        public BlockState getState()
-        {
+        public BlockState getState() {
             return state;
         }
     }
 
     /**
      * Fired when a liquid places a block. Use {@link #setNewState(BlockState)} to change the result of
-     * a cobblestone generator or add variants of obsidian. Alternatively, you  could execute
+     * a cobblestone generator or add variants of obsidian. Alternatively, you could execute
      * arbitrary code when lava sets blocks on fire, even preventing it.
      *
      * {@link #getState()} will return the block that was originally going to be placed.
      * {@link #getPos()} will return the position of the block to be changed.
      */
-    public static class FluidPlaceBlockEvent extends BlockEvent implements ICancellableEvent
-    {
+    public static class FluidPlaceBlockEvent extends BlockEvent implements ICancellableEvent {
         private final BlockPos liquidPos;
         private BlockState newState;
         private BlockState origState;
 
-        public FluidPlaceBlockEvent(LevelAccessor level, BlockPos pos, BlockPos liquidPos, BlockState state)
-        {
+        public FluidPlaceBlockEvent(LevelAccessor level, BlockPos pos, BlockPos liquidPos, BlockState state) {
             super(level, pos, state);
             this.liquidPos = liquidPos;
             this.newState = state;
@@ -276,41 +258,35 @@ public abstract class BlockEvent extends Event
         /**
          * @return The position of the liquid this event originated from. This may be the same as {@link #getPos()}.
          */
-        public BlockPos getLiquidPos()
-        {
+        public BlockPos getLiquidPos() {
             return liquidPos;
         }
 
         /**
          * @return The block state that will be placed after this event resolves.
          */
-        public BlockState getNewState()
-        {
+        public BlockState getNewState() {
             return newState;
         }
 
-        public void setNewState(BlockState state)
-        {
+        public void setNewState(BlockState state) {
             this.newState = state;
         }
 
         /**
          * @return The state of the block to be changed before the event was fired.
          */
-        public BlockState getOriginalState()
-        {
+        public BlockState getOriginalState() {
             return origState;
         }
     }
 
     /**
-     * Fired when a crop block grows.  See subevents.
+     * Fired when a crop block grows. See subevents.
      *
      */
-    public static abstract class CropGrowEvent extends BlockEvent
-    {
-        public CropGrowEvent(Level level, BlockPos pos, BlockState state)
-        {
+    public static abstract class CropGrowEvent extends BlockEvent {
+        public CropGrowEvent(Level level, BlockPos pos, BlockState state) {
             super(level, pos, state);
         }
 
@@ -326,10 +302,8 @@ public abstract class BlockEvent extends Event
          * <br>
          */
         @HasResult
-        public static class Pre extends CropGrowEvent
-        {
-            public Pre(Level level, BlockPos pos, BlockState state)
-            {
+        public static class Pre extends CropGrowEvent {
+            public Pre(Level level, BlockPos pos, BlockState state) {
                 super(level, pos, state);
             }
         }
@@ -343,17 +317,15 @@ public abstract class BlockEvent extends Event
          * <br>
          * This event does not have a result. {@link HasResult}<br>
          */
-        public static class Post extends CropGrowEvent
-        {
+        public static class Post extends CropGrowEvent {
             private final BlockState originalState;
-            public Post(Level level, BlockPos pos, BlockState original, BlockState state)
-            {
+
+            public Post(Level level, BlockPos pos, BlockState original, BlockState state) {
                 super(level, pos, state);
                 originalState = original;
             }
 
-            public BlockState getOriginalState()
-            {
+            public BlockState getOriginalState() {
                 return originalState;
             }
         }
@@ -363,14 +335,12 @@ public abstract class BlockEvent extends Event
      * Fired when when farmland gets trampled
      * This event is {@link ICancellableEvent}
      */
-    public static class FarmlandTrampleEvent extends BlockEvent implements ICancellableEvent
-    {
+    public static class FarmlandTrampleEvent extends BlockEvent implements ICancellableEvent {
 
         private final Entity entity;
         private final float fallDistance;
 
-        public FarmlandTrampleEvent(Level level, BlockPos pos, BlockState state, float fallDistance, Entity entity)
-        {
+        public FarmlandTrampleEvent(Level level, BlockPos pos, BlockState state, float fallDistance, Entity entity) {
             super(level, pos, state);
             this.entity = entity;
             this.fallDistance = fallDistance;
@@ -386,23 +356,21 @@ public abstract class BlockEvent extends Event
 
     }
 
-    /** Fired when an attempt is made to spawn a nether portal from
+    /**
+     * Fired when an attempt is made to spawn a nether portal from
      * {@link BaseFireBlock#onPlace(BlockState, Level, BlockPos, BlockState, boolean)}.
      *
      * If cancelled, the portal will not be spawned.
      */
-    public static class PortalSpawnEvent extends BlockEvent implements ICancellableEvent
-    {
+    public static class PortalSpawnEvent extends BlockEvent implements ICancellableEvent {
         private final PortalShape size;
 
-        public PortalSpawnEvent(LevelAccessor level, BlockPos pos, BlockState state, PortalShape size)
-        {
+        public PortalSpawnEvent(LevelAccessor level, BlockPos pos, BlockState state, PortalShape size) {
             super(level, pos, state);
             this.size = size;
         }
 
-        public PortalShape getPortalSize()
-        {
+        public PortalShape getPortalSize() {
             return size;
         }
     }
@@ -417,15 +385,13 @@ public abstract class BlockEvent extends Event
      * This event is {@link ICancellableEvent}. If canceled, this will prevent the tool
      * from changing the block's state.
      */
-    public static class BlockToolModificationEvent extends BlockEvent implements ICancellableEvent
-    {
+    public static class BlockToolModificationEvent extends BlockEvent implements ICancellableEvent {
         private final UseOnContext context;
         private final ToolAction toolAction;
         private final boolean simulate;
         private BlockState state;
 
-        public BlockToolModificationEvent(BlockState originalState, @NotNull UseOnContext context, ToolAction toolAction, boolean simulate)
-        {
+        public BlockToolModificationEvent(BlockState originalState, @NotNull UseOnContext context, ToolAction toolAction, boolean simulate) {
             super(context.getLevel(), context.getClickedPos(), originalState);
             this.context = context;
             this.state = originalState;
@@ -435,27 +401,24 @@ public abstract class BlockEvent extends Event
 
         /**
          * @return the player using the tool.
-         * May be null based on what was provided by {@link #getContext() the use on context}.
+         *         May be null based on what was provided by {@link #getContext() the use on context}.
          */
         @Nullable
-        public Player getPlayer()
-        {
+        public Player getPlayer() {
             return this.context.getPlayer();
         }
 
         /**
          * @return the tool being used
          */
-        public ItemStack getHeldItemStack()
-        {
+        public ItemStack getHeldItemStack() {
             return this.context.getItemInHand();
         }
 
         /**
          * @return the action being performed
          */
-        public ToolAction getToolAction()
-        {
+        public ToolAction getToolAction() {
             return this.toolAction;
         }
 
@@ -464,10 +427,9 @@ public abstract class BlockEvent extends Event
          * If {@code false}, then level-modifying actions can be performed.
          *
          * @return {@code true} if this event should not perform any actions that modify the level.
-         * If {@code false}, then level-modifying actions can be performed.
+         *         If {@code false}, then level-modifying actions can be performed.
          */
-        public boolean isSimulated()
-        {
+        public boolean isSimulated() {
             return this.simulate;
         }
 
@@ -477,8 +439,7 @@ public abstract class BlockEvent extends Event
          * @return the nonnull use on context that this event was performed in
          */
         @NotNull
-        public UseOnContext getContext()
-        {
+        public UseOnContext getContext() {
             return context;
         }
 
@@ -488,8 +449,7 @@ public abstract class BlockEvent extends Event
          * @param finalState the state to transform the block into after tool use
          * @see #getFinalState()
          */
-        public void setFinalState(@Nullable BlockState finalState)
-        {
+        public void setFinalState(@Nullable BlockState finalState) {
             this.state = finalState;
         }
 
@@ -500,8 +460,7 @@ public abstract class BlockEvent extends Event
          *
          * @return the state to transform the block into after tool use
          */
-        public BlockState getFinalState()
-        {
+        public BlockState getFinalState() {
             return state;
         }
     }

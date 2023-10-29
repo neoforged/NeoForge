@@ -38,14 +38,14 @@ import org.apache.logging.log4j.Logger;
  * For each test the result will be logged.
  */
 @Mod("registry_codec_test")
-public class RegistryCodecTest
-{
+public class RegistryCodecTest {
 
     private static final Logger LOGGER = LogManager.getLogger("Codec Registry Test");
 
     /**
      * This Codec can serialize and deserialize a {@code Pair<Item, Block>}.
      * The resulting JSON (or NBT equivalent) will have this structure:
+     * 
      * <pre>{@code
      * {
      *     "block": "block_registry_name",
@@ -55,16 +55,13 @@ public class RegistryCodecTest
      */
     private static final Codec<Pair<Block, Item>> CODEC = RecordCodecBuilder.create(codecInstance -> codecInstance.group(
             ForgeRegistries.BLOCKS.getCodec().fieldOf("block").forGetter(Pair::getFirst),
-            ForgeRegistries.ITEMS.getCodec().fieldOf("item").forGetter(Pair::getSecond)
-    ).apply(codecInstance, Pair::of));
+            ForgeRegistries.ITEMS.getCodec().fieldOf("item").forGetter(Pair::getSecond)).apply(codecInstance, Pair::of));
 
-    public RegistryCodecTest()
-    {
+    public RegistryCodecTest() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
     }
 
-    public void commonSetup(final FMLCommonSetupEvent event)
-    {
+    public void commonSetup(final FMLCommonSetupEvent event) {
         //Create our Json to decode
         JsonObject json = new JsonObject();
         json.addProperty("block", "minecraft:diamond_block");

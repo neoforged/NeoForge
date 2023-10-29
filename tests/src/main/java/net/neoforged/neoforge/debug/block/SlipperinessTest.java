@@ -22,8 +22,7 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod(SlipperinessTest.MOD_ID)
 @EventBusSubscriber
-public class SlipperinessTest
-{
+public class SlipperinessTest {
     static final String MOD_ID = "slipperiness_test";
     static final String BLOCK_ID = "test_block";
 
@@ -31,21 +30,17 @@ public class SlipperinessTest
     public static final Block BB_BLOCK = null;
 
     @SubscribeEvent
-    public static void registerBlocks(RegisterEvent e)
-    {
-        e.register(ForgeRegistries.Keys.BLOCKS, helper -> helper.register(BLOCK_ID, new Block(Block.Properties.of())
-        {
+    public static void registerBlocks(RegisterEvent e) {
+        e.register(ForgeRegistries.Keys.BLOCKS, helper -> helper.register(BLOCK_ID, new Block(Block.Properties.of()) {
             @Override
-            public float getFriction(BlockState state, LevelReader level, BlockPos pos, Entity entity)
-            {
+            public float getFriction(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
                 return entity instanceof Boat ? 2 : super.getFriction(state, level, pos, entity);
             }
         }));
     }
 
     @SubscribeEvent
-    public static void registerItems(RegisterEvent e)
-    {
+    public static void registerItems(RegisterEvent e) {
         e.register(ForgeRegistries.Keys.ITEMS, helper -> helper.register(BLOCK_ID, new BlockItem(BB_BLOCK, new Item.Properties())));
     }
 

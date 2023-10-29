@@ -7,6 +7,5 @@
 @MethodsReturnNonnullByDefault
 package net.neoforged.neoforge.client.model.pipeline;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
-
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;

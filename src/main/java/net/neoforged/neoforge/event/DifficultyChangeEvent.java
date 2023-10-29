@@ -6,9 +6,9 @@
 package net.neoforged.neoforge.event;
 
 import net.minecraft.world.Difficulty;
+import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.bus.api.Event;
 
 /**
  * DifficultyChangeEvent is fired when difficulty is changing. <br>
@@ -19,24 +19,20 @@ import net.neoforged.bus.api.Event;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class DifficultyChangeEvent extends Event
-{
+public class DifficultyChangeEvent extends Event {
     private final Difficulty difficulty;
     private final Difficulty oldDifficulty;
 
-    public DifficultyChangeEvent(Difficulty difficulty, Difficulty oldDifficulty)
-    {
+    public DifficultyChangeEvent(Difficulty difficulty, Difficulty oldDifficulty) {
         this.difficulty = difficulty;
         this.oldDifficulty = oldDifficulty;
     }
 
-    public Difficulty getDifficulty()
-    {
+    public Difficulty getDifficulty() {
         return difficulty;
     }
 
-    public Difficulty getOldDifficulty()
-    {
+    public Difficulty getOldDifficulty() {
         return oldDifficulty;
     }
 }

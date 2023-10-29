@@ -7,11 +7,11 @@ package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.gui.GuiGraphics;
-import net.neoforged.neoforge.client.gui.overlay.NamedGuiOverlay;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.client.gui.overlay.NamedGuiOverlay;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -23,39 +23,33 @@ import org.jetbrains.annotations.ApiStatus;
  * @see Pre
  * @see Post
  */
-public abstract class RenderGuiOverlayEvent extends Event
-{
+public abstract class RenderGuiOverlayEvent extends Event {
     private final Window window;
     private final GuiGraphics guiGraphics;
     private final float partialTick;
     private final NamedGuiOverlay overlay;
 
     @ApiStatus.Internal
-    protected RenderGuiOverlayEvent(Window window, GuiGraphics guiGraphics, float partialTick, NamedGuiOverlay overlay)
-    {
+    protected RenderGuiOverlayEvent(Window window, GuiGraphics guiGraphics, float partialTick, NamedGuiOverlay overlay) {
         this.window = window;
         this.guiGraphics = guiGraphics;
         this.partialTick = partialTick;
         this.overlay = overlay;
     }
 
-    public Window getWindow()
-    {
+    public Window getWindow() {
         return window;
     }
 
-    public GuiGraphics getGuiGraphics()
-    {
+    public GuiGraphics getGuiGraphics() {
         return guiGraphics;
     }
 
-    public float getPartialTick()
-    {
+    public float getPartialTick() {
         return partialTick;
     }
 
-    public NamedGuiOverlay getOverlay()
-    {
+    public NamedGuiOverlay getOverlay() {
         return overlay;
     }
 
@@ -71,11 +65,9 @@ public abstract class RenderGuiOverlayEvent extends Event
      *
      * @see Post
      */
-    public static class Pre extends RenderGuiOverlayEvent implements ICancellableEvent
-    {
+    public static class Pre extends RenderGuiOverlayEvent implements ICancellableEvent {
         @ApiStatus.Internal
-        public Pre(Window window, GuiGraphics guiGraphics, float partialTick, NamedGuiOverlay overlay)
-        {
+        public Pre(Window window, GuiGraphics guiGraphics, float partialTick, NamedGuiOverlay overlay) {
             super(window, guiGraphics, partialTick, overlay);
         }
     }
@@ -88,11 +80,9 @@ public abstract class RenderGuiOverlayEvent extends Event
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    public static class Post extends RenderGuiOverlayEvent
-    {
+    public static class Post extends RenderGuiOverlayEvent {
         @ApiStatus.Internal
-        public Post(Window window, GuiGraphics guiGraphics, float partialTick, NamedGuiOverlay overlay)
-        {
+        public Post(Window window, GuiGraphics guiGraphics, float partialTick, NamedGuiOverlay overlay) {
             super(window, guiGraphics, partialTick, overlay);
         }
     }

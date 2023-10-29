@@ -5,14 +5,12 @@
 
 package net.neoforged.neoforge.debug.world;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
@@ -34,6 +32,9 @@ import net.minecraft.world.level.levelgen.GenerationStep.Decoration;
 import net.minecraft.world.level.levelgen.placement.BiomeFilter;
 import net.minecraft.world.level.levelgen.placement.CountOnEveryLayerPlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers.AddFeaturesBiomeModifier;
@@ -41,9 +42,6 @@ import net.neoforged.neoforge.common.world.BiomeModifiers.AddSpawnsBiomeModifier
 import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveFeaturesBiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveSpawnsBiomeModifier;
 import net.neoforged.neoforge.common.world.ModifiableBiomeInfo.BiomeInfo.Builder;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
@@ -62,8 +60,7 @@ import net.neoforged.neoforge.registries.RegistryObject;
  * oak trees, pine trees, and skeletons.</p>
  */
 @Mod(BiomeModifierTest.MODID)
-public class BiomeModifierTest
-{
+public class BiomeModifierTest {
     public static final String MODID = "biome_modifiers_test";
     private static final boolean ENABLED = true;
 
@@ -71,13 +68,10 @@ public class BiomeModifierTest
 
     // Biome Modifier Serializers
     private static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MODID);
-    private static final RegistryObject<Codec<TestModifier>> MODIFY_BIOMES = BIOME_MODIFIER_SERIALIZERS.register("modify_biomes", () ->
-            RecordCodecBuilder.create(builder -> builder.group(
-                    Biome.LIST_CODEC.fieldOf("biomes").forGetter(TestModifier::biomes),
-                    Codec.STRING.xmap(s -> Precipitation.valueOf(s.toUpperCase(Locale.ROOT)), e -> e.name().toLowerCase(Locale.ROOT)).fieldOf("precipitation").forGetter(TestModifier::precipitation),
-                    Codec.INT.fieldOf("water_color").forGetter(TestModifier::waterColor)
-            ).apply(builder, TestModifier::new))
-    );
+    private static final RegistryObject<Codec<TestModifier>> MODIFY_BIOMES = BIOME_MODIFIER_SERIALIZERS.register("modify_biomes", () -> RecordCodecBuilder.create(builder -> builder.group(
+            Biome.LIST_CODEC.fieldOf("biomes").forGetter(TestModifier::biomes),
+            Codec.STRING.xmap(s -> Precipitation.valueOf(s.toUpperCase(Locale.ROOT)), e -> e.name().toLowerCase(Locale.ROOT)).fieldOf("precipitation").forGetter(TestModifier::precipitation),
+            Codec.INT.fieldOf("water_color").forGetter(TestModifier::waterColor)).apply(builder, TestModifier::new)));
 
     /* Dynamic registry objects */
 
@@ -93,9 +87,7 @@ public class BiomeModifierTest
             .add(Registries.PLACED_FEATURE, context -> context.register(LARGE_BASALT_COLUMNS,
                     new PlacedFeature(
                             context.lookup(Registries.CONFIGURED_FEATURE).getOrThrow(NetherFeatures.LARGE_BASALT_COLUMNS),
-                            List.of(CountOnEveryLayerPlacement.of(1), BiomeFilter.biome())
-                    )
-            ))
+                            List.of(CountOnEveryLayerPlacement.of(1), BiomeFilter.biome()))))
             .add(ForgeRegistries.Keys.BIOME_MODIFIERS, context -> {
                 var badlandsTag = context.lookup(Registries.BIOME).getOrThrow(BiomeTags.IS_BADLANDS);
                 var forestTag = context.lookup(Registries.BIOME).getOrThrow(BiomeTags.IS_FOREST);
@@ -103,33 +95,27 @@ public class BiomeModifierTest
                 context.register(ADD_BASALT_MODIFIER, new AddFeaturesBiomeModifier(
                         badlandsTag,
                         HolderSet.direct(context.lookup(Registries.PLACED_FEATURE).getOrThrow(LARGE_BASALT_COLUMNS)),
-                        Decoration.TOP_LAYER_MODIFICATION
-                ));
+                        Decoration.TOP_LAYER_MODIFICATION));
 
                 context.register(ADD_MAGMA_CUBES_MODIFIER, AddSpawnsBiomeModifier.singleSpawn(
                         badlandsTag,
-                        new SpawnerData(EntityType.MAGMA_CUBE, 100, 1, 4)
-                ));
+                        new SpawnerData(EntityType.MAGMA_CUBE, 100, 1, 4)));
 
                 context.register(MODIFY_BADLANDS_MODIFIER, new TestModifier(
                         badlandsTag,
                         Precipitation.SNOW,
-                        0xFF000
-                ));
+                        0xFF000));
 
                 context.register(REMOVE_FOREST_TREES_MODIFIER, RemoveFeaturesBiomeModifier.allSteps(
                         forestTag,
-                        HolderSet.direct(context.lookup(Registries.PLACED_FEATURE).getOrThrow(VegetationPlacements.TREES_BIRCH_AND_OAK))
-                ));
+                        HolderSet.direct(context.lookup(Registries.PLACED_FEATURE).getOrThrow(VegetationPlacements.TREES_BIRCH_AND_OAK))));
 
                 context.register(REMOVE_FOREST_SKELETONS_MODIFIER, new RemoveSpawnsBiomeModifier(
                         forestTag,
-                        context.lookup(Registries.ENTITY_TYPE).getOrThrow(EntityTypeTags.SKELETONS)
-                ));
+                        context.lookup(Registries.ENTITY_TYPE).getOrThrow(EntityTypeTags.SKELETONS)));
             });
 
-    public BiomeModifierTest()
-    {
+    public BiomeModifierTest() {
         if (!ENABLED)
             return;
 
@@ -141,33 +127,26 @@ public class BiomeModifierTest
         modBus.addListener(this::onGatherData);
     }
 
-    private void onGatherData(GatherDataEvent event)
-    {
+    private void onGatherData(GatherDataEvent event) {
         event.getGenerator().addProvider(event.includeServer(), (DataProvider.Factory<BiomeModifiers>) output -> new BiomeModifiers(output, event.getLookupProvider()));
     }
 
-    private static class BiomeModifiers extends DatapackBuiltinEntriesProvider
-    {
+    private static class BiomeModifiers extends DatapackBuiltinEntriesProvider {
 
-        public BiomeModifiers(PackOutput output, CompletableFuture<HolderLookup.Provider> registries)
-        {
+        public BiomeModifiers(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
             super(output, registries, BUILDER, Set.of(MODID));
         }
 
         @Override
-        public String getName()
-        {
+        public String getName() {
             return "Biome Modifier Registries: " + MODID;
         }
     }
 
-    public record TestModifier(HolderSet<Biome> biomes, Precipitation precipitation, int waterColor) implements BiomeModifier
-    {
+    public record TestModifier(HolderSet<Biome> biomes, Precipitation precipitation, int waterColor) implements BiomeModifier {
         @Override
-        public void modify(Holder<Biome> biome, Phase phase, Builder builder)
-        {
-            if (phase == Phase.MODIFY && this.biomes.contains(biome))
-            {
+        public void modify(Holder<Biome> biome, Phase phase, Builder builder) {
+            if (phase == Phase.MODIFY && this.biomes.contains(biome)) {
                 builder.getClimateSettings().setHasPrecipitation(true);
                 builder.getSpecialEffects().waterColor(this.waterColor);
                 if (this.precipitation == Precipitation.SNOW)
@@ -176,8 +155,7 @@ public class BiomeModifierTest
         }
 
         @Override
-        public Codec<? extends BiomeModifier> codec()
-        {
+        public Codec<? extends BiomeModifier> codec() {
             return MODIFY_BIOMES.get();
         }
     }

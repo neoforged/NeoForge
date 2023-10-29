@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.entity.player;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.function.Consumer;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
@@ -13,15 +14,13 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryObject;
-
-import java.util.function.Consumer;
 
 /**
  * Tests if item usage animation system works as intended. `item_use_animation_test:thing` is edible item with custom usage animation made with this system.
@@ -30,8 +29,7 @@ import java.util.function.Consumer;
  * And item in your hand will go down little.
  */
 @Mod(ItemUseAnimationTest.MOD_ID)
-public class ItemUseAnimationTest
-{
+public class ItemUseAnimationTest {
 
     public static final String MOD_ID = "item_use_animation_test";
 
@@ -39,56 +37,44 @@ public class ItemUseAnimationTest
 
     private static final RegistryObject<Item> THING = ITEMS.register("thing", () -> new ThingItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(4).alwaysEat().build())));
 
-    public ItemUseAnimationTest()
-    {
+    public ItemUseAnimationTest() {
         var modBus = FMLJavaModLoadingContext.get().getModEventBus();
         ITEMS.register(modBus);
         modBus.addListener(this::addCreative);
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.COMBAT)
             event.accept(THING);
     }
 
-    private static class ThingItem extends Item
-    {
+    private static class ThingItem extends Item {
 
-        public ThingItem(Item.Properties props)
-        {
+        public ThingItem(Item.Properties props) {
             super(props);
         }
 
         @Override
-        public UseAnim getUseAnimation(ItemStack stack)
-        {
+        public UseAnim getUseAnimation(ItemStack stack) {
             return UseAnim.CUSTOM;
         }
 
         @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer)
-        {
-            consumer.accept(new IClientItemExtensions()
-            {
+        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+            consumer.accept(new IClientItemExtensions() {
 
                 private static final HumanoidModel.ArmPose SWING_POSE = HumanoidModel.ArmPose.create("SWING", false, (model, entity, arm) -> {
-                    if (arm == HumanoidArm.RIGHT)
-                    {
+                    if (arm == HumanoidArm.RIGHT) {
                         model.rightArm.xRot = (float) (Math.random() * Math.PI * 2);
-                    } else
-                    {
+                    } else {
                         model.leftArm.xRot = (float) (Math.random() * Math.PI * 2);
                     }
                 });
 
                 @Override
-                public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack)
-                {
-                    if (!itemStack.isEmpty())
-                    {
-                        if (entityLiving.getUsedItemHand() == hand && entityLiving.getUseItemRemainingTicks() > 0)
-                        {
+                public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
+                    if (!itemStack.isEmpty()) {
+                        if (entityLiving.getUsedItemHand() == hand && entityLiving.getUseItemRemainingTicks() > 0) {
                             return SWING_POSE;
                         }
                     }

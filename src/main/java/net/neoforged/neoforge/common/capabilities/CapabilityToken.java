@@ -15,22 +15,19 @@ import net.neoforged.fml.common.asm.CapabilityTokenSubclass;
  * class.
  *
  * Example usage:
+ * 
  * <pre>{@code
- *    public static Capability<IDataHolder> DATA_HOLDER_CAPABILITY
- *    		= CapabilityManager.get(new CapabilityToken<>(){});
+ * public static Capability<IDataHolder> DATA_HOLDER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
  * }</pre>
  *
  */
-public abstract class CapabilityToken<T>
-{
-    protected final String getType()
-    {
+public abstract class CapabilityToken<T> {
+    protected final String getType() {
         throw new RuntimeException("This will be implemented by a transformer");
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "CapabilityToken[" + getType() + "]";
     }
 }

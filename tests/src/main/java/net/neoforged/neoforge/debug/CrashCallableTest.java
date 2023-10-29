@@ -20,20 +20,16 @@ import net.neoforged.fml.common.Mod;
  * To initiate a debug crash to test this, hold F3 + C for 10 seconds.
  */
 @Mod("crash_callable_test")
-public class CrashCallableTest
-{
+public class CrashCallableTest {
     private static final boolean ENABLED = true;
 
-    public CrashCallableTest()
-    {
+    public CrashCallableTest() {
         CrashReportCallables.registerCrashCallable("AlwaysActiveCrashCallable", () -> "test");
         CrashReportCallables.registerCrashCallable("ToggleableCrashCallable", () -> "active", () -> ENABLED);
-        CrashReportCallables.registerCrashCallable("BadContentCrashCallable", () ->
-        {
+        CrashReportCallables.registerCrashCallable("BadContentCrashCallable", () -> {
             throw new UnsupportedOperationException();
         });
-        CrashReportCallables.registerCrashCallable("BadFlagCrashCallable", () -> "why am I here?!", () ->
-        {
+        CrashReportCallables.registerCrashCallable("BadFlagCrashCallable", () -> "why am I here?!", () -> {
             throw new UnsupportedOperationException();
         });
     }

@@ -6,8 +6,8 @@
 package net.neoforged.neoforge.event.entity;
 
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event.HasResult;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * EntityMobGriefingEvent is fired when mob griefing is about to occur and allows an event listener to specify whether it should or not.<br>
@@ -22,10 +22,8 @@ import net.neoforged.bus.api.Event.HasResult;
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
 @HasResult
-public class EntityMobGriefingEvent extends EntityEvent
-{
-    public EntityMobGriefingEvent(Entity entity)
-    {
+public class EntityMobGriefingEvent extends EntityEvent {
+    public EntityMobGriefingEvent(Entity entity) {
         super(entity);
     }
 }

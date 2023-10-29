@@ -23,11 +23,9 @@ import org.lwjgl.opengl.GL11;
 /**
  * All the vanilla {@linkplain IGuiOverlay HUD overlays} in the order that they render.
  */
-public enum VanillaGuiOverlay
-{
+public enum VanillaGuiOverlay {
     VIGNETTE("vignette", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        if (Minecraft.useFancyGraphics())
-        {
+        if (Minecraft.useFancyGraphics()) {
             gui.setupOverlayRenderState(true, false);
             gui.renderVignette(guiGraphics, gui.getMinecraft().getCameraEntity());
         }
@@ -52,22 +50,17 @@ public enum VanillaGuiOverlay
         }
     }),
     HOTBAR("hotbar", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        if (!gui.getMinecraft().options.hideGui)
-        {
+        if (!gui.getMinecraft().options.hideGui) {
             gui.setupOverlayRenderState(true, false);
-            if (gui.getMinecraft().gameMode.getPlayerMode() == GameType.SPECTATOR)
-            {
+            if (gui.getMinecraft().gameMode.getPlayerMode() == GameType.SPECTATOR) {
                 gui.getSpectatorGui().renderHotbar(guiGraphics);
-            }
-            else
-            {
+            } else {
                 gui.renderHotbar(partialTick, guiGraphics);
             }
         }
     }),
     CROSSHAIR("crosshair", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        if (!gui.getMinecraft().options.hideGui)
-        {
+        if (!gui.getMinecraft().options.hideGui) {
             gui.setupOverlayRenderState(true, false);
 
             guiGraphics.pose().pushPose();
@@ -77,8 +70,7 @@ public enum VanillaGuiOverlay
         }
     }),
     BOSS_EVENT_PROGRESS("boss_event_progress", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        if (!gui.getMinecraft().options.hideGui)
-        {
+        if (!gui.getMinecraft().options.hideGui) {
             gui.setupOverlayRenderState(true, false);
 
             guiGraphics.pose().pushPose();
@@ -88,15 +80,13 @@ public enum VanillaGuiOverlay
         }
     }),
     PLAYER_HEALTH("player_health", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        if (!gui.getMinecraft().options.hideGui && gui.shouldDrawSurvivalElements())
-        {
+        if (!gui.getMinecraft().options.hideGui && gui.shouldDrawSurvivalElements()) {
             gui.setupOverlayRenderState(true, false);
             gui.renderHealth(screenWidth, screenHeight, guiGraphics);
         }
     }),
     ARMOR_LEVEL("armor_level", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        if (!gui.getMinecraft().options.hideGui && gui.shouldDrawSurvivalElements())
-        {
+        if (!gui.getMinecraft().options.hideGui && gui.shouldDrawSurvivalElements()) {
             gui.setupOverlayRenderState(true, false);
             gui.renderArmor(guiGraphics, screenWidth, screenHeight);
         }
@@ -104,51 +94,42 @@ public enum VanillaGuiOverlay
     FOOD_LEVEL("food_level", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
         Entity vehicle = gui.getMinecraft().player.getVehicle();
         boolean isMounted = vehicle != null && vehicle.showVehicleHealth();
-        if (!isMounted && !gui.getMinecraft().options.hideGui && gui.shouldDrawSurvivalElements())
-        {
+        if (!isMounted && !gui.getMinecraft().options.hideGui && gui.shouldDrawSurvivalElements()) {
             gui.setupOverlayRenderState(true, false);
             gui.renderFood(screenWidth, screenHeight, guiGraphics);
         }
     }),
     AIR_LEVEL("air_level", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        if (!gui.getMinecraft().options.hideGui && gui.shouldDrawSurvivalElements())
-        {
+        if (!gui.getMinecraft().options.hideGui && gui.shouldDrawSurvivalElements()) {
             gui.setupOverlayRenderState(true, false);
             gui.renderAir(screenWidth, screenHeight, guiGraphics);
         }
     }),
     MOUNT_HEALTH("mount_health", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        if (!gui.getMinecraft().options.hideGui && gui.shouldDrawSurvivalElements())
-        {
+        if (!gui.getMinecraft().options.hideGui && gui.shouldDrawSurvivalElements()) {
             gui.setupOverlayRenderState(true, false);
             gui.renderHealthMount(screenWidth, screenHeight, guiGraphics);
         }
     }),
     JUMP_BAR("jump_bar", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
         PlayerRideableJumping playerRideableJumping = gui.getMinecraft().player.jumpableVehicle();
-        if (playerRideableJumping != null && !gui.getMinecraft().options.hideGui)
-        {
+        if (playerRideableJumping != null && !gui.getMinecraft().options.hideGui) {
             gui.setupOverlayRenderState(true, false);
             gui.renderJumpMeter(playerRideableJumping, guiGraphics, screenWidth / 2 - 91);
         }
     }),
     EXPERIENCE_BAR("experience_bar", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        if (gui.getMinecraft().player.jumpableVehicle() == null && !gui.getMinecraft().options.hideGui)
-        {
+        if (gui.getMinecraft().player.jumpableVehicle() == null && !gui.getMinecraft().options.hideGui) {
             gui.setupOverlayRenderState(true, false);
             gui.renderExperience(screenWidth / 2 - 91, guiGraphics);
         }
     }),
     ITEM_NAME("item_name", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        if (!gui.getMinecraft().options.hideGui)
-        {
+        if (!gui.getMinecraft().options.hideGui) {
             gui.setupOverlayRenderState(true, false);
-            if (gui.getMinecraft().gameMode.getPlayerMode() != GameType.SPECTATOR)
-            {
+            if (gui.getMinecraft().gameMode.getPlayerMode() != GameType.SPECTATOR) {
                 gui.renderSelectedItemName(guiGraphics, Math.max(gui.leftHeight, gui.rightHeight));
-            }
-            else if (gui.getMinecraft().player.isSpectator())
-            {
+            } else if (gui.getMinecraft().player.isSpectator()) {
                 gui.getSpectatorGui().renderTooltip(guiGraphics);
             }
         }
@@ -161,24 +142,21 @@ public enum VanillaGuiOverlay
     }),
     DEBUG_SCREEN("debug_screen", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
         if (gui.getDebugOverlay().showDebugScreen()) {
-           gui.renderDebugScreenOverlay(guiGraphics);
+            gui.renderDebugScreenOverlay(guiGraphics);
         }
     }),
     RECORD_OVERLAY("record_overlay", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        if (!gui.getMinecraft().options.hideGui)
-        {
+        if (!gui.getMinecraft().options.hideGui) {
             gui.renderRecordOverlay(screenWidth, screenHeight, partialTick, guiGraphics);
         }
     }),
     TITLE_TEXT("title_text", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        if (!gui.getMinecraft().options.hideGui)
-        {
+        if (!gui.getMinecraft().options.hideGui) {
             gui.renderTitle(screenWidth, screenHeight, partialTick, guiGraphics);
         }
     }),
     SUBTITLES("subtitles", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        if (!gui.getMinecraft().options.hideGui)
-        {
+        if (!gui.getMinecraft().options.hideGui) {
             gui.renderSubtitles(guiGraphics);
         }
     }),
@@ -187,14 +165,12 @@ public enum VanillaGuiOverlay
         Scoreboard scoreboard = gui.getMinecraft().level.getScoreboard();
         Objective objective = null;
         PlayerTeam scoreplayerteam = scoreboard.getPlayersTeam(gui.getMinecraft().player.getScoreboardName());
-        if (scoreplayerteam != null)
-        {
+        if (scoreplayerteam != null) {
             DisplaySlot displayslot = DisplaySlot.teamColorToSlot(scoreplayerteam.getColor());
             if (displayslot != null) objective = scoreboard.getDisplayObjective(displayslot);
         }
         Objective scoreobjective1 = objective != null ? objective : scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
-        if (scoreobjective1 != null)
-        {
+        if (scoreobjective1 != null) {
             gui.displayScoreboardSidebar(guiGraphics, scoreobjective1);
         }
     }),
@@ -217,20 +193,17 @@ public enum VanillaGuiOverlay
     final IGuiOverlay overlay;
     NamedGuiOverlay type;
 
-    VanillaGuiOverlay(String id, IGuiOverlay overlay)
-    {
+    VanillaGuiOverlay(String id, IGuiOverlay overlay) {
         this.id = new ResourceLocation("minecraft", id);
         this.overlay = overlay;
     }
 
     @NotNull
-    public ResourceLocation id()
-    {
+    public ResourceLocation id() {
         return id;
     }
 
-    public NamedGuiOverlay type()
-    {
+    public NamedGuiOverlay type() {
         return type;
     }
 }

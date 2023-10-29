@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.registries;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -14,9 +16,6 @@ import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 /**
  * This event fires for each forge and vanilla registry when all registries are ready to have modded objects registered.
  * <p>
@@ -25,8 +24,7 @@ import java.util.function.Supplier;
  * @see #register(ResourceKey, ResourceLocation, Supplier)
  * @see #register(ResourceKey, Consumer)
  */
-public class RegisterEvent extends Event implements IModBusEvent
-{
+public class RegisterEvent extends Event implements IModBusEvent {
     @NotNull
     private final ResourceKey<? extends Registry<?>> registryKey;
     @Nullable
@@ -34,8 +32,7 @@ public class RegisterEvent extends Event implements IModBusEvent
     @Nullable
     private final Registry<?> vanillaRegistry;
 
-    RegisterEvent(@NotNull ResourceKey<? extends Registry<?>> registryKey, @Nullable ForgeRegistry<?> forgeRegistry, @Nullable Registry<?> vanillaRegistry)
-    {
+    RegisterEvent(@NotNull ResourceKey<? extends Registry<?>> registryKey, @Nullable ForgeRegistry<?> forgeRegistry, @Nullable Registry<?> vanillaRegistry) {
         this.registryKey = registryKey;
         this.forgeRegistry = forgeRegistry;
         this.vanillaRegistry = vanillaRegistry;
@@ -44,17 +41,15 @@ public class RegisterEvent extends Event implements IModBusEvent
     /**
      * Registers the value with the given name to the stored registry if the provided registry key matches this event's registry key.
      *
-     * @param registryKey the key of the registry to register the value to
-     * @param name the name of the object to register as its key
+     * @param registryKey   the key of the registry to register the value to
+     * @param name          the name of the object to register as its key
      * @param valueSupplier a supplier of the object value
-     * @param <T> the type of the registry
+     * @param <T>           the type of the registry
      * @see #register(ResourceKey, Consumer) a register variant making registration of multiple objects less redundant
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T> void register(ResourceKey<? extends Registry<T>> registryKey, ResourceLocation name, Supplier<T> valueSupplier)
-    {
-        if (this.registryKey.equals(registryKey))
-        {
+    public <T> void register(ResourceKey<? extends Registry<T>> registryKey, ResourceLocation name, Supplier<T> valueSupplier) {
+        if (this.registryKey.equals(registryKey)) {
             if (this.forgeRegistry != null)
                 ((IForgeRegistry) this.forgeRegistry).register(name, valueSupplier.get());
             else if (this.vanillaRegistry != null)
@@ -66,13 +61,11 @@ public class RegisterEvent extends Event implements IModBusEvent
      * Calls the provided consumer with a register helper if the provided registry key matches this event's registry key.
      *
      * @param registryKey the key of the registry to register objects to
-     * @param <T> the type of the registry
+     * @param <T>         the type of the registry
      * @see #register(ResourceKey, ResourceLocation, Supplier) a register variant targeted towards registering one or two objects
      */
-    public <T> void register(ResourceKey<? extends Registry<T>> registryKey, Consumer<RegisterHelper<T>> consumer)
-    {
-        if (this.registryKey.equals(registryKey))
-        {
+    public <T> void register(ResourceKey<? extends Registry<T>> registryKey, Consumer<RegisterHelper<T>> consumer) {
+        if (this.registryKey.equals(registryKey)) {
             consumer.accept((name, value) -> register(registryKey, name, () -> value));
         }
     }
@@ -81,8 +74,7 @@ public class RegisterEvent extends Event implements IModBusEvent
      * @return The registry key linked to this event
      */
     @NotNull
-    public ResourceKey<? extends Registry<?>> getRegistryKey()
-    {
+    public ResourceKey<? extends Registry<?>> getRegistryKey() {
         return registryKey;
     }
 
@@ -91,8 +83,7 @@ public class RegisterEvent extends Event implements IModBusEvent
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    public <T> IForgeRegistry<T> getForgeRegistry()
-    {
+    public <T> IForgeRegistry<T> getForgeRegistry() {
         return (IForgeRegistry<T>) forgeRegistry;
     }
 
@@ -101,48 +92,43 @@ public class RegisterEvent extends Event implements IModBusEvent
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    public <T> Registry<T> getVanillaRegistry()
-    {
+    public <T> Registry<T> getVanillaRegistry() {
         return (Registry<T>) vanillaRegistry;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "RegisterEvent";
     }
 
     @FunctionalInterface
-    public interface RegisterHelper<T>
-    {
+    public interface RegisterHelper<T> {
         /**
          * Registers the given value with the given name to the registry.
          * The namespace is inferred based on the active mod container.
          * If you wish to specify a namespace, use {@link #register(ResourceLocation, Object)} instead.
          *
-         * @param name the name of the object to register as its key with the namespaced inferred from the active mod container
+         * @param name  the name of the object to register as its key with the namespaced inferred from the active mod container
          * @param value the object value
          */
-        default void register(String name, T value)
-        {
+        default void register(String name, T value) {
             register(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name), value);
         }
 
         /**
          * Registers the given value with the given name to the registry.
          *
-         * @param key the resource key of the object to register
+         * @param key   the resource key of the object to register
          * @param value the object value
          */
-        default void register(ResourceKey<T> key, T value)
-        {
+        default void register(ResourceKey<T> key, T value) {
             register(key.location(), value);
         }
 
         /**
          * Registers the given value with the given name to the registry.
          *
-         * @param name the name of the object to register as its key
+         * @param name  the name of the object to register as its key
          * @param value the object value
          */
         void register(ResourceLocation name, T value);

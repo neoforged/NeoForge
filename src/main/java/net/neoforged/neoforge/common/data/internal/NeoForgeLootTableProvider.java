@@ -5,16 +5,27 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.data.loot.packs.VanillaLootTableProvider;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.entries.AlternativesEntry;
 import net.minecraft.world.level.storage.loot.entries.CompositeEntryBase;
 import net.minecraft.world.level.storage.loot.entries.DynamicLoot;
@@ -28,22 +39,9 @@ import net.minecraft.world.level.storage.loot.entries.SequentialEntry;
 import net.minecraft.world.level.storage.loot.entries.TagEntry;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.predicates.*;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.common.loot.CanToolPerformAction;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.ValidationContext;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -83,7 +81,7 @@ public final class NeoForgeLootTableProvider extends LootTableProvider {
             }
         });
     }
-    
+
     private void replaceLootItemCondition(Function<LootItemCondition, LootItemCondition.Builder> replacer) {
         conditionReplacers.add(replacer);
     }
@@ -204,10 +202,10 @@ public final class NeoForgeLootTableProvider extends LootTableProvider {
             int weight = getPrivateValue(LootPoolSingletonContainer.class, singleton, "weight");
             int quality = getPrivateValue(LootPoolSingletonContainer.class, singleton, "quality");
             List<LootItemFunction> functions = getPrivateValue(LootPoolSingletonContainer.class, singleton, "functions");
-            ((LootPoolSingletonContainer.Builder<?>)builder).setWeight(weight);
-            ((LootPoolSingletonContainer.Builder<?>)builder).setQuality(quality);
+            ((LootPoolSingletonContainer.Builder<?>) builder).setWeight(weight);
+            ((LootPoolSingletonContainer.Builder<?>) builder).setQuality(quality);
             for (LootItemFunction function : functions) {
-                ((LootPoolSingletonContainer.Builder<?>)builder).apply(() -> function);
+                ((LootPoolSingletonContainer.Builder<?>) builder).apply(() -> function);
             }
         } else {
             throw new IllegalStateException("Unknown LootPoolEntryContainer type: " + entry.getClass().getName());

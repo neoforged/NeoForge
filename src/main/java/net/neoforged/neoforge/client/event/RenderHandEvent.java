@@ -10,10 +10,10 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -27,8 +27,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @see RenderArmEvent
  */
-public class RenderHandEvent extends Event implements ICancellableEvent
-{
+public class RenderHandEvent extends Event implements ICancellableEvent {
     private final InteractionHand hand;
     private final PoseStack poseStack;
     private final MultiBufferSource multiBufferSource;
@@ -41,9 +40,8 @@ public class RenderHandEvent extends Event implements ICancellableEvent
 
     @ApiStatus.Internal
     public RenderHandEvent(InteractionHand hand, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight,
-                           float partialTick, float interpolatedPitch,
-                           float swingProgress, float equipProgress, ItemStack stack)
-    {
+            float partialTick, float interpolatedPitch,
+            float swingProgress, float equipProgress, ItemStack stack) {
         this.hand = hand;
         this.poseStack = poseStack;
         this.multiBufferSource = multiBufferSource;
@@ -58,24 +56,21 @@ public class RenderHandEvent extends Event implements ICancellableEvent
     /**
      * {@return the hand being rendered}
      */
-    public InteractionHand getHand()
-    {
+    public InteractionHand getHand() {
         return hand;
     }
 
     /**
      * {@return the pose stack used for rendering}
      */
-    public PoseStack getPoseStack()
-    {
+    public PoseStack getPoseStack() {
         return poseStack;
     }
 
     /**
      * {@return the source of rendering buffers}
      */
-    public MultiBufferSource getMultiBufferSource()
-    {
+    public MultiBufferSource getMultiBufferSource() {
         return multiBufferSource;
     }
 
@@ -84,48 +79,42 @@ public class RenderHandEvent extends Event implements ICancellableEvent
      *
      * @see LightTexture
      */
-    public int getPackedLight()
-    {
+    public int getPackedLight() {
         return packedLight;
     }
 
     /**
      * {@return the partial tick}
      */
-    public float getPartialTick()
-    {
+    public float getPartialTick() {
         return partialTick;
     }
 
     /**
      * {@return the interpolated pitch of the player entity}
      */
-    public float getInterpolatedPitch()
-    {
+    public float getInterpolatedPitch() {
         return interpolatedPitch;
     }
 
     /**
      * {@return the swing progress of the hand being rendered}
      */
-    public float getSwingProgress()
-    {
+    public float getSwingProgress() {
         return swingProgress;
     }
 
     /**
      * {@return the progress of the equip animation, from {@code 0.0} to {@code 1.0}}
      */
-    public float getEquipProgress()
-    {
+    public float getEquipProgress() {
         return equipProgress;
     }
 
     /**
      * {@return the item stack to be rendered}
      */
-    public ItemStack getItemStack()
-    {
+    public ItemStack getItemStack() {
         return stack;
     }
 }

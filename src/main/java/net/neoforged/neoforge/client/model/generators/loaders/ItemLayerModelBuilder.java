@@ -5,30 +5,26 @@
 
 package net.neoforged.neoforge.client.model.generators.loaders;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
 import net.neoforged.neoforge.client.model.ExtraFaceData;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
 
-public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T>
-{
-    public static <T extends ModelBuilder<T>> ItemLayerModelBuilder<T> begin(T parent, ExistingFileHelper existingFileHelper)
-    {
+public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
+    public static <T extends ModelBuilder<T>> ItemLayerModelBuilder<T> begin(T parent, ExistingFileHelper existingFileHelper) {
         return new ItemLayerModelBuilder<>(parent, existingFileHelper);
     }
 
@@ -36,8 +32,7 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
     private final Map<ResourceLocation, IntSet> renderTypes = new LinkedHashMap<>();
     private final IntSet layersWithRenderTypes = new IntOpenHashSet();
 
-    protected ItemLayerModelBuilder(T parent, ExistingFileHelper existingFileHelper)
-    {
+    protected ItemLayerModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
         super(new ResourceLocation("neoforge:item_layers"), parent, existingFileHelper);
     }
 
@@ -45,20 +40,18 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
      * Marks a set of layers to be rendered emissively.
      *
      * @param blockLight The block light (0-15)
-     * @param skyLight The sky light (0-15)
-     * @param layers the layers that will render unlit
+     * @param skyLight   The sky light (0-15)
+     * @param layers     the layers that will render unlit
      * @return this builder
      * @throws NullPointerException     if {@code layers} is {@code null}
      * @throws IllegalArgumentException if {@code layers} is empty
      * @throws IllegalArgumentException if any entry in {@code layers} is smaller than 0
      */
-    public ItemLayerModelBuilder<T> emissive(int blockLight, int skyLight, int... layers)
-    {
+    public ItemLayerModelBuilder<T> emissive(int blockLight, int skyLight, int... layers) {
         Preconditions.checkNotNull(layers, "Layers must not be null");
         Preconditions.checkArgument(layers.length > 0, "At least one layer must be specified");
         Preconditions.checkArgument(Arrays.stream(layers).allMatch(i -> i >= 0), "All layers must be >= 0");
-        for(int i : layers)
-        {
+        for (int i : layers) {
             faceData.compute(i, (key, value) -> {
                 ExtraFaceData fallback = value == null ? ExtraFaceData.DEFAULT : value;
                 return new ExtraFaceData(fallback.color(), blockLight, skyLight, fallback.ambientOcclusion());
@@ -70,20 +63,18 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
     /**
      * Marks a set of layers to be rendered with a specific color.
      *
-     * @param color The color, in ARGB.
+     * @param color  The color, in ARGB.
      * @param layers the layers that will render with color
      * @return this builder
      * @throws NullPointerException     if {@code layers} is {@code null}
      * @throws IllegalArgumentException if {@code layers} is empty
      * @throws IllegalArgumentException if any entry in {@code layers} is smaller than 0
      */
-    public ItemLayerModelBuilder<T> color(int color, int... layers)
-    {
+    public ItemLayerModelBuilder<T> color(int color, int... layers) {
         Preconditions.checkNotNull(layers, "Layers must not be null");
         Preconditions.checkArgument(layers.length > 0, "At least one layer must be specified");
         Preconditions.checkArgument(Arrays.stream(layers).allMatch(i -> i >= 0), "All layers must be >= 0");
-        for(int i : layers)
-        {
+        for (int i : layers) {
             faceData.compute(i, (key, value) -> {
                 ExtraFaceData fallback = value == null ? ExtraFaceData.DEFAULT : value;
                 return new ExtraFaceData(color, fallback.blockLight(), fallback.skyLight(), fallback.ambientOcclusion());
@@ -105,8 +96,7 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
      * @throws IllegalArgumentException if any entry in {@code layers} is smaller than 0
      * @throws IllegalArgumentException if any entry in {@code layers} already has a render type
      */
-    public ItemLayerModelBuilder<T> renderType(String renderType, int... layers)
-    {
+    public ItemLayerModelBuilder<T> renderType(String renderType, int... layers) {
         Preconditions.checkNotNull(renderType, "Render type must not be null");
         ResourceLocation asLoc;
         if (renderType.contains(":"))
@@ -129,8 +119,7 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
      * @throws IllegalArgumentException if any entry in {@code layers} is smaller than 0
      * @throws IllegalArgumentException if any entry in {@code layers} already has a render type
      */
-    public ItemLayerModelBuilder<T> renderType(ResourceLocation renderType, int... layers)
-    {
+    public ItemLayerModelBuilder<T> renderType(ResourceLocation renderType, int... layers) {
         Preconditions.checkNotNull(renderType, "Render type must not be null");
         Preconditions.checkNotNull(layers, "Layers must not be null");
         Preconditions.checkArgument(layers.length > 0, "At least one layer must be specified");
@@ -146,15 +135,13 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
     }
 
     @Override
-    public JsonObject toJson(JsonObject json)
-    {
+    public JsonObject toJson(JsonObject json) {
         json = super.toJson(json);
 
         JsonObject forgeData = new JsonObject();
         JsonObject layerObj = new JsonObject();
 
-        for(Int2ObjectMap.Entry<ExtraFaceData> entry : this.faceData.int2ObjectEntrySet())
-        {
+        for (Int2ObjectMap.Entry<ExtraFaceData> entry : this.faceData.int2ObjectEntrySet()) {
             layerObj.add(String.valueOf(entry.getIntKey()), ExtraFaceData.CODEC.encodeStart(JsonOps.INSTANCE, entry.getValue()).getOrThrow(false, s -> {}));
         }
 

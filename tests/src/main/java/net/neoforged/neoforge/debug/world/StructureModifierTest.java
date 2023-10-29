@@ -15,11 +15,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.neoforged.neoforge.common.world.ModifiableStructureInfo.StructureInfo.Builder;
-import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.common.world.ModifiableStructureInfo.StructureInfo.Builder;
+import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
@@ -37,8 +37,7 @@ import org.apache.logging.log4j.Logger;
  * <p>If the structure modifier is applied correctly, then strongholds should have wither skeletons spawn in them.</p>
  */
 @Mod(StructureModifierTest.MODID)
-public class StructureModifierTest
-{
+public class StructureModifierTest {
     private static final Codec<HolderSet<Structure>> STRUCTURE_LIST_CODEC = RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC);
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MODID = "structure_modifiers_test";
@@ -48,8 +47,7 @@ public class StructureModifierTest
     public static final String MODIFY_STRONGHOLD = "modify_stronghold";
     public static final ResourceLocation MODIFY_STRONGHOLD_RL = new ResourceLocation(MODID, MODIFY_STRONGHOLD);
 
-    public StructureModifierTest()
-    {
+    public StructureModifierTest() {
         if (!ENABLED)
             return;
 
@@ -65,56 +63,50 @@ public class StructureModifierTest
         modBus.addListener(this::onGatherData);
     }
 
-    private void onGatherData(GatherDataEvent event)
-    {
+    private void onGatherData(GatherDataEvent event) {
 /*   TODO: During the update to 1.19.3 data providers got partially turned into async executions. Creating a registry ops requires this.
 
      // Example of how to datagen datapack registry objects.
-        DataGenerator generator = event.getGenerator();
-        final RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, RegistryAccess.BUILTIN.get());
+DataGenerator generator = event.getGenerator();
+final RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, RegistryAccess.BUILTIN.get());
 
-        // prepare to datagenerate our structure modifier
-        final StructureModifier structureModifier = new TestModifier(
-              HolderSet.direct(ops.registry(Registry.STRUCTURE_REGISTRY).get().getHolder(BuiltinStructures.STRONGHOLD).orElseThrow()),
-              MobCategory.MONSTER,
-              new MobSpawnSettings.SpawnerData(EntityType.WITHER_SKELETON, 100, 5, 15)
-        );
+// prepare to datagenerate our structure modifier
+final StructureModifier structureModifier = new TestModifier(
+      HolderSet.direct(ops.registry(Registry.STRUCTURE_REGISTRY).get().getHolder(BuiltinStructures.STRONGHOLD).orElseThrow()),
+      MobCategory.MONSTER,
+      new MobSpawnSettings.SpawnerData(EntityType.WITHER_SKELETON, 100, 5, 15)
+);
 
-         DataProvider structureModifierProvider =
-              JsonCodecProvider.forDatapackRegistry(generator, event.getExistingFileHelper(), MODID, ops, ForgeRegistries.Keys.STRUCTURE_MODIFIERS,
-                    Map.of(MODIFY_STRONGHOLD_RL, structureModifier));
-        generator.addProvider(event.includeServer(), structureModifierProvider);*/
+ DataProvider structureModifierProvider =
+      JsonCodecProvider.forDatapackRegistry(generator, event.getExistingFileHelper(), MODID, ops, ForgeRegistries.Keys.STRUCTURE_MODIFIERS,
+    Map.of(MODIFY_STRONGHOLD_RL, structureModifier));
+generator.addProvider(event.includeServer(), structureModifierProvider);*/
     }
 
     public record TestModifier(HolderSet<Structure> structures, MobCategory category, MobSpawnSettings.SpawnerData spawn)
-            implements StructureModifier
-    {
+            implements StructureModifier {
+
         private static final RegistryObject<Codec<? extends StructureModifier>> SERIALIZER = RegistryObject.create(ADD_SPAWNS_TO_STRUCTURE_RL, ForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, MODID);
 
         @Override
-        public void modify(Holder<Structure> structure, Phase phase, Builder builder)
-        {
-            if (phase == Phase.ADD && this.structures.contains(structure))
-            {
+        public void modify(Holder<Structure> structure, Phase phase, Builder builder) {
+            if (phase == Phase.ADD && this.structures.contains(structure)) {
                 builder.getStructureSettings()
-                      .getOrAddSpawnOverrides(category)
-                      .addSpawn(spawn);
+                        .getOrAddSpawnOverrides(category)
+                        .addSpawn(spawn);
             }
         }
 
         @Override
-        public Codec<? extends StructureModifier> codec()
-        {
+        public Codec<? extends StructureModifier> codec() {
             return SERIALIZER.get();
         }
 
-        private static Codec<TestModifier> makeCodec()
-        {
+        private static Codec<TestModifier> makeCodec() {
             return RecordCodecBuilder.create(builder -> builder.group(
-                  STRUCTURE_LIST_CODEC.fieldOf("structures").forGetter(TestModifier::structures),
-                  MobCategory.CODEC.fieldOf("category").forGetter(TestModifier::category),
-                  MobSpawnSettings.SpawnerData.CODEC.fieldOf("spawn").forGetter(TestModifier::spawn)
-            ).apply(builder, TestModifier::new));
+                    STRUCTURE_LIST_CODEC.fieldOf("structures").forGetter(TestModifier::structures),
+                    MobCategory.CODEC.fieldOf("category").forGetter(TestModifier::category),
+                    MobSpawnSettings.SpawnerData.CODEC.fieldOf("spawn").forGetter(TestModifier::spawn)).apply(builder, TestModifier::new));
         }
     }
 }

@@ -28,13 +28,11 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-public class RegisterParticleProvidersEvent extends Event implements IModBusEvent
-{
+public class RegisterParticleProvidersEvent extends Event implements IModBusEvent {
     private final ParticleEngine particleEngine;
 
     @ApiStatus.Internal
-    public RegisterParticleProvidersEvent(ParticleEngine particleEngine)
-    {
+    public RegisterParticleProvidersEvent(ParticleEngine particleEngine) {
         this.particleEngine = particleEngine;
     }
 
@@ -45,8 +43,8 @@ public class RegisterParticleProvidersEvent extends Event implements IModBusEven
      * <p>There must be <strong>no</strong> particle json with an ID matching the ParticleType,
      * or a redundant texture list error will occur when particle jsons load.</p>
      *
-     * @param <T> ParticleOptions used by the ParticleType and ParticleProvider.
-     * @param type ParticleType to register a ParticleProvider for.
+     * @param <T>      ParticleOptions used by the ParticleType and ParticleProvider.
+     * @param type     ParticleType to register a ParticleProvider for.
      * @param provider ParticleProvider function responsible for providing that ParticleType's particles.
      */
     @SuppressWarnings("deprecation")
@@ -61,13 +59,12 @@ public class RegisterParticleProvidersEvent extends Event implements IModBusEven
      * <p>A particle json with an ID matching the ParticleType <strong>must exist</strong> in the <code>particles</code> asset folder,
      * or a missing texture list error will occur when particle jsons load.</p>
      *
-     * @param <T> ParticleOptions used by the ParticleType and Sprite function.
-     * @param type ParticleType to register a ParticleProvider for.
+     * @param <T>    ParticleOptions used by the ParticleType and Sprite function.
+     * @param type   ParticleType to register a ParticleProvider for.
      * @param sprite Sprite function responsible for providing that ParticleType's particles.
      */
     @SuppressWarnings("deprecation")
-    public <T extends ParticleOptions> void registerSprite(ParticleType<T> type, ParticleProvider.Sprite<T> sprite)
-    {
+    public <T extends ParticleOptions> void registerSprite(ParticleType<T> type, ParticleProvider.Sprite<T> sprite) {
         particleEngine.register(type, sprite);
     }
 
@@ -78,13 +75,12 @@ public class RegisterParticleProvidersEvent extends Event implements IModBusEven
      * <p>A particle json with an ID matching the ParticleType <strong>must exist</strong> in the <code>particles</code> asset folder,
      * or a missing texture list error will occur when particle jsons load.</p>
      *
-     * @param <T> ParticleOptions used by the ParticleType and SpriteParticleRegistration function.
-     * @param type ParticleType to register a particle provider for.
+     * @param <T>          ParticleOptions used by the ParticleType and SpriteParticleRegistration function.
+     * @param type         ParticleType to register a particle provider for.
      * @param registration SpriteParticleRegistration function responsible for providing that ParticleType's particles.
      */
     @SuppressWarnings("deprecation")
-    public <T extends ParticleOptions> void registerSpriteSet(ParticleType<T> type, ParticleEngine.SpriteParticleRegistration<T> registration)
-    {
+    public <T extends ParticleOptions> void registerSpriteSet(ParticleType<T> type, ParticleEngine.SpriteParticleRegistration<T> registration) {
         particleEngine.register(type, registration);
     }
 

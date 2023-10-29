@@ -7,26 +7,22 @@ package net.neoforged.neoforge.client;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.client.gui.screens.worldselection.PresetEditor;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.levelgen.presets.WorldPreset;
-import net.neoforged.neoforge.client.event.RegisterPresetEditorsEvent;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.neoforge.client.event.RegisterPresetEditorsEvent;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
-public final class PresetEditorManager
-{
+public final class PresetEditorManager {
     private PresetEditorManager() {} // Utility class
 
     private static Map<ResourceKey<WorldPreset>, PresetEditor> editors = Map.of();
 
     @SuppressWarnings("deprecation")
     @ApiStatus.Internal
-    static void init()
-    {
+    static void init() {
         // Start with the vanilla entries
         Map<ResourceKey<WorldPreset>, PresetEditor> gatheredEditors = new HashMap<>();
         // Vanilla's map uses Optional<ResourceKey>s as its keys.
@@ -46,8 +42,7 @@ public final class PresetEditorManager
      * @param key ResourceKey for the specified WorldPreset/PresetEditor.
      */
     @Nullable
-    public static PresetEditor get(ResourceKey<WorldPreset> key)
-    {
+    public static PresetEditor get(ResourceKey<WorldPreset> key) {
         return editors.get(key);
     }
 }

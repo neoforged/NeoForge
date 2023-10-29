@@ -7,5 +7,5 @@
 @MethodsReturnNonnullByDefault
 package net.neoforged.neoforge.common.data;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;

@@ -7,31 +7,28 @@ package net.neoforged.neoforge.client.gui.overlay;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
-import net.neoforged.fml.ModLoader;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Function;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.ModLoader;
+import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Manager for {@linkplain IGuiOverlay HUD overlays}.
  * <p>
  * Provides a lookup by ID, as well as all registered {@link IGuiOverlay overlays}.
  */
-public final class GuiOverlayManager
-{
+public final class GuiOverlayManager {
     private static ImmutableList<NamedGuiOverlay> OVERLAYS;
     private static ImmutableMap<ResourceLocation, NamedGuiOverlay> OVERLAYS_BY_NAME;
 
     /**
      * Retrieves an ordered list of all registered overlays.
      */
-    public static ImmutableList<NamedGuiOverlay> getOverlays()
-    {
+    public static ImmutableList<NamedGuiOverlay> getOverlays() {
         return OVERLAYS;
     }
 
@@ -40,14 +37,12 @@ public final class GuiOverlayManager
      * Do not call this before {@link RegisterGuiOverlaysEvent} has finished firing.
      */
     @Nullable
-    public static NamedGuiOverlay findOverlay(ResourceLocation id)
-    {
+    public static NamedGuiOverlay findOverlay(ResourceLocation id) {
         return OVERLAYS_BY_NAME.get(id);
     }
 
     @ApiStatus.Internal
-    public static void init()
-    {
+    public static void init() {
         var overlays = new HashMap<ResourceLocation, IGuiOverlay>();
         var orderedOverlays = new ArrayList<ResourceLocation>();
         preRegisterVanillaOverlays(overlays, orderedOverlays);
@@ -64,22 +59,17 @@ public final class GuiOverlayManager
     /**
      * Pre-registers vanilla overlays so they are available for ordering.
      */
-    private static void preRegisterVanillaOverlays(HashMap<ResourceLocation, IGuiOverlay> overlays, ArrayList<ResourceLocation> orderedOverlays)
-    {
-        for (var entry : VanillaGuiOverlay.values())
-        {
+    private static void preRegisterVanillaOverlays(HashMap<ResourceLocation, IGuiOverlay> overlays, ArrayList<ResourceLocation> orderedOverlays) {
+        for (var entry : VanillaGuiOverlay.values()) {
             overlays.put(entry.id(), entry.overlay);
             orderedOverlays.add(entry.id());
         }
     }
 
-    private static void assignVanillaOverlayTypes()
-    {
+    private static void assignVanillaOverlayTypes() {
         for (var entry : VanillaGuiOverlay.values())
             entry.type = OVERLAYS_BY_NAME.get(entry.id());
     }
 
-    private GuiOverlayManager()
-    {
-    }
+    private GuiOverlayManager() {}
 }

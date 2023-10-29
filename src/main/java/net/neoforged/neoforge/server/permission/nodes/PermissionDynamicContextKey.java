@@ -16,10 +16,8 @@ import java.util.function.Function;
  * <p>As an example usage, a dimension context key could be used inside a building permission
  * check to ensure that the actor can build given those constraints.</p>
  */
-public record PermissionDynamicContextKey<T>(Class<T> typeToken, String name, Function<T, String> serializer)
-{
-    public PermissionDynamicContext<T> createContext(T value)
-    {
+public record PermissionDynamicContextKey<T>(Class<T> typeToken, String name, Function<T, String> serializer) {
+    public PermissionDynamicContext<T> createContext(T value) {
         return new PermissionDynamicContext<>(this, value);
     }
 }

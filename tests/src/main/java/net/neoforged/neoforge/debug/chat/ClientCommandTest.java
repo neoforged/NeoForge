@@ -7,6 +7,7 @@ package net.neoforged.neoforge.debug.chat;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -16,24 +17,19 @@ import net.minecraft.commands.arguments.TeamArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.debug.client.TestScreen;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.debug.client.TestScreen;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 
-import java.util.List;
-
 @Mod("client_command_test")
-public class ClientCommandTest
-{
-    public ClientCommandTest()
-    {
+public class ClientCommandTest {
+    public ClientCommandTest() {
         NeoForge.EVENT_BUS.addListener(this::init);
     }
 
-    private void init(RegisterClientCommandsEvent event)
-    {
+    private void init(RegisterClientCommandsEvent event) {
         event.getDispatcher().register(
                 Commands.literal("clientcommandtest")
                         // Used for checking suggestion providers that aren't registered
@@ -50,14 +46,14 @@ public class ClientCommandTest
                         .then(Commands.literal("server")
                                 .executes((context) -> {
                                     context.getSource().getServer();
-                                    context.getSource().sendSuccess(() ->Component.literal("Successfully called getServer should have errored"), false);
+                                    context.getSource().sendSuccess(() -> Component.literal("Successfully called getServer should have errored"), false);
                                     return 1;
                                 }))
                         // Used for checking if attempting to get the server level on the client side errors
                         .then(Commands.literal("level")
                                 .executes((context) -> {
                                     context.getSource().getLevel();
-                                    context.getSource().sendSuccess(() ->Component.literal("Successfully called getLevel should have errored"), false);
+                                    context.getSource().sendSuccess(() -> Component.literal("Successfully called getLevel should have errored"), false);
                                     return 1;
                                 }))
                         // Used for checking if getting a known objective argument works on the client side
@@ -107,7 +103,7 @@ public class ClientCommandTest
                         .then(Commands.literal("requires")
                                 .requires((source) -> false)
                                 .executes((context) -> {
-                                    context.getSource().sendSuccess(() ->Component.literal("Executed command"), false);
+                                    context.getSource().sendSuccess(() -> Component.literal("Executed command"), false);
                                     return 1;
                                 }))
                         // Used for testing the screen after using commands
@@ -118,20 +114,19 @@ public class ClientCommandTest
         LiteralArgumentBuilder<CommandSourceStack> fork = Commands.literal("clientcommandfork");
         fork.fork(event.getDispatcher().getRoot(), (context) -> List.of(context.getSource(), context.getSource()))
                 .executes((context) -> {
-                    context.getSource().sendSuccess(() ->Component.literal("Executing forked command"), false);
+                    context.getSource().sendSuccess(() -> Component.literal("Executing forked command"), false);
                     return 1;
                 });
         event.getDispatcher().register(fork);
     }
 
-    private int testCommand(CommandContext<CommandSourceStack> context)
-    {
-        context.getSource().sendSuccess(() ->Component.literal("Input: " + ResourceLocationArgument.getId(context, "block")), false);
-        context.getSource().sendSuccess(() ->Component.literal("Teams: " + context.getSource().getAllTeams()), false);
-        context.getSource().sendSuccess(() ->Component.literal("Players: " + context.getSource().getOnlinePlayerNames()), false);
-        context.getSource().sendSuccess(() ->Component.literal("First recipe: " + context.getSource().getRecipeNames().findFirst().get()), false);
-        context.getSource().sendSuccess(() ->Component.literal("Levels: " + context.getSource().levels()), false);
-        context.getSource().sendSuccess(() ->Component.literal("Registry Access: " + context.getSource().registryAccess()), false);
+    private int testCommand(CommandContext<CommandSourceStack> context) {
+        context.getSource().sendSuccess(() -> Component.literal("Input: " + ResourceLocationArgument.getId(context, "block")), false);
+        context.getSource().sendSuccess(() -> Component.literal("Teams: " + context.getSource().getAllTeams()), false);
+        context.getSource().sendSuccess(() -> Component.literal("Players: " + context.getSource().getOnlinePlayerNames()), false);
+        context.getSource().sendSuccess(() -> Component.literal("First recipe: " + context.getSource().getRecipeNames().findFirst().get()), false);
+        context.getSource().sendSuccess(() -> Component.literal("Levels: " + context.getSource().levels()), false);
+        context.getSource().sendSuccess(() -> Component.literal("Registry Access: " + context.getSource().registryAccess()), false);
         return 0;
     }
 }

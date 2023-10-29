@@ -22,13 +22,11 @@ import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
  * <p>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
-public class LivingGetProjectileEvent extends LivingEvent
-{
+public class LivingGetProjectileEvent extends LivingEvent {
     private final ItemStack projectileWeaponItemStack;
     private ItemStack projectileItemStack;
 
-    public LivingGetProjectileEvent(LivingEntity livingEntity, ItemStack projectileWeaponItemStack, ItemStack ammo)
-    {
+    public LivingGetProjectileEvent(LivingEntity livingEntity, ItemStack projectileWeaponItemStack, ItemStack ammo) {
         super(livingEntity);
         this.projectileWeaponItemStack = projectileWeaponItemStack;
         this.projectileItemStack = ammo;
@@ -36,21 +34,19 @@ public class LivingGetProjectileEvent extends LivingEvent
 
     /**
      * @return The itemstack of the itrm that is looking for a projectile. With vanilla behavior, this usually returns
-     * an itemstack of a {@link net.minecraft.world.item.ProjectileWeaponItem}, but it's possible for that to not be the
-     * case if modder uses a different implementation of {@link LivingEntity#getProjectile(ItemStack)}.
+     *         an itemstack of a {@link net.minecraft.world.item.ProjectileWeaponItem}, but it's possible for that to not be the
+     *         case if modder uses a different implementation of {@link LivingEntity#getProjectile(ItemStack)}.
      */
-    public ItemStack getProjectileWeaponItemStack()
-    {
+    public ItemStack getProjectileWeaponItemStack() {
         return this.projectileWeaponItemStack;
     }
 
     /**
      * @return The itemstack of the projectile found. Initially this is set to the projectile found by vanilla
-     * behaviour, but it's possible for thatnot to be the case if a modder uses a different implementation of
-     * {@link LivingEntity#getProjectile(ItemStack)}.
+     *         behaviour, but it's possible for thatnot to be the case if a modder uses a different implementation of
+     *         {@link LivingEntity#getProjectile(ItemStack)}.
      */
-    public ItemStack getProjectileItemStack()
-    {
+    public ItemStack getProjectileItemStack() {
         return this.projectileItemStack;
     }
 
@@ -65,8 +61,7 @@ public class LivingGetProjectileEvent extends LivingEvent
      * {@link LivingEntity#level} is client-side, you will want to make a conditional to always set the item stack to
      * what you'd want it to be to avoid client-server desyncs.
      */
-    public void setProjectileItemStack(ItemStack projectileItemStack)
-    {
+    public void setProjectileItemStack(ItemStack projectileItemStack) {
         this.projectileItemStack = projectileItemStack;
     }
 }

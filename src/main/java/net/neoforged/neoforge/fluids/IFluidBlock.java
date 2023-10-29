@@ -5,9 +5,9 @@
 
 package net.neoforged.neoforge.fluids;
 
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,8 +15,7 @@ import org.jetbrains.annotations.NotNull;
  * Implement this interface on Block classes which represent world-placeable Fluids.
  *
  */
-public interface IFluidBlock
-{
+public interface IFluidBlock {
     /**
      * Returns the Fluid associated with this Block.
      */
@@ -42,7 +41,7 @@ public interface IFluidBlock
      * NOTE: The block is intended to handle its own state changes.
      *
      * @param action
-     *            If SIMULATE, the drain will only be simulated.
+     *               If SIMULATE, the drain will only be simulated.
      * @return the fluid stack after draining the block
      */
     @NotNull

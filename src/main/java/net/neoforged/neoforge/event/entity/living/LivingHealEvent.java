@@ -5,10 +5,10 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.EventHooks;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.EventHooks;
 
 /**
  * LivingHealEvent is fired when an Entity is set to be healed. <br>
@@ -25,22 +25,19 @@ import net.neoforged.bus.api.ICancellableEvent;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class LivingHealEvent extends LivingEvent implements ICancellableEvent
-{
+public class LivingHealEvent extends LivingEvent implements ICancellableEvent {
     private float amount;
-    public LivingHealEvent(LivingEntity entity, float amount)
-    {
+
+    public LivingHealEvent(LivingEntity entity, float amount) {
         super(entity);
         this.setAmount(amount);
     }
 
-    public float getAmount()
-    {
+    public float getAmount() {
         return amount;
     }
 
-    public void setAmount(float amount)
-    {
+    public void setAmount(float amount) {
         this.amount = amount;
     }
 }

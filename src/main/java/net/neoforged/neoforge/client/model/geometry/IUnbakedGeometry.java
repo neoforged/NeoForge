@@ -7,7 +7,6 @@ package net.neoforged.neoforge.client.model.geometry;
 
 import java.util.Set;
 import java.util.function.Function;
-
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -26,8 +25,7 @@ import net.minecraft.resources.ResourceLocation;
  * @see IGeometryLoader
  * @see IGeometryBakingContext
  */
-public interface IUnbakedGeometry<T extends IUnbakedGeometry<T>>
-{
+public interface IUnbakedGeometry<T extends IUnbakedGeometry<T>> {
     BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation);
 
     /**
@@ -35,16 +33,14 @@ public interface IUnbakedGeometry<T extends IUnbakedGeometry<T>>
      * {@link IUnbakedGeometry#bake(IGeometryBakingContext, ModelBaker, Function, ModelState, ItemOverrides, ResourceLocation)}
      * via {@link BlockModel#resolveParents(Function)}
      */
-    default void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context)
-    {
+    default void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
 
     }
 
     /**
      * {@return a set of all the components whose visibility may be configured via {@link IGeometryBakingContext}}
      */
-    default Set<String> getConfigurableComponentNames()
-    {
+    default Set<String> getConfigurableComponentNames() {
         return Set.of();
     }
 }

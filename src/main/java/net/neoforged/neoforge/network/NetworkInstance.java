@@ -5,6 +5,10 @@
 
 package net.neoforged.neoforge.network;
 
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.BusBuilder;
@@ -12,15 +16,8 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventListener;
 import net.neoforged.bus.api.IEventBus;
 
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
-public class NetworkInstance
-{
-    public ResourceLocation getChannelName()
-    {
+public class NetworkInstance {
+    public ResourceLocation getChannelName() {
         return channelName;
     }
 
@@ -30,8 +27,7 @@ public class NetworkInstance
     private final Predicate<String> serverAcceptedVersions;
     private final IEventBus networkEventBus;
 
-    NetworkInstance(ResourceLocation channelName, Supplier<String> networkProtocolVersion, Predicate<String> clientAcceptedVersions, Predicate<String> serverAcceptedVersions)
-    {
+    NetworkInstance(ResourceLocation channelName, Supplier<String> networkProtocolVersion, Predicate<String> clientAcceptedVersions, Predicate<String> serverAcceptedVersions) {
         this.channelName = channelName;
         this.networkProtocolVersion = networkProtocolVersion.get();
         this.clientAcceptedVersions = clientAcceptedVersions;
@@ -39,18 +35,15 @@ public class NetworkInstance
         this.networkEventBus = BusBuilder.builder().setExceptionHandler(this::handleError).build();
     }
 
-    private void handleError(IEventBus iEventBus, Event event, EventListener[] iEventListeners, int i, Throwable throwable)
-    {
+    private void handleError(IEventBus iEventBus, Event event, EventListener[] iEventListeners, int i, Throwable throwable) {
 
     }
 
-    public <T extends NetworkEvent> void addListener(Consumer<T> eventListener)
-    {
+    public <T extends NetworkEvent> void addListener(Consumer<T> eventListener) {
         this.networkEventBus.addListener(eventListener);
     }
 
-    public void addGatherListener(Consumer<NetworkEvent.GatherLoginPayloadsEvent> eventListener)
-    {
+    public void addGatherListener(Consumer<NetworkEvent.GatherLoginPayloadsEvent> eventListener) {
         this.networkEventBus.addListener(eventListener);
     }
 
@@ -62,15 +55,13 @@ public class NetworkInstance
         this.networkEventBus.unregister(object);
     }
 
-    boolean dispatch(final PlayNetworkDirection side, final ICustomPacketPayloadWithBuffer packet, final Connection manager)
-    {
+    boolean dispatch(final PlayNetworkDirection side, final ICustomPacketPayloadWithBuffer packet, final Connection manager) {
         final NetworkEvent.Context context = new NetworkEvent.Context(manager, side, packet.packetIndex());
         this.networkEventBus.post(side.getEvent(packet, context));
         return context.getPacketHandled();
     }
 
-    boolean dispatch(final LoginNetworkDirection side, final ICustomQueryPayloadWithBuffer packet, final Connection manager)
-    {
+    boolean dispatch(final LoginNetworkDirection side, final ICustomQueryPayloadWithBuffer packet, final Connection manager) {
         final NetworkEvent.Context context = new NetworkEvent.Context(manager, side, packet.packetIndex());
         this.networkEventBus.post(side.getEvent(packet, context));
         return context.getPacketHandled();

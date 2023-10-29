@@ -5,10 +5,10 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
-import net.neoforged.neoforge.common.NeoForge;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * AttackEntityEvent is fired when a player attacks an Entity.<br>
@@ -24,17 +24,15 @@ import net.neoforged.bus.api.ICancellableEvent;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class AttackEntityEvent extends PlayerEvent implements ICancellableEvent
-{
+public class AttackEntityEvent extends PlayerEvent implements ICancellableEvent {
     private final Entity target;
-    public AttackEntityEvent(Player player, Entity target)
-    {
+
+    public AttackEntityEvent(Player player, Entity target) {
         super(player);
         this.target = target;
     }
 
-    public Entity getTarget()
-    {
+    public Entity getTarget() {
         return target;
     }
 }
