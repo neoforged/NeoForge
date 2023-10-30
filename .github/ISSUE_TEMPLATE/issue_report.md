@@ -2,7 +2,7 @@
 name: Issue report
 about: Visit the forum first for issues with crashes.
 title: ''
-labels: Triage
+labels: triage
 assignees: ''
 
 ---
