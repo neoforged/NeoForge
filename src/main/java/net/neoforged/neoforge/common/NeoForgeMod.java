@@ -46,6 +46,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
 import net.minecraft.world.level.levelgen.GenerationStep.Decoration;
@@ -302,6 +305,15 @@ public class NeoForgeMod {
             .sound(SoundActions.FLUID_VAPORIZE, SoundEvents.FIRE_EXTINGUISH)
             .canHydrate(true)) {
         @Override
+        public boolean canConvertToSource(FluidState state, LevelReader reader, BlockPos pos) {
+            if (reader instanceof Level level) {
+                return level.getGameRules().getBoolean(GameRules.RULE_WATER_SOURCE_CONVERSION);
+            }
+            //Best guess fallback to default (true)
+            return super.canConvertToSource(state, reader, pos);
+        }
+
+        @Override
         public @Nullable BlockPathTypes getBlockPathType(FluidState state, BlockGetter level, BlockPos pos, @Nullable Mob mob, boolean canFluidLog) {
             return canFluidLog ? super.getBlockPathType(state, level, pos, mob, true) : null;
         }
@@ -359,6 +371,15 @@ public class NeoForgeMod {
             .density(3000)
             .viscosity(6000)
             .temperature(1300)) {
+        @Override
+        public boolean canConvertToSource(FluidState state, LevelReader reader, BlockPos pos) {
+            if (reader instanceof Level level) {
+                return level.getGameRules().getBoolean(GameRules.RULE_LAVA_SOURCE_CONVERSION);
+            }
+            //Best guess fallback to default (false)
+            return super.canConvertToSource(state, reader, pos);
+        }
+
         @Override
         public double motionScale(Entity entity) {
             return entity.level().dimensionType().ultraWarm() ? 0.007D : 0.0023333333333333335D;
