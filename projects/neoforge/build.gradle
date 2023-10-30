@@ -246,6 +246,7 @@ publishing {
             }
         }
 
+        changelog.publish(it)
 
         versionMapping {
             usage('java-api') {
