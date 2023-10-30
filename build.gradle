@@ -15,6 +15,7 @@ gradleutils.version {
 
 changelog {
     from "20.2"
+    disableAutomaticPublicationRegistration()
 }
 
 allprojects {
