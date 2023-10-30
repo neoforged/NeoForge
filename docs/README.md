@@ -62,7 +62,7 @@ our opencollective.*
 [Discord]: https://discord.neoforged.net/
 
 [Documentation]: https://docs.neoforged.net/
-[Getting-Started]: https://docs.neoforged.net/en/latest/gettingstarted/
+[Getting-Started]: https://docs.neoforged.net/docs/gettingstarted/
 [ForgeDev]: https://docs.neoforged.net/en/latest/forgedev/
 [Pull-Requests]: https://docs.neoforged.net/en/latest/forgedev/#making-changes-and-pull-requests
-[CurseForge]: https://curseforge.com/placeholder
+[CurseForge]: https://curseforge.com
