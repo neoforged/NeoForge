@@ -2,7 +2,7 @@
 name: Feature request
 about: Want to request a feature?
 title: ''
-labels: Feature
+labels: enhancement
 assignees: ''
 
 ---
