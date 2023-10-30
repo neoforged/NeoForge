@@ -31,16 +31,7 @@ For support and questions, visit [the NeoForged Discord server][Discord].
 
 [See the "Getting Started" section in the NeoForged Documentation][Getting-Started].
 
-# Contribute to Forge
-
-If you wish to actually inspect Forge, submit PRs or otherwise work
- with Forge itself, you're in the right place!
-
- [See the guide to setting up a Forge workspace][ForgeDev].
-
 ### Pull requests
-
-[See the "Making Changes and Pull Requests" section in the Forge documentation][Pull-Requests].
 
 Please read the contributing guidelines found [here][Contributing] before making a pull request.
 
@@ -52,7 +43,7 @@ Please ensure you have a valid email address associated with your GitHub account
 #### Donate
 *NeoForged is a large project with many collaborators working on it around the clock. It will always remain 
 free to use and modify. However, it costs money to run such a large project as this, so please consider visiting
-our opencollective.*
+our open collective.*
 
 [Contributing]: ./CONTRIBUTING.md
 [CLA]: https://cla-assistant.io/MinecraftForge/MinecraftForge
@@ -63,6 +54,4 @@ our opencollective.*
 
 [Documentation]: https://docs.neoforged.net/
 [Getting-Started]: https://docs.neoforged.net/docs/gettingstarted/
-[ForgeDev]: https://docs.minecraftforge.net/en/latest/forgedev/
-[Pull-Requests]: https://docs.minecraftforge.net/en/latest/forgedev/#making-changes-and-pull-requests
 [CurseForge]: https://curseforge.com
