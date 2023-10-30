@@ -16,6 +16,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -103,13 +104,15 @@ public interface IBlockEntityExtension extends ICapabilitySerializable<CompoundT
         BlockState state = self().getBlockState();
         Block block = state.getBlock();
         BlockPos pos = self().getBlockPos();
-        if (block == Blocks.ENCHANTING_TABLE) {
-            bb = new AABB(pos, pos.offset(1, 1, 1));
-        } else if (block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST) {
+        if (block == Blocks.DRAGON_HEAD) {
+            bb = new AABB(pos.getX() - .5, pos.getY(), pos.getZ() - .5, pos.getX() + 1.5, pos.getY() + 1.5, pos.getZ() + 1.5);
+        } else if (block == Blocks.BELL || block == Blocks.CAMPFIRE || block == Blocks.SOUL_CAMPFIRE || block instanceof SkullBlock) {
+            bb = new AABB(pos);
+        } else if (block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST || block == Blocks.ENDER_CHEST) {
             bb = new AABB(pos.offset(-1, 0, -1), pos.offset(2, 2, 2));
-        } else if (block == Blocks.STRUCTURE_BLOCK) {
-            bb = INFINITE_EXTENT_AABB;
-        } else if (block != null && block != Blocks.BEACON) {
+        } else if (block == Blocks.LECTERN || block == Blocks.ENCHANTING_TABLE) {
+            bb = new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1., pos.getY() + 1.5, pos.getZ() + 1.);
+        } else if (block != null && block != Blocks.BEACON && block != Blocks.STRUCTURE_BLOCK) {
             AABB cbb = null;
             try {
                 VoxelShape collisionShape = state.getCollisionShape(self().getLevel(), pos);
@@ -123,7 +126,7 @@ public interface IBlockEntityExtension extends ICapabilitySerializable<CompoundT
                 // So, once again in the long line of US having to accommodate BUKKIT breaking things,
                 // here it is, assume that the TE is only 1 cubic block. Problem with this is that it may
                 // cause the TileEntity renderer to error further down the line! But alas, nothing we can do.
-                cbb = new net.minecraft.world.phys.AABB(pos.offset(-1, 0, -1), pos.offset(1, 1, 1));
+                cbb = new AABB(pos);
             }
             if (cbb != null) bb = cbb;
         }
