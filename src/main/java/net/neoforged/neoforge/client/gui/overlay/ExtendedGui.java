@@ -171,11 +171,11 @@ public class ExtendedGui extends Gui {
         int level = minecraft.player.getArmorValue();
         for (int i = 1; level > 0 && i < 20; i += 2) {
             if (i < level) {
-                guiGraphics.blitSprite(ARMOR_EMPTY_SPRITE, left, top, 9, 9);
+                guiGraphics.blitSprite(ARMOR_FULL_SPRITE, left, top, 9, 9);
             } else if (i == level) {
                 guiGraphics.blitSprite(ARMOR_HALF_SPRITE, left, top, 9, 9);
-            } else if (i > level) {
-                guiGraphics.blitSprite(ARMOR_FULL_SPRITE, left, top, 9, 9);
+            } else {
+                guiGraphics.blitSprite(ARMOR_EMPTY_SPRITE, left, top, 9, 9);
             }
             left += 8;
         }
