@@ -29,11 +29,11 @@ jobs:
       - name: Setup with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: setup --stacktrace
+          arguments: setup
           cache-read-only: false
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build --stacktrace
+          arguments: build
           cache-read-only: false
