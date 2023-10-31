@@ -171,11 +171,11 @@ public class ExtendedGui extends Gui {
         int level = minecraft.player.getArmorValue();
         for (int i = 1; level > 0 && i < 20; i += 2) {
             if (i < level) {
-                guiGraphics.blitSprite(ARMOR_EMPTY_SPRITE, left, top, 9, 9);
+                guiGraphics.blitSprite(ARMOR_FULL_SPRITE, left, top, 9, 9);
             } else if (i == level) {
                 guiGraphics.blitSprite(ARMOR_HALF_SPRITE, left, top, 9, 9);
-            } else if (i > level) {
-                guiGraphics.blitSprite(ARMOR_FULL_SPRITE, left, top, 9, 9);
+            } else {
+                guiGraphics.blitSprite(ARMOR_EMPTY_SPRITE, left, top, 9, 9);
             }
             left += 8;
         }
@@ -205,7 +205,7 @@ public class ExtendedGui extends Gui {
             int partial = Mth.ceil((double) air * 10.0D / 300.0D) - full;
 
             for (int i = 0; i < full + partial; ++i) {
-                guiGraphics.blitSprite(i < full ? AIR_BURSTING_SPRITE : AIR_SPRITE, left - i * 8 - 9, top, 9, 9);
+                guiGraphics.blitSprite(i < full ? AIR_SPRITE : AIR_BURSTING_SPRITE, left - i * 8 - 9, top, 9, 9);
             }
             rightHeight += 10;
         }
