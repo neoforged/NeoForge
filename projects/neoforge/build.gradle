@@ -196,6 +196,18 @@ tasks.withType(Javadoc.class).configureEach {
 
 tasks.withType(GenerateModuleMetadata).configureEach { enabled = false }
 
+project.afterEvaluate {
+    // Installer jar task is created after project evaluation
+    // Not using the actual task type, to avoid importing it -- using a likely-permanent ancestor
+    tasks.named('legacyInstallerJar', AbstractArchiveTask) {
+        // Exclude original logo, insert our own
+        exclude 'big_logo.png'
+        from(project.parent.file('src/main/resources/neoforged_logo.png')) {
+            rename { 'big_logo.png' }
+        }
+    }
+}
+
 configurations {
     forValidation {
         canBeConsumed = true
