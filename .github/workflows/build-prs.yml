@@ -26,11 +26,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Gradle
+      - name: Setup with Gradle
         uses: gradle/gradle-build-action@v2
+        with:
+          arguments: setup --stacktrace
+          cache-read-only: false
 
-      - name: Run NeoForge setup
-        run: ./gradlew setup --stacktrace
-
-      - name: Run NeoForge build
-        run: ./gradlew build --stacktrace
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build --stacktrace
+          cache-read-only: false
