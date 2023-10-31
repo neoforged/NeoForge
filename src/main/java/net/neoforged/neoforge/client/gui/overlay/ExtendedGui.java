@@ -205,7 +205,7 @@ public class ExtendedGui extends Gui {
             int partial = Mth.ceil((double) air * 10.0D / 300.0D) - full;
 
             for (int i = 0; i < full + partial; ++i) {
-                guiGraphics.blitSprite(i < full ? AIR_BURSTING_SPRITE : AIR_SPRITE, left - i * 8 - 9, top, 9, 9);
+                guiGraphics.blitSprite(i < full ? AIR_SPRITE : AIR_BURSTING_SPRITE, left - i * 8 - 9, top, 9, 9);
             }
             rightHeight += 10;
         }
