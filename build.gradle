@@ -23,6 +23,9 @@ changelog {
     disableAutomaticPublicationRegistration()
 }
 
+// Print version, generally useful to know - also appears on CI
+System.out.println("NeoForge version ${gradleutils.version.toString()}")
+
 allprojects {
     version gradleutils.version.toString()
     group 'net.neoforged'
