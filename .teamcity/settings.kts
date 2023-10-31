@@ -31,10 +31,6 @@ project {
 
     buildType(Build)
     buildType(BuildSecondaryBranches)
-    buildType(PullRequests)
-    buildType(PullRequestChecks)
-    buildType(PullRequestCompatibility)
-    buildType(PullRequestPatchModifications)
 
     params {
         text("docker_jdk_version", "17", label = "Gradle version", description = "The version of the JDK to use during execution of tasks in a JDK.", display = ParameterDisplay.HIDDEN, allowEmpty = false)
