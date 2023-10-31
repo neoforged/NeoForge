@@ -9,6 +9,7 @@ import net.neoforged.bus.api.BusBuilder;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.IModBusEvent;
 
+// Hello!
 public class NeoForge {
     /**
      * The NeoForge event bus, used for most events.
