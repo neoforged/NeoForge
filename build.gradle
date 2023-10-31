@@ -7,9 +7,14 @@ plugins {
 apply plugin: 'net.neoforged.gradleutils'
 
 gradleutils.version {
+    minecraftVersion project.minecraft_version
+    versionPrefix = null // Reset version prefix, which is set by prev. line
     tags {
         label = "beta"
         cleanMarkerLabel = "stable"
+    }
+    branches {
+        suffixBranch = true
     }
 }
 
