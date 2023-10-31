@@ -7,7 +7,7 @@
 +   public static void initValidStates() {
 +      ALL_BLOCKS = StreamSupport.stream(BuiltInRegistries.BLOCK.spliterator(), false).flatMap(block -> block.getStateDefinition().getPossibleStates().stream()).collect(Collectors.toList());
 +      GRID_WIDTH = Mth.ceil(Mth.sqrt(ALL_BLOCKS.size()));
-+      GRID_HEIGHT = Mth.ceil((float) (ALL_BLOCKS.size() / GRID_WIDTH));
++      GRID_HEIGHT = Mth.ceil((float)ALL_BLOCKS.size() / (float)GRID_WIDTH);
 +   }
 +
     @Override
