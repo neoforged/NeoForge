@@ -31,13 +31,12 @@ public class ObjLoader implements IGeometryLoader<ObjModel>, ResourceManagerRelo
     private final Map<ObjModel.ModelSettings, ObjModel> modelCache = Maps.newConcurrentMap();
     private final Map<ResourceLocation, ObjMaterialLibrary> materialCache = Maps.newConcurrentMap();
 
-    private ResourceManager manager = Minecraft.getInstance().getResourceManager();
+    private final ResourceManager manager = Minecraft.getInstance().getResourceManager();
 
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
         modelCache.clear();
         materialCache.clear();
-        manager = resourceManager;
     }
 
     @Override
