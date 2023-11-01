@@ -9,7 +9,12 @@
              this.dispatcher
                 .getModelRenderer()
                 .tesselateBlock(
-@@ -46,7 +48,9 @@
+@@ -42,11 +44,13 @@
+                   blockstate,
+                   blockpos,
+                   p_114637_,
+-                  p_114638_.getBuffer(ItemBlockRenderTypes.getMovingBlockRenderType(blockstate)),
++                  p_114638_.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getMovingBlockRenderType(renderType)),
                    false,
                    RandomSource.create(),
                    blockstate.getSeed(p_114634_.getStartPos()),

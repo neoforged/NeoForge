@@ -58,9 +58,9 @@ class TagsCommand {
     private static final long PAGE_SIZE = 8;
     private static final ResourceKey<Registry<Registry<?>>> ROOT_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation("root"));
 
-    private static final DynamicCommandExceptionType UNKNOWN_REGISTRY = new DynamicCommandExceptionType(key -> Component.translatable("commands.forge.tags.error.unknown_registry", key));
-    private static final Dynamic2CommandExceptionType UNKNOWN_TAG = new Dynamic2CommandExceptionType((tag, registry) -> Component.translatable("commands.forge.tags.error.unknown_tag", tag, registry));
-    private static final Dynamic2CommandExceptionType UNKNOWN_ELEMENT = new Dynamic2CommandExceptionType((tag, registry) -> Component.translatable("commands.forge.tags.error.unknown_element", tag, registry));
+    private static final DynamicCommandExceptionType UNKNOWN_REGISTRY = new DynamicCommandExceptionType(key -> Component.translatable("commands.neoforge.tags.error.unknown_registry", key));
+    private static final Dynamic2CommandExceptionType UNKNOWN_TAG = new Dynamic2CommandExceptionType((tag, registry) -> Component.translatable("commands.neoforge.tags.error.unknown_tag", tag, registry));
+    private static final Dynamic2CommandExceptionType UNKNOWN_ELEMENT = new Dynamic2CommandExceptionType((tag, registry) -> Component.translatable("commands.neoforge.tags.error.unknown_element", tag, registry));
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         /*
@@ -99,9 +99,9 @@ class TagsCommand {
         final long tagCount = registry.getTags().count();
 
         ctx.getSource().sendSuccess(() -> createMessage(
-                Component.translatable("commands.forge.tags.registry_key", Component.literal(registryKey.location().toString()).withStyle(ChatFormatting.GOLD)),
-                "commands.forge.tags.tag_count",
-                "commands.forge.tags.copy_tag_names",
+                Component.translatable("commands.neoforge.tags.registry_key", Component.literal(registryKey.location().toString()).withStyle(ChatFormatting.GOLD)),
+                "commands.neoforge.tags.tag_count",
+                "commands.neoforge.tags.copy_tag_names",
                 tagCount,
                 page,
                 ChatFormatting.DARK_GREEN,
@@ -126,11 +126,11 @@ class TagsCommand {
                 .orElseThrow(() -> UNKNOWN_TAG.create(tagKey.location(), registryKey.location()));
 
         ctx.getSource().sendSuccess(() -> createMessage(
-                Component.translatable("commands.forge.tags.tag_key",
+                Component.translatable("commands.neoforge.tags.tag_key",
                         Component.literal(tagKey.registry().location().toString()).withStyle(ChatFormatting.GOLD),
                         Component.literal(tagKey.location().toString()).withStyle(ChatFormatting.DARK_GREEN)),
-                "commands.forge.tags.element_count",
-                "commands.forge.tags.copy_element_names",
+                "commands.neoforge.tags.element_count",
+                "commands.neoforge.tags.copy_element_names",
                 tag.size(),
                 page,
                 ChatFormatting.YELLOW,
@@ -154,11 +154,11 @@ class TagsCommand {
         final long containingTagsCount = elementHolder.tags().count();
 
         ctx.getSource().sendSuccess(() -> createMessage(
-                Component.translatable("commands.forge.tags.element",
+                Component.translatable("commands.neoforge.tags.element",
                         Component.literal(registryKey.location().toString()).withStyle(ChatFormatting.GOLD),
                         Component.literal(elementLocation.toString()).withStyle(ChatFormatting.YELLOW)),
-                "commands.forge.tags.containing_tag_count",
-                "commands.forge.tags.copy_tag_names",
+                "commands.neoforge.tags.containing_tag_count",
+                "commands.neoforge.tags.copy_tag_names",
                 containingTagsCount,
                 page,
                 ChatFormatting.DARK_GREEN,
@@ -186,7 +186,7 @@ class TagsCommand {
                     .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, allElementNames))
                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                             Component.translatable(copyHoverText)))));
-            containsComponent = Component.translatable("commands.forge.tags.page_info",
+            containsComponent = Component.translatable("commands.neoforge.tags.page_info",
                     containsComponent, actualPage, totalPages);
         }
 

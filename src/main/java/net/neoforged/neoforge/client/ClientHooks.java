@@ -154,7 +154,7 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenshotEvent;
-import net.neoforged.neoforge.client.event.TextureStitchEvent;
+import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import net.neoforged.neoforge.client.event.ToastAddEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
@@ -283,8 +283,8 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new RenderArmEvent(poseStack, multiBufferSource, packedLight, player, arm)).isCanceled();
     }
 
-    public static void onTextureStitchedPost(TextureAtlas map) {
-        ModLoader.get().postEvent(new TextureStitchEvent.Post(map));
+    public static void onTextureAtlasStitched(TextureAtlas atlas) {
+        ModLoader.get().postEvent(new TextureAtlasStitchedEvent(atlas));
     }
 
     public static void onBlockColorsInit(BlockColors blockColors) {
