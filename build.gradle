@@ -7,15 +7,24 @@ plugins {
 apply plugin: 'net.neoforged.gradleutils'
 
 gradleutils.version {
+    minecraftVersion project.minecraft_version
+    versionPrefix = null // Reset version prefix, which is set by prev. line
     tags {
         label = "beta"
         cleanMarkerLabel = "stable"
+    }
+    branches {
+        suffixBranch = true
     }
 }
 
 changelog {
     from "20.2"
+    disableAutomaticPublicationRegistration()
 }
+
+// Print version, generally useful to know - also appears on CI
+System.out.println("NeoForge version ${gradleutils.version.toString()}")
 
 allprojects {
     version gradleutils.version.toString()
