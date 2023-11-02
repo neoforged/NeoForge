@@ -1,4 +1,4 @@
-![NeoForged Logo](assets/neoforged_logo.png)
+![NeoForged Logo](../../NeoForge2/docs/assets/neoforged_logo.png)
 
 NeoForge
 =============
@@ -7,15 +7,15 @@ NeoForge
 
 Forge is a free, open-source modding API all of your favourite mods use!
 
-| Version |    Support    |
-|---------| ------------- |
-| 1.20.x  |    Active     |
+| Version | Support |
+|---------|---------|
+| 1.20.x  | Active  |
 
 * [Download]
 * [Discord]
 * [Documentation]
 
-# Installing NeoForged
+## Installing NeoForged
 
 Go to [CurseForge][CurseForge] project, select the minecraft version and installer, and run it.
 
@@ -27,42 +27,33 @@ You can download the installer for the *Recommended Build* or the
  
 For support and questions, visit [the NeoForged Discord server][Discord].
 
-# Creating Mods
+## Creating Mods
 
 [See the "Getting Started" section in the NeoForged Documentation][Getting-Started].
 
-# Contribute to Forge
+## Contribute to NeoForge
 
-If you wish to actually inspect Forge, submit PRs or otherwise work
- with Forge itself, you're in the right place!
-
- [See the guide to setting up a Forge workspace][ForgeDev].
+If you wish to actually inspect NeoForge, submit PRs or otherwise work
+with NeoForge itself, you're in the right place!
 
 ### Pull requests
-
-[See the "Making Changes and Pull Requests" section in the Forge documentation][Pull-Requests].
 
 Please read the contributing guidelines found [here][Contributing] before making a pull request.
 
 ### Contributor License Agreement
-We require all contributors to acknowledge the [Neoforged Contributor License Agreement][CLA]. 
+We require all contributors to acknowledge the [NeoForged Contributor License Agreement][CLA]. 
 Please ensure you have a valid email address associated with your GitHub account to do this. If you have previously 
  signed it, you should be OK.
 
 #### Donate
 *NeoForged is a large project with many collaborators working on it around the clock. It will always remain 
 free to use and modify. However, it costs money to run such a large project as this, so please consider visiting
-our opencollective.*
+our open collective.*
 
-[Contributing]: ./CONTRIBUTING.md
-[CLA]: https://cla-assistant.io/MinecraftForge/MinecraftForge
-
+[Contributing]: ../../NeoForge2/docs/CONTRIBUTING.md
+[CLA]: https://cla-assistant.io/neoforged/NeoForge
 [Download]: https://maven.neoforged.net/#/releases/net/neoforged/forge/
-
 [Discord]: https://discord.neoforged.net/
-
 [Documentation]: https://docs.neoforged.net/
-[Getting-Started]: https://docs.neoforged.net/en/latest/gettingstarted/
-[ForgeDev]: https://docs.neoforged.net/en/latest/forgedev/
-[Pull-Requests]: https://docs.neoforged.net/en/latest/forgedev/#making-changes-and-pull-requests
-[CurseForge]: https://curseforge.com/placeholder
+[Getting-Started]: https://docs.neoforged.net/docs/gettingstarted/
+[CurseForge]: https://curseforge.com
