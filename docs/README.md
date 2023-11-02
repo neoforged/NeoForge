@@ -1,4 +1,4 @@
-![NeoForged Logo](../../NeoForge/docs/assets/neoforged_logo.png)
+![NeoForged Logo](./assets/neoforged_logo.png)
 
 NeoForge
 =============
