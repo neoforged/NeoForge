@@ -7,9 +7,9 @@ NeoForge
 
 Forge is a free, open-source modding API all of your favourite mods use!
 
-| Version |    Support    |
-|---------| ------------- |
-| 1.20.x  |    Active     |
+| Version | Support |
+|---------|---------|
+| 1.20.x  | Active  |
 
 * [Download]
 * [Discord]
@@ -31,12 +31,17 @@ For support and questions, visit [the NeoForged Discord server][Discord].
 
 [See the "Getting Started" section in the NeoForged Documentation][Getting-Started].
 
+### Contribute to NeoForge
+
+If you wish to actually inspect NeoForge, submit PRs or otherwise work
+with NeoForge itself, you're in the right place!
+
 ### Pull requests
 
 Please read the contributing guidelines found [here][Contributing] before making a pull request.
 
 ### Contributor License Agreement
-We require all contributors to acknowledge the [Neoforged Contributor License Agreement][CLA]. 
+We require all contributors to acknowledge the [NeoForged Contributor License Agreement][CLA]. 
 Please ensure you have a valid email address associated with your GitHub account to do this. If you have previously 
  signed it, you should be OK.
 
@@ -47,11 +52,8 @@ our open collective.*
 
 [Contributing]: ./CONTRIBUTING.md
 [CLA]: https://cla-assistant.io/MinecraftForge/MinecraftForge
-
 [Download]: https://maven.neoforged.net/#/releases/net/neoforged/forge/
-
 [Discord]: https://discord.neoforged.net/
-
 [Documentation]: https://docs.neoforged.net/
 [Getting-Started]: https://docs.neoforged.net/docs/gettingstarted/
 [CurseForge]: https://curseforge.com
