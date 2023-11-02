@@ -17,7 +17,7 @@
        p_297904_ -> p_297904_.group(
                 ExtraCodecs.strictOptionalField(TagKey.codec(Registries.ITEM), "tag").forGetter(ItemPredicate::tag),
                 ExtraCodecs.strictOptionalField(ITEMS_CODEC, "items").forGetter(ItemPredicate::items),
-@@ -56,8 +57,42 @@
+@@ -56,8 +57,34 @@
              )
              .apply(p_297904_, ItemPredicate::new)
     );
@@ -36,23 +36,15 @@
 +            return com.mojang.datafixers.util.Either.right(predicate);
 +         }
 +      });
-+   
++
 +   public ItemPredicate(Optional<TagKey<Item>> tag, Optional<HolderSet<Item>> items, MinMaxBounds.Ints count, MinMaxBounds.Ints durability, List<EnchantmentPredicate> enchantments, List<EnchantmentPredicate> storedEnchantments, Optional<Holder<Potion>> potion, Optional<NbtPredicate> nbt) {
 +      this(tag, items, count, durability, enchantments, storedEnchantments, potion, nbt, Optional.empty());
 +   }
-+   
++
 +   public ItemPredicate(net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate customLogic) {
 +      this(Optional.empty(), Optional.empty(), MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY, List.of(), List.of(), Optional.empty(), Optional.empty(), Optional.of(customLogic));
 +   }
-+   
-+   public Codec<ItemPredicate> codec() {
-+      return VANILLA_CODEC;
-+   }
  
-+   public boolean test(ItemStack itemStack) {
-+      return matches(itemStack);
-+   }
-+   
     public boolean matches(ItemStack p_45050_) {
 +      if (this.customLogic.isPresent()) {
 +         return this.customLogic.get().test(p_45050_);
@@ -60,7 +52,7 @@
        if (this.tag.isPresent() && !p_45050_.is(this.tag.get())) {
           return false;
        } else if (this.items.isPresent() && !p_45050_.is(this.items.get())) {
-@@ -72,7 +107,7 @@
+@@ -72,7 +99,7 @@
           return false;
        } else {
           if (!this.enchantments.isEmpty()) {
@@ -69,7 +61,7 @@
  
              for(EnchantmentPredicate enchantmentpredicate : this.enchantments) {
                 if (!enchantmentpredicate.containedIn(map)) {
-@@ -105,10 +140,14 @@
+@@ -105,10 +132,14 @@
        return Util.getOrThrow(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
     }
  
