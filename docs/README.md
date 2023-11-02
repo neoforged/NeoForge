@@ -31,7 +31,7 @@ For support and questions, visit [the NeoForged Discord server][Discord].
 
 [See the "Getting Started" section in the NeoForged Documentation][Getting-Started].
 
-### Contribute to NeoForge
+# Contribute to NeoForge
 
 If you wish to actually inspect NeoForge, submit PRs or otherwise work
 with NeoForge itself, you're in the right place!
@@ -51,7 +51,7 @@ free to use and modify. However, it costs money to run such a large project as t
 our open collective.*
 
 [Contributing]: ./CONTRIBUTING.md
-[CLA]: https://cla-assistant.io/MinecraftForge/MinecraftForge
+[CLA]: https://cla-assistant.io/neoforged/NeoForge
 [Download]: https://maven.neoforged.net/#/releases/net/neoforged/forge/
 [Discord]: https://discord.neoforged.net/
 [Documentation]: https://docs.neoforged.net/
