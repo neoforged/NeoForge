@@ -403,7 +403,7 @@ public class NeoForgeMod {
         enableMilkFluid = true;
     }
 
-    public NeoForgeMod() {
+    public NeoForgeMod(IEventBus modEventBus, Dist dist) {
         LOGGER.info(NEOFORGEMOD, "NeoForge mod loading, version {}, for MC {} with MCP {}", NeoForgeVersion.getVersion(), NeoFormVersion.getMCVersion(), NeoFormVersion.getMCPVersion());
         ForgeSnapshotsMod.logStartupWarning();
 
@@ -417,7 +417,6 @@ public class NeoForgeMod {
         CrashReportCallables.registerCrashCallable("FML", NeoForgeVersion::getSpec);
         CrashReportCallables.registerCrashCallable("NeoForge", () -> NeoForgeVersion.getGroup() + ":" + NeoForgeVersion.getVersion());
 
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         // Forge-provided datapack registries
         modEventBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
             event.dataPackRegistry(ForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifier.DIRECT_CODEC);
@@ -456,7 +455,7 @@ public class NeoForgeMod {
 
         UsernameCache.load();
         TierSortingRegistry.init();
-        if (FMLEnvironment.dist == Dist.CLIENT) ClientCommandHandler.init();
+        if (dist == Dist.CLIENT) ClientCommandHandler.init();
         DualStackUtils.initialise();
 
         ForgeRegistries.ITEMS.tags().addOptionalTagDefaults(Tags.Items.ENCHANTING_FUELS, Set.of(ForgeRegistries.ITEMS.getDelegateOrThrow(Items.LAPIS_LAZULI)));
