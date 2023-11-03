@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/MouseHandler.java
 +++ b/net/minecraft/client/MouseHandler.java
-@@ -74,6 +74,7 @@
+@@ -74,6 +_,7 @@
              this.activeButton = -1;
           }
  
@@ -8,7 +8,7 @@
           boolean[] aboolean = new boolean[]{false};
           if (this.minecraft.getOverlay() == null) {
              if (this.minecraft.screen == null) {
-@@ -86,11 +87,21 @@
+@@ -86,11 +_,21 @@
                 Screen screen = this.minecraft.screen;
                 if (flag) {
                    screen.afterMouseAction();
@@ -34,7 +34,7 @@
                 }
              }
           }
-@@ -113,6 +124,7 @@
+@@ -113,6 +_,7 @@
                 }
              }
           }
@@ -42,7 +42,7 @@
        }
     }
  
-@@ -126,7 +138,11 @@
+@@ -126,7 +_,11 @@
              if (this.minecraft.screen != null) {
                 double d3 = this.xpos * (double)this.minecraft.getWindow().getGuiScaledWidth() / (double)this.minecraft.getWindow().getScreenWidth();
                 double d4 = this.ypos * (double)this.minecraft.getWindow().getGuiScaledHeight() / (double)this.minecraft.getWindow().getScreenHeight();
@@ -55,7 +55,7 @@
                 this.minecraft.screen.afterMouseAction();
              } else if (this.minecraft.player != null) {
                 if (this.accumulatedScrollX != 0.0 && Math.signum(d1) != Math.signum(this.accumulatedScrollX)) {
-@@ -148,6 +164,7 @@
+@@ -148,6 +_,7 @@
                 this.accumulatedScrollX -= (double)j;
                 this.accumulatedScrollY -= (double)i;
                 int k = i == 0 ? -j : i;
@@ -63,7 +63,7 @@
                 if (this.minecraft.player.isSpectator()) {
                    if (this.minecraft.gui.getSpectatorGui().isMenuActive()) {
                       this.minecraft.gui.getSpectatorGui().onMouseScrolled(-k);
-@@ -290,6 +307,14 @@
+@@ -290,6 +_,14 @@
  
     public double ypos() {
        return this.ypos;

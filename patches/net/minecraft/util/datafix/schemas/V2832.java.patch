@@ -1,6 +1,6 @@
 --- a/net/minecraft/util/datafix/schemas/V2832.java
 +++ b/net/minecraft/util/datafix/schemas/V2832.java
-@@ -52,51 +52,52 @@
+@@ -52,51 +_,52 @@
                    DSL.constType(namespacedString()),
                    DSL.fields(
                       "generator",

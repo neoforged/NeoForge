@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/PhantomSpawner.java
 +++ b/net/minecraft/world/level/levelgen/PhantomSpawner.java
-@@ -42,13 +42,15 @@
+@@ -42,13 +_,15 @@
                 for(ServerPlayer serverplayer : p_64576_.players()) {
                    if (!serverplayer.isSpectator()) {
                       BlockPos blockpos = serverplayer.blockPosition();
@@ -19,7 +19,7 @@
                                BlockPos blockpos1 = blockpos.above(20 + randomsource.nextInt(15))
                                   .east(-10 + randomsource.nextInt(21))
                                   .south(-10 + randomsource.nextInt(21));
-@@ -56,7 +58,7 @@
+@@ -56,7 +_,7 @@
                                FluidState fluidstate = p_64576_.getFluidState(blockpos1);
                                if (NaturalSpawner.isValidEmptySpawnBlock(p_64576_, blockpos1, blockstate, fluidstate, EntityType.PHANTOM)) {
                                   SpawnGroupData spawngroupdata = null;

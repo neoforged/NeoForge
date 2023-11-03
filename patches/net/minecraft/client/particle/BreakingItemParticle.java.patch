@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/particle/BreakingItemParticle.java
 +++ b/net/minecraft/client/particle/BreakingItemParticle.java
-@@ -33,7 +33,8 @@
+@@ -33,7 +_,8 @@
  
     protected BreakingItemParticle(ClientLevel p_105665_, double p_105666_, double p_105667_, double p_105668_, ItemStack p_105669_) {
        super(p_105665_, p_105666_, p_105667_, p_105668_, 0.0, 0.0, 0.0);

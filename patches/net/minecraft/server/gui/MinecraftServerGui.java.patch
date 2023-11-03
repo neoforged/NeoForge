@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/gui/MinecraftServerGui.java
 +++ b/net/minecraft/server/gui/MinecraftServerGui.java
-@@ -137,8 +137,10 @@
+@@ -137,8 +_,10 @@
        return jpanel;
     }
  
@@ -11,7 +11,7 @@
     }
  
     public void close() {
-@@ -152,6 +154,9 @@
+@@ -152,6 +_,9 @@
     }
  
     public void print(JTextArea p_139915_, JScrollPane p_139916_, String p_139917_) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/grower/AbstractTreeGrower.java
 +++ b/net/minecraft/world/level/block/grower/AbstractTreeGrower.java
-@@ -23,6 +23,9 @@
+@@ -23,6 +_,9 @@
           return false;
        } else {
           Holder<ConfiguredFeature<?, ?>> holder = p_222905_.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolder(resourcekey).orElse(null);

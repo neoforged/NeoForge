@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/state/BlockState.java
 +++ b/net/minecraft/world/level/block/state/BlockState.java
-@@ -7,7 +7,7 @@
+@@ -7,7 +_,7 @@
  import net.minecraft.world.level.block.Block;
  import net.minecraft.world.level.block.state.properties.Property;
  

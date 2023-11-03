@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/chunk/RenderChunkRegion.java
 +++ b/net/minecraft/client/renderer/chunk/RenderChunkRegion.java
-@@ -74,4 +74,14 @@
+@@ -74,4 +_,14 @@
     public int getHeight() {
        return this.level.getHeight();
     }

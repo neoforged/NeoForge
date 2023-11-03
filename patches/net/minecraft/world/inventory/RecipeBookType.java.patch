@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/RecipeBookType.java
 +++ b/net/minecraft/world/inventory/RecipeBookType.java
-@@ -1,8 +1,18 @@
+@@ -1,8 +_,18 @@
  package net.minecraft.world.inventory;
  
 -public enum RecipeBookType {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/ItemFrameRenderer.java
 +++ b/net/minecraft/client/renderer/entity/ItemFrameRenderer.java
-@@ -83,25 +83,25 @@
+@@ -83,25 +_,25 @@
        }
  
        if (!itemstack.isEmpty()) {
@@ -31,7 +31,7 @@
              }
           } else {
              int k = this.getLightVal(p_115076_, 15728880, p_115081_);
-@@ -109,6 +109,7 @@
+@@ -109,6 +_,7 @@
              this.itemRenderer
                 .renderStatic(itemstack, ItemDisplayContext.FIXED, k, OverlayTexture.NO_OVERLAY, p_115079_, p_115080_, p_115076_.level(), p_115076_.getId());
           }
@@ -39,7 +39,7 @@
        }
  
        p_115079_.popPose();
-@@ -120,7 +121,7 @@
+@@ -120,7 +_,7 @@
  
     private ModelResourceLocation getFrameModelResourceLoc(T p_174213_, ItemStack p_174214_) {
        boolean flag = p_174213_.getType() == EntityType.GLOW_ITEM_FRAME;

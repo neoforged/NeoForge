@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/packs/repository/BuiltInPackSource.java
 +++ b/net/minecraft/server/packs/repository/BuiltInPackSource.java
-@@ -105,4 +105,18 @@
+@@ -105,4 +_,18 @@
           }
        };
     }

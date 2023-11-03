@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/PumpkinBlock.java
 +++ b/net/minecraft/world/level/block/PumpkinBlock.java
-@@ -25,7 +25,7 @@
+@@ -25,7 +_,7 @@
     @Override
     public InteractionResult use(BlockState p_55289_, Level p_55290_, BlockPos p_55291_, Player p_55292_, InteractionHand p_55293_, BlockHitResult p_55294_) {
        ItemStack itemstack = p_55292_.getItemInHand(p_55293_);

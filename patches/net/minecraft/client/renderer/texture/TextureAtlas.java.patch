@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/texture/TextureAtlas.java
 +++ b/net/minecraft/client/renderer/texture/TextureAtlas.java
-@@ -87,6 +87,8 @@
+@@ -87,6 +_,8 @@
           this.sprites = List.copyOf(list);
           this.animatedTextures = List.copyOf(list1);
        }
@@ -9,7 +9,7 @@
     }
  
     @Override
-@@ -172,5 +174,12 @@
+@@ -172,5 +_,12 @@
  
     public void updateFilter(SpriteLoader.Preparations p_251993_) {
        this.setFilter(false, p_251993_.mipLevel() > 0);

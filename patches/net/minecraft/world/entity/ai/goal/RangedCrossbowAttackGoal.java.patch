@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/goal/RangedCrossbowAttackGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/RangedCrossbowAttackGoal.java
-@@ -35,7 +35,7 @@
+@@ -35,7 +_,7 @@
     }
  
     private boolean isHoldingCrossbow() {
@@ -9,7 +9,7 @@
     }
  
     @Override
-@@ -97,7 +97,7 @@
+@@ -97,7 +_,7 @@
           this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
           if (this.crossbowState == RangedCrossbowAttackGoal.CrossbowState.UNCHARGED) {
              if (!flag2) {
@@ -18,7 +18,7 @@
                 this.crossbowState = RangedCrossbowAttackGoal.CrossbowState.CHARGING;
                 this.mob.setChargingCrossbow(true);
              }
-@@ -121,7 +121,7 @@
+@@ -121,7 +_,7 @@
              }
           } else if (this.crossbowState == RangedCrossbowAttackGoal.CrossbowState.READY_TO_ATTACK && flag) {
              this.mob.performRangedAttack(livingentity, 1.0F);

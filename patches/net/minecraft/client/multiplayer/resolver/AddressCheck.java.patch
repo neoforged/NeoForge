@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/resolver/AddressCheck.java
 +++ b/net/minecraft/client/multiplayer/resolver/AddressCheck.java
-@@ -16,7 +16,7 @@
+@@ -16,7 +_,7 @@
     boolean isAllowed(ServerAddress p_171830_);
  
     static AddressCheck createFromService() {

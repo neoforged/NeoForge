@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
-@@ -599,6 +599,11 @@
+@@ -599,6 +_,11 @@
     private final EntityDimensions dimensions;
     private final FeatureFlagSet requiredFeatures;
  
@@ -12,7 +12,7 @@
     private static <T extends Entity> EntityType<T> register(String p_20635_, EntityType.Builder<T> p_20636_) {
        return Registry.register(BuiltInRegistries.ENTITY_TYPE, p_20635_, p_20636_.build(p_20635_));
     }
-@@ -624,17 +629,24 @@
+@@ -624,17 +_,24 @@
        int p_273451_,
        FeatureFlagSet p_273518_
     ) {
@@ -48,7 +48,7 @@
     }
  
     @Nullable
-@@ -788,6 +800,9 @@
+@@ -788,6 +_,9 @@
     }
  
     public boolean canSpawnFarFromPlayer() {
@@ -58,7 +58,7 @@
        return this.canSpawnFarFromPlayer;
     }
  
-@@ -935,10 +950,16 @@
+@@ -935,10 +_,16 @@
     }
  
     public int clientTrackingRange() {
@@ -75,7 +75,7 @@
        return this.updateInterval;
     }
  
-@@ -978,6 +999,12 @@
+@@ -978,6 +_,12 @@
        return this.builtInRegistryHolder;
     }
  
@@ -88,7 +88,7 @@
     public static class Builder<T extends Entity> {
        private final EntityType.EntityFactory<T> factory;
        private final MobCategory category;
-@@ -991,6 +1018,11 @@
+@@ -991,6 +_,11 @@
        private EntityDimensions dimensions = EntityDimensions.scalable(0.6F, 1.8F);
        private FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
  
@@ -100,7 +100,7 @@
        private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
           this.factory = p_20696_;
           this.category = p_20697_;
-@@ -1050,6 +1082,30 @@
+@@ -1050,6 +_,30 @@
           return this;
        }
  
@@ -131,7 +131,7 @@
        public EntityType<T> build(String p_20713_) {
           if (this.serialize) {
              Util.fetchChoiceType(References.ENTITY_TREE, p_20713_);
-@@ -1066,7 +1122,11 @@
+@@ -1066,7 +_,11 @@
              this.dimensions,
              this.clientTrackingRange,
              this.updateInterval,

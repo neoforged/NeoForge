@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/vertex/VertexFormatElement.java
 +++ b/com/mojang/blaze3d/vertex/VertexFormatElement.java
-@@ -93,6 +93,10 @@
+@@ -93,6 +_,10 @@
        this.usage.clearBufferState(this.index, p_166964_);
     }
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ExperienceOrb.java
 +++ b/net/minecraft/world/entity/ExperienceOrb.java
-@@ -101,7 +101,8 @@
+@@ -101,7 +_,8 @@
        this.move(MoverType.SELF, this.getDeltaMovement());
        float f = 0.98F;
        if (this.onGround()) {
@@ -10,7 +10,7 @@
        }
  
        this.setDeltaMovement(this.getDeltaMovement().multiply((double)f, 0.98, (double)f));
-@@ -182,6 +183,7 @@
+@@ -182,6 +_,7 @@
  
     @Override
     public boolean hurt(DamageSource p_20785_, float p_20786_) {
@@ -18,7 +18,7 @@
        if (this.isInvulnerableTo(p_20785_)) {
           return false;
        } else if (this.level().isClientSide) {
-@@ -217,6 +219,7 @@
+@@ -217,6 +_,7 @@
     public void playerTouch(Player p_20792_) {
        if (!this.level().isClientSide) {
           if (p_20792_.takeXpDelay == 0) {
@@ -26,7 +26,7 @@
              p_20792_.takeXpDelay = 2;
              p_20792_.take(this, 1);
              int i = this.repairPlayerItems(p_20792_, this.value);
-@@ -236,7 +239,7 @@
+@@ -236,7 +_,7 @@
        Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomItemWith(Enchantments.MENDING, p_147093_, ItemStack::isDamaged);
        if (entry != null) {
           ItemStack itemstack = entry.getValue();

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/BeehiveBlock.java
 +++ b/net/minecraft/world/level/block/BeehiveBlock.java
-@@ -73,6 +73,9 @@
+@@ -73,6 +_,9 @@
     public int getAnalogOutputSignal(BlockState p_49620_, Level p_49621_, BlockPos p_49622_) {
        return p_49620_.getValue(HONEY_LEVEL);
     }
@@ -10,7 +10,7 @@
  
     @Override
     public void playerDestroy(Level p_49584_, Player p_49585_, BlockPos p_49586_, BlockState p_49587_, @Nullable BlockEntity p_49588_, ItemStack p_49589_) {
-@@ -117,7 +120,7 @@
+@@ -117,7 +_,7 @@
        boolean flag = false;
        if (i >= 5) {
           Item item = itemstack.getItem();

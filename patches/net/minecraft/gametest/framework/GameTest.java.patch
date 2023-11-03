@@ -1,6 +1,6 @@
 --- a/net/minecraft/gametest/framework/GameTest.java
 +++ b/net/minecraft/gametest/framework/GameTest.java
-@@ -16,6 +16,11 @@
+@@ -16,6 +_,11 @@
  
     boolean required() default true;
  

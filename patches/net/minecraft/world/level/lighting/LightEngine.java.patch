@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/lighting/LightEngine.java
 +++ b/net/minecraft/world/level/lighting/LightEngine.java
-@@ -45,7 +45,7 @@
+@@ -45,7 +_,7 @@
           return false;
        } else {
           return p_285372_.getLightBlock(p_285159_, p_284985_) != p_285110_.getLightBlock(p_285159_, p_284985_)

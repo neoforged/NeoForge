@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -117,6 +117,9 @@
+@@ -117,6 +_,9 @@
     private CompoundTag leashInfoTag;
     private BlockPos restrictCenter = BlockPos.ZERO;
     private float restrictRadius = -1.0F;
@@ -10,7 +10,7 @@
  
     protected Mob(EntityType<? extends Mob> p_21368_, Level p_21369_) {
        super(p_21368_, p_21369_);
-@@ -220,7 +223,10 @@
+@@ -220,7 +_,10 @@
     }
  
     public void setTarget(@Nullable LivingEntity p_21544_) {
@@ -22,7 +22,7 @@
     }
  
     @Override
-@@ -423,6 +429,9 @@
+@@ -423,6 +_,9 @@
        if (this.isNoAi()) {
           p_21484_.putBoolean("NoAI", this.isNoAi());
        }
@@ -32,7 +32,7 @@
     }
  
     @Override
-@@ -476,6 +485,14 @@
+@@ -476,6 +_,14 @@
        }
  
        this.setNoAi(p_21450_.getBoolean("NoAI"));
@@ -47,7 +47,7 @@
     }
  
     @Override
-@@ -520,15 +537,12 @@
+@@ -520,15 +_,12 @@
     public void aiStep() {
        super.aiStep();
        this.level().getProfiler().push("looting");
@@ -69,7 +69,7 @@
              if (!itementity.isRemoved() && !itementity.getItem().isEmpty() && !itementity.hasPickUpDelay() && this.wantsToPickUp(itementity.getItem())) {
                 this.pickUpItem(itementity);
              }
-@@ -697,6 +711,14 @@
+@@ -697,6 +_,14 @@
           this.discard();
        } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
           Entity entity = this.level().getNearestPlayer(this, -1.0);
@@ -84,7 +84,7 @@
           if (entity != null) {
              double d0 = entity.distanceToSqr(this);
              int i = this.getType().getCategory().getDespawnDistance();
-@@ -1030,6 +1052,16 @@
+@@ -1030,6 +_,16 @@
        }
     }
  
@@ -101,7 +101,7 @@
     @Nullable
     public SpawnGroupData finalizeSpawn(
        ServerLevelAccessor p_21434_, DifficultyInstance p_21435_, MobSpawnType p_21436_, @Nullable SpawnGroupData p_21437_, @Nullable CompoundTag p_21438_
-@@ -1045,6 +1077,7 @@
+@@ -1045,6 +_,7 @@
           this.setLeftHanded(false);
        }
  
@@ -109,7 +109,7 @@
        return p_21437_;
     }
  
-@@ -1441,14 +1474,24 @@
+@@ -1441,14 +_,24 @@
     }
  
     @Override
@@ -135,7 +135,7 @@
     public void removeFreeWill() {
        this.removeAllGoals(p_262562_ -> true);
        this.getBrain().removeAllBehaviors();
-@@ -1474,5 +1517,40 @@
+@@ -1474,5 +_,40 @@
     public ItemStack getPickResult() {
        SpawnEggItem spawneggitem = SpawnEggItem.byId(this.getType());
        return spawneggitem == null ? null : new ItemStack(spawneggitem);

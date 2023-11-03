@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/ShapedRecipe.java
 +++ b/net/minecraft/world/item/crafting/ShapedRecipe.java
-@@ -18,7 +18,20 @@
+@@ -18,7 +_,20 @@
  import net.minecraft.world.level.Level;
  import org.apache.commons.lang3.NotImplementedException;
  
@@ -22,7 +22,7 @@
     final int width;
     final int height;
     final NonNullList<Ingredient> recipeItems;
-@@ -125,10 +138,20 @@
+@@ -125,10 +_,20 @@
        return this.width;
     }
  
@@ -43,7 +43,7 @@
     @VisibleForTesting
     static String[] shrink(List<String> p_301102_) {
        int i = Integer.MAX_VALUE;
-@@ -168,7 +191,7 @@
+@@ -168,7 +_,7 @@
     @Override
     public boolean isIncomplete() {
        NonNullList<Ingredient> nonnulllist = this.getIngredients();
@@ -52,7 +52,7 @@
     }
  
     private static int firstNonSpace(String p_44185_) {
-@@ -192,17 +215,18 @@
+@@ -192,17 +_,18 @@
     }
  
     public static class Serializer implements RecipeSerializer<ShapedRecipe> {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
-@@ -78,6 +78,10 @@
+@@ -78,6 +_,10 @@
     private Vec3 camera = Vec3.ZERO;
  
     public SectionRenderDispatcher(ClientLevel p_295274_, LevelRenderer p_295323_, Executor p_295234_, boolean p_294699_, SectionBufferBuilderPack p_294208_) {
@@ -11,7 +11,7 @@
        this.level = p_295274_;
        this.renderer = p_295323_;
        int i = Math.max(
-@@ -85,7 +89,7 @@
+@@ -85,7 +_,7 @@
        );
        int j = Runtime.getRuntime().availableProcessors();
        int k = p_294699_ ? j : Math.min(j, 4);
@@ -20,7 +20,7 @@
        this.fixedBuffers = p_294208_;
        List<SectionBufferBuilderPack> list = Lists.newArrayListWithExpectedSize(l);
  
-@@ -422,9 +426,7 @@
+@@ -422,9 +_,7 @@
           if (!sectionrenderdispatcher$compiledsection.hasBlocks.contains(p_295679_)) {
              return false;
           } else {
@@ -31,7 +31,7 @@
              p_294363_.schedule(this.lastResortTransparencyTask);
              return true;
           }
-@@ -458,9 +460,7 @@
+@@ -458,9 +_,7 @@
              this.initialCompilationCancelCount.incrementAndGet();
           }
  
@@ -42,7 +42,7 @@
           return this.lastRebuildTask;
        }
  
-@@ -500,10 +500,22 @@
+@@ -500,10 +_,22 @@
           protected final double distAtCreation;
           protected final AtomicBoolean isCancelled = new AtomicBoolean(false);
           protected final boolean isHighPriority;
@@ -65,7 +65,7 @@
           }
  
           public abstract CompletableFuture<SectionRenderDispatcher.SectionTaskResult> doTask(SectionBufferBuilderPack p_294622_);
-@@ -515,6 +527,10 @@
+@@ -515,6 +_,10 @@
           public int compareTo(SectionRenderDispatcher.RenderSection.CompileTask p_296186_) {
              return Doubles.compare(this.distAtCreation, p_296186_.distAtCreation);
           }
@@ -76,7 +76,7 @@
        }
  
        @OnlyIn(Dist.CLIENT)
-@@ -522,8 +538,13 @@
+@@ -522,8 +_,13 @@
           @Nullable
           protected RenderChunkRegion region;
  
@@ -91,7 +91,7 @@
              this.region = p_294382_;
           }
  
-@@ -628,16 +649,20 @@
+@@ -628,16 +_,20 @@
                    }
  
                    if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
@@ -115,7 +115,7 @@
                    }
                 }
  
-@@ -668,9 +693,10 @@
+@@ -668,9 +_,10 @@
           private <E extends BlockEntity> void handleBlockEntity(SectionRenderDispatcher.RenderSection.RebuildTask.CompileResults p_294198_, E p_296214_) {
              BlockEntityRenderer<E> blockentityrenderer = Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(p_296214_);
              if (blockentityrenderer != null) {
@@ -127,7 +127,7 @@
                 }
              }
           }
-@@ -698,8 +724,13 @@
+@@ -698,8 +_,13 @@
        class ResortTransparencyTask extends SectionRenderDispatcher.RenderSection.CompileTask {
           private final SectionRenderDispatcher.CompiledSection compiledSection;
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/recipes/packs/BundleRecipeProvider.java
 +++ b/net/minecraft/data/recipes/packs/BundleRecipeProvider.java
-@@ -8,8 +8,8 @@
+@@ -8,8 +_,8 @@
  import net.minecraft.world.item.Items;
  
  public class BundleRecipeProvider extends RecipeProvider {

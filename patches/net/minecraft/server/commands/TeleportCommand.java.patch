@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/commands/TeleportCommand.java
 +++ b/net/minecraft/server/commands/TeleportCommand.java
-@@ -266,6 +266,14 @@
+@@ -266,6 +_,14 @@
        float p_139023_,
        @Nullable TeleportCommand.LookAt p_139024_
     ) throws CommandSyntaxException {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -77,7 +77,7 @@
+@@ -77,7 +_,7 @@
  import net.minecraft.world.level.block.state.pattern.BlockInWorld;
  import org.slf4j.Logger;
  
@@ -9,7 +9,7 @@
     public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
        p_258963_ -> p_258963_.group(
                 BuiltInRegistries.ITEM.byNameCodec().fieldOf("id").forGetter(ItemStack::getItem),
-@@ -86,6 +86,9 @@
+@@ -86,6 +_,9 @@
              )
              .apply(p_258963_, ItemStack::new)
     );
@@ -19,7 +19,7 @@
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final ItemStack EMPTY = new ItemStack((Void)null);
     public static final DecimalFormat ATTRIBUTE_MODIFIER_FORMAT = Util.make(
-@@ -140,27 +143,39 @@
+@@ -140,27 +_,39 @@
        this(p_220155_.value(), p_220156_);
     }
  
@@ -64,7 +64,7 @@
           this.setDamageValue(this.getDamageValue());
        }
     }
-@@ -175,7 +190,7 @@
+@@ -175,7 +_,7 @@
     }
  
     public boolean isEmpty() {
@@ -73,7 +73,7 @@
     }
  
     public boolean isItemEnabled(FeatureFlagSet p_250869_) {
-@@ -200,7 +215,7 @@
+@@ -200,7 +_,7 @@
     }
  
     public Item getItem() {
@@ -82,7 +82,7 @@
     }
  
     public Holder<Item> getItemHolder() {
-@@ -232,6 +247,15 @@
+@@ -232,6 +_,15 @@
     }
  
     public InteractionResult useOn(UseOnContext p_41662_) {
@@ -98,7 +98,7 @@
        Player player = p_41662_.getPlayer();
        BlockPos blockpos = p_41662_.getClickedPos();
        BlockInWorld blockinworld = new BlockInWorld(p_41662_.getLevel(), blockpos, false);
-@@ -241,7 +265,7 @@
+@@ -241,7 +_,7 @@
           return InteractionResult.PASS;
        } else {
           Item item = this.getItem();
@@ -107,7 +107,7 @@
           if (player != null && interactionresult.shouldAwardStats()) {
              player.awardStat(Stats.ITEM_USED.get(item));
           }
-@@ -270,11 +294,15 @@
+@@ -270,11 +_,15 @@
           p_41740_.put("tag", this.tag.copy());
        }
  
@@ -124,7 +124,7 @@
     }
  
     public boolean isStackable() {
-@@ -282,7 +310,7 @@
+@@ -282,7 +_,7 @@
     }
  
     public boolean isDamageableItem() {
@@ -133,7 +133,7 @@
           CompoundTag compoundtag = this.getTag();
           return compoundtag == null || !compoundtag.getBoolean("Unbreakable");
        } else {
-@@ -291,19 +319,19 @@
+@@ -291,19 +_,19 @@
     }
  
     public boolean isDamaged() {
@@ -157,7 +157,7 @@
     }
  
     public boolean hurt(int p_220158_, RandomSource p_220159_, @Nullable ServerPlayer p_220160_) {
-@@ -339,6 +367,7 @@
+@@ -339,6 +_,7 @@
     public <T extends LivingEntity> void hurtAndBreak(int p_41623_, T p_41624_, Consumer<T> p_41625_) {
        if (!p_41624_.level().isClientSide && (!(p_41624_ instanceof Player) || !((Player)p_41624_).getAbilities().instabuild)) {
           if (this.isDamageableItem()) {
@@ -165,7 +165,7 @@
              if (this.hurt(p_41623_, p_41624_.getRandom(), p_41624_ instanceof ServerPlayer ? (ServerPlayer)p_41624_ : null)) {
                 p_41625_.accept(p_41624_);
                 Item item = this.getItem();
-@@ -388,7 +417,7 @@
+@@ -388,7 +_,7 @@
     }
  
     public boolean isCorrectToolForDrops(BlockState p_41736_) {
@@ -174,7 +174,7 @@
     }
  
     public InteractionResult interactLivingEntity(Player p_41648_, LivingEntity p_41649_, InteractionHand p_41650_) {
-@@ -399,7 +428,7 @@
+@@ -399,7 +_,7 @@
        if (this.isEmpty()) {
           return EMPTY;
        } else {
@@ -183,7 +183,7 @@
           itemstack.setPopTime(this.getPopTime());
           if (this.tag != null) {
              itemstack.tag = this.tag.copy();
-@@ -435,7 +464,7 @@
+@@ -435,7 +_,7 @@
        if (!p_150943_.is(p_150944_.getItem())) {
           return false;
        } else {
@@ -192,7 +192,7 @@
        }
     }
  
-@@ -526,7 +555,7 @@
+@@ -526,7 +_,7 @@
  
     public void setTag(@Nullable CompoundTag p_41752_) {
        this.tag = p_41752_;
@@ -201,7 +201,7 @@
           this.setDamageValue(this.getDamageValue());
        }
  
-@@ -585,7 +614,7 @@
+@@ -585,7 +_,7 @@
  
     public List<Component> getTooltipLines(@Nullable Player p_41652_, TooltipFlag p_41653_) {
        List<Component> list = Lists.newArrayList();
@@ -210,7 +210,7 @@
        if (this.hasCustomHoverName()) {
           mutablecomponent.withStyle(ChatFormatting.ITALIC);
        }
-@@ -757,6 +786,7 @@
+@@ -757,6 +_,7 @@
           list.add(DISABLED_ITEM_TOOLTIP);
        }
  
@@ -218,7 +218,7 @@
        return list;
     }
  
-@@ -765,7 +795,7 @@
+@@ -765,7 +_,7 @@
     }
  
     private int getHideFlags() {
@@ -227,7 +227,7 @@
     }
  
     public void hideTooltipPart(ItemStack.TooltipPart p_41655_) {
-@@ -886,9 +916,10 @@
+@@ -886,9 +_,10 @@
              }
           }
        } else {
@@ -239,7 +239,7 @@
        return multimap;
     }
  
-@@ -916,8 +947,9 @@
+@@ -916,8 +_,9 @@
  
        MutableComponent mutablecomponent1 = ComponentUtils.wrapInSquareBrackets(mutablecomponent);
        if (!this.isEmpty()) {
@@ -251,7 +251,7 @@
        }
  
        return mutablecomponent1;
-@@ -967,12 +999,31 @@
+@@ -967,12 +_,31 @@
        this.getItem().onUseTick(p_41732_, p_41733_, this, p_41734_);
     }
  

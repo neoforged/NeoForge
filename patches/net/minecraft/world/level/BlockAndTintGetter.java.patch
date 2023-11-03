@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/BlockAndTintGetter.java
 +++ b/net/minecraft/world/level/BlockAndTintGetter.java
-@@ -4,7 +4,7 @@
+@@ -4,7 +_,7 @@
  import net.minecraft.core.Direction;
  import net.minecraft.world.level.lighting.LevelLightEngine;
  

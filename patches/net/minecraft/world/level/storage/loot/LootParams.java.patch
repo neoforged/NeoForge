@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/LootParams.java
 +++ b/net/minecraft/world/level/storage/loot/LootParams.java
-@@ -125,7 +125,7 @@
+@@ -125,7 +_,7 @@
  
        public LootParams create(LootContextParamSet p_287701_) {
           Set<LootContextParam<?>> set = Sets.difference(this.params.keySet(), p_287701_.getAllowed());

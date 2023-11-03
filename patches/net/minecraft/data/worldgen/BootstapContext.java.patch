@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/worldgen/BootstapContext.java
 +++ b/net/minecraft/data/worldgen/BootstapContext.java
-@@ -14,4 +14,6 @@
+@@ -14,4 +_,6 @@
     }
  
     <S> HolderGetter<S> lookup(ResourceKey<? extends Registry<? extends S>> p_256410_);

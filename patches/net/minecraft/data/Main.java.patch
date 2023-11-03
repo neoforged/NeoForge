@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/Main.java
 +++ b/net/minecraft/data/Main.java
-@@ -68,8 +68,15 @@
+@@ -68,8 +_,15 @@
        OptionSpec<Void> optionspec6 = optionparser.accepts("all", "Include all generators");
        OptionSpec<String> optionspec7 = optionparser.accepts("output", "Output folder").withRequiredArg().defaultsTo("generated");
        OptionSpec<String> optionspec8 = optionparser.accepts("input", "Input folder").withRequiredArg();
@@ -17,7 +17,7 @@
           Path path = Paths.get(optionspec7.value(optionset));
           boolean flag = optionset.has(optionspec6);
           boolean flag1 = flag || optionset.has(optionspec2);
-@@ -77,9 +84,16 @@
+@@ -77,9 +_,16 @@
           boolean flag3 = flag || optionset.has(optionspec3);
           boolean flag4 = flag || optionset.has(optionspec4);
           boolean flag5 = flag || optionset.has(optionspec5);
@@ -36,7 +36,7 @@
              flag1,
              flag2,
              flag3,
-@@ -89,6 +103,7 @@
+@@ -89,6 +_,7 @@
              true
           );
           datagenerator.run();
@@ -44,7 +44,7 @@
        } else {
           optionparser.printHelpOn(System.out);
        }
-@@ -121,7 +136,7 @@
+@@ -121,7 +_,7 @@
        datagenerator$packgenerator2.addProvider(bindRegistries(RegistriesDatapackGenerator::new, completablefuture));
        datagenerator$packgenerator2.addProvider(bindRegistries(VanillaAdvancementProvider::create, completablefuture));
        datagenerator$packgenerator2.addProvider(VanillaLootTableProvider::create);
@@ -53,7 +53,7 @@
        TagsProvider<Block> tagsprovider1 = datagenerator$packgenerator2.addProvider(bindRegistries(VanillaBlockTagsProvider::new, completablefuture));
        TagsProvider<Item> tagsprovider = datagenerator$packgenerator2.addProvider(
           p_274753_ -> new VanillaItemTagsProvider(p_274753_, completablefuture, tagsprovider1.contentsGetter())
-@@ -147,7 +162,7 @@
+@@ -147,7 +_,7 @@
        datagenerator$packgenerator2.addProvider(bindRegistries(CommandsReport::new, completablefuture));
        datagenerator$packgenerator2.addProvider(RegistryDumpReport::new);
        datagenerator$packgenerator2 = datagenerator.getBuiltinDatapack(p_236683_, "bundle");

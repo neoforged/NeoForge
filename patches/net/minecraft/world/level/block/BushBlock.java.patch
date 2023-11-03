@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/BushBlock.java
 +++ b/net/minecraft/world/level/block/BushBlock.java
-@@ -10,7 +10,7 @@
+@@ -10,7 +_,7 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.pathfinder.PathComputationType;
  
@@ -9,7 +9,7 @@
     public BushBlock(BlockBehaviour.Properties p_51021_) {
        super(p_51021_);
     }
-@@ -25,10 +25,13 @@
+@@ -25,10 +_,13 @@
           ? Blocks.AIR.defaultBlockState()
           : super.updateShape(p_51032_, p_51033_, p_51034_, p_51035_, p_51036_, p_51037_);
     }
@@ -24,7 +24,7 @@
        return this.mayPlaceOn(p_51029_.getBlockState(blockpos), p_51029_, blockpos);
     }
  
-@@ -40,5 +43,12 @@
+@@ -40,5 +_,12 @@
     @Override
     public boolean isPathfindable(BlockState p_51023_, BlockGetter p_51024_, BlockPos p_51025_, PathComputationType p_51026_) {
        return p_51026_ == PathComputationType.AIR && !this.hasCollision ? true : super.isPathfindable(p_51023_, p_51024_, p_51025_, p_51026_);

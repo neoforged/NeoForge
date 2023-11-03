@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/ResourceKey.java
 +++ b/net/minecraft/resources/ResourceKey.java
-@@ -7,7 +7,7 @@
+@@ -7,7 +_,7 @@
  import net.minecraft.core.Registry;
  import net.minecraft.core.registries.BuiltInRegistries;
  
@@ -9,7 +9,7 @@
     private static final ConcurrentMap<ResourceKey.InternKey, ResourceKey<?>> VALUES = new MapMaker().weakValues().makeMap();
     private final ResourceLocation registryName;
     private final ResourceLocation location;
-@@ -54,6 +54,13 @@
+@@ -54,6 +_,13 @@
  
     public ResourceLocation registry() {
        return this.registryName;

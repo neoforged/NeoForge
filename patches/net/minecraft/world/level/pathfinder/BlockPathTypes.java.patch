@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/pathfinder/BlockPathTypes.java
 +++ b/net/minecraft/world/level/pathfinder/BlockPathTypes.java
-@@ -1,6 +1,6 @@
+@@ -1,6 +_,6 @@
  package net.minecraft.world.level.pathfinder;
  
 -public enum BlockPathTypes {
@@ -8,7 +8,7 @@
     BLOCKED(-1.0F),
     OPEN(0.0F),
     WALKABLE(0.0F),
-@@ -35,5 +35,17 @@
+@@ -35,5 +_,17 @@
  
     public float getMalus() {
        return this.malus;

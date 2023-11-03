@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/structure/Structure.java
 +++ b/net/minecraft/world/level/levelgen/structure/Structure.java
-@@ -42,10 +42,11 @@
+@@ -42,10 +_,11 @@
  public abstract class Structure {
     public static final Codec<Structure> DIRECT_CODEC = BuiltInRegistries.STRUCTURE_TYPE.byNameCodec().dispatch(Structure::type, StructureType::codec);
     public static final Codec<Holder<Structure>> CODEC = RegistryFileCodec.create(Registries.STRUCTURE, DIRECT_CODEC);
@@ -14,7 +14,7 @@
     }
  
     public static <S extends Structure> Codec<S> simpleCodec(Function<Structure.StructureSettings, S> p_226608_) {
-@@ -54,6 +55,7 @@
+@@ -54,6 +_,7 @@
  
     protected Structure(Structure.StructureSettings p_226558_) {
        this.settings = p_226558_;
@@ -22,7 +22,7 @@
     }
  
     public HolderSet<Biome> biomes() {
-@@ -189,6 +191,29 @@
+@@ -189,6 +_,29 @@
     }
  
     public abstract StructureType<?> type();

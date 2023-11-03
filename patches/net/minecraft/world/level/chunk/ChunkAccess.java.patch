@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -308,23 +308,28 @@
+@@ -308,23 +_,28 @@
  
     @Override
     public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> p_285269_) {
@@ -33,7 +33,7 @@
                       }
                    }
                 }
-@@ -469,4 +474,7 @@
+@@ -469,4 +_,7 @@
  
     public static record TicksToSave(SerializableTickContainer<Block> blocks, SerializableTickContainer<Fluid> fluids) {
     }

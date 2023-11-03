@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/Beardifier.java
 +++ b/net/minecraft/world/level/levelgen/Beardifier.java
-@@ -44,6 +44,11 @@
+@@ -44,6 +_,11 @@
        
                 for(StructurePiece structurepiece : p_223936_.getPieces()) {
                    if (structurepiece.isCloseToChunk(p_223939_, 12)) {

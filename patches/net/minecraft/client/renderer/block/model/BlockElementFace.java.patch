@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/BlockElementFace.java
 +++ b/net/minecraft/client/renderer/block/model/BlockElementFace.java
-@@ -19,12 +19,30 @@
+@@ -19,12 +_,30 @@
     public final int tintIndex;
     public final String texture;
     public final BlockFaceUV uv;
@@ -31,7 +31,7 @@
     }
  
     @OnlyIn(Dist.CLIENT)
-@@ -37,7 +55,9 @@
+@@ -37,7 +_,9 @@
           int i = this.getTintIndex(jsonobject);
           String s = this.getTexture(jsonobject);
           BlockFaceUV blockfaceuv = p_111367_.deserialize(jsonobject, BlockFaceUV.class);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/advancements/AdvancementTabType.java
 +++ b/net/minecraft/client/gui/screens/advancements/AdvancementTabType.java
-@@ -71,6 +71,7 @@
+@@ -71,6 +_,7 @@
  
     private final AdvancementTabType.Sprites selectedSprites;
     private final AdvancementTabType.Sprites unselectedSprites;

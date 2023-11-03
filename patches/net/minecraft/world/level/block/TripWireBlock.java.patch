@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/TripWireBlock.java
 +++ b/net/minecraft/world/level/block/TripWireBlock.java
-@@ -91,7 +91,7 @@
+@@ -91,7 +_,7 @@
  
     @Override
     public void playerWillDestroy(Level p_57615_, BlockPos p_57616_, BlockState p_57617_, Player p_57618_) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/ScreenEffectRenderer.java
 +++ b/net/minecraft/client/renderer/ScreenEffectRenderer.java
-@@ -30,18 +30,22 @@
+@@ -30,18 +_,22 @@
     public static void renderScreenEffect(Minecraft p_110719_, PoseStack p_110720_) {
        Player player = p_110719_.player;
        if (!player.noPhysics) {
@@ -26,7 +26,7 @@
              renderFire(p_110719_, p_110720_);
           }
        }
-@@ -49,6 +53,11 @@
+@@ -49,6 +_,11 @@
  
     @Nullable
     private static BlockState getViewBlockingState(Player p_110717_) {
@@ -38,7 +38,7 @@
        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
        for(int i = 0; i < 8; ++i) {
-@@ -58,7 +67,7 @@
+@@ -58,7 +_,7 @@
           blockpos$mutableblockpos.set(d0, d1, d2);
           BlockState blockstate = p_110717_.level().getBlockState(blockpos$mutableblockpos);
           if (blockstate.getRenderShape() != RenderShape.INVISIBLE && blockstate.isViewBlocking(p_110717_.level(), blockpos$mutableblockpos)) {
@@ -47,7 +47,7 @@
           }
        }
  
-@@ -89,8 +98,12 @@
+@@ -89,8 +_,12 @@
     }
  
     private static void renderWater(Minecraft p_110726_, PoseStack p_110727_) {

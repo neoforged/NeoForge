@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientChunkCache.java
 +++ b/net/minecraft/client/multiplayer/ClientChunkCache.java
-@@ -63,6 +63,7 @@
+@@ -63,6 +_,7 @@
           int i = this.storage.getIndex(p_295783_.x, p_295783_.z);
           LevelChunk levelchunk = this.storage.getChunk(i);
           if (isValidChunk(levelchunk, p_295783_.x, p_295783_.z)) {
@@ -8,7 +8,7 @@
              this.storage.replace(i, levelchunk, null);
           }
        }
-@@ -119,6 +120,7 @@
+@@ -119,6 +_,7 @@
           }
  
           this.level.onChunkLoaded(chunkpos);

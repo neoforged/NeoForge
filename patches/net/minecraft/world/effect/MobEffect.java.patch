@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/effect/MobEffect.java
 +++ b/net/minecraft/world/effect/MobEffect.java
-@@ -18,7 +18,7 @@
+@@ -18,7 +_,7 @@
  import net.minecraft.world.entity.ai.attributes.AttributeMap;
  import net.minecraft.world.entity.ai.attributes.AttributeModifier;
  
@@ -9,7 +9,7 @@
     private final Map<Attribute, AttributeModifierTemplate> attributeModifiers = Maps.newHashMap();
     private final MobEffectCategory category;
     private final int color;
-@@ -30,6 +30,7 @@
+@@ -30,6 +_,7 @@
     protected MobEffect(MobEffectCategory p_19451_, int p_19452_) {
        this.category = p_19451_;
        this.color = p_19452_;
@@ -17,7 +17,7 @@
     }
  
     public Optional<MobEffectInstance.FactorData> createFactorData() {
-@@ -114,6 +115,31 @@
+@@ -114,6 +_,31 @@
     public boolean isBeneficial() {
        return this.category == MobEffectCategory.BENEFICIAL;
     }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/tags/TagEntry.java
 +++ b/net/minecraft/tags/TagEntry.java
-@@ -111,11 +111,21 @@
+@@ -111,11 +_,21 @@
        return stringbuilder.toString();
     }
  

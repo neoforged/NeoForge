@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/net/minecraft/server/level/ServerPlayerGameMode.java
-@@ -126,7 +126,11 @@
+@@ -126,7 +_,11 @@
     }
  
     public void handleBlockBreakAction(BlockPos p_215120_, ServerboundPlayerActionPacket.Action p_215121_, Direction p_215122_, int p_215123_, int p_215124_) {
@@ -13,7 +13,7 @@
           this.debugLogging(p_215120_, false, p_215124_, "too far");
        } else if (p_215120_.getY() >= p_215123_) {
           this.player.connection.send(new ClientboundBlockUpdatePacket(p_215120_, this.level.getBlockState(p_215120_)));
-@@ -154,6 +158,7 @@
+@@ -154,6 +_,7 @@
              float f = 1.0F;
              BlockState blockstate = this.level.getBlockState(p_215120_);
              if (!blockstate.isAir()) {
@@ -21,7 +21,7 @@
                 blockstate.attack(this.level, p_215120_, this.player);
                 f = blockstate.getDestroyProgress(this.player, this.player.level(), p_215120_);
              }
-@@ -221,7 +226,8 @@
+@@ -221,7 +_,8 @@
  
     public boolean destroyBlock(BlockPos p_9281_) {
        BlockState blockstate = this.level.getBlockState(p_9281_);
@@ -31,7 +31,7 @@
           return false;
        } else {
           BlockEntity blockentity = this.level.getBlockEntity(p_9281_);
-@@ -229,30 +235,42 @@
+@@ -229,30 +_,42 @@
           if (block instanceof GameMasterBlock && !this.player.canUseGameMasterBlocks()) {
              this.level.sendBlockUpdated(p_9281_, blockstate, blockstate, 3);
              return false;
@@ -81,7 +81,7 @@
     }
  
     public InteractionResult useItem(ServerPlayer p_9262_, Level p_9263_, ItemStack p_9264_, InteractionHand p_9265_) {
-@@ -261,6 +279,8 @@
+@@ -261,6 +_,8 @@
        } else if (p_9262_.getCooldowns().isOnCooldown(p_9264_.getItem())) {
           return InteractionResult.PASS;
        } else {
@@ -90,7 +90,7 @@
           int i = p_9264_.getCount();
           int j = p_9264_.getDamageValue();
           InteractionResultHolder<ItemStack> interactionresultholder = p_9264_.use(p_9263_, p_9262_, p_9265_);
-@@ -299,7 +319,10 @@
+@@ -299,7 +_,10 @@
        BlockState blockstate = p_9267_.getBlockState(blockpos);
        if (!blockstate.getBlock().isEnabled(p_9267_.enabledFeatures())) {
           return InteractionResult.FAIL;
@@ -102,7 +102,7 @@
           MenuProvider menuprovider = blockstate.getMenuProvider(p_9267_, blockpos);
           if (menuprovider != null) {
              p_9266_.openMenu(menuprovider);
-@@ -308,10 +331,15 @@
+@@ -308,10 +_,15 @@
              return InteractionResult.PASS;
           }
        } else {
@@ -120,7 +120,7 @@
              InteractionResult interactionresult = blockstate.use(p_9267_, p_9266_, p_9269_, p_9270_);
              if (interactionresult.consumesAction()) {
                 CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(p_9266_, blockpos, itemstack);
-@@ -319,8 +347,8 @@
+@@ -319,8 +_,8 @@
              }
           }
  

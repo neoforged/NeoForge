@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java
-@@ -35,7 +35,7 @@
+@@ -35,7 +_,7 @@
  
     @Override
     public boolean canUse() {
@@ -9,7 +9,7 @@
           return false;
        } else if (this.nextStartTick > 0) {
           --this.nextStartTick;
-@@ -151,6 +151,7 @@
+@@ -151,6 +_,7 @@
        if (chunkaccess == null) {
           return false;
        } else {

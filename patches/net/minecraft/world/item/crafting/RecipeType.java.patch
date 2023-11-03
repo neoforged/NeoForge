@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/RecipeType.java
 +++ b/net/minecraft/world/item/crafting/RecipeType.java
-@@ -21,4 +21,14 @@
+@@ -21,4 +_,14 @@
           }
        });
     }

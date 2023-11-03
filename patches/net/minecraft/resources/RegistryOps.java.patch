@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/RegistryOps.java
 +++ b/net/minecraft/resources/RegistryOps.java
-@@ -45,6 +45,11 @@
+@@ -45,6 +_,11 @@
        super(p_256313_);
        this.lookupProvider = p_255799_;
     }
@@ -12,7 +12,7 @@
  
     public <E> Optional<HolderOwner<E>> owner(ResourceKey<? extends Registry<? extends E>> p_255757_) {
        return this.lookupProvider.lookup(p_255757_).map(RegistryOps.RegistryInfo::owner);
-@@ -64,6 +69,20 @@
+@@ -64,6 +_,20 @@
                    : DataResult.error(() -> "Not a registry ops")
           )
           .forGetter(p_255526_ -> null);

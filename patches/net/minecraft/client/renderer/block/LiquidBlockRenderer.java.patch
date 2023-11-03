@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
-@@ -70,8 +70,9 @@
+@@ -70,8 +_,9 @@
  
     public void tesselate(BlockAndTintGetter p_234370_, BlockPos p_234371_, VertexConsumer p_234372_, BlockState p_234373_, FluidState p_234374_) {
        boolean flag = p_234374_.is(FluidTags.LAVA);
@@ -12,7 +12,7 @@
        float f = (float)(i >> 16 & 0xFF) / 255.0F;
        float f1 = (float)(i >> 8 & 0xFF) / 255.0F;
        float f2 = (float)(i & 0xFF) / 255.0F;
-@@ -181,15 +182,15 @@
+@@ -181,15 +_,15 @@
              float f52 = f4 * f;
              float f30 = f4 * f1;
              float f31 = f4 * f2;
@@ -36,7 +36,7 @@
              }
           }
  
-@@ -202,10 +203,10 @@
+@@ -202,10 +_,10 @@
              float f46 = f3 * f;
              float f47 = f3 * f1;
              float f48 = f3 * f2;
@@ -51,7 +51,7 @@
           }
  
           int j = this.getLightColor(p_234370_, p_234371_);
-@@ -261,10 +262,9 @@
+@@ -261,10 +_,9 @@
               {
                 BlockPos blockpos = p_234371_.relative(direction);
                 TextureAtlasSprite textureatlassprite2 = atextureatlassprite[1];
@@ -65,7 +65,7 @@
                    }
                 }
  
-@@ -277,15 +277,15 @@
+@@ -277,15 +_,15 @@
                 float f37 = f4 * f36 * f;
                 float f38 = f4 * f36 * f1;
                 float f39 = f4 * f36 * f2;
@@ -89,7 +89,7 @@
                 }
              }
           }
-@@ -326,6 +326,10 @@
+@@ -326,6 +_,10 @@
     private float getHeight(BlockAndTintGetter p_203157_, Fluid p_203158_, BlockPos p_203159_) {
        BlockState blockstate = p_203157_.getBlockState(p_203159_);
        return this.getHeight(p_203157_, p_203158_, p_203159_, blockstate, blockstate.getFluidState());

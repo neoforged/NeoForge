@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/RecipeBookCategories.java
 +++ b/net/minecraft/client/RecipeBookCategories.java
-@@ -12,7 +12,7 @@
+@@ -12,7 +_,7 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
@@ -9,7 +9,7 @@
     CRAFTING_SEARCH(new ItemStack(Items.COMPASS)),
     CRAFTING_BUILDING_BLOCKS(new ItemStack(Blocks.BRICKS)),
     CRAFTING_REDSTONE(new ItemStack(Items.REDSTONE)),
-@@ -38,16 +38,7 @@
+@@ -38,16 +_,7 @@
     public static final List<RecipeBookCategories> CRAFTING_CATEGORIES = ImmutableList.of(
        CRAFTING_SEARCH, CRAFTING_EQUIPMENT, CRAFTING_BUILDING_BLOCKS, CRAFTING_MISC, CRAFTING_REDSTONE
     );
@@ -27,7 +27,7 @@
     private final List<ItemStack> itemIcons;
  
     private RecipeBookCategories(ItemStack... p_92267_) {
-@@ -60,10 +51,15 @@
+@@ -60,10 +_,15 @@
           case FURNACE -> FURNACE_CATEGORIES;
           case BLAST_FURNACE -> BLAST_FURNACE_CATEGORIES;
           case SMOKER -> SMOKER_CATEGORIES;

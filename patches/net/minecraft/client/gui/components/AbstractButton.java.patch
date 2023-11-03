@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/AbstractButton.java
 +++ b/net/minecraft/client/gui/components/AbstractButton.java
-@@ -14,7 +14,7 @@
+@@ -14,7 +_,7 @@
  @OnlyIn(Dist.CLIENT)
  public abstract class AbstractButton extends AbstractWidget {
     protected static final int TEXT_MARGIN = 2;
@@ -9,7 +9,7 @@
        new ResourceLocation("widget/button"), new ResourceLocation("widget/button_disabled"), new ResourceLocation("widget/button_highlighted")
     );
  
-@@ -32,7 +32,7 @@
+@@ -32,7 +_,7 @@
        RenderSystem.enableDepthTest();
        p_281670_.blitSprite(SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
        p_281670_.setColor(1.0F, 1.0F, 1.0F, 1.0F);

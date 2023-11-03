@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/Ticket.java
 +++ b/net/minecraft/server/level/Ticket.java
-@@ -9,9 +9,14 @@
+@@ -9,9 +_,14 @@
     private long createdTick;
  
     protected Ticket(TicketType<T> p_9425_, int p_9426_, T p_9427_) {
@@ -15,7 +15,7 @@
     }
  
     public int compareTo(Ticket<?> p_9432_) {
-@@ -32,18 +37,18 @@
+@@ -32,18 +_,18 @@
           return false;
        } else {
           Ticket<?> ticket = (Ticket)p_9439_;
@@ -37,7 +37,7 @@
     }
  
     public TicketType<T> getType() {
-@@ -61,5 +66,12 @@
+@@ -61,5 +_,12 @@
     protected boolean timedOut(long p_9435_) {
        long i = this.type.timeout();
        return i != 0L && p_9435_ - this.createdTick > i;

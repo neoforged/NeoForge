@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/EnchantmentMenu.java
 +++ b/net/minecraft/world/inventory/EnchantmentMenu.java
-@@ -58,7 +58,7 @@
+@@ -58,7 +_,7 @@
        this.addSlot(new Slot(this.enchantSlots, 1, 35, 47) {
           @Override
           public boolean mayPlace(ItemStack p_39517_) {
@@ -9,7 +9,7 @@
           }
  
           @Override
-@@ -95,23 +95,24 @@
+@@ -95,23 +_,24 @@
           ItemStack itemstack = p_39461_.getItem(0);
           if (!itemstack.isEmpty() && itemstack.isEnchantable()) {
              this.access.execute((p_39485_, p_39486_) -> {
@@ -37,7 +37,7 @@
                 }
  
                 for(int l = 0; l < 3; ++l) {
-@@ -245,7 +246,7 @@
+@@ -245,7 +_,7 @@
              if (!this.moveItemStackTo(itemstack1, 2, 38, true)) {
                 return ItemStack.EMPTY;
              }

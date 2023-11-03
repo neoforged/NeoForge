@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/Item.java
 +++ b/net/minecraft/world/item/Item.java
-@@ -50,9 +50,9 @@
+@@ -50,9 +_,9 @@
  import net.minecraft.world.phys.Vec3;
  import org.slf4j.Logger;
  
@@ -12,7 +12,7 @@
     protected static final UUID BASE_ATTACK_DAMAGE_UUID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
     protected static final UUID BASE_ATTACK_SPEED_UUID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
     public static final int MAX_STACK_SIZE = 64;
-@@ -98,6 +98,8 @@
+@@ -98,6 +_,8 @@
              LOGGER.error("Item classes should end with Item and {} doesn't.", s);
           }
        }
@@ -21,7 +21,7 @@
     }
  
     @Deprecated
-@@ -108,6 +110,8 @@
+@@ -108,6 +_,8 @@
     public void onUseTick(Level p_41428_, LivingEntity p_41429_, ItemStack p_41430_, int p_41431_) {
     }
  
@@ -30,7 +30,7 @@
     public void onDestroyed(ItemEntity p_150887_) {
     }
  
-@@ -132,9 +136,9 @@
+@@ -132,9 +_,9 @@
     }
  
     public InteractionResultHolder<ItemStack> use(Level p_41432_, Player p_41433_, InteractionHand p_41434_) {
@@ -43,7 +43,7 @@
              p_41433_.startUsingItem(p_41434_);
              return InteractionResultHolder.consume(itemstack);
           } else {
-@@ -149,10 +153,12 @@
+@@ -149,10 +_,12 @@
        return this.isEdible() ? p_41411_.eat(p_41410_, p_41409_) : p_41409_;
     }
  
@@ -56,7 +56,7 @@
     public final int getMaxDamage() {
        return this.maxDamage;
     }
-@@ -166,11 +172,12 @@
+@@ -166,11 +_,12 @@
     }
  
     public int getBarWidth(ItemStack p_150900_) {
@@ -71,7 +71,7 @@
        return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
  
-@@ -206,7 +213,7 @@
+@@ -206,7 +_,7 @@
  
     @Override
     public String toString() {
@@ -80,7 +80,7 @@
     }
  
     protected String getOrCreateDescriptionId() {
-@@ -230,10 +237,12 @@
+@@ -230,10 +_,12 @@
     }
  
     @Nullable
@@ -93,7 +93,7 @@
     public boolean hasCraftingRemainingItem() {
        return this.craftingRemainingItem != null;
     }
-@@ -254,7 +263,7 @@
+@@ -254,7 +_,7 @@
  
     public int getUseDuration(ItemStack p_41454_) {
        if (p_41454_.getItem().isEdible()) {
@@ -102,7 +102,7 @@
        } else {
           return 0;
        }
-@@ -296,7 +305,7 @@
+@@ -296,7 +_,7 @@
     }
  
     public boolean isEnchantable(ItemStack p_41456_) {
@@ -111,7 +111,7 @@
     }
  
     protected static BlockHitResult getPlayerPOVHitResult(Level p_41436_, Player p_41437_, ClipContext.Fluid p_41438_) {
-@@ -309,11 +318,13 @@
+@@ -309,11 +_,13 @@
        float f5 = Mth.sin(-f * (float) (Math.PI / 180.0));
        float f6 = f3 * f4;
        float f7 = f2 * f4;
@@ -127,7 +127,7 @@
     public int getEnchantmentValue() {
        return 0;
     }
-@@ -322,12 +333,20 @@
+@@ -322,12 +_,20 @@
        return false;
     }
  
@@ -149,7 +149,7 @@
     }
  
     public ItemStack getDefaultInstance() {
-@@ -338,6 +357,8 @@
+@@ -338,6 +_,8 @@
        return this.foodProperties != null;
     }
  
@@ -158,7 +158,7 @@
     @Nullable
     public FoodProperties getFoodProperties() {
        return this.foodProperties;
-@@ -368,6 +389,32 @@
+@@ -368,6 +_,32 @@
        return this.requiredFeatures;
     }
  
@@ -191,7 +191,7 @@
     public static class Properties {
        int maxStackSize = 64;
        int maxDamage;
-@@ -378,6 +425,7 @@
+@@ -378,6 +_,7 @@
        FoodProperties foodProperties;
        boolean isFireResistant;
        FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
@@ -199,7 +199,7 @@
  
        public Item.Properties food(FoodProperties p_41490_) {
           this.foodProperties = p_41490_;
-@@ -415,6 +463,11 @@
+@@ -415,6 +_,11 @@
  
        public Item.Properties fireResistant() {
           this.isFireResistant = true;

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/feature/configurations/TreeConfiguration.java
 +++ b/net/minecraft/world/level/levelgen/feature/configurations/TreeConfiguration.java
-@@ -30,6 +30,7 @@
+@@ -30,6 +_,7 @@
              )
              .apply(p_225468_, TreeConfiguration::new)
     );

@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/rcon/thread/RconClient.java
 +++ b/net/minecraft/server/rcon/thread/RconClient.java
-@@ -123,16 +123,17 @@
+@@ -123,16 +_,17 @@
     }
  
     private void sendCmdResponse(int p_11595_, String p_11596_) throws IOException {

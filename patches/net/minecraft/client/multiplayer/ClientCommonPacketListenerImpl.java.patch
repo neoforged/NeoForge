@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
-@@ -97,12 +97,12 @@
+@@ -97,12 +_,12 @@
              this.serverBrand = brandpayload.brand();
              this.telemetryManager.onServerBrandReceived(brandpayload.brand());
           } else {

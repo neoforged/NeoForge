@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/enchantment/DiggingEnchantment.java
 +++ b/net/minecraft/world/item/enchantment/DiggingEnchantment.java
-@@ -26,6 +26,6 @@
+@@ -26,6 +_,6 @@
  
     @Override
     public boolean canEnchant(ItemStack p_44668_) {

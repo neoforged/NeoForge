@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/PistonHeadRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/PistonHeadRenderer.java
-@@ -65,6 +65,10 @@
+@@ -65,6 +_,10 @@
     private void renderBlock(
        BlockPos p_112459_, BlockState p_112460_, PoseStack p_112461_, MultiBufferSource p_112462_, Level p_112463_, boolean p_112464_, int p_112465_
     ) {

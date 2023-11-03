@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/EntityRenderer.java
 +++ b/net/minecraft/client/renderer/entity/EntityRenderer.java
-@@ -65,8 +65,10 @@
+@@ -65,8 +_,10 @@
     }
  
     public void render(T p_114485_, float p_114486_, float p_114487_, PoseStack p_114488_, MultiBufferSource p_114489_, int p_114490_) {
@@ -13,7 +13,7 @@
        }
     }
  
-@@ -82,7 +84,7 @@
+@@ -82,7 +_,7 @@
  
     protected void renderNameTag(T p_114498_, Component p_114499_, PoseStack p_114500_, MultiBufferSource p_114501_, int p_114502_) {
        double d0 = this.entityRenderDispatcher.distanceToSqr(p_114498_);

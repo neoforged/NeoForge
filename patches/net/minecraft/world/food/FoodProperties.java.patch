@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/food/FoodProperties.java
 +++ b/net/minecraft/world/food/FoodProperties.java
-@@ -11,15 +11,26 @@
+@@ -11,15 +_,26 @@
     private final boolean isMeat;
     private final boolean canAlwaysEat;
     private final boolean fastFood;
@@ -30,7 +30,7 @@
     }
  
     public int getNutrition() {
-@@ -43,7 +54,7 @@
+@@ -43,7 +_,7 @@
     }
  
     public List<Pair<MobEffectInstance, Float>> getEffects() {
@@ -39,7 +39,7 @@
     }
  
     public static class Builder {
-@@ -52,7 +63,7 @@
+@@ -52,7 +_,7 @@
        private boolean isMeat;
        private boolean canAlwaysEat;
        private boolean fastFood;
@@ -48,7 +48,7 @@
  
        public FoodProperties.Builder nutrition(int p_38761_) {
           this.nutrition = p_38761_;
-@@ -79,13 +90,20 @@
+@@ -79,13 +_,20 @@
           return this;
        }
  

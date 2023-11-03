@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/packs/resources/ReloadableResourceManager.java
 +++ b/net/minecraft/server/packs/resources/ReloadableResourceManager.java
-@@ -73,4 +73,10 @@
+@@ -73,4 +_,10 @@
     public Stream<PackResources> listPacks() {
        return this.resources.listPacks();
     }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/ClientBrandRetriever.java
 +++ b/net/minecraft/client/ClientBrandRetriever.java
-@@ -10,6 +10,6 @@
+@@ -10,6 +_,6 @@
  
     @DontObfuscate
     public static String getClientModName() {

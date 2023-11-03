@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/navigation/WallClimberNavigation.java
 +++ b/net/minecraft/world/entity/ai/navigation/WallClimberNavigation.java
-@@ -45,11 +45,12 @@
+@@ -45,11 +_,12 @@
           super.tick();
        } else {
           if (this.pathToPosition != null) {

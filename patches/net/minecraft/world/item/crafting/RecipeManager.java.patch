@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -54,11 +54,16 @@
+@@ -54,11 +_,16 @@
  
        for(Entry<ResourceLocation, JsonElement> entry : p_44037_.entrySet()) {
           ResourceLocation resourcelocation = entry.getKey();
@@ -20,7 +20,7 @@
           } catch (IllegalArgumentException | JsonParseException jsonparseexception) {
              LOGGER.error("Parsing error loading recipe {}", resourcelocation, jsonparseexception);
           }
-@@ -139,14 +144,22 @@
+@@ -139,14 +_,22 @@
        return this.recipes.values().stream().flatMap(p_220258_ -> p_220258_.keySet().stream());
     }
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/FlyingMob.java
 +++ b/net/minecraft/world/entity/FlyingMob.java
-@@ -26,15 +26,16 @@
+@@ -26,15 +_,16 @@
              this.move(MoverType.SELF, this.getDeltaMovement());
              this.setDeltaMovement(this.getDeltaMovement().scale(0.5));
           } else {

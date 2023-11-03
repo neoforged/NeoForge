@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/ConcretePowderBlock.java
 +++ b/net/minecraft/world/level/block/ConcretePowderBlock.java
-@@ -21,7 +21,7 @@
+@@ -21,7 +_,7 @@
  
     @Override
     public void onLand(Level p_52068_, BlockPos p_52069_, BlockState p_52070_, BlockState p_52071_, FallingBlockEntity p_52072_) {
@@ -9,7 +9,7 @@
           p_52068_.setBlock(p_52069_, this.concrete, 3);
        }
     }
-@@ -34,20 +34,24 @@
+@@ -34,20 +_,24 @@
        return shouldSolidify(blockgetter, blockpos, blockstate) ? this.concrete : super.getStateForPlacement(p_52063_);
     }
  
@@ -38,7 +38,7 @@
                 flag = true;
                 break;
              }
-@@ -63,7 +67,7 @@
+@@ -63,7 +_,7 @@
  
     @Override
     public BlockState updateShape(BlockState p_52074_, Direction p_52075_, BlockState p_52076_, LevelAccessor p_52077_, BlockPos p_52078_, BlockPos p_52079_) {
