@@ -593,7 +593,7 @@ public interface IBlockExtension {
      * @return True if the face can be on fire, false otherwise.
      */
     default boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return state.ignitedByLava() || state.getFlammability(level, pos, direction) > 0;
+        return state.getFlammability(level, pos, direction) > 0;
     }
 
     /**
