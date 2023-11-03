@@ -152,7 +152,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          * Returns a player skin renderer for the given skin name.
          *
          * @param skinModel the skin model to get the renderer for
-         * @param <R>      the type of the skin renderer, usually {@link PlayerRenderer}
+         * @param <R>       the type of the skin renderer, usually {@link PlayerRenderer}
          * @return the skin renderer, or {@code null} if no renderer is registered for that skin name
          * @see #getSkins()
          */
