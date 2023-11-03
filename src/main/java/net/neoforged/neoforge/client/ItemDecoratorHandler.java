@@ -54,6 +54,7 @@ public final class ItemDecoratorHandler {
             if (itemDecorator.render(guiGraphics, font, stack, xOffset, yOffset))
                 resetRenderState();
         }
+        RenderSystem.disableBlend();
     }
 
     private void resetRenderState() {
