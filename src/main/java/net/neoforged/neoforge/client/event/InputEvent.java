@@ -134,7 +134,8 @@ public abstract class InputEvent extends Event {
      * @see <a href="https://www.glfw.org/docs/latest/input_guide.html#input_mouse_button" target="_top">the online GLFW documentation</a>
      */
     public static class MouseScrollingEvent extends InputEvent implements ICancellableEvent {
-        private final double scrollDelta;
+        private final double scrollDeltaX;
+        private final double scrollDeltaY;
         private final double mouseX;
         private final double mouseY;
         private final boolean leftDown;
@@ -142,8 +143,9 @@ public abstract class InputEvent extends Event {
         private final boolean rightDown;
 
         @ApiStatus.Internal
-        public MouseScrollingEvent(double scrollDelta, boolean leftDown, boolean middleDown, boolean rightDown, double mouseX, double mouseY) {
-            this.scrollDelta = scrollDelta;
+        public MouseScrollingEvent(double scrollDeltaX, double scrollDeltaY, boolean leftDown, boolean middleDown, boolean rightDown, double mouseX, double mouseY) {
+            this.scrollDeltaX = scrollDeltaX;
+            this.scrollDeltaY = scrollDeltaY;
             this.leftDown = leftDown;
             this.middleDown = middleDown;
             this.rightDown = rightDown;
@@ -152,10 +154,17 @@ public abstract class InputEvent extends Event {
         }
 
         /**
-         * {@return the amount of change / delta of the mouse scroll}
+         * {@return the amount of change / delta of the mouse scroll on the X axis}
          */
-        public double getScrollDelta() {
-            return this.scrollDelta;
+        public double getScrollDeltaX() {
+            return this.scrollDeltaX;
+        }
+
+        /**
+         * {@return the amount of change / delta of the mouse scroll on the Y axis}
+         */
+        public double getScrollDeltaY() {
+            return this.scrollDeltaY;
         }
 
         /**
