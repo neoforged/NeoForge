@@ -45,12 +45,7 @@ We require all contributors to acknowledge the [NeoForged Contributor License Ag
 Please ensure you have a valid email address associated with your GitHub account to do this. If you have previously 
  signed it, you should be OK.
 
-#### Donate
-*NeoForged is a large project with many collaborators working on it around the clock. It will always remain 
-free to use and modify. However, it costs money to run such a large project as this, so please consider visiting
-our open collective.*
-
-[Contributing]: ../../NeoForge2/docs/CONTRIBUTING.md
+[Contributing]: ../../NeoForge/docs/CONTRIBUTING.md
 [CLA]: https://cla-assistant.io/neoforged/NeoForge
 [Download]: https://maven.neoforged.net/#/releases/net/neoforged/forge/
 [Discord]: https://discord.neoforged.net/
