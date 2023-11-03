@@ -39,6 +39,7 @@ public interface IAdvancementBuilderExtension {
         }
 
         saver.accept(advancementholder);
+        fileHelper.trackGenerated(id, PackType.SERVER_DATA, ".json", "advancements");
         return advancementholder;
     }
 }
