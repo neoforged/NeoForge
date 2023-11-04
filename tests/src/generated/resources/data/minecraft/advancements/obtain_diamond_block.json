@@ -1,4 +1,5 @@
 {
+  "parent": "data_gen_test:obtain_dirt",
   "criteria": {
     "obtained_diamond_block": {
       "conditions": {

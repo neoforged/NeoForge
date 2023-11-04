@@ -917,25 +917,28 @@ public class DataGeneratorTest {
 
         @Override
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
-            Advancement.Builder.advancement().display(Items.DIRT,
-                    Component.translatable(Items.DIRT.getDescriptionId()),
-                    Component.translatable("dirt_description"),
-                    new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
-                    FrameType.TASK,
-                    true,
-                    true,
-                    false)
+            var obtainDirt = Advancement.Builder.advancement()
+                    .display(Items.DIRT,
+                            Component.translatable(Items.DIRT.getDescriptionId()),
+                            Component.translatable("dirt_description"),
+                            new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
+                            FrameType.TASK,
+                            true,
+                            true,
+                            false)
                     .addCriterion("has_dirt", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIRT))
                     .save(saver, new ResourceLocation(MODID, "obtain_dirt"), existingFileHelper);
 
-            Advancement.Builder.advancement().display(Items.DIAMOND_BLOCK,
-                    Component.translatable(Items.DIAMOND_BLOCK.getDescriptionId()),
-                    Component.literal("You obtained a DiamondBlock"),
-                    new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
-                    FrameType.CHALLENGE,
-                    true,
-                    true,
-                    false)
+            Advancement.Builder.advancement()
+                    .parent(obtainDirt)
+                    .display(Items.DIAMOND_BLOCK,
+                            Component.translatable(Items.DIAMOND_BLOCK.getDescriptionId()),
+                            Component.literal("You obtained a DiamondBlock"),
+                            new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
+                            FrameType.CHALLENGE,
+                            true,
+                            true,
+                            false)
                     .addCriterion("obtained_diamond_block", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND_BLOCK))
                     .save(saver, new ResourceLocation("obtain_diamond_block"), existingFileHelper);
 
