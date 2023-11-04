@@ -1,0 +1,19 @@
+--- a/net/minecraft/world/entity/monster/hoglin/Hoglin.java
++++ b/net/minecraft/world/entity/monster/hoglin/Hoglin.java
+@@ -163,7 +_,7 @@
+       HoglinAi.updateActivity(this);
+       if (this.isConverting()) {
+          ++this.timeInOverworld;
+-         if (this.timeInOverworld > 300) {
++         if (this.timeInOverworld > 300 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.ZOGLIN, (timer) -> this.timeInOverworld = timer)) {
+             this.playSoundEvent(SoundEvents.HOGLIN_CONVERTED_TO_ZOMBIFIED);
+             this.finishConversion((ServerLevel)this.level());
+          }
+@@ -268,6 +_,7 @@
+       Zoglin zoglin = this.convertTo(EntityType.ZOGLIN, true);
+       if (zoglin != null) {
+          zoglin.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
++         net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, zoglin);
+       }
+    }
+ 

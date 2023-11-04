@@ -1,0 +1,34 @@
+--- a/net/minecraft/locale/Language.java
++++ b/net/minecraft/locale/Language.java
+@@ -37,7 +_,8 @@
+       Builder<String, String> builder = ImmutableMap.builder();
+       BiConsumer<String, String> biconsumer = builder::put;
+       parseTranslations(biconsumer, "/assets/minecraft/lang/en_us.json");
+-      final Map<String, String> map = builder.build();
++      final Map<String, String> map = new java.util.HashMap<>(builder.build());
++      net.neoforged.neoforge.server.LanguageHook.captureLanguageMap(map);
+       return new Language() {
+          @Override
+          public String getOrDefault(String p_128127_, String p_265421_) {
+@@ -64,6 +_,11 @@
+                   )
+                   .isPresent();
+          }
++
++         @Override
++         public Map<String, String> getLanguageData() {
++            return map;
++         }
+       };
+    }
+ 
+@@ -91,6 +_,9 @@
+    public static void inject(Language p_128115_) {
+       instance = p_128115_;
+    }
++
++   // FORGE START
++   public Map<String, String> getLanguageData() { return ImmutableMap.of(); }
+ 
+    public String getOrDefault(String p_128111_) {
+       return this.getOrDefault(p_128111_, p_128111_);

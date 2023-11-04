@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "type": "neoforge:partial_nbt",
+      "item": "minecraft:stone_pickaxe",
+      "tag": {
+        "Damage": 3
+      }
+    }
+  ],
+  "result": {
+    "item": "minecraft:iron_pickaxe"
+  }
+}

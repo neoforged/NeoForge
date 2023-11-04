@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/entity/FishingHookRenderer.java
++++ b/net/minecraft/client/renderer/entity/FishingHookRenderer.java
+@@ -49,7 +_,7 @@
+          p_114708_.popPose();
+          int i = player.getMainArm() == HumanoidArm.RIGHT ? 1 : -1;
+          ItemStack itemstack = player.getMainHandItem();
+-         if (!itemstack.is(Items.FISHING_ROD)) {
++         if (!itemstack.canPerformAction(net.neoforged.neoforge.common.ToolActions.FISHING_ROD_CAST)) {
+             i = -i;
+          }
+ 

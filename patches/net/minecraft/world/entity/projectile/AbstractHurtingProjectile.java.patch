@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
++++ b/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
+@@ -78,7 +_,7 @@
+          }
+ 
+          HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
+-         if (hitresult.getType() != HitResult.Type.MISS) {
++         if (hitresult.getType() != HitResult.Type.MISS && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) {
+             this.onHit(hitresult);
+          }
+ 

@@ -1,0 +1,21 @@
+--- a/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
++++ b/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
+@@ -57,14 +_,13 @@
+ 
+    private static CustomPacketPayload readPayload(ResourceLocation p_294802_, FriendlyByteBuf p_294886_) {
+       FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = KNOWN_TYPES.get(p_294802_);
+-      return (CustomPacketPayload)(reader != null ? reader.apply(p_294886_) : readUnknownPayload(p_294802_, p_294886_));
++      return reader != null ? reader.apply(p_294886_) : readUnknownPayload(p_294802_, p_294886_);
+    }
+ 
+-   private static DiscardedPayload readUnknownPayload(ResourceLocation p_295991_, FriendlyByteBuf p_295803_) {
++   private static net.neoforged.neoforge.network.custom.payload.SimplePayload readUnknownPayload(ResourceLocation p_295991_, FriendlyByteBuf p_295803_) {
+       int i = p_295803_.readableBytes();
+-      if (i >= 0 && i <= 1048576) {
+-         p_295803_.skipBytes(i);
+-         return new DiscardedPayload(p_295991_);
++      if (i >= 0 && i <= MAX_PAYLOAD_SIZE) {
++         return net.neoforged.neoforge.network.custom.payload.SimplePayload.inbound(p_295803_, p_295991_);
+       } else {
+          throw new IllegalArgumentException("Payload may not be larger than 1048576 bytes");
+       }

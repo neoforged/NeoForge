@@ -1,0 +1,111 @@
+apply plugin: 'net.neoforged.gradle.platform'
+apply plugin: 'java'
+apply plugin: 'com.diffplug.spotless'
+apply plugin: 'net.neoforged.licenser'
+
+def neoforgeProject = project(':neoforge')
+
+repositories {
+    mavenLocal()
+    maven {
+        name 'Mojang'
+        url 'https://libraries.minecraft.net'
+    }
+    maven {
+        name 'NeoForged'
+        url 'https://maven.neoforged.net/releases'
+    }
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir file('src/generated/resources')
+        }
+    }
+}
+
+dependencies {
+    implementation neoforgeProject
+
+    implementation "org.junit.jupiter:junit-jupiter-api:${project.jupiter_api_version}"
+    implementation "org.junit.vintage:junit-vintage-engine:${project.vintage_engine_version}"
+    implementation "org.opentest4j:opentest4j:${project.opentest4j_version}"
+    implementation "org.hamcrest:hamcrest-all:${project.hamcrest_version}"
+
+    compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
+}
+
+runs {
+    client {
+        configure neoforgeProject.runTypes.client
+    }
+    server {
+        configure neoforgeProject.runTypes.server
+    }
+    "GameTest Server" {
+        configure neoforgeProject.runTypes.gameTestServer
+    }
+    "GameTest Client" {
+        configure neoforgeProject.runTypes.gameTestClient
+    }
+    data {
+        configure neoforgeProject.runTypes.data
+
+        programArguments.addAll '--flat', '--all', '--validate',
+                '--mod', 'data_gen_test',
+                '--mod', 'piston_event_test',
+                '--mod', 'global_loot_test',
+                '--mod', 'scaffolding_test',
+                '--mod', 'custom_tag_types_test',
+                '--mod', 'new_model_loader_test',
+                '--mod', 'remove_tag_datagen_test',
+                '--mod', 'tag_based_tool_types',
+                '--mod', 'custom_transformtype_test',
+                '--mod', 'data_pack_registries_test',
+                '--mod', 'biome_modifiers_test',
+                '--mod', 'structure_modifiers_test',
+                '--mod', 'custom_preset_editor_test',
+                '--mod', 'custom_predicate_test',
+                '--existing', sourceSets.main.resources.srcDirs[0].absolutePath
+
+        final File gameDir = project.file("runs/${name}") as File
+        gameDir.mkdirs();
+
+        workingDirectory.set gameDir
+        programArguments.addAll '--gameDir', "\"${gameDir.absolutePath}\""
+    }
+}
+
+//We need the assets and natives tasks from the forge project.
+runs.configureEach {
+    dependsOn(neoforgeProject.runtime.assets, neoforgeProject.runtime.natives)
+    modSource neoforgeProject.sourceSets.main
+}
+
+afterEvaluate {
+    runs.data {
+        // Override --output that forge already has
+        def args = new ArrayList<String>(programArguments.get());
+        def outputIndex = args.indexOf('--output');
+        args.set(outputIndex+1, file('src/generated/resources/').absolutePath);
+        programArguments.set(args);
+    }
+}
+
+license {
+    header = rootProject.file('codeformat/HEADER.txt')
+    skipExistingHeaders = true
+    include '**/*.java'
+}
+
+spotless {
+    java {
+        endWithNewline()
+        indentWithSpaces()
+        removeUnusedImports()
+        toggleOffOn()
+        eclipse().configFile rootProject.file('codeformat/formatter-config.xml')
+        importOrder()
+    }
+}

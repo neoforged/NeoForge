@@ -1,0 +1,22 @@
+--- a/net/minecraft/data/loot/EntityLootSubProvider.java
++++ b/net/minecraft/data/loot/EntityLootSubProvider.java
+@@ -56,6 +_,10 @@
+ 
+    public abstract void generate();
+ 
++   protected java.util.stream.Stream<EntityType<?>> getKnownEntityTypes() {
++      return BuiltInRegistries.ENTITY_TYPE.stream();
++   }
++
+    @Override
+    public void generate(BiConsumer<ResourceLocation, LootTable.Builder> p_251751_) {
+       this.generate();
+@@ -111,7 +_,7 @@
+       }
+    }
+ 
+-   protected static boolean canHaveLootTable(EntityType<?> p_249029_) {
++   protected boolean canHaveLootTable(EntityType<?> p_249029_) {
+       return SPECIAL_LOOT_TABLE_TYPES.contains(p_249029_) || p_249029_.getCategory() != MobCategory.MISC;
+    }
+ 

@@ -1,0 +1,9 @@
+--- a/net/minecraft/world/inventory/FurnaceResultSlot.java
++++ b/net/minecraft/world/inventory/FurnaceResultSlot.java
+@@ -53,5 +_,6 @@
+       }
+ 
+       this.removeCount = 0;
++      net.neoforged.neoforge.event.EventHooks.firePlayerSmeltedEvent(this.player, p_39558_);
+    }
+ }

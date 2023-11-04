@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/DeadBushBlock.java
++++ b/net/minecraft/world/level/block/DeadBushBlock.java
+@@ -8,7 +_,7 @@
+ import net.minecraft.world.phys.shapes.CollisionContext;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
+-public class DeadBushBlock extends BushBlock {
++public class DeadBushBlock extends BushBlock implements net.neoforged.neoforge.common.IShearable {
+    protected static final float AABB_OFFSET = 6.0F;
+    protected static final VoxelShape SHAPE = Block.box(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
+ 

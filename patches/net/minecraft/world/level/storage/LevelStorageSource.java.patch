@@ -1,0 +1,50 @@
+--- a/net/minecraft/world/level/storage/LevelStorageSource.java
++++ b/net/minecraft/world/level/storage/LevelStorageSource.java
+@@ -505,13 +_,26 @@
+       public Pair<WorldData, WorldDimensions.Complete> getDataTag(
+          DynamicOps<Tag> p_248747_, WorldDataConfiguration p_251873_, Registry<LevelStem> p_249187_, Lifecycle p_249736_
+       ) {
+-         this.checkLock();
+          return LevelStorageSource.this.readLevelData(this.levelDirectory, LevelStorageSource.getLevelData(p_248747_, p_251873_, p_249187_, p_249736_));
+       }
+ 
++      public void readAdditionalLevelSaveData() {
++         checkLock();
++         LevelStorageSource.this.readLevelData(this.levelDirectory, (path, dataFixer) -> {
++            try {
++               CompoundTag compoundTag = NbtIo.readCompressed(path.toFile());
++               net.neoforged.neoforge.common.CommonHooks.readAdditionalLevelSaveData(compoundTag, this.levelDirectory);
++            } catch (Exception e) {
++                LOGGER.error("Exception reading {}", path, e);
++            }
++            return ""; // Return non-null to prevent level.dat-old inject
++         });
++      }
++
+       @Nullable
+       public WorldDataConfiguration getDataConfiguration() {
+          this.checkLock();
++         this.checkLock();
+          return LevelStorageSource.this.readLevelData(this.levelDirectory, LevelStorageSource::getDataConfiguration);
+       }
+ 
+@@ -525,6 +_,8 @@
+          CompoundTag compoundtag1 = new CompoundTag();
+          compoundtag1.put("Data", compoundtag);
+ 
++         net.neoforged.neoforge.common.CommonHooks.writeAdditionalLevelSaveData(p_78292_, compoundtag1);
++
+          try {
+             File file2 = File.createTempFile("level", ".dat", file1);
+             NbtIo.writeCompressed(compoundtag1, file2);
+@@ -538,6 +_,10 @@
+ 
+       public Optional<Path> getIconFile() {
+          return !this.lock.isValid() ? Optional.empty() : Optional.of(this.levelDirectory.iconFile());
++      }
++
++      public Path getWorldDir() {
++         return baseDir;
+       }
+ 
+       public void deleteLevel() throws IOException {

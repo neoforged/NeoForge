@@ -1,0 +1,38 @@
+{
+  "parent": "minecraft:story/root",
+  "criteria": {
+    "has_named_item": {
+      "conditions": {
+        "items": [
+          {
+            "type": "custom_predicate_test:custom_name",
+            "data1": 1,
+            "data2": 2
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "text": "Get a named item"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "minecraft:anvil"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "Named!"
+    }
+  },
+  "requirements": [
+    [
+      "has_named_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

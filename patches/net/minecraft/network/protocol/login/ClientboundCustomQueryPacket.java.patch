@@ -1,0 +1,17 @@
+--- a/net/minecraft/network/protocol/login/ClientboundCustomQueryPacket.java
++++ b/net/minecraft/network/protocol/login/ClientboundCustomQueryPacket.java
+@@ -17,11 +_,10 @@
+       return readUnknownPayload(p_295267_, p_295117_);
+    }
+ 
+-   private static DiscardedQueryPayload readUnknownPayload(ResourceLocation p_294837_, FriendlyByteBuf p_296380_) {
++   private static net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload readUnknownPayload(ResourceLocation p_294837_, FriendlyByteBuf p_296380_) {
+       int i = p_296380_.readableBytes();
+-      if (i >= 0 && i <= 1048576) {
+-         p_296380_.skipBytes(i);
+-         return new DiscardedQueryPayload(p_294837_);
++      if (i >= 0 && i <= MAX_PAYLOAD_SIZE) {
++         return net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload.inbound(p_296380_, p_294837_);
+       } else {
+          throw new IllegalArgumentException("Payload may not be larger than 1048576 bytes");
+       }

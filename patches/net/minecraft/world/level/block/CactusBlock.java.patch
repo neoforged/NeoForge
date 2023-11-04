@@ -1,0 +1,63 @@
+--- a/net/minecraft/world/level/block/CactusBlock.java
++++ b/net/minecraft/world/level/block/CactusBlock.java
+@@ -20,7 +_,7 @@
+ import net.minecraft.world.phys.shapes.CollisionContext;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
+-public class CactusBlock extends Block {
++public class CactusBlock extends Block implements net.neoforged.neoforge.common.IPlantable {
+    public static final IntegerProperty AGE = BlockStateProperties.AGE_15;
+    public static final int MAX_AGE = 15;
+    protected static final int AABB_OFFSET = 1;
+@@ -34,6 +_,7 @@
+ 
+    @Override
+    public void tick(BlockState p_220908_, ServerLevel p_220909_, BlockPos p_220910_, RandomSource p_220911_) {
++      if (!p_220909_.isAreaLoaded(p_220910_, 1)) return; // Forge: prevent growing cactus from loading unloaded chunks with block update
+       if (!p_220908_.canSurvive(p_220909_, p_220910_)) {
+          p_220909_.destroyBlock(p_220910_, true);
+       }
+@@ -51,13 +_,16 @@
+ 
+          if (i < 3) {
+             int j = p_220913_.getValue(AGE);
++            if(net.neoforged.neoforge.common.CommonHooks.onCropsGrowPre(p_220914_, blockpos, p_220913_, true)) {
+             if (j == 15) {
+                p_220914_.setBlockAndUpdate(blockpos, this.defaultBlockState());
+-               BlockState blockstate = p_220913_.setValue(AGE, Integer.valueOf(0));
++               BlockState blockstate = p_220913_.setValue(AGE, 0);
+                p_220914_.setBlock(p_220915_, blockstate, 4);
+                p_220914_.neighborChanged(blockstate, blockpos, this, p_220915_, false);
+             } else {
+-               p_220914_.setBlock(p_220915_, p_220913_.setValue(AGE, Integer.valueOf(j + 1)), 4);
++               p_220914_.setBlock(p_220915_, p_220913_.setValue(AGE, j + 1), 4);
++            }
++            net.neoforged.neoforge.common.CommonHooks.onCropsGrowPost(p_220914_, p_220915_, p_220913_);
+             }
+          }
+       }
+@@ -92,7 +_,7 @@
+       }
+ 
+       BlockState blockstate1 = p_51154_.getBlockState(p_51155_.below());
+-      return (blockstate1.is(Blocks.CACTUS) || blockstate1.is(BlockTags.SAND)) && !p_51154_.getBlockState(p_51155_.above()).liquid();
++      return blockstate1.canSustainPlant(p_51154_, p_51155_, Direction.UP, this) && !p_51154_.getBlockState(p_51155_.above()).liquid();
+    }
+ 
+    @Override
+@@ -108,5 +_,15 @@
+    @Override
+    public boolean isPathfindable(BlockState p_51143_, BlockGetter p_51144_, BlockPos p_51145_, PathComputationType p_51146_) {
+       return false;
++   }
++
++   @Override
++   public net.neoforged.neoforge.common.PlantType getPlantType(BlockGetter world, BlockPos pos) {
++      return net.neoforged.neoforge.common.PlantType.DESERT;
++   }
++
++   @Override
++   public BlockState getPlant(BlockGetter world, BlockPos pos) {
++      return defaultBlockState();
+    }
+ }

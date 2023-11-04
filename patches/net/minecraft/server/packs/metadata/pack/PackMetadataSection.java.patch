@@ -1,0 +1,71 @@
+--- a/net/minecraft/server/packs/metadata/pack/PackMetadataSection.java
++++ b/net/minecraft/server/packs/metadata/pack/PackMetadataSection.java
+@@ -9,14 +_,61 @@
+ import net.minecraft.util.ExtraCodecs;
+ import net.minecraft.util.InclusiveRange;
+ 
+-public record PackMetadataSection(Component description, int packFormat, Optional<InclusiveRange<Integer>> supportedFormats) {
++public record PackMetadataSection(Component description, @Deprecated int packFormat, Optional<InclusiveRange<Integer>> supportedFormats, Optional<NeoForgeData> neoForgeData) {
++   
++   @Deprecated
++   public PackMetadataSection(Component description, int packFormat, Optional<InclusiveRange<Integer>> supportedFormats) {
++      this(description, packFormat, supportedFormats, Optional.empty());
++   }
++   
++   public PackMetadataSection(Component description, int packFormat, InclusiveRange<Integer> supportedFormats) {
++      this(description, packFormat, Optional.of(supportedFormats), Optional.empty());
++   }
++   
++   public PackMetadataSection(Component description, int packFormat, NeoForgeData neoForgeData) {
++      this(description, packFormat, Optional.empty(), Optional.of(neoForgeData));
++   }
++   
++   public <R> PackMetadataSection(Component p_10371_, int p_10372_, java.util.Map<net.minecraft.server.packs.PackType, Integer> packTypeVersions) {
++      this(p_10371_, p_10372_, new NeoForgeData(packTypeVersions));
++   }
++   
++   public PackMetadataSection(Component description, int packVersion) {
++      this(description, packVersion, Optional.empty(), Optional.empty());
++   }
++   
+    public static final Codec<PackMetadataSection> CODEC = RecordCodecBuilder.create(
+-      p_294835_ -> p_294835_.group(
+-               ExtraCodecs.COMPONENT.fieldOf("description").forGetter(PackMetadataSection::description),
+-               Codec.INT.fieldOf("pack_format").forGetter(PackMetadataSection::packFormat),
+-               InclusiveRange.codec(Codec.INT).optionalFieldOf("supported_formats").forGetter(PackMetadataSection::supportedFormats)
+-            )
+-            .apply(p_294835_, PackMetadataSection::new)
++         p_294835_ -> p_294835_.group(
++                     ExtraCodecs.COMPONENT.fieldOf("description").forGetter(PackMetadataSection::description),
++                     Codec.INT.fieldOf("pack_format").forGetter(PackMetadataSection::packFormat),
++                     InclusiveRange.codec(Codec.INT).optionalFieldOf("supported_formats").forGetter(PackMetadataSection::supportedFormats),
++                     NeoForgeData.CODEC.optionalFieldOf("neoforge").forGetter(PackMetadataSection::neoForgeData)
++               )
++                            .apply(p_294835_, PackMetadataSection::new)
+    );
+    public static final MetadataSectionType<PackMetadataSection> TYPE = MetadataSectionType.fromCodec("pack", CODEC);
++   
++   
++   public int packFormat(net.minecraft.server.packs.PackType packType) {
++      return neoForgeData().flatMap(d -> d.packFormat(packType)).orElse(packFormat());
++   }
++   
++   public record NeoForgeData(Optional<java.util.Map<net.minecraft.server.packs.PackType, Integer>> formatPerPackType) {
++      
++      private static final Codec<NeoForgeData> CODEC = RecordCodecBuilder.create(builder -> builder.group(
++            Codec.simpleMap(
++                  net.minecraft.util.StringRepresentable.fromEnum(net.minecraft.server.packs.PackType::values),
++                  Codec.INT,
++                  com.mojang.serialization.Keyable.forStrings(() -> java.util.Arrays.stream(net.minecraft.server.packs.PackType.values()).map(net.minecraft.util.StringRepresentable::getSerializedName))
++            ).codec().optionalFieldOf("versions").forGetter(NeoForgeData::formatPerPackType)
++      ).apply(builder, NeoForgeData::new));
++
++      public NeoForgeData(java.util.Map<net.minecraft.server.packs.PackType, Integer> supportedFormats) {
++         this(Optional.of(supportedFormats));
++      }
++      
++      public Optional<Integer> packFormat(net.minecraft.server.packs.PackType packType) {
++         return formatPerPackType.map(p -> p.get(packType));
++      }
++   }
+ }

@@ -1,0 +1,40 @@
+--- a/net/minecraft/world/level/block/FenceGateBlock.java
++++ b/net/minecraft/world/level/block/FenceGateBlock.java
+@@ -40,11 +_,16 @@
+    protected static final VoxelShape X_OCCLUSION_SHAPE = Shapes.or(Block.box(7.0, 5.0, 0.0, 9.0, 16.0, 2.0), Block.box(7.0, 5.0, 14.0, 9.0, 16.0, 16.0));
+    protected static final VoxelShape Z_OCCLUSION_SHAPE_LOW = Shapes.or(Block.box(0.0, 2.0, 7.0, 2.0, 13.0, 9.0), Block.box(14.0, 2.0, 7.0, 16.0, 13.0, 9.0));
+    protected static final VoxelShape X_OCCLUSION_SHAPE_LOW = Shapes.or(Block.box(7.0, 2.0, 0.0, 9.0, 13.0, 2.0), Block.box(7.0, 2.0, 14.0, 9.0, 13.0, 16.0));
+-   private final WoodType type;
++   private final net.minecraft.sounds.SoundEvent openSound;
++   private final net.minecraft.sounds.SoundEvent closeSound;
+ 
+    public FenceGateBlock(BlockBehaviour.Properties p_273352_, WoodType p_273340_) {
+-      super(p_273352_.sound(p_273340_.soundType()));
+-      this.type = p_273340_;
++      this(p_273352_.sound(p_273340_.soundType()), p_273340_.fenceGateOpen(), p_273340_.fenceGateClose());
++   }
++   public FenceGateBlock(BlockBehaviour.Properties props, net.minecraft.sounds.SoundEvent openSound, net.minecraft.sounds.SoundEvent closeSound) {
++      super(props);
++      this.openSound = openSound;
++      this.closeSound = closeSound;
+       this.registerDefaultState(
+          this.stateDefinition.any().setValue(OPEN, Boolean.valueOf(false)).setValue(POWERED, Boolean.valueOf(false)).setValue(IN_WALL, Boolean.valueOf(false))
+       );
+@@ -151,7 +_,7 @@
+       p_53366_.playSound(
+          p_53368_,
+          p_53367_,
+-         flag ? this.type.fenceGateOpen() : this.type.fenceGateClose(),
++         flag ? openSound : closeSound,
+          SoundSource.BLOCKS,
+          1.0F,
+          p_53366_.getRandom().nextFloat() * 0.1F + 0.9F
+@@ -170,7 +_,7 @@
+                p_53373_.playSound(
+                   null,
+                   p_53374_,
+-                  flag ? this.type.fenceGateOpen() : this.type.fenceGateClose(),
++                  flag ? openSound : closeSound,
+                   SoundSource.BLOCKS,
+                   1.0F,
+                   p_53373_.getRandom().nextFloat() * 0.1F + 0.9F

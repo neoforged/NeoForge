@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "#": {
+      "type": "neoforge:difference",
+      "base": {
+        "tag": "minecraft:fences"
+      },
+      "subtracted": {
+        "tag": "minecraft:non_flammable_wood"
+      }
+    }
+  },
+  "pattern": [
+    " # ",
+    "###",
+    " # "
+  ],
+  "result": {
+    "item": "minecraft:flint_and_steel"
+  },
+  "show_notification": true
+}

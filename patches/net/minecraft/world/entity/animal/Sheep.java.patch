@@ -1,0 +1,50 @@
+--- a/net/minecraft/world/entity/animal/Sheep.java
++++ b/net/minecraft/world/entity/animal/Sheep.java
+@@ -65,7 +_,7 @@
+ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+ import org.joml.Vector3f;
+ 
+-public class Sheep extends Animal implements Shearable {
++public class Sheep extends Animal implements Shearable, net.neoforged.neoforge.common.IShearable {
+    private static final int EAT_ANIMATION_TICKS = 40;
+    private static final EntityDataAccessor<Byte> DATA_WOOL_ID = SynchedEntityData.defineId(Sheep.class, EntityDataSerializers.BYTE);
+    private static final Map<DyeColor, ItemLike> ITEM_BY_DYE = Util.make(Maps.newEnumMap(DyeColor.class), p_29841_ -> {
+@@ -206,7 +_,7 @@
+    @Override
+    public InteractionResult mobInteract(Player p_29853_, InteractionHand p_29854_) {
+       ItemStack itemstack = p_29853_.getItemInHand(p_29854_);
+-      if (itemstack.is(Items.SHEARS)) {
++      if (false && itemstack.getItem() == Items.SHEARS) { //Forge: Moved to onSheared
+          if (!this.level().isClientSide && this.readyForShearing()) {
+             this.shear(SoundSource.PLAYERS);
+             this.gameEvent(GameEvent.SHEAR, p_29853_);
+@@ -380,6 +_,29 @@
+    @Override
+    protected float getStandingEyeHeight(Pose p_29850_, EntityDimensions p_29851_) {
+       return 0.95F * p_29851_.height;
++   }
++
++   @Override
++   public boolean isShearable(@org.jetbrains.annotations.NotNull ItemStack item, Level world, BlockPos pos) {
++      return readyForShearing();
++   }
++
++   @org.jetbrains.annotations.NotNull
++   @Override
++   public java.util.List<ItemStack> onSheared(@Nullable Player player, @org.jetbrains.annotations.NotNull ItemStack item, Level world, BlockPos pos, int fortune) {
++      world.playSound(null, this, SoundEvents.SHEEP_SHEAR, player == null ? SoundSource.BLOCKS : SoundSource.PLAYERS, 1.0F, 1.0F);
++      this.gameEvent(GameEvent.SHEAR, player);
++      if (!world.isClientSide) {
++         this.setSheared(true);
++         int i = 1 + this.random.nextInt(3);
++
++         java.util.List<ItemStack> items = new java.util.ArrayList<>();
++         for (int j = 0; j < i; ++j) {
++            items.add(new ItemStack(ITEM_BY_DYE.get(this.getColor())));
++         }
++         return items;
++      }
++      return java.util.Collections.emptyList();
+    }
+ 
+    @Override

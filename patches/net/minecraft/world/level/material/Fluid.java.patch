@@ -1,0 +1,25 @@
+--- a/net/minecraft/world/level/material/Fluid.java
++++ b/net/minecraft/world/level/material/Fluid.java
+@@ -20,7 +_,7 @@
+ import net.minecraft.world.phys.Vec3;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
+-public abstract class Fluid {
++public abstract class Fluid implements net.neoforged.neoforge.common.extensions.IFluidExtension {
+    public static final IdMapper<FluidState> FLUID_STATE_REGISTRY = new IdMapper<>();
+    protected final StateDefinition<Fluid, FluidState> stateDefinition;
+    private FluidState defaultFluidState;
+@@ -100,6 +_,13 @@
+    }
+ 
+    public abstract VoxelShape getShape(FluidState p_76137_, BlockGetter p_76138_, BlockPos p_76139_);
++
++   private net.neoforged.neoforge.fluids.FluidType forgeFluidType;
++   @Override
++   public net.neoforged.neoforge.fluids.FluidType getFluidType() {
++      if (forgeFluidType == null) forgeFluidType = net.neoforged.neoforge.common.CommonHooks.getVanillaFluidType(this);
++      return forgeFluidType;
++   }
+ 
+    public Optional<SoundEvent> getPickupSound() {
+       return Optional.empty();

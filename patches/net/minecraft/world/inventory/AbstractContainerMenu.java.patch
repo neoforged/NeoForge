@@ -1,0 +1,48 @@
+--- a/net/minecraft/world/inventory/AbstractContainerMenu.java
++++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
+@@ -229,6 +_,8 @@
+             ItemStack itemstack1 = p_150438_.get();
+             this.remoteSlots.set(p_150436_, itemstack1);
+             if (this.synchronizer != null) {
++               // Forge: Only synchronize a slot change if the itemstack actually changed in a way that is relevant to the client (i.e. share tag changed)
++               if (!p_150437_.equals(itemstack, true))
+                this.synchronizer.sendSlotChange(this, p_150436_, itemstack1);
+             }
+          }
+@@ -404,6 +_,7 @@
+             ItemStack itemstack10 = this.getCarried();
+             p_150434_.updateTutorialInventoryAction(itemstack10, slot7.getItem(), clickaction);
+             if (!this.tryItemClickBehaviourOverride(p_150434_, clickaction, slot7, itemstack9, itemstack10)) {
++            if (!net.neoforged.neoforge.common.CommonHooks.onItemStackedOn(itemstack9, itemstack10, slot7, clickaction, p_150434_, createCarriedSlotAccess()))
+                if (itemstack9.isEmpty()) {
+                   if (!itemstack10.isEmpty()) {
+                      int i3 = clickaction == ClickAction.PRIMARY ? itemstack10.getCount() : 1;
+@@ -607,14 +_,15 @@
+             ItemStack itemstack = slot.getItem();
+             if (!itemstack.isEmpty() && ItemStack.isSameItemSameTags(p_38904_, itemstack)) {
+                int j = itemstack.getCount() + p_38904_.getCount();
+-               if (j <= p_38904_.getMaxStackSize()) {
++               int maxSize = Math.min(slot.getMaxStackSize(), p_38904_.getMaxStackSize());
++               if (j <= maxSize) {
+                   p_38904_.setCount(0);
+                   itemstack.setCount(j);
+                   slot.setChanged();
+                   flag = true;
+-               } else if (itemstack.getCount() < p_38904_.getMaxStackSize()) {
+-                  p_38904_.shrink(p_38904_.getMaxStackSize() - itemstack.getCount());
+-                  itemstack.setCount(p_38904_.getMaxStackSize());
++               } else if (itemstack.getCount() < maxSize) {
++                  p_38904_.shrink(maxSize - itemstack.getCount());
++                  itemstack.setCount(maxSize);
+                   slot.setChanged();
+                   flag = true;
+                }
+@@ -701,7 +_,7 @@
+       return switch(p_279288_) {
+          case 0 -> Mth.floor((float)p_279172_.getCount() / (float)p_279393_.size());
+          case 1 -> 1;
+-         case 2 -> p_279172_.getItem().getMaxStackSize();
++         case 2 -> p_279172_.getMaxStackSize();
+          default -> p_279172_.getCount();
+       };
+    }

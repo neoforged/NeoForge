@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/level/chunk/PalettedContainer.java
++++ b/net/minecraft/world/level/chunk/PalettedContainer.java
+@@ -28,6 +_,7 @@
+ import net.minecraft.util.ZeroBitStorage;
+ 
+ public class PalettedContainer<T> implements PaletteResize<T>, PalettedContainerRO<T> {
++   // TODO: forceBits-parametered setBits function. -C
+    private static final int MIN_PALETTE_BITS = 0;
+    private final PaletteResize<T> dummyPaletteResize = (p_238275_, p_238276_) -> 0;
+    private final IdMap<T> registry;

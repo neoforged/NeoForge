@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/item/crafting/CraftingRecipeCodecs.java
++++ b/net/minecraft/world/item/crafting/CraftingRecipeCodecs.java
+@@ -18,7 +_,8 @@
+    public static final Codec<ItemStack> ITEMSTACK_OBJECT_CODEC = RecordCodecBuilder.create(
+       p_301292_ -> p_301292_.group(
+                ITEM_NONAIR_CODEC.fieldOf("item").forGetter(ItemStack::getItem),
+-               ExtraCodecs.strictOptionalField(ExtraCodecs.POSITIVE_INT, "count", 1).forGetter(ItemStack::getCount)
++               ExtraCodecs.strictOptionalField(ExtraCodecs.POSITIVE_INT, "count", 1).forGetter(ItemStack::getCount),
++               ExtraCodecs.strictOptionalField(ExtraCodecs.withAlternative(net.minecraft.nbt.TagParser.AS_CODEC, net.minecraft.nbt.CompoundTag.CODEC), "nbt").forGetter(stack -> java.util.Optional.ofNullable(stack.getTag()))
+             )
+             .apply(p_301292_, ItemStack::new)
+    );

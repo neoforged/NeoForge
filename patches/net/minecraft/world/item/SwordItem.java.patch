@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/item/SwordItem.java
++++ b/net/minecraft/world/item/SwordItem.java
+@@ -75,4 +_,9 @@
+    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot p_43274_) {
+       return p_43274_ == EquipmentSlot.MAINHAND ? this.defaultModifiers : super.getDefaultAttributeModifiers(p_43274_);
+    }
++
++   @Override
++   public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ToolAction toolAction) {
++      return net.neoforged.neoforge.common.ToolActions.DEFAULT_SWORD_ACTIONS.contains(toolAction);
++   }
+ }

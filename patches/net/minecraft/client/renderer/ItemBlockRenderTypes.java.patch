@@ -1,0 +1,129 @@
+--- a/net/minecraft/client/renderer/ItemBlockRenderTypes.java
++++ b/net/minecraft/client/renderer/ItemBlockRenderTypes.java
+@@ -20,6 +_,7 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class ItemBlockRenderTypes {
++   @Deprecated
+    private static final Map<Block, RenderType> TYPE_BY_BLOCK = Util.make(Maps.newHashMap(), p_301667_ -> {
+       RenderType rendertype = RenderType.tripwire();
+       p_301667_.put(Blocks.TRIPWIRE, rendertype);
+@@ -310,6 +_,7 @@
+       p_301667_.put(Blocks.BUBBLE_COLUMN, rendertype3);
+       p_301667_.put(Blocks.TINTED_GLASS, rendertype3);
+    });
++   @Deprecated
+    private static final Map<Fluid, RenderType> TYPE_BY_FLUID = Util.make(Maps.newHashMap(), p_109290_ -> {
+       RenderType rendertype = RenderType.translucent();
+       p_109290_.put(Fluids.FLOWING_WATER, rendertype);
+@@ -317,6 +_,8 @@
+    });
+    private static boolean renderCutout;
+ 
++   /** @deprecated Forge: Use {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(BlockState, net.minecraft.util.RandomSource, net.neoforged.neoforge.client.model.data.ModelData)}. */
++   @Deprecated // Note: this method does NOT support model-based render types
+    public static RenderType getChunkRenderType(BlockState p_109283_) {
+       Block block = p_109283_.getBlock();
+       if (block instanceof LeavesBlock) {
+@@ -327,6 +_,8 @@
+       }
+    }
+ 
++   /** @deprecated Forge: Use {@link net.neoforged.neoforge.client.RenderTypeHelper#getMovingBlockRenderType(RenderType)} while iterating through {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(BlockState, net.minecraft.util.RandomSource, net.neoforged.neoforge.client.model.data.ModelData)}. */
++   @Deprecated // Note: this method does NOT support model-based render types
+    public static RenderType getMovingBlockRenderType(BlockState p_109294_) {
+       Block block = p_109294_.getBlock();
+       if (block instanceof LeavesBlock) {
+@@ -341,6 +_,8 @@
+       }
+    }
+ 
++   /** @deprecated Forge: Use {@link net.neoforged.neoforge.client.RenderTypeHelper#getEntityRenderType(RenderType, boolean)} while iterating through {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(BlockState, net.minecraft.util.RandomSource, net.neoforged.neoforge.client.model.data.ModelData)}. */
++   @Deprecated // Note: this method does NOT support model-based render types
+    public static RenderType getRenderType(BlockState p_109285_, boolean p_109286_) {
+       RenderType rendertype = getChunkRenderType(p_109285_);
+       if (rendertype == RenderType.translucent()) {
+@@ -354,6 +_,8 @@
+       }
+    }
+ 
++   /** @deprecated Forge: Use {@link net.minecraft.client.resources.model.BakedModel#getRenderPasses(ItemStack, boolean)} and {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(ItemStack, boolean)}. */
++   @Deprecated // Note: this method does NOT support model-based render types
+    public static RenderType getRenderType(ItemStack p_109280_, boolean p_109281_) {
+       Item item = p_109280_.getItem();
+       if (item instanceof BlockItem) {
+@@ -365,8 +_,73 @@
+    }
+ 
+    public static RenderType getRenderLayer(FluidState p_109288_) {
+-      RenderType rendertype = TYPE_BY_FLUID.get(p_109288_.getType());
++      RenderType rendertype = FLUID_RENDER_TYPES.get(net.neoforged.neoforge.registries.ForgeRegistries.FLUIDS.getDelegateOrThrow(p_109288_.getType()));
+       return rendertype != null ? rendertype : RenderType.solid();
++   }
++
++   // FORGE START
++
++   private static final net.neoforged.neoforge.client.ChunkRenderTypeSet CUTOUT_MIPPED = net.neoforged.neoforge.client.ChunkRenderTypeSet.of(RenderType.cutoutMipped());
++   private static final net.neoforged.neoforge.client.ChunkRenderTypeSet SOLID = net.neoforged.neoforge.client.ChunkRenderTypeSet.of(RenderType.solid());
++   private static final Map<net.minecraft.core.Holder.Reference<Block>, net.neoforged.neoforge.client.ChunkRenderTypeSet> BLOCK_RENDER_TYPES = Util.make(new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(TYPE_BY_BLOCK.size(), 0.5F), map -> {
++      map.defaultReturnValue(SOLID);
++      for(Map.Entry<Block, RenderType> entry : TYPE_BY_BLOCK.entrySet()) {
++         map.put(net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getDelegateOrThrow(entry.getKey()), net.neoforged.neoforge.client.ChunkRenderTypeSet.of(entry.getValue()));
++      }
++   });
++   private static final Map<net.minecraft.core.Holder.Reference<Fluid>, RenderType> FLUID_RENDER_TYPES = Util.make(new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(TYPE_BY_FLUID.size(), 0.5F), map -> {
++      map.defaultReturnValue(RenderType.solid());
++      for(Map.Entry<Fluid, RenderType> entry : TYPE_BY_FLUID.entrySet()) {
++         map.put(net.neoforged.neoforge.registries.ForgeRegistries.FLUIDS.getDelegateOrThrow(entry.getKey()), entry.getValue());
++      }
++   });
++
++   /** @deprecated Use {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(BlockState, net.minecraft.util.RandomSource, net.neoforged.neoforge.client.model.data.ModelData)}. */
++   @Deprecated(since = "1.19")
++   public static net.neoforged.neoforge.client.ChunkRenderTypeSet getRenderLayers(BlockState state) {
++      Block block = state.getBlock();
++      if (block instanceof LeavesBlock) {
++         return renderCutout ? CUTOUT_MIPPED : SOLID;
++      } else {
++         return BLOCK_RENDER_TYPES.get(net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getDelegateOrThrow(block));
++      }
++   }
++
++   /** @deprecated Set your render type in your block model's JSON (eg. {@code "render_type": "cutout"}) or override {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(BlockState, net.minecraft.util.RandomSource, net.neoforged.neoforge.client.model.data.ModelData)} */
++   @Deprecated(since = "1.19")
++   public static void setRenderLayer(Block block, RenderType type) {
++      com.google.common.base.Preconditions.checkArgument(type.getChunkLayerId() >= 0, "The argument must be a valid chunk render type returned by RenderType#chunkBufferLayers().");
++      setRenderLayer(block, net.neoforged.neoforge.client.ChunkRenderTypeSet.of(type));
++   }
++
++   /** @deprecated Set your render type in your block model's JSON (eg. {@code "render_type": "cutout"}) or override {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(BlockState, net.minecraft.util.RandomSource, net.neoforged.neoforge.client.model.data.ModelData)} */
++   @Deprecated(since = "1.19")
++   public static synchronized void setRenderLayer(Block block, java.util.function.Predicate<RenderType> predicate) {
++      setRenderLayer(block, createSetFromPredicate(predicate));
++   }
++
++   /** @deprecated Set your render type in your block model's JSON (eg. {@code "render_type": "cutout"}) or override {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(BlockState, net.minecraft.util.RandomSource, net.neoforged.neoforge.client.model.data.ModelData)} */
++   @Deprecated(since = "1.19")
++   public static synchronized void setRenderLayer(Block block, net.neoforged.neoforge.client.ChunkRenderTypeSet layers) {
++      checkClientLoading();
++      BLOCK_RENDER_TYPES.put(net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getDelegateOrThrow(block), layers);
++   }
++
++   public static synchronized void setRenderLayer(Fluid fluid, RenderType type) {
++      com.google.common.base.Preconditions.checkArgument(type.getChunkLayerId() >= 0, "The argument must be a valid chunk render type returned by RenderType#chunkBufferLayers().");
++      checkClientLoading();
++      FLUID_RENDER_TYPES.put(net.neoforged.neoforge.registries.ForgeRegistries.FLUIDS.getDelegateOrThrow(fluid), type);
++   }
++
++   private static void checkClientLoading() {
++      com.google.common.base.Preconditions.checkState(net.neoforged.neoforge.client.loading.ClientModLoader.isLoading(),
++              "Render layers can only be set during client loading! " +
++                      "This might ideally be done from `FMLClientSetupEvent`."
++      );
++   }
++
++   private static net.neoforged.neoforge.client.ChunkRenderTypeSet createSetFromPredicate(java.util.function.Predicate<RenderType> predicate) {
++      return net.neoforged.neoforge.client.ChunkRenderTypeSet.of(RenderType.chunkBufferLayers().stream().filter(predicate).toArray(RenderType[]::new));
+    }
+ 
+    public static void setFancy(boolean p_109292_) {

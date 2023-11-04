@@ -1,0 +1,10 @@
+--- a/net/minecraft/server/network/MemoryServerHandshakePacketListenerImpl.java
++++ b/net/minecraft/server/network/MemoryServerHandshakePacketListenerImpl.java
+@@ -21,6 +_,7 @@
+       if (p_9697_.intention() != ClientIntent.LOGIN) {
+          throw new UnsupportedOperationException("Invalid intention " + p_9697_.intention());
+       } else {
++         if (!net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerLogin(p_9697_, this.connection)) return;
+          this.connection.setClientboundProtocolAfterHandshake(ClientIntent.LOGIN);
+          this.connection.setListener(new ServerLoginPacketListenerImpl(this.server, this.connection));
+       }

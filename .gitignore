@@ -19,21 +19,12 @@
 /*/build
 /*/.gradle
 
-# Projects repo, either ignore it, or ignore patches.
-/projects/mcp/
-/projects/clean/
-/projects/forge/
-/projects/fmlonly/
-#/patches/*
-
 #occupational hazards
-/projects/**/build/
-/projects/**/out/
-/projects/**/run/
 /projects/**/*.launch
 /repo/
+.run
 src/generated/resources/.cache/
-src/generated_test/resources/.cache/
+tests/src/generated/resources/.cache/
 
 #Patch rejects
 #/patches-/
@@ -46,3 +37,10 @@ changelog.txt
 *.7z
 /logs/
 
+build
+**/build
+
+**/eclipse/
+**/runs/
+
+**/out/

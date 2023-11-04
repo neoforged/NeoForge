@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/level/block/grower/AbstractTreeGrower.java
++++ b/net/minecraft/world/level/block/grower/AbstractTreeGrower.java
+@@ -23,6 +_,9 @@
+          return false;
+       } else {
+          Holder<ConfiguredFeature<?, ?>> holder = p_222905_.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolder(resourcekey).orElse(null);
++         var event = net.neoforged.neoforge.event.EventHooks.blockGrowFeature(p_222905_, p_222909_, p_222907_, holder);
++         holder = event.getFeature();
++         if (event.getResult() == net.neoforged.bus.api.Event.Result.DENY) return false;
+          if (holder == null) {
+             return false;
+          } else {

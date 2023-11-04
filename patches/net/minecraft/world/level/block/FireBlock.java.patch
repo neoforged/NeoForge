@@ -1,0 +1,151 @@
+--- a/net/minecraft/world/level/block/FireBlock.java
++++ b/net/minecraft/world/level/block/FireBlock.java
+@@ -123,13 +_,13 @@
+    protected BlockState getStateForPlacement(BlockGetter p_53471_, BlockPos p_53472_) {
+       BlockPos blockpos = p_53472_.below();
+       BlockState blockstate = p_53471_.getBlockState(blockpos);
+-      if (!this.canBurn(blockstate) && !blockstate.isFaceSturdy(p_53471_, blockpos, Direction.UP)) {
++      if (!this.canCatchFire(p_53471_, p_53472_, Direction.UP) && !blockstate.isFaceSturdy(p_53471_, blockpos, Direction.UP)) {
+          BlockState blockstate1 = this.defaultBlockState();
+ 
+          for(Direction direction : Direction.values()) {
+             BooleanProperty booleanproperty = PROPERTY_BY_DIRECTION.get(direction);
+             if (booleanproperty != null) {
+-               blockstate1 = blockstate1.setValue(booleanproperty, Boolean.valueOf(this.canBurn(p_53471_.getBlockState(p_53472_.relative(direction)))));
++               blockstate1 = blockstate1.setValue(booleanproperty, Boolean.valueOf(this.canCatchFire(p_53471_, p_53472_.relative(direction), direction.getOpposite())));
+             }
+          }
+ 
+@@ -150,14 +_,14 @@
+       p_221161_.scheduleTick(p_221162_, this, getFireTickDelay(p_221161_.random));
+       if (p_221161_.getGameRules().getBoolean(GameRules.RULE_DOFIRETICK)) {
+          if (!p_221160_.canSurvive(p_221161_, p_221162_)) {
+-            p_221161_.removeBlock(p_221162_, false);
+          }
+ 
+          BlockState blockstate = p_221161_.getBlockState(p_221162_.below());
+-         boolean flag = blockstate.is(p_221161_.dimensionType().infiniburn());
++         boolean flag = blockstate.isFireSource(p_221161_, p_221162_, Direction.UP);
+          int i = p_221160_.getValue(AGE);
+          if (!flag && p_221161_.isRaining() && this.isNearRain(p_221161_, p_221162_) && p_221163_.nextFloat() < 0.2F + (float)i * 0.03F) {
+             p_221161_.removeBlock(p_221162_, false);
++            p_221161_.removeBlock(p_221162_, false);
+          } else {
+             int j = Math.min(15, i + p_221163_.nextInt(3) / 2);
+             if (i != j) {
+@@ -175,7 +_,7 @@
+                   return;
+                }
+ 
+-               if (i == 15 && p_221163_.nextInt(4) == 0 && !this.canBurn(p_221161_.getBlockState(p_221162_.below()))) {
++               if (i == 15 && p_221163_.nextInt(4) == 0 && !this.canCatchFire(p_221161_, p_221162_.below(), Direction.UP)) {
+                   p_221161_.removeBlock(p_221162_, false);
+                   return;
+                }
+@@ -183,12 +_,12 @@
+ 
+             boolean flag1 = p_221161_.getBiome(p_221162_).is(BiomeTags.INCREASED_FIRE_BURNOUT);
+             int k = flag1 ? -50 : 0;
+-            this.checkBurnOut(p_221161_, p_221162_.east(), 300 + k, p_221163_, i);
+-            this.checkBurnOut(p_221161_, p_221162_.west(), 300 + k, p_221163_, i);
+-            this.checkBurnOut(p_221161_, p_221162_.below(), 250 + k, p_221163_, i);
+-            this.checkBurnOut(p_221161_, p_221162_.above(), 250 + k, p_221163_, i);
+-            this.checkBurnOut(p_221161_, p_221162_.north(), 300 + k, p_221163_, i);
+-            this.checkBurnOut(p_221161_, p_221162_.south(), 300 + k, p_221163_, i);
++            this.checkBurnOut(p_221161_, p_221162_.east(), 300 + k, p_221163_, i, Direction.WEST);
++            this.checkBurnOut(p_221161_, p_221162_.west(), 300 + k, p_221163_, i, Direction.EAST);
++            this.checkBurnOut(p_221161_, p_221162_.below(), 250 + k, p_221163_, i, Direction.UP);
++            this.checkBurnOut(p_221161_, p_221162_.above(), 250 + k, p_221163_, i, Direction.DOWN);
++            this.checkBurnOut(p_221161_, p_221162_.north(), 300 + k, p_221163_, i, Direction.SOUTH);
++            this.checkBurnOut(p_221161_, p_221162_.south(), 300 + k, p_221163_, i, Direction.NORTH);
+             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+             for(int l = -1; l <= 1; ++l) {
+@@ -229,33 +_,32 @@
+          || p_53429_.isRainingAt(p_53430_.south());
+    }
+ 
++   @Deprecated //Forge: Use IForgeBlockState.getFlammability, Public for default implementation only.
+    public int getBurnOdds(BlockState p_221165_) {
+       return p_221165_.hasProperty(BlockStateProperties.WATERLOGGED) && p_221165_.getValue(BlockStateProperties.WATERLOGGED)
+          ? 0
+          : this.burnOdds.getInt(p_221165_.getBlock());
+    }
+ 
++   @Deprecated //Forge: Use IForgeBlockState.getFireSpreadSpeed
+    public int getIgniteOdds(BlockState p_221167_) {
+       return p_221167_.hasProperty(BlockStateProperties.WATERLOGGED) && p_221167_.getValue(BlockStateProperties.WATERLOGGED)
+          ? 0
+          : this.igniteOdds.getInt(p_221167_.getBlock());
+    }
+ 
+-   private void checkBurnOut(Level p_221151_, BlockPos p_221152_, int p_221153_, RandomSource p_221154_, int p_221155_) {
+-      int i = this.getBurnOdds(p_221151_.getBlockState(p_221152_));
++   private void checkBurnOut(Level p_221151_, BlockPos p_221152_, int p_221153_, RandomSource p_221154_, int p_221155_, Direction face) {
++      int i = p_221151_.getBlockState(p_221152_).getFlammability(p_221151_, p_221152_, face);
+       if (p_221154_.nextInt(p_221153_) < i) {
+          BlockState blockstate = p_221151_.getBlockState(p_221152_);
++         blockstate.onCaughtFire(p_221151_, p_221152_, face, null);
++
+          if (p_221154_.nextInt(p_221155_ + 10) < 5 && !p_221151_.isRainingAt(p_221152_)) {
+             int j = Math.min(p_221155_ + p_221154_.nextInt(5) / 4, 15);
+             p_221151_.setBlock(p_221152_, this.getStateWithAge(p_221151_, p_221152_, j), 3);
+          } else {
+             p_221151_.removeBlock(p_221152_, false);
+          }
+-
+-         Block block = blockstate.getBlock();
+-         if (block instanceof TntBlock) {
+-            TntBlock.explode(p_221151_, p_221152_);
+-         }
+       }
+    }
+ 
+@@ -266,7 +_,7 @@
+ 
+    private boolean isValidFireLocation(BlockGetter p_53486_, BlockPos p_53487_) {
+       for(Direction direction : Direction.values()) {
+-         if (this.canBurn(p_53486_.getBlockState(p_53487_.relative(direction)))) {
++         if (this.canCatchFire(p_53486_, p_53487_.relative(direction), direction.getOpposite())) {
+             return true;
+          }
+       }
+@@ -282,7 +_,7 @@
+ 
+          for(Direction direction : Direction.values()) {
+             BlockState blockstate = p_221157_.getBlockState(p_221158_.relative(direction));
+-            i = Math.max(this.getIgniteOdds(blockstate), i);
++            i = Math.max(blockstate.getFireSpreadSpeed(p_221157_, p_221158_.relative(direction), direction.getOpposite()), i);
+          }
+ 
+          return i;
+@@ -290,6 +_,7 @@
+    }
+ 
+    @Override
++   @Deprecated //Forge: Use canCatchFire with more context
+    protected boolean canBurn(BlockState p_53489_) {
+       return this.getIgniteOdds(p_53489_) > 0;
+    }
+@@ -310,8 +_,21 @@
+    }
+ 
+    private void setFlammable(Block p_53445_, int p_53446_, int p_53447_) {
++      if (p_53445_ == Blocks.AIR) throw new IllegalArgumentException("Tried to set air on fire... This is bad.");
+       this.igniteOdds.put(p_53445_, p_53446_);
+       this.burnOdds.put(p_53445_, p_53447_);
++   }
++
++   /**
++    * Side sensitive version that calls the block function.
++    *
++    * @param world The current world
++    * @param pos Block position
++    * @param face The side the fire is coming from
++    * @return True if the face can catch fire.
++    */
++   public boolean canCatchFire(BlockGetter world, BlockPos pos, Direction face) {
++      return world.getBlockState(pos).isFlammable(world, pos, face);
+    }
+ 
+    public static void bootStrap() {

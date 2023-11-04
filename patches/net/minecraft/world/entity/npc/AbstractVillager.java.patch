@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/entity/npc/AbstractVillager.java
++++ b/net/minecraft/world/entity/npc/AbstractVillager.java
+@@ -127,6 +_,7 @@
+       if (this.tradingPlayer instanceof ServerPlayer) {
+          CriteriaTriggers.TRADE.trigger((ServerPlayer)this.tradingPlayer, this, p_35274_.getResult());
+       }
++      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.TradeWithVillagerEvent(this.tradingPlayer, p_35274_, this));
+    }
+ 
+    protected abstract void rewardTradeXp(MerchantOffer p_35299_);
+@@ -180,9 +_,9 @@
+ 
+    @Nullable
+    @Override
+-   public Entity changeDimension(ServerLevel p_35295_) {
++   public Entity changeDimension(ServerLevel p_35295_, net.neoforged.neoforge.common.util.ITeleporter teleporter) {
+       this.stopTrading();
+-      return super.changeDimension(p_35295_);
++      return super.changeDimension(p_35295_, teleporter);
+    }
+ 
+    protected void stopTrading() {
