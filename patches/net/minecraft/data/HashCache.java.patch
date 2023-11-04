@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/HashCache.java
 +++ b/net/minecraft/data/HashCache.java
-@@ -37,6 +37,7 @@
+@@ -37,6 +_,7 @@
     private final Path cacheDir;
     private final String versionId;
     private final Map<String, HashCache.ProviderCache> caches;
@@ -8,7 +8,7 @@
     private final Set<String> cachesToWrite = new HashSet<>();
     private final Set<Path> cachePaths = new HashSet<>();
     private final int initialCount;
-@@ -63,6 +64,7 @@
+@@ -63,6 +_,7 @@
        }
  
        this.caches = map;
@@ -16,7 +16,7 @@
        this.initialCount = i;
     }
  
-@@ -104,6 +106,8 @@
+@@ -104,6 +_,8 @@
        this.caches.forEach((p_253378_, p_253379_) -> {
           if (this.cachesToWrite.contains(p_253378_)) {
              Path path = this.getProviderCachePath(p_253378_);
@@ -25,7 +25,7 @@
              p_253379_.save(this.rootDir, path, DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now()) + "\t" + p_253378_);
           }
  
-@@ -219,10 +223,11 @@
+@@ -219,10 +_,11 @@
              bufferedwriter.write(p_236145_);
              bufferedwriter.newLine();
  

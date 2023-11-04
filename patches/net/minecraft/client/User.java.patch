@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/User.java
 +++ b/net/minecraft/client/User.java
-@@ -22,6 +22,19 @@
+@@ -22,6 +_,19 @@
     private final User.Type type;
  
     public User(String p_193799_, UUID p_296409_, String p_193800_, Optional<String> p_193802_, Optional<String> p_193803_, User.Type p_193804_) {

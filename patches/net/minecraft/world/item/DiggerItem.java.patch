@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/DiggerItem.java
 +++ b/net/minecraft/world/item/DiggerItem.java
-@@ -67,7 +67,11 @@
+@@ -67,7 +_,11 @@
     }
  
     @Override
@@ -12,7 +12,7 @@
        int i = this.getTier().getLevel();
        if (i < 3 && p_150816_.is(BlockTags.NEEDS_DIAMOND_TOOL)) {
           return false;
-@@ -76,5 +80,11 @@
+@@ -76,5 +_,11 @@
        } else {
           return i < 1 && p_150816_.is(BlockTags.NEEDS_STONE_TOOL) ? false : p_150816_.is(this.blocks);
        }

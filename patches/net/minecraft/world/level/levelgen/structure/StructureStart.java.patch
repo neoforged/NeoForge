@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/structure/StructureStart.java
 +++ b/net/minecraft/world/level/levelgen/structure/StructureStart.java
-@@ -100,6 +100,9 @@
+@@ -100,6 +_,9 @@
     public CompoundTag createTag(StructurePieceSerializationContext p_192661_, ChunkPos p_192662_) {
        CompoundTag compoundtag = new CompoundTag();
        if (this.isValid()) {

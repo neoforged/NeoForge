@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/loot/LootTableProvider.java
 +++ b/net/minecraft/data/loot/LootTableProvider.java
-@@ -45,7 +45,7 @@
+@@ -45,7 +_,7 @@
     public CompletableFuture<?> run(CachedOutput p_254060_) {
        final Map<ResourceLocation, LootTable> map = Maps.newHashMap();
        Map<RandomSupport.Seed128bit, ResourceLocation> map1 = new Object2ObjectOpenHashMap<>();
@@ -9,7 +9,7 @@
              ResourceLocation resourcelocation1 = map1.put(RandomSequence.seedForKey(p_288259_), p_288259_);
              if (resourcelocation1 != null) {
                 Util.logAndPauseIfInIde("Loot table random sequence seed collision on " + resourcelocation1 + " and " + p_288259_);
-@@ -64,15 +64,8 @@
+@@ -64,15 +_,8 @@
           }
        });
  
@@ -26,7 +26,7 @@
        Multimap<String, String> multimap = validationcontext.getProblems();
        if (!multimap.isEmpty()) {
           multimap.forEach((p_124446_, p_124447_) -> LOGGER.warn("Found validation problem in {}: {}", p_124446_, p_124447_));
-@@ -85,6 +78,20 @@
+@@ -85,6 +_,20 @@
              return DataProvider.saveStable(p_254060_, LootTable.CODEC, loottable, path);
           }).toArray(p_253403_ -> new CompletableFuture[p_253403_]));
        }

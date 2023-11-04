@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/FungusBlock.java
 +++ b/net/minecraft/world/level/block/FungusBlock.java
-@@ -56,6 +56,10 @@
+@@ -56,6 +_,10 @@
  
     @Override
     public void performBonemeal(ServerLevel p_221243_, RandomSource p_221244_, BlockPos p_221245_, BlockState p_221246_) {

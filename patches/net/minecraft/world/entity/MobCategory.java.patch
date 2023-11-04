@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/MobCategory.java
 +++ b/net/minecraft/world/entity/MobCategory.java
-@@ -3,7 +3,7 @@
+@@ -3,7 +_,7 @@
  import com.mojang.serialization.Codec;
  import net.minecraft.util.StringRepresentable;
  
@@ -9,7 +9,7 @@
     MONSTER("monster", 70, false, false, 128),
     CREATURE("creature", 10, true, true, 128),
     AMBIENT("ambient", 15, true, false, 128),
-@@ -13,7 +13,8 @@
+@@ -13,7 +_,8 @@
     WATER_AMBIENT("water_ambient", 20, true, false, 64),
     MISC("misc", -1, true, true, 128);
  
@@ -19,7 +19,7 @@
     private final int max;
     private final boolean isFriendly;
     private final boolean isPersistent;
-@@ -48,6 +49,21 @@
+@@ -48,6 +_,21 @@
  
     public boolean isPersistent() {
        return this.isPersistent;

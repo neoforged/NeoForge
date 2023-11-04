@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -63,6 +63,14 @@
+@@ -63,6 +_,14 @@
  
     @Override
     public void tick() {
@@ -15,7 +15,7 @@
        if (this.state == ServerLoginPacketListenerImpl.State.VERIFYING) {
           this.verifyLoginAndFinishConnectionSetup(Objects.requireNonNull(this.authenticatedProfile));
        }
-@@ -103,7 +111,8 @@
+@@ -103,7 +_,8 @@
  
     public String getUserName() {
        String s = this.connection.getLoggableAddress(this.server.logIPs());
@@ -25,7 +25,7 @@
     }
  
     @Override
-@@ -126,7 +135,7 @@
+@@ -126,7 +_,7 @@
  
     void startClientVerification(GameProfile p_295643_) {
        this.authenticatedProfile = p_295643_;
@@ -34,7 +34,7 @@
     }
  
     private void verifyLoginAndFinishConnectionSetup(GameProfile p_294502_) {
-@@ -182,8 +191,7 @@
+@@ -182,8 +_,7 @@
           throw new IllegalStateException("Protocol error", cryptexception);
        }
  
@@ -44,7 +44,7 @@
           public void run() {
              String s1 = Objects.requireNonNull(ServerLoginPacketListenerImpl.this.requestedUsername, "Player name not initialized");
  
-@@ -203,7 +211,7 @@
+@@ -203,7 +_,7 @@
              } catch (AuthenticationUnavailableException authenticationunavailableexception) {
                 if (ServerLoginPacketListenerImpl.this.server.isSingleplayer()) {
                    ServerLoginPacketListenerImpl.LOGGER.warn("Authentication servers are down but will let them in anyway!");
@@ -53,7 +53,7 @@
                 } else {
                    ServerLoginPacketListenerImpl.this.disconnect(Component.translatable("multiplayer.disconnect.authservers_down"));
                    ServerLoginPacketListenerImpl.LOGGER.error("Couldn't verify username because servers are unavailable");
-@@ -225,6 +233,10 @@
+@@ -225,6 +_,10 @@
  
     @Override
     public void handleCustomQueryPacket(ServerboundCustomQueryAnswerPacket p_295398_) {

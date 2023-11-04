@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/FarmBlock.java
 +++ b/net/minecraft/world/level/block/FarmBlock.java
-@@ -93,10 +93,7 @@
+@@ -93,10 +_,7 @@
     @Override
     public void fallOn(Level p_153227_, BlockState p_153228_, BlockPos p_153229_, Entity p_153230_, float p_153231_) {
        if (!p_153227_.isClientSide
@@ -12,7 +12,7 @@
           turnToDirt(p_153230_, p_153228_, p_153227_, p_153229_);
        }
  
-@@ -110,17 +107,20 @@
+@@ -110,17 +_,20 @@
     }
  
     private static boolean shouldMaintainFarmland(BlockGetter p_279219_, BlockPos p_279209_) {

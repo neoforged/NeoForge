@@ -1,11 +1,6 @@
 --- a/net/minecraft/client/MouseHandler.java
 +++ b/net/minecraft/client/MouseHandler.java
-@@ -70,10 +70,11 @@
-             if (this.minecraft.options.touchscreen().get() && --this.clickDepth > 0) {
-                return;
-             }
--
-+            
+@@ -74,6 +_,7 @@
              this.activeButton = -1;
           }
  
@@ -13,7 +8,7 @@
           boolean[] aboolean = new boolean[]{false};
           if (this.minecraft.getOverlay() == null) {
              if (this.minecraft.screen == null) {
-@@ -86,11 +87,21 @@
+@@ -86,11 +_,21 @@
                 Screen screen = this.minecraft.screen;
                 if (flag) {
                    screen.afterMouseAction();
@@ -39,7 +34,7 @@
                 }
              }
           }
-@@ -113,21 +124,29 @@
+@@ -113,6 +_,7 @@
                 }
              }
           }
@@ -47,39 +42,28 @@
        }
     }
  
-    private void onScroll(long p_91527_, double p_91528_, double p_91529_) {
-       if (p_91527_ == Minecraft.getInstance().getWindow().getWindow()) {
-+         // FORGE: Allows for Horizontal Scroll to be recognized as Vertical Scroll - Fixes MC-121772
-+         double offset = p_91529_;
-+         if (Minecraft.ON_OSX && p_91529_ == 0) {
-+            offset = p_91528_;
-+         }
-          boolean flag = this.minecraft.options.discreteMouseScroll().get();
-          double d0 = this.minecraft.options.mouseWheelSensitivity().get();
-          double d1 = (flag ? Math.signum(p_91528_) : p_91528_) * d0;
--         double d2 = (flag ? Math.signum(p_91529_) : p_91529_) * d0;
-+         double d2 = (flag ? Math.signum(offset) : offset) * d0;
-          if (this.minecraft.getOverlay() == null) {
+@@ -126,7 +_,11 @@
              if (this.minecraft.screen != null) {
                 double d3 = this.xpos * (double)this.minecraft.getWindow().getGuiScaledWidth() / (double)this.minecraft.getWindow().getScreenWidth();
                 double d4 = this.ypos * (double)this.minecraft.getWindow().getGuiScaledHeight() / (double)this.minecraft.getWindow().getScreenHeight();
 -               this.minecraft.screen.mouseScrolled(d3, d4, d1, d2);
++               if (!net.neoforged.neoforge.client.ClientHooks.onScreenMouseScrollPre(this, this.minecraft.screen, d1, d2)) {
++                  if (!this.minecraft.screen.mouseScrolled(d3, d4, d1, d2)) {
++                     net.neoforged.neoforge.client.ClientHooks.onScreenMouseScrollPost(this, this.minecraft.screen, d1, d2);
++                  }
++               }
                 this.minecraft.screen.afterMouseAction();
-+               if (net.neoforged.neoforge.client.ClientHooks.onScreenMouseScrollPre(this, this.minecraft.screen, d0)) return;
-+               if (this.minecraft.screen.mouseScrolled(d3, d4, d1, d2)) return;
-+               net.neoforged.neoforge.client.ClientHooks.onScreenMouseScrollPost(this, this.minecraft.screen, d0);
              } else if (this.minecraft.player != null) {
                 if (this.accumulatedScrollX != 0.0 && Math.signum(d1) != Math.signum(this.accumulatedScrollX)) {
-                   this.accumulatedScrollX = 0.0;
-@@ -148,6 +167,7 @@
+@@ -148,6 +_,7 @@
                 this.accumulatedScrollX -= (double)j;
                 this.accumulatedScrollY -= (double)i;
                 int k = i == 0 ? -j : i;
-+               if (net.neoforged.neoforge.client.ClientHooks.onMouseScroll(this, d0)) return;
++               if (net.neoforged.neoforge.client.ClientHooks.onMouseScroll(this, d1, d2)) return;
                 if (this.minecraft.player.isSpectator()) {
                    if (this.minecraft.gui.getSpectatorGui().isMenuActive()) {
                       this.minecraft.gui.getSpectatorGui().onMouseScrolled(-k);
-@@ -290,6 +310,14 @@
+@@ -290,6 +_,14 @@
  
     public double ypos() {
        return this.ypos;

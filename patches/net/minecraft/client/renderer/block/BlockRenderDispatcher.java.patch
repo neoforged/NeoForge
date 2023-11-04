@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
-@@ -37,7 +37,7 @@
+@@ -37,7 +_,7 @@
        this.blockModelShaper = p_173399_;
        this.blockEntityRenderer = p_173400_;
        this.blockColors = p_173401_;
@@ -9,7 +9,7 @@
        this.liquidBlockRenderer = new LiquidBlockRenderer();
     }
  
-@@ -45,11 +45,15 @@
+@@ -45,11 +_,15 @@
        return this.blockModelShaper;
     }
  
@@ -26,7 +26,7 @@
        }
     }
  
-@@ -62,6 +66,19 @@
+@@ -62,6 +_,19 @@
        boolean p_234361_,
        RandomSource p_234362_
     ) {
@@ -46,7 +46,7 @@
        try {
           RenderShape rendershape = p_234356_.getRenderShape();
           if (rendershape == RenderShape.MODEL) {
-@@ -76,7 +93,9 @@
+@@ -76,7 +_,9 @@
                    p_234361_,
                    p_234362_,
                    p_234356_.getSeed(p_234357_),
@@ -57,7 +57,7 @@
                 );
           }
        } catch (Throwable throwable) {
-@@ -106,7 +125,11 @@
+@@ -106,7 +_,11 @@
        return this.blockModelShaper.getBlockModel(p_110911_);
     }
  
@@ -69,7 +69,7 @@
        RenderShape rendershape = p_110913_.getRenderShape();
        if (rendershape != RenderShape.INVISIBLE) {
           switch(rendershape) {
-@@ -116,21 +139,25 @@
+@@ -116,21 +_,25 @@
                 float f = (float)(i >> 16 & 0xFF) / 255.0F;
                 float f1 = (float)(i >> 8 & 0xFF) / 255.0F;
                 float f2 = (float)(i & 0xFF) / 255.0F;

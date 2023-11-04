@@ -8,7 +8,7 @@ license="LGPL v2.1"
     modId="neoforge"
     # We use the global NeoForge version
     version="${global.neoForgeVersion}"
-    updateJSONURL="https://maven.neoforged.net/releases/net/neoforged/forge/promotions_slim.json"
+    #updateJSONURL="https://maven.neoforged.net/releases/net/neoforged/forge/promotions_slim.json"
     displayName="NeoForge"
     credits="Anyone who has contributed on Github and supports our development"
     authors="The NeoForged Team"

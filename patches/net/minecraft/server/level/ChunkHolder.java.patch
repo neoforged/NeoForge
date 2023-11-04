@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ChunkHolder.java
 +++ b/net/minecraft/server/level/ChunkHolder.java
-@@ -69,6 +69,7 @@
+@@ -69,6 +_,7 @@
     private final ChunkHolder.LevelChangeListener onLevelChange;
     private final ChunkHolder.PlayerProvider playerProvider;
     private boolean wasAccessibleSinceLastSave;

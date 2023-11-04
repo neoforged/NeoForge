@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/particle/Particle.java
 +++ b/net/minecraft/client/particle/Particle.java
-@@ -244,4 +244,16 @@
+@@ -244,4 +_,16 @@
     public Optional<ParticleGroup> getParticleGroup() {
        return Optional.empty();
     }

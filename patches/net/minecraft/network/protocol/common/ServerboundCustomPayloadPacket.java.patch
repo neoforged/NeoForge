@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
 +++ b/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
-@@ -23,14 +23,13 @@
+@@ -23,14 +_,13 @@
  
     private static CustomPacketPayload readPayload(ResourceLocation p_294367_, FriendlyByteBuf p_294321_) {
        FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = KNOWN_TYPES.get(p_294367_);

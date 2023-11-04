@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/model/HumanoidModel.java
 +++ b/net/minecraft/client/model/HumanoidModel.java
-@@ -302,6 +302,8 @@
+@@ -302,6 +_,8 @@
           case TOOT_HORN:
              this.rightArm.xRot = Mth.clamp(this.head.xRot, -1.2F, 1.2F) - 1.4835298F;
              this.rightArm.yRot = this.head.yRot - (float) (Math.PI / 6);
@@ -9,7 +9,7 @@
        }
     }
  
-@@ -345,6 +347,8 @@
+@@ -345,6 +_,8 @@
           case TOOT_HORN:
              this.leftArm.xRot = Mth.clamp(this.head.xRot, -1.2F, 1.2F) - 1.4835298F;
              this.leftArm.yRot = this.head.yRot + (float) (Math.PI / 6);
@@ -18,7 +18,7 @@
        }
     }
  
-@@ -438,7 +442,7 @@
+@@ -438,7 +_,7 @@
     }
  
     @OnlyIn(Dist.CLIENT)
@@ -27,7 +27,7 @@
        EMPTY(false),
        ITEM(false),
        BLOCK(false),
-@@ -454,10 +458,29 @@
+@@ -454,10 +_,29 @@
  
        private ArmPose(boolean p_102896_) {
           this.twoHanded = p_102896_;

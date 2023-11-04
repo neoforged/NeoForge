@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/behavior/StartAttacking.java
 +++ b/net/minecraft/world/entity/ai/behavior/StartAttacking.java
-@@ -32,7 +32,11 @@
+@@ -32,7 +_,11 @@
                             if (!p_258774_.canAttack(livingentity)) {
                                return false;
                             } else {

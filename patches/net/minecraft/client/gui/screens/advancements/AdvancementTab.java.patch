@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/advancements/AdvancementTab.java
 +++ b/net/minecraft/client/gui/screens/advancements/AdvancementTab.java
-@@ -38,6 +38,7 @@
+@@ -38,6 +_,7 @@
     private int maxY = Integer.MIN_VALUE;
     private float fade;
     private boolean centered;
@@ -8,7 +8,7 @@
  
     public AdvancementTab(
        Minecraft p_97145_, AdvancementsScreen p_97146_, AdvancementTabType p_97147_, int p_97148_, AdvancementNode p_300867_, DisplayInfo p_97150_
-@@ -54,6 +55,15 @@
+@@ -54,6 +_,15 @@
        this.addWidget(this.root, p_300867_.holder());
     }
  
@@ -24,7 +24,7 @@
     public AdvancementTabType getType() {
        return this.type;
     }
-@@ -147,8 +157,8 @@
+@@ -147,8 +_,8 @@
           return null;
        } else {
           for(AdvancementTabType advancementtabtype : AdvancementTabType.values()) {

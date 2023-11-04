@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/BlockElement.java
 +++ b/net/minecraft/client/renderer/block/model/BlockElement.java
-@@ -29,16 +29,23 @@
+@@ -29,16 +_,23 @@
     public final Map<Direction, BlockElementFace> faces;
     public final BlockElementRotation rotation;
     public final boolean shade;
@@ -24,7 +24,7 @@
     }
  
     private void fillUvs() {
-@@ -80,7 +87,9 @@
+@@ -80,7 +_,9 @@
              throw new JsonParseException("Expected shade to be a Boolean");
           } else {
              boolean flag = GsonHelper.getAsBoolean(jsonobject, "shade", true);
@@ -35,7 +35,7 @@
           }
        }
  
-@@ -191,5 +200,13 @@
+@@ -191,5 +_,13 @@
              return new Vector3f(afloat[0], afloat[1], afloat[2]);
           }
        }

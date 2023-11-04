@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/rcon/RconConsoleSource.java
 +++ b/net/minecraft/server/rcon/RconConsoleSource.java
-@@ -35,7 +35,7 @@
+@@ -35,7 +_,7 @@
  
     @Override
     public void sendSystemMessage(Component p_215653_) {

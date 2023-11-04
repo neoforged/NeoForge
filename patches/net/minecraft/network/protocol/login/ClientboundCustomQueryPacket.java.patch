@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/login/ClientboundCustomQueryPacket.java
 +++ b/net/minecraft/network/protocol/login/ClientboundCustomQueryPacket.java
-@@ -17,11 +17,10 @@
+@@ -17,11 +_,10 @@
        return readUnknownPayload(p_295267_, p_295117_);
     }
  

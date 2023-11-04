@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
-@@ -59,6 +59,7 @@
+@@ -59,6 +_,7 @@
     public static final int NUM_DATA_VALUES = 4;
     public static final int BURN_TIME_STANDARD = 200;
     public static final int BURN_COOL_SPEED = 2;
@@ -8,7 +8,7 @@
     protected NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
     int litTime;
     int litDuration;
-@@ -111,8 +112,10 @@
+@@ -111,8 +_,10 @@
     ) {
        super(p_154991_, p_154992_, p_154993_);
        this.quickCheck = RecipeManager.createCheck((RecipeType<AbstractCookingRecipe>)p_154994_);
@@ -19,7 +19,7 @@
     public static Map<Item, Integer> getFuel() {
        Map<Item, Integer> map = Maps.newLinkedHashMap();
        add(map, Items.LAVA_BUCKET, 20000);
-@@ -213,9 +216,9 @@
+@@ -213,9 +_,9 @@
        super.load(p_155025_);
        this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
        ContainerHelper.loadAllItems(p_155025_, this.items);
@@ -32,7 +32,7 @@
        this.litDuration = this.getBurnDuration(this.items.get(1));
        CompoundTag compoundtag = p_155025_.getCompound("RecipesUsed");
  
-@@ -227,9 +230,9 @@
+@@ -227,9 +_,9 @@
     @Override
     protected void saveAdditional(CompoundTag p_187452_) {
        super.saveAdditional(p_187452_);
@@ -45,7 +45,7 @@
        ContainerHelper.saveAllItems(p_187452_, this.items);
        CompoundTag compoundtag = new CompoundTag();
        this.recipesUsed.forEach((p_187449_, p_187450_) -> compoundtag.putInt(p_187449_.toString(), p_187450_));
-@@ -255,28 +258,30 @@
+@@ -255,28 +_,30 @@
           }
  
           int i = p_155017_.getMaxStackSize();
@@ -81,7 +81,7 @@
                    p_155017_.setRecipeUsed(recipeholder);
                 }
  
-@@ -300,9 +305,9 @@
+@@ -300,9 +_,9 @@
        }
     }
  
@@ -93,7 +93,7 @@
           if (itemstack.isEmpty()) {
              return false;
           } else {
-@@ -311,10 +316,10 @@
+@@ -311,10 +_,10 @@
                 return true;
              } else if (!ItemStack.isSameItem(itemstack1, itemstack)) {
                 return false;
@@ -106,7 +106,7 @@
              }
           }
        } else {
-@@ -322,15 +327,15 @@
+@@ -322,15 +_,15 @@
        }
     }
  
@@ -126,7 +126,7 @@
           }
  
           if (itemstack.is(Blocks.WET_SPONGE.asItem()) && !p_267073_.get(1).isEmpty() && p_267073_.get(1).is(Items.BUCKET)) {
-@@ -349,7 +354,7 @@
+@@ -349,7 +_,7 @@
           return 0;
        } else {
           Item item = p_58343_.getItem();
@@ -135,7 +135,7 @@
        }
     }
  
-@@ -358,7 +363,7 @@
+@@ -358,7 +_,7 @@
     }
  
     public static boolean isFuel(ItemStack p_58400_) {
@@ -144,7 +144,7 @@
     }
  
     @Override
-@@ -444,7 +449,7 @@
+@@ -444,7 +_,7 @@
           return true;
        } else {
           ItemStack itemstack = this.items.get(1);
@@ -153,7 +153,7 @@
        }
     }
  
-@@ -512,5 +517,34 @@
+@@ -512,5 +_,34 @@
        for(ItemStack itemstack : this.items) {
           p_58342_.accountStack(itemstack);
        }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/parameters/LootContextParamSets.java
 +++ b/net/minecraft/world/level/storage/loot/parameters/LootContextParamSets.java
-@@ -20,7 +20,7 @@
+@@ -20,7 +_,7 @@
     public static final LootContextParamSet EMPTY = register("empty", p_81454_ -> {
     });
     public static final LootContextParamSet CHEST = register(
@@ -9,7 +9,7 @@
     );
     public static final LootContextParamSet COMMAND = register(
        "command", p_81450_ -> p_81450_.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY)
-@@ -29,7 +29,7 @@
+@@ -29,7 +_,7 @@
        "selector", p_81442_ -> p_81442_.required(LootContextParams.ORIGIN).required(LootContextParams.THIS_ENTITY)
     );
     public static final LootContextParamSet FISHING = register(

@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/WorldPresetTagsProvider.java
 +++ b/net/minecraft/data/tags/WorldPresetTagsProvider.java
-@@ -9,8 +9,13 @@
+@@ -9,8 +_,13 @@
  import net.minecraft.world.level.levelgen.presets.WorldPresets;
  
  public class WorldPresetTagsProvider extends TagsProvider<WorldPreset> {

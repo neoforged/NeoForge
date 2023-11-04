@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/MobBucketItem.java
 +++ b/net/minecraft/world/item/MobBucketItem.java
-@@ -22,13 +22,18 @@
+@@ -22,13 +_,18 @@
  import net.minecraft.world.level.material.Fluid;
  
  public class MobBucketItem extends BucketItem {
@@ -24,7 +24,7 @@
     }
  
     @Override
-@@ -41,11 +46,11 @@
+@@ -41,11 +_,11 @@
  
     @Override
     protected void playEmptySound(@Nullable Player p_151151_, LevelAccessor p_151152_, BlockPos p_151153_) {
@@ -38,7 +38,7 @@
        if (entity instanceof Bucketable bucketable) {
           bucketable.loadFromBucketTag(p_151143_.getOrCreateTag());
           bucketable.setFromBucket(true);
-@@ -54,7 +59,7 @@
+@@ -54,7 +_,7 @@
  
     @Override
     public void appendHoverText(ItemStack p_151155_, @Nullable Level p_151156_, List<Component> p_151157_, TooltipFlag p_151158_) {
@@ -47,7 +47,7 @@
           CompoundTag compoundtag = p_151155_.getTag();
           if (compoundtag != null && compoundtag.contains("BucketVariantTag", 3)) {
              int i = compoundtag.getInt("BucketVariantTag");
-@@ -79,5 +84,14 @@
+@@ -79,5 +_,14 @@
              p_151157_.add(mutablecomponent);
           }
        }

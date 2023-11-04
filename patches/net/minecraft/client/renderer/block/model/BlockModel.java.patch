@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/BlockModel.java
 +++ b/net/minecraft/client/renderer/block/model/BlockModel.java
-@@ -77,9 +77,10 @@
+@@ -77,9 +_,10 @@
     public BlockModel parent;
     @Nullable
     protected ResourceLocation parentLocation;
@@ -12,7 +12,7 @@
     }
  
     public static BlockModel fromString(String p_111464_) {
-@@ -104,10 +105,15 @@
+@@ -104,10 +_,15 @@
        this.overrides = p_273099_;
     }
  
@@ -28,7 +28,7 @@
     public boolean hasAmbientOcclusion() {
        if (this.hasAmbientOcclusion != null) {
           return this.hasAmbientOcclusion;
-@@ -136,7 +142,10 @@
+@@ -136,7 +_,10 @@
        return this.overrides.isEmpty() ? ItemOverrides.EMPTY : new ItemOverrides(p_250138_, p_251800_, this.overrides);
     }
  
@@ -40,7 +40,7 @@
     public Collection<ResourceLocation> getDependencies() {
        Set<ResourceLocation> set = Sets.newHashSet();
  
-@@ -184,6 +193,10 @@
+@@ -184,6 +_,10 @@
           blockmodel.parent = (BlockModel)unbakedmodel;
        }
  
@@ -51,7 +51,7 @@
        this.overrides.forEach(p_247932_ -> {
           UnbakedModel unbakedmodel1 = p_249059_.apply(p_247932_.getModel());
           if (!Objects.equals(unbakedmodel1, this)) {
-@@ -193,11 +206,27 @@
+@@ -193,11 +_,27 @@
     }
  
     @Override
@@ -79,7 +79,7 @@
        ModelBaker p_249720_,
        BlockModel p_111451_,
        Function<Material, TextureAtlasSprite> p_111452_,
-@@ -232,7 +261,7 @@
+@@ -232,7 +_,7 @@
     }
  
     public static BakedQuad bakeFace(
@@ -88,7 +88,7 @@
     ) {
        return FACE_BAKERY.bakeQuad(p_111438_.from, p_111438_.to, p_111439_, p_111440_, p_111441_, p_111442_, p_111438_.rotation, p_111438_.shade, p_111443_);
     }
-@@ -293,7 +322,18 @@
+@@ -293,7 +_,18 @@
        ItemTransform itemtransform5 = this.getTransform(ItemDisplayContext.GUI);
        ItemTransform itemtransform6 = this.getTransform(ItemDisplayContext.GROUND);
        ItemTransform itemtransform7 = this.getTransform(ItemDisplayContext.FIXED);
@@ -108,7 +108,7 @@
     }
  
     private ItemTransform getTransform(ItemDisplayContext p_270662_) {
-@@ -412,6 +452,8 @@
+@@ -412,6 +_,8 @@
        public boolean lightLikeBlock() {
           return this == SIDE;
        }

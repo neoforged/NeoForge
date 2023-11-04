@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/TagsProvider.java
 +++ b/net/minecraft/data/tags/TagsProvider.java
-@@ -37,26 +37,54 @@
+@@ -37,26 +_,54 @@
     private final CompletableFuture<TagsProvider.TagLookup<T>> parentProvider;
     protected final ResourceKey<? extends Registry<T>> registryKey;
     protected final Map<ResourceLocation, TagBuilder> builders = Maps.newLinkedHashMap();
@@ -57,7 +57,7 @@
     }
  
     protected abstract void addTags(HolderLookup.Provider p_256380_);
-@@ -73,7 +101,13 @@
+@@ -73,7 +_,13 @@
           .thenCombineAsync(this.parentProvider, (p_274778_, p_274779_) -> new CombinedData<>(p_274778_, p_274779_))
           .thenCompose(
              p_274774_ -> {
@@ -72,7 +72,7 @@
                 Predicate<ResourceLocation> predicate = p_255496_ -> registrylookup.get(ResourceKey.create(this.registryKey, p_255496_)).isPresent();
                 Predicate<ResourceLocation> predicate1 = p_274776_ -> this.builders.containsKey(p_274776_)
                       || p_274774_.parent.contains(TagKey.create(this.registryKey, p_274776_));
-@@ -86,7 +120,10 @@
+@@ -86,7 +_,10 @@
                             ResourceLocation resourcelocation = p_255499_.getKey();
                             TagBuilder tagbuilder = p_255499_.getValue();
                             List<TagEntry> list = tagbuilder.build();
@@ -84,7 +84,7 @@
                             if (!list1.isEmpty()) {
                                throw new IllegalArgumentException(
                                   String.format(
-@@ -97,8 +134,10 @@
+@@ -97,8 +_,10 @@
                                   )
                                );
                             } else {
@@ -97,7 +97,7 @@
                                return DataProvider.saveStable(p_253684_, jsonelement, path);
                             }
                          }
-@@ -111,12 +150,24 @@
+@@ -111,12 +_,24 @@
  
     }
  
@@ -123,7 +123,7 @@
        return this.builders.computeIfAbsent(p_236452_.location(), p_236442_ -> TagBuilder.create());
     }
  
-@@ -132,11 +183,13 @@
+@@ -132,11 +_,13 @@
        });
     }
  
@@ -140,7 +140,7 @@
        }
  
        public final TagsProvider.TagAppender<T> add(ResourceKey<T> p_256138_) {
-@@ -166,6 +219,19 @@
+@@ -166,6 +_,19 @@
        public TagsProvider.TagAppender<T> addOptionalTag(ResourceLocation p_176842_) {
           this.builder.addOptionalTag(p_176842_);
           return this;

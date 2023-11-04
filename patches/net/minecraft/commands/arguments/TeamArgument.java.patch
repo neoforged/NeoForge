@@ -1,6 +1,6 @@
 --- a/net/minecraft/commands/arguments/TeamArgument.java
 +++ b/net/minecraft/commands/arguments/TeamArgument.java
-@@ -28,7 +28,7 @@
+@@ -28,7 +_,7 @@
  
     public static PlayerTeam getTeam(CommandContext<CommandSourceStack> p_112092_, String p_112093_) throws CommandSyntaxException {
        String s = p_112092_.getArgument(p_112093_, String.class);

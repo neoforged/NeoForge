@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/ChatScreen.java
 +++ b/net/minecraft/client/gui/screens/ChatScreen.java
-@@ -232,7 +232,7 @@
+@@ -232,7 +_,7 @@
              this.minecraft.player.connection.sendChat(p_242400_);
           }
  

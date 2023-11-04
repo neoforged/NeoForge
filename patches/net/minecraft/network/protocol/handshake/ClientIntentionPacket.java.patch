@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
 +++ b/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
-@@ -4,19 +4,16 @@
+@@ -4,19 +_,16 @@
  import net.minecraft.network.FriendlyByteBuf;
  import net.minecraft.network.protocol.Packet;
  
@@ -23,7 +23,7 @@
     }
  
     @Override
-@@ -25,6 +22,7 @@
+@@ -25,6 +_,7 @@
        p_134737_.writeUtf(this.hostName);
        p_134737_.writeShort(this.port);
        p_134737_.writeVarInt(this.intention.id());
@@ -31,7 +31,7 @@
     }
  
     public void handle(ServerHandshakePacketListener p_134734_) {
-@@ -34,5 +32,9 @@
+@@ -34,5 +_,9 @@
     @Override
     public ConnectionProtocol nextProtocol() {
        return this.intention.protocol();

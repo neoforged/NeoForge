@@ -1,6 +1,6 @@
 --- a/net/minecraft/nbt/CompoundTag.java
 +++ b/net/minecraft/nbt/CompoundTag.java
-@@ -40,13 +40,19 @@
+@@ -40,13 +_,19 @@
           return compoundtag;
        }
  
@@ -22,7 +22,7 @@
              Tag tag = CompoundTag.readNamedTagData(TagTypes.getType(b0), s, p_302338_, p_302362_);
              if (map.put(s, tag) == null) {
                 p_302362_.accountBytes(36L);
-@@ -205,6 +211,7 @@
+@@ -205,6 +_,7 @@
  
     @Nullable
     public Tag put(String p_128366_, Tag p_128367_) {

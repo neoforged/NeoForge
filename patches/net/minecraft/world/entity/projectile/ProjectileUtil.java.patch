@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/ProjectileUtil.java
 +++ b/net/minecraft/world/entity/projectile/ProjectileUtil.java
-@@ -70,7 +70,7 @@
+@@ -70,7 +_,7 @@
              Vec3 vec31 = optional.get();
              double d1 = p_37289_.distanceToSqr(vec31);
              if (d1 < d0 || d0 == 0.0) {
@@ -9,7 +9,7 @@
                    if (d0 == 0.0) {
                       entity = entity1;
                       vec3 = vec31;
-@@ -142,8 +142,13 @@
+@@ -142,8 +_,13 @@
        }
     }
  

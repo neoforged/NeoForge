@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/packs/PackResources.java
 +++ b/net/minecraft/server/packs/PackResources.java
-@@ -9,7 +9,7 @@
+@@ -9,7 +_,7 @@
  import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
  import net.minecraft.server.packs.resources.IoSupplier;
  

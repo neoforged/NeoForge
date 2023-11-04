@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/AbstractWidget.java
 +++ b/net/minecraft/client/gui/components/AbstractWidget.java
-@@ -28,7 +28,7 @@
+@@ -28,7 +_,7 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
@@ -9,7 +9,7 @@
     private static final double PERIOD_PER_SCROLLED_PIXEL = 0.5;
     private static final double MIN_SCROLL_PERIOD = 3.0;
     protected int width;
-@@ -152,6 +152,8 @@
+@@ -152,6 +_,8 @@
        renderScrollingString(p_281857_, p_282790_, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), p_282944_);
     }
  
@@ -18,7 +18,7 @@
     public void onClick(double p_93634_, double p_93635_) {
     }
  
-@@ -168,7 +170,7 @@
+@@ -168,7 +_,7 @@
              boolean flag = this.clicked(p_93641_, p_93642_);
              if (flag) {
                 this.playDownSound(Minecraft.getInstance().getSoundManager());
@@ -27,7 +27,7 @@
                 return true;
              }
           }
-@@ -282,6 +284,19 @@
+@@ -282,6 +_,19 @@
     @Override
     public void setFocused(boolean p_93693_) {
        this.focused = p_93693_;

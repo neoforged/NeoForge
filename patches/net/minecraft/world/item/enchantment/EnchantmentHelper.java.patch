@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/enchantment/EnchantmentHelper.java
 +++ b/net/minecraft/world/item/enchantment/EnchantmentHelper.java
-@@ -60,7 +60,14 @@
+@@ -60,7 +_,14 @@
        return BuiltInRegistries.ENCHANTMENT.getKey(p_182433_);
     }
  
@@ -15,7 +15,7 @@
        if (p_44845_.isEmpty()) {
           return 0;
        } else {
-@@ -118,6 +125,13 @@
+@@ -118,6 +_,13 @@
  
     private static void runIterationOnItem(EnchantmentHelper.EnchantmentVisitor p_44851_, ItemStack p_44852_) {
        if (!p_44852_.isEmpty()) {
@@ -29,7 +29,7 @@
           ListTag listtag = p_44852_.getEnchantmentTags();
  
           for(int i = 0; i < listtag.size(); ++i) {
-@@ -143,7 +157,7 @@
+@@ -143,7 +_,7 @@
  
     public static float getDamageBonus(ItemStack p_44834_, MobType p_44835_) {
        MutableFloat mutablefloat = new MutableFloat();
@@ -38,7 +38,7 @@
        return mutablefloat.floatValue();
     }
  
-@@ -158,6 +172,7 @@
+@@ -158,6 +_,7 @@
           runIterationOnInventory(enchantmenthelper$enchantmentvisitor, p_44824_.getAllSlots());
        }
  
@@ -46,7 +46,7 @@
        if (p_44825_ instanceof Player) {
           runIterationOnItem(enchantmenthelper$enchantmentvisitor, p_44824_.getMainHandItem());
        }
-@@ -169,6 +184,7 @@
+@@ -169,6 +_,7 @@
           runIterationOnInventory(enchantmenthelper$enchantmentvisitor, p_44897_.getAllSlots());
        }
  
@@ -54,7 +54,7 @@
        if (p_44897_ instanceof Player) {
           runIterationOnItem(enchantmenthelper$enchantmentvisitor, p_44897_.getMainHandItem());
        }
-@@ -290,7 +306,7 @@
+@@ -290,7 +_,7 @@
  
     public static int getEnchantmentCost(RandomSource p_220288_, int p_220289_, int p_220290_, ItemStack p_220291_) {
        Item item = p_220291_.getItem();
@@ -63,7 +63,7 @@
        if (i <= 0) {
           return 0;
        } else {
-@@ -328,7 +344,7 @@
+@@ -328,7 +_,7 @@
     public static List<EnchantmentInstance> selectEnchantment(RandomSource p_220298_, ItemStack p_220299_, int p_220300_, boolean p_220301_) {
        List<EnchantmentInstance> list = Lists.newArrayList();
        Item item = p_220299_.getItem();
@@ -72,7 +72,7 @@
        if (i <= 0) {
           return list;
        } else {
-@@ -383,7 +399,7 @@
+@@ -383,7 +_,7 @@
        boolean flag = p_44819_.is(Items.BOOK);
  
        for(Enchantment enchantment : BuiltInRegistries.ENCHANTMENT) {

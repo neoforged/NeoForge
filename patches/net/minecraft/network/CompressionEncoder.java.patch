@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/CompressionEncoder.java
 +++ b/net/minecraft/network/CompressionEncoder.java
-@@ -9,6 +9,8 @@
+@@ -9,6 +_,8 @@
     private final byte[] encodeBuf = new byte[8192];
     private final Deflater deflater;
     private int threshold;
@@ -9,7 +9,7 @@
  
     public CompressionEncoder(int p_129448_) {
        this.threshold = p_129448_;
-@@ -21,6 +23,12 @@
+@@ -21,6 +_,12 @@
           VarInt.write(p_129454_, 0);
           p_129454_.writeBytes(p_129453_);
        } else {

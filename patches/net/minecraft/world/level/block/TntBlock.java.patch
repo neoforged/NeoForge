@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/TntBlock.java
 +++ b/net/minecraft/world/level/block/TntBlock.java
-@@ -34,10 +34,14 @@
+@@ -34,10 +_,14 @@
     }
  
     @Override
@@ -16,7 +16,7 @@
              p_57467_.removeBlock(p_57468_, false);
           }
        }
-@@ -46,7 +50,7 @@
+@@ -46,7 +_,7 @@
     @Override
     public void neighborChanged(BlockState p_57457_, Level p_57458_, BlockPos p_57459_, Block p_57460_, BlockPos p_57461_, boolean p_57462_) {
        if (p_57458_.hasNeighborSignal(p_57459_)) {
@@ -25,7 +25,7 @@
           p_57458_.removeBlock(p_57459_, false);
        }
     }
-@@ -54,7 +58,7 @@
+@@ -54,7 +_,7 @@
     @Override
     public void playerWillDestroy(Level p_57445_, BlockPos p_57446_, BlockState p_57447_, Player p_57448_) {
        if (!p_57445_.isClientSide() && !p_57448_.isCreative() && p_57447_.getValue(UNSTABLE)) {
@@ -34,7 +34,7 @@
        }
  
        super.playerWillDestroy(p_57445_, p_57446_, p_57447_, p_57448_);
-@@ -72,10 +76,12 @@
+@@ -72,10 +_,12 @@
        }
     }
  
@@ -47,7 +47,7 @@
     private static void explode(Level p_57437_, BlockPos p_57438_, @Nullable LivingEntity p_57439_) {
        if (!p_57437_.isClientSide) {
           PrimedTnt primedtnt = new PrimedTnt(p_57437_, (double)p_57438_.getX() + 0.5, (double)p_57438_.getY(), (double)p_57438_.getZ() + 0.5, p_57439_);
-@@ -91,7 +97,7 @@
+@@ -91,7 +_,7 @@
        if (!itemstack.is(Items.FLINT_AND_STEEL) && !itemstack.is(Items.FIRE_CHARGE)) {
           return super.use(p_57450_, p_57451_, p_57452_, p_57453_, p_57454_, p_57455_);
        } else {
@@ -56,7 +56,7 @@
           p_57451_.setBlock(p_57452_, Blocks.AIR.defaultBlockState(), 11);
           Item item = itemstack.getItem();
           if (!p_57453_.isCreative()) {
-@@ -113,7 +119,7 @@
+@@ -113,7 +_,7 @@
           BlockPos blockpos = p_57431_.getBlockPos();
           Entity entity = p_57432_.getOwner();
           if (p_57432_.isOnFire() && p_57432_.mayInteract(p_57429_, blockpos)) {

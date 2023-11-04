@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/AbstractFurnaceMenu.java
 +++ b/net/minecraft/world/inventory/AbstractFurnaceMenu.java
-@@ -167,7 +167,7 @@
+@@ -167,7 +_,7 @@
     }
  
     protected boolean isFuel(ItemStack p_38989_) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/DataGenerator.java
 +++ b/net/minecraft/data/DataGenerator.java
-@@ -21,6 +21,7 @@
+@@ -21,6 +_,7 @@
     final Map<String, DataProvider> providersToRun = new LinkedHashMap<>();
     private final WorldVersion version;
     private final boolean alwaysGenerate;
@@ -8,7 +8,7 @@
  
     public DataGenerator(Path p_251724_, WorldVersion p_250554_, boolean p_251323_) {
        this.rootOutputFolder = p_251724_;
-@@ -38,6 +39,7 @@
+@@ -38,6 +_,7 @@
              LOGGER.debug("Generator {} already run for version {}", p_254418_, this.version.getName());
           } else {
              LOGGER.info("Starting provider: {}", p_254418_);
@@ -16,7 +16,7 @@
              stopwatch1.start();
              hashcache.applyUpdate(hashcache.generateUpdate(p_254418_, p_253750_::run).join());
              stopwatch1.stop();
-@@ -56,6 +58,34 @@
+@@ -56,6 +_,34 @@
     public DataGenerator.PackGenerator getBuiltinDatapack(boolean p_253826_, String p_254134_) {
        Path path = this.vanillaPackOutput.getOutputFolder(PackOutput.Target.DATA_PACK).resolve("minecraft").resolve("datapacks").resolve(p_254134_);
        return new DataGenerator.PackGenerator(p_253826_, p_254134_, new PackOutput(path));

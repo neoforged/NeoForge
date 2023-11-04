@@ -587,19 +587,28 @@ public abstract class ScreenEvent extends Event {
      * @see MouseScrolled.Post
      */
     public static abstract class MouseScrolled extends MouseInput {
-        private final double scrollDelta;
+        private final double scrollDeltaX;
+        private final double scrollDeltaY;
 
         @ApiStatus.Internal
-        public MouseScrolled(Screen screen, double mouseX, double mouseY, double scrollDelta) {
+        public MouseScrolled(Screen screen, double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
             super(screen, mouseX, mouseY);
-            this.scrollDelta = scrollDelta;
+            this.scrollDeltaX = scrollDeltaX;
+            this.scrollDeltaY = scrollDeltaY;
         }
 
         /**
-         * {@return the amount of change / delta of the mouse scroll}
+         * {@return the amount of change / delta of the mouse scroll on the X axis}
          */
-        public double getScrollDelta() {
-            return scrollDelta;
+        public double getScrollDeltaX() {
+            return scrollDeltaX;
+        }
+
+        /**
+         * {@return the amount of change / delta of the mouse scroll on the Y axis}
+         */
+        public double getScrollDeltaY() {
+            return scrollDeltaY;
         }
 
         /**
@@ -614,8 +623,8 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Pre extends MouseScrolled implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, double mouseX, double mouseY, double scrollDelta) {
-                super(screen, mouseX, mouseY, scrollDelta);
+            public Pre(Screen screen, double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+                super(screen, mouseX, mouseY, scrollDeltaX, scrollDeltaY);
             }
         }
 
@@ -631,8 +640,8 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Post extends MouseScrolled {
             @ApiStatus.Internal
-            public Post(Screen screen, double mouseX, double mouseY, double scrollDelta) {
-                super(screen, mouseX, mouseY, scrollDelta);
+            public Post(Screen screen, double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+                super(screen, mouseX, mouseY, scrollDeltaX, scrollDeltaY);
             }
         }
     }

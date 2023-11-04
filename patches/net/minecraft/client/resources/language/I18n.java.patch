@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/language/I18n.java
 +++ b/net/minecraft/client/resources/language/I18n.java
-@@ -14,6 +14,7 @@
+@@ -14,6 +_,7 @@
  
     static void setLanguage(Language p_118942_) {
        language = p_118942_;

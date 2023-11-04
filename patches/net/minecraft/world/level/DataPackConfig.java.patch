@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/DataPackConfig.java
 +++ b/net/minecraft/world/level/DataPackConfig.java
-@@ -19,7 +19,7 @@
+@@ -19,7 +_,7 @@
     private final List<String> disabled;
  
     public DataPackConfig(List<String> p_45848_, List<String> p_45849_) {
@@ -9,7 +9,7 @@
        this.disabled = ImmutableList.copyOf(p_45849_);
     }
  
-@@ -29,5 +29,9 @@
+@@ -29,5 +_,9 @@
  
     public List<String> getDisabled() {
        return this.disabled;

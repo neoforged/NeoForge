@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/texture/TextureManager.java
 +++ b/net/minecraft/client/renderer/texture/TextureManager.java
-@@ -158,6 +158,7 @@
+@@ -158,6 +_,7 @@
     public void release(ResourceLocation p_118514_) {
        AbstractTexture abstracttexture = this.byPath.remove(p_118514_);
        if (abstracttexture != null) {

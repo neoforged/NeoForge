@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/MappedRegistry.java
 +++ b/net/minecraft/core/MappedRegistry.java
-@@ -125,7 +125,16 @@
+@@ -125,7 +_,16 @@
        }
     }
  
@@ -17,7 +17,7 @@
        this.validateWrite(p_256594_);
        Validate.notNull(p_256594_);
        Validate.notNull(p_256374_);
-@@ -147,6 +156,8 @@
+@@ -147,6 +_,8 @@
           reference.bindKey(p_256594_);
        } else {
           reference = this.byKey.computeIfAbsent(p_256594_, p_258168_ -> Holder.Reference.createStandAlone(this.holderOwner(), p_258168_));
@@ -26,7 +26,7 @@
        }
  
        this.byKey.put(p_256594_, reference);
-@@ -325,13 +336,18 @@
+@@ -325,13 +_,18 @@
        return this.byKey.containsKey(p_175392_);
     }
  
@@ -46,7 +46,7 @@
           List<ResourceLocation> list = this.byKey
              .entrySet()
              .stream()
-@@ -347,7 +363,8 @@
+@@ -347,7 +_,8 @@
                    throw new IllegalStateException("Some intrusive holders were not registered: " + this.unregisteredIntrusiveHolders.values());
                 }
  

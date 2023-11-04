@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/vehicle/ChestBoat.java
 +++ b/net/minecraft/world/entity/vehicle/ChestBoat.java
-@@ -208,6 +208,28 @@
+@@ -208,6 +_,28 @@
        this.itemStacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
     }
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/saveddata/maps/MapDecoration.java
 +++ b/net/minecraft/world/level/saveddata/maps/MapDecoration.java
-@@ -7,13 +7,27 @@
+@@ -7,13 +_,27 @@
  import net.minecraft.util.StringRepresentable;
  import net.minecraft.world.level.material.MapColor;
  

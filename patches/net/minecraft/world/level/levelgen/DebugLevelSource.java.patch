@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/DebugLevelSource.java
 +++ b/net/minecraft/world/level/levelgen/DebugLevelSource.java
-@@ -89,6 +89,12 @@
+@@ -89,6 +_,12 @@
        return 0;
     }
  

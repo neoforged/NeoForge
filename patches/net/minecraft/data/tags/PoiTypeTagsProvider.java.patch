@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/PoiTypeTagsProvider.java
 +++ b/net/minecraft/data/tags/PoiTypeTagsProvider.java
-@@ -9,8 +9,13 @@
+@@ -9,8 +_,13 @@
  import net.minecraft.world.entity.ai.village.poi.PoiTypes;
  
  public class PoiTypeTagsProvider extends TagsProvider<PoiType> {

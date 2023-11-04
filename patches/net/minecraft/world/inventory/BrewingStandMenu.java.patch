@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/BrewingStandMenu.java
 +++ b/net/minecraft/world/inventory/BrewingStandMenu.java
-@@ -76,7 +76,7 @@
+@@ -76,7 +_,7 @@
                 if (!this.moveItemStackTo(itemstack1, 3, 4, false)) {
                    return ItemStack.EMPTY;
                 }
@@ -9,7 +9,7 @@
                 if (!this.moveItemStackTo(itemstack1, 0, 3, false)) {
                    return ItemStack.EMPTY;
                 }
-@@ -150,7 +150,7 @@
+@@ -150,7 +_,7 @@
  
        @Override
        public boolean mayPlace(ItemStack p_39121_) {
@@ -18,7 +18,7 @@
        }
  
        @Override
-@@ -178,6 +178,7 @@
+@@ -178,6 +_,7 @@
        public void onTake(Player p_150499_, ItemStack p_150500_) {
           Potion potion = PotionUtils.getPotion(p_150500_);
           if (p_150499_ instanceof ServerPlayer) {
@@ -26,7 +26,7 @@
              CriteriaTriggers.BREWED_POTION.trigger((ServerPlayer)p_150499_, potion);
           }
  
-@@ -185,7 +186,7 @@
+@@ -185,7 +_,7 @@
        }
  
        public static boolean mayPlaceItem(ItemStack p_39134_) {

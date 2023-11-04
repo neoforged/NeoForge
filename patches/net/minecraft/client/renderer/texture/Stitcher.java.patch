@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/texture/Stitcher.java
 +++ b/net/minecraft/client/renderer/texture/Stitcher.java
-@@ -12,6 +12,8 @@
+@@ -12,6 +_,8 @@
  
  @OnlyIn(Dist.CLIENT)
  public class Stitcher<T extends Stitcher.Entry> {
@@ -9,7 +9,7 @@
     private static final Comparator<Stitcher.Holder<?>> HOLDER_COMPARATOR = Comparator.<Stitcher.Holder<?>, Integer>comparing(p_118201_ -> -p_118201_.height)
        .thenComparing(p_118199_ -> -p_118199_.width)
        .thenComparing(p_247945_ -> p_247945_.entry.name());
-@@ -48,6 +50,14 @@
+@@ -48,6 +_,14 @@
  
        for(Stitcher.Holder<T> holder : list) {
           if (!this.addToStorage(holder)) {
@@ -24,7 +24,7 @@
              throw new StitcherException(holder.entry, list.stream().map(p_247946_ -> p_247946_.entry).collect(ImmutableList.toImmutableList()));
           }
        }
-@@ -87,7 +97,7 @@
+@@ -87,7 +_,7 @@
           boolean flag4 = flag2 && j != l;
           boolean flag;
           if (flag3 ^ flag4) {

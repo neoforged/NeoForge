@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-@@ -22,6 +22,7 @@
+@@ -22,6 +_,7 @@
  
     @Override
     public void handleIntention(ClientIntentionPacket p_9975_) {
@@ -8,7 +8,7 @@
        switch(p_9975_.intention()) {
           case LOGIN:
              this.connection.setClientboundProtocolAfterHandshake(ClientIntent.LOGIN);
-@@ -43,7 +44,7 @@
+@@ -43,7 +_,7 @@
              ServerStatus serverstatus = this.server.getStatus();
              if (this.server.repliesToStatus() && serverstatus != null) {
                 this.connection.setClientboundProtocolAfterHandshake(ClientIntent.STATUS);

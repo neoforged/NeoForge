@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/MemoryServerHandshakePacketListenerImpl.java
 +++ b/net/minecraft/server/network/MemoryServerHandshakePacketListenerImpl.java
-@@ -21,6 +21,7 @@
+@@ -21,6 +_,7 @@
        if (p_9697_.intention() != ClientIntent.LOGIN) {
           throw new UnsupportedOperationException("Invalid intention " + p_9697_.intention());
        } else {

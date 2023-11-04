@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/IntrinsicHolderTagsProvider.java
 +++ b/net/minecraft/data/tags/IntrinsicHolderTagsProvider.java
-@@ -13,37 +13,64 @@
+@@ -13,37 +_,64 @@
  public abstract class IntrinsicHolderTagsProvider<T> extends TagsProvider<T> {
     private final Function<T, ResourceKey<T>> keyExtractor;
  
@@ -82,7 +82,7 @@
           this.keyExtractor = p_256433_;
        }
  
-@@ -61,6 +88,11 @@
+@@ -61,6 +_,11 @@
        public final IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> add(T... p_255868_) {
           Stream.<T>of(p_255868_).map(this.keyExtractor).forEach(this::add);
           return this;

@@ -1,6 +1,6 @@
 --- a/net/minecraft/SharedConstants.java
 +++ b/net/minecraft/SharedConstants.java
-@@ -201,6 +201,7 @@
+@@ -201,6 +_,7 @@
     }
  
     static {

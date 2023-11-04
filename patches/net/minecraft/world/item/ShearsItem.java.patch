@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ShearsItem.java
 +++ b/net/minecraft/world/item/ShearsItem.java
-@@ -59,6 +59,31 @@
+@@ -59,6 +_,31 @@
     }
  
     @Override

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/ShulkerBoxColoring.java
 +++ b/net/minecraft/world/item/crafting/ShulkerBoxColoring.java
-@@ -25,7 +25,7 @@
+@@ -25,7 +_,7 @@
              if (Block.byItem(itemstack.getItem()) instanceof ShulkerBoxBlock) {
                 ++i;
              } else {
@@ -9,7 +9,7 @@
                    return false;
                 }
  
-@@ -43,7 +43,7 @@
+@@ -43,7 +_,7 @@
  
     public ItemStack assemble(CraftingContainer p_44322_, RegistryAccess p_266985_) {
        ItemStack itemstack = ItemStack.EMPTY;
@@ -18,7 +18,7 @@
  
        for(int i = 0; i < p_44322_.getContainerSize(); ++i) {
           ItemStack itemstack1 = p_44322_.getItem(i);
-@@ -51,13 +51,14 @@
+@@ -51,13 +_,14 @@
              Item item = itemstack1.getItem();
              if (Block.byItem(item) instanceof ShulkerBoxBlock) {
                 itemstack = itemstack1;

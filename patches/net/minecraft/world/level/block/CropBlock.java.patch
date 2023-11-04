@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/CropBlock.java
 +++ b/net/minecraft/world/level/block/CropBlock.java
-@@ -77,12 +77,14 @@
+@@ -77,12 +_,14 @@
  
     @Override
     public void randomTick(BlockState p_221050_, ServerLevel p_221051_, BlockPos p_221052_, RandomSource p_221053_) {
@@ -16,7 +16,7 @@
              }
           }
        }
-@@ -110,9 +112,9 @@
+@@ -110,9 +_,9 @@
           for(int j = -1; j <= 1; ++j) {
              float f1 = 0.0F;
              BlockState blockstate = p_52274_.getBlockState(blockpos.offset(i, 0, j));
@@ -28,7 +28,7 @@
                    f1 = 3.0F;
                 }
              }
-@@ -157,7 +159,7 @@
+@@ -157,7 +_,7 @@
  
     @Override
     public void entityInside(BlockState p_52277_, Level p_52278_, BlockPos p_52279_, Entity p_52280_) {

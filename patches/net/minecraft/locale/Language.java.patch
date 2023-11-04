@@ -1,6 +1,6 @@
 --- a/net/minecraft/locale/Language.java
 +++ b/net/minecraft/locale/Language.java
-@@ -37,7 +37,8 @@
+@@ -37,7 +_,8 @@
        Builder<String, String> builder = ImmutableMap.builder();
        BiConsumer<String, String> biconsumer = builder::put;
        parseTranslations(biconsumer, "/assets/minecraft/lang/en_us.json");
@@ -10,7 +10,7 @@
        return new Language() {
           @Override
           public String getOrDefault(String p_128127_, String p_265421_) {
-@@ -64,6 +65,11 @@
+@@ -64,6 +_,11 @@
                    )
                    .isPresent();
           }
@@ -22,7 +22,7 @@
        };
     }
  
-@@ -91,6 +97,9 @@
+@@ -91,6 +_,9 @@
     public static void inject(Language p_128115_) {
        instance = p_128115_;
     }

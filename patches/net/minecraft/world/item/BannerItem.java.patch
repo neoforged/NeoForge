@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BannerItem.java
 +++ b/net/minecraft/world/item/BannerItem.java
-@@ -37,9 +37,10 @@
+@@ -37,9 +_,10 @@
                 holder.unwrapKey()
                    .map(p_220002_ -> p_220002_.location().toShortLanguageKey())
                    .ifPresent(

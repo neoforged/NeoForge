@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/Rarity.java
 +++ b/net/minecraft/world/item/Rarity.java
-@@ -2,15 +2,36 @@
+@@ -2,15 +_,36 @@
  
  import net.minecraft.ChatFormatting;
  

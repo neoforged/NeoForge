@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/saveddata/SavedData.java
 +++ b/net/minecraft/world/level/saveddata/SavedData.java
-@@ -45,6 +45,10 @@
+@@ -45,6 +_,10 @@
        }
     }
  

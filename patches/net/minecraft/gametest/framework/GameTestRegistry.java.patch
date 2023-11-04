@@ -1,6 +1,6 @@
 --- a/net/minecraft/gametest/framework/GameTestRegistry.java
 +++ b/net/minecraft/gametest/framework/GameTestRegistry.java
-@@ -25,21 +25,33 @@
+@@ -25,21 +_,33 @@
     private static final Map<String, Consumer<ServerLevel>> AFTER_BATCH_FUNCTIONS = Maps.newHashMap();
     private static final Collection<TestFunction> LAST_FAILED_TESTS = Sets.newHashSet();
  
@@ -36,7 +36,7 @@
           TEST_CLASS_NAMES.add(s);
        }
  
-@@ -101,7 +113,9 @@
+@@ -101,7 +_,9 @@
  
     private static Collection<TestFunction> useTestGeneratorMethod(Method p_177514_) {
        try {
@@ -47,7 +47,7 @@
           return (Collection<TestFunction>)p_177514_.invoke(object);
        } catch (ReflectiveOperationException reflectiveoperationexception) {
           throw new RuntimeException(reflectiveoperationexception);
-@@ -112,8 +126,9 @@
+@@ -112,8 +_,9 @@
        GameTest gametest = p_177516_.getAnnotation(GameTest.class);
        String s = p_177516_.getDeclaringClass().getSimpleName();
        String s1 = s.toLowerCase();
@@ -59,7 +59,7 @@
        String s4 = gametest.batch();
        Rotation rotation = StructureUtils.getRotationForRotationSteps(gametest.rotationSteps());
        return new TestFunction(
-@@ -133,7 +148,9 @@
+@@ -133,7 +_,9 @@
     private static Consumer<?> turnMethodIntoConsumer(Method p_177520_) {
        return p_177512_ -> {
           try {

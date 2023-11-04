@@ -1,6 +1,6 @@
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
-@@ -199,7 +199,7 @@
+@@ -199,7 +_,7 @@
           JfrCommand.register(this.dispatcher);
        }
  
@@ -9,7 +9,7 @@
           TestCommand.register(this.dispatcher);
           SpawnArmorTrimsCommand.register(this.dispatcher);
           if (p_230943_.includeDedicated) {
-@@ -227,6 +227,7 @@
+@@ -227,6 +_,7 @@
        if (p_230943_.includeIntegrated) {
           PublishCommand.register(this.dispatcher);
        }
@@ -17,7 +17,7 @@
  
        this.dispatcher.setConsumer((p_230954_, p_230955_, p_230956_) -> p_230954_.getSource().onCommandComplete(p_230954_, p_230955_, p_230956_));
     }
-@@ -249,7 +250,16 @@
+@@ -249,7 +_,16 @@
        int j;
        try {
           try {
@@ -35,7 +35,7 @@
           } catch (CommandRuntimeException commandruntimeexception) {
              commandsourcestack.sendFailure(commandruntimeexception.getComponent());
              return 0;
-@@ -314,7 +324,8 @@
+@@ -314,7 +_,8 @@
        Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> map = Maps.newHashMap();
        RootCommandNode<SharedSuggestionProvider> rootcommandnode = new RootCommandNode<>();
        map.put(this.dispatcher.getRoot(), rootcommandnode);

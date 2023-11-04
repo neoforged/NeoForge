@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/Options.java
 +++ b/net/minecraft/client/Options.java
-@@ -707,10 +707,9 @@
+@@ -707,10 +_,9 @@
           }
        },
        new OptionInstance.LazyEnum<>(
@@ -13,7 +13,7 @@
                 ? Optional.empty()
                 : Optional.of(p_232011_),
           Codec.STRING
-@@ -1046,6 +1045,7 @@
+@@ -1046,6 +_,7 @@
     }
  
     public Options(Minecraft p_92138_, File p_92139_) {
@@ -21,7 +21,7 @@
        this.minecraft = p_92138_;
        this.optionsFile = new File(p_92139_, "options.txt");
        boolean flag = p_92138_.is64Bit();
-@@ -1176,11 +1176,21 @@
+@@ -1176,11 +_,21 @@
        p_168428_.process("telemetryOptInExtra", this.telemetryOptInExtra);
        this.onboardAccessibility = p_168428_.process("onboardAccessibility", this.onboardAccessibility);
  
@@ -45,7 +45,7 @@
           }
        }
  
-@@ -1198,6 +1208,9 @@
+@@ -1198,6 +_,9 @@
     }
  
     public void load() {
@@ -55,7 +55,7 @@
        try {
           if (!this.optionsFile.exists()) {
              return;
-@@ -1225,8 +1238,8 @@
+@@ -1225,8 +_,8 @@
              }
           }
  
@@ -66,7 +66,7 @@
                 @Nullable
                 private String getValueOrNull(String p_168459_) {
                    return compoundtag1.contains(p_168459_) ? compoundtag1.getString(p_168459_) : null;
-@@ -1396,6 +1409,7 @@
+@@ -1396,6 +_,7 @@
     }
  
     public ClientInformation buildPlayerInformation() {
@@ -74,7 +74,7 @@
        int i = 0;
  
        for(PlayerModelPart playermodelpart : this.modelParts) {
-@@ -1471,6 +1485,23 @@
+@@ -1471,6 +_,23 @@
        }
  
        p_92146_.setSelected(set);

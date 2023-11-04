@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
-@@ -47,6 +47,7 @@
+@@ -47,6 +_,7 @@
  import net.minecraft.world.phys.Vec3;
  import org.slf4j.Logger;
  
@@ -8,7 +8,7 @@
  public final class NaturalSpawner {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int MIN_SPAWN_DISTANCE = 24;
-@@ -71,7 +72,7 @@
+@@ -71,7 +_,7 @@
              continue;
           }
  
@@ -17,7 +17,7 @@
           if (mobcategory != MobCategory.MISC) {
              BlockPos blockpos = entity.blockPosition();
              p_186527_.query(
-@@ -201,7 +202,7 @@
+@@ -201,7 +_,7 @@
                             ++l1;
                             p_47040_.addFreshEntityWithPassengers(mob);
                             p_47044_.run(mob, p_47041_);
@@ -26,7 +26,7 @@
                                return;
                             }
  
-@@ -278,7 +279,7 @@
+@@ -278,7 +_,7 @@
           && p_46993_.removeWhenFarAway(p_46994_)) {
           return false;
        } else {
@@ -35,7 +35,7 @@
        }
     }
  
-@@ -305,9 +306,8 @@
+@@ -305,9 +_,8 @@
     private static WeightedRandomList<MobSpawnSettings.SpawnerData> mobsAt(
        ServerLevel p_220444_, StructureManager p_220445_, ChunkGenerator p_220446_, MobCategory p_220447_, BlockPos p_220448_, @Nullable Holder<Biome> p_220449_
     ) {
@@ -47,7 +47,7 @@
     }
  
     public static boolean isInNetherFortressBounds(BlockPos p_220456_, ServerLevel p_220457_, MobCategory p_220458_, StructureManager p_220459_) {
-@@ -346,6 +346,13 @@
+@@ -346,6 +_,13 @@
        if (p_47052_ == SpawnPlacements.Type.NO_RESTRICTIONS) {
           return true;
        } else if (p_47055_ != null && p_47053_.getWorldBorder().isWithinBounds(p_47054_)) {
@@ -61,7 +61,7 @@
           BlockState blockstate = p_47053_.getBlockState(p_47054_);
           FluidState fluidstate = p_47053_.getFluidState(p_47054_);
           BlockPos blockpos = p_47054_.above();
-@@ -358,15 +365,13 @@
+@@ -358,15 +_,13 @@
              case ON_GROUND:
              default:
                 BlockState blockstate1 = p_47053_.getBlockState(blockpos1);
@@ -78,7 +78,7 @@
        }
     }
  
-@@ -423,12 +428,10 @@
+@@ -423,12 +_,10 @@
                          if (entity == null) {
                             continue;
                          }

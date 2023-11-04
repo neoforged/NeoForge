@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/FireworkStarRecipe.java
 +++ b/net/minecraft/world/item/crafting/FireworkStarRecipe.java
-@@ -118,7 +118,7 @@
+@@ -118,7 +_,7 @@
        }
  
        compoundtag.putIntArray("Colors", list);

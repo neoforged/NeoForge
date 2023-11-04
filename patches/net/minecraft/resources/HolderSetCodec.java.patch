@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/HolderSetCodec.java
 +++ b/net/minecraft/resources/HolderSetCodec.java
-@@ -22,6 +22,8 @@
+@@ -22,6 +_,8 @@
     private final Codec<Holder<E>> elementCodec;
     private final Codec<List<Holder<E>>> homogenousListCodec;
     private final Codec<Either<TagKey<E>, List<Holder<E>>>> registryAwareCodec;
@@ -9,7 +9,7 @@
  
     private static <E> Codec<List<Holder<E>>> homogenousList(Codec<Holder<E>> p_206668_, boolean p_206669_) {
        Codec<List<Holder<E>>> codec = ExtraCodecs.validate(p_206668_.listOf(), ExtraCodecs.ensureHomogenous(Holder::kind));
-@@ -43,6 +45,10 @@
+@@ -43,6 +_,10 @@
        this.elementCodec = p_206661_;
        this.homogenousListCodec = homogenousList(p_206661_, p_206662_);
        this.registryAwareCodec = Codec.either(TagKey.hashedCodec(p_206660_), this.homogenousListCodec);
@@ -20,7 +20,7 @@
     }
  
     @Override
-@@ -51,9 +57,9 @@
+@@ -51,9 +_,9 @@
           Optional<HolderGetter<E>> optional = registryops.getter(this.registryKey);
           if (optional.isPresent()) {
              HolderGetter<E> holdergetter = optional.get();
@@ -33,7 +33,7 @@
           }
        }
  
-@@ -68,6 +74,9 @@
+@@ -68,6 +_,9 @@
                 return DataResult.error(() -> "HolderSet " + p_206674_ + " is not valid in current registry set");
              }
  

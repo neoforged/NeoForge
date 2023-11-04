@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/RegistryCodecs.java
 +++ b/net/minecraft/core/RegistryCodecs.java
-@@ -48,7 +48,8 @@
+@@ -48,7 +_,8 @@
     }
  
     public static <E> Codec<Registry<E>> fullCodec(ResourceKey<? extends Registry<E>> p_248884_, Lifecycle p_251810_, Codec<E> p_250169_) {

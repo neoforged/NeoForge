@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/goal/BreakDoorGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/BreakDoorGoal.java
-@@ -31,7 +31,7 @@
+@@ -31,7 +_,7 @@
     public boolean canUse() {
        if (!super.canUse()) {
           return false;

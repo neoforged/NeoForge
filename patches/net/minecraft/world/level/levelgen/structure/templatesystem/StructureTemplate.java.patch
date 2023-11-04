@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
 +++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
-@@ -214,6 +214,10 @@
+@@ -214,6 +_,10 @@
        return transform(p_74565_, p_74564_.getMirror(), p_74564_.getRotation(), p_74564_.getRotationPivot());
     }
  
@@ -11,7 +11,7 @@
     public boolean placeInWorld(
        ServerLevelAccessor p_230329_, BlockPos p_230330_, BlockPos p_230331_, StructurePlaceSettings p_230332_, RandomSource p_230333_, int p_230334_
     ) {
-@@ -236,7 +240,7 @@
+@@ -236,7 +_,7 @@
              int i1 = Integer.MIN_VALUE;
              int j1 = Integer.MIN_VALUE;
  
@@ -20,7 +20,7 @@
                 BlockPos blockpos = structuretemplate$structureblockinfo.pos;
                 if (boundingbox == null || boundingbox.isInside(blockpos)) {
                    FluidState fluidstate = p_230332_.shouldKeepLiquids() ? p_230329_.getFluidState(blockpos) : null;
-@@ -348,15 +352,7 @@
+@@ -348,15 +_,7 @@
              }
  
              if (!p_230332_.isIgnoreEntities()) {
@@ -37,7 +37,7 @@
              }
  
              return true;
-@@ -385,8 +381,16 @@
+@@ -385,8 +_,16 @@
     }
  
     public static List<StructureTemplate.StructureBlockInfo> processBlockInfos(
@@ -54,7 +54,7 @@
        List<StructureTemplate.StructureBlockInfo> list = new ArrayList<>();
        List<StructureTemplate.StructureBlockInfo> list1 = new ArrayList<>();
  
-@@ -401,7 +405,7 @@
+@@ -401,7 +_,7 @@
  
           while(structuretemplate$structureblockinfo1 != null && iterator.hasNext()) {
              structuretemplate$structureblockinfo1 = iterator.next()
@@ -63,7 +63,7 @@
           }
  
           if (structuretemplate$structureblockinfo1 != null) {
-@@ -417,15 +421,29 @@
+@@ -417,15 +_,29 @@
        return list1;
     }
  
@@ -101,7 +101,7 @@
              ListTag listtag = new ListTag();
              listtag.add(DoubleTag.valueOf(vec31.x));
              listtag.add(DoubleTag.valueOf(vec31.y));
-@@ -435,10 +453,10 @@
+@@ -435,10 +_,10 @@
              createEntityIgnoreException(p_74524_, compoundtag)
                 .ifPresent(
                    p_275190_ -> {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil.java
 +++ b/net/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil.java
-@@ -17,16 +17,22 @@
+@@ -17,16 +_,22 @@
     private static final int BORDER_COLOR_BOTTOM = 1344798847;
  
     public static void renderTooltipBackground(GuiGraphics p_282666_, int p_281901_, int p_281846_, int p_281559_, int p_283336_, int p_283422_) {
@@ -29,7 +29,7 @@
     }
  
     private static void renderFrameGradient(
-@@ -52,7 +58,16 @@
+@@ -52,7 +_,16 @@
        p_282981_.fill(p_282028_, p_282141_, p_282028_ + p_281771_, p_282141_ + 1, p_282734_, p_281979_);
     }
  

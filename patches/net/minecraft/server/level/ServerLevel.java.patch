@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -188,11 +188,12 @@
+@@ -188,11 +_,12 @@
     private final List<CustomSpawner> customSpawners;
     @Nullable
     private EndDragonFight dragonFight;
@@ -14,7 +14,7 @@
  
     public ServerLevel(
        MinecraftServer p_214999_,
-@@ -279,6 +280,7 @@
+@@ -279,6 +_,7 @@
        this.randomSequences = Objects.requireNonNullElseGet(
           p_288977_, () -> this.getDataStorage().computeIfAbsent(RandomSequences.factory(i), "random_sequences")
        );
@@ -22,7 +22,7 @@
     }
  
     @Deprecated
-@@ -317,8 +319,8 @@
+@@ -317,8 +_,8 @@
        int i = this.getGameRules().getInt(GameRules.RULE_PLAYERS_SLEEPING_PERCENTAGE);
        if (this.sleepStatus.areEnoughSleeping(i) && this.sleepStatus.areEnoughDeepSleeping(i, this.players)) {
           if (this.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)) {
@@ -33,7 +33,7 @@
           }
  
           this.wakeUpAllPlayers();
-@@ -347,7 +349,7 @@
+@@ -347,7 +_,7 @@
        this.runBlockEvents();
        this.handlingTick = false;
        profilerfiller.pop();
@@ -42,7 +42,7 @@
        if (flag) {
           this.resetEmptyTime();
        }
-@@ -379,7 +381,9 @@
+@@ -379,7 +_,9 @@
                       }
  
                       profilerfiller.push("tick");
@@ -53,7 +53,7 @@
                       profilerfiller.pop();
                    }
                 }
-@@ -510,6 +514,7 @@
+@@ -510,6 +_,7 @@
        BlockPos blockpos = this.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, p_295060_);
        BlockPos blockpos1 = blockpos.below();
        Biome biome = this.getBiome(blockpos).value();
@@ -61,7 +61,7 @@
        if (biome.shouldFreeze(this, blockpos1)) {
           this.setBlockAndUpdate(blockpos1, Blocks.ICE.defaultBlockState());
        }
-@@ -682,15 +687,19 @@
+@@ -682,15 +_,19 @@
              .broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.THUNDER_LEVEL_CHANGE, this.thunderLevel), this.dimension());
        }
  
@@ -85,7 +85,7 @@
        }
     }
  
-@@ -742,6 +751,7 @@
+@@ -742,6 +_,7 @@
           ProfilerFiller profilerfiller = this.getProfiler();
           profilerfiller.push(() -> BuiltInRegistries.ENTITY_TYPE.getKey(p_8664_.getType()).toString());
           profilerfiller.incrementCounter("tickPassenger");
@@ -93,7 +93,7 @@
           p_8664_.rideTick();
           profilerfiller.pop();
  
-@@ -774,6 +784,7 @@
+@@ -774,6 +_,7 @@
           } else {
              this.entityManager.autoSave();
           }
@@ -101,7 +101,7 @@
        }
     }
  
-@@ -867,6 +878,7 @@
+@@ -867,6 +_,7 @@
     }
  
     private void addPlayer(ServerPlayer p_8854_) {
@@ -109,7 +109,7 @@
        Entity entity = this.getEntities().get(p_8854_.getUUID());
        if (entity != null) {
           LOGGER.warn("Force-added player with duplicate UUID {}", p_8854_.getUUID());
-@@ -874,7 +886,8 @@
+@@ -874,7 +_,8 @@
           this.removePlayerImmediately((ServerPlayer)entity, Entity.RemovalReason.DISCARDED);
        }
  
@@ -119,7 +119,7 @@
     }
  
     private boolean addEntity(Entity p_8873_) {
-@@ -882,7 +895,12 @@
+@@ -882,7 +_,12 @@
           LOGGER.warn("Tried to add entity {} but it was marked as removed already", EntityType.getKey(p_8873_.getType()));
           return false;
        } else {
@@ -133,7 +133,7 @@
        }
     }
  
-@@ -930,6 +948,12 @@
+@@ -930,6 +_,12 @@
        float p_263390_,
        long p_263403_
     ) {
@@ -146,7 +146,7 @@
        this.server
           .getPlayerList()
           .broadcast(
-@@ -947,6 +971,12 @@
+@@ -947,6 +_,12 @@
     public void playSeededSound(
        @Nullable Player p_263545_, Entity p_263544_, Holder<SoundEvent> p_263491_, SoundSource p_263542_, float p_263530_, float p_263520_, long p_263490_
     ) {
@@ -159,7 +159,7 @@
        this.server
           .getPlayerList()
           .broadcast(
-@@ -990,6 +1020,7 @@
+@@ -990,6 +_,7 @@
  
     @Override
     public void gameEvent(GameEvent p_215041_, Vec3 p_215042_, GameEvent.Context p_215043_) {
@@ -167,7 +167,7 @@
        this.gameEventDispatcher.post(p_215041_, p_215042_, p_215043_);
     }
  
-@@ -1027,11 +1058,16 @@
+@@ -1027,11 +_,16 @@
  
     @Override
     public void updateNeighborsAt(BlockPos p_215045_, Block p_215046_) {
@@ -184,7 +184,7 @@
        this.neighborUpdater.updateNeighborsAtExceptFromFacing(p_215052_, p_215053_, p_215054_);
     }
  
-@@ -1549,7 +1585,16 @@
+@@ -1549,7 +_,16 @@
        BlockPos.betweenClosed(i - 2, j, k - 2, i + 2, j, k + 2).forEach(p_184101_ -> p_8618_.setBlockAndUpdate(p_184101_, Blocks.OBSIDIAN.defaultBlockState()));
     }
  
@@ -202,7 +202,7 @@
     public LevelEntityGetter<Entity> getEntities() {
        return this.entityManager.getEntityGetter();
     }
-@@ -1648,8 +1693,8 @@
+@@ -1648,8 +_,8 @@
              ServerLevel.this.navigatingMobs.add(mob);
           }
  
@@ -213,7 +213,7 @@
                 ServerLevel.this.dragonParts.put(enderdragonpart.getId(), enderdragonpart);
              }
           }
-@@ -1668,24 +1713,32 @@
+@@ -1668,24 +_,32 @@
              if (ServerLevel.this.isUpdatingNavigations) {
                 String s = "onTrackingStart called during navigation iteration";
                 Util.logAndPauseIfInIde(

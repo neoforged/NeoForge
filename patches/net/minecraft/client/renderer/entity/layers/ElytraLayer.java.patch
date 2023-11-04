@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/layers/ElytraLayer.java
 +++ b/net/minecraft/client/renderer/entity/layers/ElytraLayer.java
-@@ -45,7 +45,7 @@
+@@ -45,7 +_,7 @@
        float p_116960_
     ) {
        ItemStack itemstack = p_116954_.getItemBySlot(EquipmentSlot.CHEST);
@@ -9,7 +9,7 @@
           ResourceLocation resourcelocation;
           if (p_116954_ instanceof AbstractClientPlayer abstractclientplayer) {
              PlayerSkin playerskin = abstractclientplayer.getSkin();
-@@ -54,10 +54,10 @@
+@@ -54,10 +_,10 @@
              } else if (playerskin.capeTexture() != null && abstractclientplayer.isModelPartShown(PlayerModelPart.CAPE)) {
                 resourcelocation = playerskin.capeTexture();
              } else {
@@ -22,7 +22,7 @@
           }
  
           p_116951_.pushPose();
-@@ -68,5 +68,30 @@
+@@ -68,5 +_,30 @@
           this.elytraModel.renderToBuffer(p_116951_, vertexconsumer, p_116953_, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
           p_116951_.popPose();
        }

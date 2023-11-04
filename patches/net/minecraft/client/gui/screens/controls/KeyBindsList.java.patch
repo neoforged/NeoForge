@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/controls/KeyBindsList.java
 +++ b/net/minecraft/client/gui/screens/controls/KeyBindsList.java
-@@ -30,6 +30,8 @@
+@@ -30,6 +_,8 @@
     final KeyBindsScreen keyBindsScreen;
     int maxNameWidth;
  
@@ -9,7 +9,7 @@
     public KeyBindsList(KeyBindsScreen p_193861_, Minecraft p_193862_) {
        super(p_193862_, p_193861_.width + 45, p_193861_.height, 20, p_193861_.height - 32, 20);
        this.keyBindsScreen = p_193861_;
-@@ -47,7 +49,8 @@
+@@ -47,7 +_,8 @@
           Component component = Component.translatable(keymapping.getName());
           int i = p_193862_.font.width(component);
           if (i > this.maxNameWidth) {
@@ -19,7 +19,7 @@
           }
  
           this.addEntry(new KeyBindsList.KeyEntry(keymapping, component));
-@@ -65,7 +68,7 @@
+@@ -65,7 +_,7 @@
  
     @Override
     protected int getScrollbarPosition() {
@@ -28,7 +28,7 @@
     }
  
     @Override
-@@ -157,7 +160,7 @@
+@@ -157,7 +_,7 @@
                 KeyBindsList.this.keyBindsScreen.selectedKey = p_193916_;
                 KeyBindsList.this.resetMappingAndUpdateButtons();
              })
@@ -37,7 +37,7 @@
              .createNarration(
                 p_253311_ -> p_193916_.isUnbound()
                       ? Component.translatable("narrator.controls.unbound", p_193917_)
-@@ -165,6 +168,7 @@
+@@ -165,6 +_,7 @@
              )
              .build();
           this.resetButton = Button.builder(Component.translatable("controls.reset"), p_269616_ -> {
@@ -45,7 +45,7 @@
              KeyBindsList.this.minecraft.options.setKey(p_193916_, p_193916_.getDefaultKey());
              KeyBindsList.this.resetMappingAndUpdateButtons();
           }).bounds(0, 0, 50, 20).createNarration(p_253313_ -> Component.translatable("narrator.controls.reset", p_193917_)).build();
-@@ -185,8 +189,14 @@
+@@ -185,8 +_,14 @@
           float p_281432_
        ) {
           int k = p_281373_ + 90 - KeyBindsList.this.maxNameWidth;
@@ -62,7 +62,7 @@
           this.resetButton.setY(p_282357_);
           this.resetButton.render(p_281805_, p_282224_, p_282053_, p_281432_);
           this.changeButton.setX(p_281373_ + 105);
-@@ -218,7 +228,7 @@
+@@ -218,7 +_,7 @@
           MutableComponent mutablecomponent = Component.empty();
           if (!this.key.isUnbound()) {
              for(KeyMapping keymapping : KeyBindsList.this.minecraft.options.keyMappings) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -63,7 +63,7 @@
+@@ -63,7 +_,7 @@
     private static final Logger LOGGER = LogUtils.getLogger();
  
     @DontObfuscate
@@ -9,7 +9,7 @@
        SharedConstants.tryDetectVersion();
        OptionParser optionparser = new OptionParser();
        OptionSpec<Void> optionspec = optionparser.accepts("nogui");
-@@ -81,6 +81,15 @@
+@@ -81,6 +_,15 @@
        OptionSpec<Void> optionspec12 = optionparser.accepts("jfrProfile");
        OptionSpec<Path> optionspec13 = optionparser.accepts("pidFile").withRequiredArg().withValuesConvertedBy(new PathConverter());
        OptionSpec<String> optionspec14 = optionparser.nonOptions();
@@ -25,7 +25,7 @@
  
        try {
           OptionSet optionset = optionparser.parse(p_129699_);
-@@ -88,6 +97,13 @@
+@@ -88,6 +_,13 @@
              optionparser.printHelpOn(System.err);
              return;
           }
@@ -39,7 +39,7 @@
  
           Path path = optionset.valueOf(optionspec13);
           if (path != null) {
-@@ -103,25 +119,24 @@
+@@ -103,25 +_,24 @@
           Bootstrap.validate();
           Util.startTimerHackThread();
           Path path1 = Paths.get("server.properties");
@@ -71,7 +71,7 @@
           LevelSummary levelsummary = levelstoragesource$levelstorageaccess.getSummary();
           if (levelsummary != null) {
              if (levelsummary.requiresManualConversion()) {
-@@ -182,7 +197,9 @@
+@@ -182,7 +_,9 @@
                                      : dedicatedserverproperties.worldOptions;
                                   worlddimensions = dedicatedserverproperties.createDimensions(p_248079_.datapackWorldgen());
                                }
@@ -82,7 +82,7 @@
                                WorldDimensions.Complete worlddimensions$complete = worlddimensions.bake(registry);
                                Lifecycle lifecycle = worlddimensions$complete.lifecycle().add(p_248079_.datapackWorldgen().allRegistriesLifecycle());
                                return new WorldLoader.DataLoadOutput<>(
-@@ -218,24 +235,23 @@
+@@ -218,24 +_,23 @@
  
           WorldData worlddata = worldstem.worldData();
           levelstoragesource$levelstorageaccess.saveDataTag(registryaccess$frozen, worlddata);
@@ -119,7 +119,7 @@
                 }
     
                 return dedicatedserver1;
-@@ -244,7 +260,10 @@
+@@ -244,7 +_,10 @@
           Thread thread = new Thread("Server Shutdown Thread") {
              @Override
              public void run() {

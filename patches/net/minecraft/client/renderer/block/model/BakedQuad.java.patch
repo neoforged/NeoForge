@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/BakedQuad.java
 +++ b/net/minecraft/client/renderer/block/model/BakedQuad.java
-@@ -12,13 +12,19 @@
+@@ -12,13 +_,19 @@
     protected final Direction direction;
     protected final TextureAtlasSprite sprite;
     private final boolean shade;
@@ -20,7 +20,7 @@
     }
  
     public TextureAtlasSprite getSprite() {
-@@ -43,5 +49,9 @@
+@@ -43,5 +_,9 @@
  
     public boolean isShade() {
        return this.shade;

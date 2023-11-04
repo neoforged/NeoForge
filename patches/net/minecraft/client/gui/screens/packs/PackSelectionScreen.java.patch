@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/packs/PackSelectionScreen.java
 +++ b/net/minecraft/client/gui/screens/packs/PackSelectionScreen.java
-@@ -142,13 +142,10 @@
+@@ -142,13 +_,10 @@
        TransferableSelectionList.PackEntry transferableselectionlist$packentry = p_100014_.getSelected();
        String s = transferableselectionlist$packentry == null ? "" : transferableselectionlist$packentry.getPackId();
        p_100014_.setSelected(null);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/enchantment/FrostWalkerEnchantment.java
 +++ b/net/minecraft/world/item/enchantment/FrostWalkerEnchantment.java
-@@ -48,8 +48,14 @@
+@@ -48,8 +_,14 @@
                 if (blockstate1.isAir()) {
                    BlockState blockstate2 = p_45020_.getBlockState(blockpos);
                    if (blockstate2 == FrostedIceBlock.meltsInto()

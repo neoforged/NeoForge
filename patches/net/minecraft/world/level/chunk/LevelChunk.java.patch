@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -48,7 +48,7 @@
+@@ -48,7 +_,7 @@
  import net.minecraft.world.ticks.TickContainerAccess;
  import org.slf4j.Logger;
  
@@ -9,7 +9,7 @@
     static final Logger LOGGER = LogUtils.getLogger();
     private static final TickingBlockEntity NULL_TICKER = new TickingBlockEntity() {
        @Override
-@@ -109,6 +109,7 @@
+@@ -109,6 +_,7 @@
        this.postLoad = p_196861_;
        this.blockTicks = p_196857_;
        this.fluidTicks = p_196858_;
@@ -17,7 +17,7 @@
     }
  
     public LevelChunk(ServerLevel p_196850_, ProtoChunk p_196851_, @Nullable LevelChunk.PostLoadProcessor p_196852_) {
-@@ -270,14 +271,14 @@
+@@ -270,14 +_,14 @@
              boolean flag2 = blockstate.hasBlockEntity();
              if (!this.level.isClientSide) {
                 blockstate.onRemove(this.level, p_62865_, p_62866_, p_62867_);
@@ -34,7 +34,7 @@
                    p_62866_.onPlace(this.level, p_62865_, blockstate, p_62867_);
                 }
  
-@@ -321,6 +322,10 @@
+@@ -321,6 +_,10 @@
     @Nullable
     public BlockEntity getBlockEntity(BlockPos p_62868_, LevelChunk.EntityCreationType p_62869_) {
        BlockEntity blockentity = this.blockEntities.get(p_62868_);
@@ -45,7 +45,7 @@
        if (blockentity == null) {
           CompoundTag compoundtag = this.pendingBlockEntities.remove(p_62868_);
           if (compoundtag != null) {
-@@ -338,9 +343,6 @@
+@@ -338,9 +_,6 @@
                 this.addAndRegisterBlockEntity(blockentity);
              }
           }
@@ -55,7 +55,7 @@
        }
  
        return blockentity;
-@@ -355,6 +357,7 @@
+@@ -355,6 +_,7 @@
           }
  
           this.updateBlockEntityTicker(p_156391_);
@@ -63,7 +63,7 @@
        }
     }
  
-@@ -394,9 +397,14 @@
+@@ -394,9 +_,14 @@
     public CompoundTag getBlockEntityNbtForSaving(BlockPos p_62932_) {
        BlockEntity blockentity = this.getBlockEntity(p_62932_);
        if (blockentity != null && !blockentity.isRemoved()) {
@@ -78,7 +78,7 @@
        } else {
           CompoundTag compoundtag = this.pendingBlockEntities.get(p_62932_);
           if (compoundtag != null) {
-@@ -477,7 +485,7 @@
+@@ -477,7 +_,7 @@
        p_187974_.accept((p_187968_, p_187969_, p_187970_) -> {
           BlockEntity blockentity = this.getBlockEntity(p_187968_, LevelChunk.EntityCreationType.IMMEDIATE);
           if (blockentity != null && p_187970_ != null && blockentity.getType() == p_187969_) {
@@ -87,7 +87,7 @@
           }
        });
     }
-@@ -585,6 +593,7 @@
+@@ -585,6 +_,7 @@
     }
  
     public void clearAllBlockEntities() {
@@ -95,7 +95,7 @@
        this.blockEntities.values().forEach(BlockEntity::setRemoved);
        this.blockEntities.clear();
        this.tickersInLevel.values().forEach(p_187966_ -> p_187966_.rebind(NULL_TICKER));
-@@ -592,6 +601,7 @@
+@@ -592,6 +_,7 @@
     }
  
     public void registerAllBlockEntitiesAfterLevelLoad() {
@@ -103,7 +103,7 @@
        this.blockEntities.values().forEach(p_187988_ -> {
           Level level = this.level;
           if (level instanceof ServerLevel serverlevel) {
-@@ -644,6 +654,41 @@
+@@ -644,6 +_,41 @@
        return new LevelChunk.BoundTickingBlockEntity<>(p_156376_, p_156377_);
     }
  
@@ -145,7 +145,7 @@
     class BoundTickingBlockEntity<T extends BlockEntity> implements TickingBlockEntity {
        private final T blockEntity;
        private final BlockEntityTicker<T> ticker;
-@@ -661,6 +706,7 @@
+@@ -661,6 +_,7 @@
              if (LevelChunk.this.isTicking(blockpos)) {
                 try {
                    ProfilerFiller profilerfiller = LevelChunk.this.level.getProfiler();
@@ -153,7 +153,7 @@
                    profilerfiller.push(this::getType);
                    BlockState blockstate = LevelChunk.this.getBlockState(blockpos);
                    if (this.blockEntity.getType().isValid(blockstate)) {
-@@ -677,6 +723,12 @@
+@@ -677,6 +_,12 @@
                    CrashReport crashreport = CrashReport.forThrowable(throwable, "Ticking block entity");
                    CrashReportCategory crashreportcategory = crashreport.addCategory("Block entity being ticked");
                    this.blockEntity.fillCrashReportCategory(crashreportcategory);
@@ -166,7 +166,7 @@
                    throw new ReportedException(crashreport);
                 }
              }
-@@ -708,6 +760,34 @@
+@@ -708,6 +_,34 @@
        IMMEDIATE,
        QUEUED,
        CHECK;

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/FogRenderer.java
 +++ b/net/minecraft/client/renderer/FogRenderer.java
-@@ -195,6 +195,12 @@
+@@ -195,6 +_,12 @@
           fogBlue = fogBlue * (1.0F - f7) + fogBlue * f9 * f7;
        }
  
@@ -13,7 +13,7 @@
        RenderSystem.clearColor(fogRed, fogGreen, fogBlue, 0.0F);
     }
  
-@@ -271,6 +277,7 @@
+@@ -271,6 +_,7 @@
        RenderSystem.setShaderFogStart(fogrenderer$fogdata.start);
        RenderSystem.setShaderFogEnd(fogrenderer$fogdata.end);
        RenderSystem.setShaderFogShape(fogrenderer$fogdata.shape);

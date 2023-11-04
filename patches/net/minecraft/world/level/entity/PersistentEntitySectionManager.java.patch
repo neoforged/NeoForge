@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
 +++ b/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
-@@ -71,7 +71,16 @@
+@@ -71,7 +_,16 @@
        return this.addEntity(p_157534_, false);
     }
  
@@ -17,7 +17,7 @@
        if (!this.addEntityUuid(p_157539_)) {
           return false;
        } else {
-@@ -101,11 +110,17 @@
+@@ -101,11 +_,17 @@
     }
  
     public void addLegacyChunkEntities(Stream<T> p_157553_) {
@@ -37,7 +37,7 @@
     }
  
     void startTicking(T p_157565_) {
-@@ -228,7 +243,10 @@
+@@ -228,7 +_,10 @@
     private void processPendingLoads() {
        ChunkEntities<T> chunkentities;
        while((chunkentities = this.loadingInbox.poll()) != null) {
@@ -49,7 +49,7 @@
           this.chunkLoadStatuses.put(chunkentities.getPos().toLong(), PersistentEntitySectionManager.ChunkLoadStatus.LOADED);
        }
     }
-@@ -362,11 +380,13 @@
+@@ -362,11 +_,13 @@
  
     class Callback implements EntityInLevelCallback {
        private final T entity;
@@ -63,7 +63,7 @@
           this.currentSectionKey = p_157615_;
           this.currentSection = p_157616_;
        }
-@@ -385,9 +405,11 @@
+@@ -385,9 +_,11 @@
              PersistentEntitySectionManager.this.removeSectionIfEmpty(this.currentSectionKey, this.currentSection);
              EntitySection<T> entitysection = PersistentEntitySectionManager.this.sectionStorage.getOrCreateSection(i);
              entitysection.add(this.entity);

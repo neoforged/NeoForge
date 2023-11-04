@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/Screenshot.java
 +++ b/net/minecraft/client/Screenshot.java
-@@ -54,15 +54,25 @@
+@@ -54,15 +_,25 @@
           file2 = new File(file1, p_92307_);
        }
  

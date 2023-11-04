@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/piston/PistonStructureResolver.java
 +++ b/net/minecraft/world/level/block/piston/PistonStructureResolver.java
-@@ -50,7 +50,7 @@
+@@ -50,7 +_,7 @@
        } else {
           for(int i = 0; i < this.toPush.size(); ++i) {
              BlockPos blockpos = this.toPush.get(i);
@@ -9,7 +9,7 @@
                 return false;
              }
           }
-@@ -59,23 +59,9 @@
+@@ -59,23 +_,9 @@
        }
     }
  
@@ -34,7 +34,7 @@
           return true;
        } else if (!PistonBaseBlock.isPushable(blockstate, this.level, p_60434_, this.pushDirection, false, p_60435_)) {
           return true;
-@@ -88,12 +74,13 @@
+@@ -88,12 +_,13 @@
           if (i + this.toPush.size() > 12) {
              return false;
           } else {
@@ -51,7 +51,7 @@
                    || !PistonBaseBlock.isPushable(blockstate, this.level, blockpos, this.pushDirection, false, this.pushDirection.getOpposite())
                    || blockpos.equals(this.pistonPos)) {
                    break;
-@@ -121,7 +108,7 @@
+@@ -121,7 +_,7 @@
  
                    for(int k = 0; k <= j + l; ++k) {
                       BlockPos blockpos2 = this.toPush.get(k);
@@ -60,7 +60,7 @@
                          return false;
                       }
                    }
-@@ -176,7 +163,7 @@
+@@ -176,7 +_,7 @@
           if (direction.getAxis() != this.pushDirection.getAxis()) {
              BlockPos blockpos = p_60432_.relative(direction);
              BlockState blockstate1 = this.level.getBlockState(blockpos);
