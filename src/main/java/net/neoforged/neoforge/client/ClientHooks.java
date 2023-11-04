@@ -578,19 +578,19 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(event);
     }
 
-    public static boolean onScreenMouseScrollPre(MouseHandler mouseHelper, Screen guiScreen, double scrollDelta) {
+    public static boolean onScreenMouseScrollPre(MouseHandler mouseHelper, Screen guiScreen, double scrollDeltaX, double scrollDeltaY) {
         Window mainWindow = guiScreen.getMinecraft().getWindow();
         double mouseX = mouseHelper.xpos() * (double) mainWindow.getGuiScaledWidth() / (double) mainWindow.getScreenWidth();
         double mouseY = mouseHelper.ypos() * (double) mainWindow.getGuiScaledHeight() / (double) mainWindow.getScreenHeight();
-        var event = new ScreenEvent.MouseScrolled.Pre(guiScreen, mouseX, mouseY, scrollDelta);
+        var event = new ScreenEvent.MouseScrolled.Pre(guiScreen, mouseX, mouseY, scrollDeltaX, scrollDeltaY);
         return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
-    public static void onScreenMouseScrollPost(MouseHandler mouseHelper, Screen guiScreen, double scrollDelta) {
+    public static void onScreenMouseScrollPost(MouseHandler mouseHelper, Screen guiScreen, double scrollDeltaX, double scrollDeltaY) {
         Window mainWindow = guiScreen.getMinecraft().getWindow();
         double mouseX = mouseHelper.xpos() * (double) mainWindow.getGuiScaledWidth() / (double) mainWindow.getScreenWidth();
         double mouseY = mouseHelper.ypos() * (double) mainWindow.getGuiScaledHeight() / (double) mainWindow.getScreenHeight();
-        Event event = new ScreenEvent.MouseScrolled.Post(guiScreen, mouseX, mouseY, scrollDelta);
+        Event event = new ScreenEvent.MouseScrolled.Post(guiScreen, mouseX, mouseY, scrollDeltaX, scrollDeltaY);
         NeoForge.EVENT_BUS.post(event);
     }
 
@@ -637,8 +637,8 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(new InputEvent.MouseButton.Post(button, action, mods));
     }
 
-    public static boolean onMouseScroll(MouseHandler mouseHelper, double scrollDelta) {
-        var event = new InputEvent.MouseScrollingEvent(scrollDelta, mouseHelper.isLeftPressed(), mouseHelper.isMiddlePressed(), mouseHelper.isRightPressed(), mouseHelper.xpos(), mouseHelper.ypos());
+    public static boolean onMouseScroll(MouseHandler mouseHelper, double scrollDeltaX, double scrollDeltaY) {
+        var event = new InputEvent.MouseScrollingEvent(scrollDeltaX, scrollDeltaY, mouseHelper.isLeftPressed(), mouseHelper.isMiddlePressed(), mouseHelper.isRightPressed(), mouseHelper.xpos(), mouseHelper.ypos());
         return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
