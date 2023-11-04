@@ -1,0 +1,54 @@
+--- a/net/minecraft/world/level/block/PointedDripstoneBlock.java
++++ b/net/minecraft/world/level/block/PointedDripstoneBlock.java
+@@ -175,7 +175,6 @@
+ 
+    @VisibleForTesting
+    public static void maybeTransferFluid(BlockState p_221860_, ServerLevel p_221861_, BlockPos p_221862_, float p_221863_) {
+-      if (!(p_221863_ > 0.17578125F) || !(p_221863_ > 0.05859375F)) {
+          if (isStalactiteStartPos(p_221860_, p_221861_, p_221862_)) {
+             Optional<PointedDripstoneBlock.FluidInfo> optional = getFluidAboveStalactite(p_221861_, p_221862_, p_221860_);
+             if (!optional.isEmpty()) {
+@@ -184,14 +183,12 @@
+                if (fluid == Fluids.WATER) {
+                   f = 0.17578125F;
+                } else {
+-                  if (fluid != Fluids.LAVA) {
+-                     return;
+-                  }
+ 
+                   f = 0.05859375F;
+                }
+ 
+-               if (!(p_221863_ >= f)) {
++               net.neoforged.neoforge.fluids.FluidType.DripstoneDripInfo dripInfo = fluid.getFluidType().getDripInfo();
++               if (dripInfo != null && !(p_221863_ >= dripInfo.chance())) {
+                   BlockPos blockpos = findTip(p_221860_, p_221861_, p_221862_, 11, false);
+                   if (blockpos != null) {
+                      if (optional.get().sourceState.is(Blocks.MUD) && fluid == Fluids.WATER) {
+@@ -214,7 +211,6 @@
+                }
+             }
+          }
+-      }
+    }
+ 
+    @Nullable
+@@ -400,7 +396,8 @@
+       double d2 = (double)((float)(p_154073_.getY() + 1) - 0.6875F) - 0.0625;
+       double d3 = (double)p_154073_.getZ() + 0.5 + vec3.z;
+       Fluid fluid = getDripFluid(p_154072_, p_154075_);
+-      ParticleOptions particleoptions = fluid.is(FluidTags.LAVA) ? ParticleTypes.DRIPPING_DRIPSTONE_LAVA : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
++      ParticleOptions particleoptions = fluid.getFluidType().getDripInfo() != null ? fluid.getFluidType().getDripInfo().dripParticle() : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
++      if (particleoptions != null)
+       p_154072_.addParticle(particleoptions, d1, d2, d3, 0.0, 0.0, 0.0);
+    }
+ 
+@@ -552,7 +549,7 @@
+    }
+ 
+    private static boolean canFillCauldron(Fluid p_154159_) {
+-      return p_154159_ == Fluids.LAVA || p_154159_ == Fluids.WATER;
++      return p_154159_.getFluidType().getDripInfo() != null;
+    }
+ 
+    private static boolean canGrow(BlockState p_154141_, BlockState p_154142_) {
