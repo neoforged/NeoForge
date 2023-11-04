@@ -52,16 +52,16 @@
 -            this.checkBurnOut(p_221161_, p_221162_.above(), 250 + k, p_221163_, i);
 -            this.checkBurnOut(p_221161_, p_221162_.north(), 300 + k, p_221163_, i);
 -            this.checkBurnOut(p_221161_, p_221162_.south(), 300 + k, p_221163_, i);
-+            this.tryCatchFire(p_221161_, p_221162_.east(), 300 + k, p_221163_, i, Direction.WEST);
-+            this.tryCatchFire(p_221161_, p_221162_.west(), 300 + k, p_221163_, i, Direction.EAST);
-+            this.tryCatchFire(p_221161_, p_221162_.below(), 250 + k, p_221163_, i, Direction.UP);
-+            this.tryCatchFire(p_221161_, p_221162_.above(), 250 + k, p_221163_, i, Direction.DOWN);
-+            this.tryCatchFire(p_221161_, p_221162_.north(), 300 + k, p_221163_, i, Direction.SOUTH);
-+            this.tryCatchFire(p_221161_, p_221162_.south(), 300 + k, p_221163_, i, Direction.NORTH);
++            this.checkBurnOut(p_221161_, p_221162_.east(), 300 + k, p_221163_, i, Direction.WEST);
++            this.checkBurnOut(p_221161_, p_221162_.west(), 300 + k, p_221163_, i, Direction.EAST);
++            this.checkBurnOut(p_221161_, p_221162_.below(), 250 + k, p_221163_, i, Direction.UP);
++            this.checkBurnOut(p_221161_, p_221162_.above(), 250 + k, p_221163_, i, Direction.DOWN);
++            this.checkBurnOut(p_221161_, p_221162_.north(), 300 + k, p_221163_, i, Direction.SOUTH);
++            this.checkBurnOut(p_221161_, p_221162_.south(), 300 + k, p_221163_, i, Direction.NORTH);
              BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
              for(int l = -1; l <= 1; ++l) {
-@@ -229,32 +_,31 @@
+@@ -229,33 +_,32 @@
           || p_53429_.isRainingAt(p_53430_.south());
     }
  
@@ -81,31 +81,26 @@
  
 -   private void checkBurnOut(Level p_221151_, BlockPos p_221152_, int p_221153_, RandomSource p_221154_, int p_221155_) {
 -      int i = this.getBurnOdds(p_221151_.getBlockState(p_221152_));
--      if (p_221154_.nextInt(p_221153_) < i) {
--         BlockState blockstate = p_221151_.getBlockState(p_221152_);
--         if (p_221154_.nextInt(p_221155_ + 10) < 5 && !p_221151_.isRainingAt(p_221152_)) {
--            int j = Math.min(p_221155_ + p_221154_.nextInt(5) / 4, 15);
--            p_221151_.setBlock(p_221152_, this.getStateWithAge(p_221151_, p_221152_, j), 3);
--         } else {
--            p_221151_.removeBlock(p_221152_, false);
--         }
-+   private void tryCatchFire(Level p_53432_, BlockPos p_53433_, int p_53434_, RandomSource p_53435_, int p_53436_, Direction face) {
-+      int i = p_53432_.getBlockState(p_53433_).getFlammability(p_53432_, p_53433_, face);
-+      if (p_53435_.nextInt(p_53434_) < i) {
-+         BlockState blockstate = p_53432_.getBlockState(p_53433_);
-+         blockstate.onCaughtFire(p_53432_, p_53433_, face, null);
- 
++   private void checkBurnOut(Level p_221151_, BlockPos p_221152_, int p_221153_, RandomSource p_221154_, int p_221155_, Direction face) {
++      int i = p_221151_.getBlockState(p_221152_).getFlammability(p_221151_, p_221152_, face);
+       if (p_221154_.nextInt(p_221153_) < i) {
+          BlockState blockstate = p_221151_.getBlockState(p_221152_);
++         blockstate.onCaughtFire(p_221151_, p_221152_, face, null);
++
+          if (p_221154_.nextInt(p_221155_ + 10) < 5 && !p_221151_.isRainingAt(p_221152_)) {
+             int j = Math.min(p_221155_ + p_221154_.nextInt(5) / 4, 15);
+             p_221151_.setBlock(p_221152_, this.getStateWithAge(p_221151_, p_221152_, j), 3);
+          } else {
+             p_221151_.removeBlock(p_221152_, false);
+          }
+-
 -         Block block = blockstate.getBlock();
 -         if (block instanceof TntBlock) {
 -            TntBlock.explode(p_221151_, p_221152_);
-+         if (p_53435_.nextInt(p_53434_ + 10) < 5 && !p_53432_.isRainingAt(p_53433_)) {
-+            int j = Math.min(p_53434_ + p_53435_.nextInt(5) / 4, 15);
-+            p_53432_.setBlock(p_53433_, this.getStateWithAge(p_53432_, p_53433_, j), 3);
-+         } else {
-+            p_53432_.removeBlock(p_53433_, false);
-          }
+-         }
        }
     }
+ 
 @@ -266,7 +_,7 @@
  
     private boolean isValidFireLocation(BlockGetter p_53486_, BlockPos p_53487_) {
