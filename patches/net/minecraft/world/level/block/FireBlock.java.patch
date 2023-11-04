@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/FireBlock.java
 +++ b/net/minecraft/world/level/block/FireBlock.java
-@@ -123,13 +123,13 @@
+@@ -123,13 +_,13 @@
     protected BlockState getStateForPlacement(BlockGetter p_53471_, BlockPos p_53472_) {
        BlockPos blockpos = p_53472_.below();
        BlockState blockstate = p_53471_.getBlockState(blockpos);
@@ -16,7 +16,7 @@
              }
           }
  
-@@ -150,14 +150,14 @@
+@@ -150,14 +_,14 @@
        p_221161_.scheduleTick(p_221162_, this, getFireTickDelay(p_221161_.random));
        if (p_221161_.getGameRules().getBoolean(GameRules.RULE_DOFIRETICK)) {
           if (!p_221160_.canSurvive(p_221161_, p_221162_)) {
@@ -33,7 +33,7 @@
           } else {
              int j = Math.min(15, i + p_221163_.nextInt(3) / 2);
              if (i != j) {
-@@ -175,7 +175,7 @@
+@@ -175,7 +_,7 @@
                    return;
                 }
  
@@ -42,7 +42,7 @@
                    p_221161_.removeBlock(p_221162_, false);
                    return;
                 }
-@@ -183,12 +183,12 @@
+@@ -183,12 +_,12 @@
  
              boolean flag1 = p_221161_.getBiome(p_221162_).is(BiomeTags.INCREASED_FIRE_BURNOUT);
              int k = flag1 ? -50 : 0;
@@ -61,7 +61,7 @@
              BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
              for(int l = -1; l <= 1; ++l) {
-@@ -229,32 +229,31 @@
+@@ -229,32 +_,31 @@
           || p_53429_.isRainingAt(p_53430_.south());
     }
  
@@ -106,7 +106,7 @@
           }
        }
     }
-@@ -266,7 +265,7 @@
+@@ -266,7 +_,7 @@
  
     private boolean isValidFireLocation(BlockGetter p_53486_, BlockPos p_53487_) {
        for(Direction direction : Direction.values()) {
@@ -115,7 +115,7 @@
              return true;
           }
        }
-@@ -282,7 +281,7 @@
+@@ -282,7 +_,7 @@
  
           for(Direction direction : Direction.values()) {
              BlockState blockstate = p_221157_.getBlockState(p_221158_.relative(direction));
@@ -124,7 +124,7 @@
           }
  
           return i;
-@@ -290,6 +289,7 @@
+@@ -290,6 +_,7 @@
     }
  
     @Override
@@ -132,7 +132,7 @@
     protected boolean canBurn(BlockState p_53489_) {
        return this.getIgniteOdds(p_53489_) > 0;
     }
-@@ -310,8 +310,21 @@
+@@ -310,8 +_,21 @@
     }
  
     private void setFlammable(Block p_53445_, int p_53446_, int p_53447_) {

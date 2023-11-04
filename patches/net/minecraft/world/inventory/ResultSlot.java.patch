@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/ResultSlot.java
 +++ b/net/minecraft/world/inventory/ResultSlot.java
-@@ -46,6 +46,7 @@
+@@ -46,6 +_,7 @@
     protected void checkTakeAchievements(ItemStack p_40185_) {
        if (this.removeCount > 0) {
           p_40185_.onCraftedBy(this.player.level(), this.player, this.removeCount);
@@ -8,7 +8,7 @@
        }
  
        Container container = this.container;
-@@ -59,8 +60,9 @@
+@@ -59,8 +_,9 @@
     @Override
     public void onTake(Player p_150638_, ItemStack p_150639_) {
        this.checkTakeAchievements(p_150639_);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/Shearable.java
 +++ b/net/minecraft/world/entity/Shearable.java
-@@ -2,8 +2,11 @@
+@@ -2,8 +_,11 @@
  
  import net.minecraft.sounds.SoundSource;
  

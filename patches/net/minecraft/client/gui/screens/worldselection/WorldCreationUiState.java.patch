@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/worldselection/WorldCreationUiState.java
 +++ b/net/minecraft/client/gui/screens/worldselection/WorldCreationUiState.java
-@@ -223,11 +223,11 @@
+@@ -223,11 +_,11 @@
     public WorldCreationUiState.WorldTypeEntry getWorldType() {
        return this.worldType;
     }

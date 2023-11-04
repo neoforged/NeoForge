@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/FishingRodItem.java
 +++ b/net/minecraft/world/item/FishingRodItem.java
-@@ -64,4 +64,11 @@
+@@ -64,4 +_,11 @@
     public int getEnchantmentValue() {
        return 1;
     }

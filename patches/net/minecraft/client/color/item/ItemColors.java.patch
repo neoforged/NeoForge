@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/color/item/ItemColors.java
 +++ b/net/minecraft/client/color/item/ItemColors.java
-@@ -23,7 +23,8 @@
+@@ -23,7 +_,8 @@
  @OnlyIn(Dist.CLIENT)
  public class ItemColors {
     private static final int DEFAULT = -1;
@@ -10,7 +10,7 @@
  
     public static ItemColors createDefault(BlockColors p_92684_) {
        ItemColors itemcolors = new ItemColors();
-@@ -92,17 +93,20 @@
+@@ -92,17 +_,20 @@
        itemcolors.register((p_92696_, p_92697_) -> FoliageColor.getMangroveColor(), Blocks.MANGROVE_LEAVES);
        itemcolors.register((p_92693_, p_92694_) -> p_92694_ == 0 ? PotionUtils.getColor(p_92693_) : -1, Items.TIPPED_ARROW);
        itemcolors.register((p_232352_, p_232353_) -> p_232353_ == 0 ? -1 : MapItem.getColor(p_232352_), Items.FILLED_MAP);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
-@@ -140,4 +140,28 @@
+@@ -140,4 +_,28 @@
     public int getLastInteractedSlot() {
        return this.lastInteractedSlot;
     }

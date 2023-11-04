@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/entity/TransientEntitySectionManager.java
 +++ b/net/minecraft/world/level/entity/TransientEntitySectionManager.java
-@@ -82,11 +82,13 @@
+@@ -82,11 +_,13 @@
  
     class Callback implements EntityInLevelCallback {
        private final T entity;
@@ -14,7 +14,7 @@
           this.currentSectionKey = p_157674_;
           this.currentSection = p_157675_;
        }
-@@ -105,6 +107,7 @@
+@@ -105,6 +_,7 @@
              TransientEntitySectionManager.this.removeSectionIfEmpty(this.currentSectionKey, this.currentSection);
              EntitySection<T> entitysection = TransientEntitySectionManager.this.sectionStorage.getOrCreateSection(i);
              entitysection.add(this.entity);
@@ -22,7 +22,7 @@
              this.currentSection = entitysection;
              this.currentSectionKey = i;
              TransientEntitySectionManager.this.callbacks.onSectionChange(this.entity);
-@@ -117,9 +120,10 @@
+@@ -117,9 +_,10 @@
                    TransientEntitySectionManager.this.callbacks.onTickingStart(this.entity);
                 }
              }

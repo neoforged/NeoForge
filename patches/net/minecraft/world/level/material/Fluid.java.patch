@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/material/Fluid.java
 +++ b/net/minecraft/world/level/material/Fluid.java
-@@ -20,7 +20,7 @@
+@@ -20,7 +_,7 @@
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.phys.shapes.VoxelShape;
  
@@ -9,7 +9,7 @@
     public static final IdMapper<FluidState> FLUID_STATE_REGISTRY = new IdMapper<>();
     protected final StateDefinition<Fluid, FluidState> stateDefinition;
     private FluidState defaultFluidState;
-@@ -100,6 +100,13 @@
+@@ -100,6 +_,13 @@
     }
  
     public abstract VoxelShape getShape(FluidState p_76137_, BlockGetter p_76138_, BlockPos p_76139_);

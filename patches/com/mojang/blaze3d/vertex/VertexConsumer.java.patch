@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/vertex/VertexConsumer.java
 +++ b/com/mojang/blaze3d/vertex/VertexConsumer.java
-@@ -14,7 +14,7 @@
+@@ -14,7 +_,7 @@
  import org.lwjgl.system.MemoryStack;
  
  @OnlyIn(Dist.CLIENT)
@@ -9,7 +9,7 @@
     VertexConsumer vertex(double p_85945_, double p_85946_, double p_85947_);
  
     VertexConsumer color(int p_85973_, int p_85974_, int p_85975_, int p_85976_);
-@@ -99,6 +99,10 @@
+@@ -99,6 +_,10 @@
        int p_86003_,
        boolean p_86004_
     ) {
@@ -20,7 +20,7 @@
        float[] afloat = new float[]{p_85998_[0], p_85998_[1], p_85998_[2], p_85998_[3]};
        int[] aint = new int[]{p_86002_[0], p_86002_[1], p_86002_[2], p_86002_[3]};
        int[] aint1 = p_85997_.getVertices();
-@@ -134,11 +138,13 @@
+@@ -134,11 +_,13 @@
                 f5 = afloat[k] * p_86001_;
              }
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -97,10 +97,9 @@
+@@ -97,10 +_,9 @@
        Entity $$11 = this.entity;
        if ($$11 instanceof ItemFrame itemframe && this.tickCount % 10 == 0) {
           ItemStack itemstack = itemframe.getItem();
@@ -14,7 +14,7 @@
                 for(ServerPlayer serverplayer : this.level.players()) {
                    mapitemsaveddata.tickCarriedBy(serverplayer, itemstack);
                    Packet<?> packet = mapitemsaveddata.getUpdatePacket(integer, serverplayer);
-@@ -108,12 +107,13 @@
+@@ -108,12 +_,13 @@
                       serverplayer.connection.send(packet);
                    }
                 }
@@ -29,7 +29,7 @@
        if (this.tickCount % this.updateInterval == 0 || this.entity.hasImpulse || this.entity.getEntityData().isDirty()) {
           if (this.entity.isPassenger()) {
              int i1 = Mth.floor(this.entity.getYRot() * 256.0F / 360.0F);
-@@ -219,6 +219,7 @@
+@@ -219,6 +_,7 @@
     public void removePairing(ServerPlayer p_8535_) {
        this.entity.stopSeenByPlayer(p_8535_);
        p_8535_.connection.send(new ClientboundRemoveEntitiesPacket(this.entity.getId()));
@@ -37,7 +37,7 @@
     }
  
     public void addPairing(ServerPlayer p_8542_) {
-@@ -226,6 +227,7 @@
+@@ -226,6 +_,7 @@
        this.sendPairingData(p_8542_, list::add);
        p_8542_.connection.send(new ClientboundBundlePacket(list));
        this.entity.startSeenByPlayer(p_8542_);

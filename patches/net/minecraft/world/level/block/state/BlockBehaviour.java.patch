@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -104,6 +104,17 @@
+@@ -104,6 +_,17 @@
        this.dynamicShape = p_60452_.dynamicShape;
        this.requiredFeatures = p_60452_.requiredFeatures;
        this.properties = p_60452_;
@@ -18,7 +18,7 @@
     }
  
     @Deprecated
-@@ -145,7 +156,7 @@
+@@ -145,7 +_,7 @@
  
     @Deprecated
     public void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
@@ -27,7 +27,7 @@
           p_60516_.removeBlockEntity(p_60517_);
        }
     }
-@@ -321,13 +332,14 @@
+@@ -321,13 +_,14 @@
        if (f == -1.0F) {
           return 0.0F;
        } else {
@@ -44,7 +44,7 @@
     }
  
     @Deprecated
-@@ -350,8 +362,7 @@
+@@ -350,8 +_,7 @@
  
     public final ResourceLocation getLootTable() {
        if (this.drops == null) {
@@ -54,7 +54,7 @@
        }
  
        return this.drops;
-@@ -373,6 +384,14 @@
+@@ -373,6 +_,14 @@
        return this.properties.destroyTime;
     }
  
@@ -69,7 +69,7 @@
     public abstract static class BlockStateBase extends StateHolder<Block, BlockState> {
        private final int lightEmission;
        private final boolean useShapeForLightOcclusion;
-@@ -506,12 +525,14 @@
+@@ -506,12 +_,14 @@
           return this.useShapeForLightOcclusion;
        }
  
@@ -85,7 +85,7 @@
        }
  
        public boolean ignitedByLava() {
-@@ -524,13 +545,15 @@
+@@ -524,13 +_,15 @@
        }
  
        public MapColor getMapColor(BlockGetter p_285002_, BlockPos p_285293_) {
@@ -103,7 +103,7 @@
        public BlockState mirror(Mirror p_60716_) {
           return this.getBlock().mirror(this.asState(), p_60716_);
        }
-@@ -580,6 +603,8 @@
+@@ -580,6 +_,8 @@
        }
  
        public PushReaction getPistonPushReaction() {
@@ -112,7 +112,7 @@
           return this.pushReaction;
        }
  
-@@ -929,11 +954,12 @@
+@@ -929,11 +_,12 @@
        PushReaction pushReaction = PushReaction.NORMAL;
        boolean spawnTerrainParticles = true;
        NoteBlockInstrument instrument = NoteBlockInstrument.HARP;
@@ -126,7 +126,7 @@
        BlockBehaviour.StatePredicate isRedstoneConductor = (p_284888_, p_284889_, p_284890_) -> p_284888_.isCollisionShapeFullBlock(p_284889_, p_284890_);
        BlockBehaviour.StatePredicate isSuffocating = (p_284885_, p_284886_, p_284887_) -> p_284885_.blocksMotion()
              && p_284885_.isCollisionShapeFullBlock(p_284886_, p_284887_);
-@@ -1059,9 +1085,15 @@
+@@ -1059,9 +_,15 @@
           return this;
        }
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -152,6 +152,10 @@
+@@ -152,6 +_,10 @@
              }
           }
  
@@ -11,7 +11,7 @@
           profilerfiller.incrementCounter("getChunkCacheMiss");
           CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> completablefuture = this.getChunkFutureMainThread(
              p_8360_, p_8361_, p_8362_, p_8363_
-@@ -189,6 +193,7 @@
+@@ -189,6 +_,7 @@
           if (chunkholder == null) {
              return null;
           } else {
@@ -19,7 +19,7 @@
              Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure> either = chunkholder.getFutureIfPresent(ChunkStatus.FULL).getNow(null);
              if (either == null) {
                 return null;
-@@ -385,7 +390,7 @@
+@@ -385,7 +_,7 @@
           for(ServerChunkCache.ChunkAndHolder serverchunkcache$chunkandholder : list) {
              LevelChunk levelchunk1 = serverchunkcache$chunkandholder.chunk;
              ChunkPos chunkpos = levelchunk1.getPos();
@@ -28,7 +28,7 @@
                 levelchunk1.incrementInhabitedTime(j);
                 if (flag2 && (this.spawnEnemies || this.spawnFriendlies) && this.level.getWorldBorder().isWithinBounds(chunkpos)) {
                    NaturalSpawner.spawnForChunk(this.level, levelchunk1, naturalspawner$spawnstate, this.spawnFriendlies, this.spawnEnemies, flag1);
-@@ -464,11 +469,17 @@
+@@ -464,11 +_,17 @@
     }
  
     public <T> void addRegionTicket(TicketType<T> p_8388_, ChunkPos p_8389_, int p_8390_, T p_8391_) {

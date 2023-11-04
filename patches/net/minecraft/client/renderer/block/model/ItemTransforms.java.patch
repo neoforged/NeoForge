@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/ItemTransforms.java
 +++ b/net/minecraft/client/renderer/block/model/ItemTransforms.java
-@@ -21,6 +21,7 @@
+@@ -21,6 +_,7 @@
     public final ItemTransform gui;
     public final ItemTransform ground;
     public final ItemTransform fixed;
@@ -8,7 +8,7 @@
  
     private ItemTransforms() {
        this(
-@@ -44,8 +45,10 @@
+@@ -44,8 +_,10 @@
        this.gui = p_111807_.gui;
        this.ground = p_111807_.ground;
        this.fixed = p_111807_.fixed;
@@ -19,7 +19,7 @@
     public ItemTransforms(
        ItemTransform p_111798_,
        ItemTransform p_111799_,
-@@ -56,6 +59,20 @@
+@@ -56,6 +_,20 @@
        ItemTransform p_111804_,
        ItemTransform p_111805_
     ) {
@@ -40,7 +40,7 @@
        this.thirdPersonLeftHand = p_111798_;
        this.thirdPersonRightHand = p_111799_;
        this.firstPersonLeftHand = p_111800_;
-@@ -64,6 +81,7 @@
+@@ -64,6 +_,7 @@
        this.gui = p_111803_;
        this.ground = p_111804_;
        this.fixed = p_111805_;
@@ -48,7 +48,7 @@
     }
  
     public ItemTransform getTransform(ItemDisplayContext p_270619_) {
-@@ -104,9 +122,23 @@
+@@ -104,9 +_,23 @@
           ItemTransform itemtransform5 = this.getTransform(p_111822_, jsonobject, ItemDisplayContext.GUI);
           ItemTransform itemtransform6 = this.getTransform(p_111822_, jsonobject, ItemDisplayContext.GROUND);
           ItemTransform itemtransform7 = this.getTransform(p_111822_, jsonobject, ItemDisplayContext.FIXED);

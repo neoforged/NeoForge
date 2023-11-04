@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/RailBlock.java
 +++ b/net/minecraft/world/level/block/RailBlock.java
-@@ -51,6 +51,9 @@
+@@ -51,6 +_,9 @@
                    return p_55405_.setValue(SHAPE, RailShape.SOUTH_EAST);
                 case NORTH_EAST:
                    return p_55405_.setValue(SHAPE, RailShape.SOUTH_WEST);

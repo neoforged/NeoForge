@@ -1,6 +1,6 @@
 --- a/net/minecraft/tags/TagBuilder.java
 +++ b/net/minecraft/tags/TagBuilder.java
-@@ -4,7 +4,17 @@
+@@ -4,7 +_,17 @@
  import java.util.List;
  import net.minecraft.resources.ResourceLocation;
  
@@ -19,7 +19,7 @@
     private final List<TagEntry> entries = new ArrayList<>();
  
     public static TagBuilder create() {
-@@ -34,5 +44,21 @@
+@@ -34,5 +_,21 @@
  
     public TagBuilder addOptionalTag(ResourceLocation p_215910_) {
        return this.add(TagEntry.optionalTag(p_215910_));

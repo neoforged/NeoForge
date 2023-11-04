@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/DispenseItemBehavior.java
-@@ -367,7 +367,7 @@
+@@ -367,7 +_,7 @@
              DispensibleContainerItem dispensiblecontaineritem = (DispensibleContainerItem)p_123562_.getItem();
              BlockPos blockpos = p_302435_.pos().relative(p_302435_.state().getValue(DispenserBlock.FACING));
              Level level = p_302435_.level();
@@ -9,7 +9,7 @@
                 dispensiblecontaineritem.checkExtraContent(null, level, p_123562_, blockpos);
                 return new ItemStack(Items.BUCKET);
              } else {
-@@ -430,9 +430,10 @@
+@@ -430,9 +_,10 @@
              } else if (CampfireBlock.canLight(blockstate) || CandleBlock.canLight(blockstate) || CandleCakeBlock.canLight(blockstate)) {
                 level.setBlockAndUpdate(blockpos, blockstate.setValue(BlockStateProperties.LIT, Boolean.valueOf(true)));
                 level.gameEvent(null, GameEvent.BLOCK_CHANGE, blockpos);

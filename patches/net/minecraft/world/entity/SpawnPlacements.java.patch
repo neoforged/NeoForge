@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/SpawnPlacements.java
 +++ b/net/minecraft/world/entity/SpawnPlacements.java
-@@ -43,6 +43,7 @@
+@@ -43,6 +_,7 @@
     private static final Map<EntityType<?>, SpawnPlacements.Data> DATA_BY_TYPE = Maps.newHashMap();
  
     public static <T extends Mob> void register(
@@ -8,7 +8,7 @@
        EntityType<T> p_21755_, SpawnPlacements.Type p_21756_, Heightmap.Types p_21757_, SpawnPlacements.SpawnPredicate<T> p_21758_
     ) {
        SpawnPlacements.Data spawnplacements$data = DATA_BY_TYPE.put(p_21755_, new SpawnPlacements.Data(p_21757_, p_21756_, p_21758_));
-@@ -65,7 +66,8 @@
+@@ -65,7 +_,8 @@
        EntityType<T> p_217075_, ServerLevelAccessor p_217076_, MobSpawnType p_217077_, BlockPos p_217078_, RandomSource p_217079_
     ) {
        SpawnPlacements.Data spawnplacements$data = DATA_BY_TYPE.get(p_217075_);
@@ -18,7 +18,7 @@
     }
  
     static {
-@@ -167,10 +169,35 @@
+@@ -167,10 +_,35 @@
        boolean test(EntityType<T> p_217081_, ServerLevelAccessor p_217082_, MobSpawnType p_217083_, BlockPos p_217084_, RandomSource p_217085_);
     }
  

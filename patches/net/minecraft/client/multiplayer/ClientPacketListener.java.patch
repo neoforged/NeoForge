@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -403,6 +403,7 @@
+@@ -403,6 +_,7 @@
  
        this.minecraft.debugRenderer.clear();
        this.minecraft.player.resetPos();
@@ -8,7 +8,7 @@
        this.minecraft.player.setId(p_105030_.playerId());
        this.level.addEntity(this.minecraft.player);
        this.minecraft.player.input = new KeyboardInput(this.minecraft.options);
-@@ -416,6 +417,7 @@
+@@ -416,6 +_,7 @@
        this.minecraft.player.setPortalCooldown(commonplayerspawninfo.portalCooldown());
        this.minecraft.gameMode.setLocalMode(commonplayerspawninfo.gameType(), commonplayerspawninfo.previousGameType());
        this.minecraft.options.setServerRenderDistance(p_105030_.chunkRadius());
@@ -16,7 +16,7 @@
        this.chatSession = null;
        this.lastSeenMessages = new LastSeenMessagesTracker(20);
        this.messageSignatureCache = MessageSignatureCache.createDefault();
-@@ -1110,7 +1112,9 @@
+@@ -1110,7 +_,9 @@
           localplayer1.getAttributes().assignValues(localplayer.getAttributes());
        }
  
@@ -26,7 +26,7 @@
        this.level.addEntity(localplayer1);
        localplayer1.setYRot(-180.0F);
        localplayer1.input = new KeyboardInput(this.minecraft.options);
-@@ -1230,10 +1234,7 @@
+@@ -1230,10 +_,7 @@
        PacketUtils.ensureRunningOnSameThread(p_104976_, this, this.minecraft);
        BlockPos blockpos = p_104976_.getPos();
        this.minecraft.level.getBlockEntity(blockpos, p_104976_.getType()).ifPresent(p_205557_ -> {
@@ -38,7 +38,7 @@
  
           if (p_205557_ instanceof CommandBlockEntity && this.minecraft.screen instanceof CommandBlockEditScreen) {
              ((CommandBlockEditScreen)this.minecraft.screen).updateGui();
-@@ -1395,7 +1396,9 @@
+@@ -1395,7 +_,9 @@
     @Override
     public void handleCommands(ClientboundCommandsPacket p_104990_) {
        PacketUtils.ensureRunningOnSameThread(p_104990_, this, this.minecraft);
@@ -49,7 +49,7 @@
     }
  
     @Override
-@@ -1417,6 +1420,7 @@
+@@ -1417,6 +_,7 @@
        ClientRecipeBook clientrecipebook = this.minecraft.player.getRecipeBook();
        clientrecipebook.setupCollections(this.recipeManager.getRecipes(), this.minecraft.level.registryAccess());
        this.minecraft.populateSearchTree(SearchRegistry.RECIPE_COLLECTIONS, clientrecipebook.getCollections());
@@ -57,7 +57,7 @@
     }
  
     @Override
-@@ -1523,7 +1527,8 @@
+@@ -1523,7 +_,8 @@
           Blocks.rebuildCache();
        }
  
@@ -67,7 +67,7 @@
     }
  
     @Override
-@@ -1855,7 +1860,7 @@
+@@ -1855,7 +_,7 @@
     }
  
     @Override
@@ -76,7 +76,7 @@
        if (p_295851_ instanceof PathfindingDebugPayload pathfindingdebugpayload) {
           this.minecraft
              .debugRenderer
-@@ -1922,11 +1927,15 @@
+@@ -1922,11 +_,15 @@
              .gameEventListenerRenderer
              .trackListener(gameeventlistenerdebugpayload.listenerPos(), gameeventlistenerdebugpayload.listenerRange());
        } else {
@@ -94,7 +94,7 @@
        LOGGER.warn("Unknown custom packet payload: {}", p_294389_.id());
     }
  
-@@ -2302,6 +2311,8 @@
+@@ -2302,6 +_,8 @@
     }
  
     public void sendChat(String p_249888_) {
@@ -103,7 +103,7 @@
        Instant instant = Instant.now();
        long i = Crypt.SaltSupplier.getLong();
        LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2311,6 +2322,7 @@
+@@ -2311,6 +_,7 @@
     }
  
     public void sendCommand(String p_250092_) {

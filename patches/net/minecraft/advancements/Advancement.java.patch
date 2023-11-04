@@ -1,6 +1,6 @@
 --- a/net/minecraft/advancements/Advancement.java
 +++ b/net/minecraft/advancements/Advancement.java
-@@ -72,7 +72,18 @@
+@@ -72,7 +_,18 @@
        return jsonobject;
     }
  
@@ -19,7 +19,7 @@
        Optional<ResourceLocation> optional = p_301286_.has("parent")
           ? Optional.of(new ResourceLocation(GsonHelper.getAsString(p_301286_, "parent")))
           : Optional.empty();
-@@ -121,7 +132,7 @@
+@@ -121,7 +_,7 @@
        return this.parent.isEmpty();
     }
  

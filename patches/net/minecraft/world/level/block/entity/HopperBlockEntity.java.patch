@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -131,7 +131,8 @@
+@@ -131,7 +_,8 @@
        return true;
     }
  
@@ -10,7 +10,7 @@
        Container container = getAttachedContainer(p_155563_, p_155564_, p_155565_);
        if (container == null) {
           return false;
-@@ -176,6 +177,8 @@
+@@ -176,6 +_,8 @@
     }
  
     public static boolean suckInItems(Level p_155553_, Hopper p_155554_) {
@@ -19,7 +19,7 @@
        Container container = getSourceContainer(p_155553_, p_155554_);
        if (container != null) {
           Direction direction = Direction.DOWN;
-@@ -421,5 +424,14 @@
+@@ -421,5 +_,14 @@
     @Override
     protected AbstractContainerMenu createMenu(int p_59312_, Inventory p_59313_) {
        return new HopperMenu(p_59312_, p_59313_, this);

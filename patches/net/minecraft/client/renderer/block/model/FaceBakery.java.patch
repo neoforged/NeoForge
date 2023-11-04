@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/FaceBakery.java
 +++ b/net/minecraft/client/renderer/block/model/FaceBakery.java
-@@ -59,7 +59,14 @@
+@@ -59,7 +_,14 @@
           this.recalculateWinding(aint, direction);
        }
  

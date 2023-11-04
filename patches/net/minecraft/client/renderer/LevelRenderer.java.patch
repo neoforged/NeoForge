@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/LevelRenderer.java
 +++ b/net/minecraft/client/renderer/LevelRenderer.java
-@@ -246,6 +246,8 @@
+@@ -246,6 +_,8 @@
     }
  
     private void renderSnowAndRain(LightTexture p_109704_, float p_109705_, double p_109706_, double p_109707_, double p_109708_) {
@@ -9,7 +9,7 @@
        float f = this.minecraft.level.getRainLevel(p_109705_);
        if (!(f <= 0.0F)) {
           p_109704_.turnOnLightLayer();
-@@ -397,6 +399,8 @@
+@@ -397,6 +_,8 @@
     }
  
     public void tickRain(Camera p_109694_) {
@@ -18,7 +18,7 @@
        float f = this.minecraft.level.getRainLevel(1.0F) / (Minecraft.useFancyGraphics() ? 1.0F : 2.0F);
        if (!(f <= 0.0F)) {
           RandomSource randomsource = RandomSource.create((long)this.ticks * 312987231L);
-@@ -963,9 +967,11 @@
+@@ -963,9 +_,11 @@
        RenderSystem.clear(16640, Minecraft.ON_OSX);
        float f = p_109605_.getRenderDistance();
        boolean flag1 = this.minecraft.level.effects().isFoggyAt(Mth.floor(d0), Mth.floor(d1)) || this.minecraft.gui.getBossOverlay().shouldCreateWorldFog();
@@ -30,7 +30,7 @@
        profilerfiller.popPush("fog");
        FogRenderer.setupFog(p_109604_, FogRenderer.FogMode.FOG_TERRAIN, Math.max(f, 32.0F), flag1, p_109601_);
        profilerfiller.popPush("terrain_setup");
-@@ -974,7 +980,9 @@
+@@ -974,7 +_,9 @@
        this.compileSections(p_109604_);
        profilerfiller.popPush("terrain");
        this.renderSectionLayer(RenderType.solid(), p_109600_, d0, d1, d2, p_254120_);
@@ -40,7 +40,7 @@
        this.renderSectionLayer(RenderType.cutout(), p_109600_, d0, d1, d2, p_254120_);
        if (this.level.effects().constantAmbientLight()) {
           Lighting.setupNetherLevel(p_109600_.last().pose());
-@@ -1028,6 +1036,9 @@
+@@ -1028,6 +_,9 @@
                    int i = entity.getTeamColor();
                    outlinebuffersource.setColor(FastColor.ARGB32.red(i), FastColor.ARGB32.green(i), FastColor.ARGB32.blue(i), 255);
                 } else {
@@ -50,7 +50,7 @@
                    multibuffersource = multibuffersource$buffersource;
                 }
  
-@@ -1042,12 +1053,14 @@
+@@ -1042,12 +_,14 @@
        multibuffersource$buffersource.endBatch(RenderType.entityCutout(TextureAtlas.LOCATION_BLOCKS));
        multibuffersource$buffersource.endBatch(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS));
        multibuffersource$buffersource.endBatch(RenderType.entitySmoothCutout(TextureAtlas.LOCATION_BLOCKS));
@@ -65,7 +65,7 @@
                 BlockPos blockpos4 = blockentity1.getBlockPos();
                 MultiBufferSource multibuffersource1 = multibuffersource$buffersource;
                 p_109600_.pushPose();
-@@ -1069,6 +1082,9 @@
+@@ -1069,6 +_,9 @@
                       };
                    }
                 }
@@ -75,7 +75,7 @@
  
                 this.blockEntityRenderDispatcher.render(blockentity1, p_109601_, p_109600_, multibuffersource1);
                 p_109600_.popPose();
-@@ -1078,9 +1094,13 @@
+@@ -1078,9 +_,13 @@
  
        synchronized(this.globalBlockEntities) {
           for(BlockEntity blockentity : this.globalBlockEntities) {
@@ -89,7 +89,7 @@
              this.blockEntityRenderDispatcher.render(blockentity, p_109601_, p_109600_, multibuffersource$buffersource);
              p_109600_.popPose();
           }
-@@ -1103,6 +1123,7 @@
+@@ -1103,6 +_,7 @@
           this.minecraft.getMainRenderTarget().bindWrite(false);
        }
  
@@ -97,7 +97,7 @@
        profilerfiller.popPush("destroyProgress");
  
        for(Entry<SortedSet<BlockDestructionProgress>> entry : this.destructionProgress.long2ObjectEntrySet()) {
-@@ -1123,7 +1144,8 @@
+@@ -1123,7 +_,8 @@
                    posestack$pose1.normal(),
                    1.0F
                 );
@@ -107,7 +107,7 @@
                 p_109600_.popPose();
              }
           }
-@@ -1135,10 +1157,13 @@
+@@ -1135,10 +_,13 @@
           profilerfiller.popPush("outline");
           BlockPos blockpos1 = ((BlockHitResult)hitresult).getBlockPos();
           BlockState blockstate = this.level.getBlockState(blockpos1);
@@ -121,7 +121,7 @@
        }
  
        this.minecraft.debugRenderer.render(p_109600_, multibuffersource$buffersource, d0, d1, d2);
-@@ -1170,7 +1195,8 @@
+@@ -1170,7 +_,8 @@
           this.particlesTarget.copyDepthFrom(this.minecraft.getMainRenderTarget());
           RenderStateShard.PARTICLES_TARGET.setupRenderState();
           profilerfiller.popPush("particles");
@@ -131,7 +131,7 @@
           RenderStateShard.PARTICLES_TARGET.clearRenderState();
        } else {
           profilerfiller.popPush("translucent");
-@@ -1184,7 +1210,8 @@
+@@ -1184,7 +_,8 @@
           profilerfiller.popPush("string");
           this.renderSectionLayer(RenderType.tripwire(), p_109600_, d0, d1, d2, p_254120_);
           profilerfiller.popPush("particles");
@@ -141,7 +141,7 @@
        }
  
        posestack.pushPose();
-@@ -1208,6 +1235,7 @@
+@@ -1208,6 +_,7 @@
           RenderStateShard.WEATHER_TARGET.setupRenderState();
           profilerfiller.popPush("weather");
           this.renderSnowAndRain(p_109606_, p_109601_, d0, d1, d2);
@@ -149,7 +149,7 @@
           this.renderWorldBorder(p_109604_);
           RenderStateShard.WEATHER_TARGET.clearRenderState();
           this.transparencyChain.process(p_109601_);
-@@ -1216,6 +1244,7 @@
+@@ -1216,6 +_,7 @@
           RenderSystem.depthMask(false);
           profilerfiller.popPush("weather");
           this.renderSnowAndRain(p_109606_, p_109601_, d0, d1, d2);
@@ -157,7 +157,7 @@
           this.renderWorldBorder(p_109604_);
           RenderSystem.depthMask(true);
        }
-@@ -1367,6 +1396,7 @@
+@@ -1367,6 +_,7 @@
        shaderinstance.clear();
        VertexBuffer.unbind();
        this.minecraft.getProfiler().pop();
@@ -165,7 +165,7 @@
        p_294513_.clearRenderState();
     }
  
-@@ -1621,6 +1651,8 @@
+@@ -1621,6 +_,8 @@
     }
  
     public void renderSky(PoseStack p_202424_, Matrix4f p_254034_, float p_202426_, Camera p_202427_, boolean p_202428_, Runnable p_202429_) {
@@ -174,7 +174,7 @@
        p_202429_.run();
        if (!p_202428_) {
           FogType fogtype = p_202427_.getFluidInCamera();
-@@ -1745,6 +1777,8 @@
+@@ -1745,6 +_,8 @@
     }
  
     public void renderClouds(PoseStack p_254145_, Matrix4f p_254537_, float p_254364_, double p_253843_, double p_253663_, double p_253795_) {
@@ -183,7 +183,7 @@
        float f = this.level.effects().getCloudHeight();
        if (!Float.isNaN(f)) {
           RenderSystem.disableCull();
-@@ -2052,7 +2086,7 @@
+@@ -2052,7 +_,7 @@
              boolean flag = false;
              if (this.minecraft.options.prioritizeChunkUpdates().get() == PrioritizeChunkUpdates.NEARBY) {
                 BlockPos blockpos1 = sectionrenderdispatcher$rendersection.getOrigin().offset(8, 8, 8);
@@ -192,7 +192,7 @@
              } else if (this.minecraft.options.prioritizeChunkUpdates().get() == PrioritizeChunkUpdates.PLAYER_AFFECTED) {
                 flag = sectionrenderdispatcher$rendersection.isDirtyFromPlayer();
              }
-@@ -2565,7 +2599,23 @@
+@@ -2565,7 +_,23 @@
        this.viewArea.setDirty(p_109502_, p_109503_, p_109504_, p_109505_);
     }
  
@@ -216,7 +216,7 @@
        SoundInstance soundinstance = this.playingRecords.get(p_109516_);
        if (soundinstance != null) {
           this.minecraft.getSoundManager().stop(soundinstance);
-@@ -2573,7 +2623,7 @@
+@@ -2573,7 +_,7 @@
        }
  
        if (p_109515_ != null) {
@@ -225,7 +225,7 @@
           if (recorditem != null) {
              this.minecraft.gui.setNowPlaying(recorditem.getDisplayName());
           }
-@@ -2750,7 +2800,7 @@
+@@ -2750,7 +_,7 @@
           case 1010:
              Item item = Item.byId(p_234307_);
              if (item instanceof RecordItem recorditem) {
@@ -234,7 +234,7 @@
              }
              break;
           case 1011:
-@@ -3032,11 +3082,8 @@
+@@ -3032,11 +_,8 @@
           case 2001:
              BlockState blockstate1 = Block.stateById(p_234307_);
              if (!blockstate1.isAir()) {
@@ -248,7 +248,7 @@
              }
  
              this.level.addDestroyBlockEffect(p_234306_, blockstate1);
-@@ -3367,7 +3414,7 @@
+@@ -3367,7 +_,7 @@
        } else {
           int i = p_109538_.getBrightness(LightLayer.SKY, p_109540_);
           int j = p_109538_.getBrightness(LightLayer.BLOCK, p_109540_);

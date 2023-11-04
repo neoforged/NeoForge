@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/ItemModelShaper.java
 +++ b/net/minecraft/client/renderer/ItemModelShaper.java
-@@ -24,6 +24,7 @@
+@@ -24,6 +_,7 @@
  
     public BakedModel getItemModel(ItemStack p_109407_) {
        BakedModel bakedmodel = this.getItemModel(p_109407_.getItem());

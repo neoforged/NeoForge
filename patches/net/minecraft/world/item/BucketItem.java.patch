@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BucketItem.java
 +++ b/net/minecraft/world/item/BucketItem.java
-@@ -31,9 +31,21 @@
+@@ -31,9 +_,21 @@
  public class BucketItem extends Item implements DispensibleContainerItem {
     private final Fluid content;
  
@@ -22,7 +22,7 @@
     }
  
     @Override
-@@ -42,6 +54,8 @@
+@@ -42,6 +_,8 @@
        BlockHitResult blockhitresult = getPlayerPOVHitResult(
           p_40703_, p_40704_, this.content == Fluids.EMPTY ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE
        );
@@ -31,7 +31,7 @@
        if (blockhitresult.getType() == HitResult.Type.MISS) {
           return InteractionResultHolder.pass(itemstack);
        } else if (blockhitresult.getType() != HitResult.Type.BLOCK) {
-@@ -59,7 +73,7 @@
+@@ -59,7 +_,7 @@
                 ItemStack itemstack2 = bucketpickup.pickupBlock(p_40704_, p_40703_, blockpos, blockstate1);
                 if (!itemstack2.isEmpty()) {
                    p_40704_.awardStat(Stats.ITEM_USED.get(this));
@@ -40,7 +40,7 @@
                    p_40703_.gameEvent(p_40704_, GameEvent.FLUID_PICKUP, blockpos);
                    ItemStack itemstack1 = ItemUtils.createFilledResult(itemstack, p_40704_, itemstack2);
                    if (!p_40703_.isClientSide) {
-@@ -73,8 +87,8 @@
+@@ -73,8 +_,8 @@
              return InteractionResultHolder.fail(itemstack);
           } else {
              BlockState blockstate = p_40703_.getBlockState(blockpos);
@@ -51,7 +51,7 @@
                 this.checkExtraContent(p_40704_, p_40703_, itemstack, blockpos2);
                 if (p_40704_ instanceof ServerPlayer) {
                    CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer)p_40704_, blockpos2, itemstack);
-@@ -98,24 +112,29 @@
+@@ -98,24 +_,29 @@
     }
  
     @Override
@@ -89,7 +89,7 @@
                    && liquidblockcontainer.canPlaceLiquid(p_150716_, p_150717_, p_150718_, blockstate, this.content)) {
                    break label70;
                 }
-@@ -128,8 +147,12 @@
+@@ -128,8 +_,12 @@
           }
  
           boolean flag1 = flag2;
@@ -103,7 +103,7 @@
           } else if (p_150717_.dimensionType().ultraWarm() && this.content.is(FluidTags.WATER)) {
              int l = p_150718_.getX();
              int i = p_150718_.getY();
-@@ -149,13 +172,13 @@
+@@ -149,13 +_,13 @@
  
              return true;
           } else {
@@ -119,7 +119,7 @@
                 p_150717_.destroyBlock(p_150718_, true);
              }
  
-@@ -170,8 +193,25 @@
+@@ -170,8 +_,25 @@
     }
  
     protected void playEmptySound(@Nullable Player p_40696_, LevelAccessor p_40697_, BlockPos p_40698_) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/LootDataType.java
 +++ b/net/minecraft/world/level/storage/loot/LootDataType.java
-@@ -15,19 +15,36 @@
+@@ -15,19 +_,36 @@
  import net.minecraft.world.level.storage.loot.predicates.LootItemConditions;
  import org.slf4j.Logger;
  
@@ -38,7 +38,7 @@
     }
  
     public String directory() {
-@@ -39,9 +56,16 @@
+@@ -39,9 +_,16 @@
     }
  
     public Optional<T> deserialize(ResourceLocation p_279253_, JsonElement p_279330_) {

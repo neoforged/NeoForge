@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/ForcedChunksSavedData.java
 +++ b/net/minecraft/world/level/ForcedChunksSavedData.java
-@@ -24,16 +24,32 @@
+@@ -24,16 +_,32 @@
     }
  
     public static ForcedChunksSavedData load(CompoundTag p_151484_) {

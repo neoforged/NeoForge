@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/LevelSettings.java
 +++ b/net/minecraft/world/level/LevelSettings.java
-@@ -11,10 +11,14 @@
+@@ -11,10 +_,14 @@
     private final boolean allowCommands;
     private final GameRules gameRules;
     private final WorldDataConfiguration dataConfiguration;
@@ -15,7 +15,7 @@
        this.levelName = p_250485_;
        this.gameType = p_250207_;
        this.hardcore = p_251631_;
-@@ -22,6 +26,7 @@
+@@ -22,6 +_,7 @@
        this.allowCommands = p_248961_;
        this.gameRules = p_248536_;
        this.dataConfiguration = p_249797_;
@@ -23,7 +23,7 @@
     }
  
     public static LevelSettings parse(Dynamic<?> p_46925_, WorldDataConfiguration p_251697_) {
-@@ -33,7 +38,8 @@
+@@ -33,7 +_,8 @@
           p_46925_.get("Difficulty").asNumber().map(p_46928_ -> Difficulty.byId(p_46928_.byteValue())).result().orElse(Difficulty.NORMAL),
           p_46925_.get("allowCommands").asBoolean(gametype == GameType.CREATIVE),
           new GameRules(p_46925_.get("GameRules")),
@@ -33,7 +33,7 @@
        );
     }
  
-@@ -66,18 +72,25 @@
+@@ -66,18 +_,25 @@
     }
  
     public LevelSettings withGameType(GameType p_46923_) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/Direction.java
 +++ b/net/minecraft/core/Direction.java
-@@ -325,6 +325,22 @@
+@@ -325,6 +_,22 @@
        return direction;
     }
  

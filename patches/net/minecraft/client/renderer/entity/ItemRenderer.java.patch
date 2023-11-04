@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/ItemRenderer.java
 +++ b/net/minecraft/client/renderer/entity/ItemRenderer.java
-@@ -67,7 +67,7 @@
+@@ -67,7 +_,7 @@
     public ItemRenderer(Minecraft p_266926_, TextureManager p_266774_, ModelManager p_266850_, ItemColors p_267016_, BlockEntityWithoutLevelRenderer p_267049_) {
        this.minecraft = p_266926_;
        this.textureManager = p_266774_;
@@ -9,7 +9,7 @@
        this.blockEntityRenderer = p_267049_;
  
        for(Item item : BuiltInRegistries.ITEM) {
-@@ -117,7 +117,7 @@
+@@ -117,7 +_,7 @@
              }
           }
  
@@ -18,7 +18,7 @@
           p_115147_.translate(-0.5F, -0.5F, -0.5F);
           if (!p_115151_.isCustomRenderer() && (!p_115144_.is(Items.TRIDENT) || flag)) {
              boolean flag1;
-@@ -127,8 +127,8 @@
+@@ -127,8 +_,8 @@
              } else {
                 flag1 = true;
              }
@@ -29,7 +29,7 @@
              VertexConsumer vertexconsumer;
              if (hasAnimatedTexture(p_115144_) && p_115144_.hasFoil()) {
                 p_115147_.pushPose();
-@@ -152,9 +152,11 @@
+@@ -152,9 +_,11 @@
                 vertexconsumer = getFoilBuffer(p_115148_, rendertype, true, p_115144_.hasFoil());
              }
  
@@ -43,7 +43,7 @@
           }
  
           p_115147_.popPose();
-@@ -216,7 +218,7 @@
+@@ -216,7 +_,7 @@
           float f = (float)(i >> 16 & 0xFF) / 255.0F;
           float f1 = (float)(i >> 8 & 0xFF) / 255.0F;
           float f2 = (float)(i & 0xFF) / 255.0F;
@@ -52,7 +52,7 @@
        }
     }
  
-@@ -269,5 +271,9 @@
+@@ -269,5 +_,9 @@
     @Override
     public void onResourceManagerReload(ResourceManager p_115105_) {
        this.itemModelShaper.rebuildCache();

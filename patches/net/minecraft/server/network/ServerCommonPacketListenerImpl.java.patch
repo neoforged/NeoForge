@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -68,6 +68,11 @@
+@@ -68,6 +_,11 @@
  
     @Override
     public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) {

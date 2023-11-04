@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/ShapelessRecipe.java
 +++ b/net/minecraft/world/item/crafting/ShapelessRecipe.java
-@@ -19,12 +19,14 @@
+@@ -19,12 +_,14 @@
     final CraftingBookCategory category;
     final ItemStack result;
     final NonNullList<Ingredient> ingredients;
@@ -15,7 +15,7 @@
     }
  
     @Override
-@@ -54,17 +56,20 @@
+@@ -54,17 +_,20 @@
  
     public boolean matches(CraftingContainer p_44262_, Level p_44263_) {
        StackedContents stackedcontents = new StackedContents();
@@ -37,7 +37,7 @@
     }
  
     public ItemStack assemble(CraftingContainer p_44260_, RegistryAccess p_266797_) {
-@@ -77,6 +82,7 @@
+@@ -77,6 +_,7 @@
     }
  
     public static class Serializer implements RecipeSerializer<ShapelessRecipe> {
@@ -45,7 +45,7 @@
        private static final Codec<ShapelessRecipe> CODEC = RecordCodecBuilder.create(
           p_300958_ -> p_300958_.group(
                    ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(p_301127_ -> p_301127_.group),
-@@ -87,14 +93,13 @@
+@@ -87,14 +_,13 @@
                       .fieldOf("ingredients")
                       .flatXmap(
                          p_301021_ -> {

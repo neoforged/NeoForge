@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ChorusFruitItem.java
 +++ b/net/minecraft/world/item/ChorusFruitItem.java
-@@ -38,8 +38,10 @@
+@@ -38,8 +_,10 @@
              }
  
              Vec3 vec3 = p_40714_.position();

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
-@@ -229,6 +229,8 @@
+@@ -229,6 +_,8 @@
              ItemStack itemstack1 = p_150438_.get();
              this.remoteSlots.set(p_150436_, itemstack1);
              if (this.synchronizer != null) {
@@ -9,7 +9,7 @@
                 this.synchronizer.sendSlotChange(this, p_150436_, itemstack1);
              }
           }
-@@ -404,6 +406,7 @@
+@@ -404,6 +_,7 @@
              ItemStack itemstack10 = this.getCarried();
              p_150434_.updateTutorialInventoryAction(itemstack10, slot7.getItem(), clickaction);
              if (!this.tryItemClickBehaviourOverride(p_150434_, clickaction, slot7, itemstack9, itemstack10)) {
@@ -17,7 +17,7 @@
                 if (itemstack9.isEmpty()) {
                    if (!itemstack10.isEmpty()) {
                       int i3 = clickaction == ClickAction.PRIMARY ? itemstack10.getCount() : 1;
-@@ -607,14 +610,15 @@
+@@ -607,14 +_,15 @@
              ItemStack itemstack = slot.getItem();
              if (!itemstack.isEmpty() && ItemStack.isSameItemSameTags(p_38904_, itemstack)) {
                 int j = itemstack.getCount() + p_38904_.getCount();
@@ -37,7 +37,7 @@
                    slot.setChanged();
                    flag = true;
                 }
-@@ -701,7 +705,7 @@
+@@ -701,7 +_,7 @@
        return switch(p_279288_) {
           case 0 -> Mth.floor((float)p_279172_.getCount() / (float)p_279393_.size());
           case 1 -> 1;

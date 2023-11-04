@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/material/FluidState.java
 +++ b/net/minecraft/world/level/material/FluidState.java
-@@ -21,7 +21,7 @@
+@@ -21,7 +_,7 @@
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.phys.shapes.VoxelShape;
  
@@ -9,7 +9,7 @@
     public static final Codec<FluidState> CODEC = codec(BuiltInRegistries.FLUID.byNameCodec(), Fluid::defaultFluidState).stable();
     public static final int AMOUNT_MAX = 9;
     public static final int AMOUNT_FULL = 8;
-@@ -113,6 +113,7 @@
+@@ -113,6 +_,7 @@
        return this.getType() == p_192918_;
     }
  

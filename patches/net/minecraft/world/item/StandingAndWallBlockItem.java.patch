@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/StandingAndWallBlockItem.java
 +++ b/net/minecraft/world/item/StandingAndWallBlockItem.java
-@@ -50,4 +50,9 @@
+@@ -50,4 +_,9 @@
        super.registerBlocks(p_43252_, p_43253_);
        p_43252_.put(this.wallBlock, p_43253_);
     }

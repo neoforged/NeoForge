@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/loot/EntityLootSubProvider.java
 +++ b/net/minecraft/data/loot/EntityLootSubProvider.java
-@@ -56,6 +56,10 @@
+@@ -56,6 +_,10 @@
  
     public abstract void generate();
  
@@ -11,7 +11,7 @@
     @Override
     public void generate(BiConsumer<ResourceLocation, LootTable.Builder> p_251751_) {
        this.generate();
-@@ -111,7 +115,7 @@
+@@ -111,7 +_,7 @@
        }
     }
  

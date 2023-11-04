@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/MilkBucketItem.java
 +++ b/net/minecraft/world/item/MilkBucketItem.java
-@@ -18,6 +18,7 @@
+@@ -18,6 +_,7 @@
  
     @Override
     public ItemStack finishUsingItem(ItemStack p_42923_, Level p_42924_, LivingEntity p_42925_) {
@@ -8,7 +8,7 @@
        if (p_42925_ instanceof ServerPlayer serverplayer) {
           CriteriaTriggers.CONSUME_ITEM.trigger(serverplayer, p_42923_);
           serverplayer.awardStat(Stats.ITEM_USED.get(this));
-@@ -27,10 +28,6 @@
+@@ -27,10 +_,6 @@
           p_42923_.shrink(1);
        }
  
@@ -19,7 +19,7 @@
        return p_42923_.isEmpty() ? new ItemStack(Items.BUCKET) : p_42923_;
     }
  
-@@ -47,5 +44,10 @@
+@@ -47,5 +_,10 @@
     @Override
     public InteractionResultHolder<ItemStack> use(Level p_42927_, Player p_42928_, InteractionHand p_42929_) {
        return ItemUtils.startUsingInstantly(p_42927_, p_42928_, p_42929_);

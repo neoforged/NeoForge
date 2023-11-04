@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/PitcherCropBlock.java
 +++ b/net/minecraft/world/level/block/PitcherCropBlock.java
-@@ -77,7 +77,7 @@
+@@ -77,7 +_,7 @@
  
     @Override
     public boolean canSurvive(BlockState p_277671_, LevelReader p_277477_, BlockPos p_278085_) {

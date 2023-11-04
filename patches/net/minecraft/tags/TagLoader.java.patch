@@ -1,6 +1,6 @@
 --- a/net/minecraft/tags/TagLoader.java
 +++ b/net/minecraft/tags/TagLoader.java
-@@ -57,6 +57,7 @@
+@@ -57,6 +_,7 @@
  
                 String s = resource.sourcePackId();
                 tagfile.entries().forEach(p_215997_ -> list.add(new TagLoader.EntryWithSource(p_215997_, s)));
@@ -8,7 +8,7 @@
              } catch (Exception exception) {
                 LOGGER.error("Couldn't read tag list {} from {} in data pack {}", resourcelocation1, resourcelocation, resource.sourcePackId(), exception);
              }
-@@ -67,16 +68,17 @@
+@@ -67,16 +_,17 @@
     }
  
     private Either<Collection<TagLoader.EntryWithSource>, Collection<T>> build(TagEntry.Lookup<T> p_215979_, List<TagLoader.EntryWithSource> p_215980_) {
@@ -29,7 +29,7 @@
     }
  
     public Map<ResourceLocation, Collection<T>> build(Map<ResourceLocation, List<TagLoader.EntryWithSource>> p_203899_) {
-@@ -102,7 +104,7 @@
+@@ -102,7 +_,7 @@
                    p_215977_ -> LOGGER.error(
                          "Couldn't load tag {} as it is missing following references: {}",
                          p_284682_,
@@ -38,7 +38,7 @@
                       )
                 )
                 .ifRight(p_216001_ -> map.put(p_284682_, p_216001_))
-@@ -114,8 +116,8 @@
+@@ -114,8 +_,8 @@
        return this.build(this.load(p_203901_));
     }
  

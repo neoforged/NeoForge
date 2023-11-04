@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/ModelBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/ModelBlockRenderer.java
-@@ -40,6 +40,7 @@
+@@ -40,6 +_,7 @@
        this.blockColors = p_110999_;
     }
  
@@ -8,7 +8,7 @@
     public void tesselateBlock(
        BlockAndTintGetter p_234380_,
        BakedModel p_234381_,
-@@ -52,15 +53,18 @@
+@@ -52,15 +_,18 @@
        long p_234388_,
        int p_234389_
     ) {
@@ -30,7 +30,7 @@
           }
        } catch (Throwable throwable) {
           CrashReport crashreport = CrashReport.forThrowable(throwable, "Tesselating block model");
-@@ -71,6 +75,7 @@
+@@ -71,6 +_,7 @@
        }
     }
  
@@ -38,7 +38,7 @@
     public void tesselateWithAO(
        BlockAndTintGetter p_234391_,
        BakedModel p_234392_,
-@@ -83,33 +88,33 @@
+@@ -83,33 +_,33 @@
        long p_234399_,
        int p_234400_
     ) {
@@ -85,7 +85,7 @@
     public void tesselateWithoutAO(
        BlockAndTintGetter p_234402_,
        BakedModel p_234403_,
-@@ -122,25 +127,28 @@
+@@ -122,25 +_,28 @@
        long p_234410_,
        int p_234411_
     ) {
@@ -124,7 +124,7 @@
        }
     }
  
-@@ -158,6 +166,7 @@
+@@ -158,6 +_,7 @@
     ) {
        for(BakedQuad bakedquad : p_111018_) {
           this.calculateShape(p_111013_, p_111014_, p_111015_, bakedquad.getVertices(), bakedquad.getDirection(), p_111019_, p_111020_);
@@ -132,7 +132,7 @@
           p_111021_.calculate(p_111013_, p_111014_, p_111015_, bakedquad.getDirection(), p_111019_, p_111020_, bakedquad.isShade());
           this.putQuadData(
              p_111013_,
-@@ -322,6 +331,7 @@
+@@ -322,6 +_,7 @@
        }
     }
  
@@ -140,7 +140,7 @@
     public void renderModel(
        PoseStack.Pose p_111068_,
        VertexConsumer p_111069_,
-@@ -333,16 +343,20 @@
+@@ -333,16 +_,20 @@
        int p_111075_,
        int p_111076_
     ) {

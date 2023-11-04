@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/inventory/MerchantScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/MerchantScreen.java
-@@ -234,7 +234,12 @@
+@@ -234,7 +_,12 @@
           p_281357_.renderItemDecorations(this.font, p_283466_, p_282403_, p_283601_);
        } else {
           p_281357_.renderItemDecorations(this.font, p_282046_, p_282403_, p_283601_, p_282046_.getCount() == 1 ? "1" : null);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/advancements/critereon/ItemPredicate.java
 +++ b/net/minecraft/advancements/critereon/ItemPredicate.java
-@@ -36,13 +36,14 @@
+@@ -36,13 +_,14 @@
     List<EnchantmentPredicate> enchantments,
     List<EnchantmentPredicate> storedEnchantments,
     Optional<Holder<Potion>> potion,
@@ -17,7 +17,7 @@
        p_297904_ -> p_297904_.group(
                 ExtraCodecs.strictOptionalField(TagKey.codec(Registries.ITEM), "tag").forGetter(ItemPredicate::tag),
                 ExtraCodecs.strictOptionalField(ITEMS_CODEC, "items").forGetter(ItemPredicate::items),
-@@ -56,8 +57,34 @@
+@@ -56,8 +_,34 @@
              )
              .apply(p_297904_, ItemPredicate::new)
     );
@@ -52,7 +52,7 @@
        if (this.tag.isPresent() && !p_45050_.is(this.tag.get())) {
           return false;
        } else if (this.items.isPresent() && !p_45050_.is(this.items.get())) {
-@@ -72,7 +99,7 @@
+@@ -72,7 +_,7 @@
           return false;
        } else {
           if (!this.enchantments.isEmpty()) {
@@ -61,7 +61,7 @@
  
              for(EnchantmentPredicate enchantmentpredicate : this.enchantments) {
                 if (!enchantmentpredicate.containedIn(map)) {
-@@ -105,10 +132,14 @@
+@@ -105,10 +_,14 @@
        return Util.getOrThrow(CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
     }
  

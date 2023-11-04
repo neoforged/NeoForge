@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/goal/FloatGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/FloatGoal.java
-@@ -15,7 +15,7 @@
+@@ -15,7 +_,7 @@
  
     @Override
     public boolean canUse() {

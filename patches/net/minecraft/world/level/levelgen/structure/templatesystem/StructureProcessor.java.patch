@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructureProcessor.java
 +++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructureProcessor.java
-@@ -7,6 +7,10 @@
+@@ -7,6 +_,10 @@
  import net.minecraft.world.level.ServerLevelAccessor;
  
  public abstract class StructureProcessor {
@@ -11,7 +11,7 @@
     @Nullable
     public StructureTemplate.StructureBlockInfo processBlock(
        LevelReader p_74416_,
-@@ -30,5 +34,28 @@
+@@ -30,5 +_,28 @@
        StructurePlaceSettings p_277497_
     ) {
        return p_278053_;

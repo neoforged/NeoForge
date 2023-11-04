@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/BakedModel.java
 +++ b/net/minecraft/client/resources/model/BakedModel.java
-@@ -13,7 +13,9 @@
+@@ -13,7 +_,9 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
@@ -11,7 +11,7 @@
     List<BakedQuad> getQuads(@Nullable BlockState p_235039_, @Nullable Direction p_235040_, RandomSource p_235041_);
  
     boolean useAmbientOcclusion();
-@@ -24,9 +26,13 @@
+@@ -24,9 +_,13 @@
  
     boolean isCustomRenderer();
  

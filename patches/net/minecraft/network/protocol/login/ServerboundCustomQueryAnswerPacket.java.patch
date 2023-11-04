@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/login/ServerboundCustomQueryAnswerPacket.java
 +++ b/net/minecraft/network/protocol/login/ServerboundCustomQueryAnswerPacket.java
-@@ -14,15 +14,14 @@
+@@ -14,15 +_,14 @@
        return new ServerboundCustomQueryAnswerPacket(i, readPayload(i, p_295711_));
     }
  

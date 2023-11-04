@@ -1,6 +1,6 @@
 --- a/net/minecraft/commands/arguments/ResourceLocationArgument.java
 +++ b/net/minecraft/commands/arguments/ResourceLocationArgument.java
-@@ -39,7 +39,7 @@
+@@ -39,7 +_,7 @@
  
     public static AdvancementHolder getAdvancement(CommandContext<CommandSourceStack> p_106988_, String p_106989_) throws CommandSyntaxException {
        ResourceLocation resourcelocation = getId(p_106988_, p_106989_);
@@ -9,7 +9,7 @@
        if (advancementholder == null) {
           throw ERROR_UNKNOWN_ADVANCEMENT.create(resourcelocation);
        } else {
-@@ -48,7 +48,7 @@
+@@ -48,7 +_,7 @@
     }
  
     public static RecipeHolder<?> getRecipe(CommandContext<CommandSourceStack> p_106995_, String p_106996_) throws CommandSyntaxException {

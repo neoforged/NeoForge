@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/language/LanguageManager.java
 +++ b/net/minecraft/client/resources/language/LanguageManager.java
-@@ -28,7 +28,7 @@
+@@ -28,7 +_,7 @@
     private String currentCode;
  
     public LanguageManager(String p_118971_) {
@@ -9,7 +9,7 @@
     }
  
     private static Map<String, LanguageInfo> extractLanguages(Stream<PackResources> p_118982_) {
-@@ -65,8 +65,12 @@
+@@ -65,8 +_,12 @@
        Language.inject(clientlanguage);
     }
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BowItem.java
 +++ b/net/minecraft/world/item/BowItem.java
-@@ -27,18 +27,23 @@
+@@ -27,18 +_,23 @@
           Player player = (Player)p_40669_;
           boolean flag = player.getAbilities().instabuild || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, p_40667_) > 0;
           ItemStack itemstack = player.getProjectile(p_40667_);
@@ -26,7 +26,7 @@
                    abstractarrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, f * 3.0F, 1.0F);
                    if (f == 1.0F) {
                       abstractarrow.setCritArrow(true);
-@@ -113,6 +118,10 @@
+@@ -113,6 +_,10 @@
     public InteractionResultHolder<ItemStack> use(Level p_40672_, Player p_40673_, InteractionHand p_40674_) {
        ItemStack itemstack = p_40673_.getItemInHand(p_40674_);
        boolean flag = !p_40673_.getProjectile(itemstack).isEmpty();
@@ -37,7 +37,7 @@
        if (!p_40673_.getAbilities().instabuild && !flag) {
           return InteractionResultHolder.fail(itemstack);
        } else {
-@@ -124,6 +133,10 @@
+@@ -124,6 +_,10 @@
     @Override
     public Predicate<ItemStack> getAllSupportedProjectiles() {
        return ARROW_ONLY;

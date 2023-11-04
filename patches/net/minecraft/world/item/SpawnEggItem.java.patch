@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/SpawnEggItem.java
 +++ b/net/minecraft/world/item/SpawnEggItem.java
-@@ -40,11 +40,14 @@
+@@ -40,11 +_,14 @@
     private final int highlightColor;
     private final EntityType<?> defaultType;
  
@@ -15,7 +15,7 @@
        BY_ID.put(p_43207_, this);
     }
  
-@@ -139,6 +142,8 @@
+@@ -139,6 +_,8 @@
  
     @Nullable
     public static SpawnEggItem byId(@Nullable EntityType<?> p_43214_) {
@@ -24,7 +24,7 @@
        return BY_ID.get(p_43214_);
     }
  
-@@ -150,16 +155,16 @@
+@@ -150,16 +_,16 @@
        if (p_43229_ != null && p_43229_.contains("EntityTag", 10)) {
           CompoundTag compoundtag = p_43229_.getCompound("EntityTag");
           if (compoundtag.contains("id", 8)) {
@@ -44,7 +44,7 @@
     }
  
     public Optional<Mob> spawnOffspringFromSpawnEgg(
-@@ -196,5 +201,9 @@
+@@ -196,5 +_,9 @@
              }
           }
        }

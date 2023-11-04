@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientHandshakePacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientHandshakePacketListenerImpl.java
-@@ -180,7 +180,7 @@
+@@ -180,7 +_,7 @@
        if (this.serverData != null && this.serverData.isRealm()) {
           this.minecraft.setScreen(new DisconnectedRealmsScreen(this.parent, CommonComponents.CONNECT_FAILED, p_104543_));
        } else {
@@ -9,7 +9,7 @@
        }
     }
  
-@@ -203,6 +203,7 @@
+@@ -203,6 +_,7 @@
  
     @Override
     public void handleCustomQuery(ClientboundCustomQueryPacket p_104545_) {

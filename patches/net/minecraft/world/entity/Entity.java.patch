@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -123,7 +123,7 @@
+@@ -123,7 +_,7 @@
  import org.joml.Vector3f;
  import org.slf4j.Logger;
  
@@ -9,7 +9,7 @@
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final String ID_TAG = "id";
     public static final String PASSENGERS_TAG = "Passengers";
-@@ -144,6 +144,7 @@
+@@ -144,6 +_,7 @@
     private static final double LAVA_SLOW_FLOW_SCALE = 0.0023333333333333335;
     public static final String UUID_TAG = "UUID";
     private static double viewScale = 1.0;
@@ -17,7 +17,7 @@
     private final EntityType<?> type;
     private int id = ENTITY_COUNTER.incrementAndGet();
     public boolean blocksBuilding;
-@@ -190,8 +191,10 @@
+@@ -190,8 +_,10 @@
     public int tickCount;
     private int remainingFireTicks = -this.getFireImmuneTicks();
     protected boolean wasTouchingWater;
@@ -28,7 +28,7 @@
     private final Set<TagKey<Fluid>> fluidOnEyes = new HashSet<>();
     public int invulnerableTime;
     protected boolean firstTick = true;
-@@ -242,6 +245,7 @@
+@@ -242,6 +_,7 @@
     private BlockState feetBlockState = null;
  
     public Entity(EntityType<?> p_19870_, Level p_19871_) {
@@ -36,7 +36,7 @@
        this.type = p_19870_;
        this.level = p_19871_;
        this.dimensions = p_19870_.getDimensions();
-@@ -259,7 +263,11 @@
+@@ -259,7 +_,11 @@
        this.entityData.define(DATA_TICKS_FROZEN, 0);
        this.defineSynchedData();
        this.setPos(0.0, 0.0, 0.0);
@@ -49,7 +49,7 @@
     }
  
     public boolean isColliding(BlockPos p_20040_, BlockState p_20041_) {
-@@ -351,6 +359,7 @@
+@@ -351,6 +_,7 @@
  
     public void remove(Entity.RemovalReason p_146834_) {
        this.setRemoved(p_146834_);
@@ -57,7 +57,7 @@
     }
  
     public void onClientRemoval() {
-@@ -467,7 +476,7 @@
+@@ -467,7 +_,7 @@
  
        if (this.isInLava()) {
           this.lavaHurt();
@@ -66,7 +66,7 @@
        }
  
        this.checkBelowWorld();
-@@ -672,7 +681,7 @@
+@@ -672,7 +_,7 @@
                 double d1 = vec3.x;
                 double d2 = vec3.y;
                 double d3 = vec3.z;
@@ -75,7 +75,7 @@
                 BlockPos blockpos1 = this.getOnPos();
                 BlockState blockstate1 = this.level().getBlockState(blockpos1);
                 boolean flag1 = this.isStateClimbable(blockstate1);
-@@ -716,16 +725,16 @@
+@@ -716,16 +_,16 @@
                    this.setRemainingFireTicks(-this.getFireImmuneTicks());
                 }
  
@@ -95,7 +95,7 @@
           }
        }
     }
-@@ -811,9 +820,7 @@
+@@ -811,9 +_,7 @@
              return blockpos;
           } else {
              BlockState blockstate = this.level().getBlockState(blockpos);
@@ -106,7 +106,7 @@
                 ? blockpos.atY(Mth.floor(this.position.y - (double)p_216987_))
                 : blockpos;
           }
-@@ -886,12 +893,11 @@
+@@ -886,12 +_,11 @@
        boolean flag1 = p_20273_.y != vec3.y;
        boolean flag2 = p_20273_.z != vec3.z;
        boolean flag3 = this.onGround() || flag1 && p_20273_.y < 0.0;
@@ -124,7 +124,7 @@
              Vec3 vec33 = collideBoundingBox(this, new Vec3(p_20273_.x, 0.0, p_20273_.z), aabb.move(vec32), this.level(), list).add(vec32);
              if (vec33.horizontalDistanceSqr() > vec31.horizontalDistanceSqr()) {
                 vec31 = vec33;
-@@ -1039,19 +1045,20 @@
+@@ -1039,19 +_,20 @@
        return !blockstate.is(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !blockstate.is(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? p_278049_ : blockpos;
     }
  
@@ -151,7 +151,7 @@
        this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
     }
  
-@@ -1187,20 +1194,21 @@
+@@ -1187,20 +_,21 @@
  
     public void updateSwimming() {
        if (this.isSwimming()) {
@@ -180,7 +180,7 @@
     }
  
     void updateInWaterStateAndDoWaterCurrentPushing() {
-@@ -1226,6 +1234,7 @@
+@@ -1226,6 +_,7 @@
     private void updateFluidOnEyes() {
        this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
        this.fluidOnEyes.clear();
@@ -188,7 +188,7 @@
        double d0 = this.getEyeY() - 0.11111111F;
        Entity entity = this.getVehicle();
        if (entity instanceof Boat boat && !boat.isUnderWater() && boat.getBoundingBox().maxY >= d0 && boat.getBoundingBox().minY <= d0) {
-@@ -1236,7 +1245,7 @@
+@@ -1236,7 +_,7 @@
        FluidState fluidstate = this.level().getFluidState(blockpos);
        double d1 = (double)((float)blockpos.getY() + fluidstate.getHeight(this.level(), blockpos));
        if (d1 > d0) {
@@ -197,7 +197,7 @@
        }
     }
  
-@@ -1281,12 +1290,13 @@
+@@ -1281,12 +_,13 @@
     }
  
     public boolean canSpawnSprintParticle() {
@@ -212,7 +212,7 @@
        if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
           Vec3 vec3 = this.getDeltaMovement();
           BlockPos blockpos1 = this.blockPosition();
-@@ -1299,17 +1309,23 @@
+@@ -1299,17 +_,23 @@
           if (blockpos1.getZ() != blockpos.getZ()) {
              d1 = Mth.clamp(d1, (double)blockpos.getZ(), (double)blockpos.getZ() + 1.0);
           }
@@ -239,7 +239,7 @@
     }
  
     public void moveRelative(float p_19921_, Vec3 p_19922_) {
-@@ -1626,6 +1642,8 @@
+@@ -1626,6 +_,8 @@
              p_20241_.putBoolean("HasVisualFire", this.hasVisualFire);
           }
  
@@ -248,7 +248,7 @@
           if (!this.tags.isEmpty()) {
              ListTag listtag = new ListTag();
  
-@@ -1636,6 +1654,10 @@
+@@ -1636,6 +_,10 @@
              p_20241_.put("Tags", listtag);
           }
  
@@ -259,7 +259,7 @@
           this.addAdditionalSaveData(p_20241_);
           if (this.isVehicle()) {
              ListTag listtag1 = new ListTag();
-@@ -1716,6 +1738,9 @@
+@@ -1716,6 +_,9 @@
              this.setGlowingTag(p_20259_.getBoolean("Glowing"));
              this.setTicksFrozen(p_20259_.getInt("TicksFrozen"));
              this.hasVisualFire = p_20259_.getBoolean("HasVisualFire");
@@ -269,7 +269,7 @@
              if (p_20259_.contains("Tags", 9)) {
                 this.tags.clear();
                 ListTag listtag3 = p_20259_.getList("Tags", 8);
-@@ -1800,6 +1825,8 @@
+@@ -1800,6 +_,8 @@
        } else {
           ItemEntity itementity = new ItemEntity(this.level(), this.getX(), this.getY() + (double)p_19986_, this.getZ(), p_19985_);
           itementity.setDefaultPickUpDelay();
@@ -278,7 +278,7 @@
           this.level().addFreshEntity(itementity);
           return itementity;
        }
-@@ -1846,6 +1873,7 @@
+@@ -1846,6 +_,7 @@
  
     public void rideTick() {
        this.setDeltaMovement(Vec3.ZERO);
@@ -286,7 +286,7 @@
        this.tick();
        if (this.isPassenger()) {
           this.getVehicle().positionRider(this);
-@@ -1902,6 +1930,7 @@
+@@ -1902,6 +_,7 @@
              }
           }
  
@@ -294,7 +294,7 @@
           if (p_19967_ || this.canRide(p_19966_) && p_19966_.canAddPassenger(this)) {
              if (this.isPassenger()) {
                 this.stopRiding();
-@@ -1933,6 +1962,7 @@
+@@ -1933,6 +_,7 @@
     public void removeVehicle() {
        if (this.vehicle != null) {
           Entity entity = this.vehicle;
@@ -302,7 +302,7 @@
           this.vehicle = null;
           entity.removePassenger(this);
        }
-@@ -1982,6 +2012,8 @@
+@@ -1982,6 +_,8 @@
        return this.passengers.isEmpty();
     }
  
@@ -311,7 +311,7 @@
     protected boolean couldAcceptPassenger() {
        return true;
     }
-@@ -2187,7 +2219,7 @@
+@@ -2187,7 +_,7 @@
     }
  
     public boolean isVisuallyCrawling() {
@@ -320,7 +320,7 @@
     }
  
     public void setSwimming(boolean p_20283_) {
-@@ -2296,7 +2328,7 @@
+@@ -2296,7 +_,7 @@
           this.setSecondsOnFire(8);
        }
  
@@ -329,7 +329,7 @@
     }
  
     public void onAboveBubbleCol(boolean p_20313_) {
-@@ -2391,7 +2423,7 @@
+@@ -2391,7 +_,7 @@
     }
  
     protected Component getTypeName() {
@@ -338,7 +338,7 @@
     }
  
     public boolean is(Entity p_20356_) {
-@@ -2474,14 +2506,20 @@
+@@ -2474,14 +_,20 @@
  
     @Nullable
     public Entity changeDimension(ServerLevel p_20118_) {
@@ -360,7 +360,7 @@
              this.level().getProfiler().popPush("reloading");
              Entity entity = this.getType().create(p_20118_);
              if (entity != null) {
-@@ -2489,17 +2527,19 @@
+@@ -2489,17 +_,19 @@
                 entity.moveTo(portalinfo.pos.x, portalinfo.pos.y, portalinfo.pos.z, portalinfo.yRot, entity.getXRot());
                 entity.setDeltaMovement(portalinfo.speed);
                 p_20118_.addDuringTeleport(entity);
@@ -382,7 +382,7 @@
           }
        } else {
           return null;
-@@ -2629,6 +2669,7 @@
+@@ -2629,6 +_,7 @@
        return this.stringUUID;
     }
  
@@ -390,7 +390,7 @@
     public boolean isPushedByFluid() {
        return true;
     }
-@@ -2752,8 +2793,10 @@
+@@ -2752,8 +_,10 @@
        EntityDimensions entitydimensions = this.dimensions;
        Pose pose = this.getPose();
        EntityDimensions entitydimensions1 = this.getDimensions(pose);
@@ -402,7 +402,7 @@
        this.reapplyPosition();
        boolean flag = (double)entitydimensions1.width <= 4.0 && (double)entitydimensions1.height <= 4.0;
        if (!this.level().isClientSide
-@@ -2766,9 +2809,10 @@
+@@ -2766,9 +_,10 @@
           double d0 = (double)Math.max(0.0F, entitydimensions1.width - entitydimensions.width) + 1.0E-6;
           double d1 = (double)Math.max(0.0F, entitydimensions1.height - entitydimensions.height) + 1.0E-6;
           VoxelShape voxelshape = Shapes.create(AABB.ofSize(vec3, d0, d1, d0));
@@ -414,7 +414,7 @@
        }
     }
  
-@@ -3060,9 +3104,17 @@
+@@ -3060,9 +_,17 @@
        this.yRotO = this.getYRot();
     }
  
@@ -433,7 +433,7 @@
        } else {
           AABB aabb = this.getBoundingBox().deflate(0.001);
           int i = Mth.floor(aabb.minX);
-@@ -3077,25 +3129,28 @@
+@@ -3077,25 +_,28 @@
           Vec3 vec3 = Vec3.ZERO;
           int k1 = 0;
           BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
@@ -469,7 +469,7 @@
                          }
                       }
                    }
-@@ -3103,27 +3158,28 @@
+@@ -3103,27 +_,28 @@
              }
           }
  
@@ -508,7 +508,7 @@
        }
     }
  
-@@ -3136,7 +3192,10 @@
+@@ -3136,7 +_,10 @@
        return !this.level().hasChunksAt(i, k, j, l);
     }
  
@@ -519,7 +519,7 @@
        return this.fluidHeight.getDouble(p_204037_);
     }
  
-@@ -3273,6 +3332,7 @@
+@@ -3273,6 +_,7 @@
  
           this.levelCallback.onMove();
        }
@@ -527,7 +527,7 @@
     }
  
     public void checkDespawn() {
-@@ -3344,10 +3404,27 @@
+@@ -3344,10 +_,27 @@
        return false;
     }
  
@@ -555,7 +555,7 @@
     public void setMaxUpStep(float p_275672_) {
        this.maxUpStep = p_275672_;
     }
-@@ -3403,6 +3480,103 @@
+@@ -3403,6 +_,103 @@
     public boolean mayInteract(Level p_146843_, BlockPos p_146844_) {
        return true;
     }

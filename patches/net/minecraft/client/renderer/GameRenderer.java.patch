@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -334,6 +334,8 @@
+@@ -334,6 +_,8 @@
           this.loadEffect(new ResourceLocation("shaders/post/spider.json"));
        } else if (p_109107_ instanceof EnderMan) {
           this.loadEffect(new ResourceLocation("shaders/post/invert.json"));
@@ -9,7 +9,7 @@
        }
     }
  
-@@ -724,6 +726,7 @@
+@@ -724,6 +_,7 @@
                 p_286147_ -> rendertypeGuiGhostRecipeOverlayShader = p_286147_
              )
           );
@@ -17,7 +17,7 @@
        } catch (IOException ioexception) {
           list1.forEach(p_172729_ -> p_172729_.getFirst().close());
           throw new RuntimeException("could not reload shaders", ioexception);
-@@ -797,12 +800,13 @@
+@@ -797,12 +_,13 @@
              this.minecraft.getProfiler().push("pick");
              this.minecraft.crosshairPickEntity = null;
              double d0 = (double)this.minecraft.gameMode.getPickRange();
@@ -33,7 +33,7 @@
                 d1 = 6.0;
                 d0 = d1;
              } else {
-@@ -812,10 +816,19 @@
+@@ -812,10 +_,19 @@
  
                 d0 = d0;
              }
@@ -54,7 +54,7 @@
              }
  
              Vec3 vec31 = entity.getViewVector(1.0F);
-@@ -829,7 +842,7 @@
+@@ -829,7 +_,7 @@
                 Entity entity1 = entityhitresult.getEntity();
                 Vec3 vec33 = entityhitresult.getLocation();
                 double d2 = vec3.distanceToSqr(vec33);
@@ -63,7 +63,7 @@
                    this.minecraft.hitResult = BlockHitResult.miss(vec33, Direction.getNearest(vec31.x, vec31.y, vec31.z), BlockPos.containing(vec33));
                 } else if (d2 < d1 || this.minecraft.hitResult == null) {
                    this.minecraft.hitResult = entityhitresult;
-@@ -882,7 +895,7 @@
+@@ -882,7 +_,7 @@
              d0 *= Mth.lerp(this.minecraft.options.fovEffectScale().get(), 1.0, 0.85714287F);
           }
  
@@ -72,7 +72,7 @@
        }
     }
  
-@@ -1043,19 +1056,14 @@
+@@ -1043,19 +_,14 @@
           Window window = this.minecraft.getWindow();
           RenderSystem.clear(256, Minecraft.ON_OSX);
           Matrix4f matrix4f = new Matrix4f()
@@ -96,7 +96,7 @@
           RenderSystem.applyModelViewMatrix();
           Lighting.setupFor3DItems();
           GuiGraphics guigraphics = new GuiGraphics(this.minecraft, this.renderBuffers.bufferSource());
-@@ -1089,7 +1097,7 @@
+@@ -1089,7 +_,7 @@
              }
           } else if (flag && this.minecraft.screen != null) {
              try {
@@ -105,7 +105,7 @@
              } catch (Throwable throwable1) {
                 CrashReport crashreport1 = CrashReport.forThrowable(throwable1, "Rendering screen");
                 CrashReportCategory crashreportcategory1 = crashreport1.addCategory("Screen render details");
-@@ -1258,6 +1266,11 @@
+@@ -1258,6 +_,11 @@
           this.minecraft.options.getCameraType().isMirrored(),
           p_109090_
        );
@@ -117,7 +117,7 @@
        p_109092_.mulPose(Axis.XP.rotationDegrees(camera.getXRot()));
        p_109092_.mulPose(Axis.YP.rotationDegrees(camera.getYRot() + 180.0F));
        Matrix3f matrix3f = new Matrix3f(p_109092_.last().normal()).invert();
-@@ -1266,6 +1279,8 @@
+@@ -1266,6 +_,8 @@
           .levelRenderer
           .prepareCullFrustum(p_109092_, camera.getPosition(), this.getProjectionMatrix(Math.max(d0, (double)this.minecraft.options.fov().get().intValue())));
        this.minecraft.levelRenderer.renderLevel(p_109092_, p_109090_, p_109091_, flag, camera, this, this.lightTexture, matrix4f);

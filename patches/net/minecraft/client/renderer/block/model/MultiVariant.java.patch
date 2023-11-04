@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/MultiVariant.java
 +++ b/net/minecraft/client/renderer/block/model/MultiVariant.java
-@@ -68,7 +68,7 @@
+@@ -68,7 +_,7 @@
           WeightedBakedModel.Builder weightedbakedmodel$builder = new WeightedBakedModel.Builder();
  
           for(Variant variant : this.getVariants()) {

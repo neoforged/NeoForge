@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/ItemEntityRenderer.java
 +++ b/net/minecraft/client/renderer/entity/ItemEntityRenderer.java
-@@ -60,18 +60,15 @@
+@@ -60,18 +_,15 @@
        boolean flag = bakedmodel.isGui3d();
        int j = this.getRenderAmount(itemstack);
        float f = 0.25F;
@@ -23,7 +23,7 @@
           p_115039_.translate(f7, f8, f9);
        }
  
-@@ -82,18 +79,18 @@
+@@ -82,18 +_,18 @@
                 float f11 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
                 float f13 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
                 float f10 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
@@ -45,7 +45,7 @@
           }
        }
  
-@@ -104,4 +101,21 @@
+@@ -104,4 +_,21 @@
     public ResourceLocation getTextureLocation(ItemEntity p_115034_) {
        return TextureAtlas.LOCATION_BLOCKS;
     }

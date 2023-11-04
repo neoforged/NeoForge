@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/attributes/AttributeSupplier.java
 +++ b/net/minecraft/world/entity/ai/attributes/AttributeSupplier.java
-@@ -69,6 +69,22 @@
+@@ -69,6 +_,22 @@
     public static class Builder {
        private final Map<Attribute, AttributeInstance> builder = Maps.newHashMap();
        private boolean instanceFrozen;
@@ -23,7 +23,7 @@
  
        private AttributeInstance create(Attribute p_22275_) {
           AttributeInstance attributeinstance = new AttributeInstance(p_22275_, p_258260_ -> {
-@@ -93,6 +109,7 @@
+@@ -93,6 +_,7 @@
  
        public AttributeSupplier build() {
           this.instanceFrozen = true;

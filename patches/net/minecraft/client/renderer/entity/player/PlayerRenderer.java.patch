@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/player/PlayerRenderer.java
 +++ b/net/minecraft/client/renderer/entity/player/PlayerRenderer.java
-@@ -67,7 +67,9 @@
+@@ -67,7 +_,9 @@
  
     public void render(AbstractClientPlayer p_117788_, float p_117789_, float p_117790_, PoseStack p_117791_, MultiBufferSource p_117792_, int p_117793_) {
        this.setModelProperties(p_117788_);
@@ -10,7 +10,7 @@
     }
  
     public Vec3 getRenderOffset(AbstractClientPlayer p_117785_, float p_117786_) {
-@@ -137,11 +139,16 @@
+@@ -137,11 +_,16 @@
              }
  
              if (useanim == UseAnim.BRUSH) {
@@ -30,7 +30,7 @@
  
           return HumanoidModel.ArmPose.ITEM;
        }
-@@ -180,10 +187,12 @@
+@@ -180,10 +_,12 @@
     }
  
     public void renderRightHand(PoseStack p_117771_, MultiBufferSource p_117772_, int p_117773_, AbstractClientPlayer p_117774_) {
@@ -43,7 +43,7 @@
        this.renderHand(p_117814_, p_117815_, p_117816_, p_117817_, this.model.leftArm, this.model.leftSleeve);
     }
  
-@@ -225,8 +234,8 @@
+@@ -225,8 +_,8 @@
           }
        } else if (f > 0.0F) {
           super.setupRotations(p_117802_, p_117803_, p_117804_, p_117805_, p_117806_);

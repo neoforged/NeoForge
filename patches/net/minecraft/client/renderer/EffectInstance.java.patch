@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/EffectInstance.java
 +++ b/net/minecraft/client/renderer/EffectInstance.java
-@@ -58,7 +58,8 @@
+@@ -58,7 +_,8 @@
     private final EffectProgram fragmentProgram;
  
     public EffectInstance(ResourceManager p_108941_, String p_108942_) throws IOException {
@@ -10,7 +10,7 @@
        this.name = p_108942_;
        Resource resource = p_108941_.getResourceOrThrow(resourcelocation);
  
-@@ -150,7 +151,8 @@
+@@ -150,7 +_,8 @@
        } else {
           EffectProgram effectprogram;
           if (program == null) {

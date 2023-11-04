@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/ResourceLocation.java
 +++ b/net/minecraft/resources/ResourceLocation.java
-@@ -140,8 +140,14 @@
+@@ -140,8 +_,14 @@
        if (i == 0) {
           i = this.namespace.compareTo(p_135826_.namespace);
        }

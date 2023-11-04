@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/portal/PortalForcer.java
 +++ b/net/minecraft/world/level/portal/PortalForcer.java
-@@ -20,7 +20,7 @@
+@@ -20,7 +_,7 @@
  import net.minecraft.world.level.border.WorldBorder;
  import net.minecraft.world.level.levelgen.Heightmap;
  

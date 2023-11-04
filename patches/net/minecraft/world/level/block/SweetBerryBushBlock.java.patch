@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/SweetBerryBushBlock.java
 +++ b/net/minecraft/world/level/block/SweetBerryBushBlock.java
-@@ -61,10 +61,11 @@
+@@ -61,10 +_,11 @@
     @Override
     public void randomTick(BlockState p_222563_, ServerLevel p_222564_, BlockPos p_222565_, RandomSource p_222566_) {
        int i = p_222563_.getValue(AGE);

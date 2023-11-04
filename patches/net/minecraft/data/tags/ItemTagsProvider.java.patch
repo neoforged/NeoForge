@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/ItemTagsProvider.java
 +++ b/net/minecraft/data/tags/ItemTagsProvider.java
-@@ -16,18 +16,41 @@
+@@ -16,18 +_,41 @@
     private final CompletableFuture<TagsProvider.TagLookup<Block>> blockTags;
     private final Map<TagKey<Block>, TagKey<Item>> tagsToCopy = new HashMap<>();
  

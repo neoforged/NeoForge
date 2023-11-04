@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/StairBlock.java
 +++ b/net/minecraft/world/level/block/StairBlock.java
-@@ -81,7 +81,12 @@
+@@ -81,7 +_,12 @@
        return voxelshape;
     }
  
@@ -13,7 +13,7 @@
        super(p_56863_);
        this.registerDefaultState(
           this.stateDefinition
-@@ -91,8 +96,9 @@
+@@ -91,8 +_,9 @@
              .setValue(SHAPE, StairsShape.STRAIGHT)
              .setValue(WATERLOGGED, Boolean.valueOf(false))
        );
@@ -25,7 +25,7 @@
     }
  
     @Override
-@@ -300,4 +306,14 @@
+@@ -300,4 +_,14 @@
     public boolean isPathfindable(BlockState p_56891_, BlockGetter p_56892_, BlockPos p_56893_, PathComputationType p_56894_) {
        return false;
     }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/HorseArmorItem.java
 +++ b/net/minecraft/world/item/HorseArmorItem.java
-@@ -5,16 +5,20 @@
+@@ -5,16 +_,20 @@
  public class HorseArmorItem extends Item {
     private static final String TEX_FOLDER = "textures/entity/horse/";
     private final int protection;
