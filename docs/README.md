@@ -29,7 +29,7 @@ For support and questions, visit [the NeoForged Discord server][Discord].
 
 # Creating Mods
 
-[See the "Getting Started" section in the NeoForged Documentation][Getting-Started].
+[See the "Getting Started" section in the NeoForged Documentation.](https://docs.neoforged.net/docs/gettingstarted)
 
 # Contribute to Forge
 
