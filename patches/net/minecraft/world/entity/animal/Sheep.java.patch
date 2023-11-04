@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/Sheep.java
 +++ b/net/minecraft/world/entity/animal/Sheep.java
-@@ -65,7 +65,7 @@
+@@ -65,7 +_,7 @@
  import net.minecraft.world.level.storage.loot.BuiltInLootTables;
  import org.joml.Vector3f;
  
@@ -9,7 +9,7 @@
     private static final int EAT_ANIMATION_TICKS = 40;
     private static final EntityDataAccessor<Byte> DATA_WOOL_ID = SynchedEntityData.defineId(Sheep.class, EntityDataSerializers.BYTE);
     private static final Map<DyeColor, ItemLike> ITEM_BY_DYE = Util.make(Maps.newEnumMap(DyeColor.class), p_29841_ -> {
-@@ -206,7 +206,7 @@
+@@ -206,7 +_,7 @@
     @Override
     public InteractionResult mobInteract(Player p_29853_, InteractionHand p_29854_) {
        ItemStack itemstack = p_29853_.getItemInHand(p_29854_);
@@ -18,7 +18,7 @@
           if (!this.level().isClientSide && this.readyForShearing()) {
              this.shear(SoundSource.PLAYERS);
              this.gameEvent(GameEvent.SHEAR, p_29853_);
-@@ -380,6 +380,29 @@
+@@ -380,6 +_,29 @@
     @Override
     protected float getStandingEyeHeight(Pose p_29850_, EntityDimensions p_29851_) {
        return 0.95F * p_29851_.height;

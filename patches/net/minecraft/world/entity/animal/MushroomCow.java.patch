@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/MushroomCow.java
 +++ b/net/minecraft/world/entity/animal/MushroomCow.java
-@@ -42,7 +42,7 @@
+@@ -42,7 +_,7 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.gameevent.GameEvent;
  
@@ -9,7 +9,7 @@
     private static final EntityDataAccessor<String> DATA_TYPE = SynchedEntityData.defineId(MushroomCow.class, EntityDataSerializers.STRING);
     private static final int MUTATE_CHANCE = 1024;
     private static final String TAG_STEW_EFFECTS = "stew_effects";
-@@ -108,7 +108,7 @@
+@@ -108,7 +_,7 @@
  
           this.playSound(soundevent, 1.0F, 1.0F);
           return InteractionResult.sidedSuccess(this.level().isClientSide);
@@ -18,7 +18,7 @@
           this.shear(SoundSource.PLAYERS);
           this.gameEvent(GameEvent.SHEAR, p_28941_);
           if (!this.level().isClientSide) {
-@@ -164,7 +164,16 @@
+@@ -164,7 +_,16 @@
     }
  
     @Override
@@ -35,7 +35,7 @@
        this.level().playSound(null, this, SoundEvents.MOOSHROOM_SHEAR, p_28924_, 1.0F, 1.0F);
        if (!this.level().isClientSide()) {
           Cow cow = EntityType.COW.create(this.level());
-@@ -186,14 +195,14 @@
+@@ -186,14 +_,14 @@
              cow.setInvulnerable(this.isInvulnerable());
              this.level().addFreshEntity(cow);
  
@@ -54,7 +54,7 @@
     }
  
     @Override
-@@ -259,6 +268,11 @@
+@@ -259,6 +_,11 @@
        }
  
        return mushroomcow$mushroomtype2;

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/alchemy/PotionBrewing.java
 +++ b/net/minecraft/world/item/alchemy/PotionBrewing.java
-@@ -51,7 +51,7 @@
+@@ -51,7 +_,7 @@
  
     public static boolean isBrewablePotion(Potion p_43512_) {
        for(PotionBrewing.Mix<Potion> mix : POTION_MIXES) {
@@ -9,7 +9,7 @@
              return true;
           }
        }
-@@ -71,7 +71,7 @@
+@@ -71,7 +_,7 @@
        Item item = p_43520_.getItem();
  
        for(PotionBrewing.Mix<Item> mix : CONTAINER_MIXES) {
@@ -18,7 +18,7 @@
              return true;
           }
        }
-@@ -83,7 +83,7 @@
+@@ -83,7 +_,7 @@
        Potion potion = PotionUtils.getPotion(p_43525_);
  
        for(PotionBrewing.Mix<Potion> mix : POTION_MIXES) {
@@ -27,7 +27,7 @@
              return true;
           }
        }
-@@ -97,14 +97,14 @@
+@@ -97,14 +_,14 @@
           Item item = p_43531_.getItem();
  
           for(PotionBrewing.Mix<Item> mix : CONTAINER_MIXES) {
@@ -46,7 +46,7 @@
              }
           }
        }
-@@ -181,7 +181,7 @@
+@@ -181,7 +_,7 @@
        } else if (!(p_43505_ instanceof PotionItem)) {
           throw new IllegalArgumentException("Expected a potion, got: " + BuiltInRegistries.ITEM.getKey(p_43505_));
        } else {
@@ -55,7 +55,7 @@
        }
     }
  
-@@ -194,18 +194,18 @@
+@@ -194,18 +_,18 @@
     }
  
     private static void addMix(Potion p_43514_, Item p_43515_, Potion p_43516_) {

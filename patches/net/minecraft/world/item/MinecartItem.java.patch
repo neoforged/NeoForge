@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/MinecartItem.java
 +++ b/net/minecraft/world/item/MinecartItem.java
-@@ -31,9 +31,7 @@
+@@ -31,9 +_,7 @@
           double d2 = vec3.z() + (double)direction.getStepZ() * 1.125;
           BlockPos blockpos = p_302448_.pos().relative(direction);
           BlockState blockstate = level.getBlockState(blockpos);
@@ -11,7 +11,7 @@
           double d3;
           if (blockstate.is(BlockTags.RAILS)) {
              if (railshape.isAscending()) {
-@@ -90,9 +88,7 @@
+@@ -90,9 +_,7 @@
        } else {
           ItemStack itemstack = p_42943_.getItemInHand();
           if (!level.isClientSide) {

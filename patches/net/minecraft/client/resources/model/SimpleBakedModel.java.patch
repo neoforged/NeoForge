@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/SimpleBakedModel.java
 +++ b/net/minecraft/client/resources/model/SimpleBakedModel.java
-@@ -26,7 +26,12 @@
+@@ -26,7 +_,12 @@
     protected final TextureAtlasSprite particleIcon;
     protected final ItemTransforms transforms;
     protected final ItemOverrides overrides;
@@ -13,7 +13,7 @@
     public SimpleBakedModel(
        List<BakedQuad> p_119489_,
        Map<Direction, List<BakedQuad>> p_119490_,
-@@ -37,6 +42,20 @@
+@@ -37,6 +_,20 @@
        ItemTransforms p_119495_,
        ItemOverrides p_119496_
     ) {
@@ -34,7 +34,7 @@
        this.unculledFaces = p_119489_;
        this.culledFaces = p_119490_;
        this.hasAmbientOcclusion = p_119491_;
-@@ -45,6 +64,9 @@
+@@ -45,6 +_,9 @@
        this.particleIcon = p_119494_;
        this.transforms = p_119495_;
        this.overrides = p_119496_;
@@ -44,7 +44,7 @@
     }
  
     @Override
-@@ -87,6 +109,25 @@
+@@ -87,6 +_,25 @@
        return this.overrides;
     }
  
@@ -70,7 +70,7 @@
     @OnlyIn(Dist.CLIENT)
     public static class Builder {
        private final List<BakedQuad> unculledFaces = Lists.newArrayList();
-@@ -133,19 +174,18 @@
+@@ -133,19 +_,18 @@
           return this;
        }
  

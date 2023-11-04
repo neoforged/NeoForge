@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/inventory/InventoryScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/InventoryScreen.java
-@@ -118,9 +118,29 @@
+@@ -118,9 +_,29 @@
     ) {
        float f = (float)(p_275688_ + p_275535_) / 2.0F;
        float f1 = (float)(p_275245_ + p_294406_) / 2.0F;

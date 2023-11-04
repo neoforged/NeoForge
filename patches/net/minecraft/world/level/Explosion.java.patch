@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/Explosion.java
 +++ b/net/minecraft/world/level/Explosion.java
-@@ -56,6 +56,7 @@
+@@ -56,6 +_,7 @@
     private final ExplosionDamageCalculator damageCalculator;
     private final ObjectArrayList<BlockPos> toBlow = new ObjectArrayList<>();
     private final Map<Player, Vec3> hitPlayers = Maps.newHashMap();
@@ -8,7 +8,7 @@
  
     public Explosion(Level p_46024_, @Nullable Entity p_46025_, double p_46026_, double p_46027_, double p_46028_, float p_46029_, List<BlockPos> p_46030_) {
        this(p_46024_, p_46025_, p_46026_, p_46027_, p_46028_, p_46029_, false, Explosion.BlockInteraction.DESTROY_WITH_DECAY, p_46030_);
-@@ -111,6 +112,7 @@
+@@ -111,6 +_,7 @@
        this.blockInteraction = p_46060_;
        this.damageSource = p_46053_ == null ? p_46051_.damageSources().explosion(this) : p_46053_;
        this.damageCalculator = p_46054_ == null ? this.makeDamageCalculator(p_46052_) : p_46054_;
@@ -16,7 +16,7 @@
     }
  
     private ExplosionDamageCalculator makeDamageCalculator(@Nullable Entity p_46063_) {
-@@ -207,6 +209,7 @@
+@@ -207,6 +_,7 @@
        int j2 = Mth.floor(this.z - (double)f2 - 1.0);
        int j1 = Mth.floor(this.z + (double)f2 + 1.0);
        List<Entity> list = this.level.getEntities(this.source, new AABB((double)k1, (double)i2, (double)j2, (double)l1, (double)i1, (double)j1));
@@ -24,7 +24,7 @@
        Vec3 vec3 = new Vec3(this.x, this.y, this.z);
  
        for(Entity entity : list) {
-@@ -280,7 +283,7 @@
+@@ -280,7 +_,7 @@
              if (!blockstate.isAir()) {
                 BlockPos blockpos1 = blockpos.immutable();
                 this.level.getProfiler().push("explosion_blocks");
@@ -33,7 +33,7 @@
                    Level $$9 = this.level;
                    if ($$9 instanceof ServerLevel serverlevel) {
                       BlockEntity blockentity = blockstate.hasBlockEntity() ? this.level.getBlockEntity(blockpos) : null;
-@@ -298,8 +301,7 @@
+@@ -298,8 +_,7 @@
                    }
                 }
  
@@ -43,7 +43,7 @@
                 this.level.getProfiler().pop();
              }
           }
-@@ -388,6 +390,15 @@
+@@ -388,6 +_,15 @@
  
     public List<BlockPos> getToBlow() {
        return this.toBlow;

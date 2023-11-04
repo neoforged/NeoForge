@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BoneMealItem.java
 +++ b/net/minecraft/world/item/BoneMealItem.java
-@@ -38,7 +38,7 @@
+@@ -38,7 +_,7 @@
        Level level = p_40637_.getLevel();
        BlockPos blockpos = p_40637_.getClickedPos();
        BlockPos blockpos1 = blockpos.relative(p_40637_.getClickedFace());
@@ -9,7 +9,7 @@
           if (!level.isClientSide) {
              p_40637_.getPlayer().gameEvent(GameEvent.ITEM_INTERACT_FINISH);
              level.levelEvent(1505, blockpos, 0);
-@@ -61,8 +61,17 @@
+@@ -61,8 +_,17 @@
        }
     }
  

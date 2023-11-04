@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/StemBlock.java
 +++ b/net/minecraft/world/level/block/StemBlock.java
-@@ -56,24 +56,25 @@
+@@ -56,24 +_,25 @@
  
     @Override
     public void randomTick(BlockState p_222538_, ServerLevel p_222539_, BlockPos p_222540_, RandomSource p_222541_) {
@@ -30,7 +30,7 @@
           }
        }
     }
-@@ -110,5 +111,11 @@
+@@ -110,5 +_,11 @@
  
     public StemGrownBlock getFruit() {
        return this.fruit;

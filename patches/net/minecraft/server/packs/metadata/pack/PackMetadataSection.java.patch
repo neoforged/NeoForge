@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/packs/metadata/pack/PackMetadataSection.java
 +++ b/net/minecraft/server/packs/metadata/pack/PackMetadataSection.java
-@@ -9,14 +9,61 @@
+@@ -9,14 +_,61 @@
  import net.minecraft.util.ExtraCodecs;
  import net.minecraft.util.InclusiveRange;
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/vehicle/Minecart.java
 +++ b/net/minecraft/world/entity/vehicle/Minecart.java
-@@ -19,6 +19,8 @@
+@@ -19,6 +_,8 @@
  
     @Override
     public InteractionResult interact(Player p_38483_, InteractionHand p_38484_) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -586,6 +586,7 @@
+@@ -586,6 +_,7 @@
     @Override
     public void die(DamageSource p_9035_) {
        this.gameEvent(GameEvent.ENTITY_DIE);
@@ -8,7 +8,7 @@
        boolean flag = this.level().getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES);
        if (flag) {
           Component component = this.getCombatTracker().getDeathMessage();
-@@ -732,11 +733,12 @@
+@@ -732,11 +_,12 @@
  
     @Nullable
     @Override
@@ -23,7 +23,7 @@
           this.unRide();
           this.serverLevel().removePlayerImmediately(this, Entity.RemovalReason.CHANGED_DIMENSION);
           if (!this.wonGame) {
-@@ -753,13 +755,14 @@
+@@ -753,13 +_,14 @@
           PlayerList playerlist = this.server.getPlayerList();
           playerlist.sendPlayerPermissionLevel(this);
           serverlevel.removePlayerImmediately(this, Entity.RemovalReason.CHANGED_DIMENSION);
@@ -41,7 +41,7 @@
                 this.createEndPlatform(p_9180_, BlockPos.containing(portalinfo.pos));
              }
  
-@@ -771,6 +774,9 @@
+@@ -771,6 +_,9 @@
              p_9180_.addDuringPortalTeleport(this);
              serverlevel.getProfiler().pop();
              this.triggerDimensionChangeTriggers(serverlevel);
@@ -51,7 +51,7 @@
              this.connection.send(new ClientboundPlayerAbilitiesPacket(this.getAbilities()));
              playerlist.sendLevelInfo(this, p_9180_);
              playerlist.sendAllPlayerInfo(this);
-@@ -779,10 +785,12 @@
+@@ -779,10 +_,12 @@
                 this.connection.send(new ClientboundUpdateMobEffectPacket(this.getId(), mobeffectinstance));
              }
  
@@ -64,7 +64,7 @@
           }
  
           return this;
-@@ -848,6 +856,9 @@
+@@ -848,6 +_,9 @@
  
     @Override
     public Either<Player.BedSleepingProblem, Unit> startSleepInBed(BlockPos p_9115_) {
@@ -74,7 +74,7 @@
        Direction direction = this.level().getBlockState(p_9115_).getValue(HorizontalDirectionalBlock.FACING);
        if (this.isSleeping() || !this.isAlive()) {
           return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
-@@ -859,7 +870,7 @@
+@@ -859,7 +_,7 @@
           return Either.left(Player.BedSleepingProblem.OBSTRUCTED);
        } else {
           this.setRespawnPosition(this.level().dimension(), p_9115_, this.getYRot(), false, true);
@@ -83,7 +83,7 @@
              return Either.left(Player.BedSleepingProblem.NOT_POSSIBLE_NOW);
           } else {
              if (!this.isCreative()) {
-@@ -898,6 +909,7 @@
+@@ -898,6 +_,7 @@
     }
  
     private boolean bedInRange(BlockPos p_9117_, Direction p_9118_) {
@@ -91,7 +91,7 @@
        return this.isReachableBedBlock(p_9117_) || this.isReachableBedBlock(p_9117_.relative(p_9118_.getOpposite()));
     }
  
-@@ -984,6 +996,7 @@
+@@ -984,6 +_,7 @@
              this.connection.send(new ClientboundOpenScreenPacket(abstractcontainermenu.containerId, abstractcontainermenu.getType(), p_9033_.getDisplayName()));
              this.initMenu(abstractcontainermenu);
              this.containerMenu = abstractcontainermenu;
@@ -99,7 +99,7 @@
              return OptionalInt.of(this.containerCounter);
           }
        }
-@@ -1004,6 +1017,7 @@
+@@ -1004,6 +_,7 @@
        this.connection.send(new ClientboundHorseScreenOpenPacket(this.containerCounter, p_9060_.getContainerSize(), p_9059_.getId()));
        this.containerMenu = new HorseInventoryMenu(this.containerCounter, this.getInventory(), p_9060_, p_9059_);
        this.initMenu(this.containerMenu);
@@ -107,7 +107,7 @@
     }
  
     @Override
-@@ -1032,6 +1046,7 @@
+@@ -1032,6 +_,7 @@
     public void doCloseContainer() {
        this.containerMenu.removed(this);
        this.inventoryMenu.transferState(this.containerMenu);
@@ -115,7 +115,7 @@
        this.containerMenu = this.inventoryMenu;
     }
  
-@@ -1170,6 +1185,15 @@
+@@ -1170,6 +_,15 @@
        this.setShoulderEntityLeft(p_9016_.getShoulderEntityLeft());
        this.setShoulderEntityRight(p_9016_.getShoulderEntityRight());
        this.setLastDeathLocation(p_9016_.getLastDeathLocation());
@@ -131,7 +131,7 @@
     }
  
     @Override
-@@ -1262,6 +1286,8 @@
+@@ -1262,6 +_,8 @@
     }
  
     public boolean setGameMode(GameType p_143404_) {
@@ -140,7 +140,7 @@
        if (!this.gameMode.changeGameModeForPlayer(p_143404_)) {
           return false;
        } else {
-@@ -1408,6 +1434,7 @@
+@@ -1408,6 +_,7 @@
     public void setCamera(@Nullable Entity p_9214_) {
        Entity entity = this.getCamera();
        this.camera = (Entity)(p_9214_ == null ? this : p_9214_);
@@ -148,7 +148,7 @@
        if (entity != this.camera) {
           Level level = this.camera.level();
           if (level instanceof ServerLevel serverlevel) {
-@@ -1445,7 +1472,11 @@
+@@ -1445,7 +_,11 @@
  
     @Nullable
     public Component getTabListDisplayName() {
@@ -161,7 +161,7 @@
     }
  
     @Override
-@@ -1471,21 +1502,23 @@
+@@ -1471,21 +_,23 @@
        this.stopRiding();
        if (p_9000_ == this.level()) {
           this.connection.teleport(p_9001_, p_9002_, p_9003_, p_9004_, p_9005_);
@@ -187,7 +187,7 @@
        }
     }
  
-@@ -1507,6 +1540,7 @@
+@@ -1507,6 +_,7 @@
     }
  
     public void setRespawnPosition(ResourceKey<Level> p_9159_, @Nullable BlockPos p_9160_, float p_9161_, boolean p_9162_, boolean p_9163_) {
@@ -195,7 +195,7 @@
        if (p_9160_ != null) {
           boolean flag = p_9160_.equals(this.respawnPosition) && p_9159_.equals(this.respawnDimension);
           if (p_9163_ && !flag) {
-@@ -1557,6 +1591,8 @@
+@@ -1557,6 +_,8 @@
        if (itementity == null) {
           return null;
        } else {
@@ -204,7 +204,7 @@
           this.level().addFreshEntity(itementity);
           ItemStack itemstack = itementity.getItem();
           if (p_9087_) {
-@@ -1571,6 +1607,75 @@
+@@ -1571,6 +_,75 @@
        }
     }
  
@@ -280,7 +280,7 @@
     public TextFilter getTextFilter() {
        return this.textFilter;
     }
-@@ -1635,9 +1740,12 @@
+@@ -1635,9 +_,12 @@
  
     public boolean drop(boolean p_182295_) {
        Inventory inventory = this.getInventory();

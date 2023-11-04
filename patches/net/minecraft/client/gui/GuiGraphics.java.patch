@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/GuiGraphics.java
 +++ b/net/minecraft/client/gui/GuiGraphics.java
-@@ -55,7 +55,7 @@
+@@ -55,7 +_,7 @@
  import org.joml.Vector2ic;
  
  @OnlyIn(Dist.CLIENT)
@@ -9,7 +9,7 @@
     public static final float MAX_GUI_Z = 10000.0F;
     public static final float MIN_GUI_Z = -10000.0F;
     private static final int EXTRA_SPACE_AFTER_FIRST_TOOLTIP_LINE = 2;
-@@ -265,6 +265,11 @@
+@@ -265,6 +_,11 @@
     }
  
     public int drawString(Font p_283343_, @Nullable String p_281896_, int p_283569_, int p_283418_, int p_281560_, boolean p_282130_) {
@@ -21,7 +21,7 @@
        if (p_281896_ == null) {
           return 0;
        } else {
-@@ -291,6 +296,11 @@
+@@ -291,6 +_,11 @@
     }
  
     public int drawString(Font p_282636_, FormattedCharSequence p_281596_, int p_281586_, int p_282816_, int p_281743_, boolean p_282394_) {
@@ -33,7 +33,7 @@
        int i = p_282636_.drawInBatch(
           p_281596_, (float)p_281586_, (float)p_282816_, p_281743_, p_282394_, this.pose.last().pose(), this.bufferSource, Font.DisplayMode.NORMAL, 0, 15728880
        );
-@@ -800,7 +810,7 @@
+@@ -800,7 +_,7 @@
           } catch (Throwable throwable) {
              CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering item");
              CrashReportCategory crashreportcategory = crashreport.addCategory("Item being rendered");
@@ -42,7 +42,7 @@
              crashreportcategory.setDetail("Item Damage", () -> String.valueOf(p_281675_.getDamageValue()));
              crashreportcategory.setDetail("Item NBT", () -> String.valueOf(p_281675_.getTag()));
              crashreportcategory.setDetail("Item Foil", () -> String.valueOf(p_281675_.hasFoil()));
-@@ -842,19 +852,26 @@
+@@ -842,19 +_,26 @@
           }
  
           this.pose.popPose();
@@ -74,7 +74,7 @@
        this.renderTooltipInternal(p_283128_, list, p_283678_, p_281696_, DefaultTooltipPositioner.INSTANCE);
     }
  
-@@ -863,7 +880,15 @@
+@@ -863,7 +_,15 @@
     }
  
     public void renderComponentTooltip(Font p_282739_, List<Component> p_281832_, int p_282191_, int p_282446_) {
@@ -91,7 +91,7 @@
     }
  
     public void renderTooltip(Font p_282192_, List<? extends FormattedCharSequence> p_282297_, int p_281680_, int p_283325_) {
-@@ -884,11 +909,13 @@
+@@ -884,11 +_,13 @@
  
     private void renderTooltipInternal(Font p_282675_, List<ClientTooltipComponent> p_282615_, int p_283230_, int p_283417_, ClientTooltipPositioner p_282442_) {
        if (!p_282615_.isEmpty()) {
@@ -106,7 +106,7 @@
              if (k > i) {
                 i = k;
              }
-@@ -898,18 +925,19 @@
+@@ -898,18 +_,19 @@
  
           int i2 = i;
           int j2 = j;
@@ -129,7 +129,7 @@
              k1 += clienttooltipcomponent1.getHeight() + (l1 == 0 ? 2 : 0);
           }
  
-@@ -917,7 +945,7 @@
+@@ -917,7 +_,7 @@
  
           for(int k2 = 0; k2 < p_282615_.size(); ++k2) {
              ClientTooltipComponent clienttooltipcomponent2 = p_282615_.get(k2);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/AbstractSkeleton.java
 +++ b/net/minecraft/world/entity/monster/AbstractSkeleton.java
-@@ -165,7 +165,7 @@
+@@ -165,7 +_,7 @@
        if (this.level() != null && !this.level().isClientSide) {
           this.goalSelector.removeGoal(this.meleeGoal);
           this.goalSelector.removeGoal(this.bowGoal);
@@ -9,7 +9,7 @@
           if (itemstack.is(Items.BOW)) {
              int i = 20;
              if (this.level().getDifficulty() != Difficulty.HARD) {
-@@ -182,8 +182,10 @@
+@@ -182,8 +_,10 @@
  
     @Override
     public void performRangedAttack(LivingEntity p_32141_, float p_32142_) {

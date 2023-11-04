@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/chat/SignableCommand.java
 +++ b/net/minecraft/network/chat/SignableCommand.java
-@@ -22,7 +22,8 @@
+@@ -22,7 +_,8 @@
           (commandcontextbuilder2 = commandcontextbuilder1.getChild()) != null;
           commandcontextbuilder1 = commandcontextbuilder2
        ) {

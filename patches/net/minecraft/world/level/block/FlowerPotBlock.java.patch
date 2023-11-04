@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/FlowerPotBlock.java
 +++ b/net/minecraft/world/level/block/FlowerPotBlock.java
-@@ -28,10 +28,31 @@
+@@ -28,10 +_,31 @@
     protected static final VoxelShape SHAPE = Block.box(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
     private final Block content;
  
@@ -35,7 +35,7 @@
     }
  
     @Override
-@@ -48,8 +69,7 @@
+@@ -48,8 +_,7 @@
     public InteractionResult use(BlockState p_53540_, Level p_53541_, BlockPos p_53542_, Player p_53543_, InteractionHand p_53544_, BlockHitResult p_53545_) {
        ItemStack itemstack = p_53543_.getItemInHand(p_53544_);
        Item item = itemstack.getItem();
@@ -45,7 +45,7 @@
        boolean flag = blockstate.is(Blocks.AIR);
        boolean flag1 = this.isEmpty();
        if (flag != flag1) {
-@@ -67,7 +87,7 @@
+@@ -67,7 +_,7 @@
                 p_53543_.drop(itemstack1, false);
              }
  
@@ -54,7 +54,7 @@
           }
  
           p_53541_.gameEvent(p_53543_, GameEvent.BLOCK_CHANGE, p_53542_);
-@@ -94,11 +114,32 @@
+@@ -94,11 +_,32 @@
     }
  
     public Block getContent() {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/BaseRailBlock.java
 +++ b/net/minecraft/world/level/block/BaseRailBlock.java
-@@ -19,7 +19,7 @@
+@@ -19,7 +_,7 @@
  import net.minecraft.world.phys.shapes.CollisionContext;
  import net.minecraft.world.phys.shapes.VoxelShape;
  
@@ -9,7 +9,7 @@
     protected static final VoxelShape FLAT_AABB = Block.box(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
     protected static final VoxelShape HALF_BLOCK_AABB = Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-@@ -45,6 +45,7 @@
+@@ -45,6 +_,7 @@
     @Override
     public VoxelShape getShape(BlockState p_49403_, BlockGetter p_49404_, BlockPos p_49405_, CollisionContext p_49406_) {
        RailShape railshape = p_49403_.is(this) ? p_49403_.getValue(this.getShapeProperty()) : null;
@@ -17,7 +17,7 @@
        return railshape != null && railshape.isAscending() ? HALF_BLOCK_AABB : FLAT_AABB;
     }
  
-@@ -72,7 +73,7 @@
+@@ -72,7 +_,7 @@
     @Override
     public void neighborChanged(BlockState p_49377_, Level p_49378_, BlockPos p_49379_, Block p_49380_, BlockPos p_49381_, boolean p_49382_) {
        if (!p_49378_.isClientSide && p_49378_.getBlockState(p_49379_).is(this)) {
@@ -26,7 +26,7 @@
           if (shouldBeRemoved(p_49379_, p_49378_, railshape)) {
              dropResources(p_49377_, p_49378_, p_49379_);
              p_49378_.removeBlock(p_49379_, p_49382_);
-@@ -117,7 +118,7 @@
+@@ -117,7 +_,7 @@
     public void onRemove(BlockState p_49384_, Level p_49385_, BlockPos p_49386_, BlockState p_49387_, boolean p_49388_) {
        if (!p_49388_) {
           super.onRemove(p_49384_, p_49385_, p_49386_, p_49387_, p_49388_);
@@ -35,7 +35,7 @@
              p_49385_.updateNeighborsAt(p_49386_.above(), this);
           }
  
-@@ -138,6 +139,11 @@
+@@ -138,6 +_,11 @@
        return blockstate.setValue(this.getShapeProperty(), flag1 ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH).setValue(WATERLOGGED, Boolean.valueOf(flag));
     }
  
@@ -47,7 +47,7 @@
     public abstract Property<RailShape> getShapeProperty();
  
     @Override
-@@ -154,5 +160,15 @@
+@@ -154,5 +_,15 @@
     @Override
     public FluidState getFluidState(BlockState p_152158_) {
        return p_152158_.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(p_152158_);

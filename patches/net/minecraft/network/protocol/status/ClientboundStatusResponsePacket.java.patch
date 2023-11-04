@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/status/ClientboundStatusResponsePacket.java
 +++ b/net/minecraft/network/protocol/status/ClientboundStatusResponsePacket.java
-@@ -3,13 +3,19 @@
+@@ -3,13 +_,19 @@
  import net.minecraft.network.FriendlyByteBuf;
  import net.minecraft.network.protocol.Packet;
  

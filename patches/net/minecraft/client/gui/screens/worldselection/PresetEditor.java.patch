@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/worldselection/PresetEditor.java
 +++ b/net/minecraft/client/gui/screens/worldselection/PresetEditor.java
-@@ -29,6 +29,10 @@
+@@ -29,6 +_,10 @@
  
  @OnlyIn(Dist.CLIENT)
  public interface PresetEditor {

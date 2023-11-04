@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/StructureTagsProvider.java
 +++ b/net/minecraft/data/tags/StructureTagsProvider.java
-@@ -9,8 +9,13 @@
+@@ -9,8 +_,13 @@
  import net.minecraft.world.level.levelgen.structure.Structure;
  
  public class StructureTagsProvider extends TagsProvider<Structure> {

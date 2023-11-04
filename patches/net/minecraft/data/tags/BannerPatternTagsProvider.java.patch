@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/BannerPatternTagsProvider.java
 +++ b/net/minecraft/data/tags/BannerPatternTagsProvider.java
-@@ -9,8 +9,13 @@
+@@ -9,8 +_,13 @@
  import net.minecraft.world.level.block.entity.BannerPatterns;
  
  public class BannerPatternTagsProvider extends TagsProvider<BannerPattern> {

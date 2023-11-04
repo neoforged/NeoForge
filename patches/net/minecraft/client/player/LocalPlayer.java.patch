@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/player/LocalPlayer.java
 +++ b/net/minecraft/client/player/LocalPlayer.java
-@@ -158,6 +158,7 @@
+@@ -158,6 +_,7 @@
  
     @Override
     public boolean hurt(DamageSource p_108662_, float p_108663_) {
@@ -8,7 +8,7 @@
        return false;
     }
  
-@@ -294,6 +295,7 @@
+@@ -294,6 +_,7 @@
        ServerboundPlayerActionPacket.Action serverboundplayeractionpacket$action = p_108701_
           ? ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS
           : ServerboundPlayerActionPacket.Action.DROP_ITEM;
@@ -16,7 +16,7 @@
        ItemStack itemstack = this.getInventory().removeFromSelected(p_108701_);
        this.connection.send(new ServerboundPlayerActionPacket(serverboundplayeractionpacket$action, BlockPos.ZERO, Direction.DOWN));
        return !itemstack.isEmpty();
-@@ -489,7 +491,14 @@
+@@ -489,7 +_,14 @@
  
     @Override
     public void playSound(SoundEvent p_108651_, float p_108652_, float p_108653_) {
@@ -32,7 +32,7 @@
     }
  
     @Override
-@@ -681,6 +690,7 @@
+@@ -681,6 +_,7 @@
           && (this.isShiftKeyDown() || !this.isSleeping() && !this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.STANDING));
        float f = Mth.clamp(0.3F + EnchantmentHelper.getSneakingSpeedBonus(this), 0.0F, 1.0F);
        this.input.tick(this.isMovingSlowly(), f);
@@ -40,7 +40,7 @@
        this.minecraft.getTutorial().onInput(this.input);
        if (this.isUsingItem() && !this.isPassenger()) {
           this.input.leftImpulse *= 0.2F;
-@@ -709,7 +719,7 @@
+@@ -709,7 +_,7 @@
        boolean flag4 = this.canStartSprinting();
        boolean flag5 = this.isPassenger() ? this.getVehicle().onGround() : this.onGround();
        boolean flag6 = !flag1 && !flag2;
@@ -49,7 +49,7 @@
           if (this.sprintTriggerTime <= 0 && !this.minecraft.options.keySprint.isDown()) {
              this.sprintTriggerTime = 7;
           } else {
-@@ -717,15 +727,15 @@
+@@ -717,15 +_,15 @@
           }
        }
  
@@ -68,7 +68,7 @@
                 this.setSprinting(false);
              }
           } else if (flag8) {
-@@ -755,14 +765,15 @@
+@@ -755,14 +_,15 @@
  
        if (this.input.jumping && !flag9 && !flag && !this.getAbilities().flying && !this.isPassenger() && !this.onClimbable()) {
           ItemStack itemstack = this.getItemBySlot(EquipmentSlot.CHEST);
@@ -87,7 +87,7 @@
        }
  
        if (this.isEyeInFluid(FluidTags.WATER)) {
-@@ -864,6 +875,7 @@
+@@ -864,6 +_,7 @@
     @Override
     public void rideTick() {
        super.rideTick();
@@ -95,7 +95,7 @@
        this.handsBusy = false;
        Entity entity = this.getControlledVehicle();
        if (entity instanceof Boat boat) {
-@@ -1110,6 +1122,18 @@
+@@ -1110,6 +_,18 @@
        } else {
           return super.getRopeHoldPosition(p_108758_);
        }

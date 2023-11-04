@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/ItemBlockRenderTypes.java
 +++ b/net/minecraft/client/renderer/ItemBlockRenderTypes.java
-@@ -20,6 +20,7 @@
+@@ -20,6 +_,7 @@
  
  @OnlyIn(Dist.CLIENT)
  public class ItemBlockRenderTypes {
@@ -8,7 +8,7 @@
     private static final Map<Block, RenderType> TYPE_BY_BLOCK = Util.make(Maps.newHashMap(), p_301667_ -> {
        RenderType rendertype = RenderType.tripwire();
        p_301667_.put(Blocks.TRIPWIRE, rendertype);
-@@ -310,6 +311,7 @@
+@@ -310,6 +_,7 @@
        p_301667_.put(Blocks.BUBBLE_COLUMN, rendertype3);
        p_301667_.put(Blocks.TINTED_GLASS, rendertype3);
     });
@@ -16,7 +16,7 @@
     private static final Map<Fluid, RenderType> TYPE_BY_FLUID = Util.make(Maps.newHashMap(), p_109290_ -> {
        RenderType rendertype = RenderType.translucent();
        p_109290_.put(Fluids.FLOWING_WATER, rendertype);
-@@ -317,6 +319,8 @@
+@@ -317,6 +_,8 @@
     });
     private static boolean renderCutout;
  
@@ -25,7 +25,7 @@
     public static RenderType getChunkRenderType(BlockState p_109283_) {
        Block block = p_109283_.getBlock();
        if (block instanceof LeavesBlock) {
-@@ -327,6 +331,8 @@
+@@ -327,6 +_,8 @@
        }
     }
  
@@ -34,7 +34,7 @@
     public static RenderType getMovingBlockRenderType(BlockState p_109294_) {
        Block block = p_109294_.getBlock();
        if (block instanceof LeavesBlock) {
-@@ -341,6 +347,8 @@
+@@ -341,6 +_,8 @@
        }
     }
  
@@ -43,7 +43,7 @@
     public static RenderType getRenderType(BlockState p_109285_, boolean p_109286_) {
        RenderType rendertype = getChunkRenderType(p_109285_);
        if (rendertype == RenderType.translucent()) {
-@@ -354,6 +362,8 @@
+@@ -354,6 +_,8 @@
        }
     }
  
@@ -52,7 +52,7 @@
     public static RenderType getRenderType(ItemStack p_109280_, boolean p_109281_) {
        Item item = p_109280_.getItem();
        if (item instanceof BlockItem) {
-@@ -365,8 +375,73 @@
+@@ -365,8 +_,73 @@
     }
  
     public static RenderType getRenderLayer(FluidState p_109288_) {

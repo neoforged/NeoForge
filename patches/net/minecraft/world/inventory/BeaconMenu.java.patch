@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/BeaconMenu.java
 +++ b/net/minecraft/world/inventory/BeaconMenu.java
-@@ -97,10 +97,8 @@
+@@ -97,10 +_,8 @@
              }
  
              slot.onQuickCraft(itemstack1, itemstack);

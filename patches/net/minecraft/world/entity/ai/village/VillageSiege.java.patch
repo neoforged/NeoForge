@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/village/VillageSiege.java
 +++ b/net/minecraft/world/entity/ai/village/VillageSiege.java
-@@ -77,7 +77,9 @@
+@@ -77,7 +_,9 @@
                    this.spawnX = blockpos.getX() + Mth.floor(Mth.cos(f) * 32.0F);
                    this.spawnY = blockpos.getY();
                    this.spawnZ = blockpos.getZ() + Mth.floor(Mth.sin(f) * 32.0F);
@@ -11,7 +11,7 @@
                       this.nextSpawnTime = 0;
                       this.zombiesToSpawn = 20;
                       break;
-@@ -97,7 +99,7 @@
+@@ -97,7 +_,7 @@
        if (vec3 != null) {
           Zombie zombie;
           try {

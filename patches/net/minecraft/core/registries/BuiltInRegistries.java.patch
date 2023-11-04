@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/registries/BuiltInRegistries.java
 +++ b/net/minecraft/core/registries/BuiltInRegistries.java
-@@ -110,135 +110,185 @@
+@@ -110,135 +_,185 @@
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Map<ResourceLocation, Supplier<?>> LOADERS = Maps.newLinkedHashMap();
     public static final ResourceLocation ROOT_REGISTRY_NAME = new ResourceLocation("root");
@@ -307,7 +307,7 @@
     public static final Registry<CatVariant> CAT_VARIANT = registerSimple(Registries.CAT_VARIANT, CatVariant::bootstrap);
     public static final Registry<FrogVariant> FROG_VARIANT = registerSimple(Registries.FROG_VARIANT, p_259261_ -> FrogVariant.TEMPERATE);
     public static final Registry<BannerPattern> BANNER_PATTERN = registerSimple(Registries.BANNER_PATTERN, BannerPatterns::bootstrap);
-@@ -246,62 +296,58 @@
+@@ -246,62 +_,58 @@
     public static final Registry<String> DECORATED_POT_PATTERNS = registerSimple(Registries.DECORATED_POT_PATTERNS, DecoratedPotPatterns::bootstrap);
     public static final Registry<CreativeModeTab> CREATIVE_MODE_TAB = registerSimple(Registries.CREATIVE_MODE_TAB, CreativeModeTabs::bootstrap);
     public static final Registry<? extends Registry<?>> REGISTRY = WRITABLE_REGISTRY;
@@ -387,7 +387,7 @@
     private static void createContents() {
        LOADERS.forEach((p_259863_, p_259387_) -> {
           if (p_259387_.get() == null) {
-@@ -309,30 +355,47 @@
+@@ -309,30 +_,47 @@
           }
        });
     }

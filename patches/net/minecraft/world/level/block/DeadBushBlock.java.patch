@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/DeadBushBlock.java
 +++ b/net/minecraft/world/level/block/DeadBushBlock.java
-@@ -8,7 +8,7 @@
+@@ -8,7 +_,7 @@
  import net.minecraft.world.phys.shapes.CollisionContext;
  import net.minecraft.world.phys.shapes.VoxelShape;
  

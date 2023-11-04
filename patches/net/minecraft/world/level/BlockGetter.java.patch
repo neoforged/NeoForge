@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/BlockGetter.java
 +++ b/net/minecraft/world/level/BlockGetter.java
-@@ -18,7 +18,7 @@
+@@ -18,7 +_,7 @@
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.phys.shapes.VoxelShape;
  
@@ -9,7 +9,7 @@
     @Nullable
     BlockEntity getBlockEntity(BlockPos p_45570_);
  
-@@ -32,7 +32,7 @@
+@@ -32,7 +_,7 @@
     FluidState getFluidState(BlockPos p_45569_);
  
     default int getLightEmission(BlockPos p_45572_) {

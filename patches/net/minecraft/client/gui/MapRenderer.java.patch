@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/MapRenderer.java
 +++ b/net/minecraft/client/gui/MapRenderer.java
-@@ -119,6 +119,7 @@
+@@ -119,6 +_,7 @@
  
           for(MapDecoration mapdecoration : this.data.getDecorations()) {
              if (!p_93294_ || mapdecoration.renderOnFrame()) {

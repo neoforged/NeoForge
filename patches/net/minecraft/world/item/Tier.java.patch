@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/Tier.java
 +++ b/net/minecraft/world/item/Tier.java
-@@ -9,9 +9,12 @@
+@@ -9,9 +_,12 @@
  
     float getAttackDamageBonus();
  

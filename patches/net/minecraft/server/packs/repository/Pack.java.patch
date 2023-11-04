@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/packs/repository/Pack.java
 +++ b/net/minecraft/server/packs/repository/Pack.java
-@@ -29,6 +29,7 @@
+@@ -29,6 +_,7 @@
     private final Pack.Position defaultPosition;
     private final boolean required;
     private final boolean fixedPosition;
@@ -8,7 +8,7 @@
     private final PackSource packSource;
  
     @Nullable
-@@ -77,6 +78,7 @@
+@@ -77,6 +_,7 @@
        this.defaultPosition = p_251298_;
        this.fixedPosition = p_249753_;
        this.packSource = p_251608_;
@@ -16,7 +16,7 @@
     }
  
     @Nullable
-@@ -96,7 +98,7 @@
+@@ -96,7 +_,7 @@
              PackCompatibility packcompatibility = PackCompatibility.forVersion(inclusiverange, p_294759_);
              OverlayMetadataSection overlaymetadatasection = packresources.getMetadataSection(OverlayMetadataSection.TYPE);
              List<String> list = overlaymetadatasection != null ? overlaymetadatasection.overlaysForVersion(p_294759_) : List.of();
@@ -25,7 +25,7 @@
           }
  
           return pack$info;
-@@ -170,7 +172,8 @@
+@@ -170,7 +_,8 @@
        return this.packSource;
     }
  
@@ -35,7 +35,7 @@
     public boolean equals(Object p_10448_) {
        if (this == p_10448_) {
           return true;
-@@ -187,7 +190,10 @@
+@@ -187,7 +_,10 @@
        return this.id.hashCode();
     }
  

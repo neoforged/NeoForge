@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/RegistryDataLoader.java
 +++ b/net/minecraft/resources/RegistryDataLoader.java
-@@ -140,7 +140,7 @@
+@@ -140,7 +_,7 @@
     }
  
     private static String registryDirPath(ResourceLocation p_252033_) {
@@ -9,7 +9,7 @@
     }
  
     static <E> void loadRegistryContents(
-@@ -153,7 +153,8 @@
+@@ -153,7 +_,8 @@
     ) {
        String s = registryDirPath(p_255792_.location());
        FileToIdConverter filetoidconverter = FileToIdConverter.json(s);
@@ -19,7 +19,7 @@
  
        for(Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(p_256349_).entrySet()) {
           ResourceLocation resourcelocation = entry.getKey();
-@@ -162,10 +163,12 @@
+@@ -162,10 +_,12 @@
  
           try (Reader reader = resource.openAsReader()) {
              JsonElement jsonelement = JsonParser.parseReader(reader);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/CactusBlock.java
 +++ b/net/minecraft/world/level/block/CactusBlock.java
-@@ -20,7 +20,7 @@
+@@ -20,7 +_,7 @@
  import net.minecraft.world.phys.shapes.CollisionContext;
  import net.minecraft.world.phys.shapes.VoxelShape;
  
@@ -9,7 +9,7 @@
     public static final IntegerProperty AGE = BlockStateProperties.AGE_15;
     public static final int MAX_AGE = 15;
     protected static final int AABB_OFFSET = 1;
-@@ -34,6 +34,7 @@
+@@ -34,6 +_,7 @@
  
     @Override
     public void tick(BlockState p_220908_, ServerLevel p_220909_, BlockPos p_220910_, RandomSource p_220911_) {
@@ -17,7 +17,7 @@
        if (!p_220908_.canSurvive(p_220909_, p_220910_)) {
           p_220909_.destroyBlock(p_220910_, true);
        }
-@@ -51,13 +52,16 @@
+@@ -51,13 +_,16 @@
  
           if (i < 3) {
              int j = p_220913_.getValue(AGE);
@@ -36,7 +36,7 @@
              }
           }
        }
-@@ -92,7 +96,7 @@
+@@ -92,7 +_,7 @@
        }
  
        BlockState blockstate1 = p_51154_.getBlockState(p_51155_.below());
@@ -45,7 +45,7 @@
     }
  
     @Override
-@@ -108,5 +112,15 @@
+@@ -108,5 +_,15 @@
     @Override
     public boolean isPathfindable(BlockState p_51143_, BlockGetter p_51144_, BlockPos p_51145_, PathComputationType p_51146_) {
        return false;

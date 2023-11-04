@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
 +++ b/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
-@@ -56,6 +56,8 @@
+@@ -56,6 +_,8 @@
           Entity entity = this.getOwner();
           if (entity instanceof ServerPlayer serverplayer) {
              if (serverplayer.connection.isAcceptingMessages() && serverplayer.level() == this.level() && !serverplayer.isSleeping()) {
@@ -9,7 +9,7 @@
                 if (this.random.nextFloat() < 0.05F && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
                    Endermite endermite = EntityType.ENDERMITE.create(this.level());
                    if (endermite != null) {
-@@ -70,8 +72,10 @@
+@@ -70,8 +_,10 @@
                    entity.teleportTo(this.getX(), this.getY(), this.getZ());
                 }
  
@@ -21,7 +21,7 @@
              }
           } else if (entity != null) {
              entity.teleportTo(this.getX(), this.getY(), this.getZ());
-@@ -94,12 +98,12 @@
+@@ -94,12 +_,12 @@
  
     @Nullable
     @Override

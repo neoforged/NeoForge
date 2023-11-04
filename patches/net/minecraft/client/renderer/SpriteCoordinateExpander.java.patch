@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/SpriteCoordinateExpander.java
 +++ b/net/minecraft/client/renderer/SpriteCoordinateExpander.java
-@@ -17,32 +17,38 @@
+@@ -17,32 +_,38 @@
  
     @Override
     public VertexConsumer vertex(double p_110801_, double p_110802_, double p_110803_) {

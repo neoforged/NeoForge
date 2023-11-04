@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/LootDataManager.java
 +++ b/net/minecraft/world/level/storage/loot/LootDataManager.java
-@@ -22,7 +22,7 @@
+@@ -22,7 +_,7 @@
  import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
  import org.slf4j.Logger;
  
@@ -9,7 +9,7 @@
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Gson GSON = new GsonBuilder().create();
     public static final LootDataId<LootTable> EMPTY_LOOT_TABLE_KEY = new LootDataId<>(LootDataType.TABLE, BuiltInLootTables.EMPTY);
-@@ -38,22 +38,33 @@
+@@ -38,22 +_,33 @@
        Executor p_279148_,
        Executor p_279169_
     ) {

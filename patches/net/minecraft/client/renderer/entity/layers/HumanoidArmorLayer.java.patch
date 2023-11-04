@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/layers/HumanoidArmorLayer.java
 +++ b/net/minecraft/client/renderer/entity/layers/HumanoidArmorLayer.java
-@@ -65,22 +65,25 @@
+@@ -65,22 +_,25 @@
           if (armoritem.getEquipmentSlot() == p_117122_) {
              this.getParentModel().copyPropertiesTo(p_117124_);
              this.setPartVisibility(p_117124_, p_117122_);
@@ -34,7 +34,7 @@
              }
           }
        }
-@@ -121,19 +124,28 @@
+@@ -121,19 +_,28 @@
        float p_289693_,
        @Nullable String p_289682_
     ) {
@@ -64,7 +64,7 @@
        p_289659_.renderToBuffer(p_289673_, p_289654_.getBuffer(RenderType.armorEntityGlint()), p_289649_, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
     }
  
-@@ -145,6 +157,7 @@
+@@ -145,6 +_,7 @@
        return p_117129_ == EquipmentSlot.LEGS;
     }
  
@@ -72,7 +72,7 @@
     private ResourceLocation getArmorLocation(ArmorItem p_117081_, boolean p_117082_, @Nullable String p_117083_) {
        String s = "textures/models/armor/"
           + p_117081_.getMaterial().getName()
-@@ -154,4 +167,45 @@
+@@ -154,4 +_,45 @@
           + ".png";
        return ARMOR_LOCATION_CACHE.computeIfAbsent(s, ResourceLocation::new);
     }

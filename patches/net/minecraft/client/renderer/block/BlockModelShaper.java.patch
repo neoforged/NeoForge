@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/BlockModelShaper.java
 +++ b/net/minecraft/client/renderer/block/BlockModelShaper.java
-@@ -22,8 +22,15 @@
+@@ -22,8 +_,15 @@
        this.modelManager = p_110880_;
     }
  

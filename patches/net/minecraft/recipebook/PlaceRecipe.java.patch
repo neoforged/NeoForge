@@ -1,6 +1,6 @@
 --- a/net/minecraft/recipebook/PlaceRecipe.java
 +++ b/net/minecraft/recipebook/PlaceRecipe.java
-@@ -11,9 +11,9 @@
+@@ -11,9 +_,9 @@
        int i = p_135409_;
        int j = p_135410_;
        Recipe<?> recipe = p_301225_.value();

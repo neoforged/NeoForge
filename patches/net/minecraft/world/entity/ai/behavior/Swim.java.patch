@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/behavior/Swim.java
 +++ b/net/minecraft/world/entity/ai/behavior/Swim.java
-@@ -14,7 +14,7 @@
+@@ -14,7 +_,7 @@
     }
  
     protected boolean checkExtraStartConditions(ServerLevel p_24388_, Mob p_24389_) {

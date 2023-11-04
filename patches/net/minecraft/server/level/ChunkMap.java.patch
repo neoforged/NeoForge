@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -410,6 +410,7 @@
+@@ -410,6 +_,7 @@
              this.modified = true;
           }
  
@@ -8,7 +8,7 @@
           return p_140179_;
        }
     }
-@@ -524,6 +525,7 @@
+@@ -524,6 +_,7 @@
              if (this.pendingUnloads.remove(p_140182_, p_140183_) && p_203002_ != null) {
                 if (p_203002_ instanceof LevelChunk) {
                    ((LevelChunk)p_203002_).setLoaded(false);
@@ -16,7 +16,7 @@
                 }
  
                 this.save(p_203002_);
-@@ -729,11 +731,22 @@
+@@ -729,11 +_,22 @@
              }
  
              levelchunk.setFullStatus(() -> ChunkLevel.fullStatus(p_140384_.getTicketLevel()));
@@ -39,7 +39,7 @@
              }
  
              return levelchunk;
-@@ -836,6 +849,7 @@
+@@ -836,6 +_,7 @@
  
              this.level.getProfiler().incrementCounter("chunkSave");
              CompoundTag compoundtag = ChunkSerializer.write(this.level, p_140259_);
@@ -47,7 +47,7 @@
              this.write(chunkpos, compoundtag);
              this.markPosition(chunkpos, chunkstatus.getChunkType());
              return true;
-@@ -1089,6 +1103,7 @@
+@@ -1089,6 +_,7 @@
              this.playerMap.unIgnorePlayer(p_140185_);
           }
  
@@ -55,7 +55,7 @@
           this.updateChunkTracking(p_140185_);
        }
     }
-@@ -1141,7 +1156,7 @@
+@@ -1141,7 +_,7 @@
     }
  
     protected void addEntity(Entity p_140200_) {

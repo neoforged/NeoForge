@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/registries/RegistriesDatapackGenerator.java
 +++ b/net/minecraft/data/registries/RegistriesDatapackGenerator.java
-@@ -19,16 +19,32 @@
+@@ -19,16 +_,32 @@
  import net.minecraft.resources.ResourceKey;
  import org.slf4j.Logger;
  
@@ -33,7 +33,7 @@
     @Override
     public CompletableFuture<?> run(CachedOutput p_255785_) {
        return this.registries
-@@ -36,8 +52,7 @@
+@@ -36,8 +_,7 @@
              p_256533_ -> {
                 DynamicOps<JsonElement> dynamicops = RegistryOps.create(JsonOps.INSTANCE, p_256533_);
                 return CompletableFuture.allOf(
@@ -43,7 +43,7 @@
                       .flatMap(p_256552_ -> this.dumpRegistryCap(p_255785_, p_256533_, dynamicops, p_256552_).stream())
                       .toArray(p_255809_ -> new CompletableFuture[p_255809_])
                 );
-@@ -52,9 +67,10 @@
+@@ -52,9 +_,10 @@
        return p_256492_.lookup(resourcekey)
           .map(
              p_255847_ -> {

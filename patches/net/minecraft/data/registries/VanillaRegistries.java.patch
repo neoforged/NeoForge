@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/registries/VanillaRegistries.java
 +++ b/net/minecraft/data/registries/VanillaRegistries.java
-@@ -56,6 +56,7 @@
+@@ -56,6 +_,7 @@
        .add(Registries.TRIM_PATTERN, TrimPatterns::bootstrap)
        .add(Registries.TRIM_MATERIAL, TrimMaterials::bootstrap)
        .add(Registries.DAMAGE_TYPE, DamageTypes::bootstrap);

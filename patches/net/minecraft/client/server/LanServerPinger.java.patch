@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/server/LanServerPinger.java
 +++ b/net/minecraft/client/server/LanServerPinger.java
-@@ -12,11 +12,11 @@
+@@ -12,11 +_,11 @@
  import net.neoforged.api.distmarker.OnlyIn;
  import org.slf4j.Logger;
  
@@ -14,7 +14,7 @@
     public static final int PING_PORT = 4445;
     private static final long PING_INTERVAL = 1500L;
     private final String motd;
-@@ -40,7 +40,7 @@
+@@ -40,7 +_,7 @@
  
        while(!this.isInterrupted() && this.isRunning) {
           try {

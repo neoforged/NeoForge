@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ArrowItem.java
 +++ b/net/minecraft/world/item/ArrowItem.java
-@@ -15,4 +15,9 @@
+@@ -15,4 +_,9 @@
        arrow.setEffectsFromItem(p_40514_);
        return arrow;
     }

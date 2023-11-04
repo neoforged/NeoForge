@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/piglin/Piglin.java
 +++ b/net/minecraft/world/entity/monster/piglin/Piglin.java
-@@ -355,7 +355,7 @@
+@@ -355,7 +_,7 @@
        } else if (this.isChargingCrossbow()) {
           return PiglinArmPose.CROSSBOW_CHARGE;
        } else {
@@ -9,7 +9,7 @@
        }
     }
  
-@@ -401,7 +401,7 @@
+@@ -401,7 +_,7 @@
     }
  
     protected void holdInOffHand(ItemStack p_34786_) {
@@ -18,7 +18,7 @@
           this.setItemSlot(EquipmentSlot.OFFHAND, p_34786_);
           this.setGuaranteedDrop(EquipmentSlot.OFFHAND);
        } else {
-@@ -411,7 +411,7 @@
+@@ -411,7 +_,7 @@
  
     @Override
     public boolean wantsToPickUp(ItemStack p_34777_) {

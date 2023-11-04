@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/ThrowableProjectile.java
 +++ b/net/minecraft/world/entity/projectile/ThrowableProjectile.java
-@@ -60,7 +60,7 @@
+@@ -60,7 +_,7 @@
           }
        }
  

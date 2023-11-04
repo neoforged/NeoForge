@@ -1,6 +1,6 @@
 --- a/com/mojang/math/Transformation.java
 +++ b/com/mojang/math/Transformation.java
-@@ -13,7 +13,7 @@
+@@ -13,7 +_,7 @@
  import org.joml.Quaternionf;
  import org.joml.Vector3f;
  
@@ -9,7 +9,7 @@
     private final Matrix4f matrix;
     public static final Codec<Transformation> CODEC = RecordCodecBuilder.create(
        p_269604_ -> p_269604_.group(
-@@ -156,6 +156,19 @@
+@@ -156,6 +_,19 @@
     public int hashCode() {
        return Objects.hash(this.matrix);
     }

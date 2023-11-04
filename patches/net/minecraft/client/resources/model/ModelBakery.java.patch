@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/ModelBakery.java
 +++ b/net/minecraft/client/resources/model/ModelBakery.java
-@@ -164,6 +164,13 @@
+@@ -164,6 +_,13 @@
        p_252014_.popPush("special");
        this.loadTopLevel(ItemRenderer.TRIDENT_IN_HAND_MODEL);
        this.loadTopLevel(ItemRenderer.SPYGLASS_IN_HAND_MODEL);
@@ -14,7 +14,7 @@
        this.topLevelModels.values().forEach(p_247954_ -> p_247954_.resolveParents(this::getModel));
        p_252014_.pop();
     }
-@@ -482,7 +489,16 @@
+@@ -482,7 +_,16 @@
        }
  
        @Override
@@ -31,7 +31,7 @@
           ModelBakery.BakedCacheKey modelbakery$bakedcachekey = new ModelBakery.BakedCacheKey(p_252176_, p_249765_.getRotation(), p_249765_.isUvLocked());
           BakedModel bakedmodel = ModelBakery.this.bakedCache.get(modelbakery$bakedcachekey);
           if (bakedmodel != null) {
-@@ -490,12 +506,10 @@
+@@ -490,12 +_,10 @@
           } else {
              UnbakedModel unbakedmodel = this.getModel(p_252176_);
              if (unbakedmodel instanceof BlockModel blockmodel && blockmodel.getRootModel() == ModelBakery.GENERATION_MARKER) {

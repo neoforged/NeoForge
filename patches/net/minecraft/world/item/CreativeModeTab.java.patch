@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/CreativeModeTab.java
 +++ b/net/minecraft/world/item/CreativeModeTab.java
-@@ -15,6 +15,8 @@
+@@ -15,6 +_,8 @@
  import net.minecraft.world.level.ItemLike;
  
  public class CreativeModeTab {
@@ -9,7 +9,7 @@
     private final Component displayName;
     String backgroundSuffix = "items.png";
     boolean canScroll = true;
-@@ -31,23 +33,43 @@
+@@ -31,23 +_,43 @@
     private Consumer<List<ItemStack>> searchTreeBuilder;
     private final Supplier<ItemStack> iconGenerator;
     private final CreativeModeTab.DisplayItemsGenerator displayItemsGenerator;
@@ -63,7 +63,7 @@
     public static CreativeModeTab.Builder builder(CreativeModeTab.Row p_259342_, int p_260312_) {
        return new CreativeModeTab.Builder(p_259342_, p_260312_);
     }
-@@ -64,6 +86,10 @@
+@@ -64,6 +_,10 @@
        return this.iconItemStack;
     }
  
@@ -74,7 +74,7 @@
     public String getBackgroundSuffix() {
        return this.backgroundSuffix;
     }
-@@ -105,7 +131,7 @@
+@@ -105,7 +_,7 @@
        ResourceKey<CreativeModeTab> resourcekey = BuiltInRegistries.CREATIVE_MODE_TAB
           .getResourceKey(this)
           .orElseThrow(() -> new IllegalStateException("Unregistered creative tab: " + this));
@@ -83,7 +83,7 @@
        this.displayItems = creativemodetab$itemdisplaybuilder.tabContents;
        this.displayItemsSearchTab = creativemodetab$itemdisplaybuilder.searchTabContents;
        this.rebuildSearchTree();
-@@ -133,9 +159,40 @@
+@@ -133,9 +_,40 @@
        }
     }
  
@@ -125,7 +125,7 @@
        private final CreativeModeTab.Row row;
        private final int column;
        private Component displayName = Component.empty();
-@@ -146,6 +203,18 @@
+@@ -146,6 +_,18 @@
        private boolean alignedRight = false;
        private CreativeModeTab.Type type = CreativeModeTab.Type.CATEGORY;
        private String backgroundSuffix = "items.png";
@@ -144,7 +144,7 @@
  
        public Builder(CreativeModeTab.Row p_259171_, int p_259661_) {
           this.row = p_259171_;
-@@ -184,11 +253,103 @@
+@@ -184,11 +_,103 @@
  
        protected CreativeModeTab.Builder type(CreativeModeTab.Type p_259283_) {
           this.type = p_259283_;
@@ -249,7 +249,7 @@
           return this;
        }
  
-@@ -196,13 +357,12 @@
+@@ -196,13 +_,12 @@
           if ((this.type == CreativeModeTab.Type.HOTBAR || this.type == CreativeModeTab.Type.INVENTORY) && this.displayItemsGenerator != EMPTY_GENERATOR) {
              throw new IllegalStateException("Special tabs can't have display items");
           } else {

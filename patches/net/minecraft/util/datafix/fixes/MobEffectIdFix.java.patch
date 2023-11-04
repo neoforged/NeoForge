@@ -1,6 +1,6 @@
 --- a/net/minecraft/util/datafix/fixes/MobEffectIdFix.java
 +++ b/net/minecraft/util/datafix/fixes/MobEffectIdFix.java
-@@ -88,8 +88,16 @@
+@@ -88,8 +_,16 @@
        return updateMobEffectIdField(p_299001_, p_298420_, p_299001_, p_299179_);
     }
  
@@ -18,7 +18,7 @@
        p_298320_ = renameField(p_298320_, "Ambient", "ambient");
        p_298320_ = renameField(p_298320_, "Amplifier", "amplifier");
        p_298320_ = renameField(p_298320_, "Duration", "duration");
-@@ -109,7 +117,7 @@
+@@ -109,7 +_,7 @@
     }
  
     private static <T> Dynamic<T> updateSuspiciousStewEntry(Dynamic<T> p_298902_, Dynamic<T> p_299113_) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/Sheets.java
 +++ b/net/minecraft/client/renderer/Sheets.java
-@@ -157,11 +157,13 @@
+@@ -157,11 +_,13 @@
     }
  
     private static Material createSignMaterial(WoodType p_173386_) {
@@ -16,7 +16,7 @@
     }
  
     public static Material getSignMaterial(WoodType p_173382_) {
-@@ -222,6 +224,23 @@
+@@ -222,6 +_,23 @@
           case SINGLE:
           default:
              return p_110773_;

@@ -1,6 +1,6 @@
 --- a/net/minecraft/tags/TagManager.java
 +++ b/net/minecraft/tags/TagManager.java
-@@ -42,7 +42,7 @@
+@@ -42,7 +_,7 @@
  
     public static String getTagDir(ResourceKey<? extends Registry<?>> p_203919_) {
        String s = CUSTOM_REGISTRY_DIRECTORIES.get(p_203919_);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/HolderSet.java
 +++ b/net/minecraft/core/HolderSet.java
-@@ -15,7 +15,7 @@
+@@ -15,7 +_,7 @@
  import net.minecraft.util.RandomSource;
  import org.jetbrains.annotations.VisibleForTesting;
  
@@ -9,7 +9,7 @@
     Stream<Holder<T>> stream();
  
     int size();
-@@ -146,6 +146,9 @@
+@@ -146,6 +_,9 @@
  
        public void bind(List<Holder<T>> p_205836_) {
           this.contents = List.copyOf(p_205836_);
@@ -19,7 +19,7 @@
        }
  
        public TagKey<T> key() {
-@@ -180,6 +183,11 @@
+@@ -180,6 +_,11 @@
        @Override
        public boolean canSerializeIn(HolderOwner<T> p_256542_) {
           return this.owner.canSerializeIn(p_256542_);

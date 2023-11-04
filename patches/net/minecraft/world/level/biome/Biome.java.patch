@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/biome/Biome.java
 +++ b/net/minecraft/world/level/biome/Biome.java
-@@ -35,8 +35,8 @@
+@@ -35,8 +_,8 @@
  public final class Biome {
     public static final Codec<Biome> DIRECT_CODEC = RecordCodecBuilder.create(
        p_220544_ -> p_220544_.group(
@@ -11,7 +11,7 @@
                 BiomeGenerationSettings.CODEC.forGetter(p_220548_ -> p_220548_.generationSettings),
                 MobSpawnSettings.CODEC.forGetter(p_220546_ -> p_220546_.mobSettings)
              )
-@@ -79,6 +79,7 @@
+@@ -79,6 +_,7 @@
        this.generationSettings = p_220532_;
        this.mobSettings = p_220533_;
        this.specialEffects = p_220531_;
@@ -19,7 +19,7 @@
     }
  
     public int getSkyColor() {
-@@ -86,7 +87,7 @@
+@@ -86,7 +_,7 @@
     }
  
     public MobSpawnSettings getMobSettings() {
@@ -28,7 +28,7 @@
     }
  
     public boolean hasPrecipitation() {
-@@ -191,7 +192,7 @@
+@@ -191,7 +_,7 @@
     }
  
     public BiomeGenerationSettings getGenerationSettings() {
@@ -37,7 +37,7 @@
     }
  
     public int getFogColor() {
-@@ -403,4 +404,34 @@
+@@ -403,4 +_,34 @@
           return this.name;
        }
     }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/functions/SmeltItemFunction.java
 +++ b/net/minecraft/world/level/storage/loot/functions/SmeltItemFunction.java
-@@ -39,7 +39,7 @@
+@@ -39,7 +_,7 @@
           if (optional.isPresent()) {
              ItemStack itemstack = optional.get().value().getResultItem(p_81269_.getLevel().registryAccess());
              if (!itemstack.isEmpty()) {

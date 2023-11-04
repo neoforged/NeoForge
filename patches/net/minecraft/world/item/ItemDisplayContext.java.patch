@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ItemDisplayContext.java
 +++ b/net/minecraft/world/item/ItemDisplayContext.java
-@@ -5,7 +5,7 @@
+@@ -5,7 +_,7 @@
  import net.minecraft.util.ByIdMap;
  import net.minecraft.util.StringRepresentable;
  
@@ -9,7 +9,7 @@
     NONE(0, "none"),
     THIRD_PERSON_LEFT_HAND(1, "thirdperson_lefthand"),
     THIRD_PERSON_RIGHT_HAND(2, "thirdperson_righthand"),
-@@ -16,14 +16,16 @@
+@@ -16,14 +_,16 @@
     GROUND(7, "ground"),
     FIXED(8, "fixed");
  
@@ -28,7 +28,7 @@
     }
  
     @Override
-@@ -38,4 +40,29 @@
+@@ -38,4 +_,29 @@
     public boolean firstPerson() {
        return this == FIRST_PERSON_LEFT_HAND || this == FIRST_PERSON_RIGHT_HAND;
     }

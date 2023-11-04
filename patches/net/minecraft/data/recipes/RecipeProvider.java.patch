@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
-@@ -44,6 +44,7 @@
+@@ -44,6 +_,7 @@
  public abstract class RecipeProvider implements DataProvider {
     protected final PackOutput.PathProvider recipePathProvider;
     protected final PackOutput.PathProvider advancementPathProvider;
@@ -8,7 +8,7 @@
     private static final Map<BlockFamily.Variant, BiFunction<ItemLike, ItemLike, RecipeBuilder>> SHAPE_BUILDERS = ImmutableMap.<BlockFamily.Variant, BiFunction<ItemLike, ItemLike, RecipeBuilder>>builder(
           
        )
-@@ -64,13 +65,15 @@
+@@ -64,13 +_,15 @@
        .put(BlockFamily.Variant.WALL, (p_248024_, p_248025_) -> wallBuilder(RecipeCategory.DECORATIONS, p_248024_, Ingredient.of(p_248025_)))
        .build();
  
@@ -25,7 +25,7 @@
        final Set<ResourceLocation> set = Sets.newHashSet();
        final List<CompletableFuture<?>> list = new ArrayList<>();
        this.buildRecipes(new RecipeOutput() {
-@@ -80,10 +83,11 @@
+@@ -80,10 +_,11 @@
                 throw new IllegalStateException("Duplicate recipe " + p_300927_.id());
              } else {
                 list.add(DataProvider.saveStable(p_254020_, p_300927_.serializeRecipe(), RecipeProvider.this.recipePathProvider.json(p_300927_.id())));
@@ -41,7 +41,7 @@
                 }
              }
           }
-@@ -92,8 +96,23 @@
+@@ -92,8 +_,23 @@
           public Advancement.Builder advancement() {
              return Advancement.Builder.recipeAdvancement().parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT);
           }
@@ -66,7 +66,7 @@
     }
  
     protected CompletableFuture<?> buildAdvancement(CachedOutput p_253674_, AdvancementHolder p_301116_) {
-@@ -102,7 +121,7 @@
+@@ -102,7 +_,7 @@
  
     protected abstract void buildRecipes(RecipeOutput p_301172_);
  

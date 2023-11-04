@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/vehicle/MinecartSpawner.java
 +++ b/net/minecraft/world/entity/vehicle/MinecartSpawner.java
-@@ -17,6 +17,12 @@
+@@ -17,6 +_,12 @@
        public void broadcastEvent(Level p_150342_, BlockPos p_150343_, int p_150344_) {
           p_150342_.broadcastEntityEvent(MinecartSpawner.this, (byte)p_150344_);
        }

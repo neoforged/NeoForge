@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/Tiers.java
 +++ b/net/minecraft/world/item/Tiers.java
-@@ -58,4 +58,6 @@
+@@ -58,4 +_,6 @@
     public Ingredient getRepairIngredient() {
        return this.repairIngredient.get();
     }

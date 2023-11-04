@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/horse/Horse.java
 +++ b/net/minecraft/world/entity/animal/horse/Horse.java
-@@ -148,6 +148,8 @@
+@@ -148,6 +_,8 @@
        if (this.random.nextInt(10) == 0) {
           this.playSound(SoundEvents.HORSE_BREATHE, p_30709_.getVolume() * 0.6F, p_30709_.getPitch());
        }

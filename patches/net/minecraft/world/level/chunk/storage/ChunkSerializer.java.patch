@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
 +++ b/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
-@@ -180,6 +180,7 @@
+@@ -180,6 +_,7 @@
              postLoadChunk(p_188231_, p_188234_),
              blendingdata
           );
@@ -8,7 +8,7 @@
        } else {
           ProtoChunkTicks<Block> protochunkticks = ProtoChunkTicks.load(
              p_188234_.getList("block_ticks", 10), p_258992_ -> BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(p_258992_)), p_188233_
-@@ -238,6 +239,7 @@
+@@ -238,6 +_,7 @@
        }
  
        if (chunkstatus$chunktype == ChunkStatus.ChunkType.LEVELCHUNK) {
@@ -16,7 +16,7 @@
           return new ImposterProtoChunk((LevelChunk)chunkaccess, false);
        } else {
           ProtoChunk protochunk1 = (ProtoChunk)chunkaccess;
-@@ -261,6 +263,7 @@
+@@ -261,6 +_,7 @@
              protochunk1.setCarvingMask(generationstep$carving, new CarvingMask(compoundtag4.getLongArray(s1), chunkaccess.getMinBuildHeight()));
           }
  
@@ -24,7 +24,7 @@
           return protochunk1;
        }
     }
-@@ -370,6 +373,14 @@
+@@ -370,6 +_,14 @@
           }
  
           compoundtag.put("CarvingMasks", compoundtag4);

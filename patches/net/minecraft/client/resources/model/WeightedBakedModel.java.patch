@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/WeightedBakedModel.java
 +++ b/net/minecraft/client/resources/model/WeightedBakedModel.java
-@@ -17,7 +17,7 @@
+@@ -17,7 +_,7 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
@@ -9,7 +9,7 @@
     private final int totalWeight;
     private final List<WeightedEntry.Wrapper<BakedModel>> list;
     private final BakedModel wrapped;
-@@ -29,10 +29,11 @@
+@@ -29,10 +_,11 @@
     }
  
     @Override
@@ -24,7 +24,7 @@
     }
  
     @Override
-@@ -41,6 +42,16 @@
+@@ -41,6 +_,16 @@
     }
  
     @Override
@@ -41,7 +41,7 @@
     public boolean isGui3d() {
        return this.wrapped.isGui3d();
     }
-@@ -61,8 +72,23 @@
+@@ -61,8 +_,23 @@
     }
  
     @Override

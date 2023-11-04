@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/recipes/packs/VanillaRecipeProvider.java
 +++ b/net/minecraft/data/recipes/packs/VanillaRecipeProvider.java
-@@ -48,8 +48,8 @@
+@@ -48,8 +_,8 @@
     public static final ImmutableList<ItemLike> REDSTONE_SMELTABLES = ImmutableList.of(Items.REDSTONE_ORE, Items.DEEPSLATE_REDSTONE_ORE);
     public static final ImmutableList<ItemLike> EMERALD_SMELTABLES = ImmutableList.of(Items.EMERALD_ORE, Items.DEEPSLATE_EMERALD_ORE);
  

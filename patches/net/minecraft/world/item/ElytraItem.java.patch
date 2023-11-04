@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ElytraItem.java
 +++ b/net/minecraft/world/item/ElytraItem.java
-@@ -30,6 +30,25 @@
+@@ -30,6 +_,25 @@
     }
  
     @Override

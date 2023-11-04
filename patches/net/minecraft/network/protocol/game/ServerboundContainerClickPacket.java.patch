@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/game/ServerboundContainerClickPacket.java
 +++ b/net/minecraft/network/protocol/game/ServerboundContainerClickPacket.java
-@@ -52,7 +52,7 @@
+@@ -52,7 +_,7 @@
        p_133961_.writeByte(this.buttonNum);
        p_133961_.writeEnum(this.clickType);
        p_133961_.writeMap(this.changedSlots, FriendlyByteBuf::writeShort, FriendlyByteBuf::writeItem);

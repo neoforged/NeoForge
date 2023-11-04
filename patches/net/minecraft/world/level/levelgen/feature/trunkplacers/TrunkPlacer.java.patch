@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/feature/trunkplacers/TrunkPlacer.java
 +++ b/net/minecraft/world/level/levelgen/feature/trunkplacers/TrunkPlacer.java
-@@ -64,7 +64,7 @@
+@@ -64,7 +_,7 @@
     protected static void setDirtAt(
        LevelSimulatedReader p_226170_, BiConsumer<BlockPos, BlockState> p_226171_, RandomSource p_226172_, BlockPos p_226173_, TreeConfiguration p_226174_
     ) {

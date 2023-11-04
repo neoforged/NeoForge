@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/RecordItem.java
 +++ b/net/minecraft/world/item/RecordItem.java
-@@ -22,17 +22,42 @@
+@@ -22,17 +_,42 @@
  import net.minecraft.world.level.gameevent.GameEvent;
  
  public class RecordItem extends Item {
@@ -43,7 +43,7 @@
     }
  
     @Override
-@@ -81,7 +106,7 @@
+@@ -81,7 +_,7 @@
     }
  
     public SoundEvent getSound() {

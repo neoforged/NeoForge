@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/vertex/SheetedDecalTextureGenerator.java
 +++ b/com/mojang/blaze3d/vertex/SheetedDecalTextureGenerator.java
-@@ -47,7 +47,7 @@
+@@ -47,7 +_,7 @@
     @Override
     public void endVertex() {
        Vector3f vector3f = this.normalInversePose.transform(new Vector3f(this.nx, this.ny, this.nz));

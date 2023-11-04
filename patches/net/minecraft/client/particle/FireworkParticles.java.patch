@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/particle/FireworkParticles.java
 +++ b/net/minecraft/client/particle/FireworkParticles.java
-@@ -217,7 +217,7 @@
+@@ -217,7 +_,7 @@
              } else {
                 for(int i = 0; i < this.explosions.size(); ++i) {
                    CompoundTag compoundtag = this.explosions.getCompound(i);
@@ -9,7 +9,7 @@
                       flag1 = true;
                       break;
                    }
-@@ -237,7 +237,7 @@
+@@ -237,7 +_,7 @@
           if (this.life % 2 == 0 && this.explosions != null && this.life / 2 < this.explosions.size()) {
              int k = this.life / 2;
              CompoundTag compoundtag1 = this.explosions.getCompound(k);
@@ -18,7 +18,7 @@
              boolean flag4 = compoundtag1.getBoolean("Trail");
              boolean flag2 = compoundtag1.getBoolean("Flicker");
              int[] aint = compoundtag1.getIntArray("Colors");
-@@ -246,6 +246,10 @@
+@@ -246,6 +_,10 @@
                 aint = new int[]{DyeColor.BLACK.getFireworkColor()};
              }
  

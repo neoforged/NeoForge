@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/language/ClientLanguage.java
 +++ b/net/minecraft/client/resources/language/ClientLanguage.java
-@@ -77,4 +77,9 @@
+@@ -77,4 +_,9 @@
     public FormattedCharSequence getVisualOrder(FormattedText p_118925_) {
        return FormattedBidiReorder.reorder(p_118925_, this.defaultRightToLeft);
     }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/item/ItemProperties.java
 +++ b/net/minecraft/client/renderer/item/ItemProperties.java
-@@ -43,6 +43,9 @@
+@@ -43,6 +_,9 @@
     private static final Map<Item, Map<ResourceLocation, ItemPropertyFunction>> PROPERTIES = Maps.newHashMap();
  
     private static ClampedItemPropertyFunction registerGeneric(ResourceLocation p_174582_, ClampedItemPropertyFunction p_174583_) {
@@ -10,7 +10,7 @@
        GENERIC_PROPERTIES.put(p_174582_, p_174583_);
        return p_174583_;
     }
-@@ -52,6 +55,10 @@
+@@ -52,6 +_,10 @@
     }
  
     private static void register(Item p_174571_, ResourceLocation p_174572_, ClampedItemPropertyFunction p_174573_) {

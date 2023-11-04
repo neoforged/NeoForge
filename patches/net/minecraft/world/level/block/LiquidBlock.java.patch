@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/LiquidBlock.java
 +++ b/net/minecraft/world/level/block/LiquidBlock.java
-@@ -32,13 +32,15 @@
+@@ -32,13 +_,15 @@
  
  public class LiquidBlock extends Block implements BucketPickup {
     public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL;
@@ -17,7 +17,7 @@
     public LiquidBlock(FlowingFluid p_54694_, BlockBehaviour.Properties p_54695_) {
        super(p_54695_);
        this.fluid = p_54694_;
-@@ -51,6 +53,19 @@
+@@ -51,6 +_,19 @@
  
        this.stateCache.add(p_54694_.getFlowing(8, true));
        this.registerDefaultState(this.stateDefinition.any().setValue(LEVEL, Integer.valueOf(0)));
@@ -37,7 +37,7 @@
     }
  
     @Override
-@@ -85,6 +100,7 @@
+@@ -85,6 +_,7 @@
     @Override
     public FluidState getFluidState(BlockState p_54765_) {
        int i = p_54765_.getValue(LEVEL);
@@ -45,7 +45,7 @@
        return this.stateCache.get(Math.min(i, 8));
     }
  
-@@ -110,7 +126,7 @@
+@@ -110,7 +_,7 @@
  
     @Override
     public void onPlace(BlockState p_54754_, Level p_54755_, BlockPos p_54756_, BlockState p_54757_, boolean p_54758_) {
@@ -54,7 +54,7 @@
           p_54755_.scheduleTick(p_54756_, p_54754_.getFluidState().getType(), this.fluid.getTickDelay(p_54755_));
        }
     }
-@@ -126,11 +142,12 @@
+@@ -126,11 +_,12 @@
  
     @Override
     public void neighborChanged(BlockState p_54709_, Level p_54710_, BlockPos p_54711_, Block p_54712_, BlockPos p_54713_, boolean p_54714_) {
@@ -68,7 +68,7 @@
     private boolean shouldSpreadLiquid(Level p_54697_, BlockPos p_54698_, BlockState p_54699_) {
        if (this.fluid.is(FluidTags.LAVA)) {
           boolean flag = p_54697_.getBlockState(p_54698_.below()).is(Blocks.SOUL_SOIL);
-@@ -171,6 +188,25 @@
+@@ -171,6 +_,25 @@
           return new ItemStack(this.fluid.getBucket());
        } else {
           return ItemStack.EMPTY;

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/BucketPickup.java
 +++ b/net/minecraft/world/level/block/BucketPickup.java
-@@ -9,8 +9,9 @@
+@@ -9,8 +_,9 @@
  import net.minecraft.world.level.LevelAccessor;
  import net.minecraft.world.level.block.state.BlockState;
  
