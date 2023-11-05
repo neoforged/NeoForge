@@ -1,6 +1,5 @@
 package net.neoforged.neoforge.common.extensions;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.neoforged.neoforge.common.conditions.ICondition;
@@ -18,11 +17,6 @@ public interface IRecipeOutputExtension {
      * Generates a recipe with the given conditions.
      */
     void accept(FinishedRecipe finishedRecipe, ICondition... conditions);
-
-    /**
-     * {@return the provider for the registries}
-     */
-    HolderLookup.Provider provider();
 
     /**
      * Builds a wrapper around this recipe output that adds conditions to all received recipes.

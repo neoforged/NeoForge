@@ -46,15 +46,9 @@
                 }
              }
           }
-@@ -92,8 +_,23 @@
-          public Advancement.Builder advancement() {
+@@ -93,7 +_,17 @@
              return Advancement.Builder.recipeAdvancement().parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT);
           }
-+         
-+         @Override
-+         public net.minecraft.core.HolderLookup.Provider provider() {
-+            return provider;
-+         }
        });
 -      return CompletableFuture.allOf(list.toArray(p_253414_ -> new CompletableFuture[p_253414_]));
 +      return CompletableFuture.allOf(list.toArray(p_253414_ -> new CompletableFuture[p_253414_])); });

@@ -1,7 +1,6 @@
 package net.neoforged.neoforge.common.crafting;
 
 import net.minecraft.advancements.Advancement;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.neoforged.neoforge.common.conditions.ICondition;
@@ -39,10 +38,5 @@ public class ConditionalRecipeOutput implements RecipeOutput {
         }
 
         inner.accept(finishedRecipe, innerConditions);
-    }
-
-    @Override
-    public HolderLookup.Provider provider() {
-        return inner.provider();
     }
 }

@@ -101,11 +101,6 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
             public Advancement.Builder advancement() {
                 return recipeOutput.advancement();
             }
-
-            @Override
-            public HolderLookup.Provider provider() {
-                return recipeOutput.provider();
-            }
         });
     }
 

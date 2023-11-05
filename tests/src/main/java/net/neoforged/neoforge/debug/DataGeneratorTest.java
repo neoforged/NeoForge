@@ -147,7 +147,7 @@ public class DataGeneratorTest {
                     .pattern("XXX")
                     .define('X', Blocks.DIRT)
                     .group("")
-                    .unlockedBy("has_dirt", has(Blocks.DIRT)) // DUMMY: Necessary, but not used when a custom advancement is provided through setAdvancement
+                    .unlockedBy("has_dirt", has(Blocks.DIRT))
                     .save(
                             consumer.withConditions(
                                     and(
