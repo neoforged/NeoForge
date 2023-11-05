@@ -5,23 +5,33 @@
 
 package net.neoforged.neoforge.common.conditions;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import java.util.*;
 import java.util.function.Function;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Unit;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 
 public interface ICondition {
-    Codec<ICondition> CODEC = ExtraCodecs.lazyInitializedCodec(() -> ForgeRegistries.CONDITION_SERIALIZERS.get().getCodec().dispatch(ICondition::codec, Function.identity()));
+    // Use dispatchUnsafe to always write the condition value inline.
+    Codec<ICondition> CODEC = NeoForgeExtraCodecs.dispatchUnsafe(
+            ExtraCodecs.lazyInitializedCodec(() -> ForgeRegistries.CONDITION_SERIALIZERS.get().getCodec()),
+            ICondition::codec,
+            Function.identity());
     Codec<List<ICondition>> LIST_CODEC = CODEC.listOf();
 
     static <V, T> Optional<T> getConditionally(Codec<T> codec, DynamicOps<V> ops, V element) {
@@ -35,6 +45,31 @@ public interface ICondition {
     static <V> boolean conditionsMatched(DynamicOps<V> ops, V element) {
         final Codec<Unit> codec = Codec.unit(Unit.INSTANCE);
         return getConditionally(codec, ops, element).isPresent();
+    }
+
+    /**
+     * Writes an array of conditions to a JSON object.
+     */
+    static void writeConditions(HolderLookup.Provider registries, JsonObject jsonObject, String conditionalsKey, ICondition... conditions) {
+        writeConditions(registries, jsonObject, conditionalsKey, List.of(conditions));
+    }
+
+    /**
+     * Writes a list of conditions to a JSON object.
+     */
+    static void writeConditions(HolderLookup.Provider registries, JsonObject jsonObject, String conditionalsKey, List<ICondition> conditions) {
+        writeConditions(RegistryOps.create(JsonOps.INSTANCE, registries), jsonObject, conditionalsKey, conditions);
+    }
+
+    /**
+     * Writes a list of conditions to a JSON object.
+     */
+    static void writeConditions(DynamicOps<JsonElement> jsonOps, JsonObject jsonObject, String conditionalsKey, List<ICondition> conditions) {
+        if (!conditions.isEmpty()) {
+            var result = LIST_CODEC.encodeStart(jsonOps, conditions);
+            JsonElement serializedConditions = result.result().orElseThrow(() -> new RuntimeException("Failed to serialize conditions"));
+            jsonObject.add(conditionalsKey, serializedConditions);
+        }
     }
 
     boolean test(IContext context);
