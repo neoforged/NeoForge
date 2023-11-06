@@ -9,7 +9,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.ObjIntConsumer;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.ExtraCodecs;
@@ -53,6 +52,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
      * Key used to store the value associated with conditions,
      * when the value is not represented as a map.
      * For example, if we wanted to store the value 2 with some conditions, we could do:
+     * 
      * <pre>
      * {
      *     "neoforge:conditions": [ ... ],
