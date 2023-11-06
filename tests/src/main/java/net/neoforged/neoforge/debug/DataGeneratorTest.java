@@ -522,6 +522,11 @@ public class DataGeneratorTest {
                     .parent(new UncheckedModelFile("item/generated"))
                     .texture("layer0", mcLoc("block/stone"));
 
+            getBuilder("test_runtime_texture_model")
+                    .parent(new UncheckedModelFile("item/generated"))
+                    .texture("layer0", mcLoc("item/netherite_boots"))
+                    .texture("layer1", mcLoc("trims/items/boots_trim_amethyst"));
+
             getBuilder("test_block_model")
                     .parent(getExistingFile(mcLoc("block/block")))
                     .texture("all", mcLoc("block/dirt"))
@@ -549,7 +554,7 @@ public class DataGeneratorTest {
                     .texture("layer0", mcLoc("item/fishing_rod_cast"));
         }
 
-        private static final Set<String> IGNORED_MODELS = ImmutableSet.of("test_generated_model", "test_block_model",
+        private static final Set<String> IGNORED_MODELS = ImmutableSet.of("test_generated_model", "test_runtime_texture_model", "test_block_model",
                 "fishing_rod", "fishing_rod_cast" // Vanilla doesn't generate these yet, so they don't match due to having the minecraft domain
         );
 
@@ -912,25 +917,28 @@ public class DataGeneratorTest {
 
         @Override
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
-            Advancement.Builder.advancement().display(Items.DIRT,
-                    Component.translatable(Items.DIRT.getDescriptionId()),
-                    Component.translatable("dirt_description"),
-                    new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
-                    FrameType.TASK,
-                    true,
-                    true,
-                    false)
+            var obtainDirt = Advancement.Builder.advancement()
+                    .display(Items.DIRT,
+                            Component.translatable(Items.DIRT.getDescriptionId()),
+                            Component.translatable("dirt_description"),
+                            new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
+                            FrameType.TASK,
+                            true,
+                            true,
+                            false)
                     .addCriterion("has_dirt", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIRT))
                     .save(saver, new ResourceLocation(MODID, "obtain_dirt"), existingFileHelper);
 
-            Advancement.Builder.advancement().display(Items.DIAMOND_BLOCK,
-                    Component.translatable(Items.DIAMOND_BLOCK.getDescriptionId()),
-                    Component.literal("You obtained a DiamondBlock"),
-                    new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
-                    FrameType.CHALLENGE,
-                    true,
-                    true,
-                    false)
+            Advancement.Builder.advancement()
+                    .parent(obtainDirt)
+                    .display(Items.DIAMOND_BLOCK,
+                            Component.translatable(Items.DIAMOND_BLOCK.getDescriptionId()),
+                            Component.literal("You obtained a DiamondBlock"),
+                            new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
+                            FrameType.CHALLENGE,
+                            true,
+                            true,
+                            false)
                     .addCriterion("obtained_diamond_block", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND_BLOCK))
                     .save(saver, new ResourceLocation("obtain_diamond_block"), existingFileHelper);
 

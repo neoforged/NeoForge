@@ -20,7 +20,7 @@
                 }
              }
           }
-@@ -111,20 +_,26 @@
+@@ -111,20 +_,30 @@
  
     private boolean hasFlammableNeighbours(LevelReader p_76228_, BlockPos p_76229_) {
        for(Direction direction : Direction.values()) {
@@ -43,7 +43,11 @@
     }
  
 +   private boolean isFlammable(LevelReader level, BlockPos pos, Direction face) {
-+      return pos.getY() >= level.getMinBuildHeight() && pos.getY() < level.getMaxBuildHeight() && !level.hasChunkAt(pos) ? false : level.getBlockState(pos).isFlammable(level, pos, face);
++      if (pos.getY() >= level.getMinBuildHeight() && pos.getY() < level.getMaxBuildHeight() && !level.hasChunkAt(pos)) {
++         return false;
++      }
++      BlockState state = level.getBlockState(pos);
++      return state.ignitedByLava() && state.isFlammable(level, pos, face);
 +   }
 +
     @Nullable
