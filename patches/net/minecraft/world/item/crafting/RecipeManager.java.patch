@@ -42,7 +42,7 @@
 +                .orElseThrow(() -> new JsonSyntaxException("Invalid or unsupported recipe type '%s'".formatted(resourceLocation)))
 +                .codec());
 +
-+   public static final Codec<Optional<Recipe<?>>> CONDITIONAL_DISPATCH = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(DISPATCH_CODEC).codec();
++   public static final Codec<Optional<Recipe<?>>> CONDITIONAL_DISPATCH = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(DISPATCH_CODEC);
 +   
 +   public static Optional<RecipeHolder<?>> fromJson(ResourceLocation p_44046_, JsonObject p_44047_, com.mojang.serialization.DynamicOps<com.google.gson.JsonElement> jsonElementOps) {
 +      Optional<? extends Recipe<?>> recipe = net.neoforged.neoforge.common.conditions.ICondition.getWithConditionalCodec(CONDITIONAL_DISPATCH, jsonElementOps, p_44047_);

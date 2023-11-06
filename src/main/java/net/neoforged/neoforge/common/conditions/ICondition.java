@@ -18,14 +18,19 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Unit;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 
 public interface ICondition {
-    Codec<ICondition> CODEC = ExtraCodecs.lazyInitializedCodec(() -> ForgeRegistries.CONDITION_SERIALIZERS.get().getCodec().dispatch(ICondition::codec, Function.identity()));
+    // Use dispatchUnsafe to always write the condition value inline.
+    Codec<ICondition> CODEC = NeoForgeExtraCodecs.dispatchUnsafe(
+            ExtraCodecs.lazyInitializedCodec(() -> ForgeRegistries.CONDITION_SERIALIZERS.get().getCodec()),
+            ICondition::codec,
+            Function.identity());
     Codec<List<ICondition>> LIST_CODEC = CODEC.listOf();
 
     static <V, T> Optional<T> getConditionally(Codec<T> codec, DynamicOps<V> ops, V element) {
-        return getWithConditionalCodec(ConditionalOps.createConditionalCodec(codec).codec(), ops, element);
+        return getWithConditionalCodec(ConditionalOps.createConditionalCodec(codec), ops, element);
     }
 
     static <V, T> Optional<T> getWithConditionalCodec(Codec<Optional<T>> codec, DynamicOps<V> ops, V element) {

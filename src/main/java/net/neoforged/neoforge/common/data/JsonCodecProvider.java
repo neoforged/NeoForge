@@ -88,7 +88,7 @@ public abstract class JsonCodecProvider<T> implements DataProvider {
                 final Path path = this.pathProvider.json(id);
 
                 futuresBuilder.add(CompletableFuture.supplyAsync(() -> {
-                    final Codec<Optional<WithConditions<T>>> withConditionsCodec = ConditionalOps.createConditionalCodecWithConditions(this.codec).codec();
+                    final Codec<Optional<WithConditions<T>>> withConditionsCodec = ConditionalOps.createConditionalCodecWithConditions(this.codec);
                     return withConditionsCodec.encodeStart(dynamicOps, Optional.of(withConditions)).getOrThrow(false, msg -> LOGGER.error("Failed to encode {}: {}", path, msg));
                 }).thenComposeAsync(encoded -> DataProvider.saveStable(cache, encoded, path)));
             });

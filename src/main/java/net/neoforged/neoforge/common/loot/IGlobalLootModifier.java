@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 public interface IGlobalLootModifier {
     Codec<IGlobalLootModifier> DIRECT_CODEC = ExtraCodecs.lazyInitializedCodec(() -> ForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS.get().getCodec())
             .dispatch(IGlobalLootModifier::codec, Function.identity());
-    Codec<Optional<WithConditions<IGlobalLootModifier>>> CONDITIONAL_CODEC = ConditionalOps.createConditionalCodecWithConditions(DIRECT_CODEC, "neoforge:conditions").codec();
+    Codec<Optional<WithConditions<IGlobalLootModifier>>> CONDITIONAL_CODEC = ConditionalOps.createConditionalCodecWithConditions(DIRECT_CODEC, "neoforge:conditions");
 
     Codec<LootItemCondition[]> LOOT_CONDITIONS_CODEC = LootItemConditions.CODEC.listOf().xmap(list -> list.toArray(LootItemCondition[]::new), List::of);
 
