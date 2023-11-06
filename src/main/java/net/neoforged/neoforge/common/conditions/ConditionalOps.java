@@ -63,7 +63,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
     public static final String CONDITIONAL_VALUE_KEY = "neoforge:value";
 
     /**
-     * Creates a conditional codec, with the default {@code neoforge:conditions} key for the conditions.
+     * @see #createConditionalDecoder(Decoder, String)
      */
     public static <T> Codec<Optional<T>> createConditionalCodec(final Codec<T> ownerCodec) {
         return createConditionalCodec(ownerCodec, DEFAULT_CONDITIONS_KEY);
@@ -71,6 +71,9 @@ public class ConditionalOps<T> extends RegistryOps<T> {
 
     /**
      * Creates a conditional codec.
+     *
+     * <p>The conditional codec is generally not suitable for use as a dispatch target because it is never a {@link MapCodec.MapCodecCodec}.
+     * If you need to dispatch on a conditional codec, consider using {@link NeoForgeExtraCodecs#dispatchUnsafe}.
      */
     public static <T> Codec<Optional<T>> createConditionalCodec(final Codec<T> ownerCodec, String conditionalsKey) {
         return createConditionalCodecWithConditions(ownerCodec, conditionalsKey).xmap(r -> r.map(WithConditions::carrier), r -> r.map(i -> new WithConditions<>(List.of(), i)));
@@ -115,6 +118,9 @@ public class ConditionalOps<T> extends RegistryOps<T> {
 
     /**
      * Creates a conditional codec.
+     *
+     * <p>The conditional codec is generally not suitable for use as a dispatch target because it is never a {@link MapCodec.MapCodecCodec}.
+     * If you need to dispatch on a conditional codec, consider using {@link NeoForgeExtraCodecs#dispatchUnsafe}.
      */
     public static <T> Codec<Optional<WithConditions<T>>> createConditionalCodecWithConditions(final Codec<T> ownerCodec, String conditionalsKey) {
         return Codec.of(
