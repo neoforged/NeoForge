@@ -200,6 +200,8 @@ public class ConditionalOps<T> extends RegistryOps<T> {
             this.innerCodec = innerCodec;
         }
 
+        // Note: I am not too sure of what to return in the second element of the pair.
+        // If this turns out to be a problem, please change it but also document it and write some test cases.
         @Override
         public <T> DataResult<Pair<Optional<WithConditions<A>>, T>> decode(DynamicOps<T> ops, T input) {
             if (ops.compressMaps()) {
@@ -223,7 +225,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
 
                         final boolean conditionsMatch = conditions.stream().allMatch(c -> c.test(context));
                         if (!conditionsMatch)
-                            return DataResult.error(() -> "Conditions did not match", Pair.of(Optional.empty(), input));
+                            return DataResult.success(Pair.of(Optional.empty(), input));
 
                         DataResult<Pair<A, T>> innerDecodeResult;
 

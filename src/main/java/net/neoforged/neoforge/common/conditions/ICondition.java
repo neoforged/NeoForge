@@ -34,7 +34,7 @@ public interface ICondition {
     }
 
     static <V, T> Optional<T> getWithConditionalCodec(Codec<Optional<T>> codec, DynamicOps<V> ops, V element) {
-        return Util.getOrThrow(codec.parse(ops, element).promotePartial((m) -> {}), JsonParseException::new);
+        return Util.getOrThrow(codec.parse(ops, element), JsonParseException::new);
     }
 
     static <V> boolean conditionsMatched(DynamicOps<V> ops, V element) {

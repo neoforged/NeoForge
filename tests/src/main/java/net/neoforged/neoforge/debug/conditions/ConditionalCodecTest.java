@@ -93,7 +93,7 @@ public class ConditionalCodecTest {
                     }
                     """);
             // We expect a partial result with Optional.empty()
-            var decoded = getPartialResult(SimpleRecord.CONDITIONAL_CODEC.decode(JsonOps.INSTANCE, json)).get().getFirst();
+            var decoded = SimpleRecord.CONDITIONAL_CODEC.decode(JsonOps.INSTANCE, json).result().get().getFirst();
             assertEquals(Optional.empty(), decoded);
         }
 
@@ -199,7 +199,7 @@ public class ConditionalCodecTest {
                     }
                     """);
             // We expect a partial result with Optional.empty()
-            var decoded = getPartialResult(CONDITIONAL_INT.decode(JsonOps.INSTANCE, json)).get().getFirst();
+            var decoded = CONDITIONAL_INT.decode(JsonOps.INSTANCE, json).result().get().getFirst();
             assertEquals(Optional.empty(), decoded);
         }
 
@@ -230,11 +230,6 @@ public class ConditionalCodecTest {
 
     private static <T> String write(Codec<T> codec, T input) {
         return GSON.toJson(codec.encodeStart(JsonOps.INSTANCE, input).get().left().get());
-    }
-
-    private static <R> Optional<R> getPartialResult(DataResult<R> result) {
-        assertEquals(true, result.error().isPresent());
-        return result.promotePartial(e -> {}).result();
     }
 
     private static <T> void assertEquals(T expected, T actual) {
