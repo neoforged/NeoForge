@@ -50,25 +50,25 @@ public interface ICondition {
     /**
      * Writes an array of conditions to a JSON object.
      */
-    static void writeConditions(HolderLookup.Provider registries, JsonObject jsonObject, String conditionalsKey, ICondition... conditions) {
-        writeConditions(registries, jsonObject, conditionalsKey, List.of(conditions));
+    static void writeConditions(HolderLookup.Provider registries, JsonObject jsonObject, ICondition... conditions) {
+        writeConditions(registries, jsonObject, List.of(conditions));
     }
 
     /**
      * Writes a list of conditions to a JSON object.
      */
-    static void writeConditions(HolderLookup.Provider registries, JsonObject jsonObject, String conditionalsKey, List<ICondition> conditions) {
-        writeConditions(RegistryOps.create(JsonOps.INSTANCE, registries), jsonObject, conditionalsKey, conditions);
+    static void writeConditions(HolderLookup.Provider registries, JsonObject jsonObject, List<ICondition> conditions) {
+        writeConditions(RegistryOps.create(JsonOps.INSTANCE, registries), jsonObject, conditions);
     }
 
     /**
      * Writes a list of conditions to a JSON object.
      */
-    static void writeConditions(DynamicOps<JsonElement> jsonOps, JsonObject jsonObject, String conditionalsKey, List<ICondition> conditions) {
+    static void writeConditions(DynamicOps<JsonElement> jsonOps, JsonObject jsonObject, List<ICondition> conditions) {
         if (!conditions.isEmpty()) {
             var result = LIST_CODEC.encodeStart(jsonOps, conditions);
             JsonElement serializedConditions = result.result().orElseThrow(() -> new RuntimeException("Failed to serialize conditions"));
-            jsonObject.add(conditionalsKey, serializedConditions);
+            jsonObject.add(ConditionalOps.DEFAULT_CONDITIONS_KEY, serializedConditions);
         }
     }
 

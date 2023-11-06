@@ -1,6 +1,5 @@
 {
-  "parent": "minecraft:recipes/root",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "neoforge:and",
       "values": [
@@ -21,6 +20,7 @@
       ]
     }
   ],
+  "parent": "minecraft:recipes/root",
   "criteria": {
     "has_dirt": {
       "conditions": {
