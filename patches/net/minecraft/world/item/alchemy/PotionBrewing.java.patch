@@ -65,10 +65,9 @@
  
     public static class Mix<T> {
 -      final T from;
--      public final Ingredient ingredient;
--      final T to;
 +      public final net.minecraft.core.Holder.Reference<T> from;
-+      final Ingredient ingredient;
+       public final Ingredient ingredient;
+-      final T to;
 +      public final net.minecraft.core.Holder.Reference<T> to;
  
 -      public Mix(T p_43536_, Ingredient p_43537_, T p_43538_) {
