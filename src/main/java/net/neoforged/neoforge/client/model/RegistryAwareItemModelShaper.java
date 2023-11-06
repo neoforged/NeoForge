@@ -34,7 +34,7 @@ public class RegistryAwareItemModelShaper extends ItemModelShaper {
     @Override
     @Nullable
     public BakedModel getItemModel(Item item) {
-        return models.get(BuiltInRegistries.ITEM.wrapAsHolder(item));
+        return models.get(item);
     }
 
     @Override

@@ -59,10 +59,6 @@ import net.neoforged.neoforge.registries.holdersets.HolderSetType;
  * It is still advised that if you are registering things to use {@link RegisterEvent} or {@link DeferredRegister}, but queries and iterations can use this.
  */
 public class ForgeRegistries {
-    static {
-        init();
-    } // This must be above the fields so we guarantee it's run before getRegistry is called. Yay static initializers
-
     // Custom forge registries
     static final DeferredRegister<EntityDataSerializer<?>> DEFERRED_ENTITY_DATA_SERIALIZERS = DeferredRegister.create(Keys.ENTITY_DATA_SERIALIZERS, Keys.ENTITY_DATA_SERIALIZERS.location().getNamespace());
     public static final Registry<EntityDataSerializer<?>> ENTITY_DATA_SERIALIZERS = DEFERRED_ENTITY_DATA_SERIALIZERS.makeRegistry(registryBuilder -> registryBuilder.sync(true));
@@ -156,16 +152,5 @@ public class ForgeRegistries {
         private static <T> ResourceKey<Registry<T>> key(String name) {
             return ResourceKey.createRegistryKey(new ResourceLocation(name));
         }
-
-        private static void init() {}
-    }
-
-    /**
-     * This function is just to make sure static initializers in other classes have run and setup their registries before we query them.
-     */
-    private static void init() {
-        Keys.init();
-        Bootstrap.bootStrap();
-        Tags.init();
     }
 }

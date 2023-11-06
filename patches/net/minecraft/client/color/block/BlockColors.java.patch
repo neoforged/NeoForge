@@ -20,7 +20,7 @@
  
     public int getColor(BlockState p_92583_, Level p_92584_, BlockPos p_92585_) {
 -      BlockColor blockcolor = this.blockColors.byId(BuiltInRegistries.BLOCK.getId(p_92583_.getBlock()));
-+      BlockColor blockcolor = this.blockColors.get(p_92583_.getBlock().builtInRegistryHolder());
++      BlockColor blockcolor = this.blockColors.get(p_92583_.getBlock());
        if (blockcolor != null) {
           return blockcolor.getColor(p_92583_, null, null, 0);
        } else {
@@ -29,7 +29,7 @@
  
     public int getColor(BlockState p_92578_, @Nullable BlockAndTintGetter p_92579_, @Nullable BlockPos p_92580_, int p_92581_) {
 -      BlockColor blockcolor = this.blockColors.byId(BuiltInRegistries.BLOCK.getId(p_92578_.getBlock()));
-+      BlockColor blockcolor = this.blockColors.get(p_92578_.getBlock().builtInRegistryHolder());
++      BlockColor blockcolor = this.blockColors.get(p_92578_.getBlock());
        return blockcolor == null ? -1 : blockcolor.getColor(p_92578_, p_92579_, p_92580_, p_92581_);
     }
  

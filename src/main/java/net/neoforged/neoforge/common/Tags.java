@@ -19,17 +19,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 
 public class Tags {
-    public static void init() {
-        Blocks.init();
-        EntityTypes.init();
-        Items.init();
-        Fluids.init();
-        Biomes.init();
-    }
-
     public static class Blocks {
-        private static void init() {}
-
         public static final TagKey<Block> BARRELS = tag("barrels");
         public static final TagKey<Block> BARRELS_WOODEN = tag("barrels/wooden");
         public static final TagKey<Block> BOOKSHELVES = tag("bookshelves");
@@ -178,8 +168,6 @@ public class Tags {
     }
 
     public static class EntityTypes {
-        private static void init() {}
-
         public static final TagKey<EntityType<?>> BOSSES = tag("bosses");
 
         private static TagKey<EntityType<?>> tag(String name) {
@@ -188,8 +176,6 @@ public class Tags {
     }
 
     public static class Items {
-        private static void init() {}
-
         public static final TagKey<Item> BARRELS = tag("barrels");
         public static final TagKey<Item> BARRELS_WOODEN = tag("barrels/wooden");
         public static final TagKey<Item> BONES = tag("bones");
@@ -481,8 +467,6 @@ public class Tags {
     }
 
     public static class Fluids {
-        private static void init() {}
-
         /**
          * Holds all fluids related to milk.
          */
@@ -498,8 +482,6 @@ public class Tags {
     }
 
     public static class Biomes {
-        private static void init() {}
-
         public static final TagKey<Biome> IS_HOT = tag("is_hot");
         public static final TagKey<Biome> IS_HOT_OVERWORLD = tag("is_hot/overworld");
         public static final TagKey<Biome> IS_HOT_NETHER = tag("is_hot/nether");
