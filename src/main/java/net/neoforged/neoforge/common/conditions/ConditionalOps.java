@@ -63,7 +63,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
     public static final String CONDITIONAL_VALUE_KEY = "neoforge:value";
 
     /**
-     * @see #createConditionalDecoder(Decoder, String)
+     * @see #createConditionalCodec(Codec, String)
      */
     public static <T> Codec<Optional<T>> createConditionalCodec(final Codec<T> ownerCodec) {
         return createConditionalCodec(ownerCodec, DEFAULT_CONDITIONS_KEY);
@@ -79,34 +79,30 @@ public class ConditionalOps<T> extends RegistryOps<T> {
         return createConditionalCodecWithConditions(ownerCodec, conditionalsKey).xmap(r -> r.map(WithConditions::carrier), r -> r.map(i -> new WithConditions<>(List.of(), i)));
     }
 
+    /**
+     * Creates a codec that can decode a list of elements, and will check for conditions on each element.
+     */
     public static <T> Codec<List<T>> decodeListWithElementConditions(final Codec<T> ownerCodec) {
-        final Codec<List<T>> delegate = ownerCodec.listOf();
-        final Decoder<List<T>> decoder = NeoForgeExtraCodecs.listDecoderWithOptionalElements(createConditionalDecoder(ownerCodec));
-        return Codec.of(delegate, decoder);
+        return Codec.of(
+                ownerCodec.listOf(),
+                NeoForgeExtraCodecs.listWithOptionalElements(createConditionalCodec(ownerCodec)));
     }
 
+    /**
+     * Creates a codec that can decode a list of elements, and will check for conditions on element.
+     * Additionally, a callback will be invoked with each deserialized element and its index in the list.
+     *
+     * <p>The index is computed before filtering out the elements with non-matching conditions,
+     * but the callback will only be invoked on the elements with matching conditions.
+     */
     public static <T> Codec<List<T>> decodeListWithElementConditionsAndConsumeIndex(final Codec<T> ownerCodec, final ObjIntConsumer<T> consumer) {
-        final Codec<List<T>> list = ownerCodec.listOf();
-        return Codec.of(list, NeoForgeExtraCodecs.listOptionalUnwrapDecoder(
-                NeoForgeExtraCodecs.listDecoderWithIndexConsumer(
-                        NeoForgeExtraCodecs.listDecoder(createConditionalCodec(ownerCodec)),
-                        (op, i) -> op.ifPresent(o -> consumer.accept(o, i))),
-                Function.identity()));
-    }
-
-    /**
-     * @see #createConditionalDecoder(Decoder, String)
-     */
-    public static <T> Decoder<Optional<T>> createConditionalDecoder(final Decoder<T> ownerDecoder) {
-        return createConditionalDecoder(ownerDecoder, DEFAULT_CONDITIONS_KEY);
-    }
-
-    /**
-     * Creates a conditional decoder.
-     */
-    public static <T> Decoder<Optional<T>> createConditionalDecoder(final Decoder<T> ownerDecoder, String conditionalsKey) {
-        return new ConditionalDecoder<>(conditionalsKey, ICondition.LIST_CODEC, retrieveContext().codec(), ownerDecoder)
-                .map(r -> r.map(WithConditions::carrier));
+        return Codec.of(
+                ownerCodec.listOf(),
+                NeoForgeExtraCodecs.listWithoutEmpty(
+                        NeoForgeExtraCodecs.decodeOnly(
+                                NeoForgeExtraCodecs.listDecoderWithIndexConsumer(
+                                        createConditionalCodec(ownerCodec).listOf(),
+                                        (op, i) -> op.ifPresent(o -> consumer.accept(o, i))))));
     }
 
     /**
