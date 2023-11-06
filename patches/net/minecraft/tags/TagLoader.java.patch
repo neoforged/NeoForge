@@ -13,7 +13,7 @@
  
     private Either<Collection<TagLoader.EntryWithSource>, Collection<T>> build(TagEntry.Lookup<T> p_215979_, List<TagLoader.EntryWithSource> p_215980_) {
 -      Builder<T> builder = ImmutableSet.builder();
-+      var builder = new java.util.HashSet<T>();
++      var builder = new java.util.LinkedHashSet<T>();
        List<TagLoader.EntryWithSource> list = new ArrayList<>();
  
        for(TagLoader.EntryWithSource tagloader$entrywithsource : p_215980_) {
