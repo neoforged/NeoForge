@@ -8,7 +8,7 @@
     private static final Map<BlockFamily.Variant, BiFunction<ItemLike, ItemLike, RecipeBuilder>> SHAPE_BUILDERS = ImmutableMap.<BlockFamily.Variant, BiFunction<ItemLike, ItemLike, RecipeBuilder>>builder(
           
        )
-@@ -64,13 +_,15 @@
+@@ -64,26 +_,33 @@
        .put(BlockFamily.Variant.WALL, (p_248024_, p_248025_) -> wallBuilder(RecipeCategory.DECORATIONS, p_248024_, Ingredient.of(p_248025_)))
        .build();
  
@@ -25,31 +25,30 @@
        final Set<ResourceLocation> set = Sets.newHashSet();
        final List<CompletableFuture<?>> list = new ArrayList<>();
        this.buildRecipes(new RecipeOutput() {
-@@ -80,10 +_,11 @@
+          @Override
+-         public void accept(FinishedRecipe p_300927_) {
++         public void accept(FinishedRecipe p_300927_, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
+             if (!set.add(p_300927_.id())) {
                 throw new IllegalStateException("Duplicate recipe " + p_300927_.id());
              } else {
-                list.add(DataProvider.saveStable(p_254020_, p_300927_.serializeRecipe(), RecipeProvider.this.recipePathProvider.json(p_300927_.id())));
--               AdvancementHolder advancementholder = p_300927_.advancement();
--               if (advancementholder != null) {
--                  JsonObject jsonobject = advancementholder.value().serializeToJson();
+-               list.add(DataProvider.saveStable(p_254020_, p_300927_.serializeRecipe(), RecipeProvider.this.recipePathProvider.json(p_300927_.id())));
++               var serializedRecipe = p_300927_.serializeRecipe();
++               net.neoforged.neoforge.common.conditions.ICondition.writeConditions(provider, serializedRecipe, "conditions", conditions);
++               list.add(DataProvider.saveStable(p_254020_, serializedRecipe, RecipeProvider.this.recipePathProvider.json(p_300927_.id())));
+                AdvancementHolder advancementholder = p_300927_.advancement();
+                if (advancementholder != null) {
+                   JsonObject jsonobject = advancementholder.value().serializeToJson();
 -                  list.add(DataProvider.saveStable(p_254020_, jsonobject, RecipeProvider.this.advancementPathProvider.json(advancementholder.id())));
-+               JsonObject jsonobject = p_300927_.serializedAdvancement();
-+               if (jsonobject != null) {
++                  net.neoforged.neoforge.common.conditions.ICondition.writeConditions(provider, jsonobject, "conditions", conditions);
 +                  var saveAdvancementFuture = saveAdvancement(p_254020_, p_300927_, jsonobject);
 +                  if (saveAdvancementFuture != null)
 +                     list.add(saveAdvancementFuture);
                 }
              }
           }
-@@ -92,8 +_,23 @@
-          public Advancement.Builder advancement() {
+@@ -93,7 +_,17 @@
              return Advancement.Builder.recipeAdvancement().parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT);
           }
-+         
-+         @Override
-+         public net.minecraft.core.HolderLookup.Provider provider() {
-+            return provider;
-+         }
        });
 -      return CompletableFuture.allOf(list.toArray(p_253414_ -> new CompletableFuture[p_253414_]));
 +      return CompletableFuture.allOf(list.toArray(p_253414_ -> new CompletableFuture[p_253414_])); });
