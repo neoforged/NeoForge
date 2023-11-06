@@ -16,11 +16,9 @@
        this.chatSession = null;
        this.lastSeenMessages = new LastSeenMessagesTracker(20);
        this.messageSignatureCache = MessageSignatureCache.createDefault();
-@@ -1110,7 +_,9 @@
-          localplayer1.getAttributes().assignValues(localplayer.getAttributes());
+@@ -1111,6 +_,7 @@
        }
  
-+      localplayer1.updateSyncFields(localplayer); // Forge: fix MC-10657
        localplayer1.resetPos();
 +      net.neoforged.neoforge.client.ClientHooks.firePlayerRespawn(this.minecraft.gameMode, localplayer, localplayer1, localplayer1.connection.connection);
        this.level.addEntity(localplayer1);

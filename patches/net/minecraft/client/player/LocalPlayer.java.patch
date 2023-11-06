@@ -95,22 +95,3 @@
        this.handsBusy = false;
        Entity entity = this.getControlledVehicle();
        if (entity instanceof Boat boat) {
-@@ -1110,6 +_,18 @@
-       } else {
-          return super.getRopeHoldPosition(p_108758_);
-       }
-+   }
-+
-+   public void updateSyncFields(LocalPlayer old) {
-+      this.xLast = old.xLast;
-+      this.yLast1 = old.yLast1;
-+      this.zLast = old.zLast;
-+      this.yRotLast = old.yRotLast;
-+      this.xRotLast = old.xRotLast;
-+      this.lastOnGround = old.lastOnGround;
-+      this.wasShiftKeyDown = old.wasShiftKeyDown;
-+      this.wasSprinting = old.wasSprinting;
-+      this.positionReminder = old.positionReminder;
-    }
- 
-    @Override
