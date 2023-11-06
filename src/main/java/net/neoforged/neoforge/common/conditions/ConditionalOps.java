@@ -106,7 +106,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
         private final String conditionalsPropertyKey;
         public final Codec<List<ICondition>> conditionsCodec;
         private final Encoder<A> innerCodec;
-        private final String valuePropertyKey = "value";
+        private final String valuePropertyKey = "neoforge:value";
 
         private ConditionalEncoder(String conditionalsPropertyKey, Codec<List<ICondition>> conditionsCodec, Encoder<A> innerCodec) {
             this.conditionalsPropertyKey = conditionalsPropertyKey;
@@ -144,13 +144,9 @@ public class ConditionalOps<T> extends RegistryOps<T> {
             return encodedInner.flatMap(inner -> {
                 return ops.getMap(inner).map(innerMap -> {
                     // If the inner is a map...
-                    if (innerMap.get(conditionalsPropertyKey) != null) {
-                        // Conditional key cannot be used in the inner codec!
-                        return DataResult.<T>error(() -> "Cannot wrap a value that already uses the condition key with a ConditionalCodec.");
-                    } else if (innerMap.get(valuePropertyKey) != null && innerMap.entries().count() == 1) {
-                        // If there is a single map entry with the "value" key, write it to a value field
-                        recordBuilder.add(valuePropertyKey, inner);
-                        return recordBuilder.build(prefix);
+                    if (innerMap.get(conditionalsPropertyKey) != null || innerMap.get(valuePropertyKey) != null) {
+                        // Conditional or value key cannot be used in the inner codec!
+                        return DataResult.<T>error(() -> "Cannot wrap a value that already uses the condition or value key with a ConditionalCodec.");
                     }
                     // Copy all fields to the record builder
                     innerMap.entries().forEach(pair -> {
@@ -171,7 +167,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
         public final Codec<List<ICondition>> conditionsCodec;
         private final Codec<ICondition.IContext> contextCodec;
         private final Decoder<A> innerCodec;
-        private final String valuePropertyKey = "value";
+        private final String valuePropertyKey = "neoforge:value";
 
         private ConditionalDecoder(String conditionalsPropertyKey, Codec<List<ICondition>> conditionsCodec, Codec<ICondition.IContext> contextCodec, Decoder<A> innerCodec) {
             this.conditionalsPropertyKey = conditionalsPropertyKey;
@@ -208,8 +204,8 @@ public class ConditionalOps<T> extends RegistryOps<T> {
                         DataResult<Pair<A, T>> innerDecodeResult;
 
                         T valueDataCarrier = inputMap.get(valuePropertyKey);
-                        if (valueDataCarrier != null && inputMap.entries().count() == 2) {
-                            // If there is a single additional value field use its contents to deserialize.
+                        if (valueDataCarrier != null) {
+                            // If there is a value field use its contents to deserialize.
                             innerDecodeResult = innerCodec.decode(ops, valueDataCarrier);
                         } else {
                             // Else copy the input into a new map without our custom key and decode from that.

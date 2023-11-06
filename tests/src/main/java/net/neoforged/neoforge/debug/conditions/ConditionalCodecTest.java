@@ -48,18 +48,6 @@ public class ConditionalCodecTest {
                 Primitive.testReadNestedNoConditions();
                 Primitive.testWriteNoConditions();
                 Primitive.testWriteWithConditions();
-
-                ValueKeyConflict.testReadOnlyValueNoConditions();
-                ValueKeyConflict.testReadOnlyValueMatchingConditions();
-                ValueKeyConflict.testReadNestedOnlyValueMatchingConditions();
-                ValueKeyConflict.testWriteOnlyValueNoConditions();
-                ValueKeyConflict.testWriteOnlyValueWithConditions();
-
-                ValueKeyConflict.testReadValueAndOtherNoConditions();
-                ValueKeyConflict.testReadValueAndOtherMatchingConditions();
-                ValueKeyConflict.testReadNestedValueAndOtherMatchingConditions();
-                ValueKeyConflict.testWriteValueAndOtherNoConditions();
-                ValueKeyConflict.testWriteValueAndOtherWithConditions();
             } catch (Throwable t) {
                 throw new RuntimeException("ConditionalCodecTest failed", t);
             }
@@ -110,23 +98,22 @@ public class ConditionalCodecTest {
         }
 
         /**
-         * Nesting a map field in a value field is not allowed.
-         * This prevents ambiguities with for example an inner dispatch codec.
+         * Nesting a map field in a value field is also allowed.
          */
         public static void testReadNested() {
             JsonElement json = read("""
                     {
                         "conditions": [
-                            { "type": "neoforge:false" }
+                            { "type": "neoforge:true" }
                         ],
-                        "value": {
+                        "neoforge:value": {
                             "i": 1,
                             "s": "test"
                         }
                     }
                     """);
-            // We expect an errored result
-            assertErrored(SimpleRecord.CONDITIONAL_CODEC.decode(JsonOps.INSTANCE, json));
+            var decoded = SimpleRecord.CONDITIONAL_CODEC.decode(JsonOps.INSTANCE, json).result().get().getFirst().get();
+            assertEquals(new SimpleRecord(1, "test"), decoded);
         }
 
         public static void testWriteNoConditions() {
@@ -177,12 +164,12 @@ public class ConditionalCodecTest {
         }
 
         /**
-         * Nesting a value without conditions is not allowed as it could lead to ambiguities.
+         * Nesting a value without conditions is not allowed (why would anyone do this?).
          */
         public static void testReadNestedNoConditions() {
             JsonElement json = read("""
                     {
-                        "value": 1
+                        "neoforge:value": 1
                     }
                     """);
             assertErrored(CONDITIONAL_INT.decode(JsonOps.INSTANCE, json));
@@ -194,7 +181,7 @@ public class ConditionalCodecTest {
                         "conditions": [
                             { "type": "neoforge:true" }
                         ],
-                        "value": 1
+                        "neoforge:value": 1
                     }
                     """);
             int decoded = CONDITIONAL_INT.decode(JsonOps.INSTANCE, json).result().get().getFirst().get();
@@ -230,163 +217,8 @@ public class ConditionalCodecTest {
                           "type": "neoforge:true"
                         }
                       ],
-                      "value": 1
+                      "neoforge:value": 1
                     }""", write(CONDITIONS_INT, Optional.of(WithConditions.builder(1).addCondition(TrueCondition.INSTANCE).build())));
-        }
-    }
-
-    private static class ValueKeyConflict {
-        private record OnlyValue(String value) {
-            public static Codec<OnlyValue> CODEC = RecordCodecBuilder.create(
-                    builder -> builder
-                            .group(
-                                    Codec.STRING.fieldOf("value").forGetter(OnlyValue::value))
-                            .apply(builder, OnlyValue::new));
-            public static Codec<Optional<OnlyValue>> CONDITIONAL_CODEC = ConditionalOps.createConditionalCodec(CODEC);
-            public static Codec<Optional<WithConditions<OnlyValue>>> CONDITIONS_CODEC = ConditionalOps.createConditionalCodecWithConditions(CODEC);
-        }
-
-        private record ValueAndOther(String value, String other) {
-            public static Codec<ValueAndOther> CODEC = RecordCodecBuilder.create(
-                    builder -> builder
-                            .group(
-                                    Codec.STRING.fieldOf("value").forGetter(ValueAndOther::value),
-                                    Codec.STRING.fieldOf("other").forGetter(ValueAndOther::other))
-                            .apply(builder, ValueAndOther::new));
-            public static Codec<Optional<ValueAndOther>> CONDITIONAL_CODEC = ConditionalOps.createConditionalCodec(CODEC);
-            public static Codec<Optional<WithConditions<ValueAndOther>>> CONDITIONS_CODEC = ConditionalOps.createConditionalCodecWithConditions(CODEC);
-        }
-
-        public static void testReadOnlyValueNoConditions() {
-            JsonElement json = read("""
-                    {
-                        "value": "test"
-                    }
-                    """);
-            OnlyValue decoded = OnlyValue.CONDITIONAL_CODEC.decode(JsonOps.INSTANCE, json).result().get().getFirst().get();
-            assertEquals(new OnlyValue("test"), decoded);
-        }
-
-        /**
-         * This will fail because "test" will be used to deserialize the OnlyValue.
-         */
-        public static void testReadOnlyValueMatchingConditions() {
-            JsonElement json = read("""
-                    {
-                        "conditions": [
-                            { "type": "neoforge:true" }
-                        ],
-                        "value": "test"
-                    }
-                    """);
-            assertErrored(OnlyValue.CONDITIONAL_CODEC.decode(JsonOps.INSTANCE, json));
-        }
-
-        /**
-         * A nested value should work here.
-         */
-        public static void testReadNestedOnlyValueMatchingConditions() {
-            JsonElement json = read("""
-                    {
-                        "conditions": [
-                            { "type": "neoforge:true" }
-                        ],
-                        "value": {
-                            "value": "test"
-                        }
-                    }
-                    """);
-            OnlyValue decoded = OnlyValue.CONDITIONAL_CODEC.decode(JsonOps.INSTANCE, json).result().get().getFirst().get();
-            assertEquals(new OnlyValue("test"), decoded);
-        }
-
-        public static void testWriteOnlyValueNoConditions() {
-            assertEquals("""
-                    {
-                      "value": "test"
-                    }""", write(OnlyValue.CONDITIONS_CODEC, Optional.of(new WithConditions<>(new OnlyValue("test")))));
-        }
-
-        public static void testWriteOnlyValueWithConditions() {
-            assertEquals("""
-                    {
-                      "conditions": [
-                        {
-                          "type": "neoforge:true"
-                        }
-                      ],
-                      "value": {
-                        "value": "test"
-                      }
-                    }""", write(OnlyValue.CONDITIONS_CODEC, Optional.of(WithConditions.builder(new OnlyValue("test")).addCondition(TrueCondition.INSTANCE).build())));
-        }
-
-        public static void testReadValueAndOtherNoConditions() {
-            JsonElement json = read("""
-                    {
-                        "value": "test",
-                        "other": "test"
-                    }
-                    """);
-            ValueAndOther decoded = ValueAndOther.CONDITIONAL_CODEC.decode(JsonOps.INSTANCE, json).result().get().getFirst().get();
-            assertEquals(new ValueAndOther("test", "test"), decoded);
-        }
-
-        /**
-         * This will succeed because there is a 3rd key in the object, so we know the value is top-level.
-         */
-        public static void testReadValueAndOtherMatchingConditions() {
-            JsonElement json = read("""
-                    {
-                        "conditions": [
-                            { "type": "neoforge:true" }
-                        ],
-                        "value": "test",
-                        "other": "test"
-                    }
-                    """);
-            ValueAndOther decoded = ValueAndOther.CONDITIONAL_CODEC.decode(JsonOps.INSTANCE, json).result().get().getFirst().get();
-            assertEquals(new ValueAndOther("test", "test"), decoded);
-        }
-
-        /**
-         * The nested value will work because there will only be 2 keys in the map, so we know the value is not top-level.
-         */
-        public static void testReadNestedValueAndOtherMatchingConditions() {
-            JsonElement json = read("""
-                    {
-                        "conditions": [
-                            { "type": "neoforge:true" }
-                        ],
-                        "value": {
-                            "value": "test",
-                            "other": "test"
-                        }
-                    }
-                    """);
-            ValueAndOther decoded = ValueAndOther.CONDITIONAL_CODEC.decode(JsonOps.INSTANCE, json).result().get().getFirst().get();
-            assertEquals(new ValueAndOther("test", "test"), decoded);
-        }
-
-        public static void testWriteValueAndOtherNoConditions() {
-            assertEquals("""
-                    {
-                      "value": "test",
-                      "other": "test"
-                    }""", write(ValueAndOther.CONDITIONS_CODEC, Optional.of(new WithConditions<>(new ValueAndOther("test", "test")))));
-        }
-
-        public static void testWriteValueAndOtherWithConditions() {
-            assertEquals("""
-                    {
-                      "conditions": [
-                        {
-                          "type": "neoforge:true"
-                        }
-                      ],
-                      "value": "test",
-                      "other": "test"
-                    }""", write(ValueAndOther.CONDITIONS_CODEC, Optional.of(WithConditions.builder(new ValueAndOther("test", "test")).addCondition(TrueCondition.INSTANCE).build())));
         }
     }
 
