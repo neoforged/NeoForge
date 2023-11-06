@@ -35,6 +35,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
@@ -549,6 +550,27 @@ public class FluidType {
      */
     public int getViscosity(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
         return this.getViscosity();
+    }
+
+    /**
+     * Returns whether a fluid above a pointed dripstone block can successfully fill a cauldron below.
+     *
+     * @param fluid the fluid that is dripping from a dripstone
+     * @param level the level the fluid is being placed in
+     * @param pos   the position of the cauldron this fluid is dripping into
+     * @return {@code true} if a cauldron is successfully filled, {@code false} otherwise
+     */
+    public boolean handleDripInfo(Fluid fluid, Level level, BlockPos pos) {
+        if (fluid.isSource(fluid.defaultFluidState()) && fluid.getFluidType().getDripInfo() != null) {
+            BlockState cauldronBlock = fluid.getFluidType().getDripInfo().cauldron().defaultBlockState();
+            level.setBlockAndUpdate(pos, cauldronBlock);
+            level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(cauldronBlock));
+            if (this.getSound(SoundActions.CAULDRON_DRIP) != null) {
+                level.playSound(null, pos, this.getSound(SoundActions.CAULDRON_DRIP), SoundSource.BLOCKS, 2.0F, level.getRandom().nextFloat() * 0.1F + 0.9F);
+            }
+            return true;
+        }
+        return false;
     }
 
     /* Stack-Based Accessors */
