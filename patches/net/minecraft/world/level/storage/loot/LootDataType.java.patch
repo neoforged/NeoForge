@@ -34,7 +34,7 @@
        this.validator = p_279363_;
 +      this.defaultValue = defaultValue;
 +      this.idSetter = idSetter;
-+      this.conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(codec, "neoforge:conditions");
++      this.conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(codec);
     }
  
     public String directory() {

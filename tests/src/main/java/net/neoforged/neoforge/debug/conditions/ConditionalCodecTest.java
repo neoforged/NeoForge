@@ -71,7 +71,7 @@ public class ConditionalCodecTest {
         public static void testReadMatchingConditions() {
             JsonElement json = read("""
                     {
-                        "conditions": [
+                        "neoforge:conditions": [
                             { "type": "neoforge:true" }
                         ],
                         "i": 1,
@@ -85,7 +85,7 @@ public class ConditionalCodecTest {
         public static void testReadFailingConditions() {
             JsonElement json = read("""
                     {
-                        "conditions": [
+                        "neoforge:conditions": [
                             { "type": "neoforge:false" }
                         ],
                         "i": 1,
@@ -103,7 +103,7 @@ public class ConditionalCodecTest {
         public static void testReadNested() {
             JsonElement json = read("""
                     {
-                        "conditions": [
+                        "neoforge:conditions": [
                             { "type": "neoforge:true" }
                         ],
                         "neoforge:value": {
@@ -129,7 +129,7 @@ public class ConditionalCodecTest {
             SimpleRecord record = new SimpleRecord(1, "test");
             assertEquals("""
                     {
-                      "conditions": [
+                      "neoforge:conditions": [
                         {
                           "type": "neoforge:true"
                         }
@@ -178,7 +178,7 @@ public class ConditionalCodecTest {
         public static void testReadMatchingConditions() {
             JsonElement json = read("""
                     {
-                        "conditions": [
+                        "neoforge:conditions": [
                             { "type": "neoforge:true" }
                         ],
                         "neoforge:value": 1
@@ -191,7 +191,7 @@ public class ConditionalCodecTest {
         public static void testReadFailingConditions() {
             JsonElement json = read("""
                     {
-                        "conditions": [
+                        "neoforge:conditions": [
                             { "type": "neoforge:false" }
                         ],
                         "i": 1,
@@ -212,7 +212,7 @@ public class ConditionalCodecTest {
             Record.SimpleRecord record = new Record.SimpleRecord(1, "test");
             assertEquals("""
                     {
-                      "conditions": [
+                      "neoforge:conditions": [
                         {
                           "type": "neoforge:true"
                         }

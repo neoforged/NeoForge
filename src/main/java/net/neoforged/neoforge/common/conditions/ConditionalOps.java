@@ -45,25 +45,48 @@ public class ConditionalOps<T> extends RegistryOps<T> {
         });
     }
 
+    /**
+     * Key used for the conditions inside an object.
+     */
+    public static final String DEFAULT_CONDITIONS_KEY = "neoforge:conditions";
+    /**
+     * Key used to store the value associated with conditions,
+     * when the value is not represented as a map.
+     * For example, if we wanted to store the value 2 with some conditions, we could do:
+     * <pre>
+     * {
+     *     "neoforge:conditions": [ ... ],
+     *     "neoforge:value": 2
+     * }
+     * </pre>
+     */
+    public static final String CONDITIONAL_VALUE_KEY = "neoforge:value";
+
+    /**
+     * Creates a conditional codec, with the default {@code neoforge:conditions} key for the conditions.
+     */
     public static <T> Codec<Optional<T>> createConditionalCodec(final Codec<T> ownerCodec) {
-        return createConditionalCodec(ownerCodec, "conditions");
+        return createConditionalCodec(ownerCodec, DEFAULT_CONDITIONS_KEY);
     }
 
+    /**
+     * Creates a conditional codec.
+     */
     public static <T> Codec<Optional<T>> createConditionalCodec(final Codec<T> ownerCodec, String conditionalsKey) {
         return createConditionalCodecWithConditions(ownerCodec, conditionalsKey).xmap(r -> r.map(WithConditions::carrier), r -> r.map(i -> new WithConditions<>(List.of(), i)));
     }
 
-    public static <T> Codec<List<T>> decodeListWithElementConditions(final Codec<T> ownerCodec, String conditionalsKey) {
+    public static <T> Codec<List<T>> decodeListWithElementConditions(final Codec<T> ownerCodec) {
         final Codec<List<T>> delegate = ownerCodec.listOf();
-        final Decoder<List<T>> decoder = NeoForgeExtraCodecs.listDecoderWithOptionalElements(createConditionalDecoder(ownerCodec, conditionalsKey));
+        final Decoder<List<T>> decoder = NeoForgeExtraCodecs.listDecoderWithOptionalElements(createConditionalDecoder(ownerCodec));
         return Codec.of(delegate, decoder);
     }
 
-    public static <T> Codec<List<T>> decodeListWithElementConditionsAndConsumeIndex(final Codec<T> ownerCodec, final String conditionalsKey, final ObjIntConsumer<T> consumer) {
+    public static <T> Codec<List<T>> decodeListWithElementConditionsAndConsumeIndex(final Codec<T> ownerCodec, final ObjIntConsumer<T> consumer) {
         final Codec<List<T>> list = ownerCodec.listOf();
         return Codec.of(list, NeoForgeExtraCodecs.listOptionalUnwrapDecoder(
                 NeoForgeExtraCodecs.listDecoderWithIndexConsumer(
-                        NeoForgeExtraCodecs.listDecoder(createConditionalDecoder(ownerCodec, conditionalsKey)),
+                        NeoForgeExtraCodecs.listDecoder(createConditionalCodec(ownerCodec)),
                         (op, i) -> op.ifPresent(o -> consumer.accept(o, i))),
                 Function.identity()));
     }
@@ -72,14 +95,11 @@ public class ConditionalOps<T> extends RegistryOps<T> {
      * @see #createConditionalDecoder(Decoder, String)
      */
     public static <T> Decoder<Optional<T>> createConditionalDecoder(final Decoder<T> ownerDecoder) {
-        return createConditionalDecoder(ownerDecoder, "conditions");
+        return createConditionalDecoder(ownerDecoder, DEFAULT_CONDITIONS_KEY);
     }
 
     /**
      * Creates a conditional decoder.
-     * If the inner object (of type {@code T}) serializes as a map, then conditions are checked.
-     * Otherwise, conditions are not looked for.
-     * In other words, the deserializer does not assume that the inner object is a map.
      */
     public static <T> Decoder<Optional<T>> createConditionalDecoder(final Decoder<T> ownerDecoder, String conditionalsKey) {
         return new ConditionalDecoder<>(conditionalsKey, ICondition.LIST_CODEC, retrieveContext().codec(), ownerDecoder)
@@ -90,11 +110,11 @@ public class ConditionalOps<T> extends RegistryOps<T> {
      * @see #createConditionalCodecWithConditions(Codec, String)
      */
     public static <T> Codec<Optional<WithConditions<T>>> createConditionalCodecWithConditions(final Codec<T> ownerCodec) {
-        return createConditionalCodecWithConditions(ownerCodec, "conditions");
+        return createConditionalCodecWithConditions(ownerCodec, DEFAULT_CONDITIONS_KEY);
     }
 
     /**
-     * Creates a conditional codec. The codec assumes that the inner object (of type {@code T}) serializes as a map.
+     * Creates a conditional codec.
      */
     public static <T> Codec<Optional<WithConditions<T>>> createConditionalCodecWithConditions(final Codec<T> ownerCodec, String conditionalsKey) {
         return Codec.of(
@@ -106,7 +126,6 @@ public class ConditionalOps<T> extends RegistryOps<T> {
         private final String conditionalsPropertyKey;
         public final Codec<List<ICondition>> conditionsCodec;
         private final Encoder<A> innerCodec;
-        private final String valuePropertyKey = "neoforge:value";
 
         private ConditionalEncoder(String conditionalsPropertyKey, Codec<List<ICondition>> conditionsCodec, Encoder<A> innerCodec) {
             this.conditionalsPropertyKey = conditionalsPropertyKey;
@@ -144,7 +163,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
             return encodedInner.flatMap(inner -> {
                 return ops.getMap(inner).map(innerMap -> {
                     // If the inner is a map...
-                    if (innerMap.get(conditionalsPropertyKey) != null || innerMap.get(valuePropertyKey) != null) {
+                    if (innerMap.get(conditionalsPropertyKey) != null || innerMap.get(CONDITIONAL_VALUE_KEY) != null) {
                         // Conditional or value key cannot be used in the inner codec!
                         return DataResult.<T>error(() -> "Cannot wrap a value that already uses the condition or value key with a ConditionalCodec.");
                     }
@@ -155,7 +174,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
                     return recordBuilder.build(prefix);
                 }).result().orElseGet(() -> {
                     // If the inner is not a map, write it to a value field
-                    recordBuilder.add(valuePropertyKey, inner);
+                    recordBuilder.add(CONDITIONAL_VALUE_KEY, inner);
                     return recordBuilder.build(prefix);
                 });
             });
@@ -167,7 +186,6 @@ public class ConditionalOps<T> extends RegistryOps<T> {
         public final Codec<List<ICondition>> conditionsCodec;
         private final Codec<ICondition.IContext> contextCodec;
         private final Decoder<A> innerCodec;
-        private final String valuePropertyKey = "neoforge:value";
 
         private ConditionalDecoder(String conditionalsPropertyKey, Codec<List<ICondition>> conditionsCodec, Codec<ICondition.IContext> contextCodec, Decoder<A> innerCodec) {
             this.conditionalsPropertyKey = conditionalsPropertyKey;
@@ -203,7 +221,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
 
                         DataResult<Pair<A, T>> innerDecodeResult;
 
-                        T valueDataCarrier = inputMap.get(valuePropertyKey);
+                        T valueDataCarrier = inputMap.get(CONDITIONAL_VALUE_KEY);
                         if (valueDataCarrier != null) {
                             // If there is a value field use its contents to deserialize.
                             innerDecodeResult = innerCodec.decode(ops, valueDataCarrier);
