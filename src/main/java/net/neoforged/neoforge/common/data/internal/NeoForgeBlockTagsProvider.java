@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -109,7 +110,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         for (DyeColor color : DyeColor.values()) {
             ResourceLocation key = new ResourceLocation("minecraft", pattern.replace("{color}", color.getName()));
             TagKey<Block> tag = getForgeTag(prefix + color.getName());
-            Block block = ForgeRegistries.BLOCKS.getValue(key);
+            Block block = BuiltInRegistries.BLOCK.get(key);
             if (block == null || block == Blocks.AIR)
                 throw new IllegalStateException("Unknown vanilla block: " + key.toString());
             tag(tag).add(block);

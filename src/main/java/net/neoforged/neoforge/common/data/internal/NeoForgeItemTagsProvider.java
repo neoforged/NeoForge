@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.resources.ResourceLocation;
@@ -172,7 +173,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         for (DyeColor color : DyeColor.values()) {
             ResourceLocation key = new ResourceLocation("minecraft", pattern.replace("{color}", color.getName()));
             TagKey<Item> tag = getForgeItemTag(prefix + color.getName());
-            Item item = ForgeRegistries.ITEMS.getValue(key);
+            Item item = BuiltInRegistries.ITEM.get(key);
             if (item == null || item == Items.AIR)
                 throw new IllegalStateException("Unknown vanilla item: " + key.toString());
             tag(tag).add(item);

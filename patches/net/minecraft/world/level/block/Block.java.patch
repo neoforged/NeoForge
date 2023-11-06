@@ -115,7 +115,7 @@
        }
  
 -      return this.item;
-+      return net.neoforged.neoforge.registries.ForgeRegistries.ITEMS.getDelegateOrThrow(this.item).get(); // Forge: Vanilla caches the items, update with registry replacements.
++      return item;
     }
  
     public boolean hasDynamicShape() {

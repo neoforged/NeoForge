@@ -22,7 +22,7 @@
        this.stateCache.add(p_54694_.getFlowing(8, true));
        this.registerDefaultState(this.stateDefinition.any().setValue(LEVEL, Integer.valueOf(0)));
 +      fluidStateCacheInitialized = true;
-+      supplier = net.neoforged.neoforge.registries.ForgeRegistries.FLUIDS.getDelegateOrThrow(p_54694_);
++      supplier = () -> p_54694_;
 +   }
 +
 +   /**

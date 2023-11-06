@@ -51,18 +51,18 @@ public class FluidStack {
     private boolean isEmpty;
     private int amount;
     private CompoundTag tag;
-    private Holder.Reference<Fluid> fluidDelegate;
+    private Fluid fluid;
 
     public FluidStack(Fluid fluid, int amount) {
         if (fluid == null) {
             LOGGER.fatal("Null fluid supplied to fluidstack. Did you try and create a stack for an unregistered fluid?");
             throw new IllegalArgumentException("Cannot create a fluidstack from a null fluid");
-        } else if (ForgeRegistries.FLUIDS.getKey(fluid) == null) {
-            LOGGER.fatal("Failed attempt to create a FluidStack for an unregistered Fluid {} (type {})", ForgeRegistries.FLUIDS.getKey(fluid), fluid.getClass().getName());
+        } else if (BuiltInRegistries.FLUID.getKey(fluid) == null) {
+            LOGGER.fatal("Failed attempt to create a FluidStack for an unregistered Fluid {} (type {})", BuiltInRegistries.FLUID.getKey(fluid), fluid.getClass().getName());
             throw new IllegalArgumentException("Cannot create a fluidstack from an unregistered fluid");
         }
-        this.fluidDelegate = ForgeRegistries.FLUIDS.getDelegateOrThrow(fluid);
         this.amount = amount;
+        this.fluid = fluid;
 
         updateEmpty();
     }
@@ -92,7 +92,7 @@ public class FluidStack {
         }
 
         ResourceLocation fluidName = new ResourceLocation(nbt.getString("FluidName"));
-        Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidName);
+        Fluid fluid = BuiltInRegistries.FLUID.get(fluidName);
         if (fluid == null) {
             return EMPTY;
         }
@@ -105,7 +105,7 @@ public class FluidStack {
     }
 
     public CompoundTag writeToNBT(CompoundTag nbt) {
-        nbt.putString("FluidName", ForgeRegistries.FLUIDS.getKey(getFluid()).toString());
+        nbt.putString("FluidName", BuiltInRegistries.FLUID.getKey(getFluid()).toString());
         nbt.putInt("Amount", amount);
 
         if (tag != null) {
@@ -115,7 +115,7 @@ public class FluidStack {
     }
 
     public void writeToPacket(FriendlyByteBuf buf) {
-        buf.writeRegistryId(ForgeRegistries.FLUIDS, getFluid());
+        buf.writeRegistryId(BuiltInRegistries.FLUID, getFluid());
         buf.writeVarInt(getAmount());
         buf.writeNbt(tag);
     }
@@ -129,11 +129,11 @@ public class FluidStack {
     }
 
     public final Fluid getFluid() {
-        return isEmpty ? Fluids.EMPTY : fluidDelegate.get();
+        return isEmpty ? Fluids.EMPTY : fluid;
     }
 
     public final Fluid getRawFluid() {
-        return fluidDelegate.get();
+        return  fluid;
     }
 
     public boolean isEmpty() {

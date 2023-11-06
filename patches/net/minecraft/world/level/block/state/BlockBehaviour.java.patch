@@ -11,7 +11,7 @@
 +         this.lootTableSupplier = p_60452_.lootTableSupplier;
 +      } else {
 +         this.lootTableSupplier = () -> {
-+            ResourceLocation registryName = net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getKey((Block) this);
++            ResourceLocation registryName = BuiltInRegistries.BLOCK.getKey((Block) this);
 +            return new ResourceLocation(registryName.getNamespace(), "blocks/" + registryName.getPath());
 +         };
 +      }
@@ -133,7 +133,7 @@
 +      @Deprecated // FORGE: Use the variant that takes a Supplier below
        public BlockBehaviour.Properties dropsLike(Block p_60917_) {
 -         this.drops = p_60917_.getLootTable();
-+         this.lootTableSupplier = () -> net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getDelegateOrThrow(p_60917_).get().getLootTable();
++         this.lootTableSupplier = () -> p_60917_.getLootTable();
           return this;
 +      }
 +

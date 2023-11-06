@@ -176,6 +176,7 @@ import net.neoforged.neoforge.network.NetworkConstants;
 import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.network.ServerStatusPing;
 import net.neoforged.neoforge.registries.GameData;
+import net.neoforged.neoforge.registries.RegistryManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -789,7 +790,7 @@ public class ClientHooks {
         Connection client = getClientConnection();
         // ONLY revert a non-local connection
         if (client != null && !client.isMemoryConnection()) {
-            GameData.revertToFrozen();
+            RegistryManager.revertToFrozen();
         }
     }
 

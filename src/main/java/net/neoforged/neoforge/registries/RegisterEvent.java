@@ -17,43 +17,41 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * This event fires for each forge and vanilla registry when all registries are ready to have modded objects registered.
- * <p>
- * Fired on the {@link IModBusEvent mod bus}.
+ * Fired for each registry when it is ready to have modded objects registered.
+ * This event is fired for all registries, including registries in {@link net.minecraft.core.registries.BuiltInRegistries}.
+ *
+ * <p>This event is fired on the {@linkplain net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+ * on both {@linkplain net.neoforged.fml.LogicalSide logical sides}.</p>
  *
  * @see #register(ResourceKey, ResourceLocation, Supplier)
  * @see #register(ResourceKey, Consumer)
  */
-public class RegisterEvent extends Event implements IModBusEvent {
-    @NotNull
+public class RegisterEvent extends Event implements IModBusEvent
+{
     private final ResourceKey<? extends Registry<?>> registryKey;
-    @Nullable
-    final ForgeRegistry<?> forgeRegistry;
-    @Nullable
-    private final Registry<?> vanillaRegistry;
+    private final Registry<?> registry;
 
-    RegisterEvent(@NotNull ResourceKey<? extends Registry<?>> registryKey, @Nullable ForgeRegistry<?> forgeRegistry, @Nullable Registry<?> vanillaRegistry) {
+    RegisterEvent(ResourceKey<? extends Registry<?>> registryKey, Registry<?> registry)
+    {
         this.registryKey = registryKey;
-        this.forgeRegistry = forgeRegistry;
-        this.vanillaRegistry = vanillaRegistry;
+        this.registry = registry;
     }
 
     /**
      * Registers the value with the given name to the stored registry if the provided registry key matches this event's registry key.
      *
-     * @param registryKey   the key of the registry to register the value to
-     * @param name          the name of the object to register as its key
+     * @param registryKey the key of the registry to register the value to
+     * @param name the name of the object to register as its key
      * @param valueSupplier a supplier of the object value
-     * @param <T>           the type of the registry
+     * @param <T> the type of the registry
      * @see #register(ResourceKey, Consumer) a register variant making registration of multiple objects less redundant
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T> void register(ResourceKey<? extends Registry<T>> registryKey, ResourceLocation name, Supplier<T> valueSupplier) {
-        if (this.registryKey.equals(registryKey)) {
-            if (this.forgeRegistry != null)
-                ((IForgeRegistry) this.forgeRegistry).register(name, valueSupplier.get());
-            else if (this.vanillaRegistry != null)
-                Registry.register((Registry) this.vanillaRegistry, name, valueSupplier.get());
+    public <T> void register(ResourceKey<? extends Registry<T>> registryKey, ResourceLocation name, Supplier<T> valueSupplier)
+    {
+        if (this.registryKey.equals(registryKey))
+        {
+            Registry.register((Registry) this.registry, name, valueSupplier.get());
         }
     }
 
@@ -61,74 +59,76 @@ public class RegisterEvent extends Event implements IModBusEvent {
      * Calls the provided consumer with a register helper if the provided registry key matches this event's registry key.
      *
      * @param registryKey the key of the registry to register objects to
-     * @param <T>         the type of the registry
+     * @param <T> the type of the registry
      * @see #register(ResourceKey, ResourceLocation, Supplier) a register variant targeted towards registering one or two objects
      */
-    public <T> void register(ResourceKey<? extends Registry<T>> registryKey, Consumer<RegisterHelper<T>> consumer) {
-        if (this.registryKey.equals(registryKey)) {
-            consumer.accept((name, value) -> register(registryKey, name, () -> value));
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public <T> void register(ResourceKey<? extends Registry<T>> registryKey, Consumer<RegisterHelper<T>> consumer)
+    {
+        if (this.registryKey.equals(registryKey))
+        {
+            consumer.accept((name, value) -> Registry.register((Registry) this.registry, name, value));
         }
     }
 
     /**
      * @return The registry key linked to this event
      */
-    @NotNull
-    public ResourceKey<? extends Registry<?>> getRegistryKey() {
-        return registryKey;
+    public ResourceKey<? extends Registry<?>> getRegistryKey()
+    {
+        return this.registryKey;
     }
 
     /**
-     * @return The forge registry for the given registry key, or {@code null} if the registry is not a forge registry
+     * @return The registry linked to this event
      */
-    @Nullable
-    @SuppressWarnings("unchecked")
-    public <T> IForgeRegistry<T> getForgeRegistry() {
-        return (IForgeRegistry<T>) forgeRegistry;
+    public Registry<?> getRegistry()
+    {
+        return this.registry;
     }
 
     /**
-     * @return The vanilla registry for the given registry key, or {@code null} if the registry is not a vanilla registry
+     * @param key the registry key to compare again {@link #getRegistryKey()}
+     * @return The registry typed to the given registry key if it matches {@link #getRegistryKey()},
+     * or {@code null} if it does not match.
      */
-    @Nullable
     @SuppressWarnings("unchecked")
-    public <T> Registry<T> getVanillaRegistry() {
-        return (Registry<T>) vanillaRegistry;
-    }
-
-    @Override
-    public String toString() {
-        return "RegisterEvent";
+    public <T> Registry<T> getRegistry(ResourceKey<? extends Registry<T>> key)
+    {
+        return key == this.registryKey ? (Registry<T>) this.registry : null;
     }
 
     @FunctionalInterface
-    public interface RegisterHelper<T> {
+    public interface RegisterHelper<T>
+    {
         /**
          * Registers the given value with the given name to the registry.
          * The namespace is inferred based on the active mod container.
          * If you wish to specify a namespace, use {@link #register(ResourceLocation, Object)} instead.
          *
-         * @param name  the name of the object to register as its key with the namespaced inferred from the active mod container
+         * @param name the name of the object to register as its key with the namespaced inferred from the active mod container
          * @param value the object value
          */
-        default void register(String name, T value) {
+        default void register(String name, T value)
+        {
             register(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name), value);
         }
 
         /**
          * Registers the given value with the given name to the registry.
          *
-         * @param key   the resource key of the object to register
+         * @param key the resource key of the object to register
          * @param value the object value
          */
-        default void register(ResourceKey<T> key, T value) {
+        default void register(ResourceKey<T> key, T value)
+        {
             register(key.location(), value);
         }
 
         /**
          * Registers the given value with the given name to the registry.
          *
-         * @param name  the name of the object to register as its key
+         * @param name the name of the object to register as its key
          * @param value the object value
          */
         void register(ResourceLocation name, T value);

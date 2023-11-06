@@ -38,7 +38,7 @@ public interface StructureModifier {
      * Codec for (de)serializing structure modifiers inline.
      * Mods can use this for data generation.
      */
-    Codec<StructureModifier> DIRECT_CODEC = ExtraCodecs.lazyInitializedCodec(() -> ForgeRegistries.STRUCTURE_MODIFIER_SERIALIZERS.get().getCodec())
+    Codec<StructureModifier> DIRECT_CODEC = ExtraCodecs.lazyInitializedCodec(() -> ForgeRegistries.STRUCTURE_MODIFIER_SERIALIZERS.byNameCodec())
             .dispatch(StructureModifier::codec, Function.identity());
 
     /**

@@ -9,9 +9,9 @@
 -      super(p_53529_);
 -      this.content = p_53528_;
 -      POTTED_BY_CONTENT.put(p_53528_, this);
-+       this(Blocks.FLOWER_POT == null ? null : () -> (FlowerPotBlock) net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.FLOWER_POT).get(), () -> net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getDelegateOrThrow(p_53528_).get(), p_53529_);
++       this(Blocks.FLOWER_POT == null ? null : () -> (FlowerPotBlock) Blocks.FLOWER_POT, () -> p_53528_, p_53529_);
 +       if (Blocks.FLOWER_POT != null) {
-+           ((FlowerPotBlock)Blocks.FLOWER_POT).addPlant(net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getKey(p_53528_), () -> this);
++           ((FlowerPotBlock)Blocks.FLOWER_POT).addPlant(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(p_53528_), () -> this);
 +       }
 +   }
 +
@@ -41,7 +41,7 @@
        Item item = itemstack.getItem();
 -      BlockState blockstate = (item instanceof BlockItem ? POTTED_BY_CONTENT.getOrDefault(((BlockItem)item).getBlock(), Blocks.AIR) : Blocks.AIR)
 -         .defaultBlockState();
-+      BlockState blockstate = (item instanceof BlockItem ? getEmptyPot().fullPots.getOrDefault(net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getKey(((BlockItem)item).getBlock()), net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.AIR)).get() : Blocks.AIR).defaultBlockState();
++      BlockState blockstate = (item instanceof BlockItem ? getEmptyPot().fullPots.getOrDefault(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(((BlockItem)item).getBlock()), () ->Blocks.AIR).get() : Blocks.AIR).defaultBlockState();
        boolean flag = blockstate.is(Blocks.AIR);
        boolean flag1 = this.isEmpty();
        if (flag != flag1) {

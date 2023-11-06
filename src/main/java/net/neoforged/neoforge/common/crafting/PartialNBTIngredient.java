@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.advancements.critereon.NbtPredicate;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -26,14 +27,14 @@ public class PartialNBTIngredient extends Ingredient {
     public static final Codec<PartialNBTIngredient> CODEC = RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            NeoForgeExtraCodecs.singularOrPluralCodec(ForgeRegistries.ITEMS.getCodec(), "item").forGetter(PartialNBTIngredient::getContainedItems),
+                            NeoForgeExtraCodecs.singularOrPluralCodec(BuiltInRegistries.ITEM.byNameCodec(), "item").forGetter(PartialNBTIngredient::getContainedItems),
                             CompoundTag.CODEC.fieldOf("tag").forGetter(PartialNBTIngredient::getTag))
                     .apply(builder, PartialNBTIngredient::new));
 
     public static final Codec<PartialNBTIngredient> CODEC_NONEMPTY = RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            NeoForgeExtraCodecs.singularOrPluralCodecNotEmpty(ForgeRegistries.ITEMS.getCodec(), "item").forGetter(PartialNBTIngredient::getContainedItems),
+                            NeoForgeExtraCodecs.singularOrPluralCodecNotEmpty(BuiltInRegistries.ITEM.byNameCodec(), "item").forGetter(PartialNBTIngredient::getContainedItems),
                             CompoundTag.CODEC.fieldOf("tag").forGetter(PartialNBTIngredient::getTag))
                     .apply(builder, PartialNBTIngredient::new));
 

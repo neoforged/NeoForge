@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.client.model.generators;
 
 import java.util.Objects;
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -24,7 +26,7 @@ public abstract class ItemModelProvider extends ModelProvider<ItemModelBuilder> 
     }
 
     public ItemModelBuilder basicItem(Item item) {
-        return basicItem(Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item)));
+        return basicItem(Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)));
     }
 
     public ItemModelBuilder basicItem(ResourceLocation item) {

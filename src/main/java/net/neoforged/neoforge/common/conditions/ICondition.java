@@ -29,7 +29,7 @@ import net.neoforged.neoforge.registries.ForgeRegistries;
 public interface ICondition {
     // Use dispatchUnsafe to always write the condition value inline.
     Codec<ICondition> CODEC = NeoForgeExtraCodecs.dispatchUnsafe(
-            ExtraCodecs.lazyInitializedCodec(() -> ForgeRegistries.CONDITION_SERIALIZERS.get().getCodec()),
+            ExtraCodecs.lazyInitializedCodec(() -> ForgeRegistries.CONDITION_SERIALIZERS.byNameCodec()),
             ICondition::codec,
             Function.identity());
     Codec<List<ICondition>> LIST_CODEC = CODEC.listOf();

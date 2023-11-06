@@ -9,17 +9,23 @@
     public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
        p_258963_ -> p_258963_.group(
                 BuiltInRegistries.ITEM.byNameCodec().fieldOf("id").forGetter(ItemStack::getItem),
-@@ -86,6 +_,9 @@
+@@ -86,6 +_,7 @@
              )
              .apply(p_258963_, ItemStack::new)
     );
-+   @org.jetbrains.annotations.Nullable
-+   private final net.minecraft.core.Holder.Reference<Item> delegate;
 +   private CompoundTag capNBT;
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final ItemStack EMPTY = new ItemStack((Void)null);
     public static final DecimalFormat ATTRIBUTE_MODIFIER_FORMAT = Util.make(
-@@ -140,27 +_,39 @@
+@@ -107,7 +_,6 @@
+    private static final Style LORE_STYLE = Style.EMPTY.withColor(ChatFormatting.DARK_PURPLE).withItalic(true);
+    private int count;
+    private int popTime;
+-   @Deprecated
+    @Nullable
+    private final Item item;
+    @Nullable
+@@ -140,27 +_,35 @@
        this(p_220155_.value(), p_220156_);
     }
  
@@ -32,7 +38,6 @@
 +      super(ItemStack.class, true);
 +      this.capNBT = p_41606_;
 +      this.item = p_41604_.asItem();
-+      this.delegate = net.neoforged.neoforge.registries.ForgeRegistries.ITEMS.getDelegateOrThrow(p_41604_.asItem());
 +      this.count = p_41605_;
 +      this.forgeInit();
 +      if (this.item.isDamageable(this)) {
@@ -43,15 +48,12 @@
     private ItemStack(@Nullable Void p_282703_) {
 +      super(ItemStack.class, true);
        this.item = null;
-+      this.delegate = null;
     }
  
     private ItemStack(CompoundTag p_41608_) {
 +      super(ItemStack.class, true);
 +      this.capNBT = p_41608_.contains("ForgeCaps") ? p_41608_.getCompound("ForgeCaps") : null;
-+      Item rawItem =
        this.item = BuiltInRegistries.ITEM.get(new ResourceLocation(p_41608_.getString("id")));
-+      this.delegate = net.neoforged.neoforge.registries.ForgeRegistries.ITEMS.getDelegateOrThrow(rawItem);
        this.count = p_41608_.getByte("Count");
        if (p_41608_.contains("tag", 10)) {
           this.tag = p_41608_.getCompound("tag");
@@ -64,24 +66,6 @@
           this.setDamageValue(this.getDamageValue());
        }
     }
-@@ -175,7 +_,7 @@
-    }
- 
-    public boolean isEmpty() {
--      return this == EMPTY || this.item == Items.AIR || this.count <= 0;
-+      return this == EMPTY || this.count <= 0 || this.delegate.get() == Items.AIR;
-    }
- 
-    public boolean isItemEnabled(FeatureFlagSet p_250869_) {
-@@ -200,7 +_,7 @@
-    }
- 
-    public Item getItem() {
--      return this.isEmpty() ? Items.AIR : this.item;
-+      return this.isEmpty() ? Items.AIR : this.delegate.get();
-    }
- 
-    public Holder<Item> getItemHolder() {
 @@ -232,6 +_,15 @@
     }
  
@@ -276,7 +260,7 @@
 +    * Set up forge's ItemStack additions.
 +    */
 +   private void forgeInit() {
-+      if (this.delegate != null) {
++      if (this.item != null) {
 +         this.gatherCapabilities(() -> item.initCapabilities(this, this.capNBT));
 +         if (this.capNBT != null) deserializeCaps(this.capNBT);
 +      }

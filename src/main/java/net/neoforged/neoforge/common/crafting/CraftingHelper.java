@@ -81,12 +81,12 @@ public class CraftingHelper {
     // Choose between dispatch codec for custom ingredients and vanilla codec
     private static Codec<Ingredient> makeIngredientCodec0(boolean allowEmpty, Codec<Ingredient> vanillaCodec) {
         // Dispatch codec for custom ingredient types:
-        Codec<Ingredient> dispatchCodec = ExtraCodecs.lazyInitializedCodec(
+        Codec<Ingredient> dispatchCodec =
                 // Use dispatchUnsafe to always inline the dispatched type parameters into the root ingredient object, next to the "type"
-                () -> NeoForgeExtraCodecs.dispatchUnsafe(
-                        ForgeRegistries.INGREDIENT_TYPES.get().getCodec(),
+                NeoForgeExtraCodecs.dispatchUnsafe(
+                        ForgeRegistries.INGREDIENT_TYPES.byNameCodec(),
                         Ingredient::getType,
-                        ingredientType -> ingredientType.codec(allowEmpty)));
+                        ingredientType -> ingredientType.codec(allowEmpty));
         // Either codec to combine with the vanilla ingredient codec:
         Codec<Either<Ingredient, Ingredient>> eitherCodec = ExtraCodecs.either(
                 dispatchCodec,

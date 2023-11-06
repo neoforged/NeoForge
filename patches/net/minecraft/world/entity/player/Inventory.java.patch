@@ -31,7 +31,7 @@
           } catch (Throwable throwable) {
              CrashReport crashreport = CrashReport.forThrowable(throwable, "Adding item to inventory");
              CrashReportCategory crashreportcategory = crashreport.addCategory("Item being added");
-+            crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.neoforged.neoforge.registries.ForgeRegistries.ITEMS.getKey(p_36042_.getItem())));
++            crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(p_36042_.getItem())));
 +            crashreportcategory.setDetail("Item Class", () -> p_36042_.getItem().getClass().getName());
              crashreportcategory.setDetail("Item ID", Item.getId(p_36042_.getItem()));
              crashreportcategory.setDetail("Item data", p_36042_.getDamageValue());

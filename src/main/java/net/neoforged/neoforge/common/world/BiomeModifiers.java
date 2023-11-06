@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.Biome;
@@ -190,7 +191,7 @@ public final class BiomeModifiers {
                 MobSpawnSettingsBuilder spawnBuilder = builder.getMobSpawnSettings();
                 for (MobCategory category : MobCategory.values()) {
                     List<SpawnerData> spawns = spawnBuilder.getSpawner(category);
-                    spawns.removeIf(spawnerData -> this.entityTypes.contains(ForgeRegistries.ENTITY_TYPES.getHolder(spawnerData.type).get()));
+                    spawns.removeIf(spawnerData -> this.entityTypes.contains(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(spawnerData.type)));
                 }
             }
         }

@@ -19,7 +19,7 @@
        this.sound = p_239615_;
        this.lengthInTicks = p_239617_ * 20;
        BY_NAME.put(this.sound, this);
-+      this.soundSupplier = net.neoforged.neoforge.registries.ForgeRegistries.SOUND_EVENTS.getDelegateOrThrow(this.sound);
++      this.soundSupplier = () -> sound;
 +   }
 +
 +   /**

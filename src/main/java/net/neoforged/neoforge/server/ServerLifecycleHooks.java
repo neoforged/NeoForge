@@ -57,6 +57,7 @@ import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.ForgeRegistries.Keys;
 import net.neoforged.neoforge.registries.GameData;
+import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.resource.PathPackResources;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import net.neoforged.neoforgespi.language.IModInfo;
@@ -121,7 +122,7 @@ public class ServerLifecycleHooks {
     }
 
     public static void handleServerStopped(final MinecraftServer server) {
-        if (!server.isDedicatedServer()) GameData.revertToFrozen();
+        if (!server.isDedicatedServer()) RegistryManager.revertToFrozen();
         NeoForge.EVENT_BUS.post(new ServerStoppedEvent(server));
         currentServer = null;
         LogicalSidedProvider.setServer(null);

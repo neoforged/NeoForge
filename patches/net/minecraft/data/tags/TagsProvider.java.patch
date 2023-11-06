@@ -57,16 +57,12 @@
     }
  
     protected abstract void addTags(HolderLookup.Provider p_256380_);
-@@ -73,7 +_,13 @@
+@@ -73,7 +_,9 @@
           .thenCombineAsync(this.parentProvider, (p_274778_, p_274779_) -> new CombinedData<>(p_274778_, p_274779_))
           .thenCompose(
              p_274774_ -> {
 -               HolderLookup.RegistryLookup<T> registrylookup = p_274774_.contents.lookupOrThrow(this.registryKey);
 +               HolderLookup.RegistryLookup<T> registrylookup = p_274774_.contents.lookup(this.registryKey).orElseThrow(() -> {
-+                  // FORGE: Throw a more descriptive error message if this is a Forge registry without tags enabled
-+                  if (net.neoforged.neoforge.registries.RegistryManager.ACTIVE.getRegistry(this.registryKey) != null) {
-+                     return new IllegalStateException("Forge registry " + this.registryKey.location() + " does not have support for tags");
-+                  }
 +                  return new IllegalStateException("Registry " + this.registryKey.location() + " not found");
 +               });
                 Predicate<ResourceLocation> predicate = p_255496_ -> registrylookup.get(ResourceKey.create(this.registryKey, p_255496_)).isPresent();

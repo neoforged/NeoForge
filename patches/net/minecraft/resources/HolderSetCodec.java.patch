@@ -14,7 +14,7 @@
        this.homogenousListCodec = homogenousList(p_206661_, p_206662_);
        this.registryAwareCodec = Codec.either(TagKey.hashedCodec(p_206660_), this.homogenousListCodec);
 +      // FORGE: make registry-specific dispatch codec and make forge-or-vanilla either codec
-+      this.forgeDispatchCodec = ExtraCodecs.lazyInitializedCodec(() -> net.neoforged.neoforge.registries.ForgeRegistries.HOLDER_SET_TYPES.get().getCodec())
++      this.forgeDispatchCodec = ExtraCodecs.lazyInitializedCodec(() -> net.neoforged.neoforge.registries.ForgeRegistries.HOLDER_SET_TYPES.byNameCodec())
 +          .dispatch(net.neoforged.neoforge.registries.holdersets.ICustomHolderSet::type, type -> type.makeCodec(p_206660_, p_206661_, p_206662_));
 +      this.combinedCodec = new ExtraCodecs.EitherCodec<>(this.forgeDispatchCodec, this.registryAwareCodec);
     }

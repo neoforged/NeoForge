@@ -45,6 +45,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -177,7 +178,6 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.ForgeRegistry;
 import net.neoforged.neoforge.registries.GameData;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
@@ -822,7 +822,7 @@ public class CommonHooks {
             return NeoForgeMod.WATER_TYPE.get();
         if (fluid == Fluids.LAVA || fluid == Fluids.FLOWING_LAVA)
             return NeoForgeMod.LAVA_TYPE.get();
-        if (NeoForgeMod.MILK.filter(milk -> milk == fluid).isPresent() || NeoForgeMod.FLOWING_MILK.filter(milk -> milk == fluid).isPresent())
+        if (NeoForgeMod.MILK.asOptional().filter(milk -> milk == fluid).isPresent() || NeoForgeMod.FLOWING_MILK.asOptional().filter(milk -> milk == fluid).isPresent())
             return NeoForgeMod.MILK_TYPE.get();
         throw new RuntimeException("Mod fluids must override getFluidType.");
     }
@@ -892,7 +892,7 @@ public class CommonHooks {
     @Nullable
     public static String getDefaultCreatorModId(@NotNull ItemStack itemStack) {
         Item item = itemStack.getItem();
-        ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(item);
+        ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(item);
         String modId = registryName == null ? null : registryName.getNamespace();
         if ("minecraft".equals(modId)) {
             if (item instanceof EnchantedBookItem) {
@@ -900,18 +900,18 @@ public class CommonHooks {
                 if (enchantmentsNbt.size() == 1) {
                     CompoundTag nbttagcompound = enchantmentsNbt.getCompound(0);
                     ResourceLocation resourceLocation = ResourceLocation.tryParse(nbttagcompound.getString("id"));
-                    if (resourceLocation != null && ForgeRegistries.ENCHANTMENTS.containsKey(resourceLocation)) {
+                    if (resourceLocation != null && BuiltInRegistries.ENCHANTMENT.containsKey(resourceLocation)) {
                         return resourceLocation.getNamespace();
                     }
                 }
             } else if (item instanceof PotionItem || item instanceof TippedArrowItem) {
                 Potion potionType = PotionUtils.getPotion(itemStack);
-                ResourceLocation resourceLocation = ForgeRegistries.POTIONS.getKey(potionType);
+                ResourceLocation resourceLocation = BuiltInRegistries.POTION.getKey(potionType);
                 if (resourceLocation != null) {
                     return resourceLocation.getNamespace();
                 }
             } else if (item instanceof SpawnEggItem) {
-                ResourceLocation resourceLocation = ForgeRegistries.ENTITY_TYPES.getKey(((SpawnEggItem) item).getType(null));
+                ResourceLocation resourceLocation = BuiltInRegistries.ENTITY_TYPE.getKey(((SpawnEggItem) item).getType(null));
                 if (resourceLocation != null) {
                     return resourceLocation.getNamespace();
                 }
@@ -955,10 +955,7 @@ public class CommonHooks {
     public static EntityDataSerializer<?> getSerializer(int id, CrudeIncrementalIntIdentityHashBiMap<EntityDataSerializer<?>> vanilla) {
         EntityDataSerializer<?> serializer = vanilla.byId(id);
         if (serializer == null) {
-            // ForgeRegistries.DATA_SERIALIZERS is a deferred register now, so if this method is called too early, the registry will be null
-            ForgeRegistry<EntityDataSerializer<?>> registry = (ForgeRegistry<EntityDataSerializer<?>>) ForgeRegistries.ENTITY_DATA_SERIALIZERS.get();
-            if (registry != null)
-                serializer = registry.getValue(id);
+            return ForgeRegistries.ENTITY_DATA_SERIALIZERS.byId(id);
         }
         return serializer;
     }
@@ -966,10 +963,7 @@ public class CommonHooks {
     public static int getSerializerId(EntityDataSerializer<?> serializer, CrudeIncrementalIntIdentityHashBiMap<EntityDataSerializer<?>> vanilla) {
         int id = vanilla.getId(serializer);
         if (id < 0) {
-            // ForgeRegistries.DATA_SERIALIZERS is a deferred register now, so if this method is called too early, the registry will be null
-            ForgeRegistry<EntityDataSerializer<?>> registry = (ForgeRegistry<EntityDataSerializer<?>>) ForgeRegistries.ENTITY_DATA_SERIALIZERS.get();
-            if (registry != null)
-                id = registry.getID(serializer);
+            return ForgeRegistries.ENTITY_DATA_SERIALIZERS.getId(serializer);
         }
         return id;
     }
@@ -992,14 +986,14 @@ public class CommonHooks {
         } else {
             Item item = stack.getItem();
             int ret = stack.getBurnTime(recipeType);
-            return EventHooks.getItemBurnTime(stack, ret == -1 ? VANILLA_BURNS.getOrDefault(ForgeRegistries.ITEMS.getDelegateOrThrow(item), 0) : ret, recipeType);
+            return EventHooks.getItemBurnTime(stack, ret == -1 ? VANILLA_BURNS.getOrDefault(item, 0) : ret, recipeType);
         }
     }
 
     @SuppressWarnings("deprecation")
     public static synchronized void updateBurns() {
         VANILLA_BURNS.clear();
-        FurnaceBlockEntity.getFuel().entrySet().forEach(e -> VANILLA_BURNS.put(ForgeRegistries.ITEMS.getDelegateOrThrow(e.getKey()), e.getValue()));
+        FurnaceBlockEntity.getFuel().entrySet().forEach(e -> VANILLA_BURNS.put(e.getKey().builtInRegistryHolder(), e.getValue()));
     }
 
     /**
@@ -1097,127 +1091,6 @@ public class CommonHooks {
         return event;
     }
 
-    public static void writeAdditionalLevelSaveData(WorldData worldData, CompoundTag levelTag) {
-        CompoundTag fmlData = new CompoundTag();
-        ListTag modList = new ListTag();
-        ModList.get().getMods().forEach(mi -> {
-            final CompoundTag mod = new CompoundTag();
-            mod.putString("ModId", mi.getModId());
-            mod.putString("ModVersion", MavenVersionStringHelper.artifactVersionToString(mi.getVersion()));
-            modList.add(mod);
-        });
-        fmlData.put("LoadingModList", modList);
-
-        CompoundTag registries = new CompoundTag();
-        fmlData.put("Registries", registries);
-        LOGGER.debug(WORLDPERSISTENCE, "Gathering id map for writing to world save {}", worldData.getLevelName());
-
-        for (Map.Entry<ResourceLocation, ForgeRegistry.Snapshot> e : RegistryManager.ACTIVE.takeSnapshot(true).entrySet()) {
-            registries.put(e.getKey().toString(), e.getValue().write());
-        }
-        LOGGER.debug(WORLDPERSISTENCE, "ID Map collection complete {}", worldData.getLevelName());
-        levelTag.put("fml", fmlData);
-    }
-
-    /**
-     * @param rootTag        Level data file contents.
-     * @param levelDirectory Level currently being loaded.
-     */
-    @ApiStatus.Internal
-    public static void readAdditionalLevelSaveData(CompoundTag rootTag, LevelStorageSource.LevelDirectory levelDirectory) {
-        CompoundTag tag = rootTag.getCompound("fml");
-        if (tag.contains("LoadingModList")) {
-            ListTag modList = tag.getList("LoadingModList", net.minecraft.nbt.Tag.TAG_COMPOUND);
-            Map<String, ArtifactVersion> mismatchedVersions = new HashMap<>(modList.size());
-            Map<String, ArtifactVersion> missingVersions = new HashMap<>(modList.size());
-            for (int i = 0; i < modList.size(); i++) {
-                CompoundTag mod = modList.getCompound(i);
-                String modId = mod.getString("ModId");
-                if (Objects.equals("minecraft", modId)) {
-                    continue;
-                }
-
-                String modVersion = mod.getString("ModVersion");
-                final var previousVersion = new DefaultArtifactVersion(modVersion);
-                ModList.get().getModContainerById(modId).ifPresentOrElse(container -> {
-                    final var loadingVersion = container.getModInfo().getVersion();
-                    if (!loadingVersion.equals(previousVersion)) {
-                        // Enqueue mismatched versions for bulk event
-                        mismatchedVersions.put(modId, previousVersion);
-                    }
-                }, () -> missingVersions.put(modId, previousVersion));
-            }
-
-            final var mismatchEvent = new ModMismatchEvent(levelDirectory, mismatchedVersions, missingVersions);
-            ModLoader.get().postEvent(mismatchEvent);
-
-            StringBuilder resolved = new StringBuilder("The following mods have version differences that were marked resolved:");
-            StringBuilder unresolved = new StringBuilder("The following mods have version differences that were not resolved:");
-
-            // For mods that were marked resolved, log the version resolution and the mod that resolved the mismatch
-            mismatchEvent.getResolved().forEachOrdered((res) -> {
-                final var modid = res.modid();
-                final var diff = res.versionDifference();
-                if (res.wasSelfResolved()) {
-                    resolved.append(System.lineSeparator())
-                            .append(diff.isMissing()
-                                    ? "%s (version %s -> MISSING, self-resolved)".formatted(modid, diff.oldVersion())
-                                    : "%s (version %s -> %s, self-resolved)".formatted(modid, diff.oldVersion(), diff.newVersion()));
-                } else {
-                    final var resolver = res.resolver().getModId();
-                    resolved.append(System.lineSeparator())
-                            .append(diff.isMissing()
-                                    ? "%s (version %s -> MISSING, resolved by %s)".formatted(modid, diff.oldVersion(), resolver)
-                                    : "%s (version %s -> %s, resolved by %s)".formatted(modid, diff.oldVersion(), diff.newVersion(), resolver));
-                }
-            });
-
-            // For mods that did not specify handling, show a warning to users that errors may occur
-            mismatchEvent.getUnresolved().forEachOrdered((unres) -> {
-                final var modid = unres.modid();
-                final var diff = unres.versionDifference();
-                unresolved.append(System.lineSeparator())
-                        .append(diff.isMissing()
-                                ? "%s (version %s -> MISSING)".formatted(modid, diff.oldVersion())
-                                : "%s (version %s -> %s)".formatted(modid, diff.oldVersion(), diff.newVersion()));
-            });
-
-            if (mismatchEvent.anyResolved()) {
-                resolved.append(System.lineSeparator()).append("Things may not work well.");
-                LOGGER.debug(WORLDPERSISTENCE, resolved.toString());
-            }
-
-            if (mismatchEvent.anyUnresolved()) {
-                unresolved.append(System.lineSeparator()).append("Things may not work well.");
-                LOGGER.warn(WORLDPERSISTENCE, unresolved.toString());
-            }
-        }
-
-        Multimap<ResourceLocation, ResourceLocation> failedElements = null;
-
-        if (tag.contains("Registries")) {
-            Map<ResourceLocation, ForgeRegistry.Snapshot> snapshot = new HashMap<>();
-            CompoundTag regs = tag.getCompound("Registries");
-            for (String key : regs.getAllKeys()) {
-                snapshot.put(new ResourceLocation(key), ForgeRegistry.Snapshot.read(regs.getCompound(key)));
-            }
-            failedElements = GameData.injectSnapshot(snapshot, true, true);
-        }
-
-        if (failedElements != null && !failedElements.isEmpty()) {
-            StringBuilder buf = new StringBuilder();
-            buf.append("Fancy Mod Loader could not load this save.\n\n")
-                    .append("There are ").append(failedElements.size()).append(" unassigned registry entries in this save.\n")
-                    .append("You will not be able to load until they are present again.\n\n");
-
-            failedElements.asMap().forEach((name, entries) -> {
-                buf.append("Missing ").append(name).append(":\n");
-                entries.forEach(rl -> buf.append("    ").append(rl).append("\n"));
-            });
-            LOGGER.error(WORLDPERSISTENCE, buf.toString());
-        }
-    }
-
     public static String encodeLifecycle(Lifecycle lifecycle) {
         if (lifecycle == Lifecycle.stable())
             return "stable";
@@ -1239,7 +1112,7 @@ public class CommonHooks {
     }
 
     public static void saveMobEffect(CompoundTag nbt, String key, MobEffect effect) {
-        var registryName = ForgeRegistries.MOB_EFFECTS.getKey(effect);
+        var registryName = BuiltInRegistries.MOB_EFFECT.getKey(effect);
         if (registryName != null) {
             nbt.putString(key, registryName.toString());
         }
@@ -1252,7 +1125,7 @@ public class CommonHooks {
             return fallback;
         }
         try {
-            return ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(registryName));
+            return BuiltInRegistries.MOB_EFFECT.get(new ResourceLocation(registryName));
         } catch (ResourceLocationException e) {
             return fallback;
         }

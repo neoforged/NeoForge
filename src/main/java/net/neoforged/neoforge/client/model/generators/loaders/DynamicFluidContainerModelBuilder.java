@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.model.generators.loaders;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
@@ -31,7 +32,7 @@ public class DynamicFluidContainerModelBuilder<T extends ModelBuilder<T>> extend
 
     public DynamicFluidContainerModelBuilder<T> fluid(Fluid fluid) {
         Preconditions.checkNotNull(fluid, "fluid must not be null");
-        this.fluid = ForgeRegistries.FLUIDS.getKey(fluid);
+        this.fluid = BuiltInRegistries.FLUID.getKey(fluid);
         return this;
     }
 

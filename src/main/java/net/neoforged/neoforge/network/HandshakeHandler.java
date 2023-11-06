@@ -41,8 +41,8 @@ import net.neoforged.neoforge.network.ConnectionData.ModMismatchData;
 import net.neoforged.neoforge.network.simple.MessageFunctions;
 import net.neoforged.neoforge.network.simple.SimpleChannel;
 import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
-import net.neoforged.neoforge.registries.ForgeRegistry;
-import net.neoforged.neoforge.registries.GameData;
+import net.neoforged.neoforge.registries.RegistryManager;
+import net.neoforged.neoforge.registries.RegistrySnapshot;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -107,7 +107,7 @@ public class HandshakeHandler {
     private final LoginNetworkDirection direction;
     private final Connection manager;
     private int packetPosition;
-    private Map<ResourceLocation, ForgeRegistry.Snapshot> registrySnapshots;
+    private Map<ResourceLocation, RegistrySnapshot> registrySnapshots;
     private Set<ResourceLocation> registriesToReceive;
     private boolean negotiationStarted = false;
     private final List<Future<Void>> pendingFutures = new ArrayList<>();
@@ -205,7 +205,7 @@ public class HandshakeHandler {
 
         this.registriesToReceive = new HashSet<>(serverModList.getRegistries());
         this.registrySnapshots = Maps.newHashMap();
-        LOGGER.debug(ForgeRegistry.REGISTRIES, "Expecting {} registries: {}", () -> this.registriesToReceive.size(), () -> this.registriesToReceive);
+        LOGGER.debug("Expecting {} registries: {}", () -> this.registriesToReceive.size(), () -> this.registriesToReceive);
     }
 
     void handleModData(HandshakeMessages.S2CModData serverModData, NetworkEvent.Context c) {
@@ -269,14 +269,14 @@ public class HandshakeHandler {
     private boolean handleRegistryLoading(final NetworkEvent.Context contextSupplier) {
         // We use a countdown latch to suspend the impl thread pending the client thread processing the registry data
         AtomicBoolean successfulConnection = new AtomicBoolean(false);
-        AtomicReference<Multimap<ResourceLocation, ResourceLocation>> registryMismatches = new AtomicReference<>();
+        AtomicReference<Set<ResourceKey<?>>> registryMismatches = new AtomicReference<>();
         CountDownLatch block = new CountDownLatch(1);
         contextSupplier.enqueueWork(() -> {
             LOGGER.debug(FMLHSMARKER, "Injecting registry snapshot from server.");
-            final Multimap<ResourceLocation, ResourceLocation> missingData = GameData.injectSnapshot(registrySnapshots, false, false);
+            final Set<ResourceKey<?>> missingData = RegistryManager.applySnapshot(registrySnapshots, false, false);
             LOGGER.debug(FMLHSMARKER, "Snapshot injected.");
             if (!missingData.isEmpty()) {
-                LOGGER.error(FMLHSMARKER, "Missing registry data for impl connection:\n{}", LogMessageAdapter.adapt(sb -> missingData.forEach((reg, entry) -> sb.append("\t").append(reg).append(": ").append(entry).append('\n'))));
+                LOGGER.error(FMLHSMARKER, "Missing registry data for impl connection:\n{}", LogMessageAdapter.adapt(sb -> missingData.forEach((entry) -> sb.append("\t").append(entry)))); // TODO - fix log format
             }
             successfulConnection.set(missingData.isEmpty());
             registryMismatches.set(missingData);

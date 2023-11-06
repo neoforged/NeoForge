@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnPlacements;
@@ -68,15 +70,15 @@ public class SpawnPlacementRegisterEvent extends Event implements IModBusEvent {
     public <T extends Entity> void register(EntityType<T> entityType, @Nullable SpawnPlacements.Type placementType, @Nullable Heightmap.Types heightmap, SpawnPlacements.SpawnPredicate<T> predicate, Operation operation) {
         if (!map.containsKey(entityType)) {
             if (placementType == null) {
-                throw new NullPointerException("Registering a new Spawn Predicate requires a nonnull placement type! Entity Type: " + ForgeRegistries.ENTITY_TYPES.getKey(entityType));
+                throw new NullPointerException("Registering a new Spawn Predicate requires a nonnull placement type! Entity Type: " + BuiltInRegistries.ENTITY_TYPE.getKey(entityType));
             }
             if (heightmap == null) {
-                throw new NullPointerException("Registering a new Spawn Predicate requires a nonnull heightmap type! Entity Type: " + ForgeRegistries.ENTITY_TYPES.getKey(entityType));
+                throw new NullPointerException("Registering a new Spawn Predicate requires a nonnull heightmap type! Entity Type: " + BuiltInRegistries.ENTITY_TYPE.getKey(entityType));
             }
             map.put(entityType, new MergedSpawnPredicate<>(predicate, placementType, heightmap));
         } else {
             if (operation != Operation.REPLACE && (heightmap != null || placementType != null)) {
-                throw new IllegalStateException("Nonnull heightmap types or spawn placement types may only be used with the REPLACE operation. Entity Type: " + ForgeRegistries.ENTITY_TYPES.getKey(entityType));
+                throw new IllegalStateException("Nonnull heightmap types or spawn placement types may only be used with the REPLACE operation. Entity Type: " + BuiltInRegistries.ENTITY_TYPE.getKey(entityType));
             }
             ((MergedSpawnPredicate<T>) map.get(entityType)).merge(operation, predicate, placementType, heightmap);
         }

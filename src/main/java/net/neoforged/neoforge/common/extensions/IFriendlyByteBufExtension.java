@@ -7,11 +7,13 @@ package net.neoforged.neoforge.common.extensions;
 
 import com.google.common.base.Preconditions;
 import java.util.Objects;
+
+import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.registries.ForgeRegistry;
-import net.neoforged.neoforge.registries.IForgeRegistry;
 import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,10 +33,8 @@ public interface IFriendlyByteBufExtension {
      * @param entry    The entry who's registryName is to be written
      * @param <T>      The type of the entry.
      */
-    default <T> void writeRegistryIdUnsafe(@NotNull IForgeRegistry<T> registry, @NotNull T entry) {
-        ForgeRegistry<T> forgeRegistry = (ForgeRegistry<T>) registry;
-        int id = forgeRegistry.getID(entry);
-        self().writeVarInt(id);
+    default <T> void writeRegistryIdUnsafe(@NotNull Registry<T> registry, @NotNull T entry) {
+        self().writeVarInt(registry.getId(entry));
     }
 
     /**
@@ -44,10 +44,8 @@ public interface IFriendlyByteBufExtension {
      * @param registry The registry containing the entry represented by this key
      * @param entryKey The registry-name of an entry in this {@link IForgeRegistry}
      */
-    default void writeRegistryIdUnsafe(@NotNull IForgeRegistry<?> registry, @NotNull ResourceLocation entryKey) {
-        ForgeRegistry<?> forgeRegistry = (ForgeRegistry<?>) registry;
-        int id = forgeRegistry.getID(entryKey);
-        self().writeVarInt(id);
+    default void writeRegistryIdUnsafe(@NotNull Registry<?> registry, @NotNull ResourceLocation entryKey) {
+        self().writeVarInt(registry.getId(entryKey));
     }
 
     /**
@@ -56,10 +54,9 @@ public interface IFriendlyByteBufExtension {
      * 
      * @param registry The registry containing the entry
      */
-    default <T> T readRegistryIdUnsafe(@NotNull IForgeRegistry<T> registry) {
-        ForgeRegistry<T> forgeRegistry = (ForgeRegistry<T>) registry;
+    default <T> T readRegistryIdUnsafe(@NotNull Registry<T> registry) {
         int id = self().readVarInt();
-        return forgeRegistry.getValue(id);
+        return registry.byId(id);
     }
 
     /**
@@ -74,14 +71,13 @@ public interface IFriendlyByteBufExtension {
      * @throws NullPointerException     if the registry or entry was null
      * @throws IllegalArgumentException if the registry does not contain the specified value
      */
-    default <T> void writeRegistryId(@NotNull IForgeRegistry<T> registry, @NotNull T entry) {
+    default <T> void writeRegistryId(@NotNull Registry<T> registry, @NotNull T entry) {
         Objects.requireNonNull(registry, "Cannot write a null registry key!");
         Objects.requireNonNull(entry, "Cannot write a null registry entry!");
-        ResourceLocation name = registry.getRegistryName();
+        ResourceLocation name = registry.key().location();
         Preconditions.checkArgument(registry.containsValue(entry), "Cannot find %s in %s", registry.getKey(entry) != null ? registry.getKey(entry) : entry, name);
-        ForgeRegistry<T> reg = (ForgeRegistry<T>) registry;
-        self().writeResourceLocation(name); //TODO change to writing a varInt once registries use id's
-        self().writeVarInt(reg.getID(entry));
+        self().writeResourceLocation(name);
+        self().writeVarInt(registry.getId(entry));
     }
 
     /**
@@ -92,9 +88,9 @@ public interface IFriendlyByteBufExtension {
      * @throws NullPointerException if the registry could not be found.
      */
     default <T> T readRegistryId() {
-        ResourceLocation location = self().readResourceLocation(); //TODO change to reading a varInt once registries use id's
-        ForgeRegistry<T> registry = RegistryManager.ACTIVE.getRegistry(location);
-        return registry.getValue(self().readVarInt());
+        ResourceLocation location = self().readResourceLocation();
+        Registry<?> registry = BuiltInRegistries.REGISTRY.get(location);
+        return (T) registry.byId(self().readVarInt());
     }
 
     /**

@@ -74,15 +74,15 @@ function initializeCoreMod() {
                 return classNode;
             }
         },
-        'itemstack': {
-            'target': {
-                'type': 'CLASS',
-                'name': 'net.minecraft.world.item.ItemStack'
-            },
-            'transformer': function(classNode) {
-                ASMAPI.redirectFieldToMethod(classNode, 'item', 'getItem') // item
-                return classNode;
-            }
-        }
+        // 'itemstack': {
+            // 'target': {
+            //     'type': 'CLASS',
+            //     'name': 'net.minecraft.world.item.ItemStack'
+            // },
+            // 'transformer': function(classNode) {
+            //     ASMAPI.redirectFieldToMethod(classNode, 'item', 'getItem') // item
+            //     return classNode;
+            // }
+        // }
     }
 }

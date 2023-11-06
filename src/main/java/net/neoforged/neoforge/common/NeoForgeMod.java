@@ -7,6 +7,7 @@ package net.neoforged.neoforge.common;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -23,12 +24,16 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryCodecs;
+import net.minecraft.core.WritableRegistry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
@@ -409,11 +414,11 @@ public class NeoForgeMod {
     });
 
     private static boolean enableMilkFluid = false;
-    public static final RegistryObject<SoundEvent> BUCKET_EMPTY_MILK = RegistryObject.create(new ResourceLocation("item.bucket.empty_milk"), ForgeRegistries.SOUND_EVENTS);
-    public static final RegistryObject<SoundEvent> BUCKET_FILL_MILK = RegistryObject.create(new ResourceLocation("item.bucket.fill_milk"), ForgeRegistries.SOUND_EVENTS);
-    public static final RegistryObject<FluidType> MILK_TYPE = RegistryObject.createOptional(new ResourceLocation("milk"), ForgeRegistries.Keys.FLUID_TYPES.location(), "minecraft");
-    public static final RegistryObject<Fluid> MILK = RegistryObject.create(new ResourceLocation("milk"), ForgeRegistries.FLUIDS);
-    public static final RegistryObject<Fluid> FLOWING_MILK = RegistryObject.create(new ResourceLocation("flowing_milk"), ForgeRegistries.FLUIDS);
+    public static final RegistryObject<SoundEvent> BUCKET_EMPTY_MILK = RegistryObject.create(new ResourceLocation("item.bucket.empty_milk"), BuiltInRegistries.SOUND_EVENT);
+    public static final RegistryObject<SoundEvent> BUCKET_FILL_MILK = RegistryObject.create(new ResourceLocation("item.bucket.fill_milk"), BuiltInRegistries.SOUND_EVENT);
+    public static final RegistryObject<FluidType> MILK_TYPE = RegistryObject.create(new ResourceLocation("milk"), ForgeRegistries.Keys.FLUID_TYPES); // TODO - optional
+    public static final RegistryObject<Fluid> MILK = RegistryObject.create(new ResourceLocation("milk"), BuiltInRegistries.FLUID);
+    public static final RegistryObject<Fluid> FLOWING_MILK = RegistryObject.create(new ResourceLocation("flowing_milk"), BuiltInRegistries.FLUID);
 
     /**
      * Run this method during mod constructor to enable milk and add it to the Minecraft milk bucket
@@ -458,7 +463,6 @@ public class NeoForgeMod {
         CONDITION_CODECS.register(modEventBus);
         RECIPE_SERIALIZERS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
-        NeoForge.EVENT_BUS.addListener(this::missingSoundMapping);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.clientSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, NeoForgeConfig.serverSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, NeoForgeConfig.commonSpec);
@@ -476,8 +480,6 @@ public class NeoForgeMod {
         TierSortingRegistry.init();
         if (dist == Dist.CLIENT) ClientCommandHandler.init();
         DualStackUtils.initialise();
-
-        ForgeRegistries.ITEMS.tags().addOptionalTagDefaults(Tags.Items.ENCHANTING_FUELS, Set.of(ForgeRegistries.ITEMS.getDelegateOrThrow(Items.LAPIS_LAZULI)));
     }
 
     public void preInit(FMLCommonSetupEvent evt) {
@@ -514,24 +516,6 @@ public class NeoForgeMod {
 
         gen.addProvider(event.includeClient(), new NeoForgeSpriteSourceProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeClient(), new VanillaSoundDefinitionsProvider(packOutput, existingFileHelper));
-    }
-
-    public void missingSoundMapping(MissingMappingsEvent event) {
-        if (event.getKey() != ForgeRegistries.Keys.SOUND_EVENTS)
-            return;
-
-        //Removed in 1.15, see https://minecraft.gamepedia.com/Parrot#History
-        List<String> removedSounds = Arrays.asList("entity.parrot.imitate.panda", "entity.parrot.imitate.zombie_pigman", "entity.parrot.imitate.enderman", "entity.parrot.imitate.polar_bear", "entity.parrot.imitate.wolf");
-        for (MissingMappingsEvent.Mapping<SoundEvent> mapping : event.getAllMappings(ForgeRegistries.Keys.SOUND_EVENTS)) {
-            ResourceLocation regName = mapping.getKey();
-            if (regName != null && regName.getNamespace().equals("minecraft")) {
-                String path = regName.getPath();
-                if (removedSounds.stream().anyMatch(s -> s.equals(path))) {
-                    LOGGER.info("Ignoring removed minecraft sound {}", regName);
-                    mapping.ignore();
-                }
-            }
-        }
     }
 
     // done in an event instead of deferred to only enable if a mod requests it
@@ -580,13 +564,13 @@ public class NeoForgeMod {
 
     public void registerVanillaDisplayContexts(RegisterEvent event) {
         if (event.getRegistryKey().equals(ForgeRegistries.Keys.DISPLAY_CONTEXTS)) {
-            IForgeRegistryInternal<ItemDisplayContext> forgeRegistry = (IForgeRegistryInternal<ItemDisplayContext>) event.<ItemDisplayContext>getForgeRegistry();
+            WritableRegistry<ItemDisplayContext> forgeRegistry = (WritableRegistry<ItemDisplayContext>) event.getRegistry();
             if (forgeRegistry == null)
                 throw new IllegalStateException("Item display context was not a NeoForge registry, wtf???");
 
             Arrays.stream(ItemDisplayContext.values())
                     .filter(Predicate.not(ItemDisplayContext::isModded))
-                    .forEach(ctx -> forgeRegistry.register(ctx.getId(), new ResourceLocation("minecraft", ctx.getSerializedName()), ctx));
+                    .forEach(ctx -> forgeRegistry.registerWithId(ResourceKey.create(ForgeRegistries.Keys.DISPLAY_CONTEXTS, new ResourceLocation("minecraft", ctx.getSerializedName())), ctx, Lifecycle.stable(), ctx.getId()));
         }
     }
 
