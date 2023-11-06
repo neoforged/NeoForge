@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
  * Individual instances of modifiers must be registered via json, see neoforge:loot_modifiers/global_loot_modifiers
  */
 public interface IGlobalLootModifier {
-    Codec<IGlobalLootModifier> DIRECT_CODEC = ExtraCodecs.lazyInitializedCodec(() -> ForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS.byNameCodec())
+    Codec<IGlobalLootModifier> DIRECT_CODEC = ForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS.byNameCodec()
             .dispatch(IGlobalLootModifier::codec, Function.identity());
     Codec<Optional<WithConditions<IGlobalLootModifier>>> CONDITIONAL_CODEC = ConditionalOps.createConditionalCodecWithConditions(DIRECT_CODEC, "neoforge:conditions").codec();
 

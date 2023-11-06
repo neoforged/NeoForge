@@ -1,10 +1,12 @@
 --- a/net/minecraft/core/WritableRegistry.java
 +++ b/net/minecraft/core/WritableRegistry.java
-@@ -6,6 +_,8 @@
+@@ -6,6 +_,10 @@
  public interface WritableRegistry<T> extends Registry<T> {
     Holder.Reference<T> register(ResourceKey<T> p_256320_, T p_255978_, Lifecycle p_256625_);
  
-+   Holder.Reference<T> registerWithId(ResourceKey<T> key, T value, Lifecycle lifecycle, int id);
++   default Holder.Reference<T> registerMapping(int id, ResourceKey<T> key, T value, Lifecycle lifecycle) {
++      throw new UnsupportedOperationException("Cannot register mapping with explicit ID on this registry!");
++   }
 +
     boolean isEmpty();
  

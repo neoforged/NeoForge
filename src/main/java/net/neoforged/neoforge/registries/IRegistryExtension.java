@@ -1,13 +1,9 @@
 package net.neoforged.neoforge.registries;
 
-import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.callback.RegistryCallback;
-
-import javax.annotation.Nullable;
-import java.util.Optional;
 
 public interface IRegistryExtension<T> {
     /**
@@ -29,6 +25,10 @@ public interface IRegistryExtension<T> {
      * @param callback The callback to add.
      */
     void addCallback(RegistryCallback<T> callback);
+
+    default <C extends RegistryCallback<T>> void addCallback(Class<C> type, C callback) {
+        addCallback(callback);
+    }
 
     /**
      * Adds an alias that maps from the name specified by <code>from</code> to the name specified by <code>to</code>.
@@ -84,21 +84,4 @@ public interface IRegistryExtension<T> {
 
     boolean containsValue(T value);
 
-//    /**
-//     * Gets the optional holder linked to the given value in this registry.
-//     *
-//     * @param value the value to lookup
-//     * @return the optional holder linked to the given value in this registry,
-//     * or an empty optional if the value is not present in this registry.
-//     */
-//    Optional<Holder.Reference<T>> getHolder(T value);
-//
-//    /**
-//     * Gets the holder linked to the given value in this registry.
-//     *
-//     * @param value the value to lookup
-//     * @return the holder linked to the given value in this registry
-//     * @throws IllegalStateException if the value is not present in this registry
-//     */
-//    Holder.Reference<T> getHolderOrThrow(T value);
 }

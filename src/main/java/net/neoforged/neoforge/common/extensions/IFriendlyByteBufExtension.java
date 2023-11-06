@@ -42,7 +42,7 @@ public interface IFriendlyByteBufExtension {
      * in the given registry. Therefore no safety checks can be performed whilst reading it and if the entry is not in the registry a default value will be written.
      * 
      * @param registry The registry containing the entry represented by this key
-     * @param entryKey The registry-name of an entry in this {@link IForgeRegistry}
+     * @param entryKey The registry-name of an entry in this {@link Registry}
      */
     default void writeRegistryIdUnsafe(@NotNull Registry<?> registry, @NotNull ResourceLocation entryKey) {
         self().writeVarInt(registry.getId(entryKey));
@@ -61,7 +61,7 @@ public interface IFriendlyByteBufExtension {
 
     /**
      * Writes a given registry-entry's integer id to the specified buffer in combination with writing the containing registry's id. In contrast to
-     * {@link #writeRegistryIdUnsafe(IForgeRegistry, Object)} this method checks every single step performed as well as
+     * {@link #writeRegistryIdUnsafe(Registry, Object)} this method checks every single step performed as well as
      * writing the registry-id to the buffer, in order to prevent any unexpected behaviour. Therefore this method is to be preferred whenever possible,
      * over using the unsafe methods.
      *

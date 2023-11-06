@@ -49,18 +49,6 @@
        return reference;
     }
  
-@@ -170,6 +_,11 @@
-       return this.registerMapping(this.nextId, p_256252_, p_256591_, p_256255_);
-    }
- 
-+   @Override
-+   public Holder.Reference<T> registerWithId(ResourceKey<T> key, T value, Lifecycle lifecycle, int id) {
-+      return this.registerMapping(id, key, value, lifecycle);
-+   }
-+
-    @Nullable
-    @Override
-    public ResourceLocation getKey(T p_122746_) {
 @@ -190,7 +_,7 @@
     @Nullable
     @Override

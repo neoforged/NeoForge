@@ -24,7 +24,6 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -63,6 +62,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.*;
 import net.neoforged.fml.common.Mod;
@@ -416,7 +416,7 @@ public class NeoForgeMod {
     private static boolean enableMilkFluid = false;
     public static final RegistryObject<SoundEvent> BUCKET_EMPTY_MILK = RegistryObject.create(new ResourceLocation("item.bucket.empty_milk"), BuiltInRegistries.SOUND_EVENT);
     public static final RegistryObject<SoundEvent> BUCKET_FILL_MILK = RegistryObject.create(new ResourceLocation("item.bucket.fill_milk"), BuiltInRegistries.SOUND_EVENT);
-    public static final RegistryObject<FluidType> MILK_TYPE = RegistryObject.create(new ResourceLocation("milk"), ForgeRegistries.Keys.FLUID_TYPES); // TODO - optional
+    public static final RegistryObject<FluidType> MILK_TYPE = RegistryObject.create(new ResourceLocation("milk"), ForgeRegistries.Keys.FLUID_TYPES);
     public static final RegistryObject<Fluid> MILK = RegistryObject.create(new ResourceLocation("milk"), BuiltInRegistries.FLUID);
     public static final RegistryObject<Fluid> FLOWING_MILK = RegistryObject.create(new ResourceLocation("flowing_milk"), BuiltInRegistries.FLUID);
 
@@ -450,7 +450,7 @@ public class NeoForgeMod {
         modEventBus.addListener(this::gatherData);
         modEventBus.addListener(this::loadComplete);
         modEventBus.addListener(this::registerFluids);
-        modEventBus.addListener(this::registerVanillaDisplayContexts);
+        modEventBus.addListener(EventPriority.HIGHEST, this::registerVanillaDisplayContexts);
         modEventBus.addListener(this::registerLootData);
         ATTRIBUTES.register(modEventBus);
         COMMAND_ARGUMENT_TYPES.register(modEventBus);
@@ -467,7 +467,7 @@ public class NeoForgeMod {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, NeoForgeConfig.serverSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, NeoForgeConfig.commonSpec);
         modEventBus.register(NeoForgeConfig.class);
-        ForgeDeferredRegistriesSetup.setup(modEventBus);
+        ForgeRegistriesSetup.setup(modEventBus);
         // Forge does not display problems when the remote is not matching.
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> "ANY", (remote, isServer) -> true));
         StartupMessageManager.addModMessage("NeoForge version " + NeoForgeVersion.getVersion());
@@ -570,7 +570,7 @@ public class NeoForgeMod {
 
             Arrays.stream(ItemDisplayContext.values())
                     .filter(Predicate.not(ItemDisplayContext::isModded))
-                    .forEach(ctx -> forgeRegistry.registerWithId(ResourceKey.create(ForgeRegistries.Keys.DISPLAY_CONTEXTS, new ResourceLocation("minecraft", ctx.getSerializedName())), ctx, Lifecycle.stable(), ctx.getId()));
+                    .forEach(ctx -> forgeRegistry.registerMapping(ctx.getId(), ResourceKey.create(ForgeRegistries.Keys.DISPLAY_CONTEXTS, new ResourceLocation("minecraft", ctx.getSerializedName())), ctx, Lifecycle.stable()));
         }
     }
 

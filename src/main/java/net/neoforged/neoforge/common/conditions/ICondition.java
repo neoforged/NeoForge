@@ -21,7 +21,6 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Unit;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.registries.ForgeRegistries;
@@ -29,7 +28,7 @@ import net.neoforged.neoforge.registries.ForgeRegistries;
 public interface ICondition {
     // Use dispatchUnsafe to always write the condition value inline.
     Codec<ICondition> CODEC = NeoForgeExtraCodecs.dispatchUnsafe(
-            ExtraCodecs.lazyInitializedCodec(() -> ForgeRegistries.CONDITION_SERIALIZERS.byNameCodec()),
+            ForgeRegistries.CONDITION_SERIALIZERS.byNameCodec(),
             ICondition::codec,
             Function.identity());
     Codec<List<ICondition>> LIST_CODEC = CODEC.listOf();

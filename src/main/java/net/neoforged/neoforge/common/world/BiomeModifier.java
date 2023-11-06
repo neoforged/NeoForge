@@ -37,7 +37,7 @@ public interface BiomeModifier {
      * Codec for (de)serializing biome modifiers inline.
      * Mods can use this for data generation.
      */
-    Codec<BiomeModifier> DIRECT_CODEC = ExtraCodecs.lazyInitializedCodec(() -> ForgeRegistries.BIOME_MODIFIER_SERIALIZERS.byNameCodec())
+    Codec<BiomeModifier> DIRECT_CODEC = ForgeRegistries.BIOME_MODIFIER_SERIALIZERS.byNameCodec()
             .dispatch(BiomeModifier::codec, Function.identity());
 
     /**

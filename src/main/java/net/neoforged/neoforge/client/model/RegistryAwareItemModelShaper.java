@@ -12,11 +12,9 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,8 +24,8 @@ import org.jetbrains.annotations.Nullable;
  */
 @ApiStatus.Internal
 public class RegistryAwareItemModelShaper extends ItemModelShaper {
-    private final Map<Holder<Item>, ModelResourceLocation> locations = Maps.newHashMap();
-    private final Map<Holder<Item>, BakedModel> models = Maps.newHashMap();
+    private final Map<Item, ModelResourceLocation> locations = Maps.newHashMap();
+    private final Map<Item, BakedModel> models = Maps.newHashMap();
 
     public RegistryAwareItemModelShaper(ModelManager manager) {
         super(manager);
@@ -41,9 +39,8 @@ public class RegistryAwareItemModelShaper extends ItemModelShaper {
 
     @Override
     public void register(Item item, ModelResourceLocation location) {
-        Holder<Item> key = BuiltInRegistries.ITEM.wrapAsHolder(item);
-        locations.put(key, location);
-        models.put(key, getModelManager().getModel(location));
+        locations.put(item, location);
+        models.put(item, getModelManager().getModel(location));
     }
 
     @Override

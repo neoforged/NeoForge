@@ -7,6 +7,7 @@ package net.neoforged.neoforge.network;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.mojang.authlib.GameProfile;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.util.ArrayList;
@@ -276,7 +277,9 @@ public class HandshakeHandler {
             final Set<ResourceKey<?>> missingData = RegistryManager.applySnapshot(registrySnapshots, false, false);
             LOGGER.debug(FMLHSMARKER, "Snapshot injected.");
             if (!missingData.isEmpty()) {
-                LOGGER.error(FMLHSMARKER, "Missing registry data for impl connection:\n{}", LogMessageAdapter.adapt(sb -> missingData.forEach((entry) -> sb.append("\t").append(entry)))); // TODO - fix log format
+                Multimap<ResourceLocation, ResourceLocation> missingRegs = missingData.stream()
+                                .collect(Multimaps.toMultimap(ResourceKey::registry, ResourceKey::location, () -> Multimaps.newListMultimap(new HashMap<>(), ArrayList::new)));
+                LOGGER.error(FMLHSMARKER, "Missing registry data for impl connection:\n{}", LogMessageAdapter.adapt(sb -> missingRegs.forEach((reg, entry) -> sb.append("\t").append(reg).append(": ").append(entry).append('\n'))));
             }
             successfulConnection.set(missingData.isEmpty());
             registryMismatches.set(missingData);

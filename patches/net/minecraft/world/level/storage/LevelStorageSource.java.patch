@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
-@@ -505,13 +_,25 @@
+@@ -505,13 +_,13 @@
        public Pair<WorldData, WorldDimensions.Complete> getDataTag(
           DynamicOps<Tag> p_248747_, WorldDataConfiguration p_251873_, Registry<LevelStem> p_249187_, Lifecycle p_249736_
        ) {
@@ -8,18 +8,6 @@
           return LevelStorageSource.this.readLevelData(this.levelDirectory, LevelStorageSource.getLevelData(p_248747_, p_251873_, p_249187_, p_249736_));
        }
  
-+      public void readAdditionalLevelSaveData() {
-+         checkLock();
-+         LevelStorageSource.this.readLevelData(this.levelDirectory, (path, dataFixer) -> {
-+            try {
-+               CompoundTag compoundTag = NbtIo.readCompressed(path.toFile());
-+            } catch (Exception e) {
-+                LOGGER.error("Exception reading {}", path, e);
-+            }
-+            return ""; // Return non-null to prevent level.dat-old inject
-+         });
-+      }
-+
        @Nullable
        public WorldDataConfiguration getDataConfiguration() {
           this.checkLock();

@@ -132,16 +132,12 @@ public class FluidStack {
         return isEmpty ? Fluids.EMPTY : fluid;
     }
 
-    public final Fluid getRawFluid() {
-        return  fluid;
-    }
-
     public boolean isEmpty() {
         return isEmpty;
     }
 
     protected void updateEmpty() {
-        isEmpty = getRawFluid() == Fluids.EMPTY || amount <= 0;
+        isEmpty = fluid == Fluids.EMPTY || amount <= 0;
     }
 
     public int getAmount() {
@@ -149,7 +145,7 @@ public class FluidStack {
     }
 
     public void setAmount(int amount) {
-        if (getRawFluid() == Fluids.EMPTY) throw new IllegalStateException("Can't modify the empty stack.");
+        if (fluid == Fluids.EMPTY) throw new IllegalStateException("Can't modify the empty stack.");
         this.amount = amount;
         updateEmpty();
     }
@@ -171,7 +167,7 @@ public class FluidStack {
     }
 
     public void setTag(CompoundTag tag) {
-        if (getRawFluid() == Fluids.EMPTY) throw new IllegalStateException("Can't modify the empty stack.");
+        if (fluid == Fluids.EMPTY) throw new IllegalStateException("Can't modify the empty stack.");
         this.tag = tag;
     }
 

@@ -10,17 +10,19 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.bus.api.IEventBus;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Set;
 
-public class ForgeDeferredRegistriesSetup {
+@ApiStatus.Internal
+public class ForgeRegistriesSetup {
     private static boolean setup = false;
 
     /**
      * Internal forge method. Modders do not call.
      */
     public static void setup(IEventBus modEventBus) {
-        synchronized (ForgeDeferredRegistriesSetup.class) {
+        synchronized (ForgeRegistriesSetup.class) {
             if (setup)
                 throw new IllegalStateException("Setup has already been called!");
 
@@ -38,7 +40,7 @@ public class ForgeDeferredRegistriesSetup {
         ForgeRegistries.DEFERRED_HOLDER_SET_TYPES.register(modEventBus);
         ForgeRegistries.DEFERRED_DISPLAY_CONTEXTS.register(modEventBus);
 
-        modEventBus.addListener(ForgeDeferredRegistriesSetup::onModifyRegistry);
+        modEventBus.addListener(ForgeRegistriesSetup::onModifyRegistry);
     }
 
     /**
