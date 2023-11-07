@@ -6,6 +6,12 @@
 package net.neoforged.neoforge.registries;
 
 import com.mojang.logging.LogUtils;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -17,13 +23,6 @@ import net.neoforged.neoforge.network.simple.MessageFunctions;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class RegistryManager {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -69,9 +68,9 @@ public class RegistryManager {
     /**
      * Applies the snapshot to the current state of the {@link BuiltInRegistries}.
      *
-     * @param snapshots the map of registry name to snapshot
+     * @param snapshots    the map of registry name to snapshot
      * @param allowMissing if {@code true}, missing registries will be skipped but will log a warning.
-     * Otherwise, an exception will be thrown if a registry name in the snapshot map is missing.
+     *                     Otherwise, an exception will be thrown if a registry name in the snapshot map is missing.
      * @param isLocalWorld changes the logging depending on if the snapshot is coming from a local save or a remote connection
      * @return the set of unhandled missing registry entries after firing remapping events for mods
      */
@@ -147,7 +146,7 @@ public class RegistryManager {
      * Takes a snapshot of the current registries registered to {@link BuiltInRegistries#REGISTRY}.
      *
      * @param snapshotType If {@link SnapshotType#SYNC_TO_CLIENT}, only takes a snapshot of registries set to {@linkplain IRegistryExtension#doesSync() sync to the client}.
-     * If {@link SnapshotType#FULL}, takes a snapshot of all registries including entries.
+     *                     If {@link SnapshotType#FULL}, takes a snapshot of all registries including entries.
      * @return the snapshot map of registry name to snapshot data
      */
     public static Map<ResourceLocation, RegistrySnapshot> takeSnapshot(SnapshotType snapshotType) {

@@ -29,7 +29,6 @@ import net.minecraft.server.packs.PackType;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.VisibleForTesting;
 
 /**

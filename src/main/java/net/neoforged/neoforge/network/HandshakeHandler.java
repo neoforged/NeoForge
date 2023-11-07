@@ -278,7 +278,7 @@ public class HandshakeHandler {
             LOGGER.debug(FMLHSMARKER, "Snapshot injected.");
             if (!missingData.isEmpty()) {
                 Multimap<ResourceLocation, ResourceLocation> missingRegs = missingData.stream()
-                                .collect(Multimaps.toMultimap(ResourceKey::registry, ResourceKey::location, () -> Multimaps.newListMultimap(new HashMap<>(), ArrayList::new)));
+                        .collect(Multimaps.toMultimap(ResourceKey::registry, ResourceKey::location, () -> Multimaps.newListMultimap(new HashMap<>(), ArrayList::new)));
                 LOGGER.error(FMLHSMARKER, "Missing registry data for impl connection:\n{}", LogMessageAdapter.adapt(sb -> missingRegs.forEach((reg, entry) -> sb.append("\t").append(reg).append(": ").append(entry).append('\n'))));
             }
             successfulConnection.set(missingData.isEmpty());

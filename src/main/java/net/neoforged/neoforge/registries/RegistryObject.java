@@ -5,6 +5,12 @@
 
 package net.neoforged.neoforge.registries;
 
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -13,15 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
-public final class RegistryObject<T> implements Supplier<T>
-{
+public final class RegistryObject<T> implements Supplier<T> {
     private final ResourceLocation name;
     private final ResourceKey<? extends Registry<T>> registryKey;
     private final ResourceKey<T> key;
@@ -33,14 +31,13 @@ public final class RegistryObject<T> implements Supplier<T>
     /**
      * Factory for a {@link RegistryObject} that stores the value of an object from the provided registry once it is ready.
      *
-     * @param name the name of the object to look up in the registry
+     * @param name     the name of the object to look up in the registry
      * @param registry the registry
      * @return a {@link RegistryObject} that stores the value of an object from the provided registry once it is ready
      * @see #create(ResourceLocation, ResourceKey)
      * @see #create(ResourceLocation, ResourceLocation)
      */
-    public static <T, U extends T> RegistryObject<U> create(final ResourceLocation name, Registry<T> registry)
-    {
+    public static <T, U extends T> RegistryObject<U> create(final ResourceLocation name, Registry<T> registry) {
         return new RegistryObject<>(name, registry.key().location());
     }
 
@@ -49,14 +46,13 @@ public final class RegistryObject<T> implements Supplier<T>
      * <p>
      * If a registry with the given key cannot be found, an exception will be thrown when trying to fill this RegistryObject.
      *
-     * @param name the name of the object to look up in a registry
+     * @param name        the name of the object to look up in a registry
      * @param registryKey the key of the registry
      * @return a {@link RegistryObject} that stores the value of an object from a registry once it is ready
      * @see #create(ResourceLocation, Registry)
      * @see #create(ResourceLocation, ResourceLocation)
      */
-    public static <T, U extends T> RegistryObject<U> create(final ResourceLocation name, final ResourceKey<? extends Registry<T>> registryKey)
-    {
+    public static <T, U extends T> RegistryObject<U> create(final ResourceLocation name, final ResourceKey<? extends Registry<T>> registryKey) {
         return new RegistryObject<>(name, registryKey.location());
     }
 
@@ -65,36 +61,30 @@ public final class RegistryObject<T> implements Supplier<T>
      * <p>
      * If a registry with the given name cannot be found, an exception will be thrown when trying to fill this RegistryObject.
      *
-     * @param name the name of the object to look up in a registry
+     * @param name         the name of the object to look up in a registry
      * @param registryName the name of the registry
      * @return a {@link RegistryObject} that stores the value of an object from a registry once it is ready
      * @see #create(ResourceLocation, Registry)
      * @see #create(ResourceLocation, ResourceKey)
      */
-    public static <T, U extends T> RegistryObject<U> create(final ResourceLocation name, final ResourceLocation registryName)
-    {
+    public static <T, U extends T> RegistryObject<U> create(final ResourceLocation name, final ResourceLocation registryName) {
         return new RegistryObject<>(name, registryName);
     }
 
-    private RegistryObject(final ResourceLocation name, final ResourceLocation registryName)
-    {
+    private RegistryObject(final ResourceLocation name, final ResourceLocation registryName) {
         this.name = name;
         this.registryKey = ResourceKey.createRegistryKey(registryName);
         this.key = ResourceKey.create(registryKey, name);
-        ObjectHolderRegistry.addHandler(new Consumer<>()
-        {
+        ObjectHolderRegistry.addHandler(new Consumer<>() {
             private boolean registryExists = false;
             private boolean invalidRegistry = false;
 
             @Override
-            public void accept(Predicate<ResourceLocation> pred)
-            {
+            public void accept(Predicate<ResourceLocation> pred) {
                 if (invalidRegistry)
                     return;
-                if (!registryExists)
-                {
-                    if (!registryExists(registryName))
-                    {
+                if (!registryExists) {
+                    if (!registryExists(registryName)) {
                         invalidRegistry = true;
                         throw new IllegalStateException("Unable to find registry with key " + registryName);
                     }
@@ -120,38 +110,31 @@ public final class RegistryObject<T> implements Supplier<T>
      */
     @NotNull
     @Override
-    public T get()
-    {
+    public T get() {
         T ret = this.value;
         Objects.requireNonNull(ret, () -> "Registry Object not present: " + this.name);
         return ret;
     }
 
     @SuppressWarnings("unchecked")
-    void updateReference(Registry<? extends T> registry)
-    {
-        if (registry.containsKey(this.name))
-        {
+    void updateReference(Registry<? extends T> registry) {
+        if (registry.containsKey(this.name)) {
             this.value = registry.get(this.name);
             this.holder = ((Registry<T>) registry).getHolder(this.key).orElse(null);
-        }
-        else
-        {
+        } else {
             this.value = null;
             this.holder = null;
         }
     }
 
     @SuppressWarnings("unchecked")
-    void updateReference(ResourceLocation registryName)
-    {
+    void updateReference(ResourceLocation registryName) {
         Registry<? extends T> registry = (Registry<? extends T>) BuiltInRegistries.REGISTRY.get(registryName);
         if (registry != null)
             updateReference(registry);
     }
 
-    void updateReference(RegisterEvent event)
-    {
+    void updateReference(RegisterEvent event) {
         Registry<? extends T> registry = event.getRegistry(this.registryKey);
         if (registry != null)
             updateReference(registry);
@@ -159,13 +142,11 @@ public final class RegistryObject<T> implements Supplier<T>
             this.value = null;
     }
 
-    private static boolean registryExists(ResourceLocation registryName)
-    {
+    private static boolean registryExists(ResourceLocation registryName) {
         return BuiltInRegistries.REGISTRY.containsKey(registryName);
     }
 
-    public ResourceLocation getId()
-    {
+    public ResourceLocation getId() {
         return this.name;
     }
 
@@ -176,8 +157,7 @@ public final class RegistryObject<T> implements Supplier<T>
      * @return the resource key that points to the registry and name of this registry object
      */
     @Nullable
-    public ResourceKey<T> getKey()
-    {
+    public ResourceKey<T> getKey() {
         return this.key;
     }
 
@@ -198,7 +178,7 @@ public final class RegistryObject<T> implements Supplier<T>
      * Return the mod object if present, otherwise return {@code other}.
      *
      * @param other the mod object to be returned if there is no mod object present, may
-     * be null
+     *              be null
      * @return the mod object, if present, otherwise {@code other}
      */
     public T orElse(T other) {
@@ -210,10 +190,10 @@ public final class RegistryObject<T> implements Supplier<T>
      * the result of that invocation.
      *
      * @param other a {@code Supplier} whose result is returned if no mod object
-     * is present
+     *              is present
      * @return the mod object if present otherwise the result of {@code other.get()}
      * @throws NullPointerException if mod object is not present and {@code other} is
-     * null
+     *                              null
      */
     public T orElseGet(Supplier<? extends T> other) {
         return isPresent() ? get() : other.get();
@@ -224,16 +204,16 @@ public final class RegistryObject<T> implements Supplier<T>
      * to be created by the provided supplier.
      *
      * @apiNote A method reference to the exception constructor with an empty
-     * argument list can be used as the supplier. For example,
-     * {@code IllegalStateException::new}
+     *          argument list can be used as the supplier. For example,
+     *          {@code IllegalStateException::new}
      *
-     * @param <X> Type of the exception to be thrown
+     * @param <X>               Type of the exception to be thrown
      * @param exceptionSupplier The supplier which will return the exception to
-     * be thrown
+     *                          be thrown
      * @return the present mod object
-     * @throws X if there is no mod object present
+     * @throws X                    if there is no mod object present
      * @throws NullPointerException if no mod object is present and
-     * {@code exceptionSupplier} is null
+     *                              {@code exceptionSupplier} is null
      */
     public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
         if (isPresent()) {
@@ -261,24 +241,21 @@ public final class RegistryObject<T> implements Supplier<T>
      * @return an optional {@link Holder} instance pointing to this RegistryObject's name and value
      */
     @NotNull
-    public Optional<Holder<T>> getHolder()
-    {
+    public Optional<Holder<T>> getHolder() {
         return Optional.ofNullable(this.holder);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj instanceof RegistryObject) {
-            return Objects.equals(((RegistryObject<?>)obj).name, name);
+            return Objects.equals(((RegistryObject<?>) obj).name, name);
         }
         return false;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hashCode(name);
     }
 }

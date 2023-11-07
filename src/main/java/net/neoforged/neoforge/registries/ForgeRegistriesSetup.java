@@ -5,14 +5,13 @@
 
 package net.neoforged.neoforge.registries;
 
+import java.util.Set;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.bus.api.IEventBus;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.Set;
 
 @ApiStatus.Internal
 public class ForgeRegistriesSetup {
@@ -65,7 +64,7 @@ public class ForgeRegistriesSetup {
             Registries.FROG_VARIANT // Required for EntityDataSerializers
     );
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private static void onModifyRegistry(ModifyRegistryEvent event) {
         if (!event.isBuiltin() || !(event.getRegistry() instanceof BaseNeoRegistry<?> forgeRegistry))
             return;

@@ -19,7 +19,6 @@ import net.minecraft.world.entity.npc.VillagerTrades.ItemListing;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 import net.neoforged.neoforge.event.village.WandererTradesEvent;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 
 public class VillagerTradingManager {
 

@@ -13,9 +13,9 @@ public non-sealed interface AddCallback<T> extends RegistryCallback<T> {
      * Called when an entry is added to the registry.
      *
      * @param registry the registry
-     * @param id the integer ID assigned to the entry
-     * @param key the resource key for the entry
-     * @param value the entry's value
+     * @param id       the integer ID assigned to the entry
+     * @param key      the resource key for the entry
+     * @param value    the entry's value
      */
     void onAdd(Registry<T> registry, int id, ResourceKey<T> key, T value);
 }

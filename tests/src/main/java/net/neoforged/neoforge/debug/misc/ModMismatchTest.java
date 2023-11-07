@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.misc;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.api.distmarker.Dist;
@@ -16,7 +17,6 @@ import net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen;
 import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.network.simple.SimpleChannel;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 
 /**
  * This test mod provides a way to register a {@link SimpleChannel} with a different protocol version on the client and the server to cause a mod channel mismatch.
@@ -40,7 +40,7 @@ public class ModMismatchTest {
     // Enabling this field (and disabling the two above to not cause a channel mismatch) will cause a registry mismatch due to a server registry entry not being present on the client. Since this test mod is loaded on both dists, a mod mismatch will be displayed as the cause.
     private static final boolean REGISTER_REGISTRY_ENTRY = false;
 
-    private static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, MOD_ID);
+    private static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, MOD_ID);
     private static final String CHANNEL_PROTOCOL_VERSION = FMLEnvironment.dist == Dist.CLIENT ? "V1" : "V2";
 
     public ModMismatchTest() {

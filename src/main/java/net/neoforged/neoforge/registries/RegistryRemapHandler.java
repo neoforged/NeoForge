@@ -1,13 +1,12 @@
 package net.neoforged.neoforge.registries;
 
 import com.mojang.logging.LogUtils;
+import java.util.Set;
 import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
-
-import java.util.Set;
 
 @ApiStatus.Internal
 class RegistryRemapHandler {
@@ -17,7 +16,7 @@ class RegistryRemapHandler {
     /**
      * Handles remapping of missing registry entries.
      *
-     * @param missing a set of all missing entries based on their resource keys
+     * @param missing      a set of all missing entries based on their resource keys
      * @param isLocalWorld whether the remaps are being handled for a local world or a remote connection
      * @return an immutable set of unhandled missing registry entries after firing remapping events for mods
      */

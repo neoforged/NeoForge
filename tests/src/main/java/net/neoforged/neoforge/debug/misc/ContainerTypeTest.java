@@ -8,8 +8,10 @@ package net.neoforged.neoforge.debug.misc;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.MenuProvider;
@@ -29,16 +31,14 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.NetworkHooks;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.ObjectHolder;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod("containertypetest")
 public class ContainerTypeTest {
-    @ObjectHolder(registryName = "menu", value = "containertypetest:container")
-    public static final MenuType<TestContainer> TYPE = null;
+    public static final RegistryObject<MenuType<TestContainer>> TYPE = RegistryObject.create(new ResourceLocation("containertypetest", "container"), Registries.MENU);
 
-    public class TestContainer extends AbstractContainerMenu {
+    public static class TestContainer extends AbstractContainerMenu {
         private final String text;
 
         protected TestContainer(int windowId, Inventory playerInv, FriendlyByteBuf extraData) {
@@ -46,7 +46,7 @@ public class ContainerTypeTest {
         }
 
         public TestContainer(int windowId, SimpleContainer inv, String text) {
-            super(TYPE, windowId);
+            super(TYPE.get(), windowId);
             this.text = text;
             for (int i = 0; i < 9; i++) {
                 this.addSlot(new Slot(inv, i, (i % 3) * 18, (i / 3) * 18));
@@ -82,11 +82,11 @@ public class ContainerTypeTest {
     }
 
     private void registerContainers(final RegisterEvent event) {
-        event.register(ForgeRegistries.Keys.MENU_TYPES, helper -> helper.register("container", IMenuTypeExtension.create(TestContainer::new)));
+        event.register(Registries.MENU, helper -> helper.register("container", IMenuTypeExtension.create(TestContainer::new)));
     }
 
     private void setup(FMLClientSetupEvent event) {
-        MenuScreens.register(TYPE, TestGui::new);
+        MenuScreens.register(TYPE.get(), TestGui::new);
     }
 
     private void onRightClick(PlayerInteractEvent.RightClickBlock event) {

@@ -56,7 +56,6 @@ import net.neoforged.neoforge.network.NetworkHooks;
 import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.ForgeRegistries.Keys;
-import net.neoforged.neoforge.registries.GameData;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.resource.PathPackResources;
 import net.neoforged.neoforge.server.permission.PermissionAPI;

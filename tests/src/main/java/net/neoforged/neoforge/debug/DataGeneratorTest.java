@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.Variant;
 import net.minecraft.core.*;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
@@ -71,7 +72,6 @@ import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 import net.neoforged.neoforge.common.crafting.*;
 import net.neoforged.neoforge.common.data.*;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -691,7 +691,7 @@ public class DataGeneratorTest {
             logBlock((RotatedPillarBlock) Blocks.ACACIA_LOG);
 
             stairsBlock((StairBlock) Blocks.ACACIA_STAIRS, "acacia", mcLoc("block/acacia_planks"));
-            slabBlock((SlabBlock) Blocks.ACACIA_SLAB, ForgeRegistries.BLOCKS.getKey(Blocks.ACACIA_PLANKS), mcLoc("block/acacia_planks"));
+            slabBlock((SlabBlock) Blocks.ACACIA_SLAB, BuiltInRegistries.BLOCK.getKey(Blocks.ACACIA_PLANKS), mcLoc("block/acacia_planks"));
 
             // TODO 1.19: fix fenceBlock, wallBlock, and co -SS
             // fenceBlock((FenceBlock) Blocks.ACACIA_FENCE, "acacia", mcLoc("block/acacia_planks"));
@@ -737,7 +737,7 @@ public class DataGeneratorTest {
                     if (IGNORED_BLOCKS.contains(block)) return;
                     JsonObject generated = state.toJson();
                     try {
-                        Resource vanillaResource = models().existingFileHelper.getResource(ForgeRegistries.BLOCKS.getKey(block), PackType.CLIENT_RESOURCES, ".json", "blockstates");
+                        Resource vanillaResource = models().existingFileHelper.getResource(BuiltInRegistries.BLOCK.getKey(block), PackType.CLIENT_RESOURCES, ".json", "blockstates");
                         JsonObject existing = GSON.fromJson(vanillaResource.openAsReader(), JsonObject.class);
                         if (state instanceof VariantBlockStateBuilder) {
                             compareVariantBlockstates(block, generated, existing);
@@ -1018,7 +1018,7 @@ public class DataGeneratorTest {
 
         private void validateResults() {
             var errors = Stream.of(ParticleTypes.DRIPPING_LAVA, ParticleTypes.CLOUD, ParticleTypes.FISHING, ParticleTypes.ENCHANT)
-                    .map(ForgeRegistries.PARTICLE_TYPES::getKey).map(particle -> {
+                    .map(BuiltInRegistries.PARTICLE_TYPE::getKey).map(particle -> {
                         try (var resource = this.fileHelper.getResource(particle, PackType.CLIENT_RESOURCES, ".json", "particles").openAsReader()) {
                             var existingTextures = GSON.fromJson(resource, JsonObject.class).get("textures").getAsJsonArray();
                             var generatedTextures = this.descriptions.get(particle);

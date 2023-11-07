@@ -13,8 +13,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Fired for each registry when it is ready to have modded objects registered.
@@ -26,13 +24,11 @@ import org.jetbrains.annotations.Nullable;
  * @see #register(ResourceKey, ResourceLocation, Supplier)
  * @see #register(ResourceKey, Consumer)
  */
-public class RegisterEvent extends Event implements IModBusEvent
-{
+public class RegisterEvent extends Event implements IModBusEvent {
     private final ResourceKey<? extends Registry<?>> registryKey;
     private final Registry<?> registry;
 
-    RegisterEvent(ResourceKey<? extends Registry<?>> registryKey, Registry<?> registry)
-    {
+    RegisterEvent(ResourceKey<? extends Registry<?>> registryKey, Registry<?> registry) {
         this.registryKey = registryKey;
         this.registry = registry;
     }
@@ -40,17 +36,15 @@ public class RegisterEvent extends Event implements IModBusEvent
     /**
      * Registers the value with the given name to the stored registry if the provided registry key matches this event's registry key.
      *
-     * @param registryKey the key of the registry to register the value to
-     * @param name the name of the object to register as its key
+     * @param registryKey   the key of the registry to register the value to
+     * @param name          the name of the object to register as its key
      * @param valueSupplier a supplier of the object value
-     * @param <T> the type of the registry
+     * @param <T>           the type of the registry
      * @see #register(ResourceKey, Consumer) a register variant making registration of multiple objects less redundant
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T> void register(ResourceKey<? extends Registry<T>> registryKey, ResourceLocation name, Supplier<T> valueSupplier)
-    {
-        if (this.registryKey.equals(registryKey))
-        {
+    public <T> void register(ResourceKey<? extends Registry<T>> registryKey, ResourceLocation name, Supplier<T> valueSupplier) {
+        if (this.registryKey.equals(registryKey)) {
             Registry.register((Registry) this.registry, name, valueSupplier.get());
         }
     }
@@ -59,14 +53,12 @@ public class RegisterEvent extends Event implements IModBusEvent
      * Calls the provided consumer with a register helper if the provided registry key matches this event's registry key.
      *
      * @param registryKey the key of the registry to register objects to
-     * @param <T> the type of the registry
+     * @param <T>         the type of the registry
      * @see #register(ResourceKey, ResourceLocation, Supplier) a register variant targeted towards registering one or two objects
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public <T> void register(ResourceKey<? extends Registry<T>> registryKey, Consumer<RegisterHelper<T>> consumer)
-    {
-        if (this.registryKey.equals(registryKey))
-        {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public <T> void register(ResourceKey<? extends Registry<T>> registryKey, Consumer<RegisterHelper<T>> consumer) {
+        if (this.registryKey.equals(registryKey)) {
             consumer.accept((name, value) -> Registry.register((Registry) this.registry, name, value));
         }
     }
@@ -74,61 +66,55 @@ public class RegisterEvent extends Event implements IModBusEvent
     /**
      * @return The registry key linked to this event
      */
-    public ResourceKey<? extends Registry<?>> getRegistryKey()
-    {
+    public ResourceKey<? extends Registry<?>> getRegistryKey() {
         return this.registryKey;
     }
 
     /**
      * @return The registry linked to this event
      */
-    public Registry<?> getRegistry()
-    {
+    public Registry<?> getRegistry() {
         return this.registry;
     }
 
     /**
      * @param key the registry key to compare again {@link #getRegistryKey()}
      * @return The registry typed to the given registry key if it matches {@link #getRegistryKey()},
-     * or {@code null} if it does not match.
+     *         or {@code null} if it does not match.
      */
     @SuppressWarnings("unchecked")
-    public <T> Registry<T> getRegistry(ResourceKey<? extends Registry<T>> key)
-    {
+    public <T> Registry<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
         return key == this.registryKey ? (Registry<T>) this.registry : null;
     }
 
     @FunctionalInterface
-    public interface RegisterHelper<T>
-    {
+    public interface RegisterHelper<T> {
         /**
          * Registers the given value with the given name to the registry.
          * The namespace is inferred based on the active mod container.
          * If you wish to specify a namespace, use {@link #register(ResourceLocation, Object)} instead.
          *
-         * @param name the name of the object to register as its key with the namespaced inferred from the active mod container
+         * @param name  the name of the object to register as its key with the namespaced inferred from the active mod container
          * @param value the object value
          */
-        default void register(String name, T value)
-        {
+        default void register(String name, T value) {
             register(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name), value);
         }
 
         /**
          * Registers the given value with the given name to the registry.
          *
-         * @param key the resource key of the object to register
+         * @param key   the resource key of the object to register
          * @param value the object value
          */
-        default void register(ResourceKey<T> key, T value)
-        {
+        default void register(ResourceKey<T> key, T value) {
             register(key.location(), value);
         }
 
         /**
          * Registers the given value with the given name to the registry.
          *
-         * @param name the name of the object to register as its key
+         * @param name  the name of the object to register as its key
          * @param value the object value
          */
         void register(ResourceLocation name, T value);

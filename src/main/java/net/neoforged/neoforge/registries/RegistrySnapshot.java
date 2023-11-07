@@ -4,17 +4,16 @@ import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2IntRBTreeMap;
 import it.unimi.dsi.fastutil.objects.Object2IntSortedMap;
 import it.unimi.dsi.fastutil.objects.Object2IntSortedMaps;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
+import javax.annotation.Nullable;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class RegistrySnapshot {
     private static final Comparator<ResourceLocation> SORTER = ResourceLocation::compareNamespaced;
@@ -38,9 +37,9 @@ public class RegistrySnapshot {
      * Creates a registry snapshot based on the given registry.
      *
      * @param registry the registry to snapshot
-     * @param full if {@code true}, all entries will be stored in this snapshot.
-     * These entries are never saved to disk nor sent to the client.
-     * @param <T> the registry type
+     * @param full     if {@code true}, all entries will be stored in this snapshot.
+     *                 These entries are never saved to disk nor sent to the client.
+     * @param <T>      the registry type
      */
     public <T> RegistrySnapshot(Registry<T> registry, boolean full) {
         registry.keySet().forEach(key -> this.ids.put(key, registry.getId(key)));

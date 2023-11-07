@@ -21,7 +21,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.server.timings.ObjectTimings;
 import net.neoforged.neoforge.server.timings.TimeTracker;
 

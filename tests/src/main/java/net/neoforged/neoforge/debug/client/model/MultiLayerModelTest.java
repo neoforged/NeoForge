@@ -7,6 +7,7 @@ package net.neoforged.neoforge.debug.client.model;
 
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -18,7 +19,6 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(MultiLayerModelTest.MODID)
@@ -29,8 +29,8 @@ public class MultiLayerModelTest {
 
     private static final String blockName = "test_layer_block";
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MODID);
+    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
     private static final RegistryObject<Block> TEST_BLOCK = BLOCKS.register(blockName, () -> new Block(Block.Properties.of().mapColor(MapColor.WOOD).noOcclusion()));
     private static final RegistryObject<Item> TEST_BLOCK_ITEM = ITEMS.register(blockName, () -> new BlockItem(TEST_BLOCK.get(), new Item.Properties()));
 

@@ -5,13 +5,9 @@
 
 package net.neoforged.neoforge.registries;
 
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.SetMultimap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,8 +22,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.registries.tags.ITagManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,19 +32,17 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <T> The base registry type
  */
-public class DeferredRegister<T>
-{
+public class DeferredRegister<T> {
     /**
      * DeferredRegister factory for modded registries or {@linkplain BuiltInRegistries vanilla registries}.
      * <p>
      * If the registry is never created, any {@link RegistryObject}s made from this DeferredRegister will throw an exception.
      *
-     * @param registry the registry to register to
+     * @param registry  the registry to register to
      * @param namespace the namespace for all objects registered to this DeferredRegister
      * @see #create(ResourceKey, String)
      */
-    public static <T> DeferredRegister<T> create(Registry<T> registry, String namespace)
-    {
+    public static <T> DeferredRegister<T> create(Registry<T> registry, String namespace) {
         return new DeferredRegister<>(registry.key(), namespace);
     }
 
@@ -60,13 +52,26 @@ public class DeferredRegister<T>
      * <p>
      * If the registry is never created, any {@link RegistryObject}s made from this DeferredRegister will throw an exception.
      *
-     * @param key the key of the registry to reference. May come from another DeferredRegister through {@link #getRegistryKey()}.
+     * @param key       the key of the registry to reference. May come from another DeferredRegister through {@link #getRegistryKey()}.
      * @param namespace the namespace for all objects registered to this DeferredRegister
      * @see #create(Registry, String)
      */
-    public static <T> DeferredRegister<T> create(ResourceKey<? extends Registry<T>> key, String namespace)
-    {
+    public static <T> DeferredRegister<T> create(ResourceKey<? extends Registry<T>> key, String namespace) {
         return new DeferredRegister<>(key, namespace);
+    }
+
+    /**
+     * DeferredRegister factory for custom forge registries or {@link BuiltInRegistries vanilla registries}
+     * to lookup based on the provided registry name. Supports both registries that already exist or do not exist yet.
+     * <p>
+     * If the registry is never created, any {@link RegistryObject}s made from this DeferredRegister will throw an exception.
+     *
+     * @param registryName The name of the registry, should include namespace. May come from another DeferredRegister through {@link #getRegistryName()}.
+     * @param modid        The namespace for all objects registered to this DeferredRegister
+     * @see #create(ResourceKey, String)
+     */
+    public static <B> DeferredRegister<B> create(ResourceLocation registryName, String modid) {
+        return new DeferredRegister<>(ResourceKey.createRegistryKey(registryName), modid);
     }
 
     private final ResourceKey<? extends Registry<T>> registryKey;
@@ -82,8 +87,7 @@ public class DeferredRegister<T>
     private boolean seenRegisterEvent = false;
     private boolean registeredEventBus = false;
 
-    private DeferredRegister(ResourceKey<? extends Registry<T>> registryKey, String namespace)
-    {
+    private DeferredRegister(ResourceKey<? extends Registry<T>> registryKey, String namespace) {
         this.registryKey = registryKey;
         this.namespace = namespace;
     }
@@ -93,11 +97,10 @@ public class DeferredRegister<T>
      * a {@link RegistryObject} that will be populated with the created entry automatically.
      *
      * @param name The new entry's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
-     * @param sup A factory for the new entry. The factory should not cache the created entry.
+     * @param sup  A factory for the new entry. The factory should not cache the created entry.
      * @return A RegistryObject that will track updates from the registry for this entry.
      */
-    public <I extends T> RegistryObject<I> register(final String name, final Supplier<? extends I> sup)
-    {
+    public <I extends T> RegistryObject<I> register(final String name, final Supplier<? extends I> sup) {
         return this.register(name, key -> sup.get());
     }
 
@@ -110,19 +113,14 @@ public class DeferredRegister<T>
      * @return A RegistryObject that will track updates from the registry for this entry.
      */
     @SuppressWarnings("unchecked")
-    public <I extends T> RegistryObject<I> register(final String name, final Function<ResourceLocation, ? extends I> func)
-    {
+    public <I extends T> RegistryObject<I> register(final String name, final Function<ResourceLocation, ? extends I> func) {
         if (seenRegisterEvent)
             throw new IllegalStateException("Cannot register new entries to DeferredRegister after RegisterEvent has been fired.");
         Objects.requireNonNull(name);
         Objects.requireNonNull(func);
         final ResourceLocation key = new ResourceLocation(namespace, name);
 
-        RegistryObject<I> ret;
-        if (this.registryKey != null)
-            ret = RegistryObject.create(key, this.registryKey);
-        else
-            throw new IllegalStateException("Could not create RegistryObject in DeferredRegister");
+        RegistryObject<I> ret = RegistryObject.create(key, this.registryKey);
 
         if (entries.putIfAbsent((RegistryObject<T>) ret, () -> func.apply(key)) != null) {
             throw new IllegalArgumentException("Duplicate registration " + name);
@@ -138,8 +136,7 @@ public class DeferredRegister<T>
      * @param consumer A consumer that configures the provided RegistryBuilder during {@link NewRegistryEvent}
      * @return The {@link Registry} linked to {@link #getRegistryKey()}.
      */
-    public Registry<T> makeRegistry(final Consumer<RegistryBuilder<T>> consumer)
-    {
+    public Registry<T> makeRegistry(final Consumer<RegistryBuilder<T>> consumer) {
         // This restriction exists because we do not store the event bus that this instance is registered with.
         // We only listen to NewRegistryEvent if the custom registry already exists at the time of registration.
         if (this.registeredEventBus)
@@ -157,8 +154,7 @@ public class DeferredRegister<T>
      * To register additional DeferredRegisters for custom modded registries,
      * use {@link #create(ResourceKey, String)} which can take a registry key from {@link #getRegistryKey()}.
      */
-    public Supplier<Registry<T>> getRegistry()
-    {
+    public Supplier<Registry<T>> getRegistry() {
         if (this.registryHolder == null)
             this.registryHolder = new RegistryHolder<>(this.registryKey);
 
@@ -172,8 +168,7 @@ public class DeferredRegister<T>
      * @see #createTagKey(ResourceLocation)
      */
     @NotNull
-    public TagKey<T> createTagKey(@NotNull String path)
-    {
+    public TagKey<T> createTagKey(@NotNull String path) {
         Objects.requireNonNull(path);
         return createTagKey(new ResourceLocation(this.namespace, path));
     }
@@ -186,8 +181,7 @@ public class DeferredRegister<T>
      * @see #createTagKey(String)
      */
     @NotNull
-    public TagKey<T> createTagKey(@NotNull ResourceLocation location)
-    {
+    public TagKey<T> createTagKey(@NotNull ResourceLocation location) {
         Objects.requireNonNull(location);
         return TagKey.create(this.registryKey, location);
     }
@@ -198,10 +192,9 @@ public class DeferredRegister<T>
      * Any registry lookups that target the first name will resolve as the second name, iff the first name is not present.
      *
      * @param from The source registry name to alias from.
-     * @param to The target registry name to alias to.
+     * @param to   The target registry name to alias to.
      */
-    public void addAlias(ResourceLocation from, ResourceLocation to)
-    {
+    public void addAlias(ResourceLocation from, ResourceLocation to) {
         this.aliases.put(from, to);
     }
 
@@ -211,8 +204,7 @@ public class DeferredRegister<T>
      *
      * @param bus The Mod Specific event bus.
      */
-    public void register(IEventBus bus)
-    {
+    public void register(IEventBus bus) {
         if (this.registeredEventBus)
             throw new IllegalStateException("Cannot register DeferredRegister to more than one event bus.");
         this.registeredEventBus = true;
@@ -225,16 +217,14 @@ public class DeferredRegister<T>
     /**
      * @return The unmodifiable view of registered entries. Useful for bulk operations on all values.
      */
-    public Collection<RegistryObject<T>> getEntries()
-    {
+    public Collection<RegistryObject<T>> getEntries() {
         return entriesView;
     }
 
     /**
      * @return The registry key stored in this deferred register. Useful for creating new deferred registers based on an existing one.
      */
-    public ResourceKey<? extends Registry<T>> getRegistryKey()
-    {
+    public ResourceKey<? extends Registry<T>> getRegistryKey() {
         return this.registryKey;
     }
 
@@ -242,16 +232,14 @@ public class DeferredRegister<T>
      * @return The registry name stored in this deferred register. Useful for creating new deferred registers based on an existing one.
      */
     @NotNull
-    public ResourceLocation getRegistryName()
-    {
+    public ResourceLocation getRegistryName() {
         return Objects.requireNonNull(this.registryKey).location();
     }
 
     /**
      * {@return the modid/namespace associated with this deferred register}
      */
-    public String getNamespace()
-    {
+    public String getNamespace() {
         return this.namespace;
     }
 
@@ -269,40 +257,33 @@ public class DeferredRegister<T>
         return this.customRegistry;
     }
 
-    private void addEntries(RegisterEvent event)
-    {
-        if (event.getRegistryKey().equals(this.registryKey))
-        {
+    private void addEntries(RegisterEvent event) {
+        if (event.getRegistryKey().equals(this.registryKey)) {
             this.seenRegisterEvent = true;
             Registry<T> registry = event.getRegistry(this.registryKey);
             this.aliases.forEach(registry::addAlias);
-            for (Entry<RegistryObject<T>, Supplier<? extends T>> e : entries.entrySet())
-            {
+            for (Entry<RegistryObject<T>, Supplier<? extends T>> e : entries.entrySet()) {
                 event.register(this.registryKey, e.getKey().getId(), () -> e.getValue().get());
                 e.getKey().updateReference(event);
             }
         }
     }
 
-    private void createRegistry(NewRegistryEvent event)
-    {
+    private void createRegistry(NewRegistryEvent event) {
         event.register(this.customRegistry);
     }
 
-    private static class RegistryHolder<V> implements Supplier<Registry<V>>
-    {
+    private static class RegistryHolder<V> implements Supplier<Registry<V>> {
         private final ResourceKey<? extends Registry<V>> registryKey;
         private Registry<V> registry = null;
 
-        private RegistryHolder(ResourceKey<? extends Registry<V>> registryKey)
-        {
+        private RegistryHolder(ResourceKey<? extends Registry<V>> registryKey) {
             this.registryKey = registryKey;
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public Registry<V> get()
-        {
+        public Registry<V> get() {
             // Keep looking up the registry until it's not null
             if (this.registry == null)
                 this.registry = (Registry<V>) BuiltInRegistries.REGISTRY.get(this.registryKey.location());

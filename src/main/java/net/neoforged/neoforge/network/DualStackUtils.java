@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.network;
 
-import com.google.common.net.InetAddresses;
 import com.mojang.logging.LogUtils;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -144,7 +143,7 @@ public class DualStackUtils {
      * {@link SocketAddress#toString()} but with IPv6 address compression support
      */
     public static String getAddressString(final SocketAddress address) {
-        if (address instanceof final InetSocketAddress inetAddress) {
+        /*if (address instanceof final InetSocketAddress inetAddress) {
             String formatted;
             if (inetAddress.isUnresolved()) {
                 formatted = inetAddress.getHostName() + "/<unresolved>";
@@ -152,12 +151,12 @@ public class DualStackUtils {
                 formatted = InetAddresses.toAddrString(inetAddress.getAddress());
                 if (inetAddress.getAddress() instanceof Inet6Address)
                     formatted = '[' + formatted + ']';
-
+        
                 formatted = '/' + formatted;
             }
-
+        
             return formatted + ':' + inetAddress.getPort();
-        }
+        }*/
 
         return address.toString();
     }

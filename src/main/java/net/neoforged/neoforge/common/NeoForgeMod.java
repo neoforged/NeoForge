@@ -135,7 +135,7 @@ public class NeoForgeMod {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker NEOFORGEMOD = MarkerManager.getMarker("NEOFORGE-MOD");
 
-    private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.Keys.ATTRIBUTES, "neoforge");
+    private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, "neoforge");
     private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, "neoforge");
     private static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, "neoforge");
     private static final DeferredRegister<Codec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, "neoforge");
@@ -226,7 +226,7 @@ public class NeoForgeMod {
             builder -> builder
                     .group(
                             Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveSpawnsBiomeModifier::biomes),
-                            RegistryCodecs.homogeneousList(ForgeRegistries.Keys.ENTITY_TYPES).fieldOf("entity_types").forGetter(RemoveSpawnsBiomeModifier::entityTypes))
+                            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(RemoveSpawnsBiomeModifier::entityTypes))
                     .apply(builder, RemoveSpawnsBiomeModifier::new)));
     /**
      * Noop structure modifier. Can be used in a structure modifier json with "type": "neoforge:none".
@@ -522,7 +522,7 @@ public class NeoForgeMod {
     public void registerFluids(RegisterEvent event) {
         if (enableMilkFluid) {
             // register milk fill, empty sounds (delegates to water fill, empty sounds)
-            event.register(ForgeRegistries.Keys.SOUND_EVENTS, helper -> {
+            event.register(Registries.SOUND_EVENT, helper -> {
                 helper.register(BUCKET_EMPTY_MILK.getId(), SoundEvent.createVariableRangeEvent(BUCKET_EMPTY_MILK.getId()));
                 helper.register(BUCKET_FILL_MILK.getId(), SoundEvent.createVariableRangeEvent(BUCKET_FILL_MILK.getId()));
             });
@@ -552,7 +552,7 @@ public class NeoForgeMod {
             }));
 
             // register fluids
-            event.register(ForgeRegistries.Keys.FLUIDS, helper -> {
+            event.register(Registries.FLUID, helper -> {
                 // set up properties
                 BaseFlowingFluid.Properties properties = new BaseFlowingFluid.Properties(MILK_TYPE, MILK, FLOWING_MILK).bucket(() -> Items.MILK_BUCKET);
 

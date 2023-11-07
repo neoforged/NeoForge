@@ -86,7 +86,7 @@ public class CustomPredicateTest {
         }
     }
 
-    public record AdvancementGenerator() implements AdvancementProvider.AdvancementGenerator {
+    public static class AdvancementGenerator implements AdvancementProvider.AdvancementGenerator {
         @Override
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
             Advancement.Builder.advancement()

@@ -33,7 +33,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagNetworkSerialization;
 import net.neoforged.neoforge.network.NetworkHooks;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;

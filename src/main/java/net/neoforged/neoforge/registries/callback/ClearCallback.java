@@ -12,8 +12,8 @@ public non-sealed interface ClearCallback<T> extends RegistryCallback<T> {
      * Called when the registry is cleared before anything is done to the registry.
      *
      * @param registry the registry
-     * @param full if {@code true}, all entries in the registry will be cleared.
-     * if {@code false}, only integer IDs in the registry will be cleared.
+     * @param full     if {@code true}, all entries in the registry will be cleared.
+     *                 if {@code false}, only integer IDs in the registry will be cleared.
      */
     void onClear(Registry<T> registry, boolean full);
 }

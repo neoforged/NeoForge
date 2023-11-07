@@ -1,13 +1,5 @@
 --- a/net/minecraft/world/entity/ai/village/poi/PoiTypes.java
 +++ b/net/minecraft/world/entity/ai/village/poi/PoiTypes.java
-@@ -10,6 +_,7 @@
- import net.minecraft.Util;
- import net.minecraft.core.Holder;
- import net.minecraft.core.Registry;
-+import net.minecraft.core.registries.BuiltInRegistries;
- import net.minecraft.core.registries.Registries;
- import net.minecraft.resources.ResourceKey;
- import net.minecraft.resources.ResourceLocation;
 @@ -66,7 +_,9 @@
        .stream()
        .flatMap(p_218093_ -> p_218093_.getStateDefinition().getPossibleStates().stream())
@@ -37,7 +29,7 @@
  
     public static Optional<Holder<PoiType>> forState(BlockState p_218076_) {
 -      return Optional.ofNullable(TYPE_BY_STATE.get(p_218076_));
-+      return Optional.ofNullable(TYPE_BY_STATE.get(p_218076_)).map(BuiltInRegistries.POINT_OF_INTEREST_TYPE::wrapAsHolder);
++      return Optional.ofNullable(TYPE_BY_STATE.get(p_218076_)).map(net.minecraft.core.registries.BuiltInRegistries.POINT_OF_INTEREST_TYPE::wrapAsHolder);
     }
  
     public static boolean hasPoi(BlockState p_254440_) {

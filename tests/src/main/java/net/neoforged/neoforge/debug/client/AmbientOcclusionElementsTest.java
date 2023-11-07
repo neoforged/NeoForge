@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.client;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -16,7 +17,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryObject;
 
 /**
@@ -27,8 +27,8 @@ public class AmbientOcclusionElementsTest {
     private static final boolean ENABLED = false;
 
     public static final String MOD_ID = "ambient_occlusion_elements_test";
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
+    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MOD_ID);
+    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
 
     public static final RegistryObject<Block> AO_BLOCK_SHADE = BLOCKS.register("ambient_occlusion_shade", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
     public static final RegistryObject<Block> AO_BLOCK_NO_SHADE = BLOCKS.register("ambient_occlusion_no_shade", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));

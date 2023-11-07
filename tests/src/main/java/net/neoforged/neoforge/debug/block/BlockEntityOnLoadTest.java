@@ -8,6 +8,7 @@ package net.neoforged.neoforge.debug.block;
 import com.mojang.logging.LogUtils;
 import java.util.Locale;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -24,7 +25,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -34,9 +34,9 @@ public class BlockEntityOnLoadTest {
     private static final boolean ENABLED = true;
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, "be_onload_test");
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, "be_onload_test");
-    private static final DeferredRegister<BlockEntityType<?>> BE_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, "be_onload_test");
+    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, "be_onload_test");
+    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, "be_onload_test");
+    private static final DeferredRegister<BlockEntityType<?>> BE_TYPES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, "be_onload_test");
 
     private static final RegistryObject<Block> TEST_BLOCK = BLOCKS.register("be_onload_testblock", () -> new TestBlock(Properties.of().mapColor(MapColor.SAND)));
     private static final RegistryObject<Item> TEST_BLOCK_ITEM = ITEMS.register("be_onload_testblock", () -> new BlockItem(TEST_BLOCK.get(), new Item.Properties()));

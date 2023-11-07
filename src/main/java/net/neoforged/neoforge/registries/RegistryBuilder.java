@@ -5,10 +5,10 @@
 
 package net.neoforged.neoforge.registries;
 
+import com.mojang.serialization.Lifecycle;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.mojang.serialization.Lifecycle;
+import java.util.function.Consumer;
 import net.minecraft.core.DefaultedMappedRegistry;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;

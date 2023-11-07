@@ -16,12 +16,12 @@ import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.TeamArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.debug.client.TestScreen;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 
 @Mod("client_command_test")
 public class ClientCommandTest {
@@ -35,7 +35,7 @@ public class ClientCommandTest {
                         // Used for checking suggestion providers that aren't registered
                         .then(Commands.literal("rawsuggest")
                                 .then(Commands.argument("block", ResourceLocationArgument.id())
-                                        .suggests((c, b) -> SharedSuggestionProvider.suggestResource(ForgeRegistries.BLOCKS.getKeys(), b))
+                                        .suggests((c, b) -> SharedSuggestionProvider.suggestResource(BuiltInRegistries.BLOCK.keySet(), b))
                                         .executes(this::testCommand)))
                         // Used for checking suggestion providers that are registered
                         .then(Commands.literal("registeredsuggest").then(

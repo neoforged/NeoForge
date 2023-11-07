@@ -1,5 +1,8 @@
 package net.neoforged.neoforge.registries;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import net.minecraft.core.IdMapper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -14,10 +17,6 @@ import net.minecraft.world.level.levelgen.DebugLevelSource;
 import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 import net.neoforged.neoforge.registries.callback.ClearCallback;
-
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 class ForgeRegistryCallbacks {
     static class BlockCallbacks implements ClearCallback<Block>, BakeCallback<Block> {

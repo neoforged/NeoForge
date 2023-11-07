@@ -7,14 +7,11 @@ package net.neoforged.neoforge.common.extensions;
 
 import com.google.common.base.Preconditions;
 import java.util.Objects;
-
-import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.NotNull;
 
 /**

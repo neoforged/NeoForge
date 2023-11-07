@@ -175,7 +175,6 @@ import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.NetworkConstants;
 import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.network.ServerStatusPing;
-import net.neoforged.neoforge.registries.GameData;
 import net.neoforged.neoforge.registries.RegistryManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

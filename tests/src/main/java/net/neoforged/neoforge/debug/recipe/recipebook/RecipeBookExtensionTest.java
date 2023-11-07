@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.recipe.recipebook;
 
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,7 +30,6 @@ import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.NetworkHooks;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(RecipeBookExtensionTest.MOD_ID)
@@ -39,13 +39,13 @@ public class RecipeBookExtensionTest {
     public static final String MOD_ID = "recipe_book_extension_test";
     public static final RecipeBookType TEST_TYPE = RecipeBookType.create("TESTING");
 
-    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZER = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MOD_ID);
+    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZER = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MOD_ID);
     public static final RegistryObject<RecipeSerializer<RecipeBookTestRecipe>> RECIPE_BOOK_TEST_RECIPE_SERIALIZER = RECIPE_SERIALIZER.register("test_recipe", RecipeBookTestRecipeSerializer::new);
 
-    public static final DeferredRegister<MenuType<?>> MENU_TYPE = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MOD_ID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPE = DeferredRegister.create(BuiltInRegistries.MENU, MOD_ID);
     public static final RegistryObject<MenuType<RecipeBookTestMenu>> RECIPE_BOOK_TEST_MENU_TYPE = MENU_TYPE.register("test_recipe_menu", () -> IMenuTypeExtension.create(RecipeBookTestMenu::new));
 
-    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPE = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, MOD_ID);
+    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPE = DeferredRegister.create(BuiltInRegistries.RECIPE_TYPE, MOD_ID);
     public static final RegistryObject<RecipeType<RecipeBookTestRecipe>> RECIPE_BOOK_TEST_RECIPE_TYPE = RECIPE_TYPE.register("test_recipe", () -> RecipeType.simple(getId("test_recipe")));
 
     public RecipeBookExtensionTest() {

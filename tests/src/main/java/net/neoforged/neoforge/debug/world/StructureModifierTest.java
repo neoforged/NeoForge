@@ -86,7 +86,7 @@ generator.addProvider(event.includeServer(), structureModifierProvider);*/
     public record TestModifier(HolderSet<Structure> structures, MobCategory category, MobSpawnSettings.SpawnerData spawn)
             implements StructureModifier {
 
-        private static final RegistryObject<Codec<? extends StructureModifier>> SERIALIZER = RegistryObject.create(ADD_SPAWNS_TO_STRUCTURE_RL, ForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, MODID);
+        private static final RegistryObject<Codec<? extends StructureModifier>> SERIALIZER = RegistryObject.create(ADD_SPAWNS_TO_STRUCTURE_RL, ForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS);
 
         @Override
         public void modify(Holder<Structure> structure, Phase phase, Builder builder) {

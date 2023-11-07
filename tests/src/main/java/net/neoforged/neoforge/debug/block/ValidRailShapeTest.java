@@ -7,6 +7,7 @@ package net.neoforged.neoforge.debug.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -25,7 +26,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(ValidRailShapeTest.MOD_ID)
@@ -33,8 +33,8 @@ public class ValidRailShapeTest {
     public static final String MOD_ID = "valid_railshape_test";
     public static final boolean ENABLED = true;
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
+    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MOD_ID);
+    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
 
     private static final RegistryObject<Block> RAIL_SLOPE_BLOCK = BLOCKS.register("rail_slope", RailSlopeBlock::new);
     private static final RegistryObject<Item> RAIL_SLOPE_ITEM = ITEMS.register("rail_slope", () -> new BlockItem(RAIL_SLOPE_BLOCK.get(), new Item.Properties()));

@@ -36,7 +36,7 @@ public interface IRegistryExtension<T> {
      * Any registry lookups that target the first name will resolve as the second name, iff the first name is not present.
      *
      * @param from The source registry name to alias from.
-     * @param to The target registry name to alias to.
+     * @param to   The target registry name to alias to.
      */
     void addAlias(ResourceLocation from, ResourceLocation to);
 
@@ -69,7 +69,7 @@ public interface IRegistryExtension<T> {
      *
      * @param key the resource key to lookup
      * @return the integer id linked to the given key,
-     * or {@code -1} if the key is not present in this registry.
+     *         or {@code -1} if the key is not present in this registry.
      */
     int getId(ResourceKey<T> key);
 
@@ -78,7 +78,7 @@ public interface IRegistryExtension<T> {
      *
      * @param name the resource name to lookup
      * @return the integer id linked to the given name,
-     * or {@code -1} if the name is not present in this registry.
+     *         or {@code -1} if the name is not present in this registry.
      */
     int getId(ResourceLocation name);
 

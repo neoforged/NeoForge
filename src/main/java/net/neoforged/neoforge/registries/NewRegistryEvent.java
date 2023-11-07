@@ -6,15 +6,11 @@
 package net.neoforged.neoforge.registries;
 
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Lifecycle;
 import java.util.ArrayList;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import com.mojang.serialization.Lifecycle;
-import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -60,7 +56,7 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
      * Adds a registry builder to be created.
      *
      * @param builder The builder to turn into a {@link Registry}
-     * @param onFill Called when the returned supplier is filled with the registry
+     * @param onFill  Called when the returned supplier is filled with the registry
      * @return a supplier of the {@link Registry} created by the builder. Resolving too early will return null.
      * @see #create(RegistryBuilder)
      */
@@ -119,7 +115,7 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
             data.onFill.accept(registry);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void registerToRootRegistry(Registry<?> registry) {
         ResourceLocation registryName = registry.key().location();
         if (BuiltInRegistries.REGISTRY.containsKey(registryName))
@@ -131,8 +127,7 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
     private record RegistryData<T>(
             RegistryBuilder<T> builder,
             RegistryHolder<T> registryHolder,
-            Consumer<Registry<T>> onFill
-    ) {}
+            Consumer<Registry<T>> onFill) {}
 
     private static class RegistryHolder<T> implements Supplier<Registry<T>> {
         Registry<T> registry = null;

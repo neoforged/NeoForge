@@ -13,6 +13,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.Item;
@@ -22,14 +24,11 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.ForgeRegistry;
-import net.neoforged.neoforge.registries.IForgeRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * This test mod show a few example usages of {@link IForgeRegistry#getCodec()} to serialize and deserialize registry entries to JSON or NBT.
+ * This test mod show a few example usages of {@link Registry#byNameCodec()} to serialize and deserialize registry entries to JSON or NBT.
  * There are 4 tested cases :
  * 1. json -> Pair
  * 2. Pair -> nbt
@@ -54,8 +53,8 @@ public class RegistryCodecTest {
      * }</pre>
      */
     private static final Codec<Pair<Block, Item>> CODEC = RecordCodecBuilder.create(codecInstance -> codecInstance.group(
-            ForgeRegistries.BLOCKS.getCodec().fieldOf("block").forGetter(Pair::getFirst),
-            ForgeRegistries.ITEMS.getCodec().fieldOf("item").forGetter(Pair::getSecond)).apply(codecInstance, Pair::of));
+            BuiltInRegistries.BLOCK.byNameCodec().fieldOf("block").forGetter(Pair::getFirst),
+            BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(Pair::getSecond)).apply(codecInstance, Pair::of));
 
     public RegistryCodecTest() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
@@ -85,8 +84,8 @@ public class RegistryCodecTest {
 
         //Create a json to decode using numerical IDs, to be decoded by JsonOps.COMPRESSED
         JsonArray jsonCompressed = new JsonArray();
-        jsonCompressed.add(((ForgeRegistry<Block>) ForgeRegistries.BLOCKS).getID(Blocks.DIAMOND_BLOCK));
-        jsonCompressed.add(((ForgeRegistry<Item>) ForgeRegistries.ITEMS).getID(Items.DIAMOND_PICKAXE));
+        jsonCompressed.add(BuiltInRegistries.BLOCK.getId(Blocks.DIAMOND_BLOCK));
+        jsonCompressed.add(BuiltInRegistries.ITEM.getId(Items.DIAMOND_PICKAXE));
 
         //Decode a compressed json to the corresponding Pair<Block, Item>, this time using Codec#parse
         DataResult<Pair<Block, Item>> result4 = CODEC.parse(JsonOps.COMPRESSED, jsonCompressed);
