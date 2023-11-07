@@ -50,4 +50,5 @@ Please ensure you have a valid email address associated with your GitHub account
 [CurseForge]: https://curseforge.com/placeholder
 [Discord]: https://discord.neoforged.net/
 [Documentation]: https://docs.neoforged.net/
+[Download]: https://neoforged.net/
 [Getting-Started]: https://docs.neoforged.net/docs/gettingstarted/
