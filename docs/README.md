@@ -5,7 +5,7 @@ NeoForge
 [![Discord](https://img.shields.io/discord/313125603924639766.svg?color=%237289da&label=Discord&logo=discord&logoColor=%237289da)][Discord] 
 
 
-Forge is a free, open-source modding API all of your favourite mods use!
+NeoForge is a free, open-source, community-oriented modding API for.
 
 | Version | Support |
 |---------|---------|
@@ -15,15 +15,11 @@ Forge is a free, open-source modding API all of your favourite mods use!
 * [Discord]
 * [Documentation]
 
-## Installing NeoForged
+## Installing NeoForge
 
-Go to [CurseForge][CurseForge] project, select the minecraft version and installer, and run it.
-
-You can download the installer for the *Recommended Build* or the
- *Latest build* there. Latest builds may have newer features but may be
- more unstable as a result. The installer will attempt to install Forge
- into your vanilla launcher environment, where you can then create a new
- profile using that version and play the game!
+Go to the [Download] page, select the Minecraft version and installer, and run it.
+The installer will attempt to install NeoForge into your vanilla launcher environment,
+where you can then create a new profile using that version and play the game!
  
 For support and questions, visit [the NeoForged Discord server][Discord].
 
@@ -47,7 +43,6 @@ Please ensure you have a valid email address associated with your GitHub account
 
 [CLA]: https://cla-assistant.io/neoforged/NeoForge
 [Contributing]: ../../NeoForge/docs/CONTRIBUTING.md
-[CurseForge]: https://curseforge.com/placeholder
 [Discord]: https://discord.neoforged.net/
 [Documentation]: https://docs.neoforged.net/
 [Download]: https://neoforged.net/
