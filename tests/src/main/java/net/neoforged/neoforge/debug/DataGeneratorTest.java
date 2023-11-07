@@ -141,63 +141,58 @@ public class DataGeneratorTest {
         @Override
         protected void buildRecipes(RecipeOutput consumer) {
             // conditional recipe
-            new ConditionalRecipeBuilder()
-                    .withCondition(
-                            and(
-                                    not(modLoaded("minecraft")),
-                                    itemExists("minecraft", "dirt"),
-                                    FALSE()))
-                    .withRecipe(
-                            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
-                                    .pattern("XXX")
-                                    .pattern("XXX")
-                                    .pattern("XXX")
-                                    .define('X', Blocks.DIRT)
-                                    .group("")
-                                    .unlockedBy("has_dirt", has(Blocks.DIRT)) // DUMMY: Necessary, but not used when a custom advancement is provided through setAdvancement
-                    )
-                    .save(consumer, new ResourceLocation("data_gen_test", "conditional"));
-
-            new ConditionalRecipeBuilder()
-                    .withCondition(
-                            not(
+            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
+                    .pattern("XXX")
+                    .pattern("XXX")
+                    .pattern("XXX")
+                    .define('X', Blocks.DIRT)
+                    .group("")
+                    .unlockedBy("has_dirt", has(Blocks.DIRT))
+                    .save(
+                            consumer.withConditions(
                                     and(
                                             not(modLoaded("minecraft")),
                                             itemExists("minecraft", "dirt"),
-                                            FALSE())))
-                    .withRecipe(
-                            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
-                                    .pattern("XXX")
-                                    .pattern("XXX")
-                                    .pattern("XXX")
-                                    .define('X', Blocks.DIRT)
-                                    .group("")
-                                    .unlockedBy("has_dirt", has(Blocks.DIRT)))
-                    .save(consumer, new ResourceLocation("data_gen_test", "conditional2"));
+                                            FALSE())),
+                            new ResourceLocation("data_gen_test", "conditional"));
 
-            new ConditionalRecipeBuilder()
-                    .withCondition(
-                            tagEmpty(ItemTags.PLANKS))
-                    .withRecipe(
-                            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 1)
-                                    .pattern("XX")
-                                    .pattern("XX")
-                                    .define('X', Blocks.DIAMOND_BLOCK)
-                                    .group("")
-                                    .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK)))
-                    .save(consumer, new ResourceLocation("data_gen_test", "conditional3"));
+            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
+                    .pattern("XXX")
+                    .pattern("XXX")
+                    .pattern("XXX")
+                    .define('X', Blocks.DIRT)
+                    .group("")
+                    .unlockedBy("has_dirt", has(Blocks.DIRT))
+                    .save(
+                            consumer.withConditions(
+                                    not(
+                                            and(
+                                                    not(modLoaded("minecraft")),
+                                                    itemExists("minecraft", "dirt"),
+                                                    FALSE()))),
+                            new ResourceLocation("data_gen_test", "conditional2"));
 
-            new ConditionalRecipeBuilder()
-                    .withCondition(
-                            not(tagEmpty(ItemTags.PLANKS)))
-                    .withRecipe(
-                            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 9)
-                                    .pattern("XX")
-                                    .pattern("XX")
-                                    .define('X', Blocks.DIAMOND_BLOCK)
-                                    .group("")
-                                    .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK)))
-                    .save(consumer, new ResourceLocation("data_gen_test", "conditional4"));
+            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 1)
+                    .pattern("XX")
+                    .pattern("XX")
+                    .define('X', Blocks.DIAMOND_BLOCK)
+                    .group("")
+                    .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK))
+                    .save(
+                            consumer.withConditions(
+                                    tagEmpty(ItemTags.PLANKS)),
+                            new ResourceLocation("data_gen_test", "conditional3"));
+
+            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 9)
+                    .pattern("XX")
+                    .pattern("XX")
+                    .define('X', Blocks.DIAMOND_BLOCK)
+                    .group("")
+                    .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK))
+                    .save(
+                            consumer.withConditions(
+                                    not(tagEmpty(ItemTags.PLANKS))),
+                            new ResourceLocation("data_gen_test", "conditional4"));
 
             // ingredient tests
             // strict NBT match - should match an unnamed iron pickaxe that lost 3 durability

@@ -1,5 +1,26 @@
 {
   "parent": "minecraft:recipes/root",
+  "conditions": [
+    {
+      "type": "neoforge:and",
+      "values": [
+        {
+          "type": "neoforge:not",
+          "value": {
+            "type": "neoforge:mod_loaded",
+            "modid": "minecraft"
+          }
+        },
+        {
+          "type": "neoforge:item_exists",
+          "item": "minecraft:dirt"
+        },
+        {
+          "type": "neoforge:false"
+        }
+      ]
+    }
+  ],
   "criteria": {
     "has_dirt": {
       "conditions": {
