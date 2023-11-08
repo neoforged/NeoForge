@@ -19,8 +19,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
 @Mod(HiddenTooltipPartsTest.MOD_ID)
@@ -29,7 +29,7 @@ public class HiddenTooltipPartsTest {
     public static final boolean ENABLED = true;
     private static final AttributeModifier MODIFIER = new AttributeModifier(MOD_ID, 10f, Operation.ADDITION);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
-    private static final RegistryObject<Item> TEST_ITEM = ITEMS.register("test_item", () -> new TestItem(new Item.Properties()));
+    private static final DeferredHolder<Item, Item> TEST_ITEM = ITEMS.register("test_item", () -> new TestItem(new Item.Properties()));
 
     public HiddenTooltipPartsTest() {
         var modBus = FMLJavaModLoadingContext.get().getModEventBus();

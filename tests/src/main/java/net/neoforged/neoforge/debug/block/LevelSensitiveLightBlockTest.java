@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -29,8 +30,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 /**
  * Adds a light source block that can be switched on and off by right-clicking and saves its state in a BlockEntity
@@ -43,10 +44,10 @@ public class LevelSensitiveLightBlockTest {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
 
-    private static final RegistryObject<Block> LIGHT_BLOCK = BLOCKS.register("light_block", LightBlock::new);
-    private static final RegistryObject<Item> LIGHT_BLOCK_ITEM = ITEMS.register(
+    private static final Holder<Block> LIGHT_BLOCK = BLOCKS.register("light_block", LightBlock::new);
+    private static final Holder<Item> LIGHT_BLOCK_ITEM = ITEMS.register(
             "light_block", () -> new BlockItem(LIGHT_BLOCK.get(), new Item.Properties()));
-    private static final RegistryObject<BlockEntityType<LightBlockEntity>> LIGHT_BLOCK_ENTITY = BLOCK_ENTITIES.register(
+    private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LightBlockEntity>> LIGHT_BLOCK_ENTITY = BLOCK_ENTITIES.register(
             "light_block", () -> BlockEntityType.Builder.of(LightBlockEntity::new, LIGHT_BLOCK.get()).build(null));
 
     public LevelSensitiveLightBlockTest() {

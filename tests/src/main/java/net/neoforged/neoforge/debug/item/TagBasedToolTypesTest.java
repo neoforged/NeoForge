@@ -39,8 +39,8 @@ import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(TagBasedToolTypesTest.MODID)
 public class TagBasedToolTypesTest {
@@ -55,12 +55,12 @@ public class TagBasedToolTypesTest {
             List.of(Tiers.DIAMOND), List.of());
 
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MODID);
-    private static final RegistryObject<Block> STONE = BLOCKS.register("test_stone", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    private static final DeferredHolder<Block, Block> STONE = BLOCKS.register("test_stone", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
     @SuppressWarnings("unused")
-    private static final RegistryObject<Item> ORE_ITEM = ITEMS.register(STONE.getId().getPath(), () -> new BlockItem(STONE.get(), (new Item.Properties())));
-    private static final RegistryObject<Item> TOOL = ITEMS.register("test_tool", () -> {
+    private static final DeferredHolder<Item, Item> ORE_ITEM = ITEMS.register(STONE.getId().getPath(), () -> new BlockItem(STONE.get(), (new Item.Properties())));
+    private static final DeferredHolder<Item, Item> TOOL = ITEMS.register("test_tool", () -> {
         return new DiggerItem(1, 1, MY_TIER, MINEABLE_TAG, new Item.Properties()) {
             @Override
             public float getDestroySpeed(ItemStack stack, BlockState state) {

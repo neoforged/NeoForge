@@ -39,7 +39,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.slf4j.Logger;
 
 /**
@@ -62,7 +62,7 @@ public class DataPackRegistriesTest {
     private static final ResourceLocation TEST_RL = new ResourceLocation(MODID, "test");
 
     //TODO: Fix datapack generation for it.
-    private final RegistryObject<Unsyncable> datagenTestObject = null;
+    private final DeferredHolder<Unsyncable, Unsyncable> datagenTestObject = null;
 
     public DataPackRegistriesTest() {
         if (!ENABLED)

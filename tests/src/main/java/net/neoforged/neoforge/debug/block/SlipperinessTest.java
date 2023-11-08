@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -18,8 +19,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(SlipperinessTest.MOD_ID)
 @EventBusSubscriber
@@ -27,7 +28,7 @@ public class SlipperinessTest {
     static final String MOD_ID = "slipperiness_test";
     static final String BLOCK_ID = "test_block";
 
-    public static final RegistryObject<Block> BB_BLOCK = RegistryObject.create(new ResourceLocation(MOD_ID, BLOCK_ID), Registries.BLOCK);
+    public static final Holder<Block> BB_BLOCK = DeferredHolder.create(Registries.BLOCK, new ResourceLocation(MOD_ID, BLOCK_ID));
 
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent e) {

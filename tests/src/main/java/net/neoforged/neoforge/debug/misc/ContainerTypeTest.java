@@ -31,12 +31,12 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.NetworkHooks;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod("containertypetest")
 public class ContainerTypeTest {
-    public static final RegistryObject<MenuType<TestContainer>> TYPE = RegistryObject.create(new ResourceLocation("containertypetest", "container"), Registries.MENU);
+    public static final DeferredHolder<MenuType<?>, MenuType<TestContainer>> TYPE = DeferredHolder.create(Registries.MENU, new ResourceLocation("containertypetest", "container"));
 
     public static class TestContainer extends AbstractContainerMenu {
         private final String text;

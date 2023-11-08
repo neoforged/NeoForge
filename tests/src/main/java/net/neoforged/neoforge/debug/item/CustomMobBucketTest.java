@@ -16,8 +16,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(CustomMobBucketTest.MODID)
 public class CustomMobBucketTest {
@@ -26,7 +26,7 @@ public class CustomMobBucketTest {
 
     public static final boolean ENABLED = true;
 
-    public static final RegistryObject<Item> COW_BUCKET = ITEMS.register("cow_bucket", () -> new MobBucketItem(
+    public static final DeferredHolder<Item, Item> COW_BUCKET = ITEMS.register("cow_bucket", () -> new MobBucketItem(
             () -> EntityType.COW,
             () -> Fluids.WATER,
             () -> SoundEvents.BUCKET_EMPTY_FISH,

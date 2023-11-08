@@ -27,15 +27,15 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(CustomElytraTest.MOD_ID)
 public class CustomElytraTest {
     public static final String MOD_ID = "custom_elytra_test";
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
-    private static final RegistryObject<Item> TEST_ELYTRA = ITEMS.register("test_elytra", () -> new CustomElytra(new Properties().durability(100)));
+    private static final DeferredHolder<Item, Item> TEST_ELYTRA = ITEMS.register("test_elytra", () -> new CustomElytra(new Properties().durability(100)));
 
     public CustomElytraTest() {
         final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();

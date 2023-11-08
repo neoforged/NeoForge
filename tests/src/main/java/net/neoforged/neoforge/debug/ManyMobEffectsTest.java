@@ -27,9 +27,9 @@ import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import net.neoforged.neoforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -53,10 +53,10 @@ public class ManyMobEffectsTest {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, MODID);
-    private static final RegistryObject<MobEffect> LAST_EFFECT;
+    private static final DeferredHolder<MobEffect, MobEffect> LAST_EFFECT;
 
     static {
-        RegistryObject<MobEffect> effect = null;
+        DeferredHolder<MobEffect, MobEffect> effect = null;
         for (int i = 0; i < 255; i++) {
             final var index = i;
             effect = MOB_EFFECTS.register("effect_" + i, () -> new MobEffect(MobEffectCategory.NEUTRAL, 0xFF0000) {

@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -25,7 +26,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(HideNeighborFaceTest.MOD_ID)
 public class HideNeighborFaceTest {
@@ -34,8 +34,8 @@ public class HideNeighborFaceTest {
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MOD_ID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
 
-    private static final RegistryObject<Block> GLASS_SLAB = BLOCKS.register("glass_slab", GlassSlab::new);
-    private static final RegistryObject<Item> GLASS_SLAB_ITEM = ITEMS.register("glass_slab", () -> new BlockItem(GLASS_SLAB.get(), new Item.Properties()));
+    private static final Holder<Block> GLASS_SLAB = BLOCKS.register("glass_slab", GlassSlab::new);
+    private static final Holder<Item> GLASS_SLAB_ITEM = ITEMS.register("glass_slab", () -> new BlockItem(GLASS_SLAB.get(), new Item.Properties()));
 
     public HideNeighborFaceTest() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();

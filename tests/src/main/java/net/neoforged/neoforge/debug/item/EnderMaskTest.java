@@ -13,15 +13,15 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(EnderMaskTest.MODID)
 public class EnderMaskTest {
     public static final String MODID = "ender_mask_test";
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
 
-    public static RegistryObject<Item> ENDER_MASK = ITEMS.register("ender_mask", () -> new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, (new Item.Properties())) {
+    public static DeferredHolder<Item, Item> ENDER_MASK = ITEMS.register("ender_mask", () -> new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, (new Item.Properties())) {
         @Override
         public boolean isEnderMask(ItemStack stack, Player player, EnderMan endermanEntity) {
             return player.experienceLevel > 10;

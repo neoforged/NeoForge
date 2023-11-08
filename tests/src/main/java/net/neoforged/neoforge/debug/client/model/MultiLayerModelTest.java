@@ -18,8 +18,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(MultiLayerModelTest.MODID)
 public class MultiLayerModelTest {
@@ -31,8 +31,8 @@ public class MultiLayerModelTest {
 
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MODID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
-    private static final RegistryObject<Block> TEST_BLOCK = BLOCKS.register(blockName, () -> new Block(Block.Properties.of().mapColor(MapColor.WOOD).noOcclusion()));
-    private static final RegistryObject<Item> TEST_BLOCK_ITEM = ITEMS.register(blockName, () -> new BlockItem(TEST_BLOCK.get(), new Item.Properties()));
+    private static final DeferredHolder<Block, Block> TEST_BLOCK = BLOCKS.register(blockName, () -> new Block(Block.Properties.of().mapColor(MapColor.WOOD).noOcclusion()));
+    private static final DeferredHolder<Item, Item> TEST_BLOCK_ITEM = ITEMS.register(blockName, () -> new BlockItem(TEST_BLOCK.get(), new Item.Properties()));
 
     public MultiLayerModelTest() {
         if (!ENABLED)

@@ -30,15 +30,15 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod("entity_renderer_events_test")
 @Mod.EventBusSubscriber(modid = "entity_renderer_events_test", bus = Mod.EventBusSubscriber.Bus.MOD)
 public class EntityRendererEventsTest {
     private static final ResourceLocation MY_ENTITY = new ResourceLocation("entity_renderer_events_test", "test_entity");
 
-    public static final RegistryObject<EntityType<MyEntity>> MY_ENTITY_TYPE = RegistryObject.create(MY_ENTITY, Registries.ENTITY_TYPE);
+    public static final DeferredHolder<EntityType<?>, EntityType<MyEntity>> MY_ENTITY_TYPE = DeferredHolder.create(Registries.ENTITY_TYPE, MY_ENTITY);
 
     @SubscribeEvent
     public static void entityRegistry(RegisterEvent event) {

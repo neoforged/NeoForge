@@ -14,8 +14,8 @@ import net.minecraft.world.item.RecordItem;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(MusicDiscTest.MOD_ID)
 public class MusicDiscTest {
@@ -24,10 +24,10 @@ public class MusicDiscTest {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
     private static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, MOD_ID);
 
-    private static final RegistryObject<SoundEvent> TEST_SOUND_EVENT = SOUND_EVENTS.register("test_sound_event",
+    private static final DeferredHolder<SoundEvent, SoundEvent> TEST_SOUND_EVENT = SOUND_EVENTS.register("test_sound_event",
             () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MOD_ID, "test_sound_event")));
 
-    private static final RegistryObject<Item> TEST_MUSIC_DISC = ITEMS.register("test_music_disc",
+    private static final DeferredHolder<Item, Item> TEST_MUSIC_DISC = ITEMS.register("test_music_disc",
             () -> new RecordItem(1, TEST_SOUND_EVENT, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 20));
 
     public MusicDiscTest() {

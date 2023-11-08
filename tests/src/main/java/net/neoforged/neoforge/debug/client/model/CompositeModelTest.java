@@ -24,8 +24,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(CompositeModelTest.MODID)
@@ -34,7 +34,7 @@ public class CompositeModelTest {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MODID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
 
-    public static RegistryObject<Block> composite_block = BLOCKS.register("composite_block", () -> new Block(Block.Properties.of().mapColor(MapColor.WOOD).strength(10)) {
+    public static DeferredHolder<Block, Block> composite_block = BLOCKS.register("composite_block", () -> new Block(Block.Properties.of().mapColor(MapColor.WOOD).strength(10)) {
         @Override
         protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
             builder.add(BlockStateProperties.HORIZONTAL_FACING);
@@ -62,7 +62,7 @@ public class CompositeModelTest {
         }
     });
 
-    public static RegistryObject<Item> composite_item = ITEMS.register("composite_block", () -> new BlockItem(composite_block.get(), new Item.Properties()) {
+    public static DeferredHolder<Item, Item> composite_item = ITEMS.register("composite_block", () -> new BlockItem(composite_block.get(), new Item.Properties()) {
         @Override
         public boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) {
             return armorType == EquipmentSlot.HEAD;

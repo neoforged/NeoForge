@@ -7,6 +7,7 @@ package net.neoforged.neoforge.debug.fluid;
 
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -37,9 +38,9 @@ import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.DispenseFluidContainer;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,10 +60,10 @@ public class NewFluidTest {
 
     private static BaseFlowingFluid.Properties makeProperties() {
         return new BaseFlowingFluid.Properties(test_fluid_type, test_fluid, test_fluid_flowing)
-                .bucket(TEST_FLUID_BUCKET).block(test_fluid_block);
+                .bucket(TEST_FLUID_BUCKET).block(test_fluid_block::get);
     }
 
-    public static RegistryObject<FluidType> test_fluid_type = FLUID_TYPES.register("test_fluid", () -> new FluidType(FluidType.Properties.create()) {
+    public static DeferredHolder<FluidType, FluidType> test_fluid_type = FLUID_TYPES.register("test_fluid", () -> new FluidType(FluidType.Properties.create()) {
         @Override
         public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
             consumer.accept(new IClientFluidTypeExtensions() {
@@ -76,7 +77,6 @@ public class NewFluidTest {
                     return FLUID_FLOWING;
                 }
 
-                @Nullable
                 @Override
                 public ResourceLocation getOverlayTexture() {
                     return FLUID_OVERLAY;
@@ -90,15 +90,15 @@ public class NewFluidTest {
         }
     });
 
-    public static RegistryObject<FlowingFluid> test_fluid = FLUIDS.register("test_fluid", () -> new BaseFlowingFluid.Source(makeProperties()));
-    public static RegistryObject<FlowingFluid> test_fluid_flowing = FLUIDS.register("test_fluid_flowing", () -> new BaseFlowingFluid.Flowing(makeProperties()));
+    public static DeferredHolder<Fluid, FlowingFluid> test_fluid = FLUIDS.register("test_fluid", () -> new BaseFlowingFluid.Source(makeProperties()));
+    public static DeferredHolder<Fluid, FlowingFluid> test_fluid_flowing = FLUIDS.register("test_fluid_flowing", () -> new BaseFlowingFluid.Flowing(makeProperties()));
 
-    public static RegistryObject<LiquidBlock> test_fluid_block = BLOCKS.register("test_fluid_block", () -> new LiquidBlock(test_fluid, Properties.of().noCollission().strength(100.0F).noLootTable()));
-    public static RegistryObject<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> new BucketItem(test_fluid, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
+    public static DeferredHolder<Block, LiquidBlock> test_fluid_block = BLOCKS.register("test_fluid_block", () -> new LiquidBlock(test_fluid::get, Properties.of().noCollission().strength(100.0F).noLootTable()));
+    public static Holder<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> new BucketItem(test_fluid, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
 
     // WARNING: this doesn't allow "any fluid", only the fluid from this test mod!
-    public static RegistryObject<Block> fluidloggable_block = BLOCKS.register("fluidloggable_block", () -> new FluidloggableBlock(Properties.of().mapColor(MapColor.WOOD).noCollission().strength(100.0F).noLootTable()));
-    public static RegistryObject<Item> FLUID_LOGGABLE_BLOCK_ITEM = ITEMS.register("fluidloggable_block", () -> new BlockItem(fluidloggable_block.get(), new Item.Properties()));
+    public static Holder<Block> fluidloggable_block = BLOCKS.register("fluidloggable_block", () -> new FluidloggableBlock(Properties.of().mapColor(MapColor.WOOD).noCollission().strength(100.0F).noLootTable()));
+    public static Holder<Item> FLUID_LOGGABLE_BLOCK_ITEM = ITEMS.register("fluidloggable_block", () -> new BlockItem(fluidloggable_block.get(), new Item.Properties()));
 
     public NewFluidTest() {
         if (ENABLE) {

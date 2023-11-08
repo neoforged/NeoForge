@@ -224,7 +224,7 @@ modId="ingredient_invalidation"
 [[mods]]
 modId="registry_codec_test"
 [[mods]]
-modId="registry_object_test"
+modId="deferred_holder_test"
 [[mods]]
 modId="hidden_tooltip_parts"
 [[mods]]

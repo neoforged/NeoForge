@@ -43,9 +43,9 @@ import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveFeaturesBiomeMod
 import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveSpawnsBiomeModifier;
 import net.neoforged.neoforge.common.world.ModifiableBiomeInfo.BiomeInfo.Builder;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 /**
  * <p>This tests the following features and requirements of biome modifier jsons::</p>
@@ -68,7 +68,7 @@ public class BiomeModifierTest {
 
     // Biome Modifier Serializers
     private static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MODID);
-    private static final RegistryObject<Codec<TestModifier>> MODIFY_BIOMES = BIOME_MODIFIER_SERIALIZERS.register("modify_biomes", () -> RecordCodecBuilder.create(builder -> builder.group(
+    private static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<TestModifier>> MODIFY_BIOMES = BIOME_MODIFIER_SERIALIZERS.register("modify_biomes", () -> RecordCodecBuilder.create(builder -> builder.group(
             Biome.LIST_CODEC.fieldOf("biomes").forGetter(TestModifier::biomes),
             Codec.STRING.xmap(s -> Precipitation.valueOf(s.toUpperCase(Locale.ROOT)), e -> e.name().toLowerCase(Locale.ROOT)).fieldOf("precipitation").forGetter(TestModifier::precipitation),
             Codec.INT.fieldOf("water_color").forGetter(TestModifier::waterColor)).apply(builder, TestModifier::new)));

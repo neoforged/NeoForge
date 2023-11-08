@@ -7,6 +7,7 @@ package net.neoforged.neoforge.debug.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
@@ -24,8 +25,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.PlantType;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(CustomPlantTypeTest.MODID)
 @Mod.EventBusSubscriber(bus = Bus.MOD)
@@ -34,8 +35,8 @@ public class CustomPlantTypeTest {
     private static final String CUSTOM_SOIL_BLOCK = "test_custom_block";
     private static final String CUSTOM_PLANT_BLOCK = "test_custom_plant";
 
-    public static final RegistryObject<Block> CUSTOM_SOIL = RegistryObject.create(new ResourceLocation(MODID, CUSTOM_SOIL_BLOCK), Registries.BLOCK);
-    public static final RegistryObject<Block> CUSTOM_PLANT = RegistryObject.create(new ResourceLocation(MODID, CUSTOM_PLANT_BLOCK), Registries.BLOCK);
+    public static final Holder<Block> CUSTOM_SOIL = DeferredHolder.create(Registries.BLOCK, new ResourceLocation(MODID, CUSTOM_SOIL_BLOCK));
+    public static final Holder<Block> CUSTOM_PLANT = DeferredHolder.create(Registries.BLOCK, new ResourceLocation(MODID, CUSTOM_PLANT_BLOCK));
 
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent event) {

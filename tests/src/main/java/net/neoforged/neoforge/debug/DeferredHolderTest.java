@@ -11,24 +11,24 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Checks that {@link RegistryObject} works correctly, specifically that get() functions immediately
+ * Checks that {@link DeferredHolder} works correctly, specifically that get() functions immediately
  * after construction, if registries are already populated.
  */
-@Mod(RegistryObjectTest.MODID)
-public class RegistryObjectTest {
+@Mod(DeferredHolderTest.MODID)
+public class DeferredHolderTest {
 
-    static final String MODID = "registry_object_test";
+    static final String MODID = "deferred_holder_test";
 
     private static final boolean ENABLED = true;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public RegistryObjectTest() {
+    public DeferredHolderTest() {
         if (!ENABLED) return;
 
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -36,6 +36,6 @@ public class RegistryObjectTest {
     }
 
     public void commonSetup(FMLCommonSetupEvent event) {
-        LOGGER.info("Stone 1: {}", RegistryObject.create(new ResourceLocation("minecraft", "stone"), Registries.BLOCK).get());
+        LOGGER.info("Stone 1: {}", DeferredHolder.create(Registries.BLOCK, new ResourceLocation("minecraft", "stone")).get());
     }
 }

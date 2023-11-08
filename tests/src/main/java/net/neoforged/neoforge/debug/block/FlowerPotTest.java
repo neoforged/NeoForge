@@ -17,9 +17,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(FlowerPotTest.MODID)
 @Mod.EventBusSubscriber(modid = FlowerPotTest.MODID, bus = Bus.MOD)
@@ -30,8 +30,8 @@ public class FlowerPotTest {
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MODID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
 
-    public static final RegistryObject<FlowerPotBlock> EMPTY_FLOWER_POT = BLOCKS.register(BLOCK_ID, () -> new FlowerPotBlock(null, () -> Blocks.AIR, Block.Properties.copy(Blocks.FLOWER_POT)));
-    public static final RegistryObject<FlowerPotBlock> OAK_FLOWER_POT = BLOCKS.register(BLOCK_ID + "_oak", () -> new FlowerPotBlock(EMPTY_FLOWER_POT, () -> Blocks.OAK_SAPLING, Block.Properties.copy(Blocks.FLOWER_POT)));
+    public static final DeferredHolder<Block, FlowerPotBlock> EMPTY_FLOWER_POT = BLOCKS.register(BLOCK_ID, () -> new FlowerPotBlock(null, () -> Blocks.AIR, Block.Properties.copy(Blocks.FLOWER_POT)));
+    public static final DeferredHolder<Block, FlowerPotBlock> OAK_FLOWER_POT = BLOCKS.register(BLOCK_ID + "_oak", () -> new FlowerPotBlock(EMPTY_FLOWER_POT::get, () -> Blocks.OAK_SAPLING, Block.Properties.copy(Blocks.FLOWER_POT)));
 
     static {
         ITEMS.register(BLOCK_ID, () -> new BlockItem(EMPTY_FLOWER_POT.get(), new Item.Properties()));

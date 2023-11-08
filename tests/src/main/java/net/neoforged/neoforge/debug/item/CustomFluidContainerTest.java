@@ -31,8 +31,8 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStackSimple;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(CustomFluidContainerTest.MODID)
 public class CustomFluidContainerTest {
@@ -41,7 +41,7 @@ public class CustomFluidContainerTest {
 
     public static final boolean ENABLED = true;
 
-    public static final RegistryObject<Item> CUSTOM_FLUID_CONTAINER = ITEMS.register("custom_fluid_container", () -> new CustomFluidContainer((new Item.Properties()).stacksTo(1)));
+    public static final DeferredHolder<Item, Item> CUSTOM_FLUID_CONTAINER = ITEMS.register("custom_fluid_container", () -> new CustomFluidContainer((new Item.Properties()).stacksTo(1)));
 
     public CustomFluidContainerTest() {
         if (ENABLED) {
