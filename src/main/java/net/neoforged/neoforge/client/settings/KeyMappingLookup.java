@@ -73,8 +73,8 @@ public class KeyMappingLookup {
         Collection<KeyMapping> modifierBindings = map.get(modifier).get(keyCode);
         if (modifierBindings != null) {
             return modifierBindings.stream()
-                .filter(binding -> binding.isActiveAndMatches(keyCode))
-                .toList();
+                    .filter(binding -> binding.isActiveAndMatches(keyCode))
+                    .toList();
         }
         return List.of();
     }
