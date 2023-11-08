@@ -92,7 +92,7 @@ public class ConditionalCodecTest {
                         "s": "test"
                     }
                     """);
-            // We expect a partial result with Optional.empty()
+            // We expect a successful result with Optional.empty()
             var decoded = SimpleRecord.CONDITIONAL_CODEC.decode(JsonOps.INSTANCE, json).result().get().getFirst();
             assertEquals(Optional.empty(), decoded);
         }
@@ -198,7 +198,7 @@ public class ConditionalCodecTest {
                         "s": "test"
                     }
                     """);
-            // We expect a partial result with Optional.empty()
+            // We expect a successful result with Optional.empty()
             var decoded = CONDITIONAL_INT.decode(JsonOps.INSTANCE, json).result().get().getFirst();
             assertEquals(Optional.empty(), decoded);
         }
