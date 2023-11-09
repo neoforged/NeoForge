@@ -7,6 +7,8 @@ package net.neoforged.neoforge.registries;
 
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -14,9 +16,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
 import org.slf4j.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Fired when new registries can be constructed and registered.
@@ -36,8 +35,7 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final List<Registry<?>> registries = new ArrayList<>();
 
-    NewRegistryEvent() {
-    }
+    NewRegistryEvent() {}
 
     /**
      * Creates a registry using the {@code builder} and registers it.
@@ -82,7 +80,7 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
             LOGGER.error(LogUtils.FATAL_MARKER, "Failed to create some forge registries, see suppressed exceptions for details", aggregate);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void registerToRootRegistry(Registry<?> registry) {
         ResourceLocation registryName = registry.key().location();
         if (BuiltInRegistries.REGISTRY.containsKey(registryName))
