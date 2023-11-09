@@ -47,8 +47,8 @@ public class DuplicateOptionalTagTest {
     }
 
     private void onServerStarted(ServerStartedEvent event) {
-        Set<Block> tagAValues = BuiltInRegistries.BLOCK.getTag(TAG_A).map(tag -> tag.stream().map(Holder::get).collect(Collectors.toUnmodifiableSet())).orElse(TAG_A_DEFAULTS);
-        Set<Block> tagBValues = BuiltInRegistries.BLOCK.getTag(TAG_B).map(tag -> tag.stream().map(Holder::get).collect(Collectors.toUnmodifiableSet())).orElse(TAG_B_DEFAULTS);
+        Set<Block> tagAValues = BuiltInRegistries.BLOCK.getTag(TAG_A).map(tag -> tag.stream().map(Holder::value).collect(Collectors.toUnmodifiableSet())).orElse(TAG_A_DEFAULTS);
+        Set<Block> tagBValues = BuiltInRegistries.BLOCK.getTag(TAG_B).map(tag -> tag.stream().map(Holder::value).collect(Collectors.toUnmodifiableSet())).orElse(TAG_B_DEFAULTS);
 
         if (!tagAValues.equals(tagBValues)) {
             LOGGER.error("Values of both optional tag instances are not the same: first instance: {}, second instance: {}", tagAValues, tagBValues);

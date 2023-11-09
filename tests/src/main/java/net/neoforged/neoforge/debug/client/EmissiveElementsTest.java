@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.debug.client;
 
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -17,6 +16,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
@@ -28,8 +28,8 @@ public class EmissiveElementsTest {
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MOD_ID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
 
-    public static final Holder<Block> TEST_BLOCK = BLOCKS.register("emissive", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
-    public static final Holder<Item> TEST_BLOCK_ITEM = ITEMS.register("emissive", () -> new BlockItem(TEST_BLOCK.get(), new Item.Properties()));
+    public static final DeferredHolder<Block, Block> TEST_BLOCK = BLOCKS.register("emissive", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
+    public static final DeferredHolder<Item, Item> TEST_BLOCK_ITEM = ITEMS.register("emissive", () -> new BlockItem(TEST_BLOCK.get(), new Item.Properties()));
 
     public EmissiveElementsTest() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();

@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.debug.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -44,8 +43,8 @@ public class LevelSensitiveLightBlockTest {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
 
-    private static final Holder<Block> LIGHT_BLOCK = BLOCKS.register("light_block", LightBlock::new);
-    private static final Holder<Item> LIGHT_BLOCK_ITEM = ITEMS.register(
+    private static final DeferredHolder<Block, Block> LIGHT_BLOCK = BLOCKS.register("light_block", LightBlock::new);
+    private static final DeferredHolder<Item, Item> LIGHT_BLOCK_ITEM = ITEMS.register(
             "light_block", () -> new BlockItem(LIGHT_BLOCK.get(), new Item.Properties()));
     private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LightBlockEntity>> LIGHT_BLOCK_ENTITY = BLOCK_ENTITIES.register(
             "light_block", () -> BlockEntityType.Builder.of(LightBlockEntity::new, LIGHT_BLOCK.get()).build(null));

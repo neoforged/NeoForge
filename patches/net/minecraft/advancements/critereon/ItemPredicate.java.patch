@@ -24,7 +24,7 @@
 +   public static Codec<ItemPredicate> CODEC = ExtraCodecs.<net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate, ItemPredicate>either(
 +           // Use dispatchUnsafe to always inline the dispatched type parameters into the root ingredient object, next to the "type"
 +           net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.dispatchUnsafe(
-+                   ExtraCodecs.lazyInitializedCodec(() -> net.neoforged.neoforge.registries.ForgeRegistries.ITEM_PREDICATE_SERIALIZERS.byNameCodec()),
++                   net.neoforged.neoforge.registries.NeoForgeRegistries.ITEM_PREDICATE_SERIALIZERS.byNameCodec(),
 +                   net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate::codec,
 +                   java.util.function.Function.identity()),
 +           VANILLA_CODEC

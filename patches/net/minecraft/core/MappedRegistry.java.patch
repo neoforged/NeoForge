@@ -151,7 +151,7 @@
 +      var holder = byKey.get(key);
 +      this.byId.size(Math.max(this.byId.size(), id + 1));
 +      this.byId.set(id, holder);
-+      this.toId.put(holder.get(), id);
++      this.toId.put(holder.value(), id);
 +   }
 +
 +   @Override

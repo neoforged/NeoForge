@@ -24,7 +24,7 @@
 +      net.minecraft.core.Holder<SoundEvent> holder = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(p_108651_);
 +      net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtEntity(this, holder, this.getSoundSource(), p_108652_, p_108653_);
 +      if (event.isCanceled() || event.getSound() == null) return;
-+      p_108651_ = event.getSound().get();
++      p_108651_ = event.getSound().value();
 +      SoundSource source = event.getSource();
 +      p_108652_ = event.getNewVolume();
 +      p_108653_ = event.getNewPitch();

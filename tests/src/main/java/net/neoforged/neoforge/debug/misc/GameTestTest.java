@@ -8,7 +8,6 @@ package net.neoforged.neoforge.debug.misc;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
@@ -37,6 +36,7 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,12 +48,12 @@ public class GameTestTest {
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MODID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
-    private static final Holder<Block> ENERGY_BLOCK = BLOCKS.register("energy_block",
+    private static final DeferredHolder<Block, Block> ENERGY_BLOCK = BLOCKS.register("energy_block",
             () -> new EnergyBlock(Properties.of().mapColor(MapColor.STONE)));
     @SuppressWarnings("unused")
-    private static final Holder<Item> ENERGY_BLOCK_ITEM = ITEMS.register("energy_block",
+    private static final DeferredHolder<Item, Item> ENERGY_BLOCK_ITEM = ITEMS.register("energy_block",
             () -> new BlockItem(ENERGY_BLOCK.get(), new Item.Properties()));
-    private static final Holder<BlockEntityType<?>> ENERGY_BLOCK_ENTITY = BLOCK_ENTITIES.register("energy",
+    private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> ENERGY_BLOCK_ENTITY = BLOCK_ENTITIES.register("energy",
             () -> BlockEntityType.Builder.of(EnergyBlockEntity::new, ENERGY_BLOCK.get()).build(null));
 
     public GameTestTest() {

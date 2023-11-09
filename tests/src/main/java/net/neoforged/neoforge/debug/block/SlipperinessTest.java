@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.debug.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -28,7 +27,7 @@ public class SlipperinessTest {
     static final String MOD_ID = "slipperiness_test";
     static final String BLOCK_ID = "test_block";
 
-    public static final Holder<Block> BB_BLOCK = DeferredHolder.create(Registries.BLOCK, new ResourceLocation(MOD_ID, BLOCK_ID));
+    public static final DeferredHolder<Block, Block> BB_BLOCK = DeferredHolder.create(Registries.BLOCK, new ResourceLocation(MOD_ID, BLOCK_ID));
 
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent e) {

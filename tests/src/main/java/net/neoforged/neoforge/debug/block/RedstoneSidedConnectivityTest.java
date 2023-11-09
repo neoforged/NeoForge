@@ -7,7 +7,6 @@ package net.neoforged.neoforge.debug.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -21,6 +20,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,8 +33,8 @@ public class RedstoneSidedConnectivityTest {
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MODID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
 
-    private static final Holder<Block> TEST_REDSTONE_BLOCK = BLOCKS.register(BLOCK_ID, EastRedstoneBlock::new);
-    private static final Holder<Item> TEST_REDSTONE_BLOCKITEM = ITEMS.register(BLOCK_ID, () -> new BlockItem(TEST_REDSTONE_BLOCK.get(), new Item.Properties()));
+    private static final DeferredHolder<Block, Block> TEST_REDSTONE_BLOCK = BLOCKS.register(BLOCK_ID, EastRedstoneBlock::new);
+    private static final DeferredHolder<Item, Item> TEST_REDSTONE_BLOCKITEM = ITEMS.register(BLOCK_ID, () -> new BlockItem(TEST_REDSTONE_BLOCK.get(), new Item.Properties()));
 
     public RedstoneSidedConnectivityTest() {
         if (!ENABLE)

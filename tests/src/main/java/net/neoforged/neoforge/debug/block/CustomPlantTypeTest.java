@@ -7,7 +7,6 @@ package net.neoforged.neoforge.debug.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
@@ -35,8 +34,8 @@ public class CustomPlantTypeTest {
     private static final String CUSTOM_SOIL_BLOCK = "test_custom_block";
     private static final String CUSTOM_PLANT_BLOCK = "test_custom_plant";
 
-    public static final Holder<Block> CUSTOM_SOIL = DeferredHolder.create(Registries.BLOCK, new ResourceLocation(MODID, CUSTOM_SOIL_BLOCK));
-    public static final Holder<Block> CUSTOM_PLANT = DeferredHolder.create(Registries.BLOCK, new ResourceLocation(MODID, CUSTOM_PLANT_BLOCK));
+    public static final DeferredHolder<Block, Block> CUSTOM_SOIL = DeferredHolder.create(Registries.BLOCK, new ResourceLocation(MODID, CUSTOM_SOIL_BLOCK));
+    public static final DeferredHolder<Block, Block> CUSTOM_PLANT = DeferredHolder.create(Registries.BLOCK, new ResourceLocation(MODID, CUSTOM_PLANT_BLOCK));
 
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent event) {

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.debug.block;
 
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -16,6 +15,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 @Mod(StickyBlockTest.MODID)
@@ -27,14 +27,14 @@ public class StickyBlockTest {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MODID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
 
-    public static final Holder<Block> BLUE_BLOCK = BLOCKS.register(BLOCK_ID, () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)) {
+    public static final DeferredHolder<Block, Block> BLUE_BLOCK = BLOCKS.register(BLOCK_ID, () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)) {
         @Override
         public boolean isStickyBlock(BlockState state) {
             return true;
         }
     });
 
-    public static final Holder<Block> RED_BLOCK = BLOCKS.register(BLOCK_ID_2, () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)) {
+    public static final DeferredHolder<Block, Block> RED_BLOCK = BLOCKS.register(BLOCK_ID_2, () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)) {
         @Override
         public boolean isStickyBlock(BlockState state) {
             return true;
@@ -52,8 +52,8 @@ public class StickyBlockTest {
         }
     });
 
-    public static final Holder<Item> BLUE_BLOCK_ITEM = ITEMS.register(BLOCK_ID, () -> new BlockItem(BLUE_BLOCK.get(), new Item.Properties()));
-    public static final Holder<Item> RED_BLOCK_ITEM = ITEMS.register(BLOCK_ID_2, () -> new BlockItem(RED_BLOCK.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, Item> BLUE_BLOCK_ITEM = ITEMS.register(BLOCK_ID, () -> new BlockItem(BLUE_BLOCK.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, Item> RED_BLOCK_ITEM = ITEMS.register(BLOCK_ID_2, () -> new BlockItem(RED_BLOCK.get(), new Item.Properties()));
 
     public StickyBlockTest() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
