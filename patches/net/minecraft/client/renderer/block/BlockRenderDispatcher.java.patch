@@ -9,7 +9,7 @@
        this.liquidBlockRenderer = new LiquidBlockRenderer();
     }
  
-@@ -45,11 +_,15 @@
+@@ -45,11 +_,16 @@
        return this.blockModelShaper;
     }
  
@@ -22,6 +22,7 @@
           BakedModel bakedmodel = this.blockModelShaper.getBlockModel(p_110919_);
           long i = p_110919_.getSeed(p_110920_);
 -         this.modelRenderer.tesselateBlock(p_110921_, bakedmodel, p_110919_, p_110920_, p_110922_, p_110923_, true, this.random, i, OverlayTexture.NO_OVERLAY);
++         modelData = bakedmodel.getModelData(p_110921_, p_110920_, p_110919_, modelData);
 +         this.modelRenderer.tesselateBlock(p_110921_, bakedmodel, p_110919_, p_110920_, p_110922_, p_110923_, true, this.random, i, OverlayTexture.NO_OVERLAY, modelData, null);
        }
     }
