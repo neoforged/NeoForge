@@ -10,6 +10,12 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.callback.RegistryCallback;
 
+/**
+ * An extension for {@link Registry}, adding some additional functionality to vanilla registries, such as
+ * callbacks and ID limits.
+ * 
+ * @param <T> the type of registry entries
+ */
 public interface IRegistryExtension<T> {
     /**
      * {@return whether this registry should be synced to clients}
@@ -27,10 +33,18 @@ public interface IRegistryExtension<T> {
      * <p>
      * The callback will be called when the registry is added to, baked, or cleared.
      *
-     * @param callback The callback to add.
+     * @param callback the callback to add
      */
     void addCallback(RegistryCallback<T> callback);
 
+    /**
+     * Adds a callback to this registry.
+     * <p>
+     * The callback will be called when the registry is added to, baked, or cleared.
+     *
+     * @param type     the type of the callback to add
+     * @param callback The callback to add
+     */
     default <C extends RegistryCallback<T>> void addCallback(Class<C> type, C callback) {
         addCallback(callback);
     }
@@ -40,8 +54,8 @@ public interface IRegistryExtension<T> {
      * <p>
      * Any registry lookups that target the first name will resolve as the second name, iff the first name is not present.
      *
-     * @param from The source registry name to alias from.
-     * @param to   The target registry name to alias to.
+     * @param from the source registry name to alias from
+     * @param to   the target registry name to alias to
      */
     void addAlias(ResourceLocation from, ResourceLocation to);
 
@@ -74,7 +88,7 @@ public interface IRegistryExtension<T> {
      *
      * @param key the resource key to lookup
      * @return the integer id linked to the given key,
-     *         or {@code -1} if the key is not present in this registry.
+     *         or {@code -1} if the key is not present in this registry
      */
     int getId(ResourceKey<T> key);
 
@@ -83,10 +97,15 @@ public interface IRegistryExtension<T> {
      *
      * @param name the resource name to lookup
      * @return the integer id linked to the given name,
-     *         or {@code -1} if the name is not present in this registry.
+     *         or {@code -1} if the name is not present in this registry
      */
     int getId(ResourceLocation name);
 
+    /**
+     * {@return {@code true} if this registry contains the {@code value}}
+     *
+     * @param value the object whose existence to check for
+     */
     boolean containsValue(T value);
 
 }
