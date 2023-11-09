@@ -27,7 +27,7 @@ import net.neoforged.neoforge.registries.holdersets.HolderSetType;
  * Created to have a central place to access the registries directly if modders need.
  * It is still advised that if you are registering things to use {@link RegisterEvent} or {@link DeferredRegister}, but queries and iterations can use this.
  */
-public class ForgeRegistries {
+public class NeoForgeRegistries {
     // Custom forge registries
     static final DeferredRegister<EntityDataSerializer<?>> DEFERRED_ENTITY_DATA_SERIALIZERS = DeferredRegister.create(Keys.ENTITY_DATA_SERIALIZERS, Keys.ENTITY_DATA_SERIALIZERS.location().getNamespace());
     public static final Registry<EntityDataSerializer<?>> ENTITY_DATA_SERIALIZERS = DEFERRED_ENTITY_DATA_SERIALIZERS.makeRegistry(registryBuilder -> registryBuilder.sync(true));

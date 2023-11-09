@@ -30,13 +30,13 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 @Mod("custom_predicate_test")
 public class CustomPredicateTest {
     public static final String MOD_ID = "custom_predicate_test";
 
-    private static final DeferredRegister<Codec<? extends ICustomItemPredicate>> ITEM_PREDICATE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.ITEM_PREDICATE_SERIALIZERS, MOD_ID);
+    private static final DeferredRegister<Codec<? extends ICustomItemPredicate>> ITEM_PREDICATE_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.ITEM_PREDICATE_SERIALIZERS, MOD_ID);
     private static final DeferredHolder<Codec<? extends ICustomItemPredicate>, ? extends Codec<CustomNamePredicate>> CUSTOM_NAME_PREDICATE = ITEM_PREDICATE_SERIALIZERS.register("custom_name",
             () -> {
                 Codec<CustomNamePredicate> codec = RecordCodecBuilder.create(g -> g.group(

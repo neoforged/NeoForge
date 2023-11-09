@@ -5,9 +5,11 @@
 
 package net.neoforged.neoforge.debug;
 
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -25,6 +27,7 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,7 +39,8 @@ public class DeferredRegistryTest {
 
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MODID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
-    private static final DeferredRegister<Custom> CUSTOMS = DeferredRegister.create(new ResourceLocation(MODID, "test_registry"), MODID);
+    private static final ResourceKey<Registry<Custom>> CUSTOM_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(MODID, "test_registry"));
+    private static final DeferredRegister<Custom> CUSTOMS = DeferredRegister.create(CUSTOM_REGISTRY_KEY, MODID);
     private static final DeferredRegister<Object> DOESNT_EXIST_REG = DeferredRegister.create(new ResourceLocation(MODID, "doesnt_exist"), MODID);
     private static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(BuiltInRegistries.RECIPE_TYPE, MODID);
     // Vanilla Registry - filled directly after all RegistryEvent.Register events are fired
@@ -51,8 +55,7 @@ public class DeferredRegistryTest {
     private static final DeferredHolder<PosRuleTestType<?>, PosRuleTestType<?>> POS_RULE_TEST_TYPE = POS_RULE_TEST_TYPES.register("test", () -> () -> null);
 
 //    private static final TagKey<Custom> CUSTOM_TAG_KEY = CUSTOMS.createOptionalTagKey("test_tag", Set.of(CUSTOM));
-//    private static final Supplier<IForgeRegistry<Custom>> CUSTOM_REG = CUSTOMS.makeRegistry(() -> new RegistryBuilder<Custom>().disableSaving().setMaxID(Integer.MAX_VALUE - 1).hasTags()
-//            .onAdd((owner, stage, id, key, obj, old) -> LOGGER.info("Custom Added: " + id + " " + obj.foo())));
+    private static final Registry<Custom> CUSTOM_REG = CUSTOMS.makeRegistry(builder -> builder.onAdd((owner, id, key, obj) -> LOGGER.info("Custom Added: " + id + " " + obj.foo())));
 
     public DeferredRegistryTest(IEventBus modBus) {
         BLOCKS.register(modBus);

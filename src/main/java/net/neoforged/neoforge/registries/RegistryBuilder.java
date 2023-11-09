@@ -14,6 +14,9 @@ import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.registries.callback.AddCallback;
+import net.neoforged.neoforge.registries.callback.BakeCallback;
+import net.neoforged.neoforge.registries.callback.ClearCallback;
 import net.neoforged.neoforge.registries.callback.RegistryCallback;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,6 +45,18 @@ public class RegistryBuilder<T> {
     public RegistryBuilder<T> callback(RegistryCallback<T> callback) {
         this.callbacks.add(callback);
         return this;
+    }
+
+    public RegistryBuilder<T> onAdd(AddCallback<T> callback) {
+        return this.callback(callback);
+    }
+
+    public RegistryBuilder<T> onBake(BakeCallback<T> callback) {
+        return this.callback(callback);
+    }
+
+    public RegistryBuilder<T> onClear(ClearCallback<T> callback) {
+        return this.callback(callback);
     }
 
     /**

@@ -23,12 +23,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Unit;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public interface ICondition {
     // Use dispatchUnsafe to always write the condition value inline.
     Codec<ICondition> CODEC = NeoForgeExtraCodecs.dispatchUnsafe(
-            ForgeRegistries.CONDITION_SERIALIZERS.byNameCodec(),
+            NeoForgeRegistries.CONDITION_SERIALIZERS.byNameCodec(),
             ICondition::codec,
             Function.identity());
     Codec<List<ICondition>> LIST_CODEC = CODEC.listOf();

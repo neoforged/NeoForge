@@ -91,10 +91,6 @@ public class GameData {
                 StartupMessageManager.modLoaderConsumer().ifPresent(s -> s.accept("REGISTERING " + registryKey.location()));
 
                 ModLoader.get().postEventWrapContainerInModOrder(registerEvent);
-
-                LOGGER.debug(REGISTRIES, "Applying holder lookups: {}", registryKey.location());
-                ObjectHolderRegistry.applyObjectHolders(registryKey.location()::equals);
-                LOGGER.debug(REGISTRIES, "Holder lookups applied: {}", registryKey.location());
             } catch (Throwable t) {
                 aggregate.addSuppressed(t);
             }

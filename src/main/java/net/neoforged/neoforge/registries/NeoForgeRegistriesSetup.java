@@ -14,32 +14,32 @@ import net.neoforged.bus.api.IEventBus;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public class ForgeRegistriesSetup {
+public class NeoForgeRegistriesSetup {
     private static boolean setup = false;
 
     /**
      * Internal forge method. Modders do not call.
      */
     public static void setup(IEventBus modEventBus) {
-        synchronized (ForgeRegistriesSetup.class) {
+        synchronized (NeoForgeRegistriesSetup.class) {
             if (setup)
                 throw new IllegalStateException("Setup has already been called!");
 
             setup = true;
         }
 
-        ForgeRegistries.DEFERRED_INGREDIENT_TYPES.register(modEventBus);
-        ForgeRegistries.DEFERRED_CONDITION_CODECS.register(modEventBus);
-        ForgeRegistries.DEFERRED_ITEM_PREDICATE_SERIALIZERS.register(modEventBus);
-        ForgeRegistries.DEFERRED_ENTITY_DATA_SERIALIZERS.register(modEventBus);
-        ForgeRegistries.DEFERRED_GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
-        ForgeRegistries.DEFERRED_BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
-        ForgeRegistries.DEFERRED_FLUID_TYPES.register(modEventBus);
-        ForgeRegistries.DEFERRED_STRUCTURE_MODIFIER_SERIALIZERS.register(modEventBus);
-        ForgeRegistries.DEFERRED_HOLDER_SET_TYPES.register(modEventBus);
-        ForgeRegistries.DEFERRED_DISPLAY_CONTEXTS.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_INGREDIENT_TYPES.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_CONDITION_CODECS.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_ITEM_PREDICATE_SERIALIZERS.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_ENTITY_DATA_SERIALIZERS.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_FLUID_TYPES.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_STRUCTURE_MODIFIER_SERIALIZERS.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_HOLDER_SET_TYPES.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_DISPLAY_CONTEXTS.register(modEventBus);
 
-        modEventBus.addListener(ForgeRegistriesSetup::onModifyRegistry);
+        modEventBus.addListener(NeoForgeRegistriesSetup::onModifyRegistry);
     }
 
     /**
@@ -82,7 +82,7 @@ public class ForgeRegistriesSetup {
             ((BaseNeoRegistry) forgeRegistry).addCallback(ForgeRegistryCallbacks.AttributeCallbacks.INSTANCE);
         } else if (registryKey == Registries.POINT_OF_INTEREST_TYPE) {
             ((BaseNeoRegistry) forgeRegistry).addCallback(ForgeRegistryCallbacks.PoiTypeCallbacks.INSTANCE);
-        } else if (registryKey == ForgeRegistries.Keys.DISPLAY_CONTEXTS) {
+        } else if (registryKey == NeoForgeRegistries.Keys.DISPLAY_CONTEXTS) {
             // We add this callback here to not cause a tricky classloading loop with ForgeRegistries#DISPLAY_CONTEXTS and ItemDisplayContext#CODEC
             ((BaseNeoRegistry) forgeRegistry).addCallback(ItemDisplayContext.ADD_CALLBACK);
         }

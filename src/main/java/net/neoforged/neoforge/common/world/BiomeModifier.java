@@ -13,7 +13,7 @@ import net.minecraft.core.RegistryCodecs;
 import net.minecraft.resources.RegistryFileCodec;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.level.biome.Biome;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 /**
  * JSON-serializable biome modifier.
@@ -36,20 +36,20 @@ public interface BiomeModifier {
      * Codec for (de)serializing biome modifiers inline.
      * Mods can use this for data generation.
      */
-    Codec<BiomeModifier> DIRECT_CODEC = ForgeRegistries.BIOME_MODIFIER_SERIALIZERS.byNameCodec()
+    Codec<BiomeModifier> DIRECT_CODEC = NeoForgeRegistries.BIOME_MODIFIER_SERIALIZERS.byNameCodec()
             .dispatch(BiomeModifier::codec, Function.identity());
 
     /**
      * Codec for referring to biome modifiers by id in other datapack registry files.
      * Can only be used with {@link RegistryOps}.
      */
-    Codec<Holder<BiomeModifier>> REFERENCE_CODEC = RegistryFileCodec.create(ForgeRegistries.Keys.BIOME_MODIFIERS, DIRECT_CODEC);
+    Codec<Holder<BiomeModifier>> REFERENCE_CODEC = RegistryFileCodec.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, DIRECT_CODEC);
 
     /**
      * Codec for referring to biome modifiers by id, list of id, or tags.
      * Can only be used with {@link RegistryOps}.
      */
-    Codec<HolderSet<BiomeModifier>> LIST_CODEC = RegistryCodecs.homogeneousList(ForgeRegistries.Keys.BIOME_MODIFIERS, DIRECT_CODEC);
+    Codec<HolderSet<BiomeModifier>> LIST_CODEC = RegistryCodecs.homogeneousList(NeoForgeRegistries.Keys.BIOME_MODIFIERS, DIRECT_CODEC);
 
     /**
      * Modifies the information via the provided biome builder.

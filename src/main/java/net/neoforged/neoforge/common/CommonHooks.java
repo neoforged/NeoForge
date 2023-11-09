@@ -171,7 +171,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import org.apache.commons.lang3.function.TriFunction;
@@ -945,7 +945,7 @@ public class CommonHooks {
     public static EntityDataSerializer<?> getSerializer(int id, CrudeIncrementalIntIdentityHashBiMap<EntityDataSerializer<?>> vanilla) {
         EntityDataSerializer<?> serializer = vanilla.byId(id);
         if (serializer == null) {
-            return ForgeRegistries.ENTITY_DATA_SERIALIZERS.byId(id);
+            return NeoForgeRegistries.ENTITY_DATA_SERIALIZERS.byId(id);
         }
         return serializer;
     }
@@ -953,7 +953,7 @@ public class CommonHooks {
     public static int getSerializerId(EntityDataSerializer<?> serializer, CrudeIncrementalIntIdentityHashBiMap<EntityDataSerializer<?>> vanilla) {
         int id = vanilla.getId(serializer);
         if (id < 0) {
-            return ForgeRegistries.ENTITY_DATA_SERIALIZERS.getId(serializer);
+            return NeoForgeRegistries.ENTITY_DATA_SERIALIZERS.getId(serializer);
         }
         return id;
     }

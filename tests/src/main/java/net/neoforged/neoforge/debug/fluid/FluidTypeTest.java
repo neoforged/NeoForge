@@ -44,7 +44,7 @@ import net.neoforged.neoforge.fluids.FluidInteractionRegistry;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -69,7 +69,7 @@ public class FluidTypeTest {
     protected static final String ID = "fluid_type_test";
     private static Logger logger;
 
-    private static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, ID);
+    private static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, ID);
     private static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(BuiltInRegistries.FLUID, ID);
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, ID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, ID);
@@ -172,7 +172,7 @@ public class FluidTypeTest {
         FluidInteractionRegistry.addInteraction(NeoForgeMod.WATER_TYPE.get(), new FluidInteractionRegistry.InteractionInformation(TEST_FLUID_TYPE.get(), state -> state.isSource() ? Blocks.DIAMOND_BLOCK.defaultBlockState() : Blocks.IRON_BLOCK.defaultBlockState()));
 
         // Log Fluid Types for all fluids
-        event.enqueueWork(() -> BuiltInRegistries.FLUID.forEach(fluid -> logger.info("Fluid {} has FluidType {}", BuiltInRegistries.FLUID.getKey(fluid), ForgeRegistries.FLUID_TYPES.getKey(fluid.getFluidType()))));
+        event.enqueueWork(() -> BuiltInRegistries.FLUID.forEach(fluid -> logger.info("Fluid {} has FluidType {}", BuiltInRegistries.FLUID.getKey(fluid), NeoForgeRegistries.FLUID_TYPES.getKey(fluid.getFluidType()))));
     }
 
     private static class FluidTypeTestClient {

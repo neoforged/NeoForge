@@ -49,7 +49,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -77,7 +77,7 @@ public class CustomItemDisplayContextTest {
 
         @SubscribeEvent
         public static void registerContext(final RegisterEvent event) {
-            event.register(ForgeRegistries.Keys.DISPLAY_CONTEXTS, helper -> helper.register("hanging", HANGING));
+            event.register(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS, helper -> helper.register("hanging", HANGING));
         }
 
         private static class ItemHangerBlockEntityRenderer

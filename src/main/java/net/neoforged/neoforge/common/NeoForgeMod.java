@@ -130,8 +130,8 @@ import net.neoforged.neoforge.network.filters.VanillaPacketSplitter;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.ForgeRegistriesSetup;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistriesSetup;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.holdersets.AndHolderSet;
 import net.neoforged.neoforge.registries.holdersets.AnyHolderSet;
@@ -158,9 +158,9 @@ public class NeoForgeMod {
 
     private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, "neoforge");
     private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, "neoforge");
-    private static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, "neoforge");
-    private static final DeferredRegister<Codec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, "neoforge");
-    private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(ForgeRegistries.Keys.HOLDER_SET_TYPES, "neoforge");
+    private static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, "neoforge");
+    private static final DeferredRegister<Codec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, "neoforge");
+    private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.HOLDER_SET_TYPES, "neoforge");
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static final DeferredHolder<ArgumentTypeInfo<?, ?>, EnumArgument.Info<?>> ENUM_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("enum", () -> ArgumentTypeInfos.registerByClass(EnumArgument.class, new EnumArgument.Info()));
@@ -275,7 +275,7 @@ public class NeoForgeMod {
      */
     public static final DeferredHolder<HolderSetType, HolderSetType> NOT_HOLDER_SET = HOLDER_SET_TYPES.register("not", () -> NotHolderSet::codec);
 
-    private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(ForgeRegistries.Keys.INGREDIENT_TYPES, "neoforge");
+    private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, "neoforge");
 
     public static final DeferredHolder<IngredientType<?>, IngredientType<CompoundIngredient>> COMPOUND_INGREDIENT_TYPE = INGREDIENT_TYPES.register("compound", () -> new IngredientType<>(CompoundIngredient.CODEC, CompoundIngredient.CODEC_NONEMPTY));
     public static final DeferredHolder<IngredientType<?>, IngredientType<StrictNBTIngredient>> STRICT_NBT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("nbt", () -> new IngredientType<>(StrictNBTIngredient.CODEC));
@@ -286,7 +286,7 @@ public class NeoForgeMod {
     private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, "neoforge");
     public static final DeferredHolder<RecipeSerializer<?>, ConditionalRecipe<?>> CONDITIONAL_RECIPE = RECIPE_SERIALIZERS.register("conditional", ConditionalRecipe::new);
 
-    private static final DeferredRegister<Codec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(ForgeRegistries.Keys.CONDITION_CODECS, "neoforge");
+    private static final DeferredRegister<Codec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, "neoforge");
     public static final DeferredHolder<Codec<? extends ICondition>, Codec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
     public static final DeferredHolder<Codec<? extends ICondition>, Codec<FalseCondition>> FALSE_CONDITION = CONDITION_CODECS.register("false", () -> FalseCondition.CODEC);
     public static final DeferredHolder<Codec<? extends ICondition>, Codec<ItemExistsCondition>> ITEM_EXISTS_CONDITION = CONDITION_CODECS.register("item_exists", () -> ItemExistsCondition.CODEC);
@@ -295,11 +295,11 @@ public class NeoForgeMod {
     public static final DeferredHolder<Codec<? extends ICondition>, Codec<OrCondition>> OR_CONDITION = CONDITION_CODECS.register("or", () -> OrCondition.CODEC);
     public static final DeferredHolder<Codec<? extends ICondition>, Codec<TagEmptyCondition>> TAG_EMPTY_CONDITION = CONDITION_CODECS.register("tag_empty", () -> TagEmptyCondition.CODEC);
     public static final DeferredHolder<Codec<? extends ICondition>, Codec<TrueCondition>> TRUE_CONDITION = CONDITION_CODECS.register("true", () -> TrueCondition.CODEC);
-    private static final DeferredRegister<IngredientType<?>> VANILLA_INGREDIENT_TYPES = DeferredRegister.create(ForgeRegistries.Keys.INGREDIENT_TYPES, "minecraft");
+    private static final DeferredRegister<IngredientType<?>> VANILLA_INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, "minecraft");
 
     public static final DeferredHolder<IngredientType<?>, IngredientType<Ingredient>> VANILLA_INGREDIENT_TYPE = VANILLA_INGREDIENT_TYPES.register("item", () -> new IngredientType<>(Ingredient.VANILLA_CODEC, Ingredient.VANILLA_CODEC_NONEMPTY));
 
-    private static final DeferredRegister<FluidType> VANILLA_FLUID_TYPES = DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, "minecraft");
+    private static final DeferredRegister<FluidType> VANILLA_FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, "minecraft");
 
     public static final DeferredHolder<FluidType, FluidType> EMPTY_TYPE = VANILLA_FLUID_TYPES.register("empty", () -> new FluidType(FluidType.Properties.create()
             .descriptionId("block.minecraft.air")
@@ -436,7 +436,7 @@ public class NeoForgeMod {
     private static boolean enableMilkFluid = false;
     public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_EMPTY_MILK = DeferredHolder.create(Registries.SOUND_EVENT, new ResourceLocation("item.bucket.empty_milk"));
     public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_FILL_MILK = DeferredHolder.create(Registries.SOUND_EVENT, new ResourceLocation("item.bucket.fill_milk"));
-    public static final DeferredHolder<FluidType, FluidType> MILK_TYPE = DeferredHolder.create(ForgeRegistries.Keys.FLUID_TYPES, new ResourceLocation("milk"));
+    public static final DeferredHolder<FluidType, FluidType> MILK_TYPE = DeferredHolder.create(NeoForgeRegistries.Keys.FLUID_TYPES, new ResourceLocation("milk"));
     public static final DeferredHolder<Fluid, Fluid> MILK = DeferredHolder.create(Registries.FLUID, new ResourceLocation("milk"));
     public static final DeferredHolder<Fluid, Fluid> FLOWING_MILK = DeferredHolder.create(Registries.FLUID, new ResourceLocation("flowing_milk"));
 
@@ -463,8 +463,8 @@ public class NeoForgeMod {
 
         // Forge-provided datapack registries
         modEventBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
-            event.dataPackRegistry(ForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifier.DIRECT_CODEC);
-            event.dataPackRegistry(ForgeRegistries.Keys.STRUCTURE_MODIFIERS, StructureModifier.DIRECT_CODEC);
+            event.dataPackRegistry(NeoForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifier.DIRECT_CODEC);
+            event.dataPackRegistry(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, StructureModifier.DIRECT_CODEC);
         });
         modEventBus.addListener(this::preInit);
         modEventBus.addListener(this::gatherData);
@@ -487,7 +487,7 @@ public class NeoForgeMod {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, NeoForgeConfig.serverSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, NeoForgeConfig.commonSpec);
         modEventBus.register(NeoForgeConfig.class);
-        ForgeRegistriesSetup.setup(modEventBus);
+        NeoForgeRegistriesSetup.setup(modEventBus);
         // Forge does not display problems when the remote is not matching.
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> "ANY", (remote, isServer) -> true));
         StartupMessageManager.addModMessage("NeoForge version " + NeoForgeVersion.getVersion());
@@ -548,7 +548,7 @@ public class NeoForgeMod {
             });
 
             // register fluid type
-            event.register(ForgeRegistries.Keys.FLUID_TYPES, helper -> helper.register(MILK_TYPE.getId(), new FluidType(
+            event.register(NeoForgeRegistries.Keys.FLUID_TYPES, helper -> helper.register(MILK_TYPE.getId(), new FluidType(
                     FluidType.Properties.create().density(1024).viscosity(1024)
                             .sound(SoundActions.BUCKET_FILL, BUCKET_FILL_MILK.get())
                             .sound(SoundActions.BUCKET_EMPTY, BUCKET_EMPTY_MILK.get())) {
@@ -584,14 +584,14 @@ public class NeoForgeMod {
 
     @SuppressWarnings("unchecked")
     public void registerVanillaDisplayContexts(RegisterEvent event) {
-        if (!event.getRegistryKey().equals(ForgeRegistries.Keys.DISPLAY_CONTEXTS)) {
+        if (!event.getRegistryKey().equals(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS)) {
             return;
         }
         WritableRegistry<ItemDisplayContext> forgeRegistry = (WritableRegistry<ItemDisplayContext>) event.getRegistry();
 
         Arrays.stream(ItemDisplayContext.values())
                 .filter(Predicate.not(ItemDisplayContext::isModded))
-                .forEach(ctx -> forgeRegistry.registerMapping(ctx.getId(), ResourceKey.create(ForgeRegistries.Keys.DISPLAY_CONTEXTS, new ResourceLocation("minecraft", ctx.getSerializedName())), ctx, Lifecycle.stable()));
+                .forEach(ctx -> forgeRegistry.registerMapping(ctx.getId(), ResourceKey.create(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS, new ResourceLocation("minecraft", ctx.getSerializedName())), ctx, Lifecycle.stable()));
     }
 
     public void registerLootData(RegisterEvent event) {
