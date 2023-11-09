@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/levelgen/placement/EnvironmentScanPlacement.java
++++ b/net/minecraft/world/level/levelgen/placement/EnvironmentScanPlacement.java
+@@ -17,7 +_,7 @@
+    private final int maxSteps;
+    public static final Codec<EnvironmentScanPlacement> CODEC = RecordCodecBuilder.create(
+       p_191650_ -> p_191650_.group(
+-               Direction.VERTICAL_CODEC.fieldOf("direction_of_search").forGetter(p_191672_ -> p_191672_.directionOfSearch),
++               Direction.CODEC.fieldOf("direction_of_search").forGetter(p_191672_ -> p_191672_.directionOfSearch),
+                BlockPredicate.CODEC.fieldOf("target_condition").forGetter(p_191670_ -> p_191670_.targetCondition),
+                BlockPredicate.CODEC
+                   .optionalFieldOf("allowed_search_condition", BlockPredicate.alwaysTrue())
