@@ -26,7 +26,7 @@
 +   }
 +
 +   /**
-+    * @param fluid A fluid supplier such as {@link net.neoforged.neoforge.registries.RegistryObject<FlowingFluid>}
++    * @param fluid A fluid supplier such as {@link net.neoforged.neoforge.registries.DeferredHolder}
 +    */
 +   public LiquidBlock(java.util.function.Supplier<? extends FlowingFluid> fluid, BlockBehaviour.Properties p_54695_) {
 +      super(p_54695_);

@@ -38,7 +38,7 @@ public class ForgeSpawnEggItemTest {
     private static final DeferredHolder<EntityType<?>, EntityType<Pig>> ENTITY = ENTITIES.register("test_entity", () -> EntityType.Builder.of(Pig::new, MobCategory.CREATURE).sized(1, 1).build("test_entity"));
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
-    private static final DeferredHolder<Item, DeferredSpawnEggItem> EGG = ITEMS.register("test_spawn_egg", () -> new DeferredSpawnEggItem(ENTITY::get, 0x0000FF, 0xFF0000, new Item.Properties()));
+    private static final DeferredHolder<Item, DeferredSpawnEggItem> EGG = ITEMS.register("test_spawn_egg", () -> new DeferredSpawnEggItem(ENTITY, 0x0000FF, 0xFF0000, new Item.Properties()));
 
     public ForgeSpawnEggItemTest() {
         if (ENABLED) {

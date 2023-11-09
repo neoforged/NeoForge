@@ -10,6 +10,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderOwner;
@@ -25,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <T> The type of object being held by this DeferredHolder.
  */
-public class DeferredHolder<R, T extends R> implements Holder<R> {
+public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     /**
      * The resource key of the target object.
      */

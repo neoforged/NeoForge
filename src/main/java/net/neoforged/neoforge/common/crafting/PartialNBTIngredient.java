@@ -43,7 +43,7 @@ public class PartialNBTIngredient extends Ingredient {
             // copy NBT to prevent the stack from modifying the original, as capabilities or vanilla item durability will modify the tag
             stack.setTag(tag.copy());
             return new Ingredient.ItemValue(stack, PartialNBTIngredient::compareStacksUsingPredicate);
-        }), NeoForgeMod.PARTIAL_NBT_INGREDIENT_TYPE::get);
+        }), NeoForgeMod.PARTIAL_NBT_INGREDIENT_TYPE);
 
         if (items.isEmpty())
             throw new IllegalStateException("At least one item needs to be provided for a partial nbt matching ingredient.");

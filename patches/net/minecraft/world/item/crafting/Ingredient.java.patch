@@ -7,7 +7,7 @@
 -   public static final Codec<Ingredient> CODEC = codec(true);
 -   public static final Codec<Ingredient> CODEC_NONEMPTY = codec(false);
 -
-+   private final java.util.function.Supplier<net.neoforged.neoforge.common.crafting.IngredientType<?>> type;
++   private final java.util.function.Supplier<? extends net.neoforged.neoforge.common.crafting.IngredientType<?>> type;
 +   
 +   public static final Codec<Ingredient> VANILLA_CODEC = codec(true);
 +   public static final Codec<Ingredient> VANILLA_CODEC_NONEMPTY = codec(false);
@@ -18,19 +18,19 @@
 +   
     protected Ingredient(Stream<? extends Ingredient.Value> p_43907_) {
 -      this.values = p_43907_.toArray(p_43933_ -> new Ingredient.Value[p_43933_]);
-+      this(p_43907_, net.neoforged.neoforge.common.NeoForgeMod.VANILLA_INGREDIENT_TYPE::get);
++      this(p_43907_, net.neoforged.neoforge.common.NeoForgeMod.VANILLA_INGREDIENT_TYPE);
     }
  
     private Ingredient(Ingredient.Value[] p_301044_) {
-+      this(p_301044_, net.neoforged.neoforge.common.NeoForgeMod.VANILLA_INGREDIENT_TYPE::get);
++      this(p_301044_, net.neoforged.neoforge.common.NeoForgeMod.VANILLA_INGREDIENT_TYPE);
 +   }
 +   
-+   protected Ingredient(Stream<? extends Ingredient.Value> p_43907_, java.util.function.Supplier<net.neoforged.neoforge.common.crafting.IngredientType<?>> type) {
++   protected Ingredient(Stream<? extends Ingredient.Value> p_43907_, java.util.function.Supplier<? extends net.neoforged.neoforge.common.crafting.IngredientType<?>> type) {
 +      this.values = p_43907_.toArray(Value[]::new);
 +      this.type = type;
 +   }
 +   
-+   private Ingredient(Ingredient.Value[] p_301044_, java.util.function.Supplier<net.neoforged.neoforge.common.crafting.IngredientType<?>> type) {
++   private Ingredient(Ingredient.Value[] p_301044_, java.util.function.Supplier<? extends net.neoforged.neoforge.common.crafting.IngredientType<?>> type) {
        this.values = p_301044_;
 -   }
 -

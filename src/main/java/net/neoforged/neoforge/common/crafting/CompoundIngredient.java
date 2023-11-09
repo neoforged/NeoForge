@@ -32,7 +32,7 @@ public class CompoundIngredient extends Ingredient {
     private final boolean synchronizeWithContents;
 
     protected CompoundIngredient(List<Ingredient> children) {
-        super(children.stream().map(Value::new), NeoForgeMod.COMPOUND_INGREDIENT_TYPE::get);
+        super(children.stream().map(Value::new), NeoForgeMod.COMPOUND_INGREDIENT_TYPE);
         this.children = Collections.unmodifiableList(children);
         this.isSimple = children.stream().allMatch(Ingredient::isSimple);
         this.synchronizeWithContents = children.stream().anyMatch(Ingredient::synchronizeWithContents);

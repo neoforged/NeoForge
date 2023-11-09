@@ -76,7 +76,7 @@ public class FluidTypeTest {
 
     private static BaseFlowingFluid.Properties fluidProperties() {
         return new BaseFlowingFluid.Properties(TEST_FLUID_TYPE, TEST_FLUID, TEST_FLUID_FLOWING)
-                .block(TEST_FLUID_BLOCK::get)
+                .block(TEST_FLUID_BLOCK)
                 .bucket(TEST_FLUID_BUCKET);
     }
 
@@ -139,7 +139,7 @@ public class FluidTypeTest {
     });
     private static final DeferredHolder<Fluid, FlowingFluid> TEST_FLUID = FLUIDS.register("test_fluid", () -> new BaseFlowingFluid.Source(fluidProperties()));
     private static final DeferredHolder<Fluid, Fluid> TEST_FLUID_FLOWING = FLUIDS.register("test_fluid_flowing", () -> new BaseFlowingFluid.Flowing(fluidProperties()));
-    private static final DeferredHolder<Block, LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.register("test_fluid_block", () -> new LiquidBlock(TEST_FLUID::get, BlockBehaviour.Properties.of().noCollission().strength(100.0F).noLootTable()));
+    private static final DeferredHolder<Block, LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.register("test_fluid_block", () -> new LiquidBlock(TEST_FLUID, BlockBehaviour.Properties.of().noCollission().strength(100.0F).noLootTable()));
     private static final DeferredHolder<Item, Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> new BucketItem(TEST_FLUID, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
 
     public FluidTypeTest() {

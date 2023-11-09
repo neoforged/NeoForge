@@ -28,7 +28,6 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.WritableRegistry;
@@ -168,9 +167,9 @@ public class NeoForgeMod {
     private static final DeferredHolder<ArgumentTypeInfo<?, ?>, SingletonArgumentInfo<ModIdArgument>> MODID_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("modid", () -> ArgumentTypeInfos.registerByClass(ModIdArgument.class,
             SingletonArgumentInfo.contextFree(ModIdArgument::modIdArgument)));
 
-    public static final Holder<Attribute> SWIM_SPEED = ATTRIBUTES.register("swim_speed", () -> new RangedAttribute("neoforge.swim_speed", 1.0D, 0.0D, 1024.0D).setSyncable(true));
-    public static final Holder<Attribute> NAMETAG_DISTANCE = ATTRIBUTES.register("nametag_distance", () -> new RangedAttribute("neoforge.name_tag_distance", 64.0D, 0.0D, 64.0).setSyncable(true));
-    public static final Holder<Attribute> ENTITY_GRAVITY = ATTRIBUTES.register("entity_gravity", () -> new RangedAttribute("neoforge.entity_gravity", 0.08D, -8.0D, 8.0D).setSyncable(true));
+    public static final DeferredHolder<Attribute, Attribute> SWIM_SPEED = ATTRIBUTES.register("swim_speed", () -> new RangedAttribute("neoforge.swim_speed", 1.0D, 0.0D, 1024.0D).setSyncable(true));
+    public static final DeferredHolder<Attribute, Attribute> NAMETAG_DISTANCE = ATTRIBUTES.register("nametag_distance", () -> new RangedAttribute("neoforge.name_tag_distance", 64.0D, 0.0D, 64.0).setSyncable(true));
+    public static final DeferredHolder<Attribute, Attribute> ENTITY_GRAVITY = ATTRIBUTES.register("entity_gravity", () -> new RangedAttribute("neoforge.entity_gravity", 0.08D, -8.0D, 8.0D).setSyncable(true));
 
     /**
      * Reach Distance represents the distance at which a player may interact with the world. The default is 4.5 blocks. Players in creative mode have an additional 0.5 blocks of block reach.
@@ -178,7 +177,7 @@ public class NeoForgeMod {
      * @see IPlayerExtension#getBlockReach()
      * @see IPlayerExtension#canReach(BlockPos, double)
      */
-    public static final Holder<Attribute> BLOCK_REACH = ATTRIBUTES.register("block_reach", () -> new RangedAttribute("neoforge.block_reach", 4.5D, 0.0D, 1024.0D).setSyncable(true));
+    public static final DeferredHolder<Attribute, Attribute> BLOCK_REACH = ATTRIBUTES.register("block_reach", () -> new RangedAttribute("neoforge.block_reach", 4.5D, 0.0D, 1024.0D).setSyncable(true));
 
     /**
      * Attack Range represents the distance at which a player may attack an entity. The default is 3 blocks. Players in creative mode have an additional 3 blocks of entity reach.
@@ -188,14 +187,14 @@ public class NeoForgeMod {
      * @see IPlayerExtension#canReach(Entity, double)
      * @see IPlayerExtension#canReach(Vec3, double)
      */
-    public static final Holder<Attribute> ENTITY_REACH = ATTRIBUTES.register("entity_reach", () -> new RangedAttribute("neoforge.entity_reach", 3.0D, 0.0D, 1024.0D).setSyncable(true));
+    public static final DeferredHolder<Attribute, Attribute> ENTITY_REACH = ATTRIBUTES.register("entity_reach", () -> new RangedAttribute("neoforge.entity_reach", 3.0D, 0.0D, 1024.0D).setSyncable(true));
 
     /**
      * Step Height Addition modifies the amount of blocks an entity may walk up without jumping.
      * 
      * @see IEntityExtension#getStepHeight()
      */
-    public static final Holder<Attribute> STEP_HEIGHT = ATTRIBUTES.register("step_height", () -> new RangedAttribute("neoforge.step_height", 0.0D, -512.0D, 512.0D).setSyncable(true));
+    public static final DeferredHolder<Attribute, Attribute> STEP_HEIGHT = ATTRIBUTES.register("step_height", () -> new RangedAttribute("neoforge.step_height", 0.0D, -512.0D, 512.0D).setSyncable(true));
 
     /**
      * Noop biome modifier. Can be used in a biome modifier json with "type": "neoforge:none".
@@ -258,23 +257,23 @@ public class NeoForgeMod {
     /**
      * Stock holder set type that represents any/all values in a registry. Can be used in a holderset object with {@code { "type": "neoforge:any" }}
      */
-    public static final Holder<HolderSetType> ANY_HOLDER_SET = HOLDER_SET_TYPES.register("any", () -> AnyHolderSet::codec);
+    public static final DeferredHolder<HolderSetType, HolderSetType> ANY_HOLDER_SET = HOLDER_SET_TYPES.register("any", () -> AnyHolderSet::codec);
 
     /**
      * Stock holder set type that represents an intersection of other holdersets. Can be used in a holderset object with {@code { "type": "neoforge:and", "values": [list of holdersets] }}
      */
-    public static final Holder<HolderSetType> AND_HOLDER_SET = HOLDER_SET_TYPES.register("and", () -> AndHolderSet::codec);
+    public static final DeferredHolder<HolderSetType, HolderSetType> AND_HOLDER_SET = HOLDER_SET_TYPES.register("and", () -> AndHolderSet::codec);
 
     /**
      * Stock holder set type that represents a union of other holdersets. Can be used in a holderset object with {@code { "type": "neoforge:or", "values": [list of holdersets] }}
      */
-    public static final Holder<HolderSetType> OR_HOLDER_SET = HOLDER_SET_TYPES.register("or", () -> OrHolderSet::codec);
+    public static final DeferredHolder<HolderSetType, HolderSetType> OR_HOLDER_SET = HOLDER_SET_TYPES.register("or", () -> OrHolderSet::codec);
 
     /**
      * <p>Stock holder set type that represents all values in a registry except those in another given set.
      * Can be used in a holderset object with {@code { "type": "neoforge:not", "value": holderset }}</p>
      */
-    public static final Holder<HolderSetType> NOT_HOLDER_SET = HOLDER_SET_TYPES.register("not", () -> NotHolderSet::codec);
+    public static final DeferredHolder<HolderSetType, HolderSetType> NOT_HOLDER_SET = HOLDER_SET_TYPES.register("not", () -> NotHolderSet::codec);
 
     private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(ForgeRegistries.Keys.INGREDIENT_TYPES, "neoforge");
 
@@ -285,7 +284,7 @@ public class NeoForgeMod {
     public static final DeferredHolder<IngredientType<?>, IngredientType<IntersectionIngredient>> INTERSECTION_INGREDIENT_TYPE = INGREDIENT_TYPES.register("intersection", () -> new IngredientType<>(IntersectionIngredient.CODEC, IntersectionIngredient.CODEC_NONEMPTY));
 
     private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, "neoforge");
-    public static final Holder<RecipeSerializer<?>> CONDITIONAL_RECIPE = RECIPE_SERIALIZERS.register("conditional", ConditionalRecipe::new);
+    public static final DeferredHolder<RecipeSerializer<?>, ConditionalRecipe<?>> CONDITIONAL_RECIPE = RECIPE_SERIALIZERS.register("conditional", ConditionalRecipe::new);
 
     private static final DeferredRegister<Codec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(ForgeRegistries.Keys.CONDITION_CODECS, "neoforge");
     public static final DeferredHolder<Codec<? extends ICondition>, Codec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
@@ -302,7 +301,7 @@ public class NeoForgeMod {
 
     private static final DeferredRegister<FluidType> VANILLA_FLUID_TYPES = DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, "minecraft");
 
-    public static final Holder<FluidType> EMPTY_TYPE = VANILLA_FLUID_TYPES.register("empty", () -> new FluidType(FluidType.Properties.create()
+    public static final DeferredHolder<FluidType, FluidType> EMPTY_TYPE = VANILLA_FLUID_TYPES.register("empty", () -> new FluidType(FluidType.Properties.create()
             .descriptionId("block.minecraft.air")
             .motionScale(1D)
             .canPushEntity(false)
@@ -319,7 +318,7 @@ public class NeoForgeMod {
             if (!entity.isNoGravity()) entity.setDeltaMovement(entity.getDeltaMovement().add(0.0D, -0.04D, 0.0D));
         }
     });
-    public static final Holder<FluidType> WATER_TYPE = VANILLA_FLUID_TYPES.register("water", () -> new FluidType(FluidType.Properties.create()
+    public static final DeferredHolder<FluidType, FluidType> WATER_TYPE = VANILLA_FLUID_TYPES.register("water", () -> new FluidType(FluidType.Properties.create()
             .descriptionId("block.minecraft.water")
             .fallDistanceModifier(0F)
             .canExtinguish(true)
@@ -383,7 +382,7 @@ public class NeoForgeMod {
             });
         }
     });
-    public static final Holder<FluidType> LAVA_TYPE = VANILLA_FLUID_TYPES.register("lava", () -> new FluidType(FluidType.Properties.create()
+    public static final DeferredHolder<FluidType, FluidType> LAVA_TYPE = VANILLA_FLUID_TYPES.register("lava", () -> new FluidType(FluidType.Properties.create()
             .descriptionId("block.minecraft.lava")
             .canSwim(false)
             .canDrown(false)

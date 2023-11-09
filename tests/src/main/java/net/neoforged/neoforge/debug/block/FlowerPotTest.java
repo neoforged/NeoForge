@@ -31,7 +31,7 @@ public class FlowerPotTest {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
 
     public static final DeferredHolder<Block, FlowerPotBlock> EMPTY_FLOWER_POT = BLOCKS.register(BLOCK_ID, () -> new FlowerPotBlock(null, () -> Blocks.AIR, Block.Properties.copy(Blocks.FLOWER_POT)));
-    public static final DeferredHolder<Block, FlowerPotBlock> OAK_FLOWER_POT = BLOCKS.register(BLOCK_ID + "_oak", () -> new FlowerPotBlock(EMPTY_FLOWER_POT::get, () -> Blocks.OAK_SAPLING, Block.Properties.copy(Blocks.FLOWER_POT)));
+    public static final DeferredHolder<Block, FlowerPotBlock> OAK_FLOWER_POT = BLOCKS.register(BLOCK_ID + "_oak", () -> new FlowerPotBlock(EMPTY_FLOWER_POT, () -> Blocks.OAK_SAPLING, Block.Properties.copy(Blocks.FLOWER_POT)));
 
     static {
         ITEMS.register(BLOCK_ID, () -> new BlockItem(EMPTY_FLOWER_POT.get(), new Item.Properties()));
