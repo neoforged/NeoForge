@@ -127,7 +127,11 @@ public class FluidStack {
     }
 
     public final Fluid getFluid() {
-        return isEmpty ? Fluids.EMPTY : fluid;
+        return isEmpty ? Fluids.EMPTY : getRawFluid();
+    }
+
+    public final Fluid getRawFluid() {
+        return fluid;
     }
 
     public boolean isEmpty() {

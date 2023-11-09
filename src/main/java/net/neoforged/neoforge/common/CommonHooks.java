@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -965,7 +966,7 @@ public class CommonHooks {
         return EventHooks.getMobGriefingEvent(level, entity) && state.canEntityDestroy(level, pos, entity) && EventHooks.onEntityDestroyBlock(entity, pos, state);
     }
 
-    private static final Map<Holder.Reference<Item>, Integer> VANILLA_BURNS = new HashMap<>();
+    private static final Map<Item, Integer> VANILLA_BURNS = new IdentityHashMap<>();
 
     /**
      * Gets the burn time of this itemstack.
@@ -983,7 +984,7 @@ public class CommonHooks {
     @SuppressWarnings("deprecation")
     public static synchronized void updateBurns() {
         VANILLA_BURNS.clear();
-        FurnaceBlockEntity.getFuel().entrySet().forEach(e -> VANILLA_BURNS.put(e.getKey().builtInRegistryHolder(), e.getValue()));
+        VANILLA_BURNS.putAll(FurnaceBlockEntity.getFuel());
     }
 
     /**

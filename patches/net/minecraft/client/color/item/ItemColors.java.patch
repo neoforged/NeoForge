@@ -6,7 +6,7 @@
     private static final int DEFAULT = -1;
 -   private final IdMapper<ItemColor> itemColors = new IdMapper<>(32);
 +   // FORGE: Use registry delegate as non-Vanilla item ids are not constant
-+   private final java.util.Map<Item, ItemColor> itemColors = new java.util.HashMap<>();
++   private final java.util.Map<Item, ItemColor> itemColors = new java.util.IdentityHashMap<>();
  
     public static ItemColors createDefault(BlockColors p_92684_) {
        ItemColors itemcolors = new ItemColors();

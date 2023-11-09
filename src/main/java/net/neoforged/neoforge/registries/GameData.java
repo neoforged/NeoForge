@@ -42,15 +42,15 @@ public class GameData {
     private static final Marker REGISTRIES = MarkerFactory.getMarker("REGISTRIES");
 
     public static Map<Block, Item> getBlockItemMap() {
-        return ForgeRegistryCallbacks.ItemCallbacks.BLOCK_TO_ITEM_MAP;
+        return NeoForgeRegistryCallbacks.ItemCallbacks.BLOCK_TO_ITEM_MAP;
     }
 
     public static IdMapper<BlockState> getBlockStateIDMap() {
-        return ForgeRegistryCallbacks.BlockCallbacks.BLOCKSTATE_TO_ID_MAP;
+        return NeoForgeRegistryCallbacks.BlockCallbacks.BLOCKSTATE_TO_ID_MAP;
     }
 
     public static Map<BlockState, PoiType> getBlockStatePointOfInterestTypeMap() {
-        return ForgeRegistryCallbacks.PoiTypeCallbacks.BLOCKSTATE_TO_POI_TYPE_MAP;
+        return NeoForgeRegistryCallbacks.PoiTypeCallbacks.BLOCKSTATE_TO_POI_TYPE_MAP;
     }
 
     public static void vanillaSnapshot() {

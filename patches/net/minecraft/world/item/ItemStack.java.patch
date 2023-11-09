@@ -17,14 +17,6 @@
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final ItemStack EMPTY = new ItemStack((Void)null);
     public static final DecimalFormat ATTRIBUTE_MODIFIER_FORMAT = Util.make(
-@@ -107,7 +_,6 @@
-    private static final Style LORE_STYLE = Style.EMPTY.withColor(ChatFormatting.DARK_PURPLE).withItalic(true);
-    private int count;
-    private int popTime;
--   @Deprecated
-    @Nullable
-    private final Item item;
-    @Nullable
 @@ -140,27 +_,35 @@
        this(p_220155_.value(), p_220156_);
     }

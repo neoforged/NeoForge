@@ -85,21 +85,7 @@ public abstract class BaseNeoRegistry<T> implements Registry<T> {
 
     @Override
     public ResourceKey<T> resolve(ResourceKey<T> key) {
-        if (this.containsKey(key))
-            return key;
-
-        ResourceLocation alias = this.aliases.get(key.location());
-        if (alias == null)
-            return key;
-
-        while (true) {
-            if (this.containsKey(alias))
-                return ResourceKey.create(this.key(), alias);
-            ResourceLocation nextAlias = this.aliases.get(alias);
-            if (nextAlias == null)
-                return ResourceKey.create(this.key(), alias);
-            alias = nextAlias;
-        }
+        return ResourceKey.create(this.key(), resolve(key.location()));
     }
 
     @Override

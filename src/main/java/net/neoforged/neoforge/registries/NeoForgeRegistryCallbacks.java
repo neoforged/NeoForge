@@ -18,7 +18,7 @@ import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 import net.neoforged.neoforge.registries.callback.ClearCallback;
 
-class ForgeRegistryCallbacks {
+class NeoForgeRegistryCallbacks {
     static class BlockCallbacks implements ClearCallback<Block>, BakeCallback<Block> {
         static final BlockCallbacks INSTANCE = new BlockCallbacks();
         static final ClearableObjectIntIdentityMap<BlockState> BLOCKSTATE_TO_ID_MAP = new ClearableObjectIntIdentityMap<>();

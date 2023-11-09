@@ -1,18 +1,11 @@
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
-@@ -505,13 +_,13 @@
+@@ -505,7 +_,6 @@
        public Pair<WorldData, WorldDimensions.Complete> getDataTag(
           DynamicOps<Tag> p_248747_, WorldDataConfiguration p_251873_, Registry<LevelStem> p_249187_, Lifecycle p_249736_
        ) {
 -         this.checkLock();
           return LevelStorageSource.this.readLevelData(this.levelDirectory, LevelStorageSource.getLevelData(p_248747_, p_251873_, p_249187_, p_249736_));
-       }
- 
-       @Nullable
-       public WorldDataConfiguration getDataConfiguration() {
-          this.checkLock();
-+         this.checkLock();
-          return LevelStorageSource.this.readLevelData(this.levelDirectory, LevelStorageSource::getDataConfiguration);
        }
  
 @@ -538,6 +_,10 @@

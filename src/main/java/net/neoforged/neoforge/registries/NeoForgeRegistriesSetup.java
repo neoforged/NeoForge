@@ -20,13 +20,11 @@ public class NeoForgeRegistriesSetup {
     /**
      * Internal forge method. Modders do not call.
      */
-    public static void setup(IEventBus modEventBus) {
-        synchronized (NeoForgeRegistriesSetup.class) {
-            if (setup)
-                throw new IllegalStateException("Setup has already been called!");
+    public static synchronized void setup(IEventBus modEventBus) {
+        if (setup)
+            throw new IllegalStateException("Setup has already been called!");
 
-            setup = true;
-        }
+        setup = true;
 
         NeoForgeRegistries.DEFERRED_INGREDIENT_TYPES.register(modEventBus);
         NeoForgeRegistries.DEFERRED_CONDITION_CODECS.register(modEventBus);
@@ -75,13 +73,13 @@ public class NeoForgeRegistriesSetup {
             forgeRegistry.setSync(true);
 
         if (registryKey == Registries.BLOCK) {
-            ((BaseNeoRegistry) forgeRegistry).addCallback(ForgeRegistryCallbacks.BlockCallbacks.INSTANCE);
+            ((BaseNeoRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.BlockCallbacks.INSTANCE);
         } else if (registryKey == Registries.ITEM) {
-            ((BaseNeoRegistry) forgeRegistry).addCallback(ForgeRegistryCallbacks.ItemCallbacks.INSTANCE);
+            ((BaseNeoRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.ItemCallbacks.INSTANCE);
         } else if (registryKey == Registries.ATTRIBUTE) {
-            ((BaseNeoRegistry) forgeRegistry).addCallback(ForgeRegistryCallbacks.AttributeCallbacks.INSTANCE);
+            ((BaseNeoRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.AttributeCallbacks.INSTANCE);
         } else if (registryKey == Registries.POINT_OF_INTEREST_TYPE) {
-            ((BaseNeoRegistry) forgeRegistry).addCallback(ForgeRegistryCallbacks.PoiTypeCallbacks.INSTANCE);
+            ((BaseNeoRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.PoiTypeCallbacks.INSTANCE);
         } else if (registryKey == NeoForgeRegistries.Keys.DISPLAY_CONTEXTS) {
             // We add this callback here to not cause a tricky classloading loop with ForgeRegistries#DISPLAY_CONTEXTS and ItemDisplayContext#CODEC
             ((BaseNeoRegistry) forgeRegistry).addCallback(ItemDisplayContext.ADD_CALLBACK);
