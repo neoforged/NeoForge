@@ -62,7 +62,7 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
     void fill() {
         RuntimeException aggregate = new RuntimeException();
 
-        ((BaseNeoRegistry<?>) BuiltInRegistries.REGISTRY).unfreeze();
+        ((BaseMappedRegistry<?>) BuiltInRegistries.REGISTRY).unfreeze();
 
         for (final var registry : this.registries) {
             try {

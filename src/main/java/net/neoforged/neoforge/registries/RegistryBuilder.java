@@ -92,7 +92,7 @@ public class RegistryBuilder<T> {
      * @see NewRegistryEvent#register(Registry)
      */
     public Registry<T> create() {
-        BaseNeoRegistry<T> registry = this.defaultKey != null
+        BaseMappedRegistry<T> registry = this.defaultKey != null
                 ? new DefaultedMappedRegistry<>(this.defaultKey.toString(), this.registryKey, Lifecycle.stable(), false)
                 : new MappedRegistry<>(this.registryKey, Lifecycle.stable(), false);
         this.callbacks.forEach(registry::addCallback);

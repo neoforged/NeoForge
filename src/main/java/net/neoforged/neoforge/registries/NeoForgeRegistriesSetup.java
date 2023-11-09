@@ -64,7 +64,7 @@ public class NeoForgeRegistriesSetup {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static void onModifyRegistry(ModifyRegistryEvent event) {
-        if (!event.isBuiltin() || !(event.getRegistry() instanceof BaseNeoRegistry<?> forgeRegistry))
+        if (!event.isBuiltin() || !(event.getRegistry() instanceof BaseMappedRegistry<?> forgeRegistry))
             return;
 
         ResourceKey<? extends Registry<?>> registryKey = event.getRegistryKey();
@@ -73,16 +73,16 @@ public class NeoForgeRegistriesSetup {
             forgeRegistry.setSync(true);
 
         if (registryKey == Registries.BLOCK) {
-            ((BaseNeoRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.BlockCallbacks.INSTANCE);
+            ((BaseMappedRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.BlockCallbacks.INSTANCE);
         } else if (registryKey == Registries.ITEM) {
-            ((BaseNeoRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.ItemCallbacks.INSTANCE);
+            ((BaseMappedRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.ItemCallbacks.INSTANCE);
         } else if (registryKey == Registries.ATTRIBUTE) {
-            ((BaseNeoRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.AttributeCallbacks.INSTANCE);
+            ((BaseMappedRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.AttributeCallbacks.INSTANCE);
         } else if (registryKey == Registries.POINT_OF_INTEREST_TYPE) {
-            ((BaseNeoRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.PoiTypeCallbacks.INSTANCE);
+            ((BaseMappedRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.PoiTypeCallbacks.INSTANCE);
         } else if (registryKey == NeoForgeRegistries.Keys.DISPLAY_CONTEXTS) {
             // We add this callback here to not cause a tricky classloading loop with ForgeRegistries#DISPLAY_CONTEXTS and ItemDisplayContext#CODEC
-            ((BaseNeoRegistry) forgeRegistry).addCallback(ItemDisplayContext.ADD_CALLBACK);
+            ((BaseMappedRegistry) forgeRegistry).addCallback(ItemDisplayContext.ADD_CALLBACK);
         }
     }
 }

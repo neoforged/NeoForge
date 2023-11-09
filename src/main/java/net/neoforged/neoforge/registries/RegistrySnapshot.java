@@ -48,7 +48,7 @@ public class RegistrySnapshot {
      */
     public <T> RegistrySnapshot(Registry<T> registry, boolean full) {
         registry.keySet().forEach(key -> this.ids.put(key, registry.getId(key)));
-        this.aliases.putAll(((BaseNeoRegistry<T>) registry).aliases);
+        this.aliases.putAll(((BaseMappedRegistry<T>) registry).aliases);
 
         if (full) {
             MappedRegistry<T> backup = new MappedRegistry<>(registry.key(), registry.registryLifecycle());

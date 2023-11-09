@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public class MappedRegistry<T> implements WritableRegistry<T> {
-+public class MappedRegistry<T> extends net.neoforged.neoforge.registries.BaseNeoRegistry<T> implements WritableRegistry<T> {
++public class MappedRegistry<T> extends net.neoforged.neoforge.registries.BaseMappedRegistry<T> implements WritableRegistry<T> {
     private static final Logger LOGGER = LogUtils.getLogger();
     final ResourceKey<? extends Registry<T>> key;
     private final ObjectList<Holder.Reference<T>> byId = new ObjectArrayList<>(256);

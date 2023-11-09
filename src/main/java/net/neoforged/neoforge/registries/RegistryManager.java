@@ -112,7 +112,7 @@ public class RegistryManager {
     private static <T> void applySnapshot(MappedRegistry<T> registry, RegistrySnapshot snapshot, Set<ResourceKey<?>> missing) {
         // Needed for package-private operations
         // noinspection UnnecessaryLocalVariable
-        BaseNeoRegistry<T> forgeRegistry = registry;
+        BaseMappedRegistry<T> forgeRegistry = registry;
         ResourceKey<? extends Registry<T>> registryKey = registry.key();
         Registry<T> backup = snapshot.getFullBackup();
 

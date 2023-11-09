@@ -61,7 +61,7 @@ public class GameData {
 
     public static void unfreezeData() {
         LOGGER.debug(REGISTRIES, "Unfreezing registries");
-        BuiltInRegistries.REGISTRY.stream().filter(r -> r instanceof BaseNeoRegistry).forEach(r -> ((BaseNeoRegistry<?>) r).unfreeze());
+        BuiltInRegistries.REGISTRY.stream().filter(r -> r instanceof BaseMappedRegistry).forEach(r -> ((BaseMappedRegistry<?>) r).unfreeze());
     }
 
     public static void freezeData() {

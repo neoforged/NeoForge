@@ -19,7 +19,7 @@ import net.neoforged.neoforge.registries.callback.RegistryCallback;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public abstract class BaseNeoRegistry<T> implements Registry<T> {
+public abstract class BaseMappedRegistry<T> implements Registry<T> {
     protected final List<AddCallback<T>> addCallbacks = new ArrayList<>();
     protected final List<BakeCallback<T>> bakeCallbacks = new ArrayList<>();
     protected final List<ClearCallback<T>> clearCallbacks = new ArrayList<>();
