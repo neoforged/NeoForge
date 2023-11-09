@@ -59,8 +59,8 @@ public abstract class BaseNeoRegistry<T> implements Registry<T> {
             if (!old.equals(to))
                 throw new IllegalStateException("Duplicate alias with key \"" + from + "\" attempting to map to \"" + to + "\", found existing mapping \"" + old + "\"");
         }
-        if (from.equals(this.aliases.get(to)))
-            throw new IllegalStateException("Infinite alias loop detected");
+        if (resolve(from).equals(to))
+            throw new IllegalStateException("Infinite alias loop detected: from " + from + " to " + to);
         this.aliases.put(from, to);
     }
 

@@ -12,6 +12,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -39,8 +40,8 @@ public class DuplicateOptionalTagTest {
     private static final Set<Block> TAG_A_DEFAULTS = Set.of(Blocks.BEDROCK);
     private static final Set<Block> TAG_B_DEFAULTS = Set.of(Blocks.WHITE_WOOL);
 
-    private static final TagKey<Block> TAG_A = TagKey.create(Registries.BLOCK, TAG_NAME);
-    private static final TagKey<Block> TAG_B = TagKey.create(Registries.BLOCK, TAG_NAME);
+    private static final TagKey<Block> TAG_A = BlockTags.create(TAG_NAME);
+    private static final TagKey<Block> TAG_B = BlockTags.create(TAG_NAME);
 
     public DuplicateOptionalTagTest() {
         NeoForge.EVENT_BUS.addListener(this::onServerStarted);

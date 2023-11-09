@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
@@ -26,9 +27,26 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A DeferredRegister is a helper class to aid in registering objects to modded and {@linkplain BuiltInRegistries vanilla registries} and provide deferred suppliers to access those objects. This class handles all events and registration after being {@linkplain #register(IEventBus) registered} to an event bus.
+ * A DeferredRegister is a helper class to aid in registering objects to modded and {@linkplain BuiltInRegistries vanilla registries} and provide deferred suppliers to access those objects. <br>
+ * This class maintains a list of all suppliers for entries and registers them during the proper {@link RegisterEvent} event, after being {@linkplain #register(IEventBus) registered} to an event bus.
+ * Suppliers should return NEW instances every time.
+ * <p>
+ * Example Usage:
  *
- * @param <T> The base registry type
+ * <pre>{@code
+ * private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+ * private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
+ *
+ * public static final RegistryObject<Block> ROCK_BLOCK = BLOCKS.register("rock", () -> new Block(Block.Properties.create(Material.ROCK)));
+ * public static final RegistryObject<Item> ROCK_ITEM = ITEMS.register("rock", () -> new BlockItem(ROCK_BLOCK.get(), new Item.Properties().group(ItemGroup.MISC)));
+ *
+ * public ExampleMod() {
+ *     ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
+ *     BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
+ * }
+ * }</pre>
+ *
+ * @param <T> the base registry type
  */
 public class DeferredRegister<T> {
     /**
@@ -129,10 +147,6 @@ public class DeferredRegister<T> {
      * @return The {@link Registry} linked to {@link #getRegistryKey()}.
      */
     public Registry<T> makeRegistry(final Consumer<RegistryBuilder<T>> consumer) {
-        // This restriction exists because we do not store the event bus that this instance is registered with.
-        // We only listen to NewRegistryEvent if the custom registry already exists at the time of registration.
-        if (this.registeredEventBus)
-            throw new IllegalStateException("Cannot configure custom registry after DeferredRegister has been registered to an event bus.");
         return makeRegistry(this.registryKey.location(), consumer);
     }
 
@@ -192,9 +206,7 @@ public class DeferredRegister<T> {
             throw new IllegalStateException("Cannot register DeferredRegister to more than one event bus.");
         this.registeredEventBus = true;
         bus.addListener(this::addEntries);
-        if (this.customRegistry != null) {
-            bus.addListener(this::createRegistry);
-        }
+        bus.addListener(this::createRegistry);
     }
 
     /**
@@ -254,7 +266,9 @@ public class DeferredRegister<T> {
     }
 
     private void createRegistry(NewRegistryEvent event) {
-        event.register(this.customRegistry);
+        if (this.customRegistry != null) {
+            event.register(this.customRegistry);
+        }
     }
 
     private static class RegistryHolder<V> implements Supplier<Registry<V>> {

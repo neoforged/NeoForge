@@ -7,18 +7,16 @@ package net.neoforged.neoforge.registries;
 
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fired when new registries can be constructed and registered.
@@ -29,50 +27,35 @@ import org.slf4j.Logger;
  * For registering datapack registries that only load entries through JSON, see {@link DataPackRegistryEvent.NewRegistry}.
  * </p>
  *
- * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
- * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
- * on both {@linkplain LogicalSide logical sides}.</p>
+ * <p>This event is fired on the {@linkplain net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+ * on both {@linkplain net.neoforged.fml.LogicalSide logical sides}.</p>
  *
  * @see ModifyRegistryEvent
  */
 public class NewRegistryEvent extends Event implements IModBusEvent {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private final List<Object> registries = new ArrayList<>();
+    private final List<Registry<?>> registries = new ArrayList<>();
 
-    public NewRegistryEvent() {}
-
-    /**
-     * Adds a registry builder to be created.
-     *
-     * @param builder The builder to turn into a {@link Registry}
-     * @return A supplier of the {@link Registry} created by the builder. Resolving too early will return null.
-     * @see #create(RegistryBuilder, Consumer)
-     */
-    public <T> Supplier<Registry<T>> create(RegistryBuilder<T> builder) {
-        return create(builder, null);
+    NewRegistryEvent() {
     }
 
     /**
-     * Adds a registry builder to be created.
+     * Creates a registry using the {@code builder} and registers it.
      *
-     * @param builder The builder to turn into a {@link Registry}
-     * @param onFill  Called when the returned supplier is filled with the registry
-     * @return a supplier of the {@link Registry} created by the builder. Resolving too early will return null.
-     * @see #create(RegistryBuilder)
+     * @param builder the builder to turn into a {@link Registry}
+     * @return the built {@link Registry}
      */
-    public <T> Supplier<Registry<T>> create(RegistryBuilder<T> builder, @Nullable Consumer<Registry<T>> onFill) {
-        RegistryHolder<T> registryHolder = new RegistryHolder<>();
-
-        this.registries.add(new RegistryData<>(builder, registryHolder, onFill));
-
-        return registryHolder;
+    public <T> Registry<T> create(RegistryBuilder<T> builder) {
+        final Registry<T> registry = builder.create();
+        register(registry);
+        return registry;
     }
 
     /**
      * Registers an already-created registry.
      * This allows storing registries in static final fields and registering them later.
      *
-     * @param registry The registry to register
+     * @param registry the registry to register
      */
     public <T> void register(Registry<T> registry) {
         this.registries.add(registry);
@@ -81,16 +64,11 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
     void fill() {
         RuntimeException aggregate = new RuntimeException();
 
-        if (BuiltInRegistries.REGISTRY instanceof BaseNeoRegistry<?> rootRegistry)
-            rootRegistry.unfreeze();
+        ((BaseNeoRegistry<?>) BuiltInRegistries.REGISTRY).unfreeze();
 
-        for (Object obj : this.registries) {
+        for (final var registry : this.registries) {
             try {
-                if (obj instanceof RegistryData<?> data) {
-                    buildRegistry(data);
-                } else if (obj instanceof Registry<?> registry) {
-                    registerToRootRegistry(registry);
-                }
+                registerToRootRegistry(registry);
             } catch (Throwable t) {
                 aggregate.addSuppressed(t);
                 return;
@@ -104,18 +82,7 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
             LOGGER.error(LogUtils.FATAL_MARKER, "Failed to create some forge registries, see suppressed exceptions for details", aggregate);
     }
 
-    private <T> void buildRegistry(RegistryData<T> data) {
-        RegistryBuilder<T> builder = data.builder;
-        Registry<T> registry = builder.create();
-
-        registerToRootRegistry(registry);
-
-        data.registryHolder.registry = registry;
-        if (data.onFill != null)
-            data.onFill.accept(registry);
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private void registerToRootRegistry(Registry<?> registry) {
         ResourceLocation registryName = registry.key().location();
         if (BuiltInRegistries.REGISTRY.containsKey(registryName))
@@ -124,17 +91,4 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
         ((WritableRegistry) BuiltInRegistries.REGISTRY).register(registry.key(), registry, Lifecycle.stable());
     }
 
-    private record RegistryData<T>(
-            RegistryBuilder<T> builder,
-            RegistryHolder<T> registryHolder,
-            Consumer<Registry<T>> onFill) {}
-
-    private static class RegistryHolder<T> implements Supplier<Registry<T>> {
-        Registry<T> registry = null;
-
-        @Override
-        public Registry<T> get() {
-            return this.registry;
-        }
-    }
 }
