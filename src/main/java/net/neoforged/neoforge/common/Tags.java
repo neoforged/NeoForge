@@ -220,8 +220,9 @@ public class Tags {
 
         public static final TagKey<Item> EGGS = tag("eggs");
         /**
-         * This tag defaults to {@link net.minecraft.world.item.Items#LAPIS_LAZULI} when not present in any datapacks, including forge client on vanilla server
+         * @deprecated Avoid using this tag, especially on the client side, as optional tag, <i>for now</i>, do not exist, after the registry rework.
          */
+        @Deprecated
         public static final TagKey<Item> ENCHANTING_FUELS = tag("enchanting_fuels");
         public static final TagKey<Item> END_STONES = tag("end_stones");
         public static final TagKey<Item> ENDER_PEARLS = tag("ender_pearls");

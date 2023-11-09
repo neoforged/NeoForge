@@ -5,7 +5,7 @@
           @Override
           public boolean mayPlace(ItemStack p_39517_) {
 -            return p_39517_.is(Items.LAPIS_LAZULI);
-+            return p_39517_.is(net.neoforged.neoforge.common.Tags.Items.ENCHANTING_FUELS);
++            return p_39517_.is(Items.LAPIS_LAZULI); // Neo: TODO - replace with the tag once we have client tags
           }
  
           @Override
@@ -42,7 +42,7 @@
                 return ItemStack.EMPTY;
              }
 -         } else if (itemstack1.is(Items.LAPIS_LAZULI)) {
-+         } else if (itemstack1.is(net.neoforged.neoforge.common.Tags.Items.ENCHANTING_FUELS)) {
++         } else if (itemstack1.is(Items.LAPIS_LAZULI)) { // Neo: TODO - replace with the tag once we have client tags
              if (!this.moveItemStackTo(itemstack1, 1, 2, true)) {
                 return ItemStack.EMPTY;
              }
