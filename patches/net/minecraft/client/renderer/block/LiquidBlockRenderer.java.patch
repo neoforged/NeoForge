@@ -1,12 +1,20 @@
 --- a/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
+@@ -38,6 +_,7 @@
+       this.waterIcons[0] = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(Blocks.WATER.defaultBlockState()).getParticleIcon();
+       this.waterIcons[1] = ModelBakery.WATER_FLOW.sprite();
+       this.waterOverlay = ModelBakery.WATER_OVERLAY.sprite();
++      net.neoforged.neoforge.client.textures.FluidSpriteCache.reload();
+    }
+ 
+    private static boolean isNeighborSameFluid(FluidState p_203186_, FluidState p_203187_) {
 @@ -70,8 +_,9 @@
  
     public void tesselate(BlockAndTintGetter p_234370_, BlockPos p_234371_, VertexConsumer p_234372_, BlockState p_234373_, FluidState p_234374_) {
        boolean flag = p_234374_.is(FluidTags.LAVA);
 -      TextureAtlasSprite[] atextureatlassprite = flag ? this.lavaIcons : this.waterIcons;
 -      int i = flag ? 16777215 : BiomeColors.getAverageWaterColor(p_234370_, p_234371_);
-+      TextureAtlasSprite[] atextureatlassprite = net.neoforged.neoforge.client.ClientHooks.getFluidSprites(p_234370_, p_234371_, p_234374_);
++      TextureAtlasSprite[] atextureatlassprite = net.neoforged.neoforge.client.textures.FluidSpriteCache.getFluidSprites(p_234370_, p_234371_, p_234374_);
 +      int i = net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(p_234374_).getTintColor(p_234374_, p_234370_, p_234371_);
 +      float alpha = (float)(i >> 24 & 255) / 255.0F;
        float f = (float)(i >> 16 & 0xFF) / 255.0F;
