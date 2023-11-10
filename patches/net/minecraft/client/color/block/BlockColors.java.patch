@@ -5,7 +5,7 @@
  public class BlockColors {
     private static final int DEFAULT = -1;
 -   private final IdMapper<BlockColor> blockColors = new IdMapper<>(32);
-+   // FORGE: Use registry delegate as non-Vanilla block ids are not constant
++   // NEOFORGE: Use the block instance directly as non-Vanilla block ids are not constant
 +   private final java.util.Map<Block, BlockColor> blockColors = new java.util.IdentityHashMap<>();
     private final Map<Block, Set<Property<?>>> coloringStates = Maps.newHashMap();
  
