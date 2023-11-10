@@ -22,6 +22,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public final class ItemDecoratorHandler {
     private final List<IItemDecorator> itemDecorators;
+    private final GlStateBackup stateBackup = new GlStateBackup();
 
     private static Map<Item, ItemDecoratorHandler> DECORATOR_LOOKUP = ImmutableMap.of();
 
@@ -49,11 +50,15 @@ public final class ItemDecoratorHandler {
     }
 
     public void render(GuiGraphics guiGraphics, Font font, ItemStack stack, int xOffset, int yOffset) {
+        RenderSystem.backupGlState(stateBackup);
+
         resetRenderState();
         for (IItemDecorator itemDecorator : itemDecorators) {
             if (itemDecorator.render(guiGraphics, font, stack, xOffset, yOffset))
                 resetRenderState();
         }
+
+        RenderSystem.restoreGlState(stateBackup);
     }
 
     private void resetRenderState() {
