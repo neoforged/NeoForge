@@ -21,12 +21,9 @@ public class WorldgenRegistryDesyncTest {
 
     public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(Registries.FEATURE, "worldgen_registry_desync_test");
     public static final Holder<Feature<?>> dungeon = FEATURES.register("dungeon", () -> new MonsterRoomFeature(NoneFeatureConfiguration.CODEC));
-    public static final DeferredRegister<Biome> BIOMES = DeferredRegister.create(Registries.BIOME, "worldgen_registry_desync_test");
-    //TODO: public static final Holder<Biome> biome = BIOMES.register("biome", VanillaBiomes::theVoidBiome);
 
     public WorldgenRegistryDesyncTest() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         FEATURES.register(modEventBus);
-        BIOMES.register(modEventBus);
     }
 }
