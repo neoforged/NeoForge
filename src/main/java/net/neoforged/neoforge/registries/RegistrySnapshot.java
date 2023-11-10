@@ -100,7 +100,7 @@ public class RegistrySnapshot {
         return new FriendlyByteBuf(this.binary.slice());
     }
 
-    public static RegistrySnapshot read(FriendlyByteBuf buf) {
+    public static RegistrySnapshot read(@Nullable FriendlyByteBuf buf) {
         if (buf == null)
             return new RegistrySnapshot();
 
