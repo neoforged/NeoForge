@@ -105,8 +105,22 @@ public class RegistryManager {
             LOGGER.warn(REGISTRIES, builder.toString());
         }
 
-        Set<ResourceKey<?>> unhandled = RegistryRemapHandler.handleRemaps(missingEntries, isLocalWorld);
-        return unhandled;
+        if (missingEntries.isEmpty()) {
+            return Set.of();
+        }
+
+        LOGGER.debug(REGISTRIES, "There are {} mappings missing", missingEntries.size());// Only log if the world save is something we control
+        if (isLocalWorld && LOGGER.isWarnEnabled(REGISTRIES)) {
+            StringBuilder builder = new StringBuilder("NeoForge detected missing registry entries.\n\n")
+                    .append("There are ").append(missingEntries.size()).append(" missing entries in this save.\n")
+                    .append("These missing entries will be deleted from the save file on next save.");
+
+            missingEntries.forEach(key -> builder.append("Missing ").append(key).append('\n'));
+
+            LOGGER.warn(REGISTRIES, builder.toString());
+        }
+
+        return Set.copyOf(missingEntries);
     }
 
     private static <T> void applySnapshot(MappedRegistry<T> registry, RegistrySnapshot snapshot, Set<ResourceKey<?>> missing) {
