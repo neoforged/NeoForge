@@ -23,8 +23,8 @@ import org.jetbrains.annotations.Nullable;
  */
 @ApiStatus.Internal
 public class RegistryAwareItemModelShaper extends ItemModelShaper {
-    private final Map<Item, ModelResourceLocation> locations = Maps.newHashMap();
-    private final Map<Item, BakedModel> models = Maps.newHashMap();
+    private final Map<Item, ModelResourceLocation> locations = Maps.newIdentityHashMap();
+    private final Map<Item, BakedModel> models = Maps.newIdentityHashMap();
 
     public RegistryAwareItemModelShaper(ModelManager manager) {
         super(manager);
