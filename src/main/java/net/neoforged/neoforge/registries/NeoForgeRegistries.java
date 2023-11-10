@@ -23,7 +23,7 @@ import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.registries.holdersets.HolderSetType;
 
 /**
- * A class that exposes static references to all vanilla and Forge registries.
+ * A class that exposes static references to NeoForge registries.
  * Created to have a central place to access the registries directly if modders need.
  * It is still advised that if you are registering things to use {@link RegisterEvent} or {@link DeferredRegister}, but queries and iterations can use this.
  */
