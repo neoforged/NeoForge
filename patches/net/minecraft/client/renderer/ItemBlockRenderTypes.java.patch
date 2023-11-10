@@ -78,7 +78,7 @@
 +      if (block instanceof LeavesBlock) {
 +         return renderCutout ? CUTOUT_MIPPED : SOLID;
 +      } else {
-+         return BLOCK_RENDER_TYPES.getOrDefault(block, SOLID);
++         return BLOCK_RENDER_TYPES.get(block);
 +      }
 +   }
 +
