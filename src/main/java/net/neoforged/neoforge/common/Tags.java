@@ -220,7 +220,7 @@ public class Tags {
 
         public static final TagKey<Item> EGGS = tag("eggs");
         /**
-         * @deprecated Avoid using this tag, especially on the client side, as optional tag, <i>for now</i>, do not exist, after the registry rework.
+         * @deprecated Avoid using this tag, especially on the client side, as optional tags, <i>for now</i>, do not exist after the registry rework.
          */
         @Deprecated
         public static final TagKey<Item> ENCHANTING_FUELS = tag("enchanting_fuels");
