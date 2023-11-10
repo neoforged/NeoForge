@@ -1,5 +1,19 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+
+/**
+ * Backup of the OpenGL render state, for use in GUI rendering that needs to be able to go back to the previous
+ * render state after calling third-party renderers which may apply arbitrary modifications to the render state.
+ *
+ * <p>Create a backup before changing the global render state with {@link RenderSystem#backupGlState(GlStateBackup)},
+ * and apply the backup with {@link RenderSystem#restoreGlState(GlStateBackup)}.
+ */
 public final class GlStateBackup {
     public boolean blendEnabled;
     public int blendSrcRgb;
