@@ -1,32 +1,13 @@
 --- a/net/minecraft/core/Holder.java
 +++ b/net/minecraft/core/Holder.java
-@@ -11,7 +_,17 @@
- import net.minecraft.resources.ResourceLocation;
- import net.minecraft.tags.TagKey;
- 
--public interface Holder<T> {
-+public interface Holder<T> extends net.neoforged.neoforge.registries.tags.IReverseTag<T> {
-+   @Override
-+   default boolean containsTag(TagKey<T> key) {
-+      return this.is(key);
-+   }
-+
-+   @Override
-+   default Stream<TagKey<T>> getTagKeys() {
-+      return this.tags();
-+   }
-+
-    T value();
- 
-    boolean isBound();
-@@ -210,6 +_,10 @@
-       @Override
-       public Stream<TagKey<T>> tags() {
+@@ -212,6 +_,10 @@
           return this.tags.stream();
-+      }
-+
-+      public Type getType() {
-+         return this.type;
        }
  
++      public Type getType() {
++         return this.type;
++      }
++
        @Override
+       public String toString() {
+          return "Reference{" + this.key + "=" + this.value + "}";
