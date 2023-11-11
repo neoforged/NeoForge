@@ -348,6 +348,11 @@ public class Tags
         public static final TagKey<Item> FENCES = tag("fences");
         public static final TagKey<Item> FENCES_NETHER_BRICK = tag("fences/nether_brick");
         public static final TagKey<Item> FENCES_WOODEN = tag("fences/wooden");
+        public static final TagKey<Item> FOOD = tag("food");
+        public static final TagKey<Item> RAW_MEAT_FOOD = tag("food/raw_meat");
+        public static final TagKey<Item> COOKED_MEAT_FOOD = tag("food/cooked_meat");
+        public static final TagKey<Item> RAW_FISH_FOOD = tag("food/raw_fish");
+        public static final TagKey<Item> COOKED_FISH_FOOD = tag("food/cooked_fish");
         public static final TagKey<Item> GEMS = tag("gems");
         public static final TagKey<Item> GEMS_DIAMOND = tag("gems/diamond");
         public static final TagKey<Item> GEMS_EMERALD = tag("gems/emerald");

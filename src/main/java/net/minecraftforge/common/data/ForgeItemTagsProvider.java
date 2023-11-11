@@ -6,6 +6,7 @@
 package net.minecraftforge.common.data;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
 import net.minecraft.data.tags.ItemTagsProvider;
@@ -82,6 +83,16 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         copy(Tags.Blocks.FENCES, Tags.Items.FENCES);
         copy(Tags.Blocks.FENCES_NETHER_BRICK, Tags.Items.FENCES_NETHER_BRICK);
         copy(Tags.Blocks.FENCES_WOODEN, Tags.Items.FENCES_WOODEN);
+        tag(Tags.Items.RAW_MEAT_FOOD).add(Items.BEEF, Items.CHICKEN, Items.RABBIT, Items.MUTTON);
+        tag(Tags.Items.RAW_FISH_FOOD).add(Items.COD, Items.SALMON, Items.TROPICAL_FISH, Items.PUFFERFISH);
+        tag(Tags.Items.COOKED_MEAT_FOOD).add(Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_RABBIT, Items.COOKED_MUTTON);
+        tag(Tags.Items.COOKED_FISH_FOOD).add(Items.COOKED_COD, Items.COOKED_SALMON);
+        BuiltInRegistries.ITEM.forEach(item -> {
+            if (item.getFoodProperties() != null) {
+                tag(Tags.Items.FOOD).add(item);
+            }
+        });
+        tag(Tags.Items.FOOD).addTags(Tags.Items.RAW_MEAT_FOOD, Tags.Items.RAW_FISH_FOOD, Tags.Items.COOKED_MEAT_FOOD, Tags.Items.COOKED_FISH_FOOD);
         tag(Tags.Items.GEMS).addTags(Tags.Items.GEMS_AMETHYST, Tags.Items.GEMS_DIAMOND, Tags.Items.GEMS_EMERALD, Tags.Items.GEMS_LAPIS, Tags.Items.GEMS_PRISMARINE, Tags.Items.GEMS_QUARTZ);
         tag(Tags.Items.GEMS_AMETHYST).add(Items.AMETHYST_SHARD);
         tag(Tags.Items.GEMS_DIAMOND).add(Items.DIAMOND);
