@@ -195,6 +195,11 @@
   "tag.item.c.fences": "Fences",
   "tag.item.c.fences.nether_brick": "Nether Brick Fences",
   "tag.item.c.fences.wooden": "Wooden Fences",
+  "tag.item.c.food": "Food",
+  "tag.item.c.food.cooked_fish": "Cooked Fish",
+  "tag.item.c.food.cooked_meat": "Cooked Meat",
+  "tag.item.c.food.raw_fish": "Raw Fish",
+  "tag.item.c.food.raw_meat": "Raw Meat",
   "tag.item.c.gems": "Gems",
   "tag.item.c.gems.amethyst": "Amethyst Gems",
   "tag.item.c.gems.diamond": "Diamond Gems",
@@ -349,5 +354,6 @@
   "tag.worldgen.biome.c.is_wet": "Wet",
   "tag.worldgen.biome.c.is_wet.end": "Wet End",
   "tag.worldgen.biome.c.is_wet.nether": "Wet Nether",
-  "tag.worldgen.biome.c.is_wet.overworld": "Wet Overworld"
+  "tag.worldgen.biome.c.is_wet.overworld": "Wet Overworld",
+  "tag.worldgen.biome.c.no_default_monsters": "No Default Monsters"
 }
