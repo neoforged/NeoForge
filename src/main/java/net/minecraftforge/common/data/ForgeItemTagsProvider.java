@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -87,10 +88,8 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.RAW_FISH_FOOD).add(Items.COD, Items.SALMON, Items.TROPICAL_FISH, Items.PUFFERFISH);
         tag(Tags.Items.COOKED_MEAT_FOOD).add(Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_RABBIT, Items.COOKED_MUTTON);
         tag(Tags.Items.COOKED_FISH_FOOD).add(Items.COOKED_COD, Items.COOKED_SALMON);
-        BuiltInRegistries.ITEM.forEach(item -> {
-            if (item.getFoodProperties() != null) {
-                tag(Tags.Items.FOOD).add(item);
-            }
+        BuiltInRegistries.ITEM.stream().filter(Item::isEdible).sorted(Comparator.comparing(i -> i.getName(i.getDefaultInstance()).getString())).forEach(item -> {
+            tag(Tags.Items.FOOD).add(item);
         });
         tag(Tags.Items.FOOD).addTags(Tags.Items.RAW_MEAT_FOOD, Tags.Items.RAW_FISH_FOOD, Tags.Items.COOKED_MEAT_FOOD, Tags.Items.COOKED_FISH_FOOD);
         tag(Tags.Items.GEMS).addTags(Tags.Items.GEMS_AMETHYST, Tags.Items.GEMS_DIAMOND, Tags.Items.GEMS_EMERALD, Tags.Items.GEMS_LAPIS, Tags.Items.GEMS_PRISMARINE, Tags.Items.GEMS_QUARTZ);
