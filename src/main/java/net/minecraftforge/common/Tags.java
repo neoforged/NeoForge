@@ -746,6 +746,13 @@ public class Tags
         public static final TagKey<Biome> IS_MOUNTAIN_SLOPE = tag("is_mountain/slope");
         public static final TagKey<Biome> IS_MOUNTAIN = tag("is_mountain");
 
+        /**
+         * For biomes that should not spawn monsters over time the normal way.
+         * In other words, their Spawners and Spawn Cost entries have the monster category empty.
+         * Example: Mushroom Biomes not having Zombies, Creepers, Skeleton, nor any other normal monsters.
+         */
+        public static final TagKey<Biome> NO_DEFAULT_MONSTERS = tag("no_default_monsters");
+
         private static TagKey<Biome> tag(String name)
         {
             return TagKey.create(Registries.BIOME, new ResourceLocation("c", name));

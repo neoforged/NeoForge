@@ -95,6 +95,7 @@ public final class ForgeBiomeTagsProvider extends BiomeTagsProvider
         tag(Tags.Biomes.IS_MOUNTAIN).addTag(Tags.Biomes.IS_MOUNTAIN_PEAK).addTag(Tags.Biomes.IS_MOUNTAIN_SLOPE);
         tag(Tags.Biomes.IS_WATER).addTag(BiomeTags.IS_OCEAN).addTag(BiomeTags.IS_RIVER);
         tag(Tags.Biomes.IS_UNDERGROUND).addTag(Tags.Biomes.IS_CAVE);
+        tag(Tags.Biomes.NO_DEFAULT_MONSTERS).add(Biomes.MUSHROOM_FIELDS).add(Biomes.DEEP_DARK);
 
         // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22

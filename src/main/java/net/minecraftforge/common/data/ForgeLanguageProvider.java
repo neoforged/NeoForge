@@ -345,6 +345,7 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Biomes.IS_MOUNTAIN_PEAK, "Peak");
         add(Tags.Biomes.IS_MOUNTAIN_SLOPE, "Slope");
         add(Tags.Biomes.IS_MOUNTAIN, "Mountain");
+        add(Tags.Biomes.NO_DEFAULT_MONSTERS, "No Default Monsters");
     }
 
     private <T> void addColored(TagKey<T> baseTagKey, String pattern)
