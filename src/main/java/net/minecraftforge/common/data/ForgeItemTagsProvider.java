@@ -88,10 +88,20 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.RAW_FISH_FOOD).add(Items.COD, Items.SALMON, Items.TROPICAL_FISH, Items.PUFFERFISH);
         tag(Tags.Items.COOKED_MEAT_FOOD).add(Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_RABBIT, Items.COOKED_MUTTON);
         tag(Tags.Items.COOKED_FISH_FOOD).add(Items.COOKED_COD, Items.COOKED_SALMON);
-        BuiltInRegistries.ITEM.stream().filter(Item::isEdible).sorted(Comparator.comparing(i -> i.getName(i.getDefaultInstance()).getString())).forEach(item -> {
-            tag(Tags.Items.FOOD).add(item);
-        });
-        tag(Tags.Items.FOOD).addTags(Tags.Items.RAW_MEAT_FOOD, Tags.Items.RAW_FISH_FOOD, Tags.Items.COOKED_MEAT_FOOD, Tags.Items.COOKED_FISH_FOOD);
+        tag(Tags.Items.FOOD)
+                .add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE,
+                        Items.CARROT, Items.GOLDEN_CARROT,
+                        Items.POTATO, Items.POISONOUS_POTATO, Items.BAKED_POTATO,
+                        Items.MELON_SLICE, Items.GLISTERING_MELON_SLICE,
+                        Items.PUMPKIN_PIE,
+                        Items.SWEET_BERRIES, Items.GLOW_BERRIES,
+                        Items.DRIED_KELP,
+                        Items.BREAD, Items.COOKIE,
+                        Items.BEETROOT, Items.BEETROOT_SOUP,
+                        Items.RABBIT_STEW, Items.MUSHROOM_STEW, Items.SUSPICIOUS_STEW,
+                        Items.HONEY_BOTTLE,
+                        Items.SPIDER_EYE, Items.ROTTEN_FLESH)
+                .addTags(Tags.Items.RAW_MEAT_FOOD, Tags.Items.RAW_FISH_FOOD, Tags.Items.COOKED_MEAT_FOOD, Tags.Items.COOKED_FISH_FOOD);
         tag(Tags.Items.GEMS).addTags(Tags.Items.GEMS_AMETHYST, Tags.Items.GEMS_DIAMOND, Tags.Items.GEMS_EMERALD, Tags.Items.GEMS_LAPIS, Tags.Items.GEMS_PRISMARINE, Tags.Items.GEMS_QUARTZ);
         tag(Tags.Items.GEMS_AMETHYST).add(Items.AMETHYST_SHARD);
         tag(Tags.Items.GEMS_DIAMOND).add(Items.DIAMOND);
