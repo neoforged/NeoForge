@@ -158,10 +158,16 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.FENCES_NETHER_BRICK, "Nether Brick Fences");
         add(Tags.Items.FENCES_WOODEN, "Wooden Fences");
         add(Tags.Items.FOODS, "Foods");
+        add(Tags.Items.FRUITS_FOODS, "Fruits");
+        add(Tags.Items.VEGETABLES_FOODS, "Vegetables");
+        add(Tags.Items.BERRIES_FOODS, "Berries");
+        add(Tags.Items.BREADS_FOODS, "Breads");
+        add(Tags.Items.COOKIES_FOODS, "Cookies");
         add(Tags.Items.RAW_MEATS_FOODS, "Raw Meats");
         add(Tags.Items.RAW_FISHES_FOODS, "Raw Fishes");
         add(Tags.Items.COOKED_MEATS_FOODS, "Cooked Meats");
         add(Tags.Items.COOKED_FISHES_FOODS, "Cooked Fishes");
+        add(Tags.Items.SOUPS_FOODS, "Soups");
         add(Tags.Items.GEMS, "Gems");
         add(Tags.Items.GEMS_AMETHYST, "Amethyst Gems");
         add(Tags.Items.GEMS_DIAMOND, "Diamond Gems");

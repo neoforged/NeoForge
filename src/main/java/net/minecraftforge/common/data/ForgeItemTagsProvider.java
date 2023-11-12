@@ -82,24 +82,19 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         copy(Tags.Blocks.FENCES, Tags.Items.FENCES);
         copy(Tags.Blocks.FENCES_NETHER_BRICK, Tags.Items.FENCES_NETHER_BRICK);
         copy(Tags.Blocks.FENCES_WOODEN, Tags.Items.FENCES_WOODEN);
+        tag(Tags.Items.FRUITS_FOODS).add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
+        tag(Tags.Items.VEGETABLES_FOODS).add(Items.CARROT, Items.GOLDEN_CARROT, Items.POTATO, Items.POISONOUS_POTATO, Items.MELON_SLICE, Items.BEETROOT);
+        tag(Tags.Items.BERRIES_FOODS).add(Items.SWEET_BERRIES, Items.GLOW_BERRIES);
+        tag(Tags.Items.BREADS_FOODS).add(Items.BREAD);
+        tag(Tags.Items.COOKIES_FOODS).add(Items.COOKIE);
         tag(Tags.Items.RAW_MEATS_FOODS).add(Items.BEEF, Items.CHICKEN, Items.RABBIT, Items.MUTTON);
         tag(Tags.Items.RAW_FISHES_FOODS).add(Items.COD, Items.SALMON, Items.TROPICAL_FISH, Items.PUFFERFISH);
         tag(Tags.Items.COOKED_MEATS_FOODS).add(Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_RABBIT, Items.COOKED_MUTTON);
         tag(Tags.Items.COOKED_FISHES_FOODS).add(Items.COOKED_COD, Items.COOKED_SALMON);
+        tag(Tags.Items.SOUPS_FOODS).add(Items.BEETROOT_SOUP, Items.MUSHROOM_STEW, Items.RABBIT_STEW, Items.SUSPICIOUS_STEW);
         tag(Tags.Items.FOODS)
-                .add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE,
-                        Items.CARROT, Items.GOLDEN_CARROT,
-                        Items.POTATO, Items.POISONOUS_POTATO, Items.BAKED_POTATO,
-                        Items.MELON_SLICE, Items.GLISTERING_MELON_SLICE,
-                        Items.PUMPKIN_PIE,
-                        Items.SWEET_BERRIES, Items.GLOW_BERRIES,
-                        Items.DRIED_KELP,
-                        Items.BREAD, Items.COOKIE,
-                        Items.BEETROOT, Items.BEETROOT_SOUP,
-                        Items.RABBIT_STEW, Items.MUSHROOM_STEW, Items.SUSPICIOUS_STEW,
-                        Items.HONEY_BOTTLE,
-                        Items.SPIDER_EYE, Items.ROTTEN_FLESH)
-                .addTags(Tags.Items.RAW_MEATS_FOODS, Tags.Items.RAW_FISHES_FOODS, Tags.Items.COOKED_MEATS_FOODS, Tags.Items.COOKED_FISHES_FOODS);
+                .add(Items.BAKED_POTATO, Items.PUMPKIN_PIE, Items.HONEY_BOTTLE, Items.DRIED_KELP, Items.SPIDER_EYE, Items.ROTTEN_FLESH)
+                .addTags(Tags.Items.FRUITS_FOODS, Tags.Items.VEGETABLES_FOODS, Tags.Items.BERRIES_FOODS, Tags.Items.BREADS_FOODS, Tags.Items.COOKIES_FOODS, Tags.Items.RAW_MEATS_FOODS, Tags.Items.RAW_FISHES_FOODS, Tags.Items.COOKED_MEATS_FOODS, Tags.Items.COOKED_FISHES_FOODS, Tags.Items.SOUPS_FOODS);
         tag(Tags.Items.GEMS).addTags(Tags.Items.GEMS_AMETHYST, Tags.Items.GEMS_DIAMOND, Tags.Items.GEMS_EMERALD, Tags.Items.GEMS_LAPIS, Tags.Items.GEMS_PRISMARINE, Tags.Items.GEMS_QUARTZ);
         tag(Tags.Items.GEMS_AMETHYST).add(Items.AMETHYST_SHARD);
         tag(Tags.Items.GEMS_DIAMOND).add(Items.DIAMOND);

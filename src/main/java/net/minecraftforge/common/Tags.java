@@ -349,10 +349,28 @@ public class Tags
         public static final TagKey<Item> FENCES_NETHER_BRICK = tag("fences/nether_brick");
         public static final TagKey<Item> FENCES_WOODEN = tag("fences/wooden");
         public static final TagKey<Item> FOODS = tag("foods");
+        /**
+         * Apples and other foods that are considered fruits in the culinary field belong in this tag.
+         */
+        public static final TagKey<Item> FRUITS_FOODS = tag("foods/fruits");
+        /**
+         * Tomatoes and other foods that are considered vegetables in the culinary field belong in this tag.
+         */
+        public static final TagKey<Item> VEGETABLES_FOODS = tag("foods/vegetables");
+        /**
+         * Strawberries, raspberries, and other berry foods belong in this tag.
+         */
+        public static final TagKey<Item> BERRIES_FOODS = tag("foods/berries");
+        public static final TagKey<Item> BREADS_FOODS = tag("foods/breads");
+        public static final TagKey<Item> COOKIES_FOODS = tag("foods/cookies");
         public static final TagKey<Item> RAW_MEATS_FOODS = tag("foods/raw_meats");
         public static final TagKey<Item> COOKED_MEATS_FOODS = tag("foods/cooked_meats");
         public static final TagKey<Item> RAW_FISHES_FOODS = tag("foods/raw_fishes");
         public static final TagKey<Item> COOKED_FISHES_FOODS = tag("foods/cooked_fishes");
+        /**
+         * Soups, stews, and other liquid food in bowls belongs in this tag.
+         */
+        public static final TagKey<Item> SOUPS_FOODS = tag("foods/soups");
         public static final TagKey<Item> GEMS = tag("gems");
         public static final TagKey<Item> GEMS_DIAMOND = tag("gems/diamond");
         public static final TagKey<Item> GEMS_EMERALD = tag("gems/emerald");
