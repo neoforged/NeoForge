@@ -92,9 +92,10 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.COOKED_MEATS_FOODS).add(Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_RABBIT, Items.COOKED_MUTTON);
         tag(Tags.Items.COOKED_FISHES_FOODS).add(Items.COOKED_COD, Items.COOKED_SALMON);
         tag(Tags.Items.SOUPS_FOODS).add(Items.BEETROOT_SOUP, Items.MUSHROOM_STEW, Items.RABBIT_STEW, Items.SUSPICIOUS_STEW);
+        tag(Tags.Items.EDIBLE_WHEN_PLACED_FOODS).add(Items.CAKE);
         tag(Tags.Items.FOODS)
                 .add(Items.BAKED_POTATO, Items.PUMPKIN_PIE, Items.HONEY_BOTTLE, Items.DRIED_KELP, Items.SPIDER_EYE, Items.ROTTEN_FLESH)
-                .addTags(Tags.Items.FRUITS_FOODS, Tags.Items.VEGETABLES_FOODS, Tags.Items.BERRIES_FOODS, Tags.Items.BREADS_FOODS, Tags.Items.COOKIES_FOODS, Tags.Items.RAW_MEATS_FOODS, Tags.Items.RAW_FISHES_FOODS, Tags.Items.COOKED_MEATS_FOODS, Tags.Items.COOKED_FISHES_FOODS, Tags.Items.SOUPS_FOODS);
+                .addTags(Tags.Items.FRUITS_FOODS, Tags.Items.VEGETABLES_FOODS, Tags.Items.BERRIES_FOODS, Tags.Items.BREADS_FOODS, Tags.Items.COOKIES_FOODS, Tags.Items.RAW_MEATS_FOODS, Tags.Items.RAW_FISHES_FOODS, Tags.Items.COOKED_MEATS_FOODS, Tags.Items.COOKED_FISHES_FOODS, Tags.Items.SOUPS_FOODS, Tags.Items.EDIBLE_WHEN_PLACED_FOODS);
         tag(Tags.Items.GEMS).addTags(Tags.Items.GEMS_AMETHYST, Tags.Items.GEMS_DIAMOND, Tags.Items.GEMS_EMERALD, Tags.Items.GEMS_LAPIS, Tags.Items.GEMS_PRISMARINE, Tags.Items.GEMS_QUARTZ);
         tag(Tags.Items.GEMS_AMETHYST).add(Items.AMETHYST_SHARD);
         tag(Tags.Items.GEMS_DIAMOND).add(Items.DIAMOND);

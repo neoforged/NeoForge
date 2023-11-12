@@ -371,6 +371,10 @@ public class Tags
          * Soups, stews, and other liquid food in bowls belongs in this tag.
          */
         public static final TagKey<Item> SOUPS_FOODS = tag("foods/soups");
+        /**
+         * Foods like cake that can be eaten when placed in the world belong in this tag.
+         */
+        public static final TagKey<Item> EDIBLE_WHEN_PLACED_FOODS = tag("foods/edible_when_placed");
         public static final TagKey<Item> GEMS = tag("gems");
         public static final TagKey<Item> GEMS_DIAMOND = tag("gems/diamond");
         public static final TagKey<Item> GEMS_EMERALD = tag("gems/emerald");
