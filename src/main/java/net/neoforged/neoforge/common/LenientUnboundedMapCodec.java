@@ -14,10 +14,9 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.codecs.BaseMapCodec;
-import org.slf4j.Logger;
-
 import java.util.Map;
 import java.util.Objects;
+import org.slf4j.Logger;
 
 /**
  * Key and value decoded independently, unknown set of keys
