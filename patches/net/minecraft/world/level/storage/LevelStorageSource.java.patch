@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
-@@ -288,7 +_,7 @@
-          compoundtag1.remove("Player");
-          int i = NbtUtils.getDataVersion(compoundtag1, -1);
-          Dynamic<?> dynamic = DataFixTypes.LEVEL.updateToCurrentVersion(p_265021_, new Dynamic<>(p_250592_, compoundtag1), i);
--         WorldGenSettings worldgensettings = readWorldGenSettings(dynamic, p_265021_, i).getOrThrow(false, Util.prefix("WorldGenSettings: ", LOGGER::error));
-+         WorldGenSettings worldgensettings = readWorldGenSettings(dynamic, p_265021_, i).getOrThrow(true, Util.prefix("WorldGenSettings: ", LOGGER::error));
-          LevelVersion levelversion = LevelVersion.parse(dynamic);
-          LevelSettings levelsettings = LevelSettings.parse(dynamic, p_249054_);
-          WorldDimensions.Complete worlddimensions$complete = worldgensettings.dimensions().bake(p_249363_);
 @@ -505,13 +_,26 @@
        public Pair<WorldData, WorldDimensions.Complete> getDataTag(
           DynamicOps<Tag> p_248747_, WorldDataConfiguration p_251873_, Registry<LevelStem> p_249187_, Lifecycle p_249736_

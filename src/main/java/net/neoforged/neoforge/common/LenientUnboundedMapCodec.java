@@ -5,16 +5,17 @@
 
 package net.neoforged.neoforge.common;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.datafixers.util.Unit;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.codecs.BaseMapCodec;
+import org.slf4j.Logger;
+
 import java.util.Map;
 import java.util.Objects;
 
@@ -22,6 +23,7 @@ import java.util.Objects;
  * Key and value decoded independently, unknown set of keys
  */
 public class LenientUnboundedMapCodec<K, V> implements BaseMapCodec<K, V>, Codec<Map<K, V>> {
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final Codec<K> keyCodec;
     private final Codec<V> elementCodec;
 
@@ -43,25 +45,19 @@ public class LenientUnboundedMapCodec<K, V> implements BaseMapCodec<K, V>, Codec
     @Override // FORGE: Modified from decode() in BaseMapCodec
     public <T> DataResult<Map<K, V>> decode(DynamicOps<T> ops, MapLike<T> input) {
         final ImmutableMap.Builder<K, V> read = ImmutableMap.builder();
-        final ImmutableList.Builder<Pair<T, T>> failed = ImmutableList.builder();
 
-        final DataResult<Unit> result = input.entries().reduce(
-                DataResult.success(Unit.INSTANCE, Lifecycle.stable()),
-                (r, pair) -> {
-                    final DataResult<K> k = keyCodec().parse(ops, pair.getFirst());
-                    final DataResult<V> v = elementCodec().parse(ops, pair.getSecond());
+        input.entries().forEach(pair -> {
+            final DataResult<K> k = keyCodec().parse(ops, pair.getFirst());
+            final DataResult<V> v = elementCodec().parse(ops, pair.getSecond());
 
-                    final DataResult<Pair<K, V>> entry = k.apply2stable(Pair::of, v);
-                    entry.error().ifPresent(e -> failed.add(pair));
-                    entry.result().ifPresent(e -> read.put(e.getFirst(), e.getSecond())); // FORGE: This line moved outside the below apply2stable condition
-                    return r.apply2stable((u, p) -> u, entry);
-                },
-                (r1, r2) -> r1.apply2stable((u1, u2) -> u1, r2));
+            final DataResult<Pair<K, V>> entry = k.apply2stable(Pair::of, v);
+            entry.error().ifPresent(e -> LOGGER.error("Failed to decode key {} for value {}: {}", k, v, e));
+            entry.result().ifPresent(e -> read.put(e.getFirst(), e.getSecond()));
+        });
 
         final Map<K, V> elements = read.build();
-        final T errors = ops.createMap(failed.build().stream());
 
-        return result.map(unit -> elements).setPartial(elements).mapError(e -> e + " missed input: " + errors);
+        return DataResult.success(elements);
     }
 
     @Override
