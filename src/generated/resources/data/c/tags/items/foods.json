@@ -24,9 +24,9 @@
     "minecraft:honey_bottle",
     "minecraft:spider_eye",
     "minecraft:rotten_flesh",
-    "#c:food/raw_meat",
-    "#c:food/raw_fish",
-    "#c:food/cooked_meat",
-    "#c:food/cooked_fish"
+    "#c:foods/raw_meats",
+    "#c:foods/raw_fishes",
+    "#c:foods/cooked_meats",
+    "#c:foods/cooked_fishes"
   ]
 }

@@ -6,7 +6,6 @@
 package net.minecraftforge.common.data;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
 import net.minecraft.data.tags.ItemTagsProvider;
@@ -20,7 +19,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.Comparator;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -84,11 +82,11 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         copy(Tags.Blocks.FENCES, Tags.Items.FENCES);
         copy(Tags.Blocks.FENCES_NETHER_BRICK, Tags.Items.FENCES_NETHER_BRICK);
         copy(Tags.Blocks.FENCES_WOODEN, Tags.Items.FENCES_WOODEN);
-        tag(Tags.Items.RAW_MEAT_FOOD).add(Items.BEEF, Items.CHICKEN, Items.RABBIT, Items.MUTTON);
-        tag(Tags.Items.RAW_FISH_FOOD).add(Items.COD, Items.SALMON, Items.TROPICAL_FISH, Items.PUFFERFISH);
-        tag(Tags.Items.COOKED_MEAT_FOOD).add(Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_RABBIT, Items.COOKED_MUTTON);
-        tag(Tags.Items.COOKED_FISH_FOOD).add(Items.COOKED_COD, Items.COOKED_SALMON);
-        tag(Tags.Items.FOOD)
+        tag(Tags.Items.RAW_MEATS_FOODS).add(Items.BEEF, Items.CHICKEN, Items.RABBIT, Items.MUTTON);
+        tag(Tags.Items.RAW_FISHES_FOODS).add(Items.COD, Items.SALMON, Items.TROPICAL_FISH, Items.PUFFERFISH);
+        tag(Tags.Items.COOKED_MEATS_FOODS).add(Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_RABBIT, Items.COOKED_MUTTON);
+        tag(Tags.Items.COOKED_FISHES_FOODS).add(Items.COOKED_COD, Items.COOKED_SALMON);
+        tag(Tags.Items.FOODS)
                 .add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE,
                         Items.CARROT, Items.GOLDEN_CARROT,
                         Items.POTATO, Items.POISONOUS_POTATO, Items.BAKED_POTATO,
@@ -101,7 +99,7 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
                         Items.RABBIT_STEW, Items.MUSHROOM_STEW, Items.SUSPICIOUS_STEW,
                         Items.HONEY_BOTTLE,
                         Items.SPIDER_EYE, Items.ROTTEN_FLESH)
-                .addTags(Tags.Items.RAW_MEAT_FOOD, Tags.Items.RAW_FISH_FOOD, Tags.Items.COOKED_MEAT_FOOD, Tags.Items.COOKED_FISH_FOOD);
+                .addTags(Tags.Items.RAW_MEATS_FOODS, Tags.Items.RAW_FISHES_FOODS, Tags.Items.COOKED_MEATS_FOODS, Tags.Items.COOKED_FISHES_FOODS);
         tag(Tags.Items.GEMS).addTags(Tags.Items.GEMS_AMETHYST, Tags.Items.GEMS_DIAMOND, Tags.Items.GEMS_EMERALD, Tags.Items.GEMS_LAPIS, Tags.Items.GEMS_PRISMARINE, Tags.Items.GEMS_QUARTZ);
         tag(Tags.Items.GEMS_AMETHYST).add(Items.AMETHYST_SHARD);
         tag(Tags.Items.GEMS_DIAMOND).add(Items.DIAMOND);
