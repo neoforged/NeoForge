@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import org.jetbrains.annotations.ApiStatus;
 
 public final class FluidSpriteCache {
     private static Map<ResourceLocation, TextureAtlasSprite> textureLookup = Map.of();
@@ -32,6 +33,7 @@ public final class FluidSpriteCache {
         };
     }
 
+    @ApiStatus.Internal
     @SuppressWarnings("deprecation")
     public static void reload() {
         TextureAtlas atlas = Minecraft.getInstance().getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS);
