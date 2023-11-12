@@ -367,6 +367,8 @@ public final class TagConventionLogWarning
             createMapEntry(Registries.ITEM, "soups", Tags.Items.SOUPS_FOODS),
             createMapEntry(Registries.ITEM, "stew", Tags.Items.SOUPS_FOODS),
             createMapEntry(Registries.ITEM, "stews", Tags.Items.SOUPS_FOODS),
+            createMapEntry(Registries.ITEM, "candy", Tags.Items.CANDIES_FOODS),
+            createMapEntry(Registries.ITEM, "candies", Tags.Items.CANDIES_FOODS),
 
             createMapEntry(Registries.FLUID, "milk", Tags.Fluids.MILK),
             createMapEntry(Registries.FLUID, "gaseous", Tags.Fluids.GASEOUS),

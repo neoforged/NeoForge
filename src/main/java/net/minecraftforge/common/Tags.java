@@ -372,6 +372,10 @@ public class Tags
          */
         public static final TagKey<Item> SOUPS_FOODS = tag("foods/soups");
         /**
+         * Sweets and candies like lollipops or chocolate belong in this tag.
+         */
+        public static final TagKey<Item> CANDIES_FOODS = tag("foods/candies");
+        /**
          * Foods like cake that can be eaten when placed in the world belong in this tag.
          */
         public static final TagKey<Item> EDIBLE_WHEN_PLACED_FOODS = tag("foods/edible_when_placed");

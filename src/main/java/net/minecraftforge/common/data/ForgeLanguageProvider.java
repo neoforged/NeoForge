@@ -168,6 +168,7 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.COOKED_MEATS_FOODS, "Cooked Meats");
         add(Tags.Items.COOKED_FISHES_FOODS, "Cooked Fishes");
         add(Tags.Items.SOUPS_FOODS, "Soups");
+        add(Tags.Items.CANDIES_FOODS, "Candies");
         add(Tags.Items.EDIBLE_WHEN_PLACED_FOODS, "Edible When Placed");
         add(Tags.Items.GEMS, "Gems");
         add(Tags.Items.GEMS_AMETHYST, "Amethyst Gems");
