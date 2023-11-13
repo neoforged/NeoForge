@@ -86,7 +86,7 @@ public class GravityAttributeTest {
                 }
 
                 for (LivingEntity liv : list) {
-                    AttributeInstance grav = liv.getAttribute(NeoForgeMod.ENTITY_GRAVITY.get());
+                    AttributeInstance grav = liv.getAttribute(NeoForgeMod.ENTITY_GRAVITY.value());
 
                     boolean inPlains = liv.level().getBiome(liv.blockPosition()).is(BiomeTags.IS_FOREST);
                     if (inPlains && !grav.hasModifier(REDUCED_GRAVITY)) {
@@ -119,7 +119,7 @@ public class GravityAttributeTest {
             @SuppressWarnings("deprecation")
             Multimap<Attribute, AttributeModifier> multimap = super.getDefaultAttributeModifiers(slot);
             if (slot == EquipmentSlot.MAINHAND)
-                multimap.put(NeoForgeMod.ENTITY_GRAVITY.get(), new AttributeModifier(GRAVITY_MODIFIER, "More Gravity", 1.0D, Operation.ADDITION));
+                multimap.put(NeoForgeMod.ENTITY_GRAVITY.value(), new AttributeModifier(GRAVITY_MODIFIER, "More Gravity", 1.0D, Operation.ADDITION));
 
             return multimap;
         }

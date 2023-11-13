@@ -343,7 +343,7 @@ public class FluidType {
      *         {@code false} otherwise
      */
     public boolean canRideVehicleUnder(Entity vehicle, Entity rider) {
-        if (this == NeoForgeMod.WATER_TYPE.get()) return !vehicle.dismountsUnderwater();
+        if (this == NeoForgeMod.WATER_TYPE.value()) return !vehicle.dismountsUnderwater();
         return true;
     }
 
@@ -670,7 +670,7 @@ public class FluidType {
      * @return {@code true} if the type represents air, {@code false} otherwise
      */
     public final boolean isAir() {
-        return this == NeoForgeMod.EMPTY_TYPE.get();
+        return this == NeoForgeMod.EMPTY_TYPE.value();
     }
 
     /**
@@ -679,7 +679,7 @@ public class FluidType {
      * @return {@code true} if the type is from vanilla, {@code false} otherwise
      */
     public final boolean isVanilla() {
-        return this == NeoForgeMod.LAVA_TYPE.get() || this == NeoForgeMod.WATER_TYPE.get();
+        return this == NeoForgeMod.LAVA_TYPE.value() || this == NeoForgeMod.WATER_TYPE.value();
     }
 
     /**
@@ -771,7 +771,7 @@ public class FluidType {
      */
     public boolean isVaporizedOnPlacement(Level level, BlockPos pos, FluidStack stack) {
         if (level.dimensionType().ultraWarm()) {
-            return this == NeoForgeMod.WATER_TYPE.get() || this.getStateForPlacement(level, pos, stack).is(FluidTags.WATER);
+            return this == NeoForgeMod.WATER_TYPE.value() || this.getStateForPlacement(level, pos, stack).is(FluidTags.WATER);
         }
         return false;
     }

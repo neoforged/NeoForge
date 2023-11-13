@@ -807,13 +807,13 @@ public class CommonHooks {
      */
     public static FluidType getVanillaFluidType(Fluid fluid) {
         if (fluid == Fluids.EMPTY)
-            return NeoForgeMod.EMPTY_TYPE.get();
+            return NeoForgeMod.EMPTY_TYPE.value();
         if (fluid == Fluids.WATER || fluid == Fluids.FLOWING_WATER)
-            return NeoForgeMod.WATER_TYPE.get();
+            return NeoForgeMod.WATER_TYPE.value();
         if (fluid == Fluids.LAVA || fluid == Fluids.FLOWING_LAVA)
-            return NeoForgeMod.LAVA_TYPE.get();
+            return NeoForgeMod.LAVA_TYPE.value();
         if (NeoForgeMod.MILK.asOptional().filter(milk -> milk == fluid).isPresent() || NeoForgeMod.FLOWING_MILK.asOptional().filter(milk -> milk == fluid).isPresent())
-            return NeoForgeMod.MILK_TYPE.get();
+            return NeoForgeMod.MILK_TYPE.value();
         throw new RuntimeException("Mod fluids must override getFluidType.");
     }
 

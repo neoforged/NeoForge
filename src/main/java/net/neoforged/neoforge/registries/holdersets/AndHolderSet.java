@@ -44,7 +44,7 @@ public class AndHolderSet<T> extends CompositeHolderSet<T> {
 
     @Override
     public HolderSetType type() {
-        return NeoForgeMod.AND_HOLDER_SET.get();
+        return NeoForgeMod.AND_HOLDER_SET.value();
     }
 
     @Override

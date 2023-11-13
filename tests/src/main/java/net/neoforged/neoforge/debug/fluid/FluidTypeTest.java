@@ -168,8 +168,8 @@ public class FluidTypeTest {
 
     private void commonSetup(FMLCommonSetupEvent event) {
         // Add Interactions for sources
-        FluidInteractionRegistry.addInteraction(TEST_FLUID_TYPE.get(), new FluidInteractionRegistry.InteractionInformation(NeoForgeMod.LAVA_TYPE.get(), Blocks.GOLD_BLOCK.defaultBlockState()));
-        FluidInteractionRegistry.addInteraction(NeoForgeMod.WATER_TYPE.get(), new FluidInteractionRegistry.InteractionInformation(TEST_FLUID_TYPE.get(), state -> state.isSource() ? Blocks.DIAMOND_BLOCK.defaultBlockState() : Blocks.IRON_BLOCK.defaultBlockState()));
+        FluidInteractionRegistry.addInteraction(TEST_FLUID_TYPE.get(), new FluidInteractionRegistry.InteractionInformation(NeoForgeMod.LAVA_TYPE.value(), Blocks.GOLD_BLOCK.defaultBlockState()));
+        FluidInteractionRegistry.addInteraction(NeoForgeMod.WATER_TYPE.value(), new FluidInteractionRegistry.InteractionInformation(TEST_FLUID_TYPE.get(), state -> state.isSource() ? Blocks.DIAMOND_BLOCK.defaultBlockState() : Blocks.IRON_BLOCK.defaultBlockState()));
 
         // Log Fluid Types for all fluids
         event.enqueueWork(() -> BuiltInRegistries.FLUID.forEach(fluid -> logger.info("Fluid {} has FluidType {}", BuiltInRegistries.FLUID.getKey(fluid), NeoForgeRegistries.FLUID_TYPES.getKey(fluid.getFluidType()))));

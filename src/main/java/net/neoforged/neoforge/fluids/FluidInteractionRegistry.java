@@ -71,12 +71,12 @@ public final class FluidInteractionRegistry {
 
     static {
         // Lava + Water = Obsidian (Source Lava) / Cobblestone (Flowing Lava)
-        addInteraction(NeoForgeMod.LAVA_TYPE.get(), new InteractionInformation(
-                NeoForgeMod.WATER_TYPE.get(),
+        addInteraction(NeoForgeMod.LAVA_TYPE.value(), new InteractionInformation(
+                NeoForgeMod.WATER_TYPE.value(),
                 fluidState -> fluidState.isSource() ? Blocks.OBSIDIAN.defaultBlockState() : Blocks.COBBLESTONE.defaultBlockState()));
 
         // Lava + Soul Soil (Below) + Blue Ice = Basalt
-        addInteraction(NeoForgeMod.LAVA_TYPE.get(), new InteractionInformation(
+        addInteraction(NeoForgeMod.LAVA_TYPE.value(), new InteractionInformation(
                 (level, currentPos, relativePos, currentState) -> level.getBlockState(currentPos.below()).is(Blocks.SOUL_SOIL) && level.getBlockState(relativePos).is(Blocks.BLUE_ICE),
                 Blocks.BASALT.defaultBlockState()));
     }

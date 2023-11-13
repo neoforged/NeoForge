@@ -25,7 +25,7 @@ public interface IPlayerExtension {
      * @return The entity reach of this player.
      */
     default double getEntityReach() {
-        double range = self().getAttributeValue(NeoForgeMod.ENTITY_REACH.get());
+        double range = self().getAttributeValue(NeoForgeMod.ENTITY_REACH.value());
         return range == 0 ? 0 : range + (self().isCreative() ? 3 : 0);
     }
 
@@ -35,7 +35,7 @@ public interface IPlayerExtension {
      * @return The reach distance of this player.
      */
     default double getBlockReach() {
-        double reach = self().getAttributeValue(NeoForgeMod.BLOCK_REACH.get());
+        double reach = self().getAttributeValue(NeoForgeMod.BLOCK_REACH.value());
         return reach == 0 ? 0 : reach + (self().isCreative() ? 0.5 : 0);
     }
 

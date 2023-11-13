@@ -83,7 +83,7 @@
 -         this.goDownInWater();
 +      net.neoforged.neoforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
 +      if ((this.isInWater() || (!fluidType.isAir() && this.canSwimInFluidType(fluidType))) && this.input.shiftKeyDown && this.isAffectedByFluids()) {
-+         this.sinkInFluid(this.isInWater() ? net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.get() : fluidType);
++         this.sinkInFluid(this.isInWater() ? net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value() : fluidType);
        }
  
        if (this.isEyeInFluid(FluidTags.WATER)) {
