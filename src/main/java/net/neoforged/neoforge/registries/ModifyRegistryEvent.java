@@ -24,7 +24,7 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
  * on both {@linkplain LogicalSide logical sides}.</p>
  *
- * @see RegistryBuilder
+ * @see NewRegistryEvent
  * @see DataPackRegistryEvent.NewRegistry
  */
 public class ModifyRegistryEvent extends Event implements IModBusEvent {

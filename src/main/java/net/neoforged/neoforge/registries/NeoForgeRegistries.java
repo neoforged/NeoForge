@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.registries;
 
 import com.mojang.serialization.Codec;
+import java.util.function.Supplier;
 import net.minecraft.core.Registry;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.ResourceKey;
@@ -28,20 +29,43 @@ import net.neoforged.neoforge.registries.holdersets.HolderSetType;
  */
 public class NeoForgeRegistries {
     // Custom forge registries
-    public static final Registry<EntityDataSerializer<?>> ENTITY_DATA_SERIALIZERS = new RegistryBuilder<>(Keys.ENTITY_DATA_SERIALIZERS).sync(true).create();
-    public static final Registry<Codec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODIFIER_SERIALIZERS = new RegistryBuilder<>(Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS).create();
-    public static final Registry<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = new RegistryBuilder<>(Keys.BIOME_MODIFIER_SERIALIZERS).create();
-    public static final Registry<Codec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = new RegistryBuilder<>(Keys.STRUCTURE_MODIFIER_SERIALIZERS).create();
-    public static final Registry<FluidType> FLUID_TYPES = new RegistryBuilder<>(Keys.FLUID_TYPES).create();
-    public static final Registry<HolderSetType> HOLDER_SET_TYPES = new RegistryBuilder<>(Keys.HOLDER_SET_TYPES).create();
-    public static final Registry<ItemDisplayContext> DISPLAY_CONTEXTS = new RegistryBuilder<>(Keys.DISPLAY_CONTEXTS)
-            .sync(true)
+    static final DeferredRegister<EntityDataSerializer<?>> DEFERRED_ENTITY_DATA_SERIALIZERS = DeferredRegister.create(Keys.ENTITY_DATA_SERIALIZERS, Keys.ENTITY_DATA_SERIALIZERS.location().getNamespace());
+    public static final Registry<EntityDataSerializer<?>> ENTITY_DATA_SERIALIZERS = DEFERRED_ENTITY_DATA_SERIALIZERS.makeRegistry(registryBuilder -> registryBuilder.sync(true));
+    static final DeferredRegister<Codec<? extends IGlobalLootModifier>> DEFERRED_GLOBAL_LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS.location().getNamespace());
+    public static final Registry<Codec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODIFIER_SERIALIZERS = DEFERRED_GLOBAL_LOOT_MODIFIER_SERIALIZERS.makeRegistry(registryBuilder -> {});
+    static final DeferredRegister<Codec<? extends BiomeModifier>> DEFERRED_BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(Keys.BIOME_MODIFIER_SERIALIZERS, Keys.BIOME_MODIFIER_SERIALIZERS.location().getNamespace());
+    public static final Registry<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DEFERRED_BIOME_MODIFIER_SERIALIZERS.makeRegistry(registryBuilder -> {});
+    static final DeferredRegister<Codec<? extends StructureModifier>> DEFERRED_STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(Keys.STRUCTURE_MODIFIER_SERIALIZERS, Keys.STRUCTURE_MODIFIER_SERIALIZERS.location().getNamespace());
+    public static final Registry<Codec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DEFERRED_STRUCTURE_MODIFIER_SERIALIZERS.makeRegistry(registryBuilder -> {});
+    static final DeferredRegister<FluidType> DEFERRED_FLUID_TYPES = DeferredRegister.create(Keys.FLUID_TYPES, Keys.FLUID_TYPES.location().getNamespace());
+    public static final Registry<FluidType> FLUID_TYPES = DEFERRED_FLUID_TYPES.makeRegistry(registryBuilder -> {});
+    static final DeferredRegister<HolderSetType> DEFERRED_HOLDER_SET_TYPES = DeferredRegister.create(Keys.HOLDER_SET_TYPES, Keys.HOLDER_SET_TYPES.location().getNamespace());
+    public static final Registry<HolderSetType> HOLDER_SET_TYPES = DEFERRED_HOLDER_SET_TYPES.makeRegistry(registryBuilder -> {});
+    static final DeferredRegister<ItemDisplayContext> DEFERRED_DISPLAY_CONTEXTS = DeferredRegister.create(Keys.DISPLAY_CONTEXTS, Keys.DISPLAY_CONTEXTS.location().getNamespace());
+    public static final Registry<ItemDisplayContext> DISPLAY_CONTEXTS = DEFERRED_DISPLAY_CONTEXTS.makeRegistry(registryBuilder -> registryBuilder.sync(true)
             .maxId(128 * 2) // 0 -> 127 gets positive ID, 128 -> 256 gets negative ID
-            .defaultKey(new ResourceLocation("none"))
-            .create();
-    public static final Registry<IngredientType<?>> INGREDIENT_TYPES = new RegistryBuilder<>(Keys.INGREDIENT_TYPES).create();
-    public static final Registry<Codec<? extends ICondition>> CONDITION_SERIALIZERS = new RegistryBuilder<>(Keys.CONDITION_CODECS).create();
-    public static final Registry<Codec<? extends ICustomItemPredicate>> ITEM_PREDICATE_SERIALIZERS = new RegistryBuilder<>(Keys.ITEM_PREDICATE_SERIALIZERS).create();
+            .defaultKey(new ResourceLocation("none")));
+
+    static final DeferredRegister<IngredientType<?>> DEFERRED_INGREDIENT_TYPES = DeferredRegister.create(Keys.INGREDIENT_TYPES, Keys.INGREDIENT_TYPES.location().getNamespace());
+    /**
+     * Calling {@link Supplier#get()} before {@link NewRegistryEvent} is fired will result in a null registry returned.
+     * Use {@link Keys#INGREDIENT_TYPES} to create a {@link DeferredRegister}.
+     */
+    public static final Registry<IngredientType<?>> INGREDIENT_TYPES = DEFERRED_INGREDIENT_TYPES.makeRegistry(b -> {});
+
+    static final DeferredRegister<Codec<? extends ICondition>> DEFERRED_CONDITION_CODECS = DeferredRegister.create(Keys.CONDITION_CODECS, Keys.CONDITION_CODECS.location().getNamespace());
+    /**
+     * Calling {@link Supplier#get()} before {@link NewRegistryEvent} is fired will result in a null registry returned.
+     * Use {@link Keys#CONDITION_CODECS} to create a {@link DeferredRegister}.
+     */
+    public static final Registry<Codec<? extends ICondition>> CONDITION_SERIALIZERS = DEFERRED_CONDITION_CODECS.makeRegistry(b -> {});
+
+    static final DeferredRegister<Codec<? extends ICustomItemPredicate>> DEFERRED_ITEM_PREDICATE_SERIALIZERS = DeferredRegister.create(Keys.ITEM_PREDICATE_SERIALIZERS, Keys.ITEM_PREDICATE_SERIALIZERS.location().getNamespace());
+    /**
+     * Calling {@link Supplier#get()} before {@link NewRegistryEvent} is fired will result in a null registry returned.
+     * Use {@link Keys#ITEM_PREDICATE_SERIALIZERS} to create a {@link DeferredRegister}.
+     */
+    public static final Registry<Codec<? extends ICustomItemPredicate>> ITEM_PREDICATE_SERIALIZERS = DEFERRED_ITEM_PREDICATE_SERIALIZERS.makeRegistry(b -> {});
 
     public static final class Keys {
         // Forge

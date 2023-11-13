@@ -26,6 +26,17 @@ public class NeoForgeRegistriesSetup {
 
         setup = true;
 
+        NeoForgeRegistries.DEFERRED_INGREDIENT_TYPES.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_CONDITION_CODECS.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_ITEM_PREDICATE_SERIALIZERS.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_ENTITY_DATA_SERIALIZERS.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_FLUID_TYPES.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_STRUCTURE_MODIFIER_SERIALIZERS.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_HOLDER_SET_TYPES.register(modEventBus);
+        NeoForgeRegistries.DEFERRED_DISPLAY_CONTEXTS.register(modEventBus);
+
         modEventBus.addListener(NeoForgeRegistriesSetup::onModifyRegistry);
     }
 
