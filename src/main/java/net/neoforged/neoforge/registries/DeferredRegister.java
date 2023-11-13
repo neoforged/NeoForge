@@ -18,9 +18,14 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,6 +61,9 @@ public class DeferredRegister<T> {
      * @param registry  the registry to register to
      * @param namespace the namespace for all objects registered to this DeferredRegister
      * @see #create(ResourceKey, String)
+     * @see #create(ResourceLocation, String)
+     * @see #items(String)
+     * @see #blocks(String)
      */
     public static <T> DeferredRegister<T> create(Registry<T> registry, String namespace) {
         return new DeferredRegister<>(registry.key(), namespace);
@@ -69,6 +77,9 @@ public class DeferredRegister<T> {
      * @param key       the key of the registry to reference. May come from another DeferredRegister through {@link #getRegistryKey()}.
      * @param namespace the namespace for all objects registered to this DeferredRegister
      * @see #create(Registry, String)
+     * @see #create(ResourceLocation, String) 
+     * @see #items(String)
+     * @see #blocks(String)
      */
     public static <T> DeferredRegister<T> create(ResourceKey<? extends Registry<T>> key, String namespace) {
         return new DeferredRegister<>(key, namespace);
@@ -81,10 +92,39 @@ public class DeferredRegister<T> {
      *
      * @param registryName The name of the registry, should include namespace. May come from another DeferredRegister through {@link #getRegistryName()}.
      * @param modid        The namespace for all objects registered to this DeferredRegister
+     * @see #create(Registry, String)
      * @see #create(ResourceKey, String)
+     * @see #items(String)
+     * @see #blocks(String)
      */
     public static <B> DeferredRegister<B> create(ResourceLocation registryName, String modid) {
         return new DeferredRegister<>(ResourceKey.createRegistryKey(registryName), modid);
+    }
+
+    /**
+     * Factory for a specialized {@link DeferredRegister} for {@link Item Items}.
+     * 
+     * @param modid The namespace for all objects registered to this {@link DeferredRegister}
+     * @see #create(Registry, String)
+     * @see #create(ResourceKey, String)
+     * @see #create(ResourceLocation, String)
+     * @see #blocks(String)
+     */
+    public static DeferredRegister.Items items(String modid) {
+        return new Items(modid);
+    }
+
+    /**
+     * Factory for a specialized DeferredRegister for {@link Block Blocks}.
+     *
+     * @param modid The namespace for all objects registered to this DeferredRegister
+     * @see #create(Registry, String)
+     * @see #create(ResourceKey, String)
+     * @see #create(ResourceLocation, String)
+     * @see #items(String)
+     */
+    public static DeferredRegister.Blocks blocks(String modid) {
+        return new Blocks(modid);
     }
 
     private final ResourceKey<? extends Registry<T>> registryKey;
@@ -98,6 +138,7 @@ public class DeferredRegister<T> {
     @Nullable
     private RegistryHolder<T> registryHolder;
     private boolean seenRegisterEvent = false;
+    private boolean seenNewRegistryEvent = false;
     private boolean registeredEventBus = false;
 
     protected DeferredRegister(ResourceKey<? extends Registry<T>> registryKey, String namespace) {
@@ -110,7 +151,7 @@ public class DeferredRegister<T> {
      *
      * @param name The new entry's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
      * @param sup  A factory for the new entry. The factory should not cache the created entry.
-     * @return A DeferredHolder that will track updates from the registry for this entry.
+     * @return A {@link DeferredHolder} that will track updates from the registry for this entry.
      */
     public <I extends T> DeferredHolder<T, I> register(final String name, final Supplier<? extends I> sup) {
         return this.register(name, key -> sup.get());
@@ -121,7 +162,7 @@ public class DeferredRegister<T> {
      *
      * @param name The new entry's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
      * @param func A factory for the new entry. The factory should not cache the created entry.
-     * @return A DeferredHolder that will track updates from the registry for this entry.
+     * @return A {@link DeferredHolder} that will track updates from the registry for this entry.
      */
     public <I extends T> DeferredHolder<T, I> register(final String name, final Function<ResourceLocation, ? extends I> func) {
         if (seenRegisterEvent)
@@ -130,13 +171,25 @@ public class DeferredRegister<T> {
         Objects.requireNonNull(func);
         final ResourceLocation key = new ResourceLocation(namespace, name);
 
-        DeferredHolder<T, I> ret = DeferredHolder.create(this.registryKey, key);
+        DeferredHolder<T, I> ret = createHolder(this.registryKey, key);
 
         if (entries.putIfAbsent(ret, () -> func.apply(key)) != null) {
             throw new IllegalArgumentException("Duplicate registration " + name);
         }
 
         return ret;
+    }
+
+    /**
+     * Create a {@link DeferredHolder} or an inheriting type to be stored.
+     * 
+     * @param registryKey The key of the registry.
+     * @param key The resource location of the entry.
+     * @return The new instance of {@link DeferredHolder} or an inheriting type.
+     * @param <I> The specific type of the entry.
+     */
+    protected <I extends T> DeferredHolder<T, I> createHolder(ResourceKey<? extends Registry<T>> registryKey, ResourceLocation key) {
+        return DeferredHolder.create(registryKey, key);
     }
 
     /**
@@ -242,6 +295,8 @@ public class DeferredRegister<T> {
             throw new IllegalStateException("Cannot create a registry without specifying a registry name");
         if (BuiltInRegistries.REGISTRY.containsKey(registryName) || this.customRegistry != null)
             throw new IllegalStateException("Cannot create a registry that already exists - " + this.registryKey);
+        if (this.seenNewRegistryEvent)
+            throw new IllegalStateException("Cannot create a registry after NewRegistryEvent was fired");
 
         RegistryBuilder<T> registryBuilder = new RegistryBuilder<>(this.registryKey);
         consumer.accept(registryBuilder);
@@ -265,8 +320,138 @@ public class DeferredRegister<T> {
     }
 
     private void createRegistry(NewRegistryEvent event) {
+        this.seenNewRegistryEvent = true;
         if (this.customRegistry != null) {
             event.register(this.customRegistry);
+        }
+    }
+
+    /**
+     * Specialized DeferredRegister for {@link Block Blocks} that uses the specialized {@link DeferredHolder}, {@link DeferredBlock} as the return type for {@link #register}.
+     */
+    public static class Blocks extends DeferredRegister<Block> {
+        protected Blocks(String namespace) {
+            super(Registries.BLOCK, namespace);
+        }
+
+        /**
+         * Adds a new block to the list of entries to be registered and returns a {@link DeferredHolder} that will be populated with the created block automatically.
+         *
+         * @param name The new block's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param func A factory for the new block. The factory should not cache the created block.
+         * @return A {@link DeferredHolder} that will track updates from the registry for this block.
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public <B extends Block> DeferredBlock<B> register(String name, Function<ResourceLocation, ? extends B> func) {
+            return (DeferredBlock<B>) super.register(name, func);
+        }
+
+        /**
+         * Adds a new block to the list of entries to be registered and returns a {@link DeferredHolder} that will be populated with the created block automatically.
+         *
+         * @param name The new block's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param sup  A factory for the new block. The factory should not cache the created block.
+         * @return A {@link DeferredHolder} that will track updates from the registry for this block.
+         */
+        @Override
+        public <B extends Block> DeferredBlock<B> register(String name, Supplier<? extends B> sup) {
+            return this.register(name, key -> sup.get());
+        }
+
+        /**
+         * Adds a new block to the list of entries to be registered and returns a {@link DeferredHolder} that will be populated with the created block automatically.
+         *
+         * @param name  The new block's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param func  A factory for the new block. The factory should not cache the created block.
+         * @param props The properties for the created block.
+         * @return A {@link DeferredHolder} that will track updates from the registry for this block.
+         */
+        public <B extends Block> DeferredBlock<B> block(String name, Function<BlockBehaviour.Properties, ? extends B> func, BlockBehaviour.Properties props) {
+            return this.register(name, () -> func.apply(props));
+        }
+
+        /**
+         * Adds a new block to the list of entries to be registered and returns a {@link DeferredHolder} that will be populated with the created block automatically.
+         *
+         * @param name  The new block's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param props The properties for the created block.
+         * @return A {@link DeferredHolder} that will track updates from the registry for this block.
+         */
+        public DeferredBlock<Block> block(String name, BlockBehaviour.Properties props) {
+            return this.block(name, Block::new, props);
+        }
+
+        @Override
+        protected <I extends Block> DeferredBlock<I> createHolder(ResourceKey<? extends Registry<Block>> registryKey, ResourceLocation key) {
+            return DeferredBlock.createBlock(ResourceKey.create(registryKey, key));
+        }
+    }
+
+    /**
+     * Specialized DeferredRegister for {@link Item Items} that uses the specialized {@link DeferredHolder}, {@link DeferredItem} as the return type for {@link #register}.
+     */
+    public static class Items extends DeferredRegister<Item> {
+        protected Items(String namespace) {
+            super(Registries.ITEM, namespace);
+        }
+
+        /**
+         * Adds a new item to the list of entries to be registered and returns a {@link DeferredItem} that will be populated with the created item automatically.
+         *
+         * @param name The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param func A factory for the new item. The factory should not cache the created item.
+         * @return A {@link DeferredItem} that will track updates from the registry for this item.
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public <I extends Item> DeferredItem<I> register(String name, Function<ResourceLocation, ? extends I> func) {
+            return (DeferredItem<I>) super.register(name, func);
+        }
+
+        /**
+         * Adds a new item to the list of entries to be registered and returns a {@link DeferredItem} that will be populated with the created item automatically.
+         *
+         * @param name The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param sup  A factory for the new item. The factory should not cache the created item.
+         * @return A {@link DeferredItem} that will track updates from the registry for this item.
+         */
+        @Override
+        public <I extends Item> DeferredItem<I> register(String name, Supplier<? extends I> sup) {
+            return this.register(name, key -> sup.get());
+        }
+
+        /**
+         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and 
+         * returns a {@link DeferredItem} that will be populated with the created item automatically.
+         *
+         * @param name The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param block The supplier for the block to create a {@link BlockItem} for.
+         * @param properties The properties for the created {@link BlockItem}.
+         * @return A {@link DeferredItem} that will track updates from the registry for this item.
+         * @see #blockItem(String, Supplier)
+         */
+        public DeferredItem<BlockItem> blockItem(String name, Supplier<? extends Block> block, Item.Properties properties) {
+            return this.register(name, key -> new BlockItem(block.get(), properties));
+        }
+
+        /**
+         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and 
+         * returns a {@link DeferredItem} that will be populated with the created item automatically. 
+         * This method uses the default {@link Item.Properties}.
+         *
+         * @param name The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param block The supplier for the block to create a {@link BlockItem} for.
+         * @return A {@link DeferredItem} that will track updates from the registry for this item.
+         * @see #blockItem(String, Supplier, Item.Properties)
+         */
+        public DeferredItem<BlockItem> blockItem(String name, Supplier<? extends Block> block) {
+            return this.blockItem(name, block, new Item.Properties());
+        }
+
+        @Override
+        protected <I extends Item> DeferredItem<I> createHolder(ResourceKey<? extends Registry<Item>> registryKey, ResourceLocation key) {
+            return DeferredItem.createItem(ResourceKey.create(registryKey, key));
         }
     }
 
@@ -280,7 +465,7 @@ public class DeferredRegister<T> {
 
         @SuppressWarnings("unchecked")
         @Override
-        public Registry<V> get() {
+        public @Nullable Registry<V> get() {
             // Keep looking up the registry until it's not null
             if (this.registry == null)
                 this.registry = (Registry<V>) BuiltInRegistries.REGISTRY.get(this.registryKey.location());
