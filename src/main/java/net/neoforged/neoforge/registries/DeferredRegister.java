@@ -39,15 +39,15 @@ import org.jetbrains.annotations.Nullable;
  * Example Usage:
  *
  * <pre>{@code
- * private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
- * private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
+ * private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
+ * private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
  *
- * public static final DeferredHolder<Block, Block> ROCK_BLOCK = BLOCKS.register("rock", () -> new Block(Block.Properties.create(Material.ROCK)));
- * public static final DeferredHolder<Item, BlockItem> ROCK_ITEM = ITEMS.register("rock", () -> new BlockItem(ROCK_BLOCK.get(), new Item.Properties()));
+ * public static final DeferredBlock<Block> ROCK_BLOCK = BLOCKS.registerBlock("rock", Block.Properties.create(Material.ROCK));
+ * public static final DeferredItem<BlockItem> ROCK_ITEM = ITEMS.registerBlockItem(ROCK_BLOCK, new Item.Properties());
  *
- * public ExampleMod() {
- *     ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
- *     BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
+ * public ExampleMod(IEventBus modBus) {
+ *     ITEMS.register(modBus);
+ *     BLOCKS.register(modBus);
  * }
  * }</pre>
  *
