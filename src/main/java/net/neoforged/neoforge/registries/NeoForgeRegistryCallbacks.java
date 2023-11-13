@@ -38,10 +38,7 @@ class NeoForgeRegistryCallbacks {
             for (Block block : registry) {
                 for (BlockState state : block.getStateDefinition().getPossibleStates()) {
                     BLOCKSTATE_TO_ID_MAP.add(state);
-                    state.initCache();
                 }
-
-                block.getLootTable();
             }
             DebugLevelSource.initValidStates();
         }
