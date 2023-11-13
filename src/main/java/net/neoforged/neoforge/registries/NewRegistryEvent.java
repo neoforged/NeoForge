@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.registries;
 
-import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
-import org.slf4j.Logger;
 
 /**
  * Fired when new registries can be constructed and registered.
@@ -32,7 +30,6 @@ import org.slf4j.Logger;
  * @see ModifyRegistryEvent
  */
 public class NewRegistryEvent extends Event implements IModBusEvent {
-    private static final Logger LOGGER = LogUtils.getLogger();
     private final List<Registry<?>> registries = new ArrayList<>();
 
     NewRegistryEvent() {}
@@ -60,23 +57,13 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
     }
 
     void fill() {
-        RuntimeException aggregate = new RuntimeException();
-
         ((BaseMappedRegistry<?>) BuiltInRegistries.REGISTRY).unfreeze();
 
         for (final var registry : this.registries) {
-            try {
-                registerToRootRegistry(registry);
-            } catch (Throwable t) {
-                aggregate.addSuppressed(t);
-                return;
-            }
+            registerToRootRegistry(registry);
         }
 
         ((WritableRegistry<?>) BuiltInRegistries.REGISTRY).freeze();
-
-        if (aggregate.getSuppressed().length > 0)
-            LOGGER.error(LogUtils.FATAL_MARKER, "Failed to create some forge registries, see suppressed exceptions for details", aggregate);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
