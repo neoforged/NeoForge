@@ -84,7 +84,7 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         copy(Tags.Blocks.FENCES_NETHER_BRICK, Tags.Items.FENCES_NETHER_BRICK);
         copy(Tags.Blocks.FENCES_WOODEN, Tags.Items.FENCES_WOODEN);
         tag(Tags.Items.FRUITS_FOODS).add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
-        tag(Tags.Items.VEGETABLES_FOODS).add(Items.CARROT, Items.GOLDEN_CARROT, Items.POTATO, Items.POISONOUS_POTATO, Items.MELON_SLICE, Items.BEETROOT);
+        tag(Tags.Items.VEGETABLES_FOODS).add(Items.CARROT, Items.GOLDEN_CARROT, Items.POTATO, Items.MELON_SLICE, Items.BEETROOT);
         tag(Tags.Items.BERRIES_FOODS).add(Items.SWEET_BERRIES, Items.GLOW_BERRIES);
         tag(Tags.Items.BREADS_FOODS).add(Items.BREAD);
         tag(Tags.Items.COOKIES_FOODS).add(Items.COOKIE);
@@ -96,7 +96,7 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.CANDIES_FOODS);
         tag(Tags.Items.EDIBLE_WHEN_PLACED_FOODS).add(Items.CAKE);
         tag(Tags.Items.FOODS)
-                .add(Items.BAKED_POTATO, Items.PUMPKIN_PIE, Items.HONEY_BOTTLE, Items.DRIED_KELP, Items.SPIDER_EYE, Items.ROTTEN_FLESH)
+                .add(Items.BAKED_POTATO, Items.POISONOUS_POTATO, Items.PUMPKIN_PIE, Items.HONEY_BOTTLE, Items.DRIED_KELP, Items.SPIDER_EYE, Items.ROTTEN_FLESH)
                 .addTags(Tags.Items.FRUITS_FOODS, Tags.Items.VEGETABLES_FOODS, Tags.Items.BERRIES_FOODS, Tags.Items.BREADS_FOODS, Tags.Items.COOKIES_FOODS,
                         Tags.Items.RAW_MEATS_FOODS, Tags.Items.RAW_FISHES_FOODS, Tags.Items.COOKED_MEATS_FOODS, Tags.Items.COOKED_FISHES_FOODS,
                         Tags.Items.SOUPS_FOODS, Tags.Items.CANDIES_FOODS, Tags.Items.EDIBLE_WHEN_PLACED_FOODS);

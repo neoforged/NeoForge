@@ -354,6 +354,7 @@ public class Tags
         public static final TagKey<Item> FOODS = tag("foods");
         /**
          * Apples and other foods that are considered fruits in the culinary field belong in this tag.
+         * Cherries would go here as they are considered a "stone fruit" within culinary fields.
          */
         public static final TagKey<Item> FRUITS_FOODS = tag("foods/fruits");
         /**
@@ -362,6 +363,7 @@ public class Tags
         public static final TagKey<Item> VEGETABLES_FOODS = tag("foods/vegetables");
         /**
          * Strawberries, raspberries, and other berry foods belong in this tag.
+         * Cherries would NOT go here as they are considered a "stone fruit" within culinary fields.
          */
         public static final TagKey<Item> BERRIES_FOODS = tag("foods/berries");
         public static final TagKey<Item> BREADS_FOODS = tag("foods/breads");
