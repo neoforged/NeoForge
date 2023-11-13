@@ -26,17 +26,7 @@ public class NeoForgeRegistriesSetup {
 
         setup = true;
 
-        NeoForgeRegistries.DEFERRED_INGREDIENT_TYPES.register(modEventBus);
-        NeoForgeRegistries.DEFERRED_CONDITION_CODECS.register(modEventBus);
-        NeoForgeRegistries.DEFERRED_ITEM_PREDICATE_SERIALIZERS.register(modEventBus);
-        NeoForgeRegistries.DEFERRED_ENTITY_DATA_SERIALIZERS.register(modEventBus);
-        NeoForgeRegistries.DEFERRED_GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
-        NeoForgeRegistries.DEFERRED_BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
-        NeoForgeRegistries.DEFERRED_FLUID_TYPES.register(modEventBus);
-        NeoForgeRegistries.DEFERRED_STRUCTURE_MODIFIER_SERIALIZERS.register(modEventBus);
-        NeoForgeRegistries.DEFERRED_HOLDER_SET_TYPES.register(modEventBus);
-        NeoForgeRegistries.DEFERRED_DISPLAY_CONTEXTS.register(modEventBus);
-
+        modEventBus.addListener(NeoForgeRegistriesSetup::registerRegistries);
         modEventBus.addListener(NeoForgeRegistriesSetup::onModifyRegistry);
     }
 
@@ -61,6 +51,19 @@ public class NeoForgeRegistriesSetup {
             Registries.CAT_VARIANT, // Required for EntityDataSerializers
             Registries.FROG_VARIANT // Required for EntityDataSerializers
     );
+
+    private static void registerRegistries(NewRegistryEvent event) {
+        event.register(NeoForgeRegistries.ENTITY_DATA_SERIALIZERS);
+        event.register(NeoForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS);
+        event.register(NeoForgeRegistries.BIOME_MODIFIER_SERIALIZERS);
+        event.register(NeoForgeRegistries.STRUCTURE_MODIFIER_SERIALIZERS);
+        event.register(NeoForgeRegistries.FLUID_TYPES);
+        event.register(NeoForgeRegistries.HOLDER_SET_TYPES);
+        event.register(NeoForgeRegistries.DISPLAY_CONTEXTS);
+        event.register(NeoForgeRegistries.INGREDIENT_TYPES);
+        event.register(NeoForgeRegistries.CONDITION_SERIALIZERS);
+        event.register(NeoForgeRegistries.ITEM_PREDICATE_SERIALIZERS);
+    }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static void onModifyRegistry(ModifyRegistryEvent event) {
