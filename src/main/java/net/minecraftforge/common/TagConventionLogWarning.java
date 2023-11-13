@@ -297,6 +297,7 @@ public final class TagConventionLogWarning
             createMapEntry(Registries.ITEM, "rods", Tags.Items.RODS),
             createMapEntry(Registries.ITEM, "rods/blaze", Tags.Items.RODS_BLAZE),
             createMapEntry(Registries.ITEM, "rods/wooden", Tags.Items.RODS_WOODEN),
+            createMapEntry(Registries.ITEM, "rope", Tags.Items.ROPES),
             createMapEntry(Registries.ITEM, "sand", Tags.Items.SAND),
             createMapEntry(Registries.ITEM, "sand/colorless", Tags.Items.SAND_COLORLESS),
             createMapEntry(Registries.ITEM, "sand/red", Tags.Items.SAND_RED),

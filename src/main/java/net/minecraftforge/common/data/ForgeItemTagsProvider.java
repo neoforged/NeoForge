@@ -38,6 +38,7 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         copy(Tags.Blocks.BARRELS_WOODEN, Tags.Items.BARRELS_WOODEN);
         tag(Tags.Items.BONES).add(Items.BONE);
         copy(Tags.Blocks.BOOKSHELVES, Tags.Items.BOOKSHELVES);
+        copy(Tags.Blocks.CHAINS, Tags.Items.CHAINS);
         copy(Tags.Blocks.CHESTS, Tags.Items.CHESTS);
         copy(Tags.Blocks.CHESTS_ENDER, Tags.Items.CHESTS_ENDER);
         copy(Tags.Blocks.CHESTS_TRAPPED, Tags.Items.CHESTS_TRAPPED);
@@ -161,6 +162,7 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.RODS).addTags(Tags.Items.RODS_WOODEN, Tags.Items.RODS_BLAZE);
         tag(Tags.Items.RODS_BLAZE).add(Items.BLAZE_ROD);
         tag(Tags.Items.RODS_WOODEN).add(Items.STICK);
+        copy(Tags.Blocks.ROPES, Tags.Items.ROPES);
         copy(Tags.Blocks.SAND, Tags.Items.SAND);
         copy(Tags.Blocks.SAND_COLORLESS, Tags.Items.SAND_COLORLESS);
         copy(Tags.Blocks.SAND_RED, Tags.Items.SAND_RED);

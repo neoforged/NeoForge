@@ -38,6 +38,7 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(BARRELS).addTag(BARRELS_WOODEN);
         tag(BARRELS_WOODEN).add(Blocks.BARREL);
         tag(BOOKSHELVES).add(Blocks.BOOKSHELF);
+        tag(CHAINS).addTags(CHAINS);
         tag(CHESTS).addTags(CHESTS_ENDER, CHESTS_TRAPPED, CHESTS_WOODEN);
         tag(CHESTS_ENDER).add(Blocks.ENDER_CHEST);
         tag(CHESTS_TRAPPED).add(Blocks.TRAPPED_CHEST);
@@ -100,6 +101,7 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(ORES_IN_GROUND_STONE).add(Blocks.COAL_ORE, Blocks.COPPER_ORE, Blocks.DIAMOND_ORE, Blocks.EMERALD_ORE, Blocks.GOLD_ORE, Blocks.IRON_ORE, Blocks.LAPIS_ORE, Blocks.REDSTONE_ORE);
         tag(SAND).addTags(SAND_COLORLESS, SAND_RED);
         tag(RELOCATION_NOT_SUPPORTED);
+        tag(ROPES);
         tag(SAND_COLORLESS).add(Blocks.SAND);
         tag(SAND_RED).add(Blocks.RED_SAND);
 

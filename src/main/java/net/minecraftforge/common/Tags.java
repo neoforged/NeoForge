@@ -57,6 +57,7 @@ public class Tags
          * For blocks that are similar to amethyst where they have buddings forming from budding blocks
          */
         public static final TagKey<Block> BUDS = tag("buds");
+        public static final TagKey<Block> CHAINS = tag("chains");
         public static final TagKey<Block> CHESTS = tag("chests");
         public static final TagKey<Block> CHESTS_ENDER = tag("chests/ender");
         public static final TagKey<Block> CHESTS_TRAPPED = tag("chests/trapped");
@@ -171,6 +172,7 @@ public class Tags
          * {@link BlockBehaviour.BlockStateBase#getPistonPushReaction}.
          */
         public static final TagKey<Block> RELOCATION_NOT_SUPPORTED = tag("relocation_not_supported");
+        public static final TagKey<Block> ROPES = tag("ropes");
 
         public static final TagKey<Block> SAND = tag("sand");
         public static final TagKey<Block> SAND_COLORLESS = tag("sand/colorless");
@@ -270,6 +272,7 @@ public class Tags
          * For blocks that are similar to amethyst where they have buddings forming from budding blocks
          */
         public static final TagKey<Item> BUDS = tag("buds");
+        public static final TagKey<Item> CHAINS = tag("chains");
         public static final TagKey<Item> CHESTS = tag("chests");
         public static final TagKey<Item> CHESTS_ENDER = tag("chests/ender");
         public static final TagKey<Item> CHESTS_TRAPPED = tag("chests/trapped");
@@ -488,6 +491,7 @@ public class Tags
          * One example is a mod adds stick variants such as Spruce Sticks but would like stick recipes to be able to use it.
          */
         public static final TagKey<Item> RODS_WOODEN = tag("rods/wooden");
+        public static final TagKey<Item> ROPES = tag("ropes");
 
         public static final TagKey<Item> SAND = tag("sand");
         public static final TagKey<Item> SAND_COLORLESS = tag("sand/colorless");

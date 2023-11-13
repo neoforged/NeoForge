@@ -30,6 +30,7 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.BOOKSHELVES, "Bookshelves");
         add(Tags.Blocks.BUDDING_BLOCKS, "Budding Blocks");
         add(Tags.Blocks.BUDS, "Buds");
+        add(Tags.Blocks.CHAINS, "Chains");
         add(Tags.Blocks.CHESTS, "Chests");
         add(Tags.Blocks.CHESTS_ENDER, "Ender Chests");
         add(Tags.Blocks.CHESTS_TRAPPED, "Trapped Chests");
@@ -83,6 +84,7 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.ORES_IN_GROUND_NETHERRACK, "Netherrack Ores In Ground");
         add(Tags.Blocks.ORES_IN_GROUND_STONE, "Stone Ores In Ground");
         add(Tags.Blocks.RELOCATION_NOT_SUPPORTED, "Relocation Not Supported");
+        add(Tags.Blocks.ROPES, "Ropes");
         add(Tags.Blocks.SAND, "Sand");
         add(Tags.Blocks.SAND_COLORLESS, "Colorless Sand");
         add(Tags.Blocks.SAND_RED, "Red Sand");
@@ -123,6 +125,7 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.BOOKSHELVES, "Bookshelves");
         add(Tags.Items.BUDDING_BLOCKS, "Budding Blocks");
         add(Tags.Items.BUDS, "Buds");
+        add(Tags.Items.CHAINS, "Chains");
         add(Tags.Items.CHESTS, "Chests");
         add(Tags.Items.CHESTS_ENDER, "Ender Chests");
         add(Tags.Items.CHESTS_TRAPPED, "Trapped Chests");
@@ -232,6 +235,7 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.RODS, "Rods");
         add(Tags.Items.RODS_BLAZE, "Blaze Rods");
         add(Tags.Items.RODS_WOODEN, "Wooden Rods");
+        add(Tags.Items.ROPES, "Ropes");
         add(Tags.Items.SAND, "Sand");
         add(Tags.Items.SAND_COLORLESS, "Colorless Sand");
         add(Tags.Items.SAND_RED, "Red Sand");
