@@ -67,7 +67,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
      * @param <T> The type of the target value.
      * @param key The resource key of the target value.
      */
-    public static <R, T extends R> DeferredHolder<R, T> create(ResourceKey<? super T> key) {
+    public static <R, T extends R> DeferredHolder<R, T> create(ResourceKey<R> key) {
         return new DeferredHolder<>(key);
     }
 
@@ -79,9 +79,8 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
      * @see #create(ResourceLocation, ResourceLocation)
      * @see #create(ResourceKey)
      */
-    @SuppressWarnings("unchecked")
-    protected DeferredHolder(ResourceKey<? super T> key) {
-        this.key = (ResourceKey<R>) Objects.requireNonNull(key);
+    protected DeferredHolder(ResourceKey<R> key) {
+        this.key = Objects.requireNonNull(key);
         this.bind(false);
     }
 
@@ -157,16 +156,6 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
      */
     public ResourceKey<R> getKey() {
         return this.key;
-    }
-
-    /**
-     * Gets the inner holder. Only exists for encapsulation reasons.
-     *
-     * @return the inner holder.
-     */
-    @Nullable
-    protected final Holder<R> getHolder() {
-        return this.holder;
     }
 
     /**

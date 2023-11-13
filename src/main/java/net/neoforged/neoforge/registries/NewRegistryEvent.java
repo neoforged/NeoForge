@@ -73,8 +73,7 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
             }
         }
 
-        if (BuiltInRegistries.REGISTRY instanceof WritableRegistry<?> rootRegistry)
-            rootRegistry.freeze();
+        ((WritableRegistry<?>) BuiltInRegistries.REGISTRY).freeze();
 
         if (aggregate.getSuppressed().length > 0)
             LOGGER.error(LogUtils.FATAL_MARKER, "Failed to create some forge registries, see suppressed exceptions for details", aggregate);

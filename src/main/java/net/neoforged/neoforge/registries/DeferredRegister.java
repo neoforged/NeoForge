@@ -100,7 +100,7 @@ public class DeferredRegister<T> {
     private boolean seenRegisterEvent = false;
     private boolean registeredEventBus = false;
 
-    private DeferredRegister(ResourceKey<? extends Registry<T>> registryKey, String namespace) {
+    protected DeferredRegister(ResourceKey<? extends Registry<T>> registryKey, String namespace) {
         this.registryKey = registryKey;
         this.namespace = namespace;
     }
