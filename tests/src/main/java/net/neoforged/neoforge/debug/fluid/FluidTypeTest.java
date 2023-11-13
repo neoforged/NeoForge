@@ -15,6 +15,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BucketItem;
@@ -75,12 +76,12 @@ public class FluidTypeTest {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, ID);
 
     private static BaseFlowingFluid.Properties fluidProperties() {
-        return new BaseFlowingFluid.Properties(TEST_FLUID_TYPE, TEST_FLUID, TEST_FLUID_FLOWING)
+        return new BaseFlowingFluid.Properties(TEST_FLUID_TYPE::value, TEST_FLUID, TEST_FLUID_FLOWING)
                 .block(TEST_FLUID_BLOCK)
                 .bucket(TEST_FLUID_BUCKET);
     }
 
-    private static final DeferredHolder<FluidType, FluidType> TEST_FLUID_TYPE = FLUID_TYPES.register("test_fluid", () -> new FluidType(FluidType.Properties.create().supportsBoating(true).canHydrate(true)) {
+    private static final Holder<FluidType> TEST_FLUID_TYPE = FLUID_TYPES.register("test_fluid", () -> new FluidType(FluidType.Properties.create().supportsBoating(true).canHydrate(true)) {
         @Override
         public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
             consumer.accept(new IClientFluidTypeExtensions() {
@@ -168,8 +169,8 @@ public class FluidTypeTest {
 
     private void commonSetup(FMLCommonSetupEvent event) {
         // Add Interactions for sources
-        FluidInteractionRegistry.addInteraction(TEST_FLUID_TYPE.get(), new FluidInteractionRegistry.InteractionInformation(NeoForgeMod.LAVA_TYPE.value(), Blocks.GOLD_BLOCK.defaultBlockState()));
-        FluidInteractionRegistry.addInteraction(NeoForgeMod.WATER_TYPE.value(), new FluidInteractionRegistry.InteractionInformation(TEST_FLUID_TYPE.get(), state -> state.isSource() ? Blocks.DIAMOND_BLOCK.defaultBlockState() : Blocks.IRON_BLOCK.defaultBlockState()));
+        FluidInteractionRegistry.addInteraction(TEST_FLUID_TYPE.value(), new FluidInteractionRegistry.InteractionInformation(NeoForgeMod.LAVA_TYPE.value(), Blocks.GOLD_BLOCK.defaultBlockState()));
+        FluidInteractionRegistry.addInteraction(NeoForgeMod.WATER_TYPE.value(), new FluidInteractionRegistry.InteractionInformation(TEST_FLUID_TYPE.value(), state -> state.isSource() ? Blocks.DIAMOND_BLOCK.defaultBlockState() : Blocks.IRON_BLOCK.defaultBlockState()));
 
         // Log Fluid Types for all fluids
         event.enqueueWork(() -> BuiltInRegistries.FLUID.forEach(fluid -> logger.info("Fluid {} has FluidType {}", BuiltInRegistries.FLUID.getKey(fluid), NeoForgeRegistries.FLUID_TYPES.getKey(fluid.getFluidType()))));

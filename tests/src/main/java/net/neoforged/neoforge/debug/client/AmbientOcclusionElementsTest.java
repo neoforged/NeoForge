@@ -5,10 +5,11 @@
 
 package net.neoforged.neoforge.debug.client;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -16,7 +17,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
@@ -27,17 +28,17 @@ public class AmbientOcclusionElementsTest {
     private static final boolean ENABLED = false;
 
     public static final String MOD_ID = "ambient_occlusion_elements_test";
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MOD_ID);
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
+    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.blocks(MOD_ID);
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.items(MOD_ID);
 
-    public static final DeferredHolder<Block, Block> AO_BLOCK_SHADE = BLOCKS.register("ambient_occlusion_shade", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
-    public static final DeferredHolder<Block, Block> AO_BLOCK_NO_SHADE = BLOCKS.register("ambient_occlusion_no_shade", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
-    public static final DeferredHolder<Block, Block> NO_AO_BLOCK_SHADE = BLOCKS.register("no_ambient_occlusion_shade", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
-    public static final DeferredHolder<Block, Block> NO_AO_BLOCK_NO_SHADE = BLOCKS.register("no_ambient_occlusion_no_shade", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
-    public static final DeferredHolder<Item, Item> AO_BLOCK_SHADE_ITEM = ITEMS.register("ambient_occlusion_shade", () -> new BlockItem(AO_BLOCK_SHADE.get(), new Item.Properties()));
-    public static final DeferredHolder<Item, Item> AO_BLOCK_NO_SHADE_ITEM = ITEMS.register("ambient_occlusion_no_shade", () -> new BlockItem(AO_BLOCK_NO_SHADE.get(), new Item.Properties()));
-    public static final DeferredHolder<Item, Item> NO_AO_BLOCK_SHADE_ITEM = ITEMS.register("no_ambient_occlusion_shade", () -> new BlockItem(NO_AO_BLOCK_SHADE.get(), new Item.Properties()));
-    public static final DeferredHolder<Item, Item> NO_AO_BLOCK_NO_SHADE_ITEM = ITEMS.register("no_ambient_occlusion_no_shade", () -> new BlockItem(NO_AO_BLOCK_NO_SHADE.get(), new Item.Properties()));
+    public static final Holder<Block> AO_BLOCK_SHADE = BLOCKS.block("ambient_occlusion_shade", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
+    public static final Holder<Block> AO_BLOCK_NO_SHADE = BLOCKS.block("ambient_occlusion_no_shade", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
+    public static final Holder<Block> NO_AO_BLOCK_SHADE = BLOCKS.block("no_ambient_occlusion_shade", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
+    public static final Holder<Block> NO_AO_BLOCK_NO_SHADE = BLOCKS.block("no_ambient_occlusion_no_shade", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
+    public static final DeferredItem<BlockItem> AO_BLOCK_SHADE_ITEM = ITEMS.blockItem("ambient_occlusion_shade", AO_BLOCK_SHADE, new Item.Properties());
+    public static final DeferredItem<BlockItem> AO_BLOCK_NO_SHADE_ITEM = ITEMS.blockItem("ambient_occlusion_no_shade", AO_BLOCK_NO_SHADE, new Item.Properties());
+    public static final DeferredItem<BlockItem> NO_AO_BLOCK_SHADE_ITEM = ITEMS.blockItem("no_ambient_occlusion_shade", NO_AO_BLOCK_SHADE, new Item.Properties());
+    public static final DeferredItem<BlockItem> NO_AO_BLOCK_NO_SHADE_ITEM = ITEMS.blockItem("no_ambient_occlusion_no_shade", NO_AO_BLOCK_NO_SHADE, new Item.Properties());
 
     public AmbientOcclusionElementsTest() {
         if (!ENABLED)
@@ -51,10 +52,10 @@ public class AmbientOcclusionElementsTest {
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
-            event.accept(AO_BLOCK_SHADE_ITEM);
-            event.accept(AO_BLOCK_NO_SHADE_ITEM);
-            event.accept(NO_AO_BLOCK_SHADE_ITEM);
-            event.accept(NO_AO_BLOCK_NO_SHADE_ITEM);
+            event.accept((ItemLike) AO_BLOCK_SHADE_ITEM);
+            event.accept((ItemLike) AO_BLOCK_NO_SHADE_ITEM);
+            event.accept((ItemLike) NO_AO_BLOCK_SHADE_ITEM);
+            event.accept((ItemLike) NO_AO_BLOCK_NO_SHADE_ITEM);
         }
     }
 }

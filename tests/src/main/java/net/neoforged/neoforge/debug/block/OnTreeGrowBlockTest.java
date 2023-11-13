@@ -8,10 +8,9 @@ package net.neoforged.neoforge.debug.block;
 import java.util.function.BiConsumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -25,7 +24,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
@@ -39,10 +39,10 @@ public class OnTreeGrowBlockTest {
 
     static final String ID = "on_tree_grow_block_test";
 
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Registries.BLOCK, ID);
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, ID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.blocks(ID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.items(ID);
 
-    public static final DeferredHolder<Block, Block> TEST_GRASS_BLOCK = BLOCKS.register("test_grass_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).destroyTime(1.5f)) {
+    public static final Holder<Block> TEST_GRASS_BLOCK = BLOCKS.register("test_grass_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).destroyTime(1.5f)) {
         @Override
         public boolean canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, IPlantable plantable) {
             return plantable instanceof SaplingBlock;
@@ -54,19 +54,19 @@ public class OnTreeGrowBlockTest {
             if (config.forceDirt) {
                 return false;
             } else {
-                placeFunction.accept(pos, TEST_DIRT.get().defaultBlockState());
+                placeFunction.accept(pos, TEST_DIRT.value().defaultBlockState());
                 return true;
             }
         }
     });
-    public static final DeferredHolder<Block, Block> TEST_DIRT = BLOCKS.register("test_dirt", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).destroyTime(1.5f)) {
+    public static final Holder<Block> TEST_DIRT = BLOCKS.register("test_dirt", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).destroyTime(1.5f)) {
         @Override
         public boolean canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, IPlantable plantable) {
             return plantable instanceof SaplingBlock;
         }
     });
-    public static final DeferredHolder<Item, Item> TEST_GRASS_BLOCK_ITEM = ITEMS.register("test_grass_block", () -> new BlockItem(TEST_GRASS_BLOCK.get(), new Item.Properties()));
-    public static final DeferredHolder<Item, Item> TEST_DIRT_ITEM = ITEMS.register("test_dirt", () -> new BlockItem(TEST_DIRT.get(), new Item.Properties()));
+    public static final DeferredItem<BlockItem> TEST_GRASS_BLOCK_ITEM = ITEMS.blockItem("test_grass_block", TEST_GRASS_BLOCK);
+    public static final DeferredItem<BlockItem> TEST_DIRT_ITEM = ITEMS.blockItem("test_dirt", TEST_DIRT);
 
     public OnTreeGrowBlockTest() {
         if (ENABLED) {

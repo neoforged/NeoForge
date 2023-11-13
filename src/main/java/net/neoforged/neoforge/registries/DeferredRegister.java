@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -446,6 +447,34 @@ public class DeferredRegister<T> {
          * @see #blockItem(String, Supplier, Item.Properties)
          */
         public DeferredItem<BlockItem> blockItem(String name, Supplier<? extends Block> block) {
+            return this.blockItem(name, block, new Item.Properties());
+        }
+
+        /**
+         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and 
+         * returns a {@link DeferredItem} that will be populated with the created item automatically.
+         *
+         * @param name The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param block The holder for the block to create a {@link BlockItem} for.
+         * @param properties The properties for the created {@link BlockItem}.
+         * @return A {@link DeferredItem} that will track updates from the registry for this item.
+         * @see #blockItem(String, Supplier)
+         */
+        public DeferredItem<BlockItem> blockItem(String name, Holder<Block> block, Item.Properties properties) {
+            return this.register(name, key -> new BlockItem(block.value(), properties));
+        }
+
+        /**
+         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and 
+         * returns a {@link DeferredItem} that will be populated with the created item automatically. 
+         * This method uses the default {@link Item.Properties}.
+         *
+         * @param name The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param block The holder for the block to create a {@link BlockItem} for.
+         * @return A {@link DeferredItem} that will track updates from the registry for this item.
+         * @see #blockItem(String, Supplier, Item.Properties)
+         */
+        public DeferredItem<BlockItem> blockItem(String name, Holder<Block> block) {
             return this.blockItem(name, block, new Item.Properties());
         }
 
