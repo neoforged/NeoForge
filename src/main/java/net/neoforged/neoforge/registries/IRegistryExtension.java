@@ -8,6 +8,9 @@ package net.neoforged.neoforge.registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.registries.callback.AddCallback;
+import net.neoforged.neoforge.registries.callback.BakeCallback;
+import net.neoforged.neoforge.registries.callback.ClearCallback;
 import net.neoforged.neoforge.registries.callback.RegistryCallback;
 
 /**
@@ -31,19 +34,24 @@ public interface IRegistryExtension<T> {
     /**
      * Adds a callback to this registry.
      * <p>
-     * The callback will be called when the registry is added to, baked, or cleared.
+     * Depending on the interfaces implemented by the object,
+     * the callback will be called when the registry is
+     * {@linkplain AddCallback added to},
+     * {@linkplain BakeCallback baked},
+     * and/or {@linkplain ClearCallback cleared}.
      *
      * @param callback the callback to add
      */
     void addCallback(RegistryCallback<T> callback);
 
     /**
-     * Adds a callback to this registry.
+     * Adds a lambda-implemented callback to this registry.
      * <p>
      * The callback will be called when the registry is added to, baked, or cleared.
+     * The {@code Class} parameter is used to determine the lambda type.
      *
      * @param type     the type of the callback to add
-     * @param callback The callback to add
+     * @param callback the callback to add
      */
     default <C extends RegistryCallback<T>> void addCallback(Class<C> type, C callback) {
         addCallback(callback);

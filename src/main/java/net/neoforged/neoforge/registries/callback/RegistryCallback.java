@@ -5,4 +5,10 @@
 
 package net.neoforged.neoforge.registries.callback;
 
+import net.neoforged.neoforge.registries.IRegistryExtension;
+
+/**
+ * Marker interface for registry callbacks.
+ * Register to {@link IRegistryExtension#addCallback(RegistryCallback)}.
+ */
 public sealed interface RegistryCallback<T> permits AddCallback, BakeCallback, ClearCallback {}
