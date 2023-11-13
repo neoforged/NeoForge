@@ -71,14 +71,14 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
 
     @Override
     public ResourceLocation resolve(ResourceLocation name) {
-        while (true) {
-            if (this.containsKey(name))
-                return name;
-            ResourceLocation nextName = this.aliases.get(name);
-            if (nextName == null)
-                return name;
-            name = nextName;
-        }
+        if (this.containsKey(name))
+            return name;
+
+        ResourceLocation alias = this.aliases.get(name);
+        if (alias == null)
+            return name;
+
+        return resolve(alias);
     }
 
     @Override
