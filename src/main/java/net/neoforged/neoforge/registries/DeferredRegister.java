@@ -564,7 +564,7 @@ public class DeferredRegister<T> {
         }
 
         /**
-         * Adds a new {@link Item} with the given {@link Item.Properties properties} to the list of entries to be registered and 
+         * Adds a new {@link Item} with the given {@link Item.Properties properties} to the list of entries to be registered and
          * returns a {@link DeferredItem} that will be populated with the created item automatically.
          * 
          * @param name  The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
@@ -579,10 +579,10 @@ public class DeferredRegister<T> {
         }
 
         /**
-         * Adds a new {@link Item} with the default {@link Item.Properties properties} to the list of entries to be registered and 
+         * Adds a new {@link Item} with the default {@link Item.Properties properties} to the list of entries to be registered and
          * returns a {@link DeferredItem} that will be populated with the created item automatically.
          *
-         * @param name  The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param name The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
          * @see #registerItem(String, Function, Item.Properties)
          * @see #registerItem(String, Function)

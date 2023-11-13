@@ -28,17 +28,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     /**
-     * The resource key of the target object.
-     */
-    protected final ResourceKey<R> key;
-
-    /**
-     * The currently cached value.
-     */
-    @Nullable
-    private Holder<R> holder = null;
-
-    /**
      * Creates a new DeferredHolder targeting the value with the specified name in the specified registry.
      *
      * @param <T>         The type of the target value.
@@ -70,6 +59,17 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     public static <R, T extends R> DeferredHolder<R, T> create(ResourceKey<R> key) {
         return new DeferredHolder<>(key);
     }
+
+    /**
+     * The resource key of the target object.
+     */
+    protected final ResourceKey<R> key;
+
+    /**
+     * The currently cached value.
+     */
+    @Nullable
+    private Holder<R> holder = null;
 
     /**
      * Creates a new DeferredHolder with a ResourceKey.<br> Attempts to bind immediately if possible.
