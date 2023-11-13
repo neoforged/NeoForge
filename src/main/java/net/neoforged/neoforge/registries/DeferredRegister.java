@@ -78,7 +78,7 @@ public class DeferredRegister<T> {
      * @param key       the key of the registry to reference. May come from another DeferredRegister through {@link #getRegistryKey()}.
      * @param namespace the namespace for all objects registered to this DeferredRegister
      * @see #create(Registry, String)
-     * @see #create(ResourceLocation, String) 
+     * @see #create(ResourceLocation, String)
      * @see #items(String)
      * @see #blocks(String)
      */
@@ -185,7 +185,7 @@ public class DeferredRegister<T> {
      * Create a {@link DeferredHolder} or an inheriting type to be stored.
      * 
      * @param registryKey The key of the registry.
-     * @param key The resource location of the entry.
+     * @param key         The resource location of the entry.
      * @return The new instance of {@link DeferredHolder} or an inheriting type.
      * @param <I> The specific type of the entry.
      */
@@ -423,11 +423,11 @@ public class DeferredRegister<T> {
         }
 
         /**
-         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and 
+         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and
          * returns a {@link DeferredItem} that will be populated with the created item automatically.
          *
-         * @param name The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
-         * @param block The supplier for the block to create a {@link BlockItem} for.
+         * @param name       The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param block      The supplier for the block to create a {@link BlockItem} for.
          * @param properties The properties for the created {@link BlockItem}.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
          * @see #blockItem(String, Supplier)
@@ -437,11 +437,11 @@ public class DeferredRegister<T> {
         }
 
         /**
-         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and 
-         * returns a {@link DeferredItem} that will be populated with the created item automatically. 
+         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and
+         * returns a {@link DeferredItem} that will be populated with the created item automatically.
          * This method uses the default {@link Item.Properties}.
          *
-         * @param name The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param name  The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @param block The supplier for the block to create a {@link BlockItem} for.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
          * @see #blockItem(String, Supplier, Item.Properties)
@@ -451,11 +451,11 @@ public class DeferredRegister<T> {
         }
 
         /**
-         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and 
+         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and
          * returns a {@link DeferredItem} that will be populated with the created item automatically.
          *
-         * @param name The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
-         * @param block The holder for the block to create a {@link BlockItem} for.
+         * @param name       The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param block      The holder for the block to create a {@link BlockItem} for.
          * @param properties The properties for the created {@link BlockItem}.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
          * @see #blockItem(String, Supplier)
@@ -465,11 +465,11 @@ public class DeferredRegister<T> {
         }
 
         /**
-         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and 
-         * returns a {@link DeferredItem} that will be populated with the created item automatically. 
+         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and
+         * returns a {@link DeferredItem} that will be populated with the created item automatically.
          * This method uses the default {@link Item.Properties}.
          *
-         * @param name The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param name  The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @param block The holder for the block to create a {@link BlockItem} for.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
          * @see #blockItem(String, Supplier, Item.Properties)

@@ -34,7 +34,6 @@ public class DeferredBlock<T extends Block> extends DeferredHolder<Block, T> imp
         return new DeferredBlock<>(key);
     }
 
-
     protected DeferredBlock(ResourceKey<Block> key) {
         super(key);
     }

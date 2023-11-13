@@ -24,7 +24,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
-import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
