@@ -95,7 +95,7 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tag(Tags.Items.FOODS_SOUPS).add(Items.BEETROOT_SOUP, Items.MUSHROOM_STEW, Items.RABBIT_STEW, Items.SUSPICIOUS_STEW);
         tag(Tags.Items.FOODS_CANDIES);
         tag(Tags.Items.FOODS_EDIBLE_WHEN_PLACED).add(Items.CAKE);
-        tag(Tags.Items.FOODS_FOOD_POISONING).add(Items.POISONOUS_POTATO, Items.ROTTEN_FLESH, Items.SPIDER_EYE, Items.PUFFERFISH);
+        tag(Tags.Items.FOODS_FOOD_POISONING).add(Items.POISONOUS_POTATO, Items.PUFFERFISH, Items.SPIDER_EYE, Items.CHICKEN, Items.ROTTEN_FLESH);
         tag(Tags.Items.FOODS)
                 .add(Items.BAKED_POTATO, Items.PUMPKIN_PIE, Items.HONEY_BOTTLE, Items.DRIED_KELP)
                 .addTags(Tags.Items.FOODS_FRUITS, Tags.Items.FOODS_VEGETABLES, Tags.Items.FOODS_BERRIES, Tags.Items.FOODS_BREADS, Tags.Items.FOODS_COOKIES,
