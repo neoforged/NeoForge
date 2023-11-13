@@ -38,8 +38,8 @@ public class OnTreeGrowBlockTest {
 
     static final String ID = "on_tree_grow_block_test";
 
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.blocks(ID);
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.items(ID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ID);
 
     public static final Holder<Block> TEST_GRASS_BLOCK = BLOCKS.register("test_grass_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).destroyTime(1.5f)) {
         @Override
@@ -64,8 +64,8 @@ public class OnTreeGrowBlockTest {
             return plantable instanceof SaplingBlock;
         }
     });
-    public static final DeferredItem<BlockItem> TEST_GRASS_BLOCK_ITEM = ITEMS.blockItem("test_grass_block", TEST_GRASS_BLOCK);
-    public static final DeferredItem<BlockItem> TEST_DIRT_ITEM = ITEMS.blockItem("test_dirt", TEST_DIRT);
+    public static final DeferredItem<BlockItem> TEST_GRASS_BLOCK_ITEM = ITEMS.registerBlockItem("test_grass_block", TEST_GRASS_BLOCK);
+    public static final DeferredItem<BlockItem> TEST_DIRT_ITEM = ITEMS.registerBlockItem("test_dirt", TEST_DIRT);
 
     public OnTreeGrowBlockTest() {
         if (ENABLED) {

@@ -63,8 +63,8 @@ public class DeferredRegister<T> {
      * @param namespace the namespace for all objects registered to this DeferredRegister
      * @see #create(ResourceKey, String)
      * @see #create(ResourceLocation, String)
-     * @see #items(String)
-     * @see #blocks(String)
+     * @see #createItems(String)
+     * @see #createBlocks(String)
      */
     public static <T> DeferredRegister<T> create(Registry<T> registry, String namespace) {
         return new DeferredRegister<>(registry.key(), namespace);
@@ -79,8 +79,8 @@ public class DeferredRegister<T> {
      * @param namespace the namespace for all objects registered to this DeferredRegister
      * @see #create(Registry, String)
      * @see #create(ResourceLocation, String)
-     * @see #items(String)
-     * @see #blocks(String)
+     * @see #createItems(String)
+     * @see #createBlocks(String)
      */
     public static <T> DeferredRegister<T> create(ResourceKey<? extends Registry<T>> key, String namespace) {
         return new DeferredRegister<>(key, namespace);
@@ -95,8 +95,8 @@ public class DeferredRegister<T> {
      * @param modid        The namespace for all objects registered to this DeferredRegister
      * @see #create(Registry, String)
      * @see #create(ResourceKey, String)
-     * @see #items(String)
-     * @see #blocks(String)
+     * @see #createItems(String)
+     * @see #createBlocks(String)
      */
     public static <B> DeferredRegister<B> create(ResourceLocation registryName, String modid) {
         return new DeferredRegister<>(ResourceKey.createRegistryKey(registryName), modid);
@@ -109,9 +109,9 @@ public class DeferredRegister<T> {
      * @see #create(Registry, String)
      * @see #create(ResourceKey, String)
      * @see #create(ResourceLocation, String)
-     * @see #blocks(String)
+     * @see #createBlocks(String)
      */
-    public static DeferredRegister.Items items(String modid) {
+    public static DeferredRegister.Items createItems(String modid) {
         return new Items(modid);
     }
 
@@ -122,9 +122,9 @@ public class DeferredRegister<T> {
      * @see #create(Registry, String)
      * @see #create(ResourceKey, String)
      * @see #create(ResourceLocation, String)
-     * @see #items(String)
+     * @see #createItems(String)
      */
-    public static DeferredRegister.Blocks blocks(String modid) {
+    public static DeferredRegister.Blocks createBlocks(String modid) {
         return new Blocks(modid);
     }
 
@@ -367,9 +367,9 @@ public class DeferredRegister<T> {
          * @param func  A factory for the new block. The factory should not cache the created block.
          * @param props The properties for the created block.
          * @return A {@link DeferredHolder} that will track updates from the registry for this block.
-         * @see #createBlock(String, BlockBehaviour.Properties)
+         * @see #registerBlock(String, BlockBehaviour.Properties)
          */
-        public <B extends Block> DeferredBlock<B> createBlock(String name, Function<BlockBehaviour.Properties, ? extends B> func, BlockBehaviour.Properties props) {
+        public <B extends Block> DeferredBlock<B> registerBlock(String name, Function<BlockBehaviour.Properties, ? extends B> func, BlockBehaviour.Properties props) {
             return this.register(name, () -> func.apply(props));
         }
 
@@ -379,10 +379,10 @@ public class DeferredRegister<T> {
          * @param name  The new block's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @param props The properties for the created block.
          * @return A {@link DeferredHolder} that will track updates from the registry for this block.
-         * @see #createBlock(String, Function, BlockBehaviour.Properties)
+         * @see #registerBlock(String, Function, BlockBehaviour.Properties)
          */
-        public DeferredBlock<Block> createBlock(String name, BlockBehaviour.Properties props) {
-            return this.createBlock(name, Block::new, props);
+        public DeferredBlock<Block> registerBlock(String name, BlockBehaviour.Properties props) {
+            return this.registerBlock(name, Block::new, props);
         }
 
         @Override
@@ -434,13 +434,13 @@ public class DeferredRegister<T> {
          * @param block      The supplier for the block to create a {@link BlockItem} for.
          * @param properties The properties for the created {@link BlockItem}.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #createBlockItem(String, Supplier)
-         * @see #createBlockItem(String, Holder, Item.Properties)
-         * @see #createBlockItem(String, Holder)
-         * @see #createBlockItem(DeferredHolder, Item.Properties)
-         * @see #createBlockItem(DeferredHolder)
+         * @see #registerBlockItem(String, Supplier)
+         * @see #registerBlockItem(String, Holder, Item.Properties)
+         * @see #registerBlockItem(String, Holder)
+         * @see #registerBlockItem(DeferredHolder, Item.Properties)
+         * @see #registerBlockItem(DeferredHolder)
          */
-        public DeferredItem<BlockItem> createBlockItem(String name, Supplier<? extends Block> block, Item.Properties properties) {
+        public DeferredItem<BlockItem> registerBlockItem(String name, Supplier<? extends Block> block, Item.Properties properties) {
             return this.register(name, key -> new BlockItem(block.get(), properties));
         }
 
@@ -452,14 +452,14 @@ public class DeferredRegister<T> {
          * @param name  The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @param block The supplier for the block to create a {@link BlockItem} for.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #createBlockItem(String, Supplier, Item.Properties)
-         * @see #createBlockItem(String, Holder, Item.Properties)
-         * @see #createBlockItem(String, Holder)
-         * @see #createBlockItem(DeferredHolder, Item.Properties)
-         * @see #createBlockItem(DeferredHolder)
+         * @see #registerBlockItem(String, Supplier, Item.Properties)
+         * @see #registerBlockItem(String, Holder, Item.Properties)
+         * @see #registerBlockItem(String, Holder)
+         * @see #registerBlockItem(DeferredHolder, Item.Properties)
+         * @see #registerBlockItem(DeferredHolder)
          */
-        public DeferredItem<BlockItem> createBlockItem(String name, Supplier<? extends Block> block) {
-            return this.createBlockItem(name, block, new Item.Properties());
+        public DeferredItem<BlockItem> registerBlockItem(String name, Supplier<? extends Block> block) {
+            return this.registerBlockItem(name, block, new Item.Properties());
         }
 
         /**
@@ -470,13 +470,13 @@ public class DeferredRegister<T> {
          * @param block      The holder for the block to create a {@link BlockItem} for.
          * @param properties The properties for the created {@link BlockItem}.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #createBlockItem(String, Supplier, Item.Properties)
-         * @see #createBlockItem(String, Supplier)
-         * @see #createBlockItem(String, Holder)
-         * @see #createBlockItem(DeferredHolder, Item.Properties)
-         * @see #createBlockItem(DeferredHolder)
+         * @see #registerBlockItem(String, Supplier, Item.Properties)
+         * @see #registerBlockItem(String, Supplier)
+         * @see #registerBlockItem(String, Holder)
+         * @see #registerBlockItem(DeferredHolder, Item.Properties)
+         * @see #registerBlockItem(DeferredHolder)
          */
-        public DeferredItem<BlockItem> createBlockItem(String name, Holder<Block> block, Item.Properties properties) {
+        public DeferredItem<BlockItem> registerBlockItem(String name, Holder<Block> block, Item.Properties properties) {
             return this.register(name, key -> new BlockItem(block.value(), properties));
         }
 
@@ -488,14 +488,14 @@ public class DeferredRegister<T> {
          * @param name  The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @param block The holder for the block to create a {@link BlockItem} for.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #createBlockItem(String, Supplier, Item.Properties)
-         * @see #createBlockItem(String, Supplier)
-         * @see #createBlockItem(String, Holder, Item.Properties)
-         * @see #createBlockItem(DeferredHolder, Item.Properties)
-         * @see #createBlockItem(DeferredHolder)
+         * @see #registerBlockItem(String, Supplier, Item.Properties)
+         * @see #registerBlockItem(String, Supplier)
+         * @see #registerBlockItem(String, Holder, Item.Properties)
+         * @see #registerBlockItem(DeferredHolder, Item.Properties)
+         * @see #registerBlockItem(DeferredHolder)
          */
-        public DeferredItem<BlockItem> createBlockItem(String name, Holder<Block> block) {
-            return this.createBlockItem(name, block, new Item.Properties());
+        public DeferredItem<BlockItem> registerBlockItem(String name, Holder<Block> block) {
+            return this.registerBlockItem(name, block, new Item.Properties());
         }
 
         /**
@@ -506,14 +506,14 @@ public class DeferredRegister<T> {
          * @param block      The {@link DeferredHolder} of the {@link Block} for the {@link BlockItem}.
          * @param properties The properties for the created {@link BlockItem}.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #createBlockItem(String, Supplier, Item.Properties)
-         * @see #createBlockItem(String, Supplier)
-         * @see #createBlockItem(String, Holder, Item.Properties)
-         * @see #createBlockItem(String, Holder)
-         * @see #createBlockItem(DeferredHolder)
+         * @see #registerBlockItem(String, Supplier, Item.Properties)
+         * @see #registerBlockItem(String, Supplier)
+         * @see #registerBlockItem(String, Holder, Item.Properties)
+         * @see #registerBlockItem(String, Holder)
+         * @see #registerBlockItem(DeferredHolder)
          */
-        public DeferredItem<BlockItem> createBlockItem(DeferredHolder<Block, ? extends Block> block, Item.Properties properties) {
-            return this.createBlockItem(block.getId().getPath(), (Holder<Block>) block, properties);
+        public DeferredItem<BlockItem> registerBlockItem(DeferredHolder<Block, ? extends Block> block, Item.Properties properties) {
+            return this.registerBlockItem(block.getId().getPath(), (Holder<Block>) block, properties);
         }
 
         /**
@@ -523,14 +523,14 @@ public class DeferredRegister<T> {
          * 
          * @param block The {@link DeferredHolder} of the {@link Block} for the {@link BlockItem}.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #createBlockItem(String, Supplier, Item.Properties)
-         * @see #createBlockItem(String, Supplier)
-         * @see #createBlockItem(String, Holder, Item.Properties)
-         * @see #createBlockItem(String, Holder)
-         * @see #createBlockItem(DeferredHolder, Item.Properties)
+         * @see #registerBlockItem(String, Supplier, Item.Properties)
+         * @see #registerBlockItem(String, Supplier)
+         * @see #registerBlockItem(String, Holder, Item.Properties)
+         * @see #registerBlockItem(String, Holder)
+         * @see #registerBlockItem(DeferredHolder, Item.Properties)
          */
-        public DeferredItem<BlockItem> createBlockItem(DeferredHolder<Block, ? extends Block> block) {
-            return this.createBlockItem(block, new Item.Properties());
+        public DeferredItem<BlockItem> registerBlockItem(DeferredHolder<Block, ? extends Block> block) {
+            return this.registerBlockItem(block, new Item.Properties());
         }
 
         /**
@@ -540,11 +540,11 @@ public class DeferredRegister<T> {
          * @param func  A factory for the new item. The factory should not cache the created item.
          * @param props The properties for the created item.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #createItem(String, Function)
-         * @see #createItem(String, Item.Properties)
-         * @see #createItem(String)
+         * @see #registerItem(String, Function)
+         * @see #registerItem(String, Item.Properties)
+         * @see #registerItem(String)
          */
-        public <I extends Item> DeferredItem<I> createItem(String name, Function<Item.Properties, ? extends I> func, Item.Properties props) {
+        public <I extends Item> DeferredItem<I> registerItem(String name, Function<Item.Properties, ? extends I> func, Item.Properties props) {
             return this.register(name, () -> func.apply(props));
         }
 
@@ -555,12 +555,12 @@ public class DeferredRegister<T> {
          * @param name The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @param func A factory for the new item. The factory should not cache the created item.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #createItem(String, Function, Item.Properties)
-         * @see #createItem(String, Item.Properties)
-         * @see #createItem(String)
+         * @see #registerItem(String, Function, Item.Properties)
+         * @see #registerItem(String, Item.Properties)
+         * @see #registerItem(String)
          */
-        public <I extends Item> DeferredItem<I> createItem(String name, Function<Item.Properties, ? extends I> func) {
-            return this.createItem(name, func, new Item.Properties());
+        public <I extends Item> DeferredItem<I> registerItem(String name, Function<Item.Properties, ? extends I> func) {
+            return this.registerItem(name, func, new Item.Properties());
         }
 
         /**
@@ -570,12 +570,12 @@ public class DeferredRegister<T> {
          * @param name  The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @param props A factory for the new item. The factory should not cache the created item.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #createItem(String, Function, Item.Properties)
-         * @see #createItem(String, Function)
-         * @see #createItem(String)
+         * @see #registerItem(String, Function, Item.Properties)
+         * @see #registerItem(String, Function)
+         * @see #registerItem(String)
          */
-        public DeferredItem<Item> createItem(String name, Item.Properties props) {
-            return this.createItem(name, Item::new, props);
+        public DeferredItem<Item> registerItem(String name, Item.Properties props) {
+            return this.registerItem(name, Item::new, props);
         }
 
         /**
@@ -584,12 +584,12 @@ public class DeferredRegister<T> {
          *
          * @param name  The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #createItem(String, Function, Item.Properties)
-         * @see #createItem(String, Function)
-         * @see #createItem(String, Item.Properties)
+         * @see #registerItem(String, Function, Item.Properties)
+         * @see #registerItem(String, Function)
+         * @see #registerItem(String, Item.Properties)
          */
-        public DeferredItem<Item> createItem(String name) {
-            return this.createItem(name, Item::new, new Item.Properties());
+        public DeferredItem<Item> registerItem(String name) {
+            return this.registerItem(name, Item::new, new Item.Properties());
         }
 
         @Override
