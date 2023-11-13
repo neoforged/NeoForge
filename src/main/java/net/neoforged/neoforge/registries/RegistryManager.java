@@ -11,7 +11,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -27,9 +29,25 @@ import org.slf4j.MarkerFactory;
 public class RegistryManager {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Marker REGISTRIES = MarkerFactory.getMarker("REGISTRIES");
+    private static Set<ResourceLocation> pendingModdedRegistries = new HashSet<>();
     private static Set<ResourceLocation> vanillaRegistryKeys = Set.of();
     private static Map<ResourceLocation, RegistrySnapshot> vanillaSnapshot = null;
     private static Map<ResourceLocation, RegistrySnapshot> frozenSnapshot = null;
+
+    /**
+     * Called by {@link RegistryBuilder} to make sure that modders don't forget to register their registries.
+     */
+    static synchronized void trackModdedRegistry(ResourceLocation registry) {
+        Objects.requireNonNull(registry);
+
+        if (pendingModdedRegistries == null) {
+            throw new IllegalStateException("Attempting to instantiate registry with name " + registry + " after NewRegistryEvent was fired!");
+        }
+
+        if (!pendingModdedRegistries.add(registry)) {
+            throw new IllegalStateException("Registry with name " + registry + " was already instantiated once, cannot instantiate it again!");
+        }
+    }
 
     public static void postNewRegistryEvent() {
         NewRegistryEvent event = new NewRegistryEvent();
@@ -43,6 +61,13 @@ public class RegistryManager {
         dataPackEvent.process();
 
         BuiltInRegistries.REGISTRY.forEach(RegistryManager::postModifyRegistryEvent);
+
+        pendingModdedRegistries.removeIf(BuiltInRegistries.REGISTRY::containsKey);
+        if (!pendingModdedRegistries.isEmpty()) {
+            throw new IllegalStateException("The following registries were created but not registered to NewRegistryEvent:"
+                    + pendingModdedRegistries.stream().map(ResourceLocation::toString).collect(Collectors.joining("\n\t - ", "\n\t - ", "")));
+        }
+        pendingModdedRegistries = null;
     }
 
     public static void postModifyRegistryEvent(Registry<?> registry) {

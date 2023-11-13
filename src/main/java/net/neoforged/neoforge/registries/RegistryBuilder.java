@@ -100,6 +100,8 @@ public class RegistryBuilder<T> {
             registry.setMaxId(this.maxId);
         registry.setSync(this.sync);
 
+        RegistryManager.trackModdedRegistry(registry.key().location());
+
         return registry;
     }
 }
