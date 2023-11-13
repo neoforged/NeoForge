@@ -8,7 +8,7 @@ package net.neoforged.neoforge.registries;
 import com.mojang.serialization.Lifecycle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Objects;
 import net.minecraft.core.DefaultedMappedRegistry;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
@@ -29,6 +29,8 @@ public class RegistryBuilder<T> {
     private boolean sync = false;
 
     public RegistryBuilder(ResourceKey<? extends Registry<T>> registryKey) {
+        Objects.requireNonNull(registryKey);
+
         this.registryKey = registryKey;
     }
 
@@ -84,12 +86,12 @@ public class RegistryBuilder<T> {
 
     /**
      * Creates a new registry from this builder.
-     * Use {@link NewRegistryEvent#create(RegistryBuilder)} or {@link DeferredRegister#makeRegistry(Consumer)}
-     * to not have to call this manually.
-     * All created registries must be registered, see {@link NewRegistryEvent#register(Registry)}.
+     *
+     * <p>The registry will be registered to the game at an appropriate time.
+     * This function can only be called early enough in the mod loading process
+     * (i.e. before the registry events).
      *
      * @return the created registry
-     * @see NewRegistryEvent#register(Registry)
      */
     public Registry<T> create() {
         BaseMappedRegistry<T> registry = this.defaultKey != null
@@ -99,6 +101,8 @@ public class RegistryBuilder<T> {
         if (this.maxId != -1)
             registry.setMaxId(this.maxId);
         registry.setSync(this.sync);
+
+        RegistryManager.addRegistry(registry);
 
         return registry;
     }

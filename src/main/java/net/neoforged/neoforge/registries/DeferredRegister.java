@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.core.Holder;
@@ -135,11 +134,8 @@ public class DeferredRegister<T> {
     private final Map<ResourceLocation, ResourceLocation> aliases = new HashMap<>();
 
     @Nullable
-    private Registry<T> customRegistry;
-    @Nullable
     private RegistryHolder<T> registryHolder;
     private boolean seenRegisterEvent = false;
-    private boolean seenNewRegistryEvent = false;
     private boolean registeredEventBus = false;
 
     protected DeferredRegister(ResourceKey<? extends Registry<T>> registryKey, String namespace) {
@@ -194,17 +190,9 @@ public class DeferredRegister<T> {
     }
 
     /**
-     * This method is used to configure a custom modded registry. It can only be invoked by a single DeferredRegister instance for a given registry key.
-     *
-     * @param consumer A consumer that configures the provided RegistryBuilder during {@link NewRegistryEvent}
-     * @return The {@link Registry} linked to {@link #getRegistryKey()}.
-     */
-    public Registry<T> makeRegistry(final Consumer<RegistryBuilder<T>> consumer) {
-        return makeRegistry(this.registryKey.location(), consumer);
-    }
-
-    /**
-     * Returns a supplier for the {@link Registry} linked to this deferred register. For vanilla registries, this will always return a non-null registry. For modded registries, a non-null registry will only be returned after {@link NewRegistryEvent} fires, or if {@link #makeRegistry(Consumer)} is called on this same DeferredRegister instance.
+     * Returns a supplier for the {@link Registry} linked to this deferred register.
+     * For vanilla registries, this will always return a non-null registry.
+     * For modded registries, a non-null registry will only be returned after the start of the registration phase (i.e. when {@link RegisterEvent} starts firing).
      * <p>
      * To register additional DeferredRegisters for custom modded registries, use {@link #create(ResourceKey, String)} which can take a registry key from {@link #getRegistryKey()}.
      */
@@ -259,7 +247,6 @@ public class DeferredRegister<T> {
             throw new IllegalStateException("Cannot register DeferredRegister to more than one event bus.");
         this.registeredEventBus = true;
         bus.addListener(this::addEntries);
-        bus.addListener(this::createRegistry);
     }
 
     /**
@@ -291,22 +278,6 @@ public class DeferredRegister<T> {
         return this.namespace;
     }
 
-    private Registry<T> makeRegistry(final ResourceLocation registryName, final Consumer<RegistryBuilder<T>> consumer) {
-        if (registryName == null)
-            throw new IllegalStateException("Cannot create a registry without specifying a registry name");
-        if (BuiltInRegistries.REGISTRY.containsKey(registryName) || this.customRegistry != null)
-            throw new IllegalStateException("Cannot create a registry that already exists - " + this.registryKey);
-        if (this.seenNewRegistryEvent)
-            throw new IllegalStateException("Cannot create a registry after NewRegistryEvent was fired");
-
-        RegistryBuilder<T> registryBuilder = new RegistryBuilder<>(this.registryKey);
-        consumer.accept(registryBuilder);
-        this.customRegistry = registryBuilder.create();
-        this.registryHolder = new RegistryHolder<>(this.registryKey);
-        this.registryHolder.registry = this.customRegistry;
-        return this.customRegistry;
-    }
-
     private void addEntries(RegisterEvent event) {
         if (!event.getRegistryKey().equals(this.registryKey)) {
             return;
@@ -317,13 +288,6 @@ public class DeferredRegister<T> {
         for (Entry<DeferredHolder<T, ? extends T>, Supplier<? extends T>> e : entries.entrySet()) {
             event.register(this.registryKey, e.getKey().getId(), () -> e.getValue().get());
             e.getKey().bind(false);
-        }
-    }
-
-    private void createRegistry(NewRegistryEvent event) {
-        this.seenNewRegistryEvent = true;
-        if (this.customRegistry != null) {
-            event.register(this.customRegistry);
         }
     }
 

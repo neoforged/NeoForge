@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.registries;
 
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Lifecycle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
+import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -30,19 +32,67 @@ public class RegistryManager {
     private static Set<ResourceLocation> vanillaRegistryKeys = Set.of();
     private static Map<ResourceLocation, RegistrySnapshot> vanillaSnapshot = null;
     private static Map<ResourceLocation, RegistrySnapshot> frozenSnapshot = null;
+    private static List<Registry<?>> pendingRegistries = new ArrayList<>();
 
-    public static void postNewRegistryEvent() {
-        NewRegistryEvent event = new NewRegistryEvent();
+    /**
+     * Schedule a registry to be registered to {@link BuiltInRegistries#REGISTRY}.
+     * Called from {@link RegistryBuilder#create()}. Do not try to call this directly.
+     */
+    synchronized static void addRegistry(Registry<?> registry) {
+        if (pendingRegistries == null) {
+            throw new IllegalStateException("Too late to add registries, register them in your mod constructor!");
+        }
+
+        ResourceLocation registryName = registry.key().location();
+
+        if (BuiltInRegistries.REGISTRY.containsKey(registryName) || pendingRegistries.stream().anyMatch(reg -> reg.key() == registry.key()))
+            throw new IllegalStateException("Cannot create a registry that already exists - " + registryName);
+
+        pendingRegistries.add(registry);
+    }
+
+    public synchronized static void createRegistries() {
+        List<Registry<?>> moddedStaticRegistries = pendingRegistries;
+        pendingRegistries = null; // Prevent further registration
+
         DataPackRegistryEvent.NewRegistry dataPackEvent = new DataPackRegistryEvent.NewRegistry();
         vanillaRegistryKeys = Set.copyOf(BuiltInRegistries.REGISTRY.keySet());
 
-        ModLoader.get().postEventWrapContainerInModOrder(event);
         ModLoader.get().postEventWrapContainerInModOrder(dataPackEvent);
 
-        event.fill();
+        registerModdedRegistries(moddedStaticRegistries);
         dataPackEvent.process();
 
         BuiltInRegistries.REGISTRY.forEach(RegistryManager::postModifyRegistryEvent);
+    }
+
+    private static void registerModdedRegistries(List<Registry<?>> registries) {
+        RuntimeException aggregate = new RuntimeException();
+
+        ((BaseMappedRegistry<?>) BuiltInRegistries.REGISTRY).unfreeze();
+
+        for (final var registry : registries) {
+            try {
+                registerToRootRegistry(registry);
+            } catch (Throwable t) {
+                aggregate.addSuppressed(t);
+                return;
+            }
+        }
+
+        ((WritableRegistry<?>) BuiltInRegistries.REGISTRY).freeze();
+
+        if (aggregate.getSuppressed().length > 0)
+            LOGGER.error(LogUtils.FATAL_MARKER, "Failed to create some forge registries, see suppressed exceptions for details", aggregate);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static void registerToRootRegistry(Registry<?> registry) {
+        ResourceLocation registryName = registry.key().location();
+        if (BuiltInRegistries.REGISTRY.containsKey(registryName))
+            throw new IllegalStateException("Tried to register new registry for " + registryName);
+
+        ((WritableRegistry) BuiltInRegistries.REGISTRY).register(registry.key(), registry, Lifecycle.stable());
     }
 
     public static void postModifyRegistryEvent(Registry<?> registry) {
