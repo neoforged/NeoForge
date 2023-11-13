@@ -27,6 +27,7 @@ public class RegistryBuilder<T> {
     private ResourceLocation defaultKey;
     private int maxId = -1;
     private boolean sync = false;
+    private boolean registrationCheck = true;
 
     public RegistryBuilder(ResourceKey<? extends Registry<T>> registryKey) {
         this.registryKey = registryKey;
@@ -83,6 +84,15 @@ public class RegistryBuilder<T> {
     }
 
     /**
+     * Disables the safeguard that ensures this registry is registered to {@link NewRegistryEvent} in due time.
+     * <b>DO NOT CALL THIS METHOD UNLESS YOU KNOW WHAT YOU ARE DOING.</b>
+     */
+    public RegistryBuilder<T> disableRegistrationCheck() {
+        this.registrationCheck = false;
+        return this;
+    }
+
+    /**
      * Creates a new registry from this builder.
      * Use {@link NewRegistryEvent#create(RegistryBuilder)} or {@link DeferredRegister#makeRegistry(Consumer)}
      * to not have to call this manually.
@@ -100,7 +110,9 @@ public class RegistryBuilder<T> {
             registry.setMaxId(this.maxId);
         registry.setSync(this.sync);
 
-        RegistryManager.trackModdedRegistry(registry.key().location());
+        if (this.registrationCheck) {
+            RegistryManager.trackModdedRegistry(registry.key().location());
+        }
 
         return registry;
     }
