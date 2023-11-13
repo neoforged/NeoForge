@@ -113,13 +113,13 @@ public class FluidStack {
     }
 
     public void writeToPacket(FriendlyByteBuf buf) {
-        buf.writeRegistryId(BuiltInRegistries.FLUID, getFluid());
+        buf.writeId(BuiltInRegistries.FLUID, getFluid());
         buf.writeVarInt(getAmount());
         buf.writeNbt(tag);
     }
 
     public static FluidStack readFromPacket(FriendlyByteBuf buf) {
-        Fluid fluid = buf.readRegistryId();
+        Fluid fluid = buf.readById(BuiltInRegistries.FLUID);
         int amount = buf.readVarInt();
         CompoundTag tag = buf.readNbt();
         if (fluid == Fluids.EMPTY) return EMPTY;
