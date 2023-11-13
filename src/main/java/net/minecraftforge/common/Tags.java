@@ -356,34 +356,39 @@ public class Tags
          * Apples and other foods that are considered fruits in the culinary field belong in this tag.
          * Cherries would go here as they are considered a "stone fruit" within culinary fields.
          */
-        public static final TagKey<Item> FRUITS_FOODS = tag("foods/fruits");
+        public static final TagKey<Item> FOODS_FRUITS = tag("foods/fruits");
         /**
          * Tomatoes and other foods that are considered vegetables in the culinary field belong in this tag.
          */
-        public static final TagKey<Item> VEGETABLES_FOODS = tag("foods/vegetables");
+        public static final TagKey<Item> FOODS_VEGETABLES = tag("foods/vegetables");
         /**
          * Strawberries, raspberries, and other berry foods belong in this tag.
          * Cherries would NOT go here as they are considered a "stone fruit" within culinary fields.
          */
-        public static final TagKey<Item> BERRIES_FOODS = tag("foods/berries");
-        public static final TagKey<Item> BREADS_FOODS = tag("foods/breads");
-        public static final TagKey<Item> COOKIES_FOODS = tag("foods/cookies");
-        public static final TagKey<Item> RAW_MEATS_FOODS = tag("foods/raw_meats");
-        public static final TagKey<Item> COOKED_MEATS_FOODS = tag("foods/cooked_meats");
-        public static final TagKey<Item> RAW_FISHES_FOODS = tag("foods/raw_fishes");
-        public static final TagKey<Item> COOKED_FISHES_FOODS = tag("foods/cooked_fishes");
+        public static final TagKey<Item> FOODS_BERRIES = tag("foods/berries");
+        public static final TagKey<Item> FOODS_BREADS = tag("foods/breads");
+        public static final TagKey<Item> FOODS_COOKIES = tag("foods/cookies");
+        public static final TagKey<Item> FOODS_RAW_MEATS = tag("foods/raw_meats");
+        public static final TagKey<Item> FOODS_COOKED_MEATS = tag("foods/cooked_meats");
+        public static final TagKey<Item> FOODS_RAW_FISHES = tag("foods/raw_fishes");
+        public static final TagKey<Item> FOODS_COOKED_FISHES = tag("foods/cooked_fishes");
         /**
          * Soups, stews, and other liquid food in bowls belongs in this tag.
          */
-        public static final TagKey<Item> SOUPS_FOODS = tag("foods/soups");
+        public static final TagKey<Item> FOODS_SOUPS = tag("foods/soups");
         /**
          * Sweets and candies like lollipops or chocolate belong in this tag.
          */
-        public static final TagKey<Item> CANDIES_FOODS = tag("foods/candies");
+        public static final TagKey<Item> FOODS_CANDIES = tag("foods/candies");
         /**
          * Foods like cake that can be eaten when placed in the world belong in this tag.
          */
-        public static final TagKey<Item> EDIBLE_WHEN_PLACED_FOODS = tag("foods/edible_when_placed");
+        public static final TagKey<Item> FOODS_EDIBLE_WHEN_PLACED = tag("foods/edible_when_placed");
+        /**
+         * For foods that inflict food poisoning-like effects.
+         * Examples are Rotten Flesh's Hunger or Pufferfish's Nausea, or Poisonous Potato's Poison.
+         */
+        public static final TagKey<Item> FOODS_FOOD_POISONING = tag("foods/food_poisoning");
         public static final TagKey<Item> GEMS = tag("gems");
         public static final TagKey<Item> GEMS_DIAMOND = tag("gems/diamond");
         public static final TagKey<Item> GEMS_EMERALD = tag("gems/emerald");

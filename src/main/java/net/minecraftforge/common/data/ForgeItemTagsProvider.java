@@ -83,23 +83,25 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         copy(Tags.Blocks.FENCES, Tags.Items.FENCES);
         copy(Tags.Blocks.FENCES_NETHER_BRICK, Tags.Items.FENCES_NETHER_BRICK);
         copy(Tags.Blocks.FENCES_WOODEN, Tags.Items.FENCES_WOODEN);
-        tag(Tags.Items.FRUITS_FOODS).add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
-        tag(Tags.Items.VEGETABLES_FOODS).add(Items.CARROT, Items.GOLDEN_CARROT, Items.POTATO, Items.MELON_SLICE, Items.BEETROOT);
-        tag(Tags.Items.BERRIES_FOODS).add(Items.SWEET_BERRIES, Items.GLOW_BERRIES);
-        tag(Tags.Items.BREADS_FOODS).add(Items.BREAD);
-        tag(Tags.Items.COOKIES_FOODS).add(Items.COOKIE);
-        tag(Tags.Items.RAW_MEATS_FOODS).add(Items.BEEF, Items.CHICKEN, Items.RABBIT, Items.MUTTON);
-        tag(Tags.Items.RAW_FISHES_FOODS).add(Items.COD, Items.SALMON, Items.TROPICAL_FISH, Items.PUFFERFISH);
-        tag(Tags.Items.COOKED_MEATS_FOODS).add(Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_RABBIT, Items.COOKED_MUTTON);
-        tag(Tags.Items.COOKED_FISHES_FOODS).add(Items.COOKED_COD, Items.COOKED_SALMON);
-        tag(Tags.Items.SOUPS_FOODS).add(Items.BEETROOT_SOUP, Items.MUSHROOM_STEW, Items.RABBIT_STEW, Items.SUSPICIOUS_STEW);
-        tag(Tags.Items.CANDIES_FOODS);
-        tag(Tags.Items.EDIBLE_WHEN_PLACED_FOODS).add(Items.CAKE);
+        tag(Tags.Items.FOODS_FRUITS).add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
+        tag(Tags.Items.FOODS_VEGETABLES).add(Items.CARROT, Items.GOLDEN_CARROT, Items.POTATO, Items.MELON_SLICE, Items.BEETROOT);
+        tag(Tags.Items.FOODS_BERRIES).add(Items.SWEET_BERRIES, Items.GLOW_BERRIES);
+        tag(Tags.Items.FOODS_BREADS).add(Items.BREAD);
+        tag(Tags.Items.FOODS_COOKIES).add(Items.COOKIE);
+        tag(Tags.Items.FOODS_RAW_MEATS).add(Items.BEEF, Items.CHICKEN, Items.RABBIT, Items.MUTTON);
+        tag(Tags.Items.FOODS_RAW_FISHES).add(Items.COD, Items.SALMON, Items.TROPICAL_FISH, Items.PUFFERFISH);
+        tag(Tags.Items.FOODS_COOKED_MEATS).add(Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_RABBIT, Items.COOKED_MUTTON);
+        tag(Tags.Items.FOODS_COOKED_FISHES).add(Items.COOKED_COD, Items.COOKED_SALMON);
+        tag(Tags.Items.FOODS_SOUPS).add(Items.BEETROOT_SOUP, Items.MUSHROOM_STEW, Items.RABBIT_STEW, Items.SUSPICIOUS_STEW);
+        tag(Tags.Items.FOODS_CANDIES);
+        tag(Tags.Items.FOODS_EDIBLE_WHEN_PLACED).add(Items.CAKE);
+        tag(Tags.Items.FOODS_FOOD_POISONING).add(Items.POISONOUS_POTATO, Items.ROTTEN_FLESH, Items.SPIDER_EYE, Items.PUFFERFISH);
         tag(Tags.Items.FOODS)
-                .add(Items.BAKED_POTATO, Items.POISONOUS_POTATO, Items.PUMPKIN_PIE, Items.HONEY_BOTTLE, Items.DRIED_KELP, Items.SPIDER_EYE, Items.ROTTEN_FLESH)
-                .addTags(Tags.Items.FRUITS_FOODS, Tags.Items.VEGETABLES_FOODS, Tags.Items.BERRIES_FOODS, Tags.Items.BREADS_FOODS, Tags.Items.COOKIES_FOODS,
-                        Tags.Items.RAW_MEATS_FOODS, Tags.Items.RAW_FISHES_FOODS, Tags.Items.COOKED_MEATS_FOODS, Tags.Items.COOKED_FISHES_FOODS,
-                        Tags.Items.SOUPS_FOODS, Tags.Items.CANDIES_FOODS, Tags.Items.EDIBLE_WHEN_PLACED_FOODS);
+                .add(Items.BAKED_POTATO, Items.PUMPKIN_PIE, Items.HONEY_BOTTLE, Items.DRIED_KELP)
+                .addTags(Tags.Items.FOODS_FRUITS, Tags.Items.FOODS_VEGETABLES, Tags.Items.FOODS_BERRIES, Tags.Items.FOODS_BREADS, Tags.Items.FOODS_COOKIES,
+                        Tags.Items.FOODS_RAW_MEATS, Tags.Items.FOODS_RAW_FISHES, Tags.Items.FOODS_COOKED_MEATS, Tags.Items.FOODS_COOKED_FISHES,
+                        Tags.Items.FOODS_SOUPS, Tags.Items.FOODS_CANDIES,
+                        Tags.Items.FOODS_EDIBLE_WHEN_PLACED, Tags.Items.FOODS_FOOD_POISONING);
         tag(Tags.Items.GEMS).addTags(Tags.Items.GEMS_AMETHYST, Tags.Items.GEMS_DIAMOND, Tags.Items.GEMS_EMERALD, Tags.Items.GEMS_LAPIS, Tags.Items.GEMS_PRISMARINE, Tags.Items.GEMS_QUARTZ);
         tag(Tags.Items.GEMS_AMETHYST).add(Items.AMETHYST_SHARD);
         tag(Tags.Items.GEMS_DIAMOND).add(Items.DIAMOND);
