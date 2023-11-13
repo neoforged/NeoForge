@@ -478,6 +478,78 @@ public class DeferredRegister<T> {
             return this.blockItem(name, block, new Item.Properties());
         }
 
+        /**
+         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and
+         * returns a {@link DeferredItem} that will be populated with the created item automatically.
+         * Where the name is determined by the name of the given block.
+         * 
+         * @param block      The {@link DeferredHolder} of the {@link Block} for the {@link BlockItem}.
+         * @param properties The properties for the created {@link BlockItem}.
+         * @return A {@link DeferredItem} that will track updates from the registry for this item.
+         */
+        public DeferredItem<BlockItem> blockItem(DeferredHolder<Block, ? extends Block> block, Item.Properties properties) {
+            return this.blockItem(block.getId().getPath(), (Holder<Block>) block, properties);
+        }
+
+        /**
+         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and
+         * returns a {@link DeferredItem} that will be populated with the created item automatically.
+         * Where the name is determined by the name of the given block and uses the default {@link Item.Properties}.
+         * 
+         * @param block The {@link DeferredHolder} of the {@link Block} for the {@link BlockItem}.
+         * @return A {@link DeferredItem} that will track updates from the registry for this item.
+         */
+        public DeferredItem<BlockItem> blockItem(DeferredHolder<Block, ? extends Block> block) {
+            return this.blockItem(block, new Item.Properties());
+        }
+
+        /**
+         * Adds a new item to the list of entries to be registered and returns a {@link DeferredItem} that will be populated with the created item automatically.
+         *
+         * @param name  The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param func  A factory for the new item. The factory should not cache the created item.
+         * @param props The properties for the created item.
+         * @return A {@link DeferredItem} that will track updates from the registry for this item.
+         */
+        public <I extends Item> DeferredItem<I> item(String name, Function<Item.Properties, ? extends I> func, Item.Properties props) {
+            return this.register(name, () -> func.apply(props));
+        }
+
+        /**
+         * Adds a new item to the list of entries to be registered and returns a {@link DeferredItem} that will be populated with the created item automatically.
+         * This method uses the default {@link Item.Properties}.
+         * 
+         * @param name The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param func A factory for the new item. The factory should not cache the created item.
+         * @return A {@link DeferredItem} that will track updates from the registry for this item.
+         */
+        public <I extends Item> DeferredItem<I> item(String name, Function<Item.Properties, ? extends I> func) {
+            return this.item(name, func, new Item.Properties());
+        }
+
+        /**
+         * Adds a new {@link Item} with the given {@link Item.Properties properties} to the list of entries to be registered and 
+         * returns a {@link DeferredItem} that will be populated with the created item automatically.
+         * 
+         * @param name  The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param props A factory for the new item. The factory should not cache the created item.
+         * @return A {@link DeferredItem} that will track updates from the registry for this item.
+         */
+        public DeferredItem<Item> item(String name, Item.Properties props) {
+            return this.item(name, Item::new, props);
+        }
+
+        /**
+         * Adds a new {@link Item} with the default {@link Item.Properties properties} to the list of entries to be registered and 
+         * returns a {@link DeferredItem} that will be populated with the created item automatically.
+         *
+         * @param name  The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @return A {@link DeferredItem} that will track updates from the registry for this item.
+         */
+        public DeferredItem<Item> item(String name) {
+            return this.item(name, Item::new, new Item.Properties());
+        }
+
         @Override
         protected <I extends Item> DeferredItem<I> createHolder(ResourceKey<? extends Registry<Item>> registryKey, ResourceLocation key) {
             return DeferredItem.createItem(ResourceKey.create(registryKey, key));
