@@ -28,7 +28,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -143,8 +142,8 @@ public class DeferredRegister<T> {
     private boolean registeredEventBus = false;
 
     protected DeferredRegister(ResourceKey<? extends Registry<T>> registryKey, String namespace) {
-        this.registryKey = registryKey;
-        this.namespace = namespace;
+        this.registryKey = Objects.requireNonNull(registryKey);
+        this.namespace = Objects.requireNonNull(namespace);
     }
 
     /**
@@ -220,8 +219,7 @@ public class DeferredRegister<T> {
      *
      * @see #createTagKey(ResourceLocation)
      */
-    @NotNull
-    public TagKey<T> createTagKey(@NotNull String path) {
+    public TagKey<T> createTagKey(String path) {
         Objects.requireNonNull(path);
         return createTagKey(new ResourceLocation(this.namespace, path));
     }
@@ -231,8 +229,7 @@ public class DeferredRegister<T> {
      *
      * @see #createTagKey(String)
      */
-    @NotNull
-    public TagKey<T> createTagKey(@NotNull ResourceLocation location) {
+    public TagKey<T> createTagKey(ResourceLocation location) {
         Objects.requireNonNull(location);
         return TagKey.create(this.registryKey, location);
     }
@@ -279,9 +276,8 @@ public class DeferredRegister<T> {
     /**
      * @return The registry name stored in this deferred register. Useful for creating new deferred registers based on an existing one.
      */
-    @NotNull
     public ResourceLocation getRegistryName() {
-        return Objects.requireNonNull(this.registryKey).location();
+        return this.registryKey.location();
     }
 
     /**
