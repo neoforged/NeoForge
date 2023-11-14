@@ -36,6 +36,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
@@ -561,12 +562,13 @@ public class FluidType {
      * @return {@code true} if a cauldron is successfully filled, {@code false} otherwise
      */
     public boolean handleDripInfo(Fluid fluid, Level level, BlockPos pos) {
-        if (fluid.isSource(fluid.defaultFluidState()) && fluid.getFluidType().getDripInfo() != null) {
-            BlockState cauldronBlock = fluid.getFluidType().getDripInfo().cauldron().defaultBlockState();
+        if (fluid instanceof FlowingFluid flowing && fluid.isSource(flowing.getSource(false)) && this.getDripInfo() != null) {
+            BlockState cauldronBlock = this.getDripInfo().cauldron().defaultBlockState();
             level.setBlockAndUpdate(pos, cauldronBlock);
             level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(cauldronBlock));
-            if (this.getSound(SoundActions.CAULDRON_DRIP) != null) {
-                level.playSound(null, pos, this.getSound(SoundActions.CAULDRON_DRIP), SoundSource.BLOCKS, 2.0F, level.getRandom().nextFloat() * 0.1F + 0.9F);
+            SoundEvent dripSound = this.getSound(null, level, pos, SoundActions.CAULDRON_DRIP);
+            if (dripSound != null) {
+                level.playSound(null, pos, dripSound, SoundSource.BLOCKS, 2.0F, level.getRandom().nextFloat() * 0.1F + 0.9F);
             }
             return true;
         }
