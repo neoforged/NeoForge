@@ -1,0 +1,25 @@
+--- a/net/minecraft/core/Direction.java
++++ b/net/minecraft/core/Direction.java
+@@ -325,6 +_,22 @@
+       return direction;
+    }
+ 
++   /** NeoForge: Version of {@link #getNearest(float, float, float)} that accounts for potential rounding errors. */
++   public static Direction getNearestStable(float p_122373_, float p_122374_, float p_122375_) {
++      Direction direction = NORTH;
++      float f = Float.MIN_VALUE;
++
++      for(Direction direction1 : VALUES) {
++         float f1 = p_122373_ * (float)direction1.normal.getX() + p_122374_ * (float)direction1.normal.getY() + p_122375_ * (float)direction1.normal.getZ();
++         if (f1 > f + com.mojang.math.Constants.EPSILON) {
++            f = f1;
++            direction = direction1;
++         }
++      }
++
++      return direction;
++   }
++
+    @Override
+    public String toString() {
+       return this.name;

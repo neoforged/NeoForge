@@ -1,0 +1,30 @@
+--- a/net/minecraft/world/item/ShovelItem.java
++++ b/net/minecraft/world/item/ShovelItem.java
+@@ -43,9 +_,9 @@
+          return InteractionResult.PASS;
+       } else {
+          Player player = p_43119_.getPlayer();
+-         BlockState blockstate1 = FLATTENABLES.get(blockstate.getBlock());
++         BlockState blockstate1 = blockstate.getToolModifiedState(p_43119_, net.neoforged.neoforge.common.ToolActions.SHOVEL_FLATTEN, false);
+          BlockState blockstate2 = null;
+-         if (blockstate1 != null && level.getBlockState(blockpos.above()).isAir()) {
++         if (blockstate1 != null && level.isEmptyBlock(blockpos.above())) {
+             level.playSound(player, blockpos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
+             blockstate2 = blockstate1;
+          } else if (blockstate.getBlock() instanceof CampfireBlock && blockstate.getValue(CampfireBlock.LIT)) {
+@@ -71,5 +_,15 @@
+             return InteractionResult.PASS;
+          }
+       }
++   }
++
++   @org.jetbrains.annotations.Nullable
++   public static BlockState getShovelPathingState(BlockState originalState) {
++      return FLATTENABLES.get(originalState.getBlock());
++   }
++
++   @Override
++   public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ToolAction toolAction) {
++      return net.neoforged.neoforge.common.ToolActions.DEFAULT_SHOVEL_ACTIONS.contains(toolAction);
+    }
+ }

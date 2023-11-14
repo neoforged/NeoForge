@@ -1,0 +1,31 @@
+--- a/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
+@@ -140,4 +_,28 @@
+    public int getLastInteractedSlot() {
+       return this.lastInteractedSlot;
+    }
++
++   private net.neoforged.neoforge.common.util.LazyOptional<?> itemHandler = net.neoforged.neoforge.common.util.LazyOptional.of(this::createUnSidedHandler);
++   protected net.neoforged.neoforge.items.IItemHandler createUnSidedHandler() {
++      return new net.neoforged.neoforge.items.wrapper.InvWrapper(this);
++   }
++
++   @Override
++   public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(net.neoforged.neoforge.common.capabilities.Capability<T> cap, @org.jetbrains.annotations.Nullable net.minecraft.core.Direction side) {
++      if (!this.remove && cap == net.neoforged.neoforge.common.capabilities.Capabilities.ITEM_HANDLER)
++         return itemHandler.cast();
++      return super.getCapability(cap, side);
++   }
++
++   @Override
++   public void invalidateCaps() {
++      super.invalidateCaps();
++      itemHandler.invalidate();
++   }
++
++   @Override
++   public void reviveCaps() {
++      super.reviveCaps();
++      itemHandler = net.neoforged.neoforge.common.util.LazyOptional.of(this::createUnSidedHandler);
++   }
+ }

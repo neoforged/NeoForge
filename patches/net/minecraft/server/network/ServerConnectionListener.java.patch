@@ -1,0 +1,39 @@
+--- a/net/minecraft/server/network/ServerConnectionListener.java
++++ b/net/minecraft/server/network/ServerConnectionListener.java
+@@ -48,12 +_,9 @@
+ 
+ public class ServerConnectionListener {
+    private static final Logger LOGGER = LogUtils.getLogger();
+-   public static final Supplier<NioEventLoopGroup> SERVER_EVENT_GROUP = Suppliers.memoize(
+-      () -> new NioEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").setDaemon(true).build())
+-   );
+-   public static final Supplier<EpollEventLoopGroup> SERVER_EPOLL_EVENT_GROUP = Suppliers.memoize(
+-      () -> new EpollEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).build())
+-   );
++   private static final int READ_TIMEOUT = Integer.parseInt(System.getProperty("neoforge.readTimeout", "30"));
++   public static final Supplier<NioEventLoopGroup> SERVER_EVENT_GROUP = Suppliers.memoize(() -> new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Server IO #%d").setDaemon(true).setThreadFactory(net.neoforged.fml.util.thread.SidedThreadGroups.SERVER).build()));
++   public static final Supplier<EpollEventLoopGroup> SERVER_EPOLL_EVENT_GROUP = Suppliers.memoize(() -> new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).setThreadFactory(net.neoforged.fml.util.thread.SidedThreadGroups.SERVER).build()));
+    final MinecraftServer server;
+    public volatile boolean running;
+    private final List<ChannelFuture> channels = Collections.synchronizedList(Lists.newArrayList());
+@@ -65,6 +_,8 @@
+    }
+ 
+    public void startTcpServerListener(@Nullable InetAddress p_9712_, int p_9713_) throws IOException {
++      if (p_9712_ == null) p_9712_ = new java.net.InetSocketAddress(p_9713_).getAddress();
++      net.neoforged.neoforge.network.DualStackUtils.checkIPv6(p_9712_);
+       synchronized(this.channels) {
+          Class<? extends ServerSocketChannel> oclass;
+          EventLoopGroup eventloopgroup;
+@@ -92,9 +_,9 @@
+                               p_9729_.config().setOption(ChannelOption.TCP_NODELAY, true);
+                            } catch (ChannelException channelexception) {
+                            }
+-            
++                           
+                            ChannelPipeline channelpipeline = p_9729_.pipeline()
+-                              .addLast("timeout", new ReadTimeoutHandler(30))
++                              .addLast("timeout", new ReadTimeoutHandler(READ_TIMEOUT))
+                               .addLast("legacy_query", new LegacyQueryHandler(ServerConnectionListener.this.getServer()));
+                            Connection.configureSerialization(channelpipeline, PacketFlow.SERVERBOUND, null);
+                            int i = ServerConnectionListener.this.server.getRateLimitPacketsPerSecond();

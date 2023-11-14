@@ -1,0 +1,84 @@
+--- a/net/minecraft/world/entity/monster/EnderMan.java
++++ b/net/minecraft/world/entity/monster/EnderMan.java
+@@ -121,7 +_,6 @@
+ 
+    @Override
+    public void setTarget(@Nullable LivingEntity p_32537_) {
+-      super.setTarget(p_32537_);
+       AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
+       if (p_32537_ == null) {
+          this.targetChangeTime = 0;
+@@ -135,6 +_,7 @@
+             attributeinstance.addTransientModifier(SPEED_MODIFIER_ATTACKING);
+          }
+       }
++      super.setTarget(p_32537_); //Forge: Moved down to allow event handlers to write data manager values.
+    }
+ 
+    @Override
+@@ -217,7 +_,7 @@
+ 
+    boolean isLookingAtMe(Player p_32535_) {
+       ItemStack itemstack = p_32535_.getInventory().armor.get(3);
+-      if (itemstack.is(Blocks.CARVED_PUMPKIN.asItem())) {
++      if (net.neoforged.neoforge.common.CommonHooks.shouldSuppressEnderManAnger(this, p_32535_, itemstack)) {
+          return false;
+       } else {
+          Vec3 vec3 = p_32535_.getViewVector(1.0F).normalize();
+@@ -314,8 +_,10 @@
+       boolean flag = blockstate.blocksMotion();
+       boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
+       if (flag && !flag1) {
++         net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = net.neoforged.neoforge.event.EventHooks.onEnderTeleport(this, p_32544_, p_32545_, p_32546_);
++         if (event.isCanceled()) return false;
+          Vec3 vec3 = this.position();
+-         boolean flag2 = this.randomTeleport(p_32544_, p_32545_, p_32546_, true);
++         boolean flag2 = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
+          if (flag2) {
+             this.level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
+             if (!this.isSilent()) {
+@@ -467,7 +_,7 @@
+       public boolean canUse() {
+          if (this.enderman.getCarriedBlock() == null) {
+             return false;
+-         } else if (!this.enderman.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
++         } else if (!net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.enderman.level(), this.enderman)) {
+             return false;
+          } else {
+             return this.enderman.getRandom().nextInt(reducedTickDelay(2000)) == 0;
+@@ -488,7 +_,7 @@
+          BlockState blockstate2 = this.enderman.getCarriedBlock();
+          if (blockstate2 != null) {
+             blockstate2 = Block.updateFromNeighbourShapes(blockstate2, this.enderman.level(), blockpos);
+-            if (this.canPlaceBlock(level, blockpos, blockstate2, blockstate, blockstate1, blockpos1)) {
++            if (this.canPlaceBlock(level, blockpos, blockstate2, blockstate, blockstate1, blockpos1) && !net.neoforged.neoforge.event.EventHooks.onBlockPlace(enderman, net.neoforged.neoforge.common.util.BlockSnapshot.create(level.dimension(), level, blockpos1), net.minecraft.core.Direction.UP)) {
+                level.setBlock(blockpos, blockstate2, 3);
+                level.gameEvent(GameEvent.BLOCK_PLACE, blockpos, GameEvent.Context.of(this.enderman, blockstate2));
+                this.enderman.setCarriedBlock(null);
+@@ -498,11 +_,12 @@
+ 
+       private boolean canPlaceBlock(Level p_32559_, BlockPos p_32560_, BlockState p_32561_, BlockState p_32562_, BlockState p_32563_, BlockPos p_32564_) {
+          return p_32562_.isAir()
+-            && !p_32563_.isAir()
+-            && !p_32563_.is(Blocks.BEDROCK)
+-            && p_32563_.isCollisionShapeFullBlock(p_32559_, p_32564_)
+-            && p_32561_.canSurvive(p_32559_, p_32560_)
+-            && p_32559_.getEntities(this.enderman, AABB.unitCubeFromLowerCorner(Vec3.atLowerCornerOf(p_32560_))).isEmpty();
++                      && !p_32563_.isAir()
++                      && !p_32563_.is(Blocks.BEDROCK)
++                      && !p_32563_.is(net.neoforged.neoforge.common.Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST)
++                      && p_32563_.isCollisionShapeFullBlock(p_32559_, p_32564_)
++                      && p_32561_.canSurvive(p_32559_, p_32560_)
++                      && p_32559_.getEntities(this.enderman, AABB.unitCubeFromLowerCorner(Vec3.atLowerCornerOf(p_32560_))).isEmpty();
+       }
+    }
+ 
+@@ -610,7 +_,7 @@
+       public boolean canUse() {
+          if (this.enderman.getCarriedBlock() != null) {
+             return false;
+-         } else if (!this.enderman.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
++         } else if (!net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.enderman.level(), this.enderman)) {
+             return false;
+          } else {
+             return this.enderman.getRandom().nextInt(reducedTickDelay(20)) == 0;

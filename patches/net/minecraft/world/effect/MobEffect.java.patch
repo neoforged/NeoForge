@@ -1,0 +1,51 @@
+--- a/net/minecraft/world/effect/MobEffect.java
++++ b/net/minecraft/world/effect/MobEffect.java
+@@ -18,7 +_,7 @@
+ import net.minecraft.world.entity.ai.attributes.AttributeMap;
+ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+ 
+-public class MobEffect {
++public class MobEffect implements net.neoforged.neoforge.common.extensions.IMobEffectExtension {
+    private final Map<Attribute, AttributeModifierTemplate> attributeModifiers = Maps.newHashMap();
+    private final MobEffectCategory category;
+    private final int color;
+@@ -30,6 +_,7 @@
+    protected MobEffect(MobEffectCategory p_19451_, int p_19452_) {
+       this.category = p_19451_;
+       this.color = p_19452_;
++      initClient();
+    }
+ 
+    public Optional<MobEffectInstance.FactorData> createFactorData() {
+@@ -114,6 +_,31 @@
+    public boolean isBeneficial() {
+       return this.category == MobEffectCategory.BENEFICIAL;
+    }
++
++   // FORGE START
++   private Object effectRenderer;
++
++   /*
++      DO NOT CALL, IT WILL DISAPPEAR IN THE FUTURE
++      Call RenderProperties.getEffectRenderer instead
++    */
++   public Object getEffectRendererInternal() {
++      return effectRenderer;
++   }
++
++   private void initClient() {
++      // Minecraft instance isn't available in datagen, so don't call initializeClient if in datagen
++      if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT && !net.neoforged.fml.loading.FMLLoader.getLaunchHandler().isData()) {
++         initializeClient(properties -> {
++            this.effectRenderer = properties;
++         });
++      }
++   }
++
++   public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions> consumer) {
++   }
++   // END FORGE
++
+ 
+    @Deprecated
+    public Holder.Reference<MobEffect> builtInRegistryHolder() {

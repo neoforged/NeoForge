@@ -1,0 +1,11 @@
+--- a/net/minecraft/commands/arguments/EntityArgument.java
++++ b/net/minecraft/commands/arguments/EntityArgument.java
+@@ -120,7 +_,7 @@
+       if (s instanceof SharedSuggestionProvider sharedsuggestionprovider) {
+          StringReader stringreader = new StringReader(p_91483_.getInput());
+          stringreader.setCursor(p_91483_.getStart());
+-         EntitySelectorParser entityselectorparser = new EntitySelectorParser(stringreader, sharedsuggestionprovider.hasPermission(2));
++         EntitySelectorParser entityselectorparser = new EntitySelectorParser(stringreader, net.neoforged.neoforge.common.CommonHooks.canUseEntitySelectors(sharedsuggestionprovider));
+ 
+          try {
+             entityselectorparser.parse();

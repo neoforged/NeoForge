@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/gui/screens/advancements/AdvancementTabType.java
++++ b/net/minecraft/client/gui/screens/advancements/AdvancementTabType.java
+@@ -71,6 +_,7 @@
+ 
+    private final AdvancementTabType.Sprites selectedSprites;
+    private final AdvancementTabType.Sprites unselectedSprites;
++   public static final int MAX_TABS = java.util.Arrays.stream(values()).mapToInt(AdvancementTabType::getMax).sum();
+    private final int width;
+    private final int height;
+    private final int max;

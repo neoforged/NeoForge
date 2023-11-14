@@ -1,0 +1,35 @@
+--- a/net/minecraft/client/color/item/ItemColors.java
++++ b/net/minecraft/client/color/item/ItemColors.java
+@@ -23,7 +_,8 @@
+ @OnlyIn(Dist.CLIENT)
+ public class ItemColors {
+    private static final int DEFAULT = -1;
+-   private final IdMapper<ItemColor> itemColors = new IdMapper<>(32);
++   // FORGE: Use registry delegate as non-Vanilla item ids are not constant
++   private final java.util.Map<net.minecraft.core.Holder.Reference<Item>, ItemColor> itemColors = new java.util.HashMap<>();
+ 
+    public static ItemColors createDefault(BlockColors p_92684_) {
+       ItemColors itemcolors = new ItemColors();
+@@ -92,17 +_,20 @@
+       itemcolors.register((p_92696_, p_92697_) -> FoliageColor.getMangroveColor(), Blocks.MANGROVE_LEAVES);
+       itemcolors.register((p_92693_, p_92694_) -> p_92694_ == 0 ? PotionUtils.getColor(p_92693_) : -1, Items.TIPPED_ARROW);
+       itemcolors.register((p_232352_, p_232353_) -> p_232353_ == 0 ? -1 : MapItem.getColor(p_232352_), Items.FILLED_MAP);
++      net.neoforged.neoforge.client.ClientHooks.onItemColorsInit(itemcolors, p_92684_);
+       return itemcolors;
+    }
+ 
+    public int getColor(ItemStack p_92677_, int p_92678_) {
+-      ItemColor itemcolor = this.itemColors.byId(BuiltInRegistries.ITEM.getId(p_92677_.getItem()));
++      ItemColor itemcolor = this.itemColors.get(net.neoforged.neoforge.registries.ForgeRegistries.ITEMS.getDelegateOrThrow(p_92677_.getItem()));
+       return itemcolor == null ? -1 : itemcolor.getColor(p_92677_, p_92678_);
+    }
+ 
++   /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Item} */
++   @Deprecated
+    public void register(ItemColor p_92690_, ItemLike... p_92691_) {
+       for(ItemLike itemlike : p_92691_) {
+-         this.itemColors.addMapping(p_92690_, Item.getId(itemlike.asItem()));
++         this.itemColors.put(net.neoforged.neoforge.registries.ForgeRegistries.ITEMS.getDelegateOrThrow(itemlike.asItem()), p_92690_);
+       }
+    }
+ }

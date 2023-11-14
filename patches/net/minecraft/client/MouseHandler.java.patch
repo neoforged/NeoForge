@@ -1,0 +1,80 @@
+--- a/net/minecraft/client/MouseHandler.java
++++ b/net/minecraft/client/MouseHandler.java
+@@ -74,6 +_,7 @@
+             this.activeButton = -1;
+          }
+ 
++         if (net.neoforged.neoforge.client.ClientHooks.onMouseButtonPre(p_91532_, p_91533_, p_91534_)) return;
+          boolean[] aboolean = new boolean[]{false};
+          if (this.minecraft.getOverlay() == null) {
+             if (this.minecraft.screen == null) {
+@@ -86,11 +_,21 @@
+                Screen screen = this.minecraft.screen;
+                if (flag) {
+                   screen.afterMouseAction();
+-                  Screen.wrapScreenError(() -> aboolean[0] = screen.mouseClicked(d0, d1, i), "mouseClicked event handler", screen.getClass().getCanonicalName());
++                  Screen.wrapScreenError(() -> {
++                     aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenMouseClickedPre(screen, d0, d1, i);
++                     if (!aboolean[0]) {
++                        aboolean[0] = screen.mouseClicked(d0, d1, i);
++                        aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenMouseClickedPost(screen, d0, d1, i, aboolean[0]);
++                     }
++                  }, "mouseClicked event handler", screen.getClass().getCanonicalName());
+                } else {
+-                  Screen.wrapScreenError(
+-                     () -> aboolean[0] = screen.mouseReleased(d0, d1, i), "mouseReleased event handler", screen.getClass().getCanonicalName()
+-                  );
++                  Screen.wrapScreenError(() -> {
++                     aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenMouseReleasedPre(screen, d0, d1, i);
++                     if (!aboolean[0]) {
++                        aboolean[0] = screen.mouseReleased(d0, d1, i);
++                        aboolean[0] = net.neoforged.neoforge.client.ClientHooks.onScreenMouseReleasedPost(screen, d0, d1, i, aboolean[0]);
++                     }
++                  }, "mouseReleased event handler", screen.getClass().getCanonicalName());
+                }
+             }
+          }
+@@ -113,6 +_,7 @@
+                }
+             }
+          }
++         net.neoforged.neoforge.client.ClientHooks.onMouseButtonPost(p_91532_, p_91533_, p_91534_);
+       }
+    }
+ 
+@@ -126,7 +_,11 @@
+             if (this.minecraft.screen != null) {
+                double d3 = this.xpos * (double)this.minecraft.getWindow().getGuiScaledWidth() / (double)this.minecraft.getWindow().getScreenWidth();
+                double d4 = this.ypos * (double)this.minecraft.getWindow().getGuiScaledHeight() / (double)this.minecraft.getWindow().getScreenHeight();
+-               this.minecraft.screen.mouseScrolled(d3, d4, d1, d2);
++               if (!net.neoforged.neoforge.client.ClientHooks.onScreenMouseScrollPre(this, this.minecraft.screen, d1, d2)) {
++                  if (!this.minecraft.screen.mouseScrolled(d3, d4, d1, d2)) {
++                     net.neoforged.neoforge.client.ClientHooks.onScreenMouseScrollPost(this, this.minecraft.screen, d1, d2);
++                  }
++               }
+                this.minecraft.screen.afterMouseAction();
+             } else if (this.minecraft.player != null) {
+                if (this.accumulatedScrollX != 0.0 && Math.signum(d1) != Math.signum(this.accumulatedScrollX)) {
+@@ -148,6 +_,7 @@
+                this.accumulatedScrollX -= (double)j;
+                this.accumulatedScrollY -= (double)i;
+                int k = i == 0 ? -j : i;
++               if (net.neoforged.neoforge.client.ClientHooks.onMouseScroll(this, d1, d2)) return;
+                if (this.minecraft.player.isSpectator()) {
+                   if (this.minecraft.gui.getSpectatorGui().isMenuActive()) {
+                      this.minecraft.gui.getSpectatorGui().onMouseScrolled(-k);
+@@ -290,6 +_,14 @@
+ 
+    public double ypos() {
+       return this.ypos;
++   }
++
++   public double getXVelocity() {
++      return this.accumulatedDX;
++   }
++
++   public double getYVelocity() {
++      return this.accumulatedDY;
+    }
+ 
+    public void setIgnoreFirstMove() {

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "conditions": [
+    {
+      "type": "neoforge:tag_empty",
+      "tag": "minecraft:planks"
+    }
+  ],
+  "key": {
+    "X": {
+      "item": "minecraft:diamond_block"
+    }
+  },
+  "pattern": [
+    "XX",
+    "XX"
+  ],
+  "result": {
+    "item": "minecraft:netherite_block"
+  },
+  "show_notification": true
+}

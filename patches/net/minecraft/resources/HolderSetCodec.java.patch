@@ -1,0 +1,45 @@
+--- a/net/minecraft/resources/HolderSetCodec.java
++++ b/net/minecraft/resources/HolderSetCodec.java
+@@ -22,6 +_,8 @@
+    private final Codec<Holder<E>> elementCodec;
+    private final Codec<List<Holder<E>>> homogenousListCodec;
+    private final Codec<Either<TagKey<E>, List<Holder<E>>>> registryAwareCodec;
++   private final Codec<net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<E>> forgeDispatchCodec;
++   private final Codec<Either<net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<E>, Either<TagKey<E>, List<Holder<E>>>>> combinedCodec;
+ 
+    private static <E> Codec<List<Holder<E>>> homogenousList(Codec<Holder<E>> p_206668_, boolean p_206669_) {
+       Codec<List<Holder<E>>> codec = ExtraCodecs.validate(p_206668_.listOf(), ExtraCodecs.ensureHomogenous(Holder::kind));
+@@ -43,6 +_,10 @@
+       this.elementCodec = p_206661_;
+       this.homogenousListCodec = homogenousList(p_206661_, p_206662_);
+       this.registryAwareCodec = Codec.either(TagKey.hashedCodec(p_206660_), this.homogenousListCodec);
++      // FORGE: make registry-specific dispatch codec and make forge-or-vanilla either codec
++      this.forgeDispatchCodec = ExtraCodecs.lazyInitializedCodec(() -> net.neoforged.neoforge.registries.ForgeRegistries.HOLDER_SET_TYPES.get().getCodec())
++          .dispatch(net.neoforged.neoforge.registries.holdersets.ICustomHolderSet::type, type -> type.makeCodec(p_206660_, p_206661_, p_206662_));
++      this.combinedCodec = new ExtraCodecs.EitherCodec<>(this.forgeDispatchCodec, this.registryAwareCodec);
+    }
+ 
+    @Override
+@@ -51,9 +_,9 @@
+          Optional<HolderGetter<E>> optional = registryops.getter(this.registryKey);
+          if (optional.isPresent()) {
+             HolderGetter<E> holdergetter = optional.get();
+-            return this.registryAwareCodec
+-               .decode(p_206696_, p_206697_)
+-               .map(p_206682_ -> p_206682_.mapFirst(p_206679_ -> p_206679_.map(holdergetter::getOrThrow, HolderSet::direct)));
++            // FORGE: use the wrapped codec to decode custom/tag/list instead of just tag/list
++            return this.combinedCodec.decode(p_206696_, p_206697_)
++               .map(p_206682_ -> p_206682_.mapFirst(p_206679_ -> p_206679_.map(java.util.function.Function.identity(), tagOrList -> tagOrList.map(holdergetter::getOrThrow, HolderSet::direct))));
+          }
+       }
+ 
+@@ -68,6 +_,9 @@
+                return DataResult.error(() -> "HolderSet " + p_206674_ + " is not valid in current registry set");
+             }
+ 
++            // FORGE: use the dispatch codec to encode custom holdersets, otherwise fall back to vanilla tag/list
++            if (p_206674_ instanceof net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<E> customHolderSet)
++                return this.forgeDispatchCodec.encode(customHolderSet, p_206675_, p_206676_);
+             return this.registryAwareCodec.encode(p_206674_.unwrap().mapRight(List::copyOf), p_206675_, p_206676_);
+          }
+       }

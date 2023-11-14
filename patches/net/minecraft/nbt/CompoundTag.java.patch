@@ -1,0 +1,32 @@
+--- a/net/minecraft/nbt/CompoundTag.java
++++ b/net/minecraft/nbt/CompoundTag.java
+@@ -40,13 +_,19 @@
+          return compoundtag;
+       }
+ 
++      private static byte readNamedTagType(DataInput p_302338_, NbtAccounter p_302362_) throws IOException {
++         p_302362_.accountBytes(2);
++         return p_302338_.readByte();
++      }
++
+       private static CompoundTag loadCompound(DataInput p_302338_, NbtAccounter p_302362_) throws IOException {
+          p_302362_.accountBytes(48L);
+          Map<String, Tag> map = Maps.newHashMap();
+ 
+          byte b0;
+-         while((b0 = p_302338_.readByte()) != 0) {
+-            String s = readString(p_302338_, p_302362_);
++         while((b0 = readNamedTagType(p_302338_, p_302362_)) != 0) {
++            String s = p_302362_.readUTF(p_302338_.readUTF());
++            p_302362_.accountBytes(4); //Forge: 4 extra bytes for the object allocation.
+             Tag tag = CompoundTag.readNamedTagData(TagTypes.getType(b0), s, p_302338_, p_302362_);
+             if (map.put(s, tag) == null) {
+                p_302362_.accountBytes(36L);
+@@ -205,6 +_,7 @@
+ 
+    @Nullable
+    public Tag put(String p_128366_, Tag p_128367_) {
++      if (p_128367_ == null) throw new IllegalArgumentException("Invalid null NBT value with key " + p_128366_);
+       return this.tags.put(p_128366_, p_128367_);
+    }
+ 

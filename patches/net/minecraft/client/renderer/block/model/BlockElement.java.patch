@@ -1,0 +1,51 @@
+--- a/net/minecraft/client/renderer/block/model/BlockElement.java
++++ b/net/minecraft/client/renderer/block/model/BlockElement.java
+@@ -29,16 +_,23 @@
+    public final Map<Direction, BlockElementFace> faces;
+    public final BlockElementRotation rotation;
+    public final boolean shade;
++   private net.neoforged.neoforge.client.model.ExtraFaceData faceData;
+ 
+    public BlockElement(
+       Vector3f p_253626_, Vector3f p_254426_, Map<Direction, BlockElementFace> p_254454_, @Nullable BlockElementRotation p_254229_, boolean p_253661_
+    ) {
++     this(p_253626_, p_254426_, p_254454_, p_254229_, p_253661_, net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
++   }
++
++   public BlockElement(Vector3f p_253626_, Vector3f p_254426_, Map<Direction, BlockElementFace> p_254454_, @Nullable BlockElementRotation p_254229_, boolean p_253661_, net.neoforged.neoforge.client.model.ExtraFaceData faceData) {
+       this.from = p_253626_;
+       this.to = p_254426_;
+       this.faces = p_254454_;
+       this.rotation = p_254229_;
+       this.shade = p_253661_;
+       this.fillUvs();
++      this.setFaceData(faceData);
++      this.faces.values().forEach(face -> face.parent = this);
+    }
+ 
+    private void fillUvs() {
+@@ -80,7 +_,9 @@
+             throw new JsonParseException("Expected shade to be a Boolean");
+          } else {
+             boolean flag = GsonHelper.getAsBoolean(jsonobject, "shade", true);
+-            return new BlockElement(vector3f, vector3f1, map, blockelementrotation, flag);
++            if (jsonobject.has("forge_data")) throw new JsonParseException("forge_data should be replaced by neoforge_data"); // TODO 1.22: Remove
++            var faceData = net.neoforged.neoforge.client.model.ExtraFaceData.read(jsonobject.get("neoforge_data"), net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
++            return new BlockElement(vector3f, vector3f1, map, blockelementrotation, flag, faceData);
+          }
+       }
+ 
+@@ -191,5 +_,13 @@
+             return new Vector3f(afloat[0], afloat[1], afloat[2]);
+          }
+       }
++   }
++
++   public net.neoforged.neoforge.client.model.ExtraFaceData getFaceData() {
++      return this.faceData;
++   }
++
++   public void setFaceData(net.neoforged.neoforge.client.model.ExtraFaceData faceData) {
++      this.faceData = java.util.Objects.requireNonNull(faceData);
+    }
+ }

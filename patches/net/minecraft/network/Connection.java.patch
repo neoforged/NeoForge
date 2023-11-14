@@ -1,0 +1,59 @@
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -97,6 +_,7 @@
+    private volatile Component delayedDisconnect;
+    @Nullable
+    BandwidthDebugMonitor bandwidthDebugMonitor;
++   private java.util.function.Consumer<Connection> activationHandler;
+ 
+    public Connection(PacketFlow p_129482_) {
+       this.receiving = p_129482_;
+@@ -107,6 +_,7 @@
+       super.channelActive(p_129525_);
+       this.channel = p_129525_.channel();
+       this.address = this.channel.remoteAddress();
++      if (activationHandler != null) activationHandler.accept(this);
+       if (this.delayedDisconnect != null) {
+          this.disconnect(this.delayedDisconnect);
+       }
+@@ -371,7 +_,7 @@
+       if (this.address == null) {
+          return "local";
+       } else {
+-         return p_295875_ ? this.address.toString() : "IP hidden";
++         return p_295875_ ? net.neoforged.neoforge.network.DualStackUtils.getAddressString(this.address) : "IP hidden";
+       }
+    }
+ 
+@@ -410,6 +_,8 @@
+    }
+ 
+    public static ChannelFuture connect(InetSocketAddress p_290034_, boolean p_290035_, final Connection p_290031_) {
++      net.neoforged.neoforge.network.DualStackUtils.checkIPv6(p_290034_.getAddress());
++      p_290031_.activationHandler = net.neoforged.neoforge.network.NetworkHooks::registerClientLoginChannel;
+       Class<? extends SocketChannel> oclass;
+       EventLoopGroup eventloopgroup;
+       if (Epoll.isAvailable() && p_290035_) {
+@@ -466,6 +_,7 @@
+ 
+    public static Connection connectToLocalServer(SocketAddress p_129494_) {
+       final Connection connection = new Connection(PacketFlow.CLIENTBOUND);
++      connection.activationHandler = net.neoforged.neoforge.network.NetworkHooks::registerClientLoginChannel;
+       new Bootstrap().group(LOCAL_WORKER_GROUP.get()).handler(new ChannelInitializer<Channel>() {
+          @Override
+          protected void initChannel(Channel p_129557_) {
+@@ -558,6 +_,14 @@
+ 
+    public float getAverageSentPackets() {
+       return this.averageSentPackets;
++   }
++
++   public Channel channel() {
++      return this.channel;
++   }
++
++   public PacketFlow getDirection() {
++      return this.receiving;
+    }
+ 
+    public void setBandwidthLogger(SampleLogger p_299187_) {

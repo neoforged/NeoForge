@@ -1,0 +1,132 @@
+--- a/net/minecraft/server/Main.java
++++ b/net/minecraft/server/Main.java
+@@ -63,7 +_,7 @@
+    private static final Logger LOGGER = LogUtils.getLogger();
+ 
+    @DontObfuscate
+-   public static void main(String[] p_129699_) {
++   public static void main(String[] p_129699_) throws Exception {
+       SharedConstants.tryDetectVersion();
+       OptionParser optionparser = new OptionParser();
+       OptionSpec<Void> optionspec = optionparser.accepts("nogui");
+@@ -81,6 +_,15 @@
+       OptionSpec<Void> optionspec12 = optionparser.accepts("jfrProfile");
+       OptionSpec<Path> optionspec13 = optionparser.accepts("pidFile").withRequiredArg().withValuesConvertedBy(new PathConverter());
+       OptionSpec<String> optionspec14 = optionparser.nonOptions();
++      optionparser.accepts("allowUpdates").withRequiredArg().ofType(Boolean.class).defaultsTo(Boolean.TRUE); // Forge: allow mod updates to proceed
++      optionparser.accepts("gameDir").withRequiredArg().ofType(File.class).defaultsTo(new File(".")); //Forge: Consume this argument, we use it in the launcher, and the client side.
++      final OptionSpec<net.minecraft.core.BlockPos> spawnPosOpt;
++      boolean gametestEnabled = Boolean.getBoolean("neoforge.gameTestServer");
++      if (gametestEnabled) {
++         spawnPosOpt = optionparser.accepts("spawnPos").withRequiredArg().withValuesConvertedBy(new net.neoforged.neoforge.gametest.BlockPosValueConverter()).defaultsTo(new net.minecraft.core.BlockPos(0, 60, 0));
++      } else {
++          spawnPosOpt = null;
++      }
+ 
+       try {
+          OptionSet optionset = optionparser.parse(p_129699_);
+@@ -88,6 +_,13 @@
+             optionparser.printHelpOn(System.err);
+             return;
+          }
++         Path path2 = Paths.get("eula.txt");
++         Eula eula = new Eula(path2);
++
++         if (!eula.hasAgreedToEULA()) {
++            LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
++            return;
++         }
+ 
+          Path path = optionset.valueOf(optionspec13);
+          if (path != null) {
+@@ -103,25 +_,24 @@
+          Bootstrap.validate();
+          Util.startTimerHackThread();
+          Path path1 = Paths.get("server.properties");
++         if (!optionset.has(optionspec1)) net.neoforged.neoforge.server.loading.ServerModLoader.load(); // Load mods before we load almost anything else anymore. Single spot now. Only loads if they haven't passed the initserver param
+          DedicatedServerSettings dedicatedserversettings = new DedicatedServerSettings(path1);
+          dedicatedserversettings.forceSave();
+-         Path path2 = Paths.get("eula.txt");
+-         Eula eula = new Eula(path2);
+          if (optionset.has(optionspec1)) {
+             LOGGER.info("Initialized '{}' and '{}'", path1.toAbsolutePath(), path2.toAbsolutePath());
+             return;
+          }
+ 
+-         if (!eula.hasAgreedToEULA()) {
+-            LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
+-            return;
+-         }
+-
+          File file1 = new File(optionset.valueOf(optionspec8));
+          Services services = Services.create(new YggdrasilAuthenticationService(Proxy.NO_PROXY), file1);
+          String s = Optional.ofNullable(optionset.valueOf(optionspec9)).orElse(dedicatedserversettings.getProperties().levelName);
++         if (s == null || s.isEmpty() || new File(file1, s).getAbsolutePath().equals(new File(s).getAbsolutePath())) {
++            LOGGER.error("Invalid world directory specified, must not be null, empty or the same directory as your universe! " + s);
++            return;
++         }
+          LevelStorageSource levelstoragesource = LevelStorageSource.createDefault(file1.toPath());
+          LevelStorageSource.LevelStorageAccess levelstoragesource$levelstorageaccess = levelstoragesource.validateAndCreateAccess(s);
++         levelstoragesource$levelstorageaccess.readAdditionalLevelSaveData();
+          LevelSummary levelsummary = levelstoragesource$levelstorageaccess.getSummary();
+          if (levelsummary != null) {
+             if (levelsummary.requiresManualConversion()) {
+@@ -182,7 +_,9 @@
+                                     : dedicatedserverproperties.worldOptions;
+                                  worlddimensions = dedicatedserverproperties.createDimensions(p_248079_.datapackWorldgen());
+                               }
+-         
++
++                              //Forge: Do a write-read-cycle to inject modded dimensions on first start of a dedicated server into its generated world dimensions list.
++                              worlddimensions = WorldDimensions.CODEC.encoder().encodeStart(dynamicops, worlddimensions).flatMap((writtenPayloadWithModdedDimensions) -> WorldDimensions.CODEC.decoder().parse(dynamicops, writtenPayloadWithModdedDimensions)).resultOrPartial(LOGGER::error).orElse(worlddimensions);
+                               WorldDimensions.Complete worlddimensions$complete = worlddimensions.bake(registry);
+                               Lifecycle lifecycle = worlddimensions$complete.lifecycle().add(p_248079_.datapackWorldgen().allRegistriesLifecycle());
+                               return new WorldLoader.DataLoadOutput<>(
+@@ -218,24 +_,23 @@
+ 
+          WorldData worlddata = worldstem.worldData();
+          levelstoragesource$levelstorageaccess.saveDataTag(registryaccess$frozen, worlddata);
+-         final DedicatedServer dedicatedserver = MinecraftServer.spin(
++         final MinecraftServer dedicatedserver = MinecraftServer.spin(
+             p_293760_ -> {
+-               DedicatedServer dedicatedserver1 = new DedicatedServer(
+-                  p_293760_,
+-                  levelstoragesource$levelstorageaccess,
+-                  packrepository,
+-                  worldstem,
+-                  dedicatedserversettings,
+-                  DataFixers.getDataFixer(),
+-                  services,
+-                  LoggerChunkProgressListener::new
+-               );
++               MinecraftServer dedicatedserver1;
++               if (gametestEnabled) {
++                  net.neoforged.neoforge.gametest.GameTestHooks.registerGametests();
++                  java.util.Collection<net.minecraft.gametest.framework.GameTestBatch> testBatches = net.minecraft.gametest.framework.GameTestRunner.groupTestsIntoBatches(net.minecraft.gametest.framework.GameTestRegistry.getAllTestFunctions());
++                  net.minecraft.core.BlockPos spawnPos = optionset.valueOf(spawnPosOpt);
++                  dedicatedserver1 = new net.minecraft.gametest.framework.GameTestServer(p_293760_, levelstoragesource$levelstorageaccess, packrepository, worldstem, testBatches, spawnPos);
++               } else {
++                  dedicatedserver1 = new DedicatedServer(p_293760_, levelstoragesource$levelstorageaccess, packrepository, worldstem, dedicatedserversettings, DataFixers.getDataFixer(), services, LoggerChunkProgressListener::new);
++               }
+                dedicatedserver1.setPort(optionset.valueOf(optionspec10));
+                dedicatedserver1.setDemo(optionset.has(optionspec2));
+                dedicatedserver1.setId(optionset.valueOf(optionspec11));
+                boolean flag1 = !optionset.has(optionspec) && !optionset.valuesOf(optionspec14).contains("nogui");
+-               if (flag1 && !GraphicsEnvironment.isHeadless()) {
+-                  dedicatedserver1.showGui();
++               if (dedicatedserver1 instanceof DedicatedServer dedicatedServer && flag1 && !GraphicsEnvironment.isHeadless()) {
++                  dedicatedServer.showGui();
+                }
+    
+                return dedicatedserver1;
+@@ -244,7 +_,10 @@
+          Thread thread = new Thread("Server Shutdown Thread") {
+             @Override
+             public void run() {
++               // FORGE: Halting as GameTestServer will cause issues as it always calls System#exit on both crash and normal exit, so skip it
++               if (!(dedicatedserver instanceof net.minecraft.gametest.framework.GameTestServer))
+                dedicatedserver.halt(true);
++               org.apache.logging.log4j.LogManager.shutdown(); // we're manually managing the logging shutdown on the server. Make sure we do it here at the end.
+             }
+          };
+          thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER));

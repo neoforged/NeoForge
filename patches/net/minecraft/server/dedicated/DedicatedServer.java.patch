@@ -1,0 +1,70 @@
+--- a/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -68,6 +_,8 @@
+    private MinecraftServerGui gui;
+    @Nullable
+    private final TextFilterClient textFilterClient;
++   @Nullable
++   private net.minecraft.client.server.LanServerPinger dediLanPinger;
+ 
+    public DedicatedServer(
+       Thread p_214789_,
+@@ -90,6 +_,7 @@
+       Thread thread = new Thread("Server console handler") {
+          @Override
+          public void run() {
++            if (net.neoforged.neoforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
+             BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
+ 
+             String s1;
+@@ -168,11 +_,13 @@
+          long i = Util.getNanos();
+          SkullBlockEntity.setup(this.services, this);
+          GameProfileCache.setUsesAuthentication(this.usesAuthentication());
++         net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
+          LOGGER.info("Preparing level \"{}\"", this.getLevelIdName());
+          this.loadLevel();
+          long j = Util.getNanos() - i;
+          String s = String.format(Locale.ROOT, "%.3fs", (double)j / 1.0E9);
+          LOGGER.info("Done ({})! For help, type \"help\"", s);
++         this.nextTickTime = Util.getMillis(); //Forge: Update server time to prevent watchdog/spaming during long load.
+          if (dedicatedserverproperties.announcePlayerAchievements != null) {
+             this.getGameRules().getRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS).set(dedicatedserverproperties.announcePlayerAchievements, this);
+          }
+@@ -200,6 +_,12 @@
+             LOGGER.info("JMX monitoring enabled");
+          }
+ 
++         if (net.neoforged.neoforge.common.NeoForgeConfig.SERVER.advertiseDedicatedServerToLan.get()) {
++            this.dediLanPinger = new net.minecraft.client.server.LanServerPinger(this.getMotd(), String.valueOf(this.getServerPort()));
++            this.dediLanPinger.start();
++         }
++
++         net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(this);
+          return true;
+       }
+    }
+@@ -278,6 +_,10 @@
+       if (this.queryThreadGs4 != null) {
+          this.queryThreadGs4.stop();
+       }
++      if (this.dediLanPinger != null) {
++         this.dediLanPinger.interrupt();
++         this.dediLanPinger = null;
++      }
+    }
+ 
+    @Override
+@@ -531,7 +_,12 @@
+ 
+    @Override
+    public void stopServer() {
++      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.GameShuttingDownEvent());
+       super.stopServer();
++      if (this.dediLanPinger != null) {
++         this.dediLanPinger.interrupt();
++         this.dediLanPinger = null;
++      }
+       Util.shutdownExecutors();
+       SkullBlockEntity.clear();
+    }

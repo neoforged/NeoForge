@@ -1,0 +1,195 @@
+--- a/net/minecraft/world/item/crafting/Ingredient.java
++++ b/net/minecraft/world/item/crafting/Ingredient.java
+@@ -37,17 +_,37 @@
+    private ItemStack[] itemStacks;
+    @Nullable
+    private IntList stackingIds;
+-   public static final Codec<Ingredient> CODEC = codec(true);
+-   public static final Codec<Ingredient> CODEC_NONEMPTY = codec(false);
+-
++   private final java.util.function.Supplier<net.neoforged.neoforge.common.crafting.IngredientType<?>> type;
++   
++   public static final Codec<Ingredient> VANILLA_CODEC = codec(true);
++   public static final Codec<Ingredient> VANILLA_CODEC_NONEMPTY = codec(false);
++   public static final Codec<Ingredient> CODEC = net.neoforged.neoforge.common.crafting.CraftingHelper.makeIngredientCodec(true, VANILLA_CODEC);
++   public static final Codec<Ingredient> CODEC_NONEMPTY = net.neoforged.neoforge.common.crafting.CraftingHelper.makeIngredientCodec(false, VANILLA_CODEC_NONEMPTY);
++   public static final Codec<List<Ingredient>> LIST_CODEC = CODEC.listOf();
++   public static final Codec<List<Ingredient>> LIST_CODEC_NONEMPTY = CODEC_NONEMPTY.listOf();
++   
+    protected Ingredient(Stream<? extends Ingredient.Value> p_43907_) {
+-      this.values = p_43907_.toArray(p_43933_ -> new Ingredient.Value[p_43933_]);
++      this(p_43907_, net.neoforged.neoforge.common.NeoForgeMod.VANILLA_INGREDIENT_TYPE::get);
+    }
+ 
+    private Ingredient(Ingredient.Value[] p_301044_) {
++      this(p_301044_, net.neoforged.neoforge.common.NeoForgeMod.VANILLA_INGREDIENT_TYPE::get);
++   }
++   
++   protected Ingredient(Stream<? extends Ingredient.Value> p_43907_, java.util.function.Supplier<net.neoforged.neoforge.common.crafting.IngredientType<?>> type) {
++      this.values = p_43907_.toArray(Value[]::new);
++      this.type = type;
++   }
++   
++   private Ingredient(Ingredient.Value[] p_301044_, java.util.function.Supplier<net.neoforged.neoforge.common.crafting.IngredientType<?>> type) {
+       this.values = p_301044_;
+-   }
+-
++      this.type = type;
++   }
++   
++   public net.neoforged.neoforge.common.crafting.IngredientType<?> getType() {
++      return type.get();
++   }
++   
+    public ItemStack[] getItems() {
+       if (this.itemStacks == null) {
+          this.itemStacks = Arrays.stream(this.values).flatMap(p_43916_ -> p_43916_.getItems().stream()).distinct().toArray(p_43910_ -> new ItemStack[p_43910_]);
+@@ -63,7 +_,7 @@
+          return p_43914_.isEmpty();
+       } else {
+          for(ItemStack itemstack : this.getItems()) {
+-            if (itemstack.is(p_43914_.getItem())) {
++            if (areStacksEqual(itemstack, p_43914_)) {
+                return true;
+             }
+          }
+@@ -71,6 +_,10 @@
+          return false;
+       }
+    }
++   
++   protected boolean areStacksEqual(ItemStack left, ItemStack right) {
++      return left.is(right.getItem());
++   }
+ 
+    public IntList getStackingIds() {
+       if (this.stackingIds == null) {
+@@ -86,18 +_,31 @@
+ 
+       return this.stackingIds;
+    }
+-
+-   public final void toNetwork(FriendlyByteBuf p_43924_) {
+-      p_43924_.writeCollection(Arrays.asList(this.getItems()), FriendlyByteBuf::writeItem);
+-   }
+-
++   
++   public void toNetwork(FriendlyByteBuf p_43924_) {
++      if (synchronizeWithContents()) {
++         p_43924_.writeCollection(Arrays.asList(this.getItems()), FriendlyByteBuf::writeItem);
++      }
++      else {
++         p_43924_.writeVarInt(-1);
++         p_43924_.writeWithCodec(net.minecraft.nbt.NbtOps.INSTANCE, CODEC, this);
++      }
++   }
++
++   /**
++    * {@return if {@code true}, this ingredient will be synchronized using its contents, as in vanilla, otherwise it will be synchronized via the {@link #codec(boolean) codec}}
++    */
++   public boolean synchronizeWithContents() {
++      return true;
++   }
++   
+    public JsonElement toJson(boolean p_301239_) {
+       Codec<Ingredient> codec = p_301239_ ? CODEC : CODEC_NONEMPTY;
+       return Util.getOrThrow(codec.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
+    }
+ 
+    public boolean isEmpty() {
+-      return this.values.length == 0;
++      return this.values.length == 0 || Arrays.stream(getItems()).allMatch(ItemStack::isEmpty);
+    }
+ 
+    @Override
+@@ -105,6 +_,10 @@
+       return p_301003_ instanceof Ingredient ingredient ? Arrays.equals((Object[])this.values, (Object[])ingredient.values) : false;
+    }
+ 
++   public boolean isSimple() {
++      return true;
++   }
++
+    public static Ingredient fromValues(Stream<? extends Ingredient.Value> p_43939_) {
+       Ingredient ingredient = new Ingredient(p_43939_);
+       return ingredient.isEmpty() ? EMPTY : ingredient;
+@@ -129,12 +_,22 @@
+    public static Ingredient of(TagKey<Item> p_204133_) {
+       return fromValues(Stream.of(new Ingredient.TagValue(p_204133_)));
+    }
+-
++   
++   public static Ingredient fromJson(JsonElement element, boolean nonEmpty) {
++      Codec<Ingredient> codec = nonEmpty ? CODEC : CODEC_NONEMPTY;
++      return Util.getOrThrow(codec.parse(JsonOps.INSTANCE, element), IllegalStateException::new);
++   }
++   
+    public static Ingredient fromNetwork(FriendlyByteBuf p_43941_) {
+-      return fromValues(p_43941_.<ItemStack>readList(FriendlyByteBuf::readItem).stream().map(Ingredient.ItemValue::new));
++      var size = p_43941_.readVarInt();
++      if (size == -1) {
++         return p_43941_.readWithCodecTrusted(net.minecraft.nbt.NbtOps.INSTANCE, CODEC);
++      }
++      return new Ingredient(Stream.generate(() -> new Ingredient.ItemValue(p_43941_.readItem())).limit(size));
+    }
+ 
+    private static Codec<Ingredient> codec(boolean p_301074_) {
++      //PATCH: 1.20.2: Wrap in dispatch codec with fallback.
+       Codec<Ingredient.Value[]> codec = Codec.list(Ingredient.Value.CODEC)
+          .comapFlatMap(
+             p_300810_ -> !p_301074_ && p_300810_.size() < 1
+@@ -157,7 +_,12 @@
+          );
+    }
+ 
+-   public static record ItemValue(ItemStack item) implements Ingredient.Value {
++   public static record ItemValue(ItemStack item, java.util.function.BiFunction<net.minecraft.world.item.ItemStack, net.minecraft.world.item.ItemStack, Boolean> comparator) implements Ingredient.Value {
++      
++      public ItemValue(ItemStack item) {
++         this(item, ItemValue::areStacksEqual);
++      }
++      
+       static final Codec<Ingredient.ItemValue> CODEC = RecordCodecBuilder.create(
+          p_301184_ -> p_301184_.group(CraftingRecipeCodecs.ITEMSTACK_NONAIR_CODEC.fieldOf("item").forGetter(p_300919_ -> p_300919_.item))
+                .apply(p_301184_, Ingredient.ItemValue::new)
+@@ -169,7 +_,7 @@
+             return false;
+          } else {
+             Ingredient.ItemValue ingredient$itemvalue = (Ingredient.ItemValue)p_301316_;
+-            return ingredient$itemvalue.item.getItem().equals(this.item.getItem()) && ingredient$itemvalue.item.getCount() == this.item.getCount();
++            return comparator().apply(item(), ingredient$itemvalue.item());
+          }
+       }
+ 
+@@ -177,6 +_,11 @@
+       public Collection<ItemStack> getItems() {
+          return Collections.singleton(this.item);
+       }
++      
++      private static boolean areStacksEqual(ItemStack left, ItemStack right) {
++         return left.getItem().equals(right.getItem())
++               && left.getCount() == right.getCount();
++      }
+    }
+ 
+    public static record TagValue(TagKey<Item> tag) implements Ingredient.Value {
+@@ -198,6 +_,9 @@
+             list.add(new ItemStack(holder));
+          }
+ 
++         if (list.size() == 0) {
++            list.add(new ItemStack(net.minecraft.world.level.block.Blocks.BARRIER).setHoverName(net.minecraft.network.chat.Component.literal("Empty Tag: " + this.tag.location())));
++         }
+          return list;
+       }
+    }
+@@ -215,5 +_,9 @@
+          });
+ 
+       Collection<ItemStack> getItems();
++   }
++   
++   public final Value[] getValues() {
++      return values;
+    }
+ }

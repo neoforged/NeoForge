@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "type": "neoforge:nbt",
+      "Count": 1,
+      "id": "minecraft:iron_pickaxe",
+      "tag": {
+        "Damage": 3
+      }
+    }
+  ],
+  "result": {
+    "item": "minecraft:golden_pickaxe"
+  }
+}

@@ -1,0 +1,50 @@
+--- a/net/minecraft/world/inventory/Slot.java
++++ b/net/minecraft/world/inventory/Slot.java
+@@ -81,7 +_,7 @@
+ 
+    @Nullable
+    public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+-      return null;
++      return backgroundPair;
+    }
+ 
+    public ItemStack remove(int p_40227_) {
+@@ -94,6 +_,38 @@
+ 
+    public boolean isActive() {
+       return true;
++   }
++
++   /**
++    * Retrieves the index in the inventory for this slot, this value should typically not
++    * be used, but can be useful for some occasions.
++    *
++    * @return Index in associated inventory for this slot.
++    */
++   public int getSlotIndex() {
++      return slot;
++   }
++
++   /**
++    * Checks if the other slot is in the same inventory, by comparing the inventory reference.
++    * @param other
++    * @return true if the other slot is in the same inventory
++    */
++   public boolean isSameInventory(Slot other) {
++      return this.container == other.container;
++   }
++
++   private Pair<ResourceLocation, ResourceLocation> backgroundPair;
++   /**
++    * Sets the background atlas and sprite location.
++    *
++    * @param atlas The atlas name
++    * @param sprite The sprite located on that atlas.
++    * @return this, to allow chaining.
++    */
++   public Slot setBackground(ResourceLocation atlas, ResourceLocation sprite) {
++       this.backgroundPair = Pair.of(atlas, sprite);
++       return this;
+    }
+ 
+    public Optional<ItemStack> tryRemove(int p_150642_, int p_150643_, Player p_150644_) {

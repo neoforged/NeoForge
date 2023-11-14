@@ -1,0 +1,17 @@
+--- a/net/minecraft/client/renderer/chunk/RenderChunkRegion.java
++++ b/net/minecraft/client/renderer/chunk/RenderChunkRegion.java
+@@ -74,4 +_,14 @@
+    public int getHeight() {
+       return this.level.getHeight();
+    }
++
++   @Override
++   public float getShade(float normalX, float normalY, float normalZ, boolean shade) {
++      return this.level.getShade(normalX, normalY, normalZ, shade);
++   }
++
++   @Override
++   public net.neoforged.neoforge.client.model.data.ModelDataManager getModelDataManager() {
++      return level.getModelDataManager();
++   }
+ }

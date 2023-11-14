@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": [
+      {
+        "tag": "minecraft:planks"
+      },
+      {
+        "tag": "minecraft:logs"
+      },
+      {
+        "type": "neoforge:nbt",
+        "Count": 1,
+        "id": "minecraft:iron_pickaxe",
+        "tag": {
+          "Damage": 3
+        }
+      }
+    ]
+  },
+  "pattern": [
+    "#",
+    "#"
+  ],
+  "result": {
+    "item": "minecraft:gold_block"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/gui/screens/ChatScreen.java
++++ b/net/minecraft/client/gui/screens/ChatScreen.java
+@@ -232,7 +_,7 @@
+             this.minecraft.player.connection.sendChat(p_242400_);
+          }
+ 
+-         return true;
++         return minecraft.screen == this; // FORGE: Prevent closing the screen if another screen has been opened.
+       }
+    }
+ 

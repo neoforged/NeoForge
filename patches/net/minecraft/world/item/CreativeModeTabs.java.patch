@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/item/CreativeModeTabs.java
++++ b/net/minecraft/world/item/CreativeModeTabs.java
+@@ -1731,7 +_,7 @@
+    ) {
+       p_270903_.listElements()
+          .map(Holder::value)
+-         .filter(p_270008_ -> p_270380_.contains(p_270008_.category))
++         .filter(p_270008_ -> p_270008_.allowedInCreativeTab(Items.ENCHANTED_BOOK, p_270380_))
+          .map(p_270038_ -> EnchantedBookItem.createForEnchantment(new EnchantmentInstance(p_270038_, p_270038_.getMaxLevel())))
+          .forEach(p_269989_ -> p_270868_.accept(p_269989_, p_270407_));
+    }
+@@ -1741,7 +_,7 @@
+    ) {
+       p_270628_.listElements()
+          .map(Holder::value)
+-         .filter(p_269991_ -> p_271024_.contains(p_269991_.category))
++         .filter(p_269991_ -> p_269991_.allowedInCreativeTab(Items.ENCHANTED_BOOK, p_271024_))
+          .flatMap(
+             p_270024_ -> IntStream.rangeClosed(p_270024_.getMinLevel(), p_270024_.getMaxLevel())
+                   .mapToObj(p_270006_ -> EnchantedBookItem.createForEnchantment(new EnchantmentInstance(p_270024_, p_270006_)))

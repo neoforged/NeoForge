@@ -1,0 +1,30 @@
+--- a/net/minecraft/advancements/Advancement.java
++++ b/net/minecraft/advancements/Advancement.java
+@@ -72,7 +_,18 @@
+       return jsonobject;
+    }
+ 
++   /** @deprecated Forge: use {@linkplain #fromJson(JsonObject, DeserializationContext, com.mojang.serialization.DynamicOps) overload with context}. */
++   @Deprecated
++   @Nullable
+    public static Advancement fromJson(JsonObject p_301286_, DeserializationContext p_300878_) {
++      return fromJson(p_301286_, p_300878_, com.mojang.serialization.JsonOps.INSTANCE);
++   }
++
++   private static final com.mojang.serialization.Codec<net.minecraft.util.Unit> DUMMY_CODEC = com.mojang.serialization.Codec.unit(net.minecraft.util.Unit.INSTANCE);
++   
++   @Nullable
++   public static Advancement fromJson(JsonObject p_301286_, DeserializationContext p_300878_, com.mojang.serialization.DynamicOps<com.google.gson.JsonElement> jsonElementOps) {
++      if (!net.neoforged.neoforge.common.conditions.ICondition.conditionsMatched(jsonElementOps, p_301286_)) return null;
+       Optional<ResourceLocation> optional = p_301286_.has("parent")
+          ? Optional.of(new ResourceLocation(GsonHelper.getAsString(p_301286_, "parent")))
+          : Optional.empty();
+@@ -121,7 +_,7 @@
+       return this.parent.isEmpty();
+    }
+ 
+-   public static class Builder {
++   public static class Builder implements net.neoforged.neoforge.common.extensions.IAdvancementBuilderExtension {
+       private Optional<ResourceLocation> parent = Optional.empty();
+       private Optional<DisplayInfo> display = Optional.empty();
+       private AdvancementRewards rewards = AdvancementRewards.EMPTY;

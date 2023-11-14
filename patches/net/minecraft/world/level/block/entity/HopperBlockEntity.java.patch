@@ -1,0 +1,36 @@
+--- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+@@ -131,7 +_,8 @@
+       return true;
+    }
+ 
+-   private static boolean ejectItems(Level p_155563_, BlockPos p_155564_, BlockState p_155565_, Container p_155566_) {
++   private static boolean ejectItems(Level p_155563_, BlockPos p_155564_, BlockState p_155565_, HopperBlockEntity p_155566_) {
++      if (net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertHook(p_155566_)) return true;
+       Container container = getAttachedContainer(p_155563_, p_155564_, p_155565_);
+       if (container == null) {
+          return false;
+@@ -176,6 +_,8 @@
+    }
+ 
+    public static boolean suckInItems(Level p_155553_, Hopper p_155554_) {
++      Boolean ret = net.neoforged.neoforge.items.VanillaInventoryCodeHooks.extractHook(p_155553_, p_155554_);
++      if (ret != null) return ret;
+       Container container = getSourceContainer(p_155553_, p_155554_);
+       if (container != null) {
+          Direction direction = Direction.DOWN;
+@@ -421,5 +_,14 @@
+    @Override
+    protected AbstractContainerMenu createMenu(int p_59312_, Inventory p_59313_) {
+       return new HopperMenu(p_59312_, p_59313_, this);
++   }
++
++   @Override
++   protected net.neoforged.neoforge.items.IItemHandler createUnSidedHandler() {
++      return new net.neoforged.neoforge.items.VanillaHopperItemHandler(this);
++   }
++
++   public long getLastUpdateTime() {
++      return this.tickedGameTime;
+    }
+ }

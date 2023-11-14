@@ -1,0 +1,50 @@
+--- a/net/minecraft/client/gui/components/DebugScreenOverlay.java
++++ b/net/minecraft/client/gui/components/DebugScreenOverlay.java
+@@ -132,8 +_,13 @@
+       this.block = entity.pick(20.0, 0.0F, false);
+       this.liquid = entity.pick(20.0, 0.0F, true);
+       p_281427_.drawManaged(() -> {
+-         this.drawGameInformation(p_281427_);
+-         this.drawSystemInformation(p_281427_);
++         final List<String> gameInformation = new java.util.ArrayList<>();
++         final List<String> systemInformation = new java.util.ArrayList<>();
++         var event = new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.DebugText(minecraft.getWindow(), p_281427_, minecraft.getFrameTime(), gameInformation, systemInformation);
++         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
++         
++         this.drawGameInformation(p_281427_, gameInformation);
++         this.drawSystemInformation(p_281427_, systemInformation);
+          if (this.renderFpsCharts) {
+             int i = p_281427_.guiWidth();
+             int j = i / 2;
+@@ -158,7 +_,7 @@
+       this.minecraft.getProfiler().pop();
+    }
+ 
+-   protected void drawGameInformation(GuiGraphics p_281525_) {
++   protected void drawGameInformation(GuiGraphics p_281525_, List<String> gameInformation) {
+       List<String> list = this.getGameInformation();
+       list.add("");
+       boolean flag = this.minecraft.getSingleplayerServer() != null;
+@@ -173,11 +_,13 @@
+             + (this.renderNetworkCharts ? " visible" : " hidden")
+       );
+       list.add("For help: press F3 + Q");
++      list.addAll(gameInformation);
+       this.renderLines(p_281525_, list, true);
+    }
+ 
+-   protected void drawSystemInformation(GuiGraphics p_281261_) {
++   protected void drawSystemInformation(GuiGraphics p_281261_, List<String> systemInformation) {
+       List<String> list = this.getSystemInformation();
++      list.addAll(systemInformation);
+       this.renderLines(p_281261_, list, false);
+    }
+ 
+@@ -523,6 +_,7 @@
+             list.add("");
+             list.add(ChatFormatting.UNDERLINE + "Targeted Entity");
+             list.add(String.valueOf(BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType())));
++            entity.getType().builtInRegistryHolder().tags().forEach(t -> list.add("#" + t.location()));
+          }
+ 
+          return list;

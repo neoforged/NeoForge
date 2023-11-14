@@ -1,9 +1,0 @@
-{
-  "parent": "forge:item/default",
-  "loader": "forge:bucket",
-  "textures": {
-    "base": "minecraft:item/bucket",
-    "fluid": "dyn_bucket_model_test:item/drip_bucket"
-  },
-  "fluid": "lava"
-}

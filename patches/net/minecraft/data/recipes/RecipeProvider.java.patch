@@ -1,0 +1,76 @@
+--- a/net/minecraft/data/recipes/RecipeProvider.java
++++ b/net/minecraft/data/recipes/RecipeProvider.java
+@@ -44,6 +_,7 @@
+ public abstract class RecipeProvider implements DataProvider {
+    protected final PackOutput.PathProvider recipePathProvider;
+    protected final PackOutput.PathProvider advancementPathProvider;
++   protected final CompletableFuture<net.minecraft.core.HolderLookup.Provider> lookupProvider;
+    private static final Map<BlockFamily.Variant, BiFunction<ItemLike, ItemLike, RecipeBuilder>> SHAPE_BUILDERS = ImmutableMap.<BlockFamily.Variant, BiFunction<ItemLike, ItemLike, RecipeBuilder>>builder(
+          
+       )
+@@ -64,26 +_,33 @@
+       .put(BlockFamily.Variant.WALL, (p_248024_, p_248025_) -> wallBuilder(RecipeCategory.DECORATIONS, p_248024_, Ingredient.of(p_248025_)))
+       .build();
+ 
+-   public RecipeProvider(PackOutput p_248933_) {
++   public RecipeProvider(PackOutput p_248933_, CompletableFuture<net.minecraft.core.HolderLookup.Provider> lookupProvider) {
+       this.recipePathProvider = p_248933_.createPathProvider(PackOutput.Target.DATA_PACK, "recipes");
+       this.advancementPathProvider = p_248933_.createPathProvider(PackOutput.Target.DATA_PACK, "advancements");
++      this.lookupProvider = lookupProvider;
+    }
+ 
+    @Override
+    public CompletableFuture<?> run(final CachedOutput p_254020_) {
++      return this.lookupProvider.thenCompose(provider -> {
+       final Set<ResourceLocation> set = Sets.newHashSet();
+       final List<CompletableFuture<?>> list = new ArrayList<>();
+       this.buildRecipes(new RecipeOutput() {
+          @Override
+-         public void accept(FinishedRecipe p_300927_) {
++         public void accept(FinishedRecipe p_300927_, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
+             if (!set.add(p_300927_.id())) {
+                throw new IllegalStateException("Duplicate recipe " + p_300927_.id());
+             } else {
+-               list.add(DataProvider.saveStable(p_254020_, p_300927_.serializeRecipe(), RecipeProvider.this.recipePathProvider.json(p_300927_.id())));
++               var serializedRecipe = p_300927_.serializeRecipe();
++               net.neoforged.neoforge.common.conditions.ICondition.writeConditions(provider, serializedRecipe, "conditions", conditions);
++               list.add(DataProvider.saveStable(p_254020_, serializedRecipe, RecipeProvider.this.recipePathProvider.json(p_300927_.id())));
+                AdvancementHolder advancementholder = p_300927_.advancement();
+                if (advancementholder != null) {
+                   JsonObject jsonobject = advancementholder.value().serializeToJson();
+-                  list.add(DataProvider.saveStable(p_254020_, jsonobject, RecipeProvider.this.advancementPathProvider.json(advancementholder.id())));
++                  net.neoforged.neoforge.common.conditions.ICondition.writeConditions(provider, jsonobject, "conditions", conditions);
++                  var saveAdvancementFuture = saveAdvancement(p_254020_, p_300927_, jsonobject);
++                  if (saveAdvancementFuture != null)
++                     list.add(saveAdvancementFuture);
+                }
+             }
+          }
+@@ -93,7 +_,17 @@
+             return Advancement.Builder.recipeAdvancement().parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT);
+          }
+       });
+-      return CompletableFuture.allOf(list.toArray(p_253414_ -> new CompletableFuture[p_253414_]));
++      return CompletableFuture.allOf(list.toArray(p_253414_ -> new CompletableFuture[p_253414_])); });
++   }
++
++   /**
++    * Called every time a recipe is saved to also save the advancement JSON if it exists.
++    *
++    * @return A completable future that saves the advancement to disk, or null to cancel saving the advancement.
++    */
++   @org.jetbrains.annotations.Nullable
++   protected CompletableFuture<?> saveAdvancement(CachedOutput output, FinishedRecipe finishedRecipe, JsonObject advancementJson) {
++      return DataProvider.saveStable(output, advancementJson, this.advancementPathProvider.json(finishedRecipe.advancement().id()));
+    }
+ 
+    protected CompletableFuture<?> buildAdvancement(CachedOutput p_253674_, AdvancementHolder p_301116_) {
+@@ -102,7 +_,7 @@
+ 
+    protected abstract void buildRecipes(RecipeOutput p_301172_);
+ 
+-   protected static void generateForEnabledBlockFamilies(RecipeOutput p_301146_, FeatureFlagSet p_251836_) {
++   protected void generateForEnabledBlockFamilies(RecipeOutput p_301146_, FeatureFlagSet p_251836_) {
+       BlockFamilies.getAllFamilies().filter(p_248034_ -> p_248034_.shouldGenerateRecipe(p_251836_)).forEach(p_300708_ -> generateRecipes(p_301146_, p_300708_));
+    }
+ 

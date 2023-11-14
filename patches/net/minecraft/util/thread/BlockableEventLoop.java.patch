@@ -1,0 +1,20 @@
+--- a/net/minecraft/util/thread/BlockableEventLoop.java
++++ b/net/minecraft/util/thread/BlockableEventLoop.java
+@@ -55,10 +_,15 @@
+    }
+ 
+    public CompletableFuture<Void> submitAsync(Runnable p_18690_) {
+-      return CompletableFuture.supplyAsync(() -> {
++      return CompletableFuture.<Void>supplyAsync(() -> {
+          p_18690_.run();
+          return null;
+-      }, this);
++      }, this)
++      .exceptionallyCompose(ex -> {
++         // Neo: Log since this is usually swallowed
++         LOGGER.error(LogUtils.FATAL_MARKER, "Error executing task on {}", name(), ex);
++         return CompletableFuture.failedStage(ex);
++      });
+    }
+ 
+    public CompletableFuture<Void> submit(Runnable p_18708_) {

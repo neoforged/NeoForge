@@ -1,0 +1,21 @@
+--- a/net/minecraft/server/packs/PackType.java
++++ b/net/minecraft/server/packs/PackType.java
+@@ -1,6 +_,6 @@
+ package net.minecraft.server.packs;
+ 
+-public enum PackType {
++public enum PackType implements net.minecraft.util.StringRepresentable {
+    CLIENT_RESOURCES("assets"),
+    SERVER_DATA("data");
+ 
+@@ -12,5 +_,10 @@
+ 
+    public String getDirectory() {
+       return this.directory;
++   }
++
++   @Override
++   public String getSerializedName() {
++      return name().toLowerCase();
+    }
+ }

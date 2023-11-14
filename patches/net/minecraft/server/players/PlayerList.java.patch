@@ -1,0 +1,122 @@
+--- a/net/minecraft/server/players/PlayerList.java
++++ b/net/minecraft/server/players/PlayerList.java
+@@ -126,6 +_,7 @@
+    private boolean allowCheatsForAllPlayers;
+    private static final boolean ALLOW_LOGOUTIVATOR = false;
+    private int sendAllPlayerInfoIn;
++   private final List<ServerPlayer> playersView = java.util.Collections.unmodifiableList(players);
+ 
+    public PlayerList(MinecraftServer p_203842_, LayeredRegistryAccess<RegistryLayer> p_251844_, PlayerDataStorage p_203844_, int p_203845_) {
+       this.server = p_203842_;
+@@ -173,6 +_,7 @@
+       LevelData leveldata = serverlevel1.getLevelData();
+       p_11263_.loadGameTypes(compoundtag);
+       ServerGamePacketListenerImpl servergamepacketlistenerimpl = new ServerGamePacketListenerImpl(this.server, p_11262_, p_11263_, p_301988_);
++      net.neoforged.neoforge.network.NetworkHooks.sendMCRegistryPackets(p_11262_, net.neoforged.neoforge.network.PlayNetworkDirection.PLAY_TO_CLIENT);
+       GameRules gamerules = serverlevel1.getGameRules();
+       boolean flag = gamerules.getBoolean(GameRules.RULE_DO_IMMEDIATE_RESPAWN);
+       boolean flag1 = gamerules.getBoolean(GameRules.RULE_REDUCEDDEBUGINFO);
+@@ -194,6 +_,7 @@
+       servergamepacketlistenerimpl.send(new ClientboundChangeDifficultyPacket(leveldata.getDifficulty(), leveldata.isDifficultyLocked()));
+       servergamepacketlistenerimpl.send(new ClientboundPlayerAbilitiesPacket(p_11263_.getAbilities()));
+       servergamepacketlistenerimpl.send(new ClientboundSetCarriedItemPacket(p_11263_.getInventory().selected));
++      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.OnDatapackSyncEvent(this, p_11263_));
+       servergamepacketlistenerimpl.send(new ClientboundUpdateRecipesPacket(this.server.getRecipeManager().getRecipes()));
+       this.sendPlayerPermissionLevel(p_11263_);
+       p_11263_.getStats().markAllDirty();
+@@ -262,6 +_,7 @@
+       }
+ 
+       p_11263_.initInventoryMenu();
++      net.neoforged.neoforge.event.EventHooks.firePlayerLoggedIn( p_11263_ );
+    }
+ 
+    protected void updateEntireScoreboard(ServerScoreboard p_11274_, ServerPlayer p_11275_) {
+@@ -328,6 +_,7 @@
+          compoundtag1 = compoundtag;
+          p_11225_.load(compoundtag);
+          LOGGER.debug("loading single player");
++         net.neoforged.neoforge.event.EventHooks.firePlayerLoadingEvent(p_11225_, this.playerIo, p_11225_.getUUID().toString());
+       } else {
+          compoundtag1 = this.playerIo.load(p_11225_);
+       }
+@@ -336,6 +_,7 @@
+    }
+ 
+    protected void save(ServerPlayer p_11277_) {
++      if (p_11277_.connection == null) return;
+       this.playerIo.save(p_11277_);
+       ServerStatsCounter serverstatscounter = this.stats.get(p_11277_.getUUID());
+       if (serverstatscounter != null) {
+@@ -349,6 +_,7 @@
+    }
+ 
+    public void remove(ServerPlayer p_11287_) {
++      net.neoforged.neoforge.event.EventHooks.firePlayerLoggedOut(p_11287_);
+       ServerLevel serverlevel = p_11287_.serverLevel();
+       p_11287_.awardStat(Stats.LEAVE_GAME);
+       this.save(p_11287_);
+@@ -495,6 +_,7 @@
+       this.playersByUUID.put(serverplayer.getUUID(), serverplayer);
+       serverplayer.initInventoryMenu();
+       serverplayer.setHealth(serverplayer.getHealth());
++      net.neoforged.neoforge.event.EventHooks.firePlayerRespawnEvent(serverplayer, p_11238_);
+       if (flag2) {
+          serverplayer.connection
+             .send(
+@@ -586,6 +_,7 @@
+    }
+ 
+    public void op(GameProfile p_11254_) {
++      if (net.neoforged.neoforge.event.EventHooks.onPermissionChanged(p_11254_, this.server.getOperatorUserPermissionLevel(), this)) return;
+       this.ops.add(new ServerOpListEntry(p_11254_, this.server.getOperatorUserPermissionLevel(), this.ops.canBypassPlayerLimit(p_11254_)));
+       ServerPlayer serverplayer = this.getPlayer(p_11254_.getId());
+       if (serverplayer != null) {
+@@ -594,6 +_,7 @@
+    }
+ 
+    public void deop(GameProfile p_11281_) {
++      if (net.neoforged.neoforge.event.EventHooks.onPermissionChanged(p_11281_, 0, this)) return;
+       this.ops.remove(p_11281_);
+       ServerPlayer serverplayer = this.getPlayer(p_11281_.getId());
+       if (serverplayer != null) {
+@@ -804,13 +_,6 @@
+       if (serverstatscounter == null) {
+          File file1 = this.server.getWorldPath(LevelResource.PLAYER_STATS_DIR).toFile();
+          File file2 = new File(file1, uuid + ".json");
+-         if (!file2.exists()) {
+-            File file3 = new File(file1, p_11240_.getName().getString() + ".json");
+-            Path path = file3.toPath();
+-            if (FileUtil.isPathNormalized(path) && FileUtil.isPathPortable(path) && path.startsWith(file1.getPath()) && file3.isFile()) {
+-               file3.renameTo(file2);
+-            }
+-         }
+ 
+          serverstatscounter = new ServerStatsCounter(this.server, file2);
+          this.stats.put(uuid, serverstatscounter);
+@@ -828,6 +_,8 @@
+          this.advancements.put(uuid, playeradvancements);
+       }
+ 
++      // Forge: don't overwrite active player with a fake one.
++      if (!(p_11297_ instanceof net.neoforged.neoforge.common.util.FakePlayer))
+       playeradvancements.setPlayer(p_11297_);
+       return playeradvancements;
+    }
+@@ -855,7 +_,7 @@
+    }
+ 
+    public List<ServerPlayer> getPlayers() {
+-      return this.players;
++      return this.playersView; //Unmodifiable view, we don't want people removing things without us knowing.
+    }
+ 
+    @Nullable
+@@ -872,6 +_,7 @@
+          playeradvancements.reload(this.server.getAdvancements());
+       }
+ 
++      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.OnDatapackSyncEvent(this, null));
+       this.broadcastAll(new ClientboundUpdateTagsPacket(TagNetworkSerialization.serializeTagsToNetwork(this.registries)));
+       ClientboundUpdateRecipesPacket clientboundupdaterecipespacket = new ClientboundUpdateRecipesPacket(this.server.getRecipeManager().getRecipes());
+ 
