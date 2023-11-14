@@ -17,6 +17,7 @@ import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.DebugLevelSource;
 import net.neoforged.neoforge.registries.callback.AddCallback;
@@ -24,9 +25,16 @@ import net.neoforged.neoforge.registries.callback.BakeCallback;
 import net.neoforged.neoforge.registries.callback.ClearCallback;
 
 class NeoForgeRegistryCallbacks {
-    static class BlockCallbacks implements ClearCallback<Block>, BakeCallback<Block> {
+    static class BlockCallbacks implements AddCallback<Block>, ClearCallback<Block>, BakeCallback<Block> {
         static final BlockCallbacks INSTANCE = new BlockCallbacks();
         static final ClearableObjectIntIdentityMap<BlockState> BLOCKSTATE_TO_ID_MAP = new ClearableObjectIntIdentityMap<>();
+
+        @Override
+        public void onAdd(Registry<Block> registry, int id, ResourceKey<Block> key, Block value) {
+            // Vanilla does this in Blocks.<clinit> for its own blocks.
+            value.getStateDefinition().getPossibleStates().forEach(BlockBehaviour.BlockStateBase::initCache);
+            value.getLootTable();
+        }
 
         @Override
         public void onClear(Registry<Block> registry, boolean full) {
@@ -35,6 +43,7 @@ class NeoForgeRegistryCallbacks {
 
         @Override
         public void onBake(Registry<Block> registry) {
+            // Vanilla does this in Blocks.<clinit>, but we must do it after each bake in case of registry changes.
             for (Block block : registry) {
                 for (BlockState state : block.getStateDefinition().getPossibleStates()) {
                     BLOCKSTATE_TO_ID_MAP.add(state);
