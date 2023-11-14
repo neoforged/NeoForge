@@ -7,6 +7,8 @@ package net.neoforged.neoforge.registries;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -23,8 +25,9 @@ import net.neoforged.neoforge.registries.holdersets.HolderSetType;
 
 /**
  * A class that exposes static references to NeoForge registries.
- * Created to have a central place to access the registries directly if modders need.
- * It is still advised that if you are registering things to use {@link RegisterEvent} or {@link DeferredRegister}, but queries and iterations can use this.
+ * It is still advised that you register things with {@link RegisterEvent} or {@link DeferredRegister}, but queries and iterations can use this.
+ *
+ * <p>Vanilla's registries can be found in {@link BuiltInRegistries}, and their keys in {@link Registries}.
  */
 public class NeoForgeRegistries {
     // Custom NeoForge registries
