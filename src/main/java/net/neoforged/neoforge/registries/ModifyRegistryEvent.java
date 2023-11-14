@@ -9,18 +9,22 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.callback.RegistryCallback;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Fired for every builtin registry and datapack registry after they are constructed.
  * For builtin registries, this event is fired after vanilla entries are registered but before modded entries.
- * For datapack registries, this event is fired before any entries are registered.
- * <p>
- * This event can be used to register {@linkplain IForgeRegistry#addCallback(Callback) callbacks} to the registry.
- * </p>
  *
- * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
+ * <p>This event can be used to register {@linkplain IRegistryExtension#addCallback(RegistryCallback)} to the registry.
+ *
+ * <p>This event does not fire for datapack registries.
+ *
+ * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
  * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
  * on both {@linkplain LogicalSide logical sides}.</p>
  *
