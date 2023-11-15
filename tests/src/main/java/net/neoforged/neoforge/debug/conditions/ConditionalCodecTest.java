@@ -237,6 +237,11 @@ public class ConditionalCodecTest {
         return GSON.toJson(codec.encodeStart(JsonOps.INSTANCE, input).get().left().get());
     }
 
+    /**
+     * While JUnit is added via {@code modImplementation},
+     * it is not actually available in the GAME layer at the moment.
+     * This function can be replaced by JUnit assertions once we have support for non-mod dependencies in NeoGradle.
+     */
     private static <T> void assertEquals(T expected, T actual) {
         if (!Objects.equals(expected, actual)) {
             throw new AssertionError("Expected " + expected + " but got " + actual);
