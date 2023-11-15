@@ -17,14 +17,37 @@
              }
  
              entity.absMoveTo(d3, d4, d5, f, f1);
-+            this.player.absMoveTo(d3, d4, d5, this.player.getYRot(), this.player.getXRot()); // Forge - Resync player position on vehicle moving
++            resyncPlayerWithVehicle(entity); // Neo - Resync player position on vehicle moving
              boolean flag3 = serverlevel.noCollision(entity, entity.getBoundingBox().deflate(0.0625));
              if (flag && (flag2 || !flag3)) {
                 entity.absMoveTo(d0, d1, d2, f, f1);
-+               this.player.absMoveTo(d3, d4, d5, this.player.getYRot(), this.player.getXRot()); // Forge - Resync player position on vehicle moving
++               resyncPlayerWithVehicle(entity); // Neo - Resync player position on vehicle moving
                 this.send(new ClientboundMoveVehiclePacket(entity));
                 return;
              }
+@@ -443,6 +_,22 @@
+       }
+    }
+ 
++   private void resyncPlayerWithVehicle(Entity vehicle) {
++      Vec3 oldPos = this.player.position();
++      float yRot = this.player.getYRot();
++      float xRot = this.player.getXRot();
++      float yHeadRot = this.player.getYHeadRot();
++      vehicle.positionRider(this.player);
++      // keep old rotation
++      this.player.setYRot(yRot);
++      this.player.setXRot(xRot);
++      this.player.setYHeadRot(yHeadRot);
++      // save old position
++      this.player.xo = oldPos.x;
++      this.player.yo = oldPos.y;
++      this.player.zo = oldPos.z;
++   }
++
+    private boolean noBlocksAround(Entity p_9794_) {
+       return p_9794_.level()
+          .getBlockStates(p_9794_.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
 @@ -1004,8 +_,10 @@
           case SWAP_ITEM_WITH_OFFHAND:
              if (!this.player.isSpectator()) {
