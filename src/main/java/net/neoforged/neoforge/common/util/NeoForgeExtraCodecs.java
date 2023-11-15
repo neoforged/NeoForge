@@ -138,7 +138,7 @@ public class NeoForgeExtraCodecs {
     /**
      * Creates a decoder invoking a callback for each element and the corresponding index in a list.
      */
-    public static <A> Decoder<List<A>> listDecoderWithIndexConsumer(final Decoder<List<A>> decoder, ObjIntConsumer<A> consumer) {
+    public static <A> Decoder<List<A>> listDecoderWithIndexedPeek(final Decoder<List<A>> decoder, ObjIntConsumer<A> consumer) {
         return decoder.map(
                 list -> {
                     for (int i = 0; i < list.size(); i++) {

@@ -22,9 +22,14 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.TrueCondition;
 import net.neoforged.neoforge.common.conditions.WithConditions;
-import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.slf4j.Logger;
 
+/**
+ * Tests for {@link ConditionalOps} and related methods.
+ * We do not have JUnit support at the moment,
+ * so these unit tests run in the {@link FMLCommonSetupEvent}.
+ * If you can get to the main menu, it means that the tests passed.
+ */
 @Mod("conditional_codec_test")
 public class ConditionalCodecTest {
     public static final boolean ENABLED = true;
@@ -239,8 +244,6 @@ public class ConditionalCodecTest {
     }
 
     private static void assertErrored(DataResult<?> result) {
-        MutableBoolean hasError = new MutableBoolean();
-        result.promotePartial(error -> hasError.setTrue());
-        assertEquals(true, hasError.booleanValue());
+        assertEquals(true, result.error().isPresent());
     }
 }

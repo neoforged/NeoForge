@@ -95,12 +95,12 @@ public class ConditionalOps<T> extends RegistryOps<T> {
      * <p>The index is computed before filtering out the elements with non-matching conditions,
      * but the callback will only be invoked on the elements with matching conditions.
      */
-    public static <T> Codec<List<T>> decodeListWithElementConditionsAndConsumeIndex(final Codec<T> ownerCodec, final ObjIntConsumer<T> consumer) {
+    public static <T> Codec<List<T>> decodeListWithElementConditionsAndIndexedPeek(final Codec<T> ownerCodec, final ObjIntConsumer<T> consumer) {
         return Codec.of(
                 ownerCodec.listOf(),
                 NeoForgeExtraCodecs.listWithoutEmpty(
                         NeoForgeExtraCodecs.decodeOnly(
-                                NeoForgeExtraCodecs.listDecoderWithIndexConsumer(
+                                NeoForgeExtraCodecs.listDecoderWithIndexedPeek(
                                         createConditionalCodec(ownerCodec).listOf(),
                                         (op, i) -> op.ifPresent(o -> consumer.accept(o, i))))));
     }
