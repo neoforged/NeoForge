@@ -14,7 +14,7 @@
        for(Block block : BuiltInRegistries.BLOCK) {
           for(BlockState blockstate : block.getStateDefinition().getPossibleStates()) {
 -            Block.BLOCK_STATE_REGISTRY.add(blockstate);
-+            // NeoForge: comment out, it's done in NeoForgeRegistryCallbacks
++            // Neo: comment out, it's done in NeoForgeRegistryCallbacks
 +            //Block.BLOCK_STATE_REGISTRY.add(blockstate);
              blockstate.initCache();
           }
