@@ -44,7 +44,7 @@ public class Tags
         /**
          * For blocks that should be recognized as stone during feature world generation.
          * This is patched into {@link net.minecraft.world.level.levelgen.feature.Feature#isStone(BlockState)} method.
-         * Please use that method when trying to detect stone in your own custom Features or other worldgen stone detection code.
+         * Please use that method or tag when trying to detect stone in your own custom Features or other worldgen stone detection code.
          */
         public static final TagKey<Block> WORLDGEN_STONES = neoforgeTag("worldgen/stones");
 
