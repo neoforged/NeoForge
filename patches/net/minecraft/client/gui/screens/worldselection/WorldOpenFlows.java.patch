@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
 +++ b/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
-@@ -216,6 +_,12 @@
+@@ -216,13 +_,23 @@
     }
  
     private void doLoadLevel(Screen p_233146_, String p_233147_, boolean p_233148_, boolean p_233149_) {
@@ -13,9 +13,10 @@
        LevelStorageSource.LevelStorageAccess levelstoragesource$levelstorageaccess = this.createWorldAccess(p_233147_);
        if (levelstoragesource$levelstorageaccess != null) {
           PackRepository packrepository = ServerPacksSource.createPackRepository(levelstoragesource$levelstorageaccess);
-@@ -223,6 +_,9 @@
+ 
           WorldStem worldstem;
           try {
++            levelstoragesource$levelstorageaccess.readAdditionalLevelSaveData(); // Read extra (e.g. modded) data from the world before creating it
              worldstem = this.loadWorldStem(levelstoragesource$levelstorageaccess, p_233148_, packrepository);
 +            if (confirmExperimentalWarning && worldstem.worldData() instanceof PrimaryLevelData pld) {
 +               pld.withConfirmedWarning(true);

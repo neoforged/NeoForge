@@ -39,7 +39,7 @@
  
           Path path = optionset.valueOf(optionspec13);
           if (path != null) {
-@@ -103,23 +_,21 @@
+@@ -103,25 +_,24 @@
           Bootstrap.validate();
           Util.startTimerHackThread();
           Path path1 = Paths.get("server.properties");
@@ -67,7 +67,10 @@
 +         }
           LevelStorageSource levelstoragesource = LevelStorageSource.createDefault(file1.toPath());
           LevelStorageSource.LevelStorageAccess levelstoragesource$levelstorageaccess = levelstoragesource.validateAndCreateAccess(s);
++         levelstoragesource$levelstorageaccess.readAdditionalLevelSaveData(); // Read extra (e.g. modded) data from the world before creating it
           LevelSummary levelsummary = levelstoragesource$levelstorageaccess.getSummary();
+          if (levelsummary != null) {
+             if (levelsummary.requiresManualConversion()) {
 @@ -182,7 +_,9 @@
                                      : dedicatedserverproperties.worldOptions;
                                   worlddimensions = dedicatedserverproperties.createDimensions(p_248079_.datapackWorldgen());

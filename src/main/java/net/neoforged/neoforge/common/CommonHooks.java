@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -119,12 +120,15 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.storage.LevelStorageSource;
+import net.minecraft.world.level.storage.WorldData;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
@@ -132,12 +136,14 @@ import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.common.util.Lazy;
+import net.neoforged.neoforge.common.util.MavenVersionStringHelper;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
 import net.neoforged.neoforge.event.DifficultyChangeEvent;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.GrindstoneEvent;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.ItemStackedOnOtherEvent;
+import net.neoforged.neoforge.event.ModMismatchEvent;
 import net.neoforged.neoforge.event.RegisterStructureConversionsEvent;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.VanillaGameEvent;
@@ -179,6 +185,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -1079,6 +1087,97 @@ public class CommonHooks {
         LivingSwapItemsEvent.Hands event = new LivingSwapItemsEvent.Hands(livingEntity);
         NeoForge.EVENT_BUS.post(event);
         return event;
+    }
+
+    @ApiStatus.Internal
+    public static void writeAdditionalLevelSaveData(WorldData worldData, CompoundTag levelTag) {
+        CompoundTag fmlData = new CompoundTag();
+        ListTag modList = new ListTag();
+        ModList.get().getMods().forEach(mi -> {
+            final CompoundTag mod = new CompoundTag();
+            mod.putString("ModId", mi.getModId());
+            mod.putString("ModVersion", MavenVersionStringHelper.artifactVersionToString(mi.getVersion()));
+            modList.add(mod);
+        });
+        fmlData.put("LoadingModList", modList);
+
+        LOGGER.debug(WORLDPERSISTENCE, "Gathered mod list to write to world save {}", worldData.getLevelName());
+        levelTag.put("fml", fmlData);
+    }
+
+    /**
+     * @param rootTag        Level data file contents.
+     * @param levelDirectory Level currently being loaded.
+     */
+    @ApiStatus.Internal
+    public static void readAdditionalLevelSaveData(CompoundTag rootTag, LevelStorageSource.LevelDirectory levelDirectory) {
+        CompoundTag tag = rootTag.getCompound("fml");
+        if (tag.contains("LoadingModList")) {
+            ListTag modList = tag.getList("LoadingModList", net.minecraft.nbt.Tag.TAG_COMPOUND);
+            Map<String, ArtifactVersion> mismatchedVersions = new HashMap<>(modList.size());
+            Map<String, ArtifactVersion> missingVersions = new HashMap<>(modList.size());
+            for (int i = 0; i < modList.size(); i++) {
+                CompoundTag mod = modList.getCompound(i);
+                String modId = mod.getString("ModId");
+                if (Objects.equals("minecraft", modId)) {
+                    continue;
+                }
+
+                String modVersion = mod.getString("ModVersion");
+                final var previousVersion = new DefaultArtifactVersion(modVersion);
+                ModList.get().getModContainerById(modId).ifPresentOrElse(container -> {
+                    final var loadingVersion = container.getModInfo().getVersion();
+                    if (!loadingVersion.equals(previousVersion)) {
+                        // Enqueue mismatched versions for bulk event
+                        mismatchedVersions.put(modId, previousVersion);
+                    }
+                }, () -> missingVersions.put(modId, previousVersion));
+            }
+
+            final var mismatchEvent = new ModMismatchEvent(levelDirectory, mismatchedVersions, missingVersions);
+            ModLoader.get().postEvent(mismatchEvent);
+
+            StringBuilder resolved = new StringBuilder("The following mods have version differences that were marked resolved:");
+            StringBuilder unresolved = new StringBuilder("The following mods have version differences that were not resolved:");
+
+            // For mods that were marked resolved, log the version resolution and the mod that resolved the mismatch
+            mismatchEvent.getResolved().forEachOrdered((res) -> {
+                final var modid = res.modid();
+                final var diff = res.versionDifference();
+                if (res.wasSelfResolved()) {
+                    resolved.append(System.lineSeparator())
+                            .append(diff.isMissing()
+                                    ? "%s (version %s -> MISSING, self-resolved)".formatted(modid, diff.oldVersion())
+                                    : "%s (version %s -> %s, self-resolved)".formatted(modid, diff.oldVersion(), diff.newVersion()));
+                } else {
+                    final var resolver = res.resolver().getModId();
+                    resolved.append(System.lineSeparator())
+                            .append(diff.isMissing()
+                                    ? "%s (version %s -> MISSING, resolved by %s)".formatted(modid, diff.oldVersion(), resolver)
+                                    : "%s (version %s -> %s, resolved by %s)".formatted(modid, diff.oldVersion(), diff.newVersion(), resolver));
+                }
+            });
+
+            // For mods that did not specify handling, show a warning to users that errors may occur
+            mismatchEvent.getUnresolved().forEachOrdered((unres) -> {
+                final var modid = unres.modid();
+                final var diff = unres.versionDifference();
+                unresolved.append(System.lineSeparator())
+                        .append(diff.isMissing()
+                                ? "%s (version %s -> MISSING)".formatted(modid, diff.oldVersion())
+                                : "%s (version %s -> %s)".formatted(modid, diff.oldVersion(), diff.newVersion()));
+            });
+
+            if (mismatchEvent.anyResolved()) {
+                resolved.append(System.lineSeparator()).append("Things may not work well.");
+                LOGGER.debug(WORLDPERSISTENCE, resolved.toString());
+            }
+
+            if (mismatchEvent.anyUnresolved()) {
+                unresolved.append(System.lineSeparator()).append("Things may not work well.");
+                LOGGER.warn(WORLDPERSISTENCE, unresolved.toString());
+            }
+        }
     }
 
     public static String encodeLifecycle(Lifecycle lifecycle) {
