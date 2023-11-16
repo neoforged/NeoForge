@@ -25,7 +25,7 @@
                 this.send(new ClientboundMoveVehiclePacket(entity));
                 return;
              }
-@@ -443,6 +_,22 @@
+@@ -443,6 +_,23 @@
        }
     }
  
@@ -34,12 +34,13 @@
 +      float yRot = this.player.getYRot();
 +      float xRot = this.player.getXRot();
 +      float yHeadRot = this.player.getYHeadRot();
++
 +      vehicle.positionRider(this.player);
-+      // keep old rotation
++
++      // preserve old rotation and store old position in xo/yo/zo
 +      this.player.setYRot(yRot);
 +      this.player.setXRot(xRot);
 +      this.player.setYHeadRot(yHeadRot);
-+      // save old position
 +      this.player.xo = oldPos.x;
 +      this.player.yo = oldPos.y;
 +      this.player.zo = oldPos.z;
