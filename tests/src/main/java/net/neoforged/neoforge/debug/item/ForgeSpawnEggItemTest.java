@@ -27,6 +27,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 @Mod(value = ForgeSpawnEggItemTest.MODID)
@@ -37,8 +38,8 @@ public class ForgeSpawnEggItemTest {
     private static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, MODID);
     private static final DeferredHolder<EntityType<?>, EntityType<Pig>> ENTITY = ENTITIES.register("test_entity", () -> EntityType.Builder.of(Pig::new, MobCategory.CREATURE).sized(1, 1).build("test_entity"));
 
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
-    private static final DeferredHolder<Item, DeferredSpawnEggItem> EGG = ITEMS.register("test_spawn_egg", () -> new DeferredSpawnEggItem(ENTITY, 0x0000FF, 0xFF0000, new Item.Properties()));
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
+    private static final DeferredItem<DeferredSpawnEggItem> EGG = ITEMS.register("test_spawn_egg", () -> new DeferredSpawnEggItem(ENTITY, 0x0000FF, 0xFF0000, new Item.Properties()));
 
     public ForgeSpawnEggItemTest() {
         if (ENABLED) {

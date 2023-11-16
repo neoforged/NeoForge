@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -31,17 +30,17 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStackSimple;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 @Mod(CustomFluidContainerTest.MODID)
 public class CustomFluidContainerTest {
     public static final String MODID = "custom_fluid_container_test";
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
     public static final boolean ENABLED = true;
 
-    public static final DeferredHolder<Item, Item> CUSTOM_FLUID_CONTAINER = ITEMS.register("custom_fluid_container", () -> new CustomFluidContainer((new Item.Properties()).stacksTo(1)));
+    public static final DeferredItem<Item> CUSTOM_FLUID_CONTAINER = ITEMS.register("custom_fluid_container", () -> new CustomFluidContainer((new Item.Properties()).stacksTo(1)));
 
     public CustomFluidContainerTest() {
         if (ENABLED) {

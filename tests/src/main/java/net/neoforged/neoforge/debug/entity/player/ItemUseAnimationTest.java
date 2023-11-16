@@ -9,7 +9,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.function.Consumer;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,7 +18,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
@@ -33,9 +32,9 @@ public class ItemUseAnimationTest {
 
     public static final String MOD_ID = "item_use_animation_test";
 
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
-    private static final DeferredHolder<Item, Item> THING = ITEMS.register("thing", () -> new ThingItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(4).alwaysEat().build())));
+    private static final DeferredItem<Item> THING = ITEMS.register("thing", () -> new ThingItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(4).alwaysEat().build())));
 
     public ItemUseAnimationTest() {
         var modBus = FMLJavaModLoadingContext.get().getModEventBus();

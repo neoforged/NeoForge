@@ -5,12 +5,10 @@
 
 package net.neoforged.neoforge.event;
 
-import java.util.function.Supplier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
@@ -74,13 +72,5 @@ public final class BuildCreativeModeTabContentsEvent extends Event implements IM
     @Override
     public void accept(ItemStack stack, CreativeModeTab.TabVisibility visibility) {
         getEntries().put(stack, visibility);
-    }
-
-    public void accept(Supplier<? extends ItemLike> item, CreativeModeTab.TabVisibility visibility) {
-        this.accept(item.get(), visibility);
-    }
-
-    public void accept(Supplier<? extends ItemLike> item) {
-        this.accept(item.get());
     }
 }

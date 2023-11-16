@@ -24,7 +24,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -34,12 +36,12 @@ public class BlockEntityOnLoadTest {
     private static final boolean ENABLED = true;
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, "be_onload_test");
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, "be_onload_test");
+    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks("be_onload_test");
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems("be_onload_test");
     private static final DeferredRegister<BlockEntityType<?>> BE_TYPES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, "be_onload_test");
 
-    private static final DeferredHolder<Block, Block> TEST_BLOCK = BLOCKS.register("be_onload_testblock", () -> new TestBlock(Properties.of().mapColor(MapColor.SAND)));
-    private static final DeferredHolder<Item, Item> TEST_BLOCK_ITEM = ITEMS.register("be_onload_testblock", () -> new BlockItem(TEST_BLOCK.get(), new Item.Properties()));
+    private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.register("be_onload_testblock", () -> new TestBlock(Properties.of().mapColor(MapColor.SAND)));
+    private static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerBlockItem(TEST_BLOCK);
     private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TestBlockEntity>> TEST_BE_TYPE = BE_TYPES.register("be_onload_testbe", () -> BlockEntityType.Builder.of(TestBlockEntity::new, TEST_BLOCK.get()).build(null));
 
     public BlockEntityOnLoadTest() {

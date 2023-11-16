@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.debug.item;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -16,14 +15,14 @@ import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 @Mod("custom_shield_test")
 public class CustomShieldTest {
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, "custom_shield_test");
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems("custom_shield_test");
 
-    private static final DeferredHolder<Item, CustomShieldItem> CUSTOM_SHIELD_ITEM = ITEMS.register("custom_shield",
+    private static final DeferredItem<CustomShieldItem> CUSTOM_SHIELD_ITEM = ITEMS.register("custom_shield",
             () -> new CustomShieldItem((new Item.Properties()).durability(336)));
 
     public CustomShieldTest() {

@@ -24,7 +24,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.PlantType;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod(CustomPlantTypeTest.MODID)
@@ -34,8 +34,8 @@ public class CustomPlantTypeTest {
     private static final String CUSTOM_SOIL_BLOCK = "test_custom_block";
     private static final String CUSTOM_PLANT_BLOCK = "test_custom_plant";
 
-    public static final DeferredHolder<Block, Block> CUSTOM_SOIL = DeferredHolder.create(Registries.BLOCK, new ResourceLocation(MODID, CUSTOM_SOIL_BLOCK));
-    public static final DeferredHolder<Block, Block> CUSTOM_PLANT = DeferredHolder.create(Registries.BLOCK, new ResourceLocation(MODID, CUSTOM_PLANT_BLOCK));
+    public static final DeferredBlock<Block> CUSTOM_SOIL = DeferredBlock.createBlock(new ResourceLocation(MODID, CUSTOM_SOIL_BLOCK));
+    public static final DeferredBlock<Block> CUSTOM_PLANT = DeferredBlock.createBlock(new ResourceLocation(MODID, CUSTOM_PLANT_BLOCK));
 
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent event) {

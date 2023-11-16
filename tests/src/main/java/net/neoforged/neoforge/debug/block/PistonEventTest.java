@@ -10,14 +10,12 @@ import java.util.Locale;
 import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -36,7 +34,8 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.level.PistonEvent.PistonMoveType;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
@@ -52,11 +51,11 @@ public class PistonEventTest {
 
     public static final String MODID = "piston_event_test";
     public static String blockName = "shiftonmove";
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MODID);
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
+    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    private static final DeferredHolder<Block, Block> SHIFT_ON_MOVE = BLOCKS.register(blockName, () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)));
-    private static final DeferredHolder<Item, Item> SHIFT_ON_MOVE_ITEM = ITEMS.register(blockName, () -> new BlockItem(SHIFT_ON_MOVE.get(), new Item.Properties()));
+    private static final DeferredBlock<Block> SHIFT_ON_MOVE = BLOCKS.register(blockName, () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)));
+    private static final DeferredItem<BlockItem> SHIFT_ON_MOVE_ITEM = ITEMS.registerBlockItem(SHIFT_ON_MOVE);
 
     public PistonEventTest() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();

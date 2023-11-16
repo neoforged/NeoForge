@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.debug.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -28,7 +27,7 @@ import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
@@ -38,10 +37,10 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 @Mod(ScaffoldingTest.MODID)
 public class ScaffoldingTest {
     static final String MODID = "scaffolding_test";
-    static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MODID);
+    static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     static final TagKey<Block> SCAFFOLDING = BlockTags.create(new ResourceLocation("forge", "scaffolding"));
 
-    static final DeferredHolder<Block, Block> SCAFFOLDING_METHOD_TEST = BLOCKS.register("scaffolding_method_test", () -> new ScaffoldingMethodTestBlock(Properties.of().mapColor(MapColor.SAND).noCollission().sound(SoundType.SCAFFOLDING).dynamicShape()));
+    static final DeferredBlock<Block> SCAFFOLDING_METHOD_TEST = BLOCKS.register("scaffolding_method_test", () -> new ScaffoldingMethodTestBlock(Properties.of().mapColor(MapColor.SAND).noCollission().sound(SoundType.SCAFFOLDING).dynamicShape()));
 
     public ScaffoldingTest() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();

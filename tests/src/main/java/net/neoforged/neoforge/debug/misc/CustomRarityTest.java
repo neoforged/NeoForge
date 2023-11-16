@@ -6,13 +6,12 @@
 package net.neoforged.neoforge.debug.misc;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 @Mod(CustomRarityTest.MOD_ID)
@@ -23,8 +22,8 @@ public class CustomRarityTest {
 
     private static final Rarity CUSTOM_RARITY = Rarity.create(MOD_ID + "_CUSTOM", style -> style.withItalic(true).withColor(ChatFormatting.DARK_AQUA));
 
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
-    private static final DeferredHolder<Item, Item> CUSTOM_ITEM = ITEMS.register(
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    private static final DeferredItem<Item> CUSTOM_ITEM = ITEMS.register(
             "test",
             () -> new Item(new Item.Properties()) {
                 @Override

@@ -9,9 +9,7 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -24,18 +22,19 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 @Mod(HideNeighborFaceTest.MOD_ID)
 public class HideNeighborFaceTest {
     public static final String MOD_ID = "hide_neighbor_face_test";
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MOD_ID);
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
+    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
-    private static final DeferredHolder<Block, Block> GLASS_SLAB = BLOCKS.register("glass_slab", GlassSlab::new);
-    private static final DeferredHolder<Item, Item> GLASS_SLAB_ITEM = ITEMS.register("glass_slab", () -> new BlockItem(GLASS_SLAB.get(), new Item.Properties()));
+    private static final DeferredBlock<Block> GLASS_SLAB = BLOCKS.register("glass_slab", GlassSlab::new);
+    private static final DeferredItem<BlockItem> GLASS_SLAB_ITEM = ITEMS.registerBlockItem(GLASS_SLAB);
 
     public HideNeighborFaceTest() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.debug.item;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -16,17 +15,17 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 @Mod(CustomMobBucketTest.MODID)
 public class CustomMobBucketTest {
     public static final String MODID = "custom_mob_bucket_test";
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
     public static final boolean ENABLED = true;
 
-    public static final DeferredHolder<Item, Item> COW_BUCKET = ITEMS.register("cow_bucket", () -> new MobBucketItem(
+    public static final DeferredItem<Item> COW_BUCKET = ITEMS.register("cow_bucket", () -> new MobBucketItem(
             () -> EntityType.COW,
             () -> Fluids.WATER,
             () -> SoundEvents.BUCKET_EMPTY_FISH,

@@ -37,7 +37,9 @@ import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.DispenseFluidContainer;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.commons.lang3.Validate;
@@ -52,8 +54,8 @@ public class NewFluidTest {
     public static final ResourceLocation FLUID_FLOWING = new ResourceLocation("minecraft:block/mushroom_stem");
     public static final ResourceLocation FLUID_OVERLAY = new ResourceLocation("minecraft:block/obsidian");
 
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MODID);
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, MODID);
     public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(BuiltInRegistries.FLUID, MODID);
 
@@ -92,12 +94,12 @@ public class NewFluidTest {
     public static DeferredHolder<Fluid, FlowingFluid> test_fluid = FLUIDS.register("test_fluid", () -> new BaseFlowingFluid.Source(makeProperties()));
     public static DeferredHolder<Fluid, FlowingFluid> test_fluid_flowing = FLUIDS.register("test_fluid_flowing", () -> new BaseFlowingFluid.Flowing(makeProperties()));
 
-    public static DeferredHolder<Block, LiquidBlock> test_fluid_block = BLOCKS.register("test_fluid_block", () -> new LiquidBlock(test_fluid, Properties.of().noCollission().strength(100.0F).noLootTable()));
-    public static DeferredHolder<Item, Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> new BucketItem(test_fluid, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
+    public static DeferredBlock<LiquidBlock> test_fluid_block = BLOCKS.register("test_fluid_block", () -> new LiquidBlock(test_fluid, Properties.of().noCollission().strength(100.0F).noLootTable()));
+    public static DeferredItem<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> new BucketItem(test_fluid, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
 
     // WARNING: this doesn't allow "any fluid", only the fluid from this test mod!
-    public static DeferredHolder<Block, Block> fluidloggable_block = BLOCKS.register("fluidloggable_block", () -> new FluidloggableBlock(Properties.of().mapColor(MapColor.WOOD).noCollission().strength(100.0F).noLootTable()));
-    public static DeferredHolder<Item, Item> FLUID_LOGGABLE_BLOCK_ITEM = ITEMS.register("fluidloggable_block", () -> new BlockItem(fluidloggable_block.get(), new Item.Properties()));
+    public static DeferredBlock<Block> fluidloggable_block = BLOCKS.register("fluidloggable_block", () -> new FluidloggableBlock(Properties.of().mapColor(MapColor.WOOD).noCollission().strength(100.0F).noLootTable()));
+    public static DeferredItem<Item> FLUID_LOGGABLE_BLOCK_ITEM = ITEMS.register("fluidloggable_block", () -> new BlockItem(fluidloggable_block.get(), new Item.Properties()));
 
     public NewFluidTest() {
         if (ENABLE) {

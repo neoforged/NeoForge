@@ -14,7 +14,6 @@ import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -49,17 +48,18 @@ import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(NewModelLoaderTest.MODID)
 public class NewModelLoaderTest {
     public static final String MODID = "new_model_loader_test";
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MODID);
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    public static DeferredHolder<Block, Block> obj_block = BLOCKS.register("obj_block", () -> new Block(Block.Properties.of().mapColor(MapColor.WOOD).strength(10)) {
+    public static DeferredBlock<Block> obj_block = BLOCKS.register("obj_block", () -> new Block(Block.Properties.of().mapColor(MapColor.WOOD).strength(10)) {
         @Override
         protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
             builder.add(BlockStateProperties.HORIZONTAL_FACING);
@@ -78,22 +78,22 @@ public class NewModelLoaderTest {
         }
     });
 
-    public static DeferredHolder<Item, Item> obj_item = ITEMS.register("obj_block", () -> new BlockItem(obj_block.get(), new Item.Properties()) {
+    public static DeferredItem<Item> obj_item = ITEMS.register("obj_block", () -> new BlockItem(obj_block.get(), new Item.Properties()) {
         @Override
         public boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) {
             return armorType == EquipmentSlot.HEAD;
         }
     });
 
-    public static DeferredHolder<Item, Item> custom_transforms = ITEMS.register("custom_transforms", () -> new Item(new Item.Properties()));
+    public static DeferredItem<Item> custom_transforms = ITEMS.registerItem("custom_transforms");
 
-    public static DeferredHolder<Item, Item> custom_vanilla_loader = ITEMS.register("custom_vanilla_loader", () -> new Item(new Item.Properties()));
+    public static DeferredItem<Item> custom_vanilla_loader = ITEMS.registerItem("custom_vanilla_loader");
 
-    public static DeferredHolder<Item, Item> custom_loader = ITEMS.register("custom_loader", () -> new Item(new Item.Properties()));
+    public static DeferredItem<Item> custom_loader = ITEMS.registerItem("custom_loader");
 
-    public static DeferredHolder<Item, Item> item_layers = ITEMS.register("item_layers", () -> new Item(new Item.Properties()));
+    public static DeferredItem<Item> item_layers = ITEMS.registerItem("item_layers");
 
-    public static DeferredHolder<Item, Item> separate_perspective = ITEMS.register("separate_perspective", () -> new Item(new Item.Properties()));
+    public static DeferredItem<Item> separate_perspective = ITEMS.registerItem("separate_perspective");
 
     public NewModelLoaderTest() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();

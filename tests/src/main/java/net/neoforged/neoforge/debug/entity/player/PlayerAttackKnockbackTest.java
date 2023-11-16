@@ -8,7 +8,6 @@ package net.neoforged.neoforge.debug.entity.player;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import java.util.UUID;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -18,7 +17,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
@@ -34,9 +33,9 @@ public class PlayerAttackKnockbackTest {
 
     static final float ATTACK_KNOCKBACK_VALUE = 2.0F; // Change this value for testing, but note that the attribute is capped at 5.0D
 
-    static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
+    static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    static DeferredHolder<Item, Item> KNOCKBACK_SWORD = ITEMS.register("knockback_sword", () -> new KnockbackSwordItem(Tiers.IRON, 3, -2.4F, ATTACK_KNOCKBACK_VALUE, (new Item.Properties())));
+    static DeferredItem<Item> KNOCKBACK_SWORD = ITEMS.register("knockback_sword", () -> new KnockbackSwordItem(Tiers.IRON, 3, -2.4F, ATTACK_KNOCKBACK_VALUE, (new Item.Properties())));
 
     public PlayerAttackKnockbackTest() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();

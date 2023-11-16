@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod(SlipperinessTest.MOD_ID)
@@ -27,7 +27,7 @@ public class SlipperinessTest {
     static final String MOD_ID = "slipperiness_test";
     static final String BLOCK_ID = "test_block";
 
-    public static final DeferredHolder<Block, Block> BB_BLOCK = DeferredHolder.create(Registries.BLOCK, new ResourceLocation(MOD_ID, BLOCK_ID));
+    public static final DeferredBlock<Block> BB_BLOCK = DeferredBlock.createBlock(new ResourceLocation(MOD_ID, BLOCK_ID));
 
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent e) {

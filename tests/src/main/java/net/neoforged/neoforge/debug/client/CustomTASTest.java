@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.debug.client;
 
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -18,7 +17,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class CustomTASTest {
     private static final boolean ENABLED = true;
     static final String MOD_ID = "custom_tas_test";
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
     private static final Holder<Item> TEST_ITEM = ITEMS.register("test_item", () -> new Item(new Item.Properties()));
 
     public CustomTASTest() {
