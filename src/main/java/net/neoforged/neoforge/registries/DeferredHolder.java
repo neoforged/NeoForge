@@ -94,7 +94,10 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     @Override
     public T value() {
         bind(true);
-        Objects.requireNonNull(this.holder, () -> "Trying to access unbound value: " + this.key);
+        if (this.holder == null) {
+            throw new IllegalStateException("Trying to access unbound value: " + this.key);
+        }
+
         return (T) this.holder.value();
     }
 

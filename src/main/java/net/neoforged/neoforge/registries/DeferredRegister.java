@@ -243,6 +243,9 @@ public class DeferredRegister<T> {
      * @param to   The target registry name to alias to.
      */
     public void addAlias(ResourceLocation from, ResourceLocation to) {
+        if (seenRegisterEvent)
+            throw new IllegalStateException("Cannot add aliases to DeferredRegister after RegisterEvent has been fired.");
+
         this.aliases.put(from, to);
     }
 
@@ -256,7 +259,7 @@ public class DeferredRegister<T> {
             throw new IllegalStateException("Cannot register DeferredRegister to more than one event bus.");
         this.registeredEventBus = true;
         bus.addListener(this::addEntries);
-        bus.addListener(this::createRegistry);
+        bus.addListener(this::addRegistry);
     }
 
     /**
@@ -316,7 +319,7 @@ public class DeferredRegister<T> {
         }
     }
 
-    private void createRegistry(NewRegistryEvent event) {
+    private void addRegistry(NewRegistryEvent event) {
         this.seenNewRegistryEvent = true;
         if (this.customRegistry != null) {
             event.register(this.customRegistry);
@@ -431,10 +434,8 @@ public class DeferredRegister<T> {
          * @param properties The properties for the created {@link BlockItem}.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
          * @see #registerBlockItem(String, Supplier)
-         * @see #registerBlockItem(String, Holder, Item.Properties)
-         * @see #registerBlockItem(String, Holder)
-         * @see #registerBlockItem(DeferredHolder, Item.Properties)
-         * @see #registerBlockItem(DeferredHolder)
+         * @see #registerBlockItem(Holder, Item.Properties)
+         * @see #registerBlockItem(Holder)
          */
         public DeferredItem<BlockItem> registerBlockItem(String name, Supplier<? extends Block> block, Item.Properties properties) {
             return this.register(name, key -> new BlockItem(block.get(), properties));
@@ -449,48 +450,10 @@ public class DeferredRegister<T> {
          * @param block The supplier for the block to create a {@link BlockItem} for.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
          * @see #registerBlockItem(String, Supplier, Item.Properties)
-         * @see #registerBlockItem(String, Holder, Item.Properties)
-         * @see #registerBlockItem(String, Holder)
-         * @see #registerBlockItem(DeferredHolder, Item.Properties)
-         * @see #registerBlockItem(DeferredHolder)
+         * @see #registerBlockItem(Holder, Item.Properties)
+         * @see #registerBlockItem(Holder)
          */
         public DeferredItem<BlockItem> registerBlockItem(String name, Supplier<? extends Block> block) {
-            return this.registerBlockItem(name, block, new Item.Properties());
-        }
-
-        /**
-         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and
-         * returns a {@link DeferredItem} that will be populated with the created item automatically.
-         *
-         * @param name       The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
-         * @param block      The holder for the block to create a {@link BlockItem} for.
-         * @param properties The properties for the created {@link BlockItem}.
-         * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #registerBlockItem(String, Supplier, Item.Properties)
-         * @see #registerBlockItem(String, Supplier)
-         * @see #registerBlockItem(String, Holder)
-         * @see #registerBlockItem(DeferredHolder, Item.Properties)
-         * @see #registerBlockItem(DeferredHolder)
-         */
-        public DeferredItem<BlockItem> registerBlockItem(String name, Holder<Block> block, Item.Properties properties) {
-            return this.register(name, key -> new BlockItem(block.value(), properties));
-        }
-
-        /**
-         * Adds a new {@link BlockItem} for the given {@link Block} to the list of entries to be registered and
-         * returns a {@link DeferredItem} that will be populated with the created item automatically.
-         * This method uses the default {@link Item.Properties}.
-         *
-         * @param name  The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
-         * @param block The holder for the block to create a {@link BlockItem} for.
-         * @return A {@link DeferredItem} that will track updates from the registry for this item.
-         * @see #registerBlockItem(String, Supplier, Item.Properties)
-         * @see #registerBlockItem(String, Supplier)
-         * @see #registerBlockItem(String, Holder, Item.Properties)
-         * @see #registerBlockItem(DeferredHolder, Item.Properties)
-         * @see #registerBlockItem(DeferredHolder)
-         */
-        public DeferredItem<BlockItem> registerBlockItem(String name, Holder<Block> block) {
             return this.registerBlockItem(name, block, new Item.Properties());
         }
 
@@ -504,12 +467,10 @@ public class DeferredRegister<T> {
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
          * @see #registerBlockItem(String, Supplier, Item.Properties)
          * @see #registerBlockItem(String, Supplier)
-         * @see #registerBlockItem(String, Holder, Item.Properties)
-         * @see #registerBlockItem(String, Holder)
-         * @see #registerBlockItem(DeferredHolder)
+         * @see #registerBlockItem(Holder)
          */
-        public DeferredItem<BlockItem> registerBlockItem(DeferredHolder<Block, ? extends Block> block, Item.Properties properties) {
-            return this.registerBlockItem(block.getId().getPath(), (Holder<Block>) block, properties);
+        public DeferredItem<BlockItem> registerBlockItem(Holder<Block> block, Item.Properties properties) {
+            return this.registerBlockItem(block.unwrapKey().orElseThrow().location().getPath(), block::value, properties);
         }
 
         /**
@@ -521,11 +482,9 @@ public class DeferredRegister<T> {
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
          * @see #registerBlockItem(String, Supplier, Item.Properties)
          * @see #registerBlockItem(String, Supplier)
-         * @see #registerBlockItem(String, Holder, Item.Properties)
-         * @see #registerBlockItem(String, Holder)
-         * @see #registerBlockItem(DeferredHolder, Item.Properties)
+         * @see #registerBlockItem(Holder, Item.Properties)
          */
-        public DeferredItem<BlockItem> registerBlockItem(DeferredHolder<Block, ? extends Block> block) {
+        public DeferredItem<BlockItem> registerBlockItem(Holder<Block> block) {
             return this.registerBlockItem(block, new Item.Properties());
         }
 
