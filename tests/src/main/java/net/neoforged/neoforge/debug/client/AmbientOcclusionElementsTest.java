@@ -8,7 +8,6 @@ package net.neoforged.neoforge.debug.client;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -35,10 +34,10 @@ public class AmbientOcclusionElementsTest {
     public static final Holder<Block> AO_BLOCK_NO_SHADE = BLOCKS.registerBlock("ambient_occlusion_no_shade", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
     public static final Holder<Block> NO_AO_BLOCK_SHADE = BLOCKS.registerBlock("no_ambient_occlusion_shade", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
     public static final Holder<Block> NO_AO_BLOCK_NO_SHADE = BLOCKS.registerBlock("no_ambient_occlusion_no_shade", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
-    public static final DeferredItem<BlockItem> AO_BLOCK_SHADE_ITEM = ITEMS.registerBlockItem("ambient_occlusion_shade", AO_BLOCK_SHADE, new Item.Properties());
-    public static final DeferredItem<BlockItem> AO_BLOCK_NO_SHADE_ITEM = ITEMS.registerBlockItem("ambient_occlusion_no_shade", AO_BLOCK_NO_SHADE, new Item.Properties());
-    public static final DeferredItem<BlockItem> NO_AO_BLOCK_SHADE_ITEM = ITEMS.registerBlockItem("no_ambient_occlusion_shade", NO_AO_BLOCK_SHADE, new Item.Properties());
-    public static final DeferredItem<BlockItem> NO_AO_BLOCK_NO_SHADE_ITEM = ITEMS.registerBlockItem("no_ambient_occlusion_no_shade", NO_AO_BLOCK_NO_SHADE, new Item.Properties());
+    public static final DeferredItem<BlockItem> AO_BLOCK_SHADE_ITEM = ITEMS.registerBlockItem(AO_BLOCK_SHADE);
+    public static final DeferredItem<BlockItem> AO_BLOCK_NO_SHADE_ITEM = ITEMS.registerBlockItem(AO_BLOCK_NO_SHADE);
+    public static final DeferredItem<BlockItem> NO_AO_BLOCK_SHADE_ITEM = ITEMS.registerBlockItem(NO_AO_BLOCK_SHADE);
+    public static final DeferredItem<BlockItem> NO_AO_BLOCK_NO_SHADE_ITEM = ITEMS.registerBlockItem(NO_AO_BLOCK_NO_SHADE);
 
     public AmbientOcclusionElementsTest() {
         if (!ENABLED)

@@ -64,8 +64,8 @@ public class OnTreeGrowBlockTest {
             return plantable instanceof SaplingBlock;
         }
     });
-    public static final DeferredItem<BlockItem> TEST_GRASS_BLOCK_ITEM = ITEMS.registerBlockItem("test_grass_block", TEST_GRASS_BLOCK);
-    public static final DeferredItem<BlockItem> TEST_DIRT_ITEM = ITEMS.registerBlockItem("test_dirt", TEST_DIRT);
+    public static final DeferredItem<BlockItem> TEST_GRASS_BLOCK_ITEM = ITEMS.registerBlockItem(TEST_GRASS_BLOCK);
+    public static final DeferredItem<BlockItem> TEST_DIRT_ITEM = ITEMS.registerBlockItem(TEST_DIRT);
 
     public OnTreeGrowBlockTest() {
         if (ENABLED) {
