@@ -95,7 +95,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     public T value() {
         bind(true);
         if (this.holder == null) {
-            throw new IllegalStateException("Trying to access unbound value: " + this.key);
+            throw new NullPointerException("Trying to access unbound value: " + this.key);
         }
 
         return (T) this.holder.value();
