@@ -5,6 +5,7 @@
 
 package net.minecraftforge.common;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -15,6 +16,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -37,13 +39,20 @@ public class Tags
         private static void init(){}
 
         // `neoforge` tags for functional behavior provided by Neoforge
+        /**
+         * Controls what blocks Endermen cannot place blocks onto.
+         * <P>
+         * This is patched into the following method: {@link net.minecraft.world.entity.monster.EnderMan.EndermanLeaveBlockGoal#canPlaceBlock(Level, BlockPos, BlockState, BlockState, BlockState, BlockPos)}
+         */
         public static final TagKey<Block> ENDERMAN_PLACE_ON_BLACKLIST = neoforgeTag("enderman_place_on_blacklist");
         public static final TagKey<Block> NEEDS_WOOD_TOOL = neoforgeTag("needs_wood_tool");
         public static final TagKey<Block> NEEDS_GOLD_TOOL = neoforgeTag("needs_gold_tool");
         public static final TagKey<Block> NEEDS_NETHERITE_TOOL = neoforgeTag("needs_netherite_tool");
         /**
          * For blocks that should be recognized as stone during feature world generation.
-         * This is patched into {@link net.minecraft.world.level.levelgen.feature.Feature#isStone(BlockState)} method.
+         * <P>
+         * This is patched into the following method: {@link net.minecraft.world.level.levelgen.feature.Feature#isStone(BlockState)}
+         * <P>
          * Please use that method or tag when trying to detect stone in your own custom Features or other worldgen stone detection code.
          */
         public static final TagKey<Block> WORLDGEN_STONES = neoforgeTag("worldgen/stones");
@@ -258,6 +267,7 @@ public class Tags
 
         // `neoforge` tags for functional behavior provided by Neoforge
         /**
+         * Controls what items can be consumed for enchanting such as Enchanting Tables.
          * This tag defaults to {@link net.minecraft.world.item.Items#LAPIS_LAZULI} when not present in any datapacks, including forge client on vanilla server
          */
         public static final TagKey<Item> ENCHANTING_FUELS = neoforgeTag("enchanting_fuels");
