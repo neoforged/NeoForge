@@ -67,7 +67,7 @@
 +         }
           LevelStorageSource levelstoragesource = LevelStorageSource.createDefault(file1.toPath());
           LevelStorageSource.LevelStorageAccess levelstoragesource$levelstorageaccess = levelstoragesource.validateAndCreateAccess(s);
-+         levelstoragesource$levelstorageaccess.readAdditionalLevelSaveData(); // Read extra (e.g. modded) data from the world before creating it
++         levelstoragesource$levelstorageaccess.readAdditionalLevelSaveData();
           LevelSummary levelsummary = levelstoragesource$levelstorageaccess.getSummary();
           if (levelsummary != null) {
              if (levelsummary.requiresManualConversion()) {
