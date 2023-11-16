@@ -33,7 +33,6 @@ class NeoForgeRegistryCallbacks {
         public void onAdd(Registry<Block> registry, int id, ResourceKey<Block> key, Block value) {
             // Vanilla does this in Blocks.<clinit> for its own blocks.
             value.getStateDefinition().getPossibleStates().forEach(BlockBehaviour.BlockStateBase::initCache);
-            value.getLootTable();
         }
 
         @Override
@@ -48,6 +47,8 @@ class NeoForgeRegistryCallbacks {
                 for (BlockState state : block.getStateDefinition().getPossibleStates()) {
                     BLOCKSTATE_TO_ID_MAP.add(state);
                 }
+                // Cannot do this in onAdd because the lootTableSupplier might depend on blocks that will be registered later.
+                block.getLootTable();
             }
             DebugLevelSource.initValidStates();
         }

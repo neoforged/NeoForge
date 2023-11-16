@@ -17,8 +17,9 @@ import net.neoforged.neoforge.registries.callback.RegistryCallback;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Fired for every builtin registry and datapack registry after they are constructed.
- * For builtin registries, this event is fired after vanilla entries are registered but before modded entries.
+ * Fired for every builtin (i.e. non-datapack) registry after they are constructed.
+ * For vanilla registries, this event is fired after vanilla entries are registered but before modded entries.
+ * For modded registries, this event is fired before any entry is registered.
  *
  * <p>This event can be used to register {@linkplain IRegistryExtension#addCallback(RegistryCallback)} to the registry.
  *
