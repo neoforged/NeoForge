@@ -49,14 +49,14 @@ public class FluidStack {
     private boolean isEmpty;
     private int amount;
     private CompoundTag tag;
-    private Fluid fluid;
+    private final Fluid fluid;
 
     public FluidStack(Fluid fluid, int amount) {
         if (fluid == null) {
             LOGGER.fatal("Null fluid supplied to fluidstack. Did you try and create a stack for an unregistered fluid?");
             throw new IllegalArgumentException("Cannot create a fluidstack from a null fluid");
-        } else if (BuiltInRegistries.FLUID.getKey(fluid) == null) {
-            LOGGER.fatal("Failed attempt to create a FluidStack for an unregistered Fluid {} (type {})", BuiltInRegistries.FLUID.getKey(fluid), fluid.getClass().getName());
+        } else if (!BuiltInRegistries.FLUID.containsValue(fluid)) {
+            LOGGER.fatal("Failed attempt to create a FluidStack for an unregistered Fluid {} (type {})", fluid, fluid.getClass().getName());
             throw new IllegalArgumentException("Cannot create a fluidstack from an unregistered fluid");
         }
         this.amount = amount;
@@ -91,7 +91,7 @@ public class FluidStack {
 
         ResourceLocation fluidName = new ResourceLocation(nbt.getString("FluidName"));
         Fluid fluid = BuiltInRegistries.FLUID.get(fluidName);
-        if (fluid == null) {
+        if (fluid == Fluids.EMPTY) {
             return EMPTY;
         }
         FluidStack stack = new FluidStack(fluid, nbt.getInt("Amount"));
