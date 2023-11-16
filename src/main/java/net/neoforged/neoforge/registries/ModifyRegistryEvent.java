@@ -21,7 +21,7 @@ import org.jetbrains.annotations.ApiStatus;
  * For vanilla registries, this event is fired after vanilla entries are registered but before modded entries.
  * For modded registries, this event is fired before any entry is registered.
  *
- * <p>This event can be used to register {@linkplain IRegistryExtension#addCallback(RegistryCallback)} to the registry.
+ * <p>This event can be used to register {@linkplain IRegistryExtension#addCallback(RegistryCallback) callbacks} to the registry.
  *
  * <p>This event does not fire for datapack registries.
  *
@@ -30,7 +30,6 @@ import org.jetbrains.annotations.ApiStatus;
  * on both {@linkplain LogicalSide logical sides}.</p>
  *
  * @see NewRegistryEvent
- * @see DataPackRegistryEvent.NewRegistry
  */
 public class ModifyRegistryEvent extends Event implements IModBusEvent {
     private final ResourceKey<? extends Registry<?>> registryKey;
