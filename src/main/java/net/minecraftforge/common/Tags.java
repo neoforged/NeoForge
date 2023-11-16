@@ -18,6 +18,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 
 public class Tags
@@ -42,6 +43,8 @@ public class Tags
         public static final TagKey<Block> NEEDS_NETHERITE_TOOL = neoforgeTag("needs_netherite_tool");
         /**
          * For blocks that should be recognized as stone during feature world generation.
+         * This is patched into {@link net.minecraft.world.level.levelgen.feature.Feature#isStone(BlockState)} method.
+         * Please use that method when trying to detect stone in your own custom Features or other worldgen stone detection code.
          */
         public static final TagKey<Block> WORLDGEN_STONES = neoforgeTag("worldgen/stones");
 
