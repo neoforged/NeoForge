@@ -5,9 +5,11 @@
 
 package net.neoforged.neoforge.registries;
 
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import net.minecraft.core.IdMapper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -29,10 +31,11 @@ class NeoForgeRegistryCallbacks {
         static final BlockCallbacks INSTANCE = new BlockCallbacks();
         static final ClearableObjectIntIdentityMap<BlockState> BLOCKSTATE_TO_ID_MAP = new ClearableObjectIntIdentityMap<>();
 
+        private final Set<Block> addedBlocks = new ReferenceOpenHashSet<>();
+
         @Override
         public void onAdd(Registry<Block> registry, int id, ResourceKey<Block> key, Block value) {
-            // Vanilla does this in Blocks.<clinit> for its own blocks.
-            value.getStateDefinition().getPossibleStates().forEach(BlockBehaviour.BlockStateBase::initCache);
+            addedBlocks.add(value);
         }
 
         @Override
@@ -42,14 +45,22 @@ class NeoForgeRegistryCallbacks {
 
         @Override
         public void onBake(Registry<Block> registry) {
-            // Vanilla does this in Blocks.<clinit>, but we must do it after each bake in case of registry changes.
+            // Vanilla does this in Blocks.<clinit>
+
+            // Init cache and loot table for new blocks only (the cache init is expensive).
+            for (Block block : addedBlocks) {
+                block.getStateDefinition().getPossibleStates().forEach(BlockBehaviour.BlockStateBase::initCache);
+                block.getLootTable();
+            }
+            addedBlocks.clear();
+
+            // Update block state ID map after each bake in case of registry changes.
             for (Block block : registry) {
                 for (BlockState state : block.getStateDefinition().getPossibleStates()) {
                     BLOCKSTATE_TO_ID_MAP.add(state);
                 }
-                // Cannot do this in onAdd because the lootTableSupplier might depend on blocks that will be registered later.
-                block.getLootTable();
             }
+
             DebugLevelSource.initValidStates();
         }
 
