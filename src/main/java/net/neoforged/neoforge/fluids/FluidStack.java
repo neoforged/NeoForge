@@ -8,6 +8,7 @@ package net.neoforged.neoforge.fluids;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -20,6 +21,7 @@ import net.minecraft.world.level.material.Fluids;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * ItemStack substitute for Fluids.
@@ -65,12 +67,20 @@ public class FluidStack {
         updateEmpty();
     }
 
-    public FluidStack(Fluid fluid, int amount, CompoundTag nbt) {
+    public FluidStack(Holder<Fluid> fluid, int amount) {
+        this(fluid.value(), amount);
+    }
+
+    public FluidStack(Fluid fluid, int amount, @Nullable CompoundTag nbt) {
         this(fluid, amount);
 
         if (nbt != null) {
             tag = nbt.copy();
         }
+    }
+
+    public FluidStack(Holder<Fluid> fluid, int amount, @Nullable CompoundTag nbt) {
+        this(fluid.value(), amount, nbt);
     }
 
     public FluidStack(FluidStack stack, int amount) {
