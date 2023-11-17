@@ -1,11 +1,9 @@
 {
   "values": [
-    "#c:ingots/brick",
     "#c:ingots/copper",
     "#c:ingots/gold",
     "#c:ingots/iron",
     "#c:ingots/netherite",
-    "#c:ingots/nether_brick",
     {
       "id": "#forge:ingots",
       "required": false

@@ -27,27 +27,27 @@ public final class ForgeFluidTagsProvider extends FluidTagsProvider
     @Override
     public void addTags(HolderLookup.Provider lookupProvider)
     {
-        tag(Fluids.WATER).add(net.minecraft.world.level.material.Fluids.WATER).add(net.minecraft.world.level.material.Fluids.FLOWING_WATER);
-        tag(Fluids.LAVA).add(net.minecraft.world.level.material.Fluids.LAVA).add(net.minecraft.world.level.material.Fluids.FLOWING_LAVA);
-        tag(Fluids.MILK).addOptional(ForgeMod.MILK.getId()).addOptional(ForgeMod.FLOWING_MILK.getId());
+        tag(Fluids.WATERS).add(net.minecraft.world.level.material.Fluids.WATER).add(net.minecraft.world.level.material.Fluids.FLOWING_WATER);
+        tag(Fluids.LAVAS).add(net.minecraft.world.level.material.Fluids.LAVA).add(net.minecraft.world.level.material.Fluids.FLOWING_LAVA);
+        tag(Fluids.MILKS).addOptional(ForgeMod.MILK.getId()).addOptional(ForgeMod.FLOWING_MILK.getId());
         tag(Fluids.GASEOUS);
-        tag(Fluids.HONEY);
-        tag(Fluids.POTION);
-        tag(Fluids.SUSPICIOUS_STEW);
-        tag(Fluids.MUSHROOM_STEW);
-        tag(Fluids.RABBIT_STEW);
-        tag(Fluids.BEETROOT_SOUP);
+        tag(Fluids.HONEYS);
+        tag(Fluids.POTIONS);
+        tag(Fluids.SUSPICIOUS_STEWS);
+        tag(Fluids.MUSHROOM_STEWS);
+        tag(Fluids.RABBIT_STEWS);
+        tag(Fluids.BEETROOT_SOUPS);
 
         // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
-        tagWithOptionalLegacy(Fluids.MILK);
+        tagWithOptionalLegacy(Fluids.MILKS);
         tagWithOptionalLegacy(Fluids.GASEOUS);
-        tagWithOptionalLegacy(Fluids.HONEY);
-        tagWithOptionalLegacy(Fluids.POTION);
-        tagWithOptionalLegacy(Fluids.SUSPICIOUS_STEW);
-        tagWithOptionalLegacy(Fluids.MUSHROOM_STEW);
-        tagWithOptionalLegacy(Fluids.RABBIT_STEW);
-        tagWithOptionalLegacy(Fluids.BEETROOT_SOUP);
+        tagWithOptionalLegacy(Fluids.HONEYS);
+        tagWithOptionalLegacy(Fluids.POTIONS);
+        tagWithOptionalLegacy(Fluids.SUSPICIOUS_STEWS);
+        tagWithOptionalLegacy(Fluids.MUSHROOM_STEWS);
+        tagWithOptionalLegacy(Fluids.RABBIT_STEWS);
+        tagWithOptionalLegacy(Fluids.BEETROOT_SOUPS);
     }
 
     private IntrinsicHolderTagsProvider.IntrinsicTagAppender<Fluid> tagWithOptionalLegacy(TagKey<Fluid> tag)

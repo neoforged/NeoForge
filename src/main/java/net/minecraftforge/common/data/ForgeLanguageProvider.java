@@ -122,6 +122,9 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.BARRELS_WOODEN, "Wooden Barrels");
         add(Tags.Items.BONES, "Bones");
         add(Tags.Items.BOOKSHELVES, "Bookshelves");
+        add(Tags.Items.BRICKS, "Bricks");
+        add(Tags.Items.BRICKS_NORMAL, "Normal Bricks");
+        add(Tags.Items.BRICKS_NETHER, "Nether Bricks");
         add(Tags.Items.BUDDING_BLOCKS, "Budding Blocks");
         add(Tags.Items.BUDS, "Buds");
         add(Tags.Items.CHAINS, "Chains");
@@ -143,7 +146,6 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.CROPS_WHEAT, "Wheat Crops");
         add(Tags.Items.DUSTS, "Dusts");
         add(Tags.Items.DUSTS_GLOWSTONE, "Glowstone Dusts");
-        add(Tags.Items.DUSTS_PRISMARINE, "Prismarine Dusts");
         add(Tags.Items.DUSTS_REDSTONE, "Redstone Dusts");
         add(Tags.Items.DYED, "Dyed Items");
         addColored(Tags.Items.DYED, "{color} Dyed Items");
@@ -188,12 +190,10 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.GUNPOWDERS, "Gunpowders");
         add(Tags.Items.HEADS, "Heads");
         add(Tags.Items.INGOTS, "Ingots");
-        add(Tags.Items.INGOTS_BRICK, "Brick Ingots");
         add(Tags.Items.INGOTS_COPPER, "Copper Ingots");
         add(Tags.Items.INGOTS_GOLD, "Gold Ingots");
         add(Tags.Items.INGOTS_IRON, "Iron Ingots");
         add(Tags.Items.INGOTS_NETHERITE, "Netherite Ingots");
-        add(Tags.Items.INGOTS_NETHER_BRICK, "Nether Brick Ingots");
         add(Tags.Items.LEATHERS, "Leathers");
         add(Tags.Items.MUSHROOMS, "Mushrooms");
         add(Tags.Items.NETHER_STARS, "Nether Stars");
@@ -286,16 +286,16 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.ARMORS, "Armors");
 
         // Fluids
-        add(Tags.Fluids.WATER, "Water");
-        add(Tags.Fluids.LAVA, "Lava");
-        add(Tags.Fluids.MILK, "Milk");
+        add(Tags.Fluids.WATERS, "Waters");
+        add(Tags.Fluids.LAVAS, "Lavas");
+        add(Tags.Fluids.MILKS, "Milks");
         add(Tags.Fluids.GASEOUS, "Gaseous");
-        add(Tags.Fluids.HONEY, "Honey");
-        add(Tags.Fluids.POTION, "Potion");
-        add(Tags.Fluids.SUSPICIOUS_STEW, "Suspicious Stew");
-        add(Tags.Fluids.MUSHROOM_STEW, "Mushroom Stew");
-        add(Tags.Fluids.RABBIT_STEW, "Rabbit Stew");
-        add(Tags.Fluids.BEETROOT_SOUP, "Beetroot Soup");
+        add(Tags.Fluids.HONEYS, "Honeys");
+        add(Tags.Fluids.POTIONS, "Potions");
+        add(Tags.Fluids.SUSPICIOUS_STEWS, "Suspicious Stews");
+        add(Tags.Fluids.MUSHROOM_STEWS, "Mushroom Stews");
+        add(Tags.Fluids.RABBIT_STEWS, "Rabbit Stews");
+        add(Tags.Fluids.BEETROOT_SOUPS, "Beetroot Soups");
 
         // Entities
         add(Tags.EntityTypes.BOSSES, "Bosses");

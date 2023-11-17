@@ -269,6 +269,9 @@ public class Tags
         public static final TagKey<Item> BARRELS_WOODEN = tag("barrels/wooden");
         public static final TagKey<Item> BONES = tag("bones");
         public static final TagKey<Item> BOOKSHELVES = tag("bookshelves");
+        public static final TagKey<Item> BRICKS = tag("bricks");
+        public static final TagKey<Item> BRICKS_NORMAL = tag("bricks/normal");
+        public static final TagKey<Item> BRICKS_NETHER = tag("bricks/nether");
         /**
          * For blocks that are similar to amethyst where their budding block produces buds and cluster blocks
          */
@@ -298,7 +301,6 @@ public class Tags
         public static final TagKey<Item> CROPS_POTATO = tag("crops/potato");
         public static final TagKey<Item> CROPS_WHEAT = tag("crops/wheat");
         public static final TagKey<Item> DUSTS = tag("dusts");
-        public static final TagKey<Item> DUSTS_PRISMARINE = tag("dusts/prismarine");
         public static final TagKey<Item> DUSTS_REDSTONE = tag("dusts/redstone");
         public static final TagKey<Item> DUSTS_GLOWSTONE = tag("dusts/glowstone");
 
@@ -424,12 +426,10 @@ public class Tags
          */
         public static final TagKey<Item> HEADS = tag("heads");
         public static final TagKey<Item> INGOTS = tag("ingots");
-        public static final TagKey<Item> INGOTS_BRICK = tag("ingots/brick");
         public static final TagKey<Item> INGOTS_COPPER = tag("ingots/copper");
         public static final TagKey<Item> INGOTS_GOLD = tag("ingots/gold");
         public static final TagKey<Item> INGOTS_IRON = tag("ingots/iron");
         public static final TagKey<Item> INGOTS_NETHERITE = tag("ingots/netherite");
-        public static final TagKey<Item> INGOTS_NETHER_BRICK = tag("ingots/nether_brick");
         public static final TagKey<Item> LEATHERS = tag("leather");
         public static final TagKey<Item> MUSHROOMS = tag("mushrooms");
         public static final TagKey<Item> NETHER_STARS = tag("nether_stars");
@@ -660,16 +660,16 @@ public class Tags
          * Holds all fluids related to water.
          * This tag is done to help out multi-loader mods/datapacks where the vanilla water tag has attached behaviors outside Neo.
          */
-        public static final TagKey<Fluid> WATER = tag("water");
+        public static final TagKey<Fluid> WATERS = tag("waters");
         /**
          * Holds all fluids related to lava.
          * This tag is done to help out multi-loader mods/datapacks where the vanilla lava tag has attached behaviors outside Neo.
          */
-        public static final TagKey<Fluid> LAVA = tag("lava");
+        public static final TagKey<Fluid> LAVAS = tag("lavas");
         /**
          * Holds all fluids related to milk.
          */
-        public static final TagKey<Fluid> MILK = tag("milk");
+        public static final TagKey<Fluid> MILKS = tag("milks");
         /**
          * Holds all fluids that are gaseous at room temperature.
          */
@@ -677,30 +677,30 @@ public class Tags
         /**
          * Holds all fluids related to honey. (Standard unit for honey bottle is 250mb per bottle)
          */
-        public static final TagKey<Fluid> HONEY = tag("honey");
+        public static final TagKey<Fluid> HONEYS = tag("honeys");
         /**
          * Holds all fluids related to potions. The effects of the potion fluid should be read from NBT.
          * See {@link net.minecraft.world.item.alchemy.PotionUtils} class for how to read the effect and color from the fluid NBT.
          * (Standard unit for potions is 250mb per bottle)
          */
-        public static final TagKey<Fluid> POTION = tag("potion");
+        public static final TagKey<Fluid> POTIONS = tag("potions");
         /**
          * Holds all fluids related to Suspicious Stew. The effects of the suspicious stew fluid should be read from NBT.
          * (Standard unit for suspicious stew is 250mb per bowl)
          */
-        public static final TagKey<Fluid> SUSPICIOUS_STEW = tag("suspicious_stew");
+        public static final TagKey<Fluid> SUSPICIOUS_STEWS = tag("suspicious_stews");
         /**
          * Holds all fluids related to Mushroom Stew. (Standard unit for mushroom stew is 250mb per bowl)
          */
-        public static final TagKey<Fluid> MUSHROOM_STEW = tag("mushroom_stew");
+        public static final TagKey<Fluid> MUSHROOM_STEWS = tag("mushroom_stews");
         /**
          * Holds all fluids related to Rabbit Stew. (Standard unit for rabbit stew is 250mb per bowl)
          */
-        public static final TagKey<Fluid> RABBIT_STEW = tag("rabbit_stew");
+        public static final TagKey<Fluid> RABBIT_STEWS = tag("rabbit_stews");
         /**
          * Holds all fluids related to Beetroot Soup. (Standard unit for beetroot soup is 250mb per bowl)
          */
-        public static final TagKey<Fluid> BEETROOT_SOUP = tag("beetroot_soup");
+        public static final TagKey<Fluid> BEETROOT_SOUPS = tag("beetroot_soups");
 
         private static TagKey<Fluid> tag(String name)
         {

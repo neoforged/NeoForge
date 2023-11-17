@@ -1,9 +1,0 @@
-{
-  "values": [
-    "minecraft:prismarine_shard",
-    {
-      "id": "#forge:dusts/prismarine",
-      "required": false
-    }
-  ]
-}

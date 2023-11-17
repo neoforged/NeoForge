@@ -38,6 +38,9 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         copy(Tags.Blocks.BARRELS_WOODEN, Tags.Items.BARRELS_WOODEN);
         tag(Tags.Items.BONES).add(Items.BONE);
         copy(Tags.Blocks.BOOKSHELVES, Tags.Items.BOOKSHELVES);
+        tag(Tags.Items.BRICKS).addTags(Tags.Items.BRICKS_NORMAL, Tags.Items.BRICKS_NETHER);
+        tag(Tags.Items.BRICKS_NORMAL).add(Items.BRICK);
+        tag(Tags.Items.BRICKS_NETHER).add(Items.NETHER_BRICKS);
         copy(Tags.Blocks.CHAINS, Tags.Items.CHAINS);
         copy(Tags.Blocks.CHESTS, Tags.Items.CHESTS);
         copy(Tags.Blocks.CHESTS_ENDER, Tags.Items.CHESTS_ENDER);
@@ -67,9 +70,8 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         addColored(Tags.Items.DYED, "{color}_terracotta");
         addColored(Tags.Items.DYED, "{color}_wool");
         addColoredTags(tag(Tags.Items.DYED)::addTags, Tags.Items.DYED);
-        tag(Tags.Items.DUSTS).addTags(Tags.Items.DUSTS_GLOWSTONE, Tags.Items.DUSTS_PRISMARINE, Tags.Items.DUSTS_REDSTONE);
+        tag(Tags.Items.DUSTS).addTags(Tags.Items.DUSTS_GLOWSTONE, Tags.Items.DUSTS_REDSTONE);
         tag(Tags.Items.DUSTS_GLOWSTONE).add(Items.GLOWSTONE_DUST);
-        tag(Tags.Items.DUSTS_PRISMARINE).add(Items.PRISMARINE_SHARD);
         tag(Tags.Items.DUSTS_REDSTONE).add(Items.REDSTONE);
         addColored(Tags.Items.DYES, "{color}_dye");
         addColoredTags(tag(Tags.Items.DYES)::addTags, Tags.Items.DYES);
@@ -118,13 +120,11 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         copy(Tags.Blocks.GRAVELS, Tags.Items.GRAVELS);
         tag(Tags.Items.GUNPOWDERS).add(Items.GUNPOWDER);
         tag(Tags.Items.HEADS).add(Items.SKELETON_SKULL, Items.WITHER_SKELETON_SKULL, Items.PLAYER_HEAD, Items.ZOMBIE_HEAD, Items.CREEPER_HEAD, Items.PIGLIN_HEAD, Items.DRAGON_HEAD);
-        tag(Tags.Items.INGOTS).addTags(Tags.Items.INGOTS_BRICK, Tags.Items.INGOTS_COPPER, Tags.Items.INGOTS_GOLD, Tags.Items.INGOTS_IRON, Tags.Items.INGOTS_NETHERITE, Tags.Items.INGOTS_NETHER_BRICK);
-        tag(Tags.Items.INGOTS_BRICK).add(Items.BRICK);
+        tag(Tags.Items.INGOTS).addTags( Tags.Items.INGOTS_COPPER, Tags.Items.INGOTS_GOLD, Tags.Items.INGOTS_IRON, Tags.Items.INGOTS_NETHERITE);
         tag(Tags.Items.INGOTS_COPPER).add(Items.COPPER_INGOT);
         tag(Tags.Items.INGOTS_GOLD).add(Items.GOLD_INGOT);
         tag(Tags.Items.INGOTS_IRON).add(Items.IRON_INGOT);
         tag(Tags.Items.INGOTS_NETHERITE).add(Items.NETHERITE_INGOT);
-        tag(Tags.Items.INGOTS_NETHER_BRICK).add(Items.NETHER_BRICK);
         tag(Tags.Items.LEATHERS).add(Items.LEATHER);
         tag(Tags.Items.MUSHROOMS).add(Items.BROWN_MUSHROOM, Items.RED_MUSHROOM);
         tag(Tags.Items.NETHER_STARS).add(Items.NETHER_STAR);
@@ -224,6 +224,8 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
         tagWithOptionalLegacy(Tags.Items.BONES);
+        tag(Tags.Items.BRICKS_NORMAL).addOptionalTag(new ResourceLocation("forge", "ingots/brick"));
+        tag(Tags.Items.BRICKS_NETHER).addOptionalTag(new ResourceLocation("forge", "ingots/nether_brick"));
         tagWithOptionalLegacy(Tags.Items.CROPS);
         tagWithOptionalLegacy(Tags.Items.CROPS_BEETROOT);
         tagWithOptionalLegacy(Tags.Items.CROPS_CARROT);
@@ -232,7 +234,6 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tagWithOptionalLegacy(Tags.Items.CROPS_WHEAT);
         tagWithOptionalLegacy(Tags.Items.DUSTS);
         tagWithOptionalLegacy(Tags.Items.DUSTS_GLOWSTONE);
-        tagWithOptionalLegacy(Tags.Items.DUSTS_PRISMARINE);
         tagWithOptionalLegacy(Tags.Items.DUSTS_REDSTONE);
         tagColoredWithOptionalLegacy(Tags.Items.DYES);
         tag(Tags.Items.DYED_BLACK)
@@ -298,12 +299,10 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tagWithOptionalLegacy(Tags.Items.GUNPOWDERS);
         tagWithOptionalLegacy(Tags.Items.HEADS);
         tagWithOptionalLegacy(Tags.Items.INGOTS);
-        tagWithOptionalLegacy(Tags.Items.INGOTS_BRICK);
         tagWithOptionalLegacy(Tags.Items.INGOTS_COPPER);
         tagWithOptionalLegacy(Tags.Items.INGOTS_GOLD);
         tagWithOptionalLegacy(Tags.Items.INGOTS_IRON);
         tagWithOptionalLegacy(Tags.Items.INGOTS_NETHERITE);
-        tagWithOptionalLegacy(Tags.Items.INGOTS_NETHER_BRICK);
         tag(Tags.Items.LEATHERS).addOptionalTag(new ResourceLocation("forge", "leather"));
         tagWithOptionalLegacy(Tags.Items.MUSHROOMS);
         tagWithOptionalLegacy(Tags.Items.NETHER_STARS);
