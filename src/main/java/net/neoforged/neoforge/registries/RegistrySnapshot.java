@@ -6,9 +6,9 @@
 package net.neoforged.neoforge.registries;
 
 import io.netty.buffer.Unpooled;
-import it.unimi.dsi.fastutil.objects.Object2IntRBTreeMap;
-import it.unimi.dsi.fastutil.objects.Object2IntSortedMap;
-import it.unimi.dsi.fastutil.objects.Object2IntSortedMaps;
+import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMaps;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
@@ -22,8 +22,10 @@ import net.minecraft.resources.ResourceLocation;
 
 public class RegistrySnapshot {
     private static final Comparator<ResourceLocation> SORTER = ResourceLocation::compareNamespaced;
-    private final Object2IntSortedMap<ResourceLocation> ids = new Object2IntRBTreeMap<>(SORTER);
-    private final Object2IntSortedMap<ResourceLocation> idsView = Object2IntSortedMaps.unmodifiable(this.ids);
+    // Use a sorted map with the ID as the key.
+    // We need the entries to be sorted by increasing order for client-side application of the snapshot to work.
+    private final Int2ObjectSortedMap<ResourceLocation> ids = new Int2ObjectRBTreeMap<>();
+    private final Int2ObjectSortedMap<ResourceLocation> idsView = Int2ObjectSortedMaps.unmodifiable(this.ids);
     private final Map<ResourceLocation, ResourceLocation> aliases = new TreeMap<>(SORTER);
     private final Map<ResourceLocation, ResourceLocation> aliasesView = Collections.unmodifiableMap(this.aliases);
     @Nullable
@@ -47,7 +49,7 @@ public class RegistrySnapshot {
      * @param <T>      the registry type
      */
     public <T> RegistrySnapshot(Registry<T> registry, boolean full) {
-        registry.keySet().forEach(key -> this.ids.put(key, registry.getId(key)));
+        registry.keySet().forEach(key -> this.ids.put(registry.getId(key), key));
         this.aliases.putAll(((BaseMappedRegistry<T>) registry).aliases);
 
         if (full) {
@@ -64,7 +66,7 @@ public class RegistrySnapshot {
         }
     }
 
-    public Object2IntSortedMap<ResourceLocation> getIds() {
+    public Int2ObjectSortedMap<ResourceLocation> getIds() {
         return this.idsView;
     }
 
@@ -84,8 +86,8 @@ public class RegistrySnapshot {
 
             pkt.writeVarInt(this.ids.size());
             this.ids.forEach((k, v) -> {
-                pkt.writeResourceLocation(k);
-                pkt.writeVarInt(v);
+                pkt.writeVarInt(k);
+                pkt.writeResourceLocation(v);
             });
 
             pkt.writeVarInt(this.aliases.size());
@@ -108,7 +110,7 @@ public class RegistrySnapshot {
 
         int len = buf.readVarInt();
         for (int x = 0; x < len; x++)
-            ret.ids.put(buf.readResourceLocation(), buf.readVarInt());
+            ret.ids.put(buf.readVarInt(), buf.readResourceLocation());
 
         len = buf.readVarInt();
         for (int x = 0; x < len; x++)

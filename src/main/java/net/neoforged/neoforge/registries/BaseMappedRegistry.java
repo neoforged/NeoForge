@@ -102,6 +102,10 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
         this.aliases.clear();
     }
 
+    /**
+     * Register a key <-> ID mapping.
+     * <b>The IDs must be registered in increasing order.</b>
+     */
     protected abstract void registerIdMapping(ResourceKey<T> key, int id);
 
     protected abstract void unfreeze();

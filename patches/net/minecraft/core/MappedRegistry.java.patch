@@ -142,8 +142,8 @@
 +      this.validateWrite(key);
 +      if (id > this.getMaxId())
 +         throw new IllegalStateException(String.format(java.util.Locale.ENGLISH, "Invalid id %d - maximum id range of %d exceeded.", id, this.getMaxId()));
-+      if (this.byId(id) != null) {
-+         throw new IllegalStateException("Duplicate id " + id + " for " + key + " and " + this.getKey(this.byId(id)));
++      if (0 <= id && id < this.byId.size() && this.byId.get(id) != null) { // Don't use byId() method, it will return the default value if the entry is absent
++         throw new IllegalStateException("Duplicate id " + id + " for " + key + " and " + this.getKey(this.byId.get(id).value()));
 +      }
 +      if (this.nextId <= id) {
 +         this.nextId = id + 1;

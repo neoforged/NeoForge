@@ -159,12 +159,12 @@ public class RegistryManager {
 
         if (backup == null) {
             forgeRegistry.clear(false);
-            for (var entry : snapshot.getIds().object2IntEntrySet()) {
-                ResourceKey<T> key = ResourceKey.create(registryKey, entry.getKey());
+            for (var entry : snapshot.getIds().int2ObjectEntrySet()) {
+                ResourceKey<T> key = ResourceKey.create(registryKey, entry.getValue());
                 if (!registry.containsKey(key)) {
                     missing.add(key);
                 } else {
-                    forgeRegistry.registerIdMapping(key, entry.getIntValue());
+                    forgeRegistry.registerIdMapping(key, entry.getIntKey());
                 }
             }
         } else {
