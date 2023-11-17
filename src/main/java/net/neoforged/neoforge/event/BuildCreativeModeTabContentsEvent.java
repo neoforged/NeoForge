@@ -20,7 +20,7 @@ import org.jetbrains.annotations.ApiStatus;
  * Fired when the contents of a specific creative mode tab are being populated.
  * This event may be fired multiple times if the operator status of the local player or enabled feature flags changes.
  * <p>
- * This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+ * This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  * <p>
  * This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.
