@@ -96,19 +96,18 @@
           List<ResourceLocation> list = this.byKey
              .entrySet()
              .stream()
-@@ -347,9 +_,10 @@
+@@ -347,8 +_,10 @@
                    throw new IllegalStateException("Some intrusive holders were not registered: " + this.unregisteredIntrusiveHolders.values());
                 }
  
 -               this.unregisteredIntrusiveHolders = null;
-+               // Forge: We freeze/unfreeze vanilla registries more than once, so we need to keep the unregistered intrusive holders map around.
++               // Neo: We freeze/unfreeze vanilla registries more than once, so we need to keep the unregistered intrusive holders map around.
 +               // this.unregisteredIntrusiveHolders = null;
              }
--
 +            this.bakeCallbacks.forEach(bakeCallback -> bakeCallback.onBake(this));
+ 
              return this;
           }
-       }
 @@ -443,5 +_,59 @@
     @Override
     public HolderLookup.RegistryLookup<T> asLookup() {

@@ -17,9 +17,6 @@ import org.jetbrains.annotations.ApiStatus;
 public class NeoForgeRegistriesSetup {
     private static boolean setup = false;
 
-    /**
-     * Internal forge method. Modders do not call.
-     */
     public static synchronized void setup(IEventBus modEventBus) {
         if (setup)
             throw new IllegalStateException("Setup has already been called!");

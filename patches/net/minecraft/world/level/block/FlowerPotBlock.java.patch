@@ -41,7 +41,7 @@
        Item item = itemstack.getItem();
 -      BlockState blockstate = (item instanceof BlockItem ? POTTED_BY_CONTENT.getOrDefault(((BlockItem)item).getBlock(), Blocks.AIR) : Blocks.AIR)
 -         .defaultBlockState();
-+      BlockState blockstate = (item instanceof BlockItem ? getEmptyPot().fullPots.getOrDefault(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(((BlockItem)item).getBlock()), () ->Blocks.AIR).get() : Blocks.AIR).defaultBlockState();
++      BlockState blockstate = (item instanceof BlockItem ? getEmptyPot().fullPots.getOrDefault(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(((BlockItem)item).getBlock()), () -> Blocks.AIR).get() : Blocks.AIR).defaultBlockState();
        boolean flag = blockstate.is(Blocks.AIR);
        boolean flag1 = this.isEmpty();
        if (flag != flag1) {

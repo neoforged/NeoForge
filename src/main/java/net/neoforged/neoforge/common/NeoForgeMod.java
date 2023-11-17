@@ -30,8 +30,8 @@ import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.RegistryCodecs;
-import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -588,7 +588,7 @@ public class NeoForgeMod {
         if (!event.getRegistryKey().equals(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS)) {
             return;
         }
-        WritableRegistry<ItemDisplayContext> forgeRegistry = (WritableRegistry<ItemDisplayContext>) event.getRegistry();
+        MappedRegistry<ItemDisplayContext> forgeRegistry = (MappedRegistry<ItemDisplayContext>) event.getRegistry();
 
         Arrays.stream(ItemDisplayContext.values())
                 .filter(Predicate.not(ItemDisplayContext::isModded))
