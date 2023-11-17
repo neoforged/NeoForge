@@ -58,6 +58,7 @@ import org.joml.Vector3f;
  * <li>Overrides fluid rendering methods</li>
  * <li>Adds block color and render layer</li>
  * <li>Adds fluid interaction definitions</li>
+ * <li>Adds the ability for the fluid to drip from Pointed Dripstone stalactites into a cauldron below</li>
  * </ul>
  */
 @Mod(FluidTypeTest.ID)

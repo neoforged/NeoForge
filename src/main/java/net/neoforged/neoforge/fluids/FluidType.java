@@ -218,9 +218,7 @@ public class FluidType {
     }
 
     /**
-     * Returns the Pointed Dripstone drip information of the fluid.
-     *
-     * @return the Pointed Dripstone drip information of the fluid
+     * {@return the pointed dripstone drip information of the fluid}
      */
     @Nullable
     public DripstoneDripInfo getDripInfo() {
@@ -556,19 +554,26 @@ public class FluidType {
     /**
      * Returns whether a fluid above a pointed dripstone block can successfully fill a cauldron below.
      *
-     * @param fluid the fluid that is dripping from a dripstone
-     * @param level the level the fluid is being placed in
-     * @param pos   the position of the cauldron this fluid is dripping into
+     * <p>If this will return {@code true}, this method will also do 3 things:
+     * <ul>
+     * <li>Set the cauldron below to the proper filled state as defined by the FluidType's {@link DripstoneDripInfo}</li>
+     * <li>Send the BLOCK_CHANGE {@link GameEvent}</li>
+     * <li>Play a sound as defined by the FluidType's {@link DripstoneDripInfo}</li>
+     * </ul>
+     * 
+     * @param fluid       the fluid that is dripping from a stalactite
+     * @param level       the level the fluid is being placed in
+     * @param cauldronPos the position of the cauldron this fluid is dripping into
      * @return {@code true} if a cauldron is successfully filled, {@code false} otherwise
      */
-    public boolean handleDripInfo(Fluid fluid, Level level, BlockPos pos) {
+    public boolean handleCauldronDrip(Fluid fluid, Level level, BlockPos cauldronPos) {
         if (fluid instanceof FlowingFluid flowing && fluid.isSource(flowing.getSource(false)) && this.getDripInfo() != null) {
-            BlockState cauldronBlock = this.getDripInfo().cauldron().defaultBlockState();
-            level.setBlockAndUpdate(pos, cauldronBlock);
-            level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(cauldronBlock));
-            SoundEvent dripSound = this.getSound(null, level, pos, SoundActions.CAULDRON_DRIP);
+            BlockState cauldronBlock = this.getDripInfo().filledCauldron().defaultBlockState();
+            level.setBlockAndUpdate(cauldronPos, cauldronBlock);
+            level.gameEvent(GameEvent.BLOCK_CHANGE, cauldronPos, GameEvent.Context.of(cauldronBlock));
+            SoundEvent dripSound = this.getSound(null, level, cauldronPos, SoundActions.CAULDRON_DRIP);
             if (dripSound != null) {
-                level.playSound(null, pos, dripSound, SoundSource.BLOCKS, 2.0F, level.getRandom().nextFloat() * 0.1F + 0.9F);
+                level.playSound(null, cauldronPos, dripSound, SoundSource.BLOCKS, 2.0F, level.getRandom().nextFloat() * 0.1F + 0.9F);
             }
             return true;
         }
@@ -1115,7 +1120,7 @@ public class FluidType {
         }
 
         /**
-         * Allows this fluid to drip from Pointed Dripstones and fill cauldrons below.
+         * Allows this fluid to drip from Pointed Dripstone stalactites and fill cauldrons below.
          *
          * @param chance       the chance that the cauldron below will be filled every time the Pointed Dripstone is randomly ticked
          * @param dripParticle the particle that spawns randomly from the tip of the Pointed Dripstone when this fluid is above it
@@ -1133,11 +1138,11 @@ public class FluidType {
     }
 
     /**
-     * A record that holds some information to let a fluid drip from Pointed Dripstones and fill cauldrons below.
+     * A record that holds some information to let a fluid drip from Pointed Dripstone stalactites and fill cauldrons below.
      *
-     * @param chance       the chance that the cauldron below will be filled every time the Pointed Dripstone is randomly ticked
-     * @param dripParticle the particle that spawns randomly from the tip of the Pointed Dripstone when this fluid is above it
-     * @param cauldron     the block the Pointed Dripstone should replace an empty cauldron with when it successfully tries to fill the cauldron
+     * @param chance         the chance that the cauldron below will be filled every time the Pointed Dripstone is randomly ticked. This number should be some value between 0.0 and 1.0
+     * @param dripParticle   the particle that spawns randomly from the tip of the Pointed Dripstone when this fluid is above it
+     * @param filledCauldron the block the Pointed Dripstone should replace an empty cauldron with when it successfully tries to fill the cauldron
      */
-    public record DripstoneDripInfo(float chance, @Nullable ParticleOptions dripParticle, Block cauldron) {}
+    public record DripstoneDripInfo(float chance, @Nullable ParticleOptions dripParticle, Block filledCauldron) {}
 }

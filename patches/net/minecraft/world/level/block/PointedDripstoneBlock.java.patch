@@ -1,10 +1,22 @@
 --- a/net/minecraft/world/level/block/PointedDripstoneBlock.java
 +++ b/net/minecraft/world/level/block/PointedDripstoneBlock.java
-@@ -175,7 +_,6 @@
+@@ -51,8 +_,8 @@
+    private static final float DRIP_PROBABILITY_PER_ANIMATE_TICK = 0.02F;
+    private static final float DRIP_PROBABILITY_PER_ANIMATE_TICK_IF_UNDER_LIQUID_SOURCE = 0.12F;
+    private static final int MAX_SEARCH_LENGTH_BETWEEN_STALACTITE_TIP_AND_CAULDRON = 11;
+-   private static final float WATER_TRANSFER_PROBABILITY_PER_RANDOM_TICK = 0.17578125F;
+-   private static final float LAVA_TRANSFER_PROBABILITY_PER_RANDOM_TICK = 0.05859375F;
++   public static final float WATER_TRANSFER_PROBABILITY_PER_RANDOM_TICK = 0.17578125F;
++   public static final float LAVA_TRANSFER_PROBABILITY_PER_RANDOM_TICK = 0.05859375F;
+    private static final double MIN_TRIDENT_VELOCITY_TO_BREAK_DRIPSTONE = 0.6;
+    private static final float STALACTITE_DAMAGE_PER_FALL_DISTANCE_AND_SIZE = 1.0F;
+    private static final int STALACTITE_MAX_DAMAGE = 40;
+@@ -175,7 +_,7 @@
  
     @VisibleForTesting
     public static void maybeTransferFluid(BlockState p_221860_, ServerLevel p_221861_, BlockPos p_221862_, float p_221863_) {
 -      if (!(p_221863_ > 0.17578125F) || !(p_221863_ > 0.05859375F)) {
++      if (true) { //Neo: remove the water and lava drip chance checks to allow modded fluids to drip into cauldrons
           if (isStalactiteStartPos(p_221860_, p_221861_, p_221862_)) {
              Optional<PointedDripstoneBlock.FluidInfo> optional = getFluidAboveStalactite(p_221861_, p_221862_, p_221860_);
              if (!optional.isEmpty()) {
@@ -25,14 +37,6 @@
                    BlockPos blockpos = findTip(p_221860_, p_221861_, p_221862_, 11, false);
                    if (blockpos != null) {
                       if (optional.get().sourceState.is(Blocks.MUD) && fluid == Fluids.WATER) {
-@@ -214,7 +_,6 @@
-                }
-             }
-          }
--      }
-    }
- 
-    @Nullable
 @@ -400,7 +_,8 @@
        double d2 = (double)((float)(p_154073_.getY() + 1) - 0.6875F) - 0.0625;
        double d3 = (double)p_154073_.getZ() + 0.5 + vec3.z;
