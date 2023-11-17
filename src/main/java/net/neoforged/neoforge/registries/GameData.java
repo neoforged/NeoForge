@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import net.minecraft.core.Holder;
 import net.minecraft.core.IdMapper;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
@@ -49,7 +50,7 @@ public class GameData {
         return NeoForgeRegistryCallbacks.BlockCallbacks.BLOCKSTATE_TO_ID_MAP;
     }
 
-    public static Map<BlockState, PoiType> getBlockStatePointOfInterestTypeMap() {
+    public static Map<BlockState, Holder<PoiType>> getBlockStatePointOfInterestTypeMap() {
         return NeoForgeRegistryCallbacks.PoiTypeCallbacks.BLOCKSTATE_TO_POI_TYPE_MAP;
     }
 

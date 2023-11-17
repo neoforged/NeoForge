@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import net.minecraft.core.Holder;
 import net.minecraft.core.IdMapper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -102,12 +103,12 @@ class NeoForgeRegistryCallbacks {
 
     static class PoiTypeCallbacks implements AddCallback<PoiType>, ClearCallback<PoiType> {
         static final PoiTypeCallbacks INSTANCE = new PoiTypeCallbacks();
-        static final Map<BlockState, PoiType> BLOCKSTATE_TO_POI_TYPE_MAP = new HashMap<>();
+        static final Map<BlockState, Holder<PoiType>> BLOCKSTATE_TO_POI_TYPE_MAP = new HashMap<>();
 
         @Override
         public void onAdd(Registry<PoiType> registry, int id, ResourceKey<PoiType> key, PoiType value) {
             value.matchingStates().forEach(state -> {
-                PoiType oldType = BLOCKSTATE_TO_POI_TYPE_MAP.put(state, value);
+                Holder<PoiType> oldType = BLOCKSTATE_TO_POI_TYPE_MAP.put(state, registry.getHolderOrThrow(key));
                 if (oldType != null) {
                     throw new IllegalStateException(String.format(Locale.ENGLISH,
                             "Point of interest types %s and %s both list %s in their blockstates, this is not allowed. Blockstates can only have one point of interest type each.",
