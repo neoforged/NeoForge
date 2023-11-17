@@ -1,16 +1,5 @@
 --- a/net/minecraft/world/level/block/PointedDripstoneBlock.java
 +++ b/net/minecraft/world/level/block/PointedDripstoneBlock.java
-@@ -51,8 +_,8 @@
-    private static final float DRIP_PROBABILITY_PER_ANIMATE_TICK = 0.02F;
-    private static final float DRIP_PROBABILITY_PER_ANIMATE_TICK_IF_UNDER_LIQUID_SOURCE = 0.12F;
-    private static final int MAX_SEARCH_LENGTH_BETWEEN_STALACTITE_TIP_AND_CAULDRON = 11;
--   public static final float WATER_TRANSFER_PROBABILITY_PER_RANDOM_TICK = 0.17578125F;
--   public static final float LAVA_TRANSFER_PROBABILITY_PER_RANDOM_TICK = 0.05859375F;
-+   private static final float WATER_TRANSFER_PROBABILITY_PER_RANDOM_TICK = 0.17578125F;
-+   private static final float LAVA_TRANSFER_PROBABILITY_PER_RANDOM_TICK = 0.05859375F;
-    private static final double MIN_TRIDENT_VELOCITY_TO_BREAK_DRIPSTONE = 0.6;
-    private static final float STALACTITE_DAMAGE_PER_FALL_DISTANCE_AND_SIZE = 1.0F;
-    private static final int STALACTITE_MAX_DAMAGE = 40;
 @@ -175,7 +_,7 @@
  
     @VisibleForTesting
