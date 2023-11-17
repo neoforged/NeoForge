@@ -48,14 +48,6 @@ public class Tags
         public static final TagKey<Block> NEEDS_WOOD_TOOL = neoforgeTag("needs_wood_tool");
         public static final TagKey<Block> NEEDS_GOLD_TOOL = neoforgeTag("needs_gold_tool");
         public static final TagKey<Block> NEEDS_NETHERITE_TOOL = neoforgeTag("needs_netherite_tool");
-        /**
-         * For blocks that should be recognized as stone during feature world generation.
-         * <P>
-         * This is patched into the following method: {@link net.minecraft.world.level.levelgen.feature.Feature#isStone(BlockState)}
-         * <P>
-         * Please use that method or tag when trying to detect stone in your own custom Features or other worldgen stone detection code.
-         */
-        public static final TagKey<Block> WORLDGEN_STONES = neoforgeTag("worldgen/stones");
 
         // `c` tags for common conventions
         public static final TagKey<Block> BARRELS = tag("barrels");
