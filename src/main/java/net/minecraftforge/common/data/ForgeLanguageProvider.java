@@ -117,7 +117,6 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.STORAGE_BLOCKS_WHEAT, "Wheat Storage Blocks");
 
         // Items
-
         add(Tags.Items.BARRELS, "Barrels");
         add(Tags.Items.BARRELS_WOODEN, "Wooden Barrels");
         add(Tags.Items.BONES, "Bones");
@@ -286,16 +285,16 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.ARMORS, "Armors");
 
         // Fluids
-        add(Tags.Fluids.WATERS, "Waters");
-        add(Tags.Fluids.LAVAS, "Lavas");
-        add(Tags.Fluids.MILKS, "Milks");
+        add(Tags.Fluids.WATER, "Water");
+        add(Tags.Fluids.LAVA, "Lava");
+        add(Tags.Fluids.MILK, "Milk");
         add(Tags.Fluids.GASEOUS, "Gaseous");
-        add(Tags.Fluids.HONEYS, "Honeys");
-        add(Tags.Fluids.POTIONS, "Potions");
-        add(Tags.Fluids.SUSPICIOUS_STEWS, "Suspicious Stews");
-        add(Tags.Fluids.MUSHROOM_STEWS, "Mushroom Stews");
-        add(Tags.Fluids.RABBIT_STEWS, "Rabbit Stews");
-        add(Tags.Fluids.BEETROOT_SOUPS, "Beetroot Soups");
+        add(Tags.Fluids.HONEY, "Honey");
+        add(Tags.Fluids.POTION, "Potion");
+        add(Tags.Fluids.SUSPICIOUS_STEW, "Suspicious Stew");
+        add(Tags.Fluids.MUSHROOM_STEW, "Mushroom Stew");
+        add(Tags.Fluids.RABBIT_STEW, "Rabbit Stew");
+        add(Tags.Fluids.BEETROOT_SOUP, "Beetroot Soup");
 
         // Entities
         add(Tags.EntityTypes.BOSSES, "Bosses");

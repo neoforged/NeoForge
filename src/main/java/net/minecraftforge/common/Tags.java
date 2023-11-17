@@ -41,7 +41,7 @@ public class Tags
         // `neoforge` tags for functional behavior provided by Neoforge
         /**
          * Controls what blocks Endermen cannot place blocks onto.
-         * <P>
+         * <p></p>
          * This is patched into the following method: {@link net.minecraft.world.entity.monster.EnderMan.EndermanLeaveBlockGoal#canPlaceBlock(Level, BlockPos, BlockState, BlockState, BlockState, BlockPos)}
          */
         public static final TagKey<Block> ENDERMAN_PLACE_ON_BLACKLIST = neoforgeTag("enderman_place_on_blacklist");
@@ -652,6 +652,10 @@ public class Tags
         }
     }
 
+    /**
+     * Note, fluid tags should not be plural to match the vanilla standard.
+     * This is the only tag category exempted from many-different-types plural rule.
+     */
     public static class Fluids
     {
         private static void init() {}
@@ -660,16 +664,16 @@ public class Tags
          * Holds all fluids related to water.
          * This tag is done to help out multi-loader mods/datapacks where the vanilla water tag has attached behaviors outside Neo.
          */
-        public static final TagKey<Fluid> WATERS = tag("waters");
+        public static final TagKey<Fluid> WATER = tag("water");
         /**
          * Holds all fluids related to lava.
          * This tag is done to help out multi-loader mods/datapacks where the vanilla lava tag has attached behaviors outside Neo.
          */
-        public static final TagKey<Fluid> LAVAS = tag("lavas");
+        public static final TagKey<Fluid> LAVA = tag("lava");
         /**
          * Holds all fluids related to milk.
          */
-        public static final TagKey<Fluid> MILKS = tag("milks");
+        public static final TagKey<Fluid> MILK = tag("milk");
         /**
          * Holds all fluids that are gaseous at room temperature.
          */
@@ -677,30 +681,30 @@ public class Tags
         /**
          * Holds all fluids related to honey. (Standard unit for honey bottle is 250mb per bottle)
          */
-        public static final TagKey<Fluid> HONEYS = tag("honeys");
+        public static final TagKey<Fluid> HONEY = tag("honey");
         /**
          * Holds all fluids related to potions. The effects of the potion fluid should be read from NBT.
          * See {@link net.minecraft.world.item.alchemy.PotionUtils} class for how to read the effect and color from the fluid NBT.
          * (Standard unit for potions is 250mb per bottle)
          */
-        public static final TagKey<Fluid> POTIONS = tag("potions");
+        public static final TagKey<Fluid> POTION = tag("potion");
         /**
          * Holds all fluids related to Suspicious Stew. The effects of the suspicious stew fluid should be read from NBT.
          * (Standard unit for suspicious stew is 250mb per bowl)
          */
-        public static final TagKey<Fluid> SUSPICIOUS_STEWS = tag("suspicious_stews");
+        public static final TagKey<Fluid> SUSPICIOUS_STEW = tag("suspicious_stew");
         /**
          * Holds all fluids related to Mushroom Stew. (Standard unit for mushroom stew is 250mb per bowl)
          */
-        public static final TagKey<Fluid> MUSHROOM_STEWS = tag("mushroom_stews");
+        public static final TagKey<Fluid> MUSHROOM_STEW = tag("mushroom_stew");
         /**
          * Holds all fluids related to Rabbit Stew. (Standard unit for rabbit stew is 250mb per bowl)
          */
-        public static final TagKey<Fluid> RABBIT_STEWS = tag("rabbit_stews");
+        public static final TagKey<Fluid> RABBIT_STEW = tag("rabbit_stew");
         /**
          * Holds all fluids related to Beetroot Soup. (Standard unit for beetroot soup is 250mb per bowl)
          */
-        public static final TagKey<Fluid> BEETROOT_SOUPS = tag("beetroot_soups");
+        public static final TagKey<Fluid> BEETROOT_SOUP = tag("beetroot_soup");
 
         private static TagKey<Fluid> tag(String name)
         {

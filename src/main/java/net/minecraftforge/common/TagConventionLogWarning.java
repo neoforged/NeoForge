@@ -370,12 +370,12 @@ public final class TagConventionLogWarning
             createMapEntry(Registries.ITEM, "candy", Tags.Items.FOODS_CANDIES),
             createMapEntry(Registries.ITEM, "candies", Tags.Items.FOODS_CANDIES),
 
-            createMapEntry(Registries.FLUID, "water", Tags.Fluids.WATERS),
-            createMapEntry(Registries.FLUID, "lava", Tags.Fluids.LAVAS),
-            createMapEntry(Registries.FLUID, "milk", Tags.Fluids.MILKS),
+            createMapEntry(Registries.FLUID, "water", Tags.Fluids.WATER),
+            createMapEntry(Registries.FLUID, "lava", Tags.Fluids.LAVA),
+            createMapEntry(Registries.FLUID, "milk", Tags.Fluids.MILK),
             createMapEntry(Registries.FLUID, "gaseous", Tags.Fluids.GASEOUS),
-            createMapEntry(Registries.FLUID, "honey", Tags.Fluids.HONEYS),
-            createMapEntry(Registries.FLUID, "potion", Tags.Fluids.POTIONS),
+            createMapEntry(Registries.FLUID, "honey", Tags.Fluids.HONEY),
+            createMapEntry(Registries.FLUID, "potion", Tags.Fluids.POTION),
             createMapEntry(Registries.FLUID, "plantoil", "plant_oil"),
 
             createMapEntry(Registries.BIOME, "is_hot", Tags.Biomes.IS_HOT),
