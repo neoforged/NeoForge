@@ -70,7 +70,7 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
     private void registerToRootRegistry(Registry<?> registry) {
         ResourceLocation registryName = registry.key().location();
         if (BuiltInRegistries.REGISTRY.containsKey(registryName))
-            throw new IllegalStateException("Tried to register new registry for " + registryName);
+            throw new IllegalStateException("Attempted duplicate registration of registry " + registryName);
 
         ((WritableRegistry) BuiltInRegistries.REGISTRY).register(registry.key(), registry, Lifecycle.stable());
     }

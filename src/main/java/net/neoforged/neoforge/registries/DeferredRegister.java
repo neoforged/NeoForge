@@ -40,13 +40,17 @@ import org.jetbrains.annotations.Nullable;
  * <pre>{@code
  * private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
  * private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
+ * private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
  *
  * public static final DeferredBlock<Block> ROCK_BLOCK = BLOCKS.registerBlock("rock", Block.Properties.create(Material.ROCK));
  * public static final DeferredItem<BlockItem> ROCK_ITEM = ITEMS.registerBlockItem(ROCK_BLOCK, new Item.Properties());
+ * // (Can be DeferredHolder<BlockEntityType<?>, BlockEntityType<RockBlockEntity>> if you prefer)
+ * public static final Supplier<BlockEntityType<RockBlockEntity>> ROCK_BLOCK_ENTITY = BLOCK_ENTITIES.register("rock", () -> BlockEntityType.Builder.of(RockBlockEntity::new, ROCK_BLOCK.get()).build(null));
  *
  * public ExampleMod(IEventBus modBus) {
  *     ITEMS.register(modBus);
  *     BLOCKS.register(modBus);
+ *     BLOCK_ENTITIES.register(modBus);
  * }
  * }</pre>
  *
@@ -327,7 +331,7 @@ public class DeferredRegister<T> {
     }
 
     /**
-     * Specialized DeferredRegister for {@link Block Blocks} that uses the specialized {@link DeferredHolder}, {@link DeferredBlock} as the return type for {@link #register}.
+     * Specialized DeferredRegister for {@link Block Blocks} that uses the specialized {@link DeferredBlock} as the return type for {@link #register}.
      */
     public static class Blocks extends DeferredRegister<Block> {
         protected Blocks(String namespace) {
@@ -391,7 +395,7 @@ public class DeferredRegister<T> {
     }
 
     /**
-     * Specialized DeferredRegister for {@link Item Items} that uses the specialized {@link DeferredHolder}, {@link DeferredItem} as the return type for {@link #register}.
+     * Specialized DeferredRegister for {@link Item Items} that uses the specialized {@link DeferredItem} as the return type for {@link #register}.
      */
     public static class Items extends DeferredRegister<Item> {
         protected Items(String namespace) {

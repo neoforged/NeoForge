@@ -83,7 +83,9 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
 
     @Override
     public ResourceKey<T> resolve(ResourceKey<T> key) {
-        return ResourceKey.create(this.key(), resolve(key.location()));
+        ResourceLocation resolvedName = resolve(key.location());
+        // Try to reuse the key if possible
+        return resolvedName == key.location() ? key : ResourceKey.create(this.key(), resolvedName);
     }
 
     @Override
