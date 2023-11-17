@@ -60,7 +60,7 @@ public class RegistryManager {
         event.fill();
         dataPackEvent.process();
 
-        BuiltInRegistries.REGISTRY.forEach(RegistryManager::postModifyRegistryEvent);
+        ModLoader.get().postEvent(new ModifyRegistriesEvent());
 
         pendingModdedRegistries.removeIf(BuiltInRegistries.REGISTRY::containsKey);
         if (!pendingModdedRegistries.isEmpty()) {
@@ -68,10 +68,6 @@ public class RegistryManager {
                     + pendingModdedRegistries.stream().map(ResourceLocation::toString).collect(Collectors.joining("\n\t - ", "\n\t - ", "")));
         }
         pendingModdedRegistries = null;
-    }
-
-    public static void postModifyRegistryEvent(Registry<?> registry) {
-        ModLoader.get().postEventWrapContainerInModOrder(new ModifyRegistryEvent(registry));
     }
 
     static void takeVanillaSnapshot() {

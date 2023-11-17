@@ -27,7 +27,7 @@ import net.neoforged.fml.event.IModBusEvent;
  * <p>This event is fired on the {@linkplain net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
  * on both {@linkplain net.neoforged.fml.LogicalSide logical sides}.</p>
  *
- * @see ModifyRegistryEvent
+ * @see ModifyRegistriesEvent
  */
 public class NewRegistryEvent extends Event implements IModBusEvent {
     private final List<Registry<?>> registries = new ArrayList<>();

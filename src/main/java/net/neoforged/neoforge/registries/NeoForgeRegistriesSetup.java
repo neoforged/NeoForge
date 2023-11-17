@@ -7,8 +7,7 @@ package net.neoforged.neoforge.registries;
 
 import java.util.Set;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.bus.api.IEventBus;
 import org.jetbrains.annotations.ApiStatus;
@@ -24,29 +23,29 @@ public class NeoForgeRegistriesSetup {
         setup = true;
 
         modEventBus.addListener(NeoForgeRegistriesSetup::registerRegistries);
-        modEventBus.addListener(NeoForgeRegistriesSetup::onModifyRegistry);
+        modEventBus.addListener(NeoForgeRegistriesSetup::modifyRegistries);
     }
 
     /**
      * The set of vanilla registries which should be synced to the client.
      */
-    private static final Set<ResourceKey<? extends Registry<?>>> VANILLA_SYNC_KEYS = Set.of(
-            Registries.SOUND_EVENT, // Required for SoundEvent packets
-            Registries.MOB_EFFECT, // Required for MobEffect packets
-            Registries.BLOCK, // Required for chunk BlockState paletted containers syncing
-            Registries.ENCHANTMENT, // Required for EnchantmentMenu syncing
-            Registries.ENTITY_TYPE, // Required for Entity spawn packets
-            Registries.ITEM, // Required for Item/ItemStack packets
-            Registries.PARTICLE_TYPE, // Required for ParticleType packets
-            Registries.BLOCK_ENTITY_TYPE, // Required for BlockEntity packets
-            Registries.PAINTING_VARIANT, // Required for EntityDataSerializers
-            Registries.MENU, // Required for ClientboundOpenScreenPacket
-            Registries.COMMAND_ARGUMENT_TYPE, // Required for ClientboundCommandsPacket
-            Registries.STAT_TYPE, // Required for ClientboundAwardStatsPacket
-            Registries.VILLAGER_TYPE, // Required for EntityDataSerializers
-            Registries.VILLAGER_PROFESSION, // Required for EntityDataSerializers
-            Registries.CAT_VARIANT, // Required for EntityDataSerializers
-            Registries.FROG_VARIANT // Required for EntityDataSerializers
+    private static final Set<Registry<?>> VANILLA_SYNC_REGISTRIES = Set.of(
+            BuiltInRegistries.SOUND_EVENT, // Required for SoundEvent packets
+            BuiltInRegistries.MOB_EFFECT, // Required for MobEffect packets
+            BuiltInRegistries.BLOCK, // Required for chunk BlockState paletted containers syncing
+            BuiltInRegistries.ENCHANTMENT, // Required for EnchantmentMenu syncing
+            BuiltInRegistries.ENTITY_TYPE, // Required for Entity spawn packets
+            BuiltInRegistries.ITEM, // Required for Item/ItemStack packets
+            BuiltInRegistries.PARTICLE_TYPE, // Required for ParticleType packets
+            BuiltInRegistries.BLOCK_ENTITY_TYPE, // Required for BlockEntity packets
+            BuiltInRegistries.PAINTING_VARIANT, // Required for EntityDataSerializers
+            BuiltInRegistries.MENU, // Required for ClientboundOpenScreenPacket
+            BuiltInRegistries.COMMAND_ARGUMENT_TYPE, // Required for ClientboundCommandsPacket
+            BuiltInRegistries.STAT_TYPE, // Required for ClientboundAwardStatsPacket
+            BuiltInRegistries.VILLAGER_TYPE, // Required for EntityDataSerializers
+            BuiltInRegistries.VILLAGER_PROFESSION, // Required for EntityDataSerializers
+            BuiltInRegistries.CAT_VARIANT, // Required for EntityDataSerializers
+            BuiltInRegistries.FROG_VARIANT // Required for EntityDataSerializers
     );
 
     private static void registerRegistries(NewRegistryEvent event) {
@@ -63,26 +62,16 @@ public class NeoForgeRegistriesSetup {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static void onModifyRegistry(ModifyRegistryEvent event) {
-        if (!event.isBuiltin() || !(event.getRegistry() instanceof BaseMappedRegistry<?> forgeRegistry))
-            return;
-
-        ResourceKey<? extends Registry<?>> registryKey = event.getRegistryKey();
-
-        if (VANILLA_SYNC_KEYS.contains(registryKey))
-            forgeRegistry.setSync(true);
-
-        if (registryKey == Registries.BLOCK) {
-            ((BaseMappedRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.BlockCallbacks.INSTANCE);
-        } else if (registryKey == Registries.ITEM) {
-            ((BaseMappedRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.ItemCallbacks.INSTANCE);
-        } else if (registryKey == Registries.ATTRIBUTE) {
-            ((BaseMappedRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.AttributeCallbacks.INSTANCE);
-        } else if (registryKey == Registries.POINT_OF_INTEREST_TYPE) {
-            ((BaseMappedRegistry) forgeRegistry).addCallback(NeoForgeRegistryCallbacks.PoiTypeCallbacks.INSTANCE);
-        } else if (registryKey == NeoForgeRegistries.Keys.DISPLAY_CONTEXTS) {
-            // We add this callback here to not cause a tricky classloading loop with ForgeRegistries#DISPLAY_CONTEXTS and ItemDisplayContext#CODEC
-            ((BaseMappedRegistry) forgeRegistry).addCallback(ItemDisplayContext.ADD_CALLBACK);
+    private static void modifyRegistries(ModifyRegistriesEvent event) {
+        for (var registry : VANILLA_SYNC_REGISTRIES) {
+            ((BaseMappedRegistry<?>) registry).setSync(true);
         }
+
+        BuiltInRegistries.BLOCK.addCallback(NeoForgeRegistryCallbacks.BlockCallbacks.INSTANCE);
+        BuiltInRegistries.ITEM.addCallback(NeoForgeRegistryCallbacks.ItemCallbacks.INSTANCE);
+        BuiltInRegistries.ATTRIBUTE.addCallback(NeoForgeRegistryCallbacks.AttributeCallbacks.INSTANCE);
+        BuiltInRegistries.POINT_OF_INTEREST_TYPE.addCallback(NeoForgeRegistryCallbacks.PoiTypeCallbacks.INSTANCE);
+        // We add this callback here to not cause a tricky classloading loop with ForgeRegistries#DISPLAY_CONTEXTS and ItemDisplayContext#CODEC
+        NeoForgeRegistries.DISPLAY_CONTEXTS.addCallback(ItemDisplayContext.ADD_CALLBACK);
     }
 }
