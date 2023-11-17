@@ -61,7 +61,6 @@ public class NeoForgeRegistriesSetup {
         event.register(NeoForgeRegistries.ITEM_PREDICATE_SERIALIZERS);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     private static void modifyRegistries(ModifyRegistriesEvent event) {
         for (var registry : VANILLA_SYNC_REGISTRIES) {
             ((BaseMappedRegistry<?>) registry).setSync(true);

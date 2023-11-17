@@ -8,15 +8,17 @@ package net.neoforged.neoforge.registries;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Fired for each registry when it is ready to have modded objects registered.
- * This event is fired for all registries, including registries in {@link net.minecraft.core.registries.BuiltInRegistries}.
+ * This event is fired for all builtin registries from vanilla (see {@link BuiltInRegistries}) and mods.
  *
  * <p>This event is fired on the {@linkplain net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
  * on both {@linkplain net.neoforged.fml.LogicalSide logical sides}.</p>
@@ -83,6 +85,7 @@ public class RegisterEvent extends Event implements IModBusEvent {
      *         or {@code null} if it does not match.
      */
     @SuppressWarnings("unchecked")
+    @Nullable
     public <T> Registry<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
         return key == this.registryKey ? (Registry<T>) this.registry : null;
     }
