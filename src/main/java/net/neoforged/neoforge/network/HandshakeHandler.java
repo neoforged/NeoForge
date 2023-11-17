@@ -271,25 +271,24 @@ public class HandshakeHandler {
         // We use a countdown latch to suspend the impl thread pending the client thread processing the registry data
         AtomicBoolean successfulConnection = new AtomicBoolean(false);
         AtomicReference<Set<ResourceKey<?>>> registryMismatches = new AtomicReference<>();
-        CountDownLatch block = new CountDownLatch(1);
-        contextSupplier.enqueueWork(() -> {
-            LOGGER.debug(FMLHSMARKER, "Injecting registry snapshot from server.");
-            final Set<ResourceKey<?>> missingData = RegistryManager.applySnapshot(registrySnapshots, false, false);
-            LOGGER.debug(FMLHSMARKER, "Snapshot injected.");
-            if (!missingData.isEmpty()) {
-                Multimap<ResourceLocation, ResourceLocation> missingRegs = missingData.stream()
-                        .collect(Multimaps.toMultimap(ResourceKey::registry, ResourceKey::location, () -> Multimaps.newListMultimap(new HashMap<>(), ArrayList::new)));
-                LOGGER.error(FMLHSMARKER, "Missing registry data for impl connection:\n{}", LogMessageAdapter.adapt(sb -> missingRegs.forEach((reg, entry) -> sb.append("\t").append(reg).append(": ").append(entry).append('\n'))));
-            }
-            successfulConnection.set(missingData.isEmpty());
-            registryMismatches.set(missingData);
-            block.countDown();
-        });
         LOGGER.debug(FMLHSMARKER, "Waiting for registries to load.");
         try {
-            block.await();
+            contextSupplier.enqueueWork(() -> {
+                LOGGER.debug(FMLHSMARKER, "Injecting registry snapshot from server.");
+                final Set<ResourceKey<?>> missingData = RegistryManager.applySnapshot(registrySnapshots, false, false);
+                LOGGER.debug(FMLHSMARKER, "Snapshot injected.");
+                if (!missingData.isEmpty()) {
+                    Multimap<ResourceLocation, ResourceLocation> missingRegs = missingData.stream()
+                            .collect(Multimaps.toMultimap(ResourceKey::registry, ResourceKey::location, () -> Multimaps.newListMultimap(new HashMap<>(), ArrayList::new)));
+                    LOGGER.error(FMLHSMARKER, "Missing registry data for impl connection:\n{}", LogMessageAdapter.adapt(sb -> missingRegs.forEach((reg, entry) -> sb.append("\t").append(reg).append(": ").append(entry).append('\n'))));
+                }
+                successfulConnection.set(missingData.isEmpty());
+                registryMismatches.set(missingData);
+            }).get();
         } catch (InterruptedException e) {
             Thread.interrupted();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
         }
         if (successfulConnection.get()) {
             LOGGER.debug(FMLHSMARKER, "Registry load complete, continuing handshake.");
