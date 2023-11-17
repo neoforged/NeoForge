@@ -1,12 +1,12 @@
 {
   "values": [
     {
-      "id": "#forge:obsidian",
+      "id": "#forge:obsidians",
       "required": false
     },
     "minecraft:obsidian",
     {
-      "id": "#forge:obsidian",
+      "id": "#forge:obsidians",
       "required": false
     }
   ]

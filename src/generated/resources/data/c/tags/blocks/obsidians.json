@@ -2,7 +2,7 @@
   "values": [
     "minecraft:obsidian",
     {
-      "id": "#forge:obsidian",
+      "id": "#forge:obsidians",
       "required": false
     }
   ]

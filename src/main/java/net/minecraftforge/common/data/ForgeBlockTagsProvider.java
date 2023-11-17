@@ -75,10 +75,10 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(GLASS_BLOCKS_TINTED).add(Blocks.TINTED_GLASS);
         tag(GLASS_PANES).addTags(GLASS_PANES_COLORLESS).add(Blocks.WHITE_STAINED_GLASS_PANE, Blocks.ORANGE_STAINED_GLASS_PANE, Blocks.MAGENTA_STAINED_GLASS_PANE, Blocks.LIGHT_BLUE_STAINED_GLASS_PANE, Blocks.YELLOW_STAINED_GLASS_PANE, Blocks.LIME_STAINED_GLASS_PANE, Blocks.PINK_STAINED_GLASS_PANE, Blocks.GRAY_STAINED_GLASS_PANE, Blocks.LIGHT_GRAY_STAINED_GLASS_PANE, Blocks.CYAN_STAINED_GLASS_PANE, Blocks.PURPLE_STAINED_GLASS_PANE, Blocks.BLUE_STAINED_GLASS_PANE, Blocks.BROWN_STAINED_GLASS_PANE, Blocks.GREEN_STAINED_GLASS_PANE, Blocks.GREEN_STAINED_GLASS_PANE, Blocks.RED_STAINED_GLASS_PANE, Blocks.BLACK_STAINED_GLASS_PANE);
         tag(GLASS_PANES_COLORLESS).add(Blocks.GLASS_PANE);
-        tag(GRAVEL).add(Blocks.GRAVEL);
+        tag(GRAVELS).add(Blocks.GRAVEL);
         tag(HEADS).add(Blocks.SKELETON_SKULL, Blocks.SKELETON_WALL_SKULL, Blocks.WITHER_SKELETON_SKULL, Blocks.WITHER_SKELETON_WALL_SKULL, Blocks.PLAYER_HEAD, Blocks.PLAYER_WALL_HEAD, Blocks.ZOMBIE_HEAD, Blocks.ZOMBIE_WALL_HEAD, Blocks.CREEPER_HEAD, Blocks.CREEPER_WALL_HEAD, Blocks.PIGLIN_HEAD, Blocks.PIGLIN_WALL_HEAD, Blocks.DRAGON_HEAD, Blocks.DRAGON_WALL_HEAD);
-        tag(NETHERRACK).add(Blocks.NETHERRACK);
-        tag(OBSIDIAN).add(Blocks.OBSIDIAN);
+        tag(NETHERRACKS).add(Blocks.NETHERRACK);
+        tag(OBSIDIANS).add(Blocks.OBSIDIAN);
         tag(ORE_BEARING_GROUND_DEEPSLATE).add(Blocks.DEEPSLATE);
         tag(ORE_BEARING_GROUND_NETHERRACK).add(Blocks.NETHERRACK);
         tag(ORE_BEARING_GROUND_STONE).add(Blocks.STONE);
@@ -99,11 +99,11 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(ORES_IN_GROUND_DEEPSLATE).add(Blocks.DEEPSLATE_COAL_ORE, Blocks.DEEPSLATE_COPPER_ORE, Blocks.DEEPSLATE_DIAMOND_ORE, Blocks.DEEPSLATE_EMERALD_ORE, Blocks.DEEPSLATE_GOLD_ORE, Blocks.DEEPSLATE_IRON_ORE, Blocks.DEEPSLATE_LAPIS_ORE, Blocks.DEEPSLATE_REDSTONE_ORE);
         tag(ORES_IN_GROUND_NETHERRACK).add(Blocks.NETHER_GOLD_ORE, Blocks.NETHER_QUARTZ_ORE);
         tag(ORES_IN_GROUND_STONE).add(Blocks.COAL_ORE, Blocks.COPPER_ORE, Blocks.DIAMOND_ORE, Blocks.EMERALD_ORE, Blocks.GOLD_ORE, Blocks.IRON_ORE, Blocks.LAPIS_ORE, Blocks.REDSTONE_ORE);
-        tag(SAND).addTags(SAND_COLORLESS, SAND_RED);
+        tag(SANDS).addTags(SANDS_COLORLESS, SANDS_RED);
         tag(RELOCATION_NOT_SUPPORTED);
         tag(ROPES);
-        tag(SAND_COLORLESS).add(Blocks.SAND);
-        tag(SAND_RED).add(Blocks.RED_SAND);
+        tag(SANDS_COLORLESS).add(Blocks.SAND);
+        tag(SANDS_RED).add(Blocks.RED_SAND);
 
         tag(SANDSTONE_RED_BLOCKS).add(Blocks.RED_SANDSTONE, Blocks.CUT_RED_SANDSTONE, Blocks.CHISELED_RED_SANDSTONE, Blocks.SMOOTH_RED_SANDSTONE);
         tag(SANDSTONE_UNCOLORED_BLOCKS).add(Blocks.SANDSTONE, Blocks.CUT_SANDSTONE, Blocks.CHISELED_SANDSTONE, Blocks.SMOOTH_SANDSTONE);
@@ -221,9 +221,9 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(GLASS_BLOCKS_TINTED).addOptional(new ResourceLocation("forge", "glass_tinted"));
         tag(GLASS_PANES_COLORLESS)
                 .addOptional(new ResourceLocation("forge", "glass_panes_colorless"));
-        tagWithOptionalLegacy(GRAVEL);
-        tagWithOptionalLegacy(NETHERRACK);
-        tagWithOptionalLegacy(OBSIDIAN);
+        tagWithOptionalLegacy(GRAVELS);
+        tagWithOptionalLegacy(NETHERRACKS);
+        tagWithOptionalLegacy(OBSIDIANS);
         tagWithOptionalLegacy(ORE_BEARING_GROUND_DEEPSLATE);
         tagWithOptionalLegacy(ORE_BEARING_GROUND_NETHERRACK);
         tagWithOptionalLegacy(ORE_BEARING_GROUND_STONE);
@@ -244,9 +244,9 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tagWithOptionalLegacy(ORES_IN_GROUND_DEEPSLATE);
         tagWithOptionalLegacy(ORES_IN_GROUND_NETHERRACK);
         tagWithOptionalLegacy(ORES_IN_GROUND_STONE);
-        tagWithOptionalLegacy(SAND);
-        tagWithOptionalLegacy(SAND_COLORLESS);
-        tagWithOptionalLegacy(SAND_RED);
+        tagWithOptionalLegacy(SANDS);
+        tagWithOptionalLegacy(SANDS_COLORLESS);
+        tagWithOptionalLegacy(SANDS_RED);
         tagWithOptionalLegacy(STONES);
         tagWithOptionalLegacy(STORAGE_BLOCKS);
         tagWithOptionalLegacy(STORAGE_BLOCKS_COAL);

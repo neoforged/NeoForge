@@ -115,13 +115,13 @@ public class Tags
         public static final TagKey<Block> GLASS_PANES = tag("glass_panes");
         public static final TagKey<Block> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
 
-        public static final TagKey<Block> GRAVEL = tag("gravel");
+        public static final TagKey<Block> GRAVELS = tag("gravel");
         /**
          * Tag that holds all head based blocks such as Skeleton Skull or Player Head.
          */
         public static final TagKey<Block> HEADS = tag("heads");
-        public static final TagKey<Block> NETHERRACK = tag("netherrack");
-        public static final TagKey<Block> OBSIDIAN = tag("obsidian");
+        public static final TagKey<Block> NETHERRACKS = tag("netherrack");
+        public static final TagKey<Block> OBSIDIANS = tag("obsidians");
         /**
          * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation
          */
@@ -178,9 +178,9 @@ public class Tags
         public static final TagKey<Block> RELOCATION_NOT_SUPPORTED = tag("relocation_not_supported");
         public static final TagKey<Block> ROPES = tag("ropes");
 
-        public static final TagKey<Block> SAND = tag("sand");
-        public static final TagKey<Block> SAND_COLORLESS = tag("sand/colorless");
-        public static final TagKey<Block> SAND_RED = tag("sand/red");
+        public static final TagKey<Block> SANDS = tag("sands");
+        public static final TagKey<Block> SANDS_COLORLESS = tag("sands/colorless");
+        public static final TagKey<Block> SANDS_RED = tag("sands/red");
 
         public static final TagKey<Block> SANDSTONE_BLOCKS = tag("sandstone/blocks");
         public static final TagKey<Block> SANDSTONE_SLABS = tag("sandstone/slabs");
@@ -413,8 +413,8 @@ public class Tags
         public static final TagKey<Item> GLASS_PANES = tag("glass_panes");
         public static final TagKey<Item> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
 
-        public static final TagKey<Item> GRAVEL = tag("gravel");
-        public static final TagKey<Item> GUNPOWDER = tag("gunpowder");
+        public static final TagKey<Item> GRAVELS = tag("gravel");
+        public static final TagKey<Item> GUNPOWDERS = tag("gunpowder");
         /**
          * Tag that holds all head based blocks such as Skeleton Skull or Player Head.
          * <p></p>
@@ -430,14 +430,14 @@ public class Tags
         public static final TagKey<Item> INGOTS_IRON = tag("ingots/iron");
         public static final TagKey<Item> INGOTS_NETHERITE = tag("ingots/netherite");
         public static final TagKey<Item> INGOTS_NETHER_BRICK = tag("ingots/nether_brick");
-        public static final TagKey<Item> LEATHER = tag("leather");
+        public static final TagKey<Item> LEATHERS = tag("leather");
         public static final TagKey<Item> MUSHROOMS = tag("mushrooms");
         public static final TagKey<Item> NETHER_STARS = tag("nether_stars");
-        public static final TagKey<Item> NETHERRACK = tag("netherrack");
+        public static final TagKey<Item> NETHERRACKS = tag("netherrack");
         public static final TagKey<Item> NUGGETS = tag("nuggets");
         public static final TagKey<Item> NUGGETS_GOLD = tag("nuggets/gold");
         public static final TagKey<Item> NUGGETS_IRON = tag("nuggets/iron");
-        public static final TagKey<Item> OBSIDIAN = tag("obsidian");
+        public static final TagKey<Item> OBSIDIANS = tag("obsidians");
         /**
          * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation
          */
@@ -505,9 +505,9 @@ public class Tags
         public static final TagKey<Item> RODS_WOODEN = tag("rods/wooden");
         public static final TagKey<Item> ROPES = tag("ropes");
 
-        public static final TagKey<Item> SAND = tag("sand");
-        public static final TagKey<Item> SAND_COLORLESS = tag("sand/colorless");
-        public static final TagKey<Item> SAND_RED = tag("sand/red");
+        public static final TagKey<Item> SANDS = tag("sands");
+        public static final TagKey<Item> SANDS_COLORLESS = tag("sands/colorless");
+        public static final TagKey<Item> SANDS_RED = tag("sands/red");
 
         public static final TagKey<Item> SANDSTONE_BLOCKS = tag("sandstone/blocks");
         public static final TagKey<Item> SANDSTONE_SLABS = tag("sandstone/slabs");
@@ -713,20 +713,20 @@ public class Tags
         /**
          * For enchantments that increase the damage dealt by an item.
          */
-        public static final TagKey<Enchantment> WEAPON_DAMAGE_ENHANCEMENT = tag("weapon_damage_enhancement");
+        public static final TagKey<Enchantment> WEAPON_DAMAGE_ENHANCEMENTS = tag("weapon_damage_enhancement");
         /**
          * For enchantments that increase movement speed for entity wearing armor enchanted with it.
          */
-        public static final TagKey<Enchantment> ENTITY_SPEED_ENHANCEMENT = tag("entity_speed_enhancement");
+        public static final TagKey<Enchantment> ENTITY_SPEED_ENHANCEMENTS = tag("entity_speed_enhancement");
         /**
          * For enchantments that applies movement-based benefits unrelated to speed for the entity wearing armor enchanted with it.
          * Example: Reducing falling speeds ({@link net.minecraft.world.item.enchantment.Enchantments#FALL_PROTECTION}) or allowing walking on water ({@link net.minecraft.world.item.enchantment.Enchantments#FROST_WALKER})
          */
-        public static final TagKey<Enchantment> ENTITY_AUXILIARY_MOVEMENT_ENHANCEMENT = tag("entity_auxiliary_movement_enhancement");
+        public static final TagKey<Enchantment> ENTITY_AUXILIARY_MOVEMENT_ENHANCEMENTS = tag("entity_auxiliary_movement_enhancement");
         /**
          * For enchantments that decrease damage taken or otherwise benefit, in regard to damage, the entity wearing armor enchanted with it.
          */
-        public static final TagKey<Enchantment> ENTITY_DEFENSE_ENHANCEMENT = tag("entity_defense_enhancement");
+        public static final TagKey<Enchantment> ENTITY_DEFENSE_ENHANCEMENTS = tag("entity_defense_enhancement");
 
         private static TagKey<Enchantment> tag(String name)
         {

@@ -56,13 +56,13 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.GLASS_BLOCKS_TINTED, "Tinted Glass Blocks");
         add(Tags.Blocks.GLASS_PANES, "Glass Panes");
         add(Tags.Blocks.GLASS_PANES_COLORLESS, "Colorless Glass Panes");
-        add(Tags.Blocks.GRAVEL, "Gravel");
+        add(Tags.Blocks.GRAVELS, "Gravels");
         add(Tags.Blocks.HEADS, "Heads");
-        add(Tags.Blocks.NETHERRACK, "Netherrack");
+        add(Tags.Blocks.NETHERRACKS, "Netherracks");
         add(Tags.Blocks.NEEDS_WOOD_TOOL, "Needs Wooden Tools");
         add(Tags.Blocks.NEEDS_GOLD_TOOL, "Needs Gold Tools");
         add(Tags.Blocks.NEEDS_NETHERITE_TOOL, "Needs Netherite Tools");
-        add(Tags.Blocks.OBSIDIAN, "Obsidian");
+        add(Tags.Blocks.OBSIDIANS, "Obsidians");
         add(Tags.Blocks.ORE_BEARING_GROUND_DEEPSLATE, "Deepslate Ore Bearing Ground");
         add(Tags.Blocks.ORE_BEARING_GROUND_NETHERRACK, "Netherrack Ore Bearing Ground");
         add(Tags.Blocks.ORE_BEARING_GROUND_STONE, "Stone Ore Bearing Ground");
@@ -85,9 +85,9 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.ORES_IN_GROUND_STONE, "Stone Ores In Ground");
         add(Tags.Blocks.RELOCATION_NOT_SUPPORTED, "Relocation Not Supported");
         add(Tags.Blocks.ROPES, "Ropes");
-        add(Tags.Blocks.SAND, "Sand");
-        add(Tags.Blocks.SAND_COLORLESS, "Colorless Sand");
-        add(Tags.Blocks.SAND_RED, "Red Sand");
+        add(Tags.Blocks.SANDS, "Sands");
+        add(Tags.Blocks.SANDS_COLORLESS, "Colorless Sands");
+        add(Tags.Blocks.SANDS_RED, "Red Sands");
         add(Tags.Blocks.SANDSTONE_BLOCKS, "Sandstone Blocks");
         add(Tags.Blocks.SANDSTONE_SLABS, "Sandstone Slabs");
         add(Tags.Blocks.SANDSTONE_STAIRS, "Sandstone Stairs");
@@ -138,8 +138,6 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.CROPS, "Crops");
         add(Tags.Items.CROPS_BEETROOT, "Beetroot Crops");
         add(Tags.Items.CROPS_CARROT, "Carrot Crops");
-        add(Tags.Items.DYED, "Dyed Items");
-        addColored(Tags.Items.DYED, "{color} Dyed Items");
         add(Tags.Items.CROPS_NETHER_WART, "Nether Wart Crops");
         add(Tags.Items.CROPS_POTATO, "Potato Crops");
         add(Tags.Items.CROPS_WHEAT, "Wheat Crops");
@@ -147,8 +145,8 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.DUSTS_GLOWSTONE, "Glowstone Dusts");
         add(Tags.Items.DUSTS_PRISMARINE, "Prismarine Dusts");
         add(Tags.Items.DUSTS_REDSTONE, "Redstone Dusts");
-        add(Tags.Items.DYES, "Dyes");
-        addColored(Tags.Items.DYES, "{color} Dyes");
+        add(Tags.Items.DYED, "Dyed Items");
+        addColored(Tags.Items.DYED, "{color} Dyed Items");
         add(Tags.Items.EGGS, "Eggs");
         add(Tags.Items.ENCHANTING_FUELS, "Enchanting Fuels");
         add(Tags.Items.END_STONES, "End Stones");
@@ -186,8 +184,8 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.GLASS_BLOCKS_COLORLESS, "Colorless Glass Blocks");
         add(Tags.Items.GLASS_PANES, "Glass Panes");
         add(Tags.Items.GLASS_PANES_COLORLESS, "Colorless Glass Panes");
-        add(Tags.Items.GRAVEL, "Gravel");
-        add(Tags.Items.GUNPOWDER, "Gunpowder");
+        add(Tags.Items.GRAVELS, "Gravels");
+        add(Tags.Items.GUNPOWDERS, "Gunpowders");
         add(Tags.Items.HEADS, "Heads");
         add(Tags.Items.INGOTS, "Ingots");
         add(Tags.Items.INGOTS_BRICK, "Brick Ingots");
@@ -196,14 +194,14 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.INGOTS_IRON, "Iron Ingots");
         add(Tags.Items.INGOTS_NETHERITE, "Netherite Ingots");
         add(Tags.Items.INGOTS_NETHER_BRICK, "Nether Brick Ingots");
-        add(Tags.Items.LEATHER, "Leather");
+        add(Tags.Items.LEATHERS, "Leathers");
         add(Tags.Items.MUSHROOMS, "Mushrooms");
         add(Tags.Items.NETHER_STARS, "Nether Stars");
-        add(Tags.Items.NETHERRACK, "Netherrack");
+        add(Tags.Items.NETHERRACKS, "Netherracks");
         add(Tags.Items.NUGGETS, "Nuggets");
         add(Tags.Items.NUGGETS_IRON, "Iron Nuggets");
         add(Tags.Items.NUGGETS_GOLD, "Gold Nuggets");
-        add(Tags.Items.OBSIDIAN, "Obsidian");
+        add(Tags.Items.OBSIDIANS, "Obsidians");
         add(Tags.Items.ORE_BEARING_GROUND_DEEPSLATE, "Deepslate Ore Bearing Ground");
         add(Tags.Items.ORE_BEARING_GROUND_NETHERRACK, "Netherrack Ore Bearing Ground");
         add(Tags.Items.ORE_BEARING_GROUND_STONE, "Stone Ore Bearing Ground");
@@ -236,9 +234,9 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.RODS_BLAZE, "Blaze Rods");
         add(Tags.Items.RODS_WOODEN, "Wooden Rods");
         add(Tags.Items.ROPES, "Ropes");
-        add(Tags.Items.SAND, "Sand");
-        add(Tags.Items.SAND_COLORLESS, "Colorless Sand");
-        add(Tags.Items.SAND_RED, "Red Sand");
+        add(Tags.Items.SANDS, "Sands");
+        add(Tags.Items.SANDS_COLORLESS, "Colorless Sands");
+        add(Tags.Items.SANDS_RED, "Red Sands");
         add(Tags.Items.SANDSTONE_BLOCKS, "Sandstone Blocks");
         add(Tags.Items.SANDSTONE_SLABS, "Sandstone Slabs");
         add(Tags.Items.SANDSTONE_STAIRS, "Sandstone Stairs");
@@ -306,10 +304,10 @@ public final class ForgeLanguageProvider extends LanguageProvider
         // Enchantments
         add(Tags.Enchantments.INCREASE_BLOCK_DROPS, "Increase Block Drops");
         add(Tags.Enchantments.INCREASE_ENTITY_DROPS, "Increase Entity Drops");
-        add(Tags.Enchantments.WEAPON_DAMAGE_ENHANCEMENT, "Weapon Damage Enhancement");
-        add(Tags.Enchantments.ENTITY_SPEED_ENHANCEMENT, "Entity Speed Enhancement");
-        add(Tags.Enchantments.ENTITY_AUXILIARY_MOVEMENT_ENHANCEMENT, "Entity Auxiliary Movement Enhancement");
-        add(Tags.Enchantments.ENTITY_DEFENSE_ENHANCEMENT, "Entity Defense Enhancement");
+        add(Tags.Enchantments.WEAPON_DAMAGE_ENHANCEMENTS, "Weapon Damage Enhancements");
+        add(Tags.Enchantments.ENTITY_SPEED_ENHANCEMENTS, "Entity Speed Enhancements");
+        add(Tags.Enchantments.ENTITY_AUXILIARY_MOVEMENT_ENHANCEMENTS, "Entity Auxiliary Movement Enhancements");
+        add(Tags.Enchantments.ENTITY_DEFENSE_ENHANCEMENTS, "Entity Defense Enhancements");
 
         // Biomes
         add(Tags.Biomes.IS_HOT, "Hot");
@@ -341,27 +339,27 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Biomes.IS_SPOOKY, "Spooky");
         add(Tags.Biomes.IS_DEAD, "Dead");
         add(Tags.Biomes.IS_LUSH, "Lush");
-        add(Tags.Biomes.IS_MUSHROOM, "Mushroom");
+        add(Tags.Biomes.IS_MUSHROOM, "Mushrooms");
         add(Tags.Biomes.IS_MAGICAL, "Magical");
         add(Tags.Biomes.IS_RARE, "Rare");
-        add(Tags.Biomes.IS_PLATEAU, "Plateau");
+        add(Tags.Biomes.IS_PLATEAU, "Plateaus");
         add(Tags.Biomes.IS_MODIFIED, "Modified");
         add(Tags.Biomes.IS_FLORAL, "Floral");
 
         add(Tags.Biomes.IS_WATER, "Water");
-        add(Tags.Biomes.IS_DESERT, "Desert");
+        add(Tags.Biomes.IS_DESERT, "Deserts");
         add(Tags.Biomes.IS_PLAINS, "Plains");
-        add(Tags.Biomes.IS_SWAMP, "Swamp");
+        add(Tags.Biomes.IS_SWAMP, "Swamps");
         add(Tags.Biomes.IS_SANDY, "Sandy");
         add(Tags.Biomes.IS_SNOWY, "Snowy");
-        add(Tags.Biomes.IS_WASTELAND, "Wasteland");
-        add(Tags.Biomes.IS_VOID, "Void");
+        add(Tags.Biomes.IS_WASTELAND, "Wastelands");
+        add(Tags.Biomes.IS_VOID, "Voids");
 
         add(Tags.Biomes.IS_UNDERGROUND, "Underground");
-        add(Tags.Biomes.IS_CAVE, "Cave");
-        add(Tags.Biomes.IS_MOUNTAIN_PEAK, "Peak");
-        add(Tags.Biomes.IS_MOUNTAIN_SLOPE, "Slope");
-        add(Tags.Biomes.IS_MOUNTAIN, "Mountain");
+        add(Tags.Biomes.IS_CAVE, "Caves");
+        add(Tags.Biomes.IS_MOUNTAIN_PEAK, "Peaks");
+        add(Tags.Biomes.IS_MOUNTAIN_SLOPE, "Slopes");
+        add(Tags.Biomes.IS_MOUNTAIN, "Mountains");
         add(Tags.Biomes.NO_DEFAULT_MONSTERS, "No Default Monsters");
     }
 

@@ -26,20 +26,20 @@ public final class ForgeEnchantmentTagsProvider extends EnchantmentTagsProvider
                 .add(Enchantments.BLOCK_FORTUNE);
         tag(Tags.Enchantments.INCREASE_ENTITY_DROPS)
                 .add(Enchantments.MOB_LOOTING);
-        tag(Tags.Enchantments.WEAPON_DAMAGE_ENHANCEMENT)
+        tag(Tags.Enchantments.WEAPON_DAMAGE_ENHANCEMENTS)
                 .add(Enchantments.SHARPNESS)
                 .add(Enchantments.SMITE)
                 .add(Enchantments.BANE_OF_ARTHROPODS)
                 .add(Enchantments.POWER_ARROWS)
                 .add(Enchantments.IMPALING);
-        tag(Tags.Enchantments.ENTITY_SPEED_ENHANCEMENT)
+        tag(Tags.Enchantments.ENTITY_SPEED_ENHANCEMENTS)
                 .add(Enchantments.SOUL_SPEED)
                 .add(Enchantments.SWIFT_SNEAK)
                 .add(Enchantments.DEPTH_STRIDER);
-        tag(Tags.Enchantments.ENTITY_AUXILIARY_MOVEMENT_ENHANCEMENT)
+        tag(Tags.Enchantments.ENTITY_AUXILIARY_MOVEMENT_ENHANCEMENTS)
                 .add(Enchantments.FALL_PROTECTION)
                 .add(Enchantments.FROST_WALKER);
-        tag(Tags.Enchantments.ENTITY_DEFENSE_ENHANCEMENT)
+        tag(Tags.Enchantments.ENTITY_DEFENSE_ENHANCEMENTS)
                 .add(Enchantments.ALL_DAMAGE_PROTECTION)
                 .add(Enchantments.BLAST_PROTECTION)
                 .add(Enchantments.PROJECTILE_PROTECTION)
