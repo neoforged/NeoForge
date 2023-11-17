@@ -657,6 +657,16 @@ public class Tags
         private static void init() {}
 
         /**
+         * Holds all fluids related to water.
+         * This tag is done to help out multi-loader mods/datapacks where the vanilla water tag has attached behaviors outside Neo.
+         */
+        public static final TagKey<Fluid> WATER = tag("water");
+        /**
+         * Holds all fluids related to lava.
+         * This tag is done to help out multi-loader mods/datapacks where the vanilla lava tag has attached behaviors outside Neo.
+         */
+        public static final TagKey<Fluid> LAVA = tag("lava");
+        /**
          * Holds all fluids related to milk.
          */
         public static final TagKey<Fluid> MILK = tag("milk");

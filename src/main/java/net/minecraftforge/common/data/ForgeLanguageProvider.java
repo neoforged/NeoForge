@@ -286,6 +286,8 @@ public final class ForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.ARMORS, "Armors");
 
         // Fluids
+        add(Tags.Fluids.WATER, "Water");
+        add(Tags.Fluids.LAVA, "Lava");
         add(Tags.Fluids.MILK, "Milk");
         add(Tags.Fluids.GASEOUS, "Gaseous");
         add(Tags.Fluids.HONEY, "Honey");

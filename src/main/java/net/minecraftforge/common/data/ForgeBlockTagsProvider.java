@@ -146,23 +146,11 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tagWithOptionalLegacy(CHESTS_ENDER);
         tagWithOptionalLegacy(CHESTS_TRAPPED);
         tagWithOptionalLegacy(CHESTS_WOODEN);
-        tag(COBBLESTONES)
-                .addOptional(new ResourceLocation("forge", "cobblestone"));
-        tag(COBBLESTONES_NORMAL)
-                .addOptional(new ResourceLocation("forge", "cobblestone/normal"));
-        tag(COBBLESTONES_INFESTED)
-                .addOptional(new ResourceLocation("forge", "cobblestone/infested"));
-        tag(COBBLESTONES_MOSSY)
-                .addOptional(new ResourceLocation("forge", "cobblestone/mossy"));
-        tag(COBBLESTONES_DEEPSLATE)
-                .addOptional(new ResourceLocation("forge", "cobblestone/deepslate"));
-        tagWithOptionalLegacy(END_STONES);
-        tagWithOptionalLegacy(ENDERMAN_PLACE_ON_BLACKLIST);
-        tagWithOptionalLegacy(FENCE_GATES);
-        tagWithOptionalLegacy(FENCE_GATES_WOODEN);
-        tagWithOptionalLegacy(FENCES);
-        tagWithOptionalLegacy(FENCES_NETHER_BRICK);
-        tagWithOptionalLegacy(FENCES_WOODEN);
+        tag(COBBLESTONES).addOptional(new ResourceLocation("forge", "cobblestone"));
+        tag(COBBLESTONES_NORMAL).addOptional(new ResourceLocation("forge", "cobblestone/normal"));
+        tag(COBBLESTONES_INFESTED).addOptional(new ResourceLocation("forge", "cobblestone/infested"));
+        tag(COBBLESTONES_MOSSY).addOptional(new ResourceLocation("forge", "cobblestone/mossy"));
+        tag(COBBLESTONES_DEEPSLATE).addOptional(new ResourceLocation("forge", "cobblestone/deepslate"));
         tag(DYED_BLACK)
                 .addOptional(new ResourceLocation("forge", "glass/black"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/black"));
@@ -214,16 +202,21 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(DYED_YELLOW)
                 .addOptional(new ResourceLocation("forge", "glass/yellow"))
                 .addOptional(new ResourceLocation("forge", "stained_glass/yellow"));
-        tag(GLASS_BLOCKS)
-                .addOptional(new ResourceLocation("forge", "glass"));
+        tagWithOptionalLegacy(END_STONES);
+        tagWithOptionalLegacy(ENDERMAN_PLACE_ON_BLACKLIST);
+        tagWithOptionalLegacy(FENCE_GATES);
+        tagWithOptionalLegacy(FENCE_GATES_WOODEN);
+        tagWithOptionalLegacy(FENCES);
+        tagWithOptionalLegacy(FENCES_NETHER_BRICK);
+        tagWithOptionalLegacy(FENCES_WOODEN);
+        tag(GRAVELS).addOptionalTag(new ResourceLocation("forge", "gravel"));
+        tag(GLASS_BLOCKS).addOptional(new ResourceLocation("forge", "glass"));
         tag(GLASS_BLOCKS_COLORLESS).addOptional(new ResourceLocation("forge", "glass_colorless"));
         tag(GLASS_BLOCKS_CHEAP).addOptional(new ResourceLocation("forge", "glass_silica"));
         tag(GLASS_BLOCKS_TINTED).addOptional(new ResourceLocation("forge", "glass_tinted"));
-        tag(GLASS_PANES_COLORLESS)
-                .addOptional(new ResourceLocation("forge", "glass_panes_colorless"));
-        tagWithOptionalLegacy(GRAVELS);
-        tagWithOptionalLegacy(NETHERRACKS);
-        tagWithOptionalLegacy(OBSIDIANS);
+        tag(GLASS_PANES_COLORLESS).addOptional(new ResourceLocation("forge", "glass_panes_colorless"));
+        tag(NETHERRACKS).addOptionalTag(new ResourceLocation("forge", "netherrack"));
+        tag(OBSIDIANS).addOptionalTag(new ResourceLocation("forge", "obsidian"));
         tagWithOptionalLegacy(ORE_BEARING_GROUND_DEEPSLATE);
         tagWithOptionalLegacy(ORE_BEARING_GROUND_NETHERRACK);
         tagWithOptionalLegacy(ORE_BEARING_GROUND_STONE);
@@ -244,9 +237,6 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tagWithOptionalLegacy(ORES_IN_GROUND_DEEPSLATE);
         tagWithOptionalLegacy(ORES_IN_GROUND_NETHERRACK);
         tagWithOptionalLegacy(ORES_IN_GROUND_STONE);
-        tagWithOptionalLegacy(SANDS);
-        tagWithOptionalLegacy(SANDS_COLORLESS);
-        tagWithOptionalLegacy(SANDS_RED);
         tagWithOptionalLegacy(STONES);
         tagWithOptionalLegacy(STORAGE_BLOCKS);
         tagWithOptionalLegacy(STORAGE_BLOCKS_COAL);
@@ -265,6 +255,9 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
                 .addOptionalTag(new ResourceLocation("forge", "relocation_not_supported"))
                 .addOptionalTag(new ResourceLocation("forge", "immovable"));
         tag(Tags.Blocks.SANDSTONE_BLOCKS).addOptionalTag(new ResourceLocation("forge", "sandstone"));
+        tag(Tags.Blocks.SANDS).addOptionalTag(new ResourceLocation("forge", "sand"));
+        tag(Tags.Blocks.SANDS_COLORLESS).addOptionalTag(new ResourceLocation("forge", "sand/colorless"));
+        tag(Tags.Blocks.SANDS_RED).addOptionalTag(new ResourceLocation("forge", "sand/red"));
     }
 
     private IntrinsicHolderTagsProvider.IntrinsicTagAppender<Block> tagWithOptionalLegacy(TagKey<Block> tag)

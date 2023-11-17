@@ -27,6 +27,8 @@ public final class ForgeFluidTagsProvider extends FluidTagsProvider
     @Override
     public void addTags(HolderLookup.Provider lookupProvider)
     {
+        tag(Fluids.WATER).add(net.minecraft.world.level.material.Fluids.WATER).add(net.minecraft.world.level.material.Fluids.FLOWING_WATER);
+        tag(Fluids.LAVA).add(net.minecraft.world.level.material.Fluids.LAVA).add(net.minecraft.world.level.material.Fluids.FLOWING_LAVA);
         tag(Fluids.MILK).addOptional(ForgeMod.MILK.getId()).addOptional(ForgeMod.FLOWING_MILK.getId());
         tag(Fluids.GASEOUS);
         tag(Fluids.HONEY);

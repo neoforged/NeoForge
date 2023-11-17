@@ -304,13 +304,12 @@ public final class ForgeItemTagsProvider extends ItemTagsProvider
         tagWithOptionalLegacy(Tags.Items.INGOTS_IRON);
         tagWithOptionalLegacy(Tags.Items.INGOTS_NETHERITE);
         tagWithOptionalLegacy(Tags.Items.INGOTS_NETHER_BRICK);
-        tagWithOptionalLegacy(Tags.Items.LEATHERS);
+        tag(Tags.Items.LEATHERS).addOptionalTag(new ResourceLocation("forge", "leather"));
         tagWithOptionalLegacy(Tags.Items.MUSHROOMS);
         tagWithOptionalLegacy(Tags.Items.NETHER_STARS);
         tagWithOptionalLegacy(Tags.Items.NUGGETS);
         tagWithOptionalLegacy(Tags.Items.NUGGETS_IRON);
         tagWithOptionalLegacy(Tags.Items.NUGGETS_GOLD);
-        tagWithOptionalLegacy(Tags.Items.OBSIDIANS);
         tagWithOptionalLegacy(Tags.Items.RAW_MATERIALS);
         tagWithOptionalLegacy(Tags.Items.RAW_MATERIALS_COPPER);
         tagWithOptionalLegacy(Tags.Items.RAW_MATERIALS_GOLD);

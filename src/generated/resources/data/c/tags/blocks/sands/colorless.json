@@ -2,7 +2,7 @@
   "values": [
     "minecraft:sand",
     {
-      "id": "#forge:sands/colorless",
+      "id": "#forge:sand/colorless",
       "required": false
     }
   ]

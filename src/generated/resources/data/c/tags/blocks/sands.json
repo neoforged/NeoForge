@@ -3,7 +3,7 @@
     "#c:sands/colorless",
     "#c:sands/red",
     {
-      "id": "#forge:sands",
+      "id": "#forge:sand",
       "required": false
     }
   ]
