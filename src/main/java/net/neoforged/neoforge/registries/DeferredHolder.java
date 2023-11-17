@@ -22,7 +22,9 @@ import net.minecraft.tags.TagKey;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A Deferred Holder is a Holder that is constructed with only a ResourceKey.<br> It will be populated with the underlying Holder from the registry when available.
+ * A Deferred Holder is a {@link Holder} that is constructed with only a ResourceKey.
+ *
+ * <p>It will be populated with the underlying Holder from the registry when available.
  *
  * @param <T> The type of object being held by this DeferredHolder.
  */
@@ -72,7 +74,9 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     private Holder<R> holder = null;
 
     /**
-     * Creates a new DeferredHolder with a ResourceKey.<br> Attempts to bind immediately if possible.
+     * Creates a new DeferredHolder with a ResourceKey.
+     *
+     * <p>Attempts to bind immediately if possible.
      *
      * @param key The resource key of the target object.
      * @see #create(ResourceKey, ResourceLocation)
@@ -85,7 +89,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * Gets the object stored by this DeferredHolder, if this holder {@linkplain #isPresent() is present}.<br>
+     * Gets the object stored by this DeferredHolder, if this holder {@linkplain #isPresent() is present}.
      *
      * @throws IllegalStateException If the backing registry is unavailable.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
@@ -102,7 +106,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * Gets the object stored by this DeferredHolder, if this holder {@linkplain #isPresent() is present}.<br>
+     * Gets the object stored by this DeferredHolder, if this holder {@linkplain #isPresent() is present}.
      *
      * @throws IllegalStateException If the backing registry is unavailable.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
@@ -120,9 +124,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * The type of the registry is really <? super T> but this saves us some additional ugly casting and doesn't break anything.
-     *
-     * @return The registry that this DeferredHolder is pointing at, or null if it doesn't exist.
+     * @return The registry that this DeferredHolder is pointing at, or {@code null} if it doesn't exist.
      */
     @Nullable
     @SuppressWarnings("unchecked")
@@ -131,7 +133,9 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * Binds this DeferredHolder to the underlying registry and target object.<br> Has no effect if already bound.
+     * Binds this DeferredHolder to the underlying registry and target object.
+     *
+     * <p>Has no effect if already bound.
      *
      * @param throwOnMissingRegistry If true, an exception will be thrown if the registry is absent.
      * @throws IllegalStateException If throwOnMissingRegistry is true and the backing registry is unavailable.
@@ -234,7 +238,8 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * If this DH {@linkplain #isPresent() is present}, this method returns an {@link Either#right()} containing the underlying object.<br> Otherwise, this method returns and {@link Either#left()} containing {@linkplain #getKey() this DH's resource key}.
+     * If this DH {@linkplain #isPresent() is present}, this method returns an {@link Either#right()} containing the underlying object.
+     * Otherwise, this method returns and {@link Either#left()} containing {@linkplain #getKey() this DH's resource key}.
      *
      * @return The unwrapped form of this DeferredHolder.
      */
