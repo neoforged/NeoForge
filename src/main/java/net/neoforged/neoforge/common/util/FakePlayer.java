@@ -9,6 +9,7 @@ import com.mojang.authlib.GameProfile;
 import java.util.Set;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.network.Connection;
+import net.minecraft.network.PacketListener;
 import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
@@ -117,7 +118,7 @@ public class FakePlayer extends ServerPlayer {
 
     @ParametersAreNonnullByDefault
     private static class FakePlayerNetHandler extends ServerGamePacketListenerImpl {
-        private static final Connection DUMMY_CONNECTION = new Connection(PacketFlow.CLIENTBOUND);
+        private static final Connection DUMMY_CONNECTION = new FakeConnection();
 
         public FakePlayerNetHandler(MinecraftServer server, ServerPlayer player) {
             super(server, DUMMY_CONNECTION, player, CommonListenerCookie.createInitial(player.getGameProfile()));
@@ -299,5 +300,14 @@ public class FakePlayer extends ServerPlayer {
 
         @Override
         public void handleChatSessionUpdate(ServerboundChatSessionUpdatePacket packet) {}
+    }
+
+    private static final class FakeConnection extends Connection {
+        public FakeConnection() {
+            super(PacketFlow.SERVERBOUND);
+        }
+
+        @Override
+        public void setListener(PacketListener listener) {}
     }
 }

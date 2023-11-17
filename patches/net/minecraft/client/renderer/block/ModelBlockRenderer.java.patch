@@ -117,7 +117,7 @@
 -      p_234409_.setSeed(p_234410_);
 -      List<BakedQuad> list1 = p_234403_.getQuads(p_234404_, null, p_234409_);
 +      p_111098_.setSeed(p_111099_);
-+      List<BakedQuad> list1 = p_111092_.getQuads(p_111093_, null, p_111098_);
++      List<BakedQuad> list1 = p_111092_.getQuads(p_111093_, null, p_111098_, modelData, renderType);
        if (!list1.isEmpty()) {
 -         this.renderModelFaceFlat(p_234402_, p_234404_, p_234405_, -1, p_234411_, true, p_234406_, p_234407_, list1, bitset);
 +         this.renderModelFaceFlat(p_111091_, p_111093_, p_111094_, -1, p_111100_, true, p_111095_, p_111096_, list1, bitset);
