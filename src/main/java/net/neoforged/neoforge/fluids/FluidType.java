@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +32,11 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
@@ -85,6 +90,8 @@ public class FluidType {
     private final int temperature;
     private final int viscosity;
     private final Rarity rarity;
+    @Nullable
+    private final DripstoneDripInfo dripInfo;
 
     /**
      * A map of actions performed to sound that should be played.
@@ -115,6 +122,7 @@ public class FluidType {
         this.temperature = properties.temperature;
         this.viscosity = properties.viscosity;
         this.rarity = properties.rarity;
+        this.dripInfo = properties.dripInfo;
 
         this.initClient();
     }
@@ -207,6 +215,14 @@ public class FluidType {
      */
     public Rarity getRarity() {
         return this.rarity;
+    }
+
+    /**
+     * {@return the pointed dripstone drip information of the fluid}
+     */
+    @Nullable
+    public DripstoneDripInfo getDripInfo() {
+        return this.dripInfo;
     }
 
     /**
@@ -535,6 +551,35 @@ public class FluidType {
         return this.getViscosity();
     }
 
+    /**
+     * Returns whether a fluid above a pointed dripstone block can successfully fill a cauldron below.
+     *
+     * <p>If this will return {@code true}, this method will also do 3 things:
+     * <ul>
+     * <li>Set the cauldron below to the proper filled state as defined by the FluidType's {@link DripstoneDripInfo}</li>
+     * <li>Send the BLOCK_CHANGE {@link GameEvent}</li>
+     * <li>Play a sound as defined by the FluidType's {@link DripstoneDripInfo}</li>
+     * </ul>
+     * 
+     * @param fluid       the fluid that is dripping from a stalactite
+     * @param level       the level the fluid is being placed in
+     * @param cauldronPos the position of the cauldron this fluid is dripping into
+     * @return {@code true} if a cauldron is successfully filled, {@code false} otherwise
+     */
+    public boolean handleCauldronDrip(Fluid fluid, Level level, BlockPos cauldronPos) {
+        if (fluid instanceof FlowingFluid flowing && fluid.isSource(flowing.getSource(false)) && this.getDripInfo() != null) {
+            BlockState cauldronBlock = this.getDripInfo().filledCauldron().defaultBlockState();
+            level.setBlockAndUpdate(cauldronPos, cauldronBlock);
+            level.gameEvent(GameEvent.BLOCK_CHANGE, cauldronPos, GameEvent.Context.of(cauldronBlock));
+            SoundEvent dripSound = this.getSound(null, level, cauldronPos, SoundActions.CAULDRON_DRIP);
+            if (dripSound != null) {
+                level.playSound(null, cauldronPos, dripSound, SoundSource.BLOCKS, 2.0F, level.getRandom().nextFloat() * 0.1F + 0.9F);
+            }
+            return true;
+        }
+        return false;
+    }
+
     /* Stack-Based Accessors */
 
     /**
@@ -850,6 +895,8 @@ public class FluidType {
                 temperature = 300,
                 viscosity = 1000;
         private Rarity rarity = Rarity.COMMON;
+        @Nullable
+        private DripstoneDripInfo dripInfo;
 
         private Properties() {}
 
@@ -1071,5 +1118,31 @@ public class FluidType {
             this.rarity = rarity;
             return this;
         }
+
+        /**
+         * Allows this fluid to drip from Pointed Dripstone stalactites and fill cauldrons below.
+         *
+         * @param chance       the chance that the cauldron below will be filled every time the Pointed Dripstone is randomly ticked
+         * @param dripParticle the particle that spawns randomly from the tip of the Pointed Dripstone when this fluid is above it
+         * @param cauldron     the block the Pointed Dripstone should replace an empty cauldron with when it successfully tries to fill the cauldron
+         * @param fillSound    the sound that plays when the Pointed Dripstone successfully tries to fill an empty cauldron. If null, no sound will play. Note that if your block class does not extend {@link CauldronBlock}, this sound will not play regardless.
+         * @return the property holder instance
+         */
+        public Properties addDripstoneDripping(float chance, ParticleOptions dripParticle, Block cauldron, @Nullable SoundEvent fillSound) {
+            if (fillSound != null) {
+                this.sounds.put(SoundActions.CAULDRON_DRIP, fillSound);
+            }
+            this.dripInfo = new DripstoneDripInfo(chance, dripParticle, cauldron);
+            return this;
+        }
     }
+
+    /**
+     * A record that holds some information to let a fluid drip from Pointed Dripstone stalactites and fill cauldrons below.
+     *
+     * @param chance         the chance that the cauldron below will be filled every time the Pointed Dripstone is randomly ticked. This number should be some value between 0.0 and 1.0
+     * @param dripParticle   the particle that spawns randomly from the tip of the Pointed Dripstone when this fluid is above it
+     * @param filledCauldron the block the Pointed Dripstone should replace an empty cauldron with when it successfully tries to fill the cauldron
+     */
+    public record DripstoneDripInfo(float chance, @Nullable ParticleOptions dripParticle, Block filledCauldron) {}
 }
