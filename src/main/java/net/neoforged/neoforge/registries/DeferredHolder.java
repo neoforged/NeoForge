@@ -89,7 +89,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * Gets the object stored by this DeferredHolder, if this holder {@linkplain #isPresent() is present}.
+     * Gets the object stored by this DeferredHolder, if this holder {@linkplain #isBound() is bound}.
      *
      * @throws IllegalStateException If the backing registry is unavailable.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
@@ -106,7 +106,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * Gets the object stored by this DeferredHolder, if this holder {@linkplain #isPresent() is present}.
+     * Gets the object stored by this DeferredHolder, if this holder {@linkplain #isBound() is bound}.
      *
      * @throws IllegalStateException If the backing registry is unavailable.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
@@ -117,14 +117,18 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * @return An optional containing the target object, if {@link #isPresent()}, otherwise {@linkplain Optional#empty() an empty optional}.
+     * Returns an optional containing the target object, if {@link #isBound() bound}; otherwise {@linkplain Optional#empty() an empty optional}.
+     *
+     * @return an optional containing the target object, if {@link #isBound() bound}; otherwise {@linkplain Optional#empty() an empty optional}
      */
     public Optional<T> asOptional() {
-        return isPresent() ? Optional.of(value()) : Optional.empty();
+        return isBound() ? Optional.of(value()) : Optional.empty();
     }
 
     /**
-     * @return The registry that this DeferredHolder is pointing at, or {@code null} if it doesn't exist.
+     * Returns the registry that this DeferredHolder is pointing at, or {@code null} if it doesn't exist.
+     *
+     * @return the registry that this DeferredHolder is pointing at, or {@code null} if it doesn't exist
      */
     @Nullable
     @SuppressWarnings("unchecked")
@@ -140,7 +144,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
      * @param throwOnMissingRegistry If true, an exception will be thrown if the registry is absent.
      * @throws IllegalStateException If throwOnMissingRegistry is true and the backing registry is unavailable.
      */
-    protected void bind(boolean throwOnMissingRegistry) {
+    private void bind(boolean throwOnMissingRegistry) {
         if (this.holder != null) return;
 
         Registry<R> registry = getRegistry();
@@ -165,14 +169,6 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
         return this.key;
     }
 
-    /**
-     * @return True if this DeferredHolder has been bound, and {@link #get()} or {@link #value()} may be called.
-     */
-    public boolean isPresent() {
-        bind(false);
-        return this.holder != null;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -190,15 +186,19 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * @return True if this DH {@link #isPresent()} and the underlying holder {@linkplain Holder#isBound() is bound}.
+     * {@return true if the underlying object is available}
+     *
+     * <p>If {@code true}, the underlying object was added to the registry,
+     * and {@link #value()} or {@link #get()} can be called.
      */
     @Override
     public boolean isBound() {
-        return isPresent() && this.holder.isBound();
+        bind(false);
+        return this.holder != null && this.holder.isBound();
     }
 
     /**
-     * @return True if the passed ResourceLocation is the same as the ID of the target object.
+     * {@return true if the passed ResourceLocation is the same as the ID of the target object}
      */
     @Override
     public boolean is(ResourceLocation id) {
@@ -206,7 +206,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * @return True if the passed ResourceKey is the same as this DH's resource key.
+     * {@return true if the passed ResourceKey is the same as this holder's resource key}
      */
     @Override
     public boolean is(ResourceKey<R> key) {
@@ -214,7 +214,9 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * @return True if the filter matches {@linkplain #getKey() this DH's resource key}.
+     * Evaluates the passed predicate against this holder's resource key.
+     *
+     * @return {@code true} if the filter matches {@linkplain #getKey() this DH's resource key}
      */
     @Override
     public boolean is(Predicate<ResourceKey<R>> filter) {
@@ -222,34 +224,41 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * @return True if this DH {@link #isPresent()} and the underlying object is a member of the passed tag.
+     * {@return true if this holder is a member of the passed tag}
      */
     @Override
     public boolean is(TagKey<R> tag) {
-        return isPresent() && this.holder.is(tag);
+        bind(false);
+        return this.holder != null && this.holder.is(tag);
     }
 
     /**
-     * @return All tags present on the underlying object, if {@link #isPresent()}, otherwise {@linkplain Stream#empty() an empty stream}.
+     * {@return all tags present on the underlying object}
+     *
+     * <p>If the underlying object is not {@linkplain #isBound() bound} yet, and empty stream is returned.
      */
     @Override
     public Stream<TagKey<R>> tags() {
-        return isPresent() ? this.holder.tags() : Stream.empty();
+        bind(false);
+        return this.holder != null ? this.holder.tags() : Stream.empty();
     }
 
     /**
-     * If this DH {@linkplain #isPresent() is present}, this method returns an {@link Either#right()} containing the underlying object.
-     * Otherwise, this method returns and {@link Either#left()} containing {@linkplain #getKey() this DH's resource key}.
+     * Returns an {@link Either#left()} containing {@linkplain #getKey() the resource key of this holder}.
      *
-     * @return The unwrapped form of this DeferredHolder.
+     * @apiNote This method is implemented for {@link Holder} compatibility, but {@link #getKey()} should be preferred.
      */
     @Override
     public Either<ResourceKey<R>, R> unwrap() {
-        return isPresent() ? this.holder.unwrap() : Either.left(this.key);
+        // Holder.Reference always returns the key, do the same here.
+        return Either.left(this.key);
     }
 
     /**
-     * @return An optional containing {@linkplain #getKey() this DH's resource key}.
+     * Returns the resource key of this holder.
+     *
+     * @return a present optional containing {@linkplain #getKey() the resource key of this holder}
+     * @apiNote This method is implemented for {@link Holder} compatibility, but {@link #getKey()} should be preferred.
      */
     @Override
     public Optional<ResourceKey<R>> unwrapKey() {
@@ -263,6 +272,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
 
     @Override
     public boolean canSerializeIn(HolderOwner<R> owner) {
-        return isPresent() && this.holder.canSerializeIn(owner);
+        bind(false);
+        return this.holder != null && this.holder.canSerializeIn(owner);
     }
 }

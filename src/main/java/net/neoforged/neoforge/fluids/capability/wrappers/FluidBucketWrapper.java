@@ -56,7 +56,7 @@ public class FluidBucketWrapper implements IFluidHandlerItem, ICapabilityProvide
         Item item = container.getItem();
         if (item instanceof BucketItem) {
             return new FluidStack(((BucketItem) item).getFluid(), FluidType.BUCKET_VOLUME);
-        } else if (item instanceof MilkBucketItem && NeoForgeMod.MILK.isPresent()) {
+        } else if (item instanceof MilkBucketItem && NeoForgeMod.MILK.isBound()) {
             return new FluidStack(NeoForgeMod.MILK.get(), FluidType.BUCKET_VOLUME);
         } else {
             return FluidStack.EMPTY;

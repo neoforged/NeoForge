@@ -79,7 +79,7 @@ public class DeferredRegistryTest {
         BLOCK.get();
         ITEM.get();
         CUSTOM.get();
-        if (DOESNT_EXIST.isPresent())
+        if (DOESNT_EXIST.isBound())
             throw new IllegalStateException("DeferredRegistryTest#DOESNT_EXIST should not be present!");
         RECIPE_TYPE.get();
         //POS_RULE_TEST_TYPE.get();
