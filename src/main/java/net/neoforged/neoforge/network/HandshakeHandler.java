@@ -268,7 +268,6 @@ public class HandshakeHandler {
     }
 
     private boolean handleRegistryLoading(final NetworkEvent.Context contextSupplier) {
-        // We use a countdown latch to suspend the impl thread pending the client thread processing the registry data
         AtomicBoolean successfulConnection = new AtomicBoolean(false);
         AtomicReference<Set<ResourceKey<?>>> registryMismatches = new AtomicReference<>();
         var future = contextSupplier.enqueueWork(() -> {
