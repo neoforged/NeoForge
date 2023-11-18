@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
@@ -38,11 +39,14 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(BARRELS).addTag(BARRELS_WOODEN);
         tag(BARRELS_WOODEN).add(Blocks.BARREL);
         tag(BOOKSHELVES).add(Blocks.BOOKSHELF);
+        tag(BUDDING_BLOCKS).add(Blocks.BUDDING_AMETHYST);
+        tag(BUDS).add(Blocks.SMALL_AMETHYST_BUD).add(Blocks.MEDIUM_AMETHYST_BUD).add(Blocks.LARGE_AMETHYST_BUD);
         tag(CHAINS).addTags(CHAINS);
         tag(CHESTS).addTags(CHESTS_ENDER, CHESTS_TRAPPED, CHESTS_WOODEN);
         tag(CHESTS_ENDER).add(Blocks.ENDER_CHEST);
         tag(CHESTS_TRAPPED).add(Blocks.TRAPPED_CHEST);
         tag(CHESTS_WOODEN).add(Blocks.CHEST, Blocks.TRAPPED_CHEST);
+        tag(CLUSTERS).add(Blocks.AMETHYST_CLUSTER);
         tag(COBBLESTONES).addTags(COBBLESTONES_NORMAL, COBBLESTONES_INFESTED, COBBLESTONES_MOSSY, COBBLESTONES_DEEPSLATE);
         tag(COBBLESTONES_NORMAL).add(Blocks.COBBLESTONE);
         tag(COBBLESTONES_INFESTED).add(Blocks.INFESTED_COBBLESTONE);
@@ -133,9 +137,11 @@ public final class ForgeBlockTagsProvider extends BlockTagsProvider
         tag(STORAGE_BLOCKS_REDSTONE).add(Blocks.REDSTONE_BLOCK);
         tag(STORAGE_BLOCKS_SLIME).add(Blocks.SLIME_BLOCK);
         tag(STORAGE_BLOCKS_WHEAT).add(Blocks.HAY_BLOCK);
-        tag(BUDDING_BLOCKS).add(Blocks.BUDDING_AMETHYST);
-        tag(BUDS).add(Blocks.SMALL_AMETHYST_BUD).add(Blocks.MEDIUM_AMETHYST_BUD).add(Blocks.LARGE_AMETHYST_BUD);
-        tag(CLUSTERS).add(Blocks.AMETHYST_CLUSTER);
+        tag(VILLAGER_JOB_SITES).add(
+                Blocks.BARREL, Blocks.BLAST_FURNACE, Blocks.BREWING_STAND, Blocks.CARTOGRAPHY_TABLE,
+                Blocks.CAULDRON, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON, Blocks.POWDER_SNOW_CAULDRON,
+                Blocks.COMPOSTER, Blocks.FLETCHING_TABLE, Blocks.GRINDSTONE, Blocks.LECTERN,
+                Blocks.LOOM, Blocks.SMITHING_TABLE, Blocks.SMOKER, Blocks.STONECUTTER);
 
         // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22

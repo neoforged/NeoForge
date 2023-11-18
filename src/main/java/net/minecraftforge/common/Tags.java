@@ -220,6 +220,7 @@ public class Tags
         public static final TagKey<Block> STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
         public static final TagKey<Block> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
         public static final TagKey<Block> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
+        public static final TagKey<Block> VILLAGER_JOB_SITES = tag("villager_job_sites");
 
         private static TagKey<Block> tag(String name)
         {
@@ -554,6 +555,9 @@ public class Tags
         public static final TagKey<Item> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
         public static final TagKey<Item> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
         public static final TagKey<Item> STRINGS = tag("strings");
+        public static final TagKey<Item> VILLAGER_JOB_SITES = tag("villager_job_sites");
+
+        // Tools and Armors
         /**
          * A tag containing all existing tools. Do not use this tag for determining a tool's behavior.
          * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
