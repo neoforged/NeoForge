@@ -60,7 +60,7 @@ public interface IRegistryExtension<T> {
     /**
      * Adds an alias that maps from the name specified by <code>from</code> to the name specified by <code>to</code>.
      * <p>
-     * Any registry lookups that target the first name will resolve as the second name, iff the first name is not present.
+     * Any registry lookups that target the first name will resolve as the second name, if the first name is not present.
      *
      * @param from the source registry name to alias from
      * @param to   the target registry name to alias to

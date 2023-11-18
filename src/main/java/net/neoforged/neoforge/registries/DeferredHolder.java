@@ -144,7 +144,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
      * @param throwOnMissingRegistry If true, an exception will be thrown if the registry is absent.
      * @throws IllegalStateException If throwOnMissingRegistry is true and the backing registry is unavailable.
      */
-    private void bind(boolean throwOnMissingRegistry) {
+    protected final void bind(boolean throwOnMissingRegistry) {
         if (this.holder != null) return;
 
         Registry<R> registry = getRegistry();
