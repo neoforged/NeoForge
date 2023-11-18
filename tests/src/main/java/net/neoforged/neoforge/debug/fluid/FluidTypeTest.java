@@ -16,8 +16,10 @@ import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -62,6 +64,7 @@ import org.joml.Vector3f;
  * <li>Overrides fluid rendering methods</li>
  * <li>Adds block color and render layer</li>
  * <li>Adds fluid interaction definitions</li>
+ * <li>Adds the ability for the fluid to drip from Pointed Dripstone stalactites into a cauldron below</li>
  * </ul>
  */
 @Mod(FluidTypeTest.ID)
@@ -82,7 +85,7 @@ public class FluidTypeTest {
                 .bucket(TEST_FLUID_BUCKET);
     }
 
-    private static final Holder<FluidType> TEST_FLUID_TYPE = FLUID_TYPES.register("test_fluid", () -> new FluidType(FluidType.Properties.create().supportsBoating(true).canHydrate(true)) {
+    private static final Holder<FluidType> TEST_FLUID_TYPE = FLUID_TYPES.register("test_fluid", () -> new FluidType(FluidType.Properties.create().supportsBoating(true).canHydrate(true).addDripstoneDripping(0.25F, ParticleTypes.SCULK_SOUL, Blocks.POWDER_SNOW_CAULDRON, SoundEvents.END_PORTAL_SPAWN)) {
         @Override
         public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
             consumer.accept(new IClientFluidTypeExtensions() {
