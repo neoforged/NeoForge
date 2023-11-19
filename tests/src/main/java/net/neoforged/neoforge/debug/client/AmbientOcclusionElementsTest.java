@@ -8,7 +8,6 @@ package net.neoforged.neoforge.debug.client;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -51,10 +50,10 @@ public class AmbientOcclusionElementsTest {
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
-            event.accept((ItemLike) AO_BLOCK_SHADE_ITEM);
-            event.accept((ItemLike) AO_BLOCK_NO_SHADE_ITEM);
-            event.accept((ItemLike) NO_AO_BLOCK_SHADE_ITEM);
-            event.accept((ItemLike) NO_AO_BLOCK_NO_SHADE_ITEM);
+            event.accept(AO_BLOCK_SHADE_ITEM);
+            event.accept(AO_BLOCK_NO_SHADE_ITEM);
+            event.accept(NO_AO_BLOCK_SHADE_ITEM);
+            event.accept(NO_AO_BLOCK_NO_SHADE_ITEM);
         }
     }
 }
