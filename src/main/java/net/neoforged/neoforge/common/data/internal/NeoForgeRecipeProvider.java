@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -32,7 +33,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
@@ -44,7 +44,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     }
 
     private void exclude(ItemLike item) {
-        excludes.add(ForgeRegistries.ITEMS.getKey(item.asItem()));
+        excludes.add(BuiltInRegistries.ITEM.getKey(item.asItem()));
     }
 
     private void exclude(String name) {

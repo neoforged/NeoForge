@@ -5,306 +5,115 @@
 
 package net.neoforged.neoforge.registries;
 
-import com.google.common.collect.Lists;
-import java.util.HashSet;
+import com.mojang.serialization.Lifecycle;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
-import net.minecraft.core.Holder;
+import java.util.function.Consumer;
+import net.minecraft.core.DefaultedMappedRegistry;
+import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.registries.callback.AddCallback;
+import net.neoforged.neoforge.registries.callback.BakeCallback;
+import net.neoforged.neoforge.registries.callback.ClearCallback;
+import net.neoforged.neoforge.registries.callback.RegistryCallback;
 import org.jetbrains.annotations.Nullable;
 
 public class RegistryBuilder<T> {
-    private static final int MAX_ID = Integer.MAX_VALUE - 1;
-
-    private ResourceLocation registryName;
-    private ResourceLocation optionalDefaultKey;
-    private int minId = 0;
-    private int maxId = MAX_ID;
-    private List<IForgeRegistry.AddCallback<T>> addCallback = Lists.newArrayList();
-    private List<IForgeRegistry.ClearCallback<T>> clearCallback = Lists.newArrayList();
-    private List<IForgeRegistry.CreateCallback<T>> createCallback = Lists.newArrayList();
-    private List<IForgeRegistry.ValidateCallback<T>> validateCallback = Lists.newArrayList();
-    private List<IForgeRegistry.BakeCallback<T>> bakeCallback = Lists.newArrayList();
-    private boolean saveToDisc = true;
-    private boolean sync = true;
-    private boolean allowOverrides = true;
-    private boolean allowModifications = false;
-    private boolean hasWrapper = false;
-    private IForgeRegistry.MissingFactory<T> missingFactory;
-    private Set<ResourceLocation> legacyNames = new HashSet<>();
+    private final ResourceKey<? extends Registry<T>> registryKey;
+    private final List<RegistryCallback<T>> callbacks = new ArrayList<>();
     @Nullable
-    private Function<T, Holder.Reference<T>> intrusiveHolderCallback = null;
+    private ResourceLocation defaultKey;
+    private int maxId = -1;
+    private boolean sync = false;
+    private boolean registrationCheck = true;
 
-    public RegistryBuilder<T> setName(ResourceLocation name) {
-        this.registryName = name;
+    public RegistryBuilder(ResourceKey<? extends Registry<T>> registryKey) {
+        this.registryKey = registryKey;
+    }
+
+    public RegistryBuilder<T> defaultKey(ResourceLocation key) {
+        this.defaultKey = key;
         return this;
     }
 
-    public RegistryBuilder<T> setIDRange(int min, int max) {
-        this.minId = Math.max(min, 0);
-        this.maxId = Math.min(max, MAX_ID);
+    public RegistryBuilder<T> defaultKey(ResourceKey<T> key) {
+        this.defaultKey = key.location();
         return this;
     }
 
-    public RegistryBuilder<T> setMaxID(int max) {
-        return this.setIDRange(0, max);
-    }
-
-    public RegistryBuilder<T> setDefaultKey(ResourceLocation key) {
-        this.optionalDefaultKey = key;
+    public RegistryBuilder<T> callback(RegistryCallback<T> callback) {
+        this.callbacks.add(callback);
         return this;
     }
 
-    @SuppressWarnings("unchecked")
-    public RegistryBuilder<T> addCallback(Object inst) {
-        if (inst instanceof IForgeRegistry.AddCallback)
-            this.add((IForgeRegistry.AddCallback<T>) inst);
-        if (inst instanceof IForgeRegistry.ClearCallback)
-            this.add((IForgeRegistry.ClearCallback<T>) inst);
-        if (inst instanceof IForgeRegistry.CreateCallback)
-            this.add((IForgeRegistry.CreateCallback<T>) inst);
-        if (inst instanceof IForgeRegistry.ValidateCallback)
-            this.add((IForgeRegistry.ValidateCallback<T>) inst);
-        if (inst instanceof IForgeRegistry.BakeCallback)
-            this.add((IForgeRegistry.BakeCallback<T>) inst);
-        if (inst instanceof IForgeRegistry.MissingFactory)
-            this.set((IForgeRegistry.MissingFactory<T>) inst);
-        return this;
+    public RegistryBuilder<T> onAdd(AddCallback<T> callback) {
+        return this.callback(callback);
     }
 
-    public RegistryBuilder<T> add(IForgeRegistry.AddCallback<T> add) {
-        this.addCallback.add(add);
-        return this;
+    public RegistryBuilder<T> onBake(BakeCallback<T> callback) {
+        return this.callback(callback);
     }
 
-    public RegistryBuilder<T> onAdd(IForgeRegistry.AddCallback<T> add) {
-        return this.add(add);
-    }
-
-    public RegistryBuilder<T> add(IForgeRegistry.ClearCallback<T> clear) {
-        this.clearCallback.add(clear);
-        return this;
-    }
-
-    public RegistryBuilder<T> onClear(IForgeRegistry.ClearCallback<T> clear) {
-        return this.add(clear);
-    }
-
-    public RegistryBuilder<T> add(IForgeRegistry.CreateCallback<T> create) {
-        this.createCallback.add(create);
-        return this;
-    }
-
-    public RegistryBuilder<T> onCreate(IForgeRegistry.CreateCallback<T> create) {
-        return this.add(create);
-    }
-
-    public RegistryBuilder<T> add(IForgeRegistry.ValidateCallback<T> validate) {
-        this.validateCallback.add(validate);
-        return this;
-    }
-
-    public RegistryBuilder<T> onValidate(IForgeRegistry.ValidateCallback<T> validate) {
-        return this.add(validate);
-    }
-
-    public RegistryBuilder<T> add(IForgeRegistry.BakeCallback<T> bake) {
-        this.bakeCallback.add(bake);
-        return this;
-    }
-
-    public RegistryBuilder<T> onBake(IForgeRegistry.BakeCallback<T> bake) {
-        return this.add(bake);
-    }
-
-    public RegistryBuilder<T> set(IForgeRegistry.MissingFactory<T> missing) {
-        this.missingFactory = missing;
-        return this;
-    }
-
-    public RegistryBuilder<T> missing(IForgeRegistry.MissingFactory<T> missing) {
-        return this.set(missing);
-    }
-
-    public RegistryBuilder<T> disableSaving() {
-        this.saveToDisc = false;
-        return this;
+    public RegistryBuilder<T> onClear(ClearCallback<T> callback) {
+        return this.callback(callback);
     }
 
     /**
-     * Prevents the registry from being synced to clients.
+     * Sets the highest numerical id that an entry in this registry
+     * is <i>allowed</i> to use.
+     * Must be greater than or equal to zero.
      *
-     * @return this
+     * @param maxId the highest numerical id
      */
-    public RegistryBuilder<T> disableSync() {
-        this.sync = false;
-        return this;
-    }
-
-    public RegistryBuilder<T> disableOverrides() {
-        this.allowOverrides = false;
-        return this;
-    }
-
-    public RegistryBuilder<T> allowModification() {
-        this.allowModifications = true;
-        return this;
-    }
-
-    RegistryBuilder<T> hasWrapper() {
-        this.hasWrapper = true;
-        return this;
-    }
-
-    public RegistryBuilder<T> legacyName(String name) {
-        return legacyName(new ResourceLocation(name));
-    }
-
-    public RegistryBuilder<T> legacyName(ResourceLocation name) {
-        this.legacyNames.add(name);
-        return this;
-    }
-
-    RegistryBuilder<T> intrusiveHolderCallback(Function<T, Holder.Reference<T>> intrusiveHolderCallback) {
-        this.intrusiveHolderCallback = intrusiveHolderCallback;
+    public RegistryBuilder<T> maxId(int maxId) {
+        if (maxId < 0)
+            throw new IllegalArgumentException("maxId must be greater than or equal to zero");
+        this.maxId = maxId;
         return this;
     }
 
     /**
-     * Enables tags for this registry if not already.
-     * All forge registries with wrappers inherently support tags.
+     * Sets whether this registry should have its numerical IDs synced to clients.
+     * Default: {@code false}.
+     */
+    public RegistryBuilder<T> sync(boolean sync) {
+        this.sync = sync;
+        return this;
+    }
+
+    /**
+     * Disables the safeguard that ensures this registry is registered to {@link NewRegistryEvent} in due time.
+     * <b>DO NOT CALL THIS METHOD UNLESS YOU KNOW WHAT YOU ARE DOING.</b>
+     */
+    public RegistryBuilder<T> disableRegistrationCheck() {
+        this.registrationCheck = false;
+        return this;
+    }
+
+    /**
+     * Creates a new registry from this builder.
+     * Use {@link NewRegistryEvent#create(RegistryBuilder)} or {@link DeferredRegister#makeRegistry(Consumer)}
+     * to not have to call this manually.
+     * All created registries must be registered, see {@link NewRegistryEvent#register(Registry)}.
      *
-     * @return this builder
-     * @see RegistryBuilder#hasWrapper()
+     * @return the created registry
+     * @see NewRegistryEvent#register(Registry)
      */
-    public RegistryBuilder<T> hasTags() {
-        // Tag system heavily relies on Registry<?> objects, so we need a wrapper for this registry to take advantage
-        this.hasWrapper();
-        return this;
-    }
+    public Registry<T> create() {
+        BaseMappedRegistry<T> registry = this.defaultKey != null
+                ? new DefaultedMappedRegistry<>(this.defaultKey.toString(), this.registryKey, Lifecycle.stable(), false)
+                : new MappedRegistry<>(this.registryKey, Lifecycle.stable(), false);
+        this.callbacks.forEach(registry::addCallback);
+        if (this.maxId != -1)
+            registry.setMaxId(this.maxId);
+        registry.setSync(this.sync);
 
-    /**
-     * Modders: Use {@link NewRegistryEvent#create(RegistryBuilder)} instead
-     */
-    IForgeRegistry<T> create() {
-        if (hasWrapper) {
-            if (getDefault() == null)
-                addCallback(new NamespacedWrapper.Factory<T>());
-            else
-                addCallback(new NamespacedDefaultedWrapper.Factory<T>());
+        if (this.registrationCheck) {
+            RegistryManager.trackModdedRegistry(registry.key().location());
         }
-        return RegistryManager.ACTIVE.createRegistry(registryName, this);
-    }
 
-    @Nullable
-    public IForgeRegistry.AddCallback<T> getAdd() {
-        if (addCallback.isEmpty())
-            return null;
-        if (addCallback.size() == 1)
-            return addCallback.get(0);
-
-        return (owner, stage, id, key, obj, old) -> {
-            for (IForgeRegistry.AddCallback<T> cb : this.addCallback)
-                cb.onAdd(owner, stage, id, key, obj, old);
-        };
-    }
-
-    @Nullable
-    public IForgeRegistry.ClearCallback<T> getClear() {
-        if (clearCallback.isEmpty())
-            return null;
-        if (clearCallback.size() == 1)
-            return clearCallback.get(0);
-
-        return (owner, stage) -> {
-            for (IForgeRegistry.ClearCallback<T> cb : this.clearCallback)
-                cb.onClear(owner, stage);
-        };
-    }
-
-    @Nullable
-    public IForgeRegistry.CreateCallback<T> getCreate() {
-        if (createCallback.isEmpty())
-            return null;
-        if (createCallback.size() == 1)
-            return createCallback.get(0);
-
-        return (owner, stage) -> {
-            for (IForgeRegistry.CreateCallback<T> cb : this.createCallback)
-                cb.onCreate(owner, stage);
-        };
-    }
-
-    @Nullable
-    public IForgeRegistry.ValidateCallback<T> getValidate() {
-        if (validateCallback.isEmpty())
-            return null;
-        if (validateCallback.size() == 1)
-            return validateCallback.get(0);
-
-        return (owner, stage, id, key, obj) -> {
-            for (IForgeRegistry.ValidateCallback<T> cb : this.validateCallback)
-                cb.onValidate(owner, stage, id, key, obj);
-        };
-    }
-
-    @Nullable
-    public IForgeRegistry.BakeCallback<T> getBake() {
-        if (bakeCallback.isEmpty())
-            return null;
-        if (bakeCallback.size() == 1)
-            return bakeCallback.get(0);
-
-        return (owner, stage) -> {
-            for (IForgeRegistry.BakeCallback<T> cb : this.bakeCallback)
-                cb.onBake(owner, stage);
-        };
-    }
-
-    @Nullable
-    public ResourceLocation getDefault() {
-        return this.optionalDefaultKey;
-    }
-
-    public int getMinId() {
-        return minId;
-    }
-
-    public int getMaxId() {
-        return maxId;
-    }
-
-    public boolean getAllowOverrides() {
-        return allowOverrides;
-    }
-
-    public boolean getAllowModifications() {
-        return allowModifications;
-    }
-
-    @Nullable
-    public IForgeRegistry.MissingFactory<T> getMissingFactory() {
-        return missingFactory;
-    }
-
-    public boolean getSaveToDisc() {
-        return saveToDisc;
-    }
-
-    public boolean getSync() {
-        return sync;
-    }
-
-    public Set<ResourceLocation> getLegacyNames() {
-        return legacyNames;
-    }
-
-    Function<T, Holder.Reference<T>> getIntrusiveHolderCallback() {
-        return this.intrusiveHolderCallback;
-    }
-
-    boolean getHasWrapper() {
-        return this.hasWrapper;
+        return registry;
     }
 }

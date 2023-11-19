@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.models.model.ModelLocationUtils;
@@ -45,10 +46,12 @@ import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import net.neoforged.neoforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -75,7 +78,7 @@ public class CustomItemDisplayContextTest {
 
         @SubscribeEvent
         public static void registerContext(final RegisterEvent event) {
-            event.register(ForgeRegistries.Keys.DISPLAY_CONTEXTS, helper -> helper.register("hanging", HANGING));
+            event.register(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS, helper -> helper.register("hanging", HANGING));
         }
 
         private static class ItemHangerBlockEntityRenderer
@@ -105,13 +108,13 @@ public class CustomItemDisplayContextTest {
         }
     }
 
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MODID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
 
-    public static final RegistryObject<Block> ITEM_HANGER_BLOCK = BLOCKS.register("item_hanger", () -> new ItemHangerBlock(BlockBehaviour.Properties.of().noCollission().noOcclusion().noLootTable()));
-    public static final RegistryObject<BlockEntityType<ItemHangerBlockEntity>> ITEM_HANGER_BE = BLOCK_ENTITY_TYPES.register("item_hanger", () -> BlockEntityType.Builder.of(ItemHangerBlockEntity::new, ITEM_HANGER_BLOCK.get()).build(null));
-    public static final RegistryObject<Item> ITEM_HANGER_ITEM = ITEMS.register("item_hanger", () -> new ItemHangerItem(ITEM_HANGER_BLOCK.get(), new Item.Properties()));
+    public static final DeferredBlock<Block> ITEM_HANGER_BLOCK = BLOCKS.register("item_hanger", () -> new ItemHangerBlock(BlockBehaviour.Properties.of().noCollission().noOcclusion().noLootTable()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemHangerBlockEntity>> ITEM_HANGER_BE = BLOCK_ENTITY_TYPES.register("item_hanger", () -> BlockEntityType.Builder.of(ItemHangerBlockEntity::new, ITEM_HANGER_BLOCK.get()).build(null));
+    public static final DeferredItem<Item> ITEM_HANGER_ITEM = ITEMS.register("item_hanger", () -> new ItemHangerItem(ITEM_HANGER_BLOCK.get(), new Item.Properties()));
 
     public CustomItemDisplayContextTest() {
         var modBus = FMLJavaModLoadingContext.get().getModEventBus();

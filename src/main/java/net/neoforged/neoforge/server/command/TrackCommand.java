@@ -17,10 +17,10 @@ import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.server.timings.ObjectTimings;
 import net.neoforged.neoforge.server.timings.TimeTracker;
 
@@ -121,7 +121,7 @@ class TrackCommand {
                 double averageTimings = data.getAverageTimings();
                 String tickTime = (averageTimings > 1000 ? TIME_FORMAT.format(averageTimings / 1000) : TIME_FORMAT.format(averageTimings)) + (averageTimings < 1000 ? "\u03bcs" : "ms");
 
-                return Component.translatable("commands.neoforge.tracking.timing_entry", ForgeRegistries.ENTITY_TYPES.getKey(entity.getType()), entity.level().dimension().location().toString(), pos.getX(), pos.getY(), pos.getZ(), tickTime);
+                return Component.translatable("commands.neoforge.tracking.timing_entry", BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()), entity.level().dimension().location().toString(), pos.getX(), pos.getY(), pos.getZ(), tickTime);
             }));
         }
     }
@@ -137,7 +137,7 @@ class TrackCommand {
 
                 double averageTimings = data.getAverageTimings();
                 String tickTime = (averageTimings > 1000 ? TIME_FORMAT.format(averageTimings / 1000) : TIME_FORMAT.format(averageTimings)) + (averageTimings < 1000 ? "\u03bcs" : "ms");
-                return Component.translatable("commands.neoforge.tracking.timing_entry", ForgeRegistries.BLOCK_ENTITY_TYPES.getKey(be.getType()), be.getLevel().dimension().location().toString(), pos.getX(), pos.getY(), pos.getZ(), tickTime);
+                return Component.translatable("commands.neoforge.tracking.timing_entry", BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(be.getType()), be.getLevel().dimension().location().toString(), pos.getX(), pos.getY(), pos.getZ(), tickTime);
             }));
         }
     }

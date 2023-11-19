@@ -7,8 +7,14 @@ package net.neoforged.neoforge.common;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.*;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -22,7 +28,9 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -30,6 +38,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
@@ -61,11 +70,17 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.*;
+import net.neoforged.fml.CrashReportCallables;
+import net.neoforged.fml.IExtensionPoint;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.StartupMessageManager;
+import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.*;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.client.ClientCommandHandler;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.conditions.AndCondition;
@@ -77,7 +92,13 @@ import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.conditions.OrCondition;
 import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
 import net.neoforged.neoforge.common.conditions.TrueCondition;
-import net.neoforged.neoforge.common.crafting.*;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
+import net.neoforged.neoforge.common.crafting.ConditionalRecipe;
+import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
+import net.neoforged.neoforge.common.crafting.IngredientType;
+import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
+import net.neoforged.neoforge.common.crafting.PartialNBTIngredient;
+import net.neoforged.neoforge.common.crafting.StrictNBTIngredient;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.internal.NeoForgeBiomeTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeBlockTagsProvider;
@@ -110,7 +131,12 @@ import net.neoforged.neoforge.internal.versions.neoform.NeoFormVersion;
 import net.neoforged.neoforge.network.DualStackUtils;
 import net.neoforged.neoforge.network.NetworkConstants;
 import net.neoforged.neoforge.network.filters.VanillaPacketSplitter;
-import net.neoforged.neoforge.registries.*;
+import net.neoforged.neoforge.registries.DataPackRegistryEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistriesSetup;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.holdersets.AndHolderSet;
 import net.neoforged.neoforge.registries.holdersets.AnyHolderSet;
 import net.neoforged.neoforge.registries.holdersets.HolderSetType;
@@ -127,26 +153,27 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 @Mod(NeoForgeVersion.MOD_ID)
 public class NeoForgeMod {
     public static final String VERSION_CHECK_CAT = "version_checking";
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker NEOFORGEMOD = MarkerManager.getMarker("NEOFORGE-MOD");
 
-    private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.Keys.ATTRIBUTES, "neoforge");
+    private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, "neoforge");
     private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, "neoforge");
-    private static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, "neoforge");
-    private static final DeferredRegister<Codec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, "neoforge");
-    private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(ForgeRegistries.Keys.HOLDER_SET_TYPES, "neoforge");
+    private static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, "neoforge");
+    private static final DeferredRegister<Codec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, "neoforge");
+    private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.HOLDER_SET_TYPES, "neoforge");
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static final RegistryObject<EnumArgument.Info> ENUM_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("enum", () -> ArgumentTypeInfos.registerByClass(EnumArgument.class, new EnumArgument.Info()));
-    private static final RegistryObject<SingletonArgumentInfo<ModIdArgument>> MODID_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("modid", () -> ArgumentTypeInfos.registerByClass(ModIdArgument.class,
+    private static final DeferredHolder<ArgumentTypeInfo<?, ?>, EnumArgument.Info<?>> ENUM_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("enum", () -> ArgumentTypeInfos.registerByClass(EnumArgument.class, new EnumArgument.Info()));
+    private static final DeferredHolder<ArgumentTypeInfo<?, ?>, SingletonArgumentInfo<ModIdArgument>> MODID_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("modid", () -> ArgumentTypeInfos.registerByClass(ModIdArgument.class,
             SingletonArgumentInfo.contextFree(ModIdArgument::modIdArgument)));
 
-    public static final RegistryObject<Attribute> SWIM_SPEED = ATTRIBUTES.register("swim_speed", () -> new RangedAttribute("neoforge.swim_speed", 1.0D, 0.0D, 1024.0D).setSyncable(true));
-    public static final RegistryObject<Attribute> NAMETAG_DISTANCE = ATTRIBUTES.register("nametag_distance", () -> new RangedAttribute("neoforge.name_tag_distance", 64.0D, 0.0D, 64.0).setSyncable(true));
-    public static final RegistryObject<Attribute> ENTITY_GRAVITY = ATTRIBUTES.register("entity_gravity", () -> new RangedAttribute("neoforge.entity_gravity", 0.08D, -8.0D, 8.0D).setSyncable(true));
+    public static final Holder<Attribute> SWIM_SPEED = ATTRIBUTES.register("swim_speed", () -> new RangedAttribute("neoforge.swim_speed", 1.0D, 0.0D, 1024.0D).setSyncable(true));
+    public static final Holder<Attribute> NAMETAG_DISTANCE = ATTRIBUTES.register("nametag_distance", () -> new RangedAttribute("neoforge.name_tag_distance", 64.0D, 0.0D, 64.0).setSyncable(true));
+    public static final Holder<Attribute> ENTITY_GRAVITY = ATTRIBUTES.register("entity_gravity", () -> new RangedAttribute("neoforge.entity_gravity", 0.08D, -8.0D, 8.0D).setSyncable(true));
 
     /**
      * Reach Distance represents the distance at which a player may interact with the world. The default is 4.5 blocks. Players in creative mode have an additional 0.5 blocks of block reach.
@@ -154,7 +181,7 @@ public class NeoForgeMod {
      * @see IPlayerExtension#getBlockReach()
      * @see IPlayerExtension#canReach(BlockPos, double)
      */
-    public static final RegistryObject<Attribute> BLOCK_REACH = ATTRIBUTES.register("block_reach", () -> new RangedAttribute("neoforge.block_reach", 4.5D, 0.0D, 1024.0D).setSyncable(true));
+    public static final Holder<Attribute> BLOCK_REACH = ATTRIBUTES.register("block_reach", () -> new RangedAttribute("neoforge.block_reach", 4.5D, 0.0D, 1024.0D).setSyncable(true));
 
     /**
      * Attack Range represents the distance at which a player may attack an entity. The default is 3 blocks. Players in creative mode have an additional 3 blocks of entity reach.
@@ -164,24 +191,24 @@ public class NeoForgeMod {
      * @see IPlayerExtension#canReach(Entity, double)
      * @see IPlayerExtension#canReach(Vec3, double)
      */
-    public static final RegistryObject<Attribute> ENTITY_REACH = ATTRIBUTES.register("entity_reach", () -> new RangedAttribute("neoforge.entity_reach", 3.0D, 0.0D, 1024.0D).setSyncable(true));
+    public static final Holder<Attribute> ENTITY_REACH = ATTRIBUTES.register("entity_reach", () -> new RangedAttribute("neoforge.entity_reach", 3.0D, 0.0D, 1024.0D).setSyncable(true));
 
     /**
      * Step Height Addition modifies the amount of blocks an entity may walk up without jumping.
      * 
      * @see IEntityExtension#getStepHeight()
      */
-    public static final RegistryObject<Attribute> STEP_HEIGHT = ATTRIBUTES.register("step_height", () -> new RangedAttribute("neoforge.step_height", 0.0D, -512.0D, 512.0D).setSyncable(true));
+    public static final Holder<Attribute> STEP_HEIGHT = ATTRIBUTES.register("step_height", () -> new RangedAttribute("neoforge.step_height", 0.0D, -512.0D, 512.0D).setSyncable(true));
 
     /**
      * Noop biome modifier. Can be used in a biome modifier json with "type": "neoforge:none".
      */
-    public static final RegistryObject<Codec<NoneBiomeModifier>> NONE_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("none", () -> Codec.unit(NoneBiomeModifier.INSTANCE));
+    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<NoneBiomeModifier>> NONE_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("none", () -> Codec.unit(NoneBiomeModifier.INSTANCE));
 
     /**
      * Stock biome modifier for adding features to biomes.
      */
-    public static final RegistryObject<Codec<AddFeaturesBiomeModifier>> ADD_FEATURES_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_features", () -> RecordCodecBuilder.create(
+    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<AddFeaturesBiomeModifier>> ADD_FEATURES_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_features", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
                             Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddFeaturesBiomeModifier::biomes),
@@ -192,7 +219,7 @@ public class NeoForgeMod {
     /**
      * Stock biome modifier for removing features from biomes.
      */
-    public static final RegistryObject<Codec<RemoveFeaturesBiomeModifier>> REMOVE_FEATURES_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_features", () -> RecordCodecBuilder.create(
+    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<RemoveFeaturesBiomeModifier>> REMOVE_FEATURES_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_features", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
                             Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveFeaturesBiomeModifier::biomes),
@@ -205,7 +232,7 @@ public class NeoForgeMod {
     /**
      * Stock biome modifier for adding mob spawns to biomes.
      */
-    public static final RegistryObject<Codec<AddSpawnsBiomeModifier>> ADD_SPAWNS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_spawns", () -> RecordCodecBuilder.create(
+    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<AddSpawnsBiomeModifier>> ADD_SPAWNS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_spawns", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
                             Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddSpawnsBiomeModifier::biomes),
@@ -220,65 +247,65 @@ public class NeoForgeMod {
     /**
      * Stock biome modifier for removing mob spawns from biomes.
      */
-    public static final RegistryObject<Codec<RemoveSpawnsBiomeModifier>> REMOVE_SPAWNS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_spawns", () -> RecordCodecBuilder.create(
+    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<RemoveSpawnsBiomeModifier>> REMOVE_SPAWNS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_spawns", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
                             Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveSpawnsBiomeModifier::biomes),
-                            RegistryCodecs.homogeneousList(ForgeRegistries.Keys.ENTITY_TYPES).fieldOf("entity_types").forGetter(RemoveSpawnsBiomeModifier::entityTypes))
+                            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(RemoveSpawnsBiomeModifier::entityTypes))
                     .apply(builder, RemoveSpawnsBiomeModifier::new)));
     /**
      * Noop structure modifier. Can be used in a structure modifier json with "type": "neoforge:none".
      */
-    public static final RegistryObject<Codec<NoneStructureModifier>> NONE_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("none", () -> Codec.unit(NoneStructureModifier.INSTANCE));
+    public static final DeferredHolder<Codec<? extends StructureModifier>, Codec<NoneStructureModifier>> NONE_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("none", () -> Codec.unit(NoneStructureModifier.INSTANCE));
 
     /**
      * Stock holder set type that represents any/all values in a registry. Can be used in a holderset object with {@code { "type": "neoforge:any" }}
      */
-    public static final RegistryObject<HolderSetType> ANY_HOLDER_SET = HOLDER_SET_TYPES.register("any", () -> AnyHolderSet::codec);
+    public static final Holder<HolderSetType> ANY_HOLDER_SET = HOLDER_SET_TYPES.register("any", () -> AnyHolderSet::codec);
 
     /**
      * Stock holder set type that represents an intersection of other holdersets. Can be used in a holderset object with {@code { "type": "neoforge:and", "values": [list of holdersets] }}
      */
-    public static final RegistryObject<HolderSetType> AND_HOLDER_SET = HOLDER_SET_TYPES.register("and", () -> AndHolderSet::codec);
+    public static final Holder<HolderSetType> AND_HOLDER_SET = HOLDER_SET_TYPES.register("and", () -> AndHolderSet::codec);
 
     /**
      * Stock holder set type that represents a union of other holdersets. Can be used in a holderset object with {@code { "type": "neoforge:or", "values": [list of holdersets] }}
      */
-    public static final RegistryObject<HolderSetType> OR_HOLDER_SET = HOLDER_SET_TYPES.register("or", () -> OrHolderSet::codec);
+    public static final Holder<HolderSetType> OR_HOLDER_SET = HOLDER_SET_TYPES.register("or", () -> OrHolderSet::codec);
 
     /**
      * <p>Stock holder set type that represents all values in a registry except those in another given set.
      * Can be used in a holderset object with {@code { "type": "neoforge:not", "value": holderset }}</p>
      */
-    public static final RegistryObject<HolderSetType> NOT_HOLDER_SET = HOLDER_SET_TYPES.register("not", () -> NotHolderSet::codec);
+    public static final Holder<HolderSetType> NOT_HOLDER_SET = HOLDER_SET_TYPES.register("not", () -> NotHolderSet::codec);
 
-    private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(ForgeRegistries.Keys.INGREDIENT_TYPES, "neoforge");
+    private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, "neoforge");
 
-    public static final RegistryObject<IngredientType<CompoundIngredient>> COMPOUND_INGREDIENT_TYPE = INGREDIENT_TYPES.register("compound", () -> new IngredientType<>(CompoundIngredient.CODEC, CompoundIngredient.CODEC_NONEMPTY));
-    public static final RegistryObject<IngredientType<StrictNBTIngredient>> STRICT_NBT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("nbt", () -> new IngredientType<>(StrictNBTIngredient.CODEC));
-    public static final RegistryObject<IngredientType<PartialNBTIngredient>> PARTIAL_NBT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("partial_nbt", () -> new IngredientType<>(PartialNBTIngredient.CODEC, PartialNBTIngredient.CODEC_NONEMPTY));
-    public static final RegistryObject<IngredientType<DifferenceIngredient>> DIFFERENCE_INGREDIENT_TYPE = INGREDIENT_TYPES.register("difference", () -> new IngredientType<>(DifferenceIngredient.CODEC, DifferenceIngredient.CODEC_NONEMPTY));
-    public static final RegistryObject<IngredientType<IntersectionIngredient>> INTERSECTION_INGREDIENT_TYPE = INGREDIENT_TYPES.register("intersection", () -> new IngredientType<>(IntersectionIngredient.CODEC, IntersectionIngredient.CODEC_NONEMPTY));
+    public static final DeferredHolder<IngredientType<?>, IngredientType<CompoundIngredient>> COMPOUND_INGREDIENT_TYPE = INGREDIENT_TYPES.register("compound", () -> new IngredientType<>(CompoundIngredient.CODEC, CompoundIngredient.CODEC_NONEMPTY));
+    public static final DeferredHolder<IngredientType<?>, IngredientType<StrictNBTIngredient>> STRICT_NBT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("nbt", () -> new IngredientType<>(StrictNBTIngredient.CODEC));
+    public static final DeferredHolder<IngredientType<?>, IngredientType<PartialNBTIngredient>> PARTIAL_NBT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("partial_nbt", () -> new IngredientType<>(PartialNBTIngredient.CODEC, PartialNBTIngredient.CODEC_NONEMPTY));
+    public static final DeferredHolder<IngredientType<?>, IngredientType<DifferenceIngredient>> DIFFERENCE_INGREDIENT_TYPE = INGREDIENT_TYPES.register("difference", () -> new IngredientType<>(DifferenceIngredient.CODEC, DifferenceIngredient.CODEC_NONEMPTY));
+    public static final DeferredHolder<IngredientType<?>, IngredientType<IntersectionIngredient>> INTERSECTION_INGREDIENT_TYPE = INGREDIENT_TYPES.register("intersection", () -> new IngredientType<>(IntersectionIngredient.CODEC, IntersectionIngredient.CODEC_NONEMPTY));
 
     private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, "neoforge");
-    public static final RegistryObject<RecipeSerializer<?>> CONDITIONAL_RECIPE = RECIPE_SERIALIZERS.register("conditional", ConditionalRecipe::new);
+    public static final DeferredHolder<RecipeSerializer<?>, ConditionalRecipe<?>> CONDITIONAL_RECIPE = RECIPE_SERIALIZERS.register("conditional", ConditionalRecipe::new);
 
-    private static final DeferredRegister<Codec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(ForgeRegistries.Keys.CONDITION_CODECS, "neoforge");
-    public static final RegistryObject<Codec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
-    public static final RegistryObject<Codec<FalseCondition>> FALSE_CONDITION = CONDITION_CODECS.register("false", () -> FalseCondition.CODEC);
-    public static final RegistryObject<Codec<ItemExistsCondition>> ITEM_EXISTS_CONDITION = CONDITION_CODECS.register("item_exists", () -> ItemExistsCondition.CODEC);
-    public static final RegistryObject<Codec<ModLoadedCondition>> MOD_LOADED_CONDITION = CONDITION_CODECS.register("mod_loaded", () -> ModLoadedCondition.CODEC);
-    public static final RegistryObject<Codec<NotCondition>> NOT_CONDITION = CONDITION_CODECS.register("not", () -> NotCondition.CODEC);
-    public static final RegistryObject<Codec<OrCondition>> OR_CONDITION = CONDITION_CODECS.register("or", () -> OrCondition.CODEC);
-    public static final RegistryObject<Codec<TagEmptyCondition>> TAG_EMPTY_CONDITION = CONDITION_CODECS.register("tag_empty", () -> TagEmptyCondition.CODEC);
-    public static final RegistryObject<Codec<TrueCondition>> TRUE_CONDITION = CONDITION_CODECS.register("true", () -> TrueCondition.CODEC);
-    private static final DeferredRegister<IngredientType<?>> VANILLA_INGREDIENT_TYPES = DeferredRegister.create(ForgeRegistries.Keys.INGREDIENT_TYPES, "minecraft");
+    private static final DeferredRegister<Codec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, "neoforge");
+    public static final DeferredHolder<Codec<? extends ICondition>, Codec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
+    public static final DeferredHolder<Codec<? extends ICondition>, Codec<FalseCondition>> FALSE_CONDITION = CONDITION_CODECS.register("false", () -> FalseCondition.CODEC);
+    public static final DeferredHolder<Codec<? extends ICondition>, Codec<ItemExistsCondition>> ITEM_EXISTS_CONDITION = CONDITION_CODECS.register("item_exists", () -> ItemExistsCondition.CODEC);
+    public static final DeferredHolder<Codec<? extends ICondition>, Codec<ModLoadedCondition>> MOD_LOADED_CONDITION = CONDITION_CODECS.register("mod_loaded", () -> ModLoadedCondition.CODEC);
+    public static final DeferredHolder<Codec<? extends ICondition>, Codec<NotCondition>> NOT_CONDITION = CONDITION_CODECS.register("not", () -> NotCondition.CODEC);
+    public static final DeferredHolder<Codec<? extends ICondition>, Codec<OrCondition>> OR_CONDITION = CONDITION_CODECS.register("or", () -> OrCondition.CODEC);
+    public static final DeferredHolder<Codec<? extends ICondition>, Codec<TagEmptyCondition>> TAG_EMPTY_CONDITION = CONDITION_CODECS.register("tag_empty", () -> TagEmptyCondition.CODEC);
+    public static final DeferredHolder<Codec<? extends ICondition>, Codec<TrueCondition>> TRUE_CONDITION = CONDITION_CODECS.register("true", () -> TrueCondition.CODEC);
+    private static final DeferredRegister<IngredientType<?>> VANILLA_INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, "minecraft");
 
-    public static final RegistryObject<IngredientType<Ingredient>> VANILLA_INGREDIENT_TYPE = VANILLA_INGREDIENT_TYPES.register("item", () -> new IngredientType<>(Ingredient.VANILLA_CODEC, Ingredient.VANILLA_CODEC_NONEMPTY));
+    public static final DeferredHolder<IngredientType<?>, IngredientType<Ingredient>> VANILLA_INGREDIENT_TYPE = VANILLA_INGREDIENT_TYPES.register("item", () -> new IngredientType<>(Ingredient.VANILLA_CODEC, Ingredient.VANILLA_CODEC_NONEMPTY));
 
-    private static final DeferredRegister<FluidType> VANILLA_FLUID_TYPES = DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, "minecraft");
+    private static final DeferredRegister<FluidType> VANILLA_FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, "minecraft");
 
-    public static final RegistryObject<FluidType> EMPTY_TYPE = VANILLA_FLUID_TYPES.register("empty", () -> new FluidType(FluidType.Properties.create()
+    public static final Holder<FluidType> EMPTY_TYPE = VANILLA_FLUID_TYPES.register("empty", () -> new FluidType(FluidType.Properties.create()
             .descriptionId("block.minecraft.air")
             .motionScale(1D)
             .canPushEntity(false)
@@ -295,7 +322,7 @@ public class NeoForgeMod {
             if (!entity.isNoGravity()) entity.setDeltaMovement(entity.getDeltaMovement().add(0.0D, -0.04D, 0.0D));
         }
     });
-    public static final RegistryObject<FluidType> WATER_TYPE = VANILLA_FLUID_TYPES.register("water", () -> new FluidType(FluidType.Properties.create()
+    public static final Holder<FluidType> WATER_TYPE = VANILLA_FLUID_TYPES.register("water", () -> new FluidType(FluidType.Properties.create()
             .descriptionId("block.minecraft.water")
             .fallDistanceModifier(0F)
             .canExtinguish(true)
@@ -338,7 +365,6 @@ public class NeoForgeMod {
                     return WATER_FLOW;
                 }
 
-                @Nullable
                 @Override
                 public ResourceLocation getOverlayTexture() {
                     return WATER_OVERLAY;
@@ -361,7 +387,7 @@ public class NeoForgeMod {
             });
         }
     });
-    public static final RegistryObject<FluidType> LAVA_TYPE = VANILLA_FLUID_TYPES.register("lava", () -> new FluidType(FluidType.Properties.create()
+    public static final Holder<FluidType> LAVA_TYPE = VANILLA_FLUID_TYPES.register("lava", () -> new FluidType(FluidType.Properties.create()
             .descriptionId("block.minecraft.lava")
             .canSwim(false)
             .canDrown(false)
@@ -414,11 +440,11 @@ public class NeoForgeMod {
     });
 
     private static boolean enableMilkFluid = false;
-    public static final RegistryObject<SoundEvent> BUCKET_EMPTY_MILK = RegistryObject.create(new ResourceLocation("item.bucket.empty_milk"), ForgeRegistries.SOUND_EVENTS);
-    public static final RegistryObject<SoundEvent> BUCKET_FILL_MILK = RegistryObject.create(new ResourceLocation("item.bucket.fill_milk"), ForgeRegistries.SOUND_EVENTS);
-    public static final RegistryObject<FluidType> MILK_TYPE = RegistryObject.createOptional(new ResourceLocation("milk"), ForgeRegistries.Keys.FLUID_TYPES.location(), "minecraft");
-    public static final RegistryObject<Fluid> MILK = RegistryObject.create(new ResourceLocation("milk"), ForgeRegistries.FLUIDS);
-    public static final RegistryObject<Fluid> FLOWING_MILK = RegistryObject.create(new ResourceLocation("flowing_milk"), ForgeRegistries.FLUIDS);
+    public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_EMPTY_MILK = DeferredHolder.create(Registries.SOUND_EVENT, new ResourceLocation("item.bucket.empty_milk"));
+    public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_FILL_MILK = DeferredHolder.create(Registries.SOUND_EVENT, new ResourceLocation("item.bucket.fill_milk"));
+    public static final DeferredHolder<FluidType, FluidType> MILK_TYPE = DeferredHolder.create(NeoForgeRegistries.Keys.FLUID_TYPES, new ResourceLocation("milk"));
+    public static final DeferredHolder<Fluid, Fluid> MILK = DeferredHolder.create(Registries.FLUID, new ResourceLocation("milk"));
+    public static final DeferredHolder<Fluid, Fluid> FLOWING_MILK = DeferredHolder.create(Registries.FLUID, new ResourceLocation("flowing_milk"));
 
     /**
      * Run this method during mod constructor to enable milk and add it to the Minecraft milk bucket
@@ -443,14 +469,14 @@ public class NeoForgeMod {
 
         // Forge-provided datapack registries
         modEventBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
-            event.dataPackRegistry(ForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifier.DIRECT_CODEC);
-            event.dataPackRegistry(ForgeRegistries.Keys.STRUCTURE_MODIFIERS, StructureModifier.DIRECT_CODEC);
+            event.dataPackRegistry(NeoForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifier.DIRECT_CODEC);
+            event.dataPackRegistry(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, StructureModifier.DIRECT_CODEC);
         });
         modEventBus.addListener(this::preInit);
         modEventBus.addListener(this::gatherData);
         modEventBus.addListener(this::loadComplete);
         modEventBus.addListener(this::registerFluids);
-        modEventBus.addListener(this::registerVanillaDisplayContexts);
+        modEventBus.addListener(EventPriority.HIGHEST, this::registerVanillaDisplayContexts);
         modEventBus.addListener(this::registerLootData);
         ATTRIBUTES.register(modEventBus);
         COMMAND_ARGUMENT_TYPES.register(modEventBus);
@@ -463,12 +489,11 @@ public class NeoForgeMod {
         CONDITION_CODECS.register(modEventBus);
         RECIPE_SERIALIZERS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
-        NeoForge.EVENT_BUS.addListener(this::missingSoundMapping);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.clientSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, NeoForgeConfig.serverSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, NeoForgeConfig.commonSpec);
         modEventBus.register(NeoForgeConfig.class);
-        ForgeDeferredRegistriesSetup.setup(modEventBus);
+        NeoForgeRegistriesSetup.setup(modEventBus);
         // Forge does not display problems when the remote is not matching.
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> "ANY", (remote, isServer) -> true));
         StartupMessageManager.addModMessage("NeoForge version " + NeoForgeVersion.getVersion());
@@ -481,8 +506,6 @@ public class NeoForgeMod {
         TierSortingRegistry.init();
         if (dist == Dist.CLIENT) ClientCommandHandler.init();
         DualStackUtils.initialise();
-
-        ForgeRegistries.ITEMS.tags().addOptionalTagDefaults(Tags.Items.ENCHANTING_FUELS, Set.of(ForgeRegistries.ITEMS.getDelegateOrThrow(Items.LAPIS_LAZULI)));
     }
 
     public void preInit(FMLCommonSetupEvent evt) {
@@ -521,38 +544,20 @@ public class NeoForgeMod {
         gen.addProvider(event.includeClient(), new VanillaSoundDefinitionsProvider(packOutput, existingFileHelper));
     }
 
-    public void missingSoundMapping(MissingMappingsEvent event) {
-        if (event.getKey() != ForgeRegistries.Keys.SOUND_EVENTS)
-            return;
-
-        //Removed in 1.15, see https://minecraft.gamepedia.com/Parrot#History
-        List<String> removedSounds = Arrays.asList("entity.parrot.imitate.panda", "entity.parrot.imitate.zombie_pigman", "entity.parrot.imitate.enderman", "entity.parrot.imitate.polar_bear", "entity.parrot.imitate.wolf");
-        for (MissingMappingsEvent.Mapping<SoundEvent> mapping : event.getAllMappings(ForgeRegistries.Keys.SOUND_EVENTS)) {
-            ResourceLocation regName = mapping.getKey();
-            if (regName != null && regName.getNamespace().equals("minecraft")) {
-                String path = regName.getPath();
-                if (removedSounds.stream().anyMatch(s -> s.equals(path))) {
-                    LOGGER.info("Ignoring removed minecraft sound {}", regName);
-                    mapping.ignore();
-                }
-            }
-        }
-    }
-
     // done in an event instead of deferred to only enable if a mod requests it
     public void registerFluids(RegisterEvent event) {
         if (enableMilkFluid) {
             // register milk fill, empty sounds (delegates to water fill, empty sounds)
-            event.register(ForgeRegistries.Keys.SOUND_EVENTS, helper -> {
+            event.register(Registries.SOUND_EVENT, helper -> {
                 helper.register(BUCKET_EMPTY_MILK.getId(), SoundEvent.createVariableRangeEvent(BUCKET_EMPTY_MILK.getId()));
                 helper.register(BUCKET_FILL_MILK.getId(), SoundEvent.createVariableRangeEvent(BUCKET_FILL_MILK.getId()));
             });
 
             // register fluid type
-            event.register(ForgeRegistries.Keys.FLUID_TYPES, helper -> helper.register(MILK_TYPE.getId(), new FluidType(
+            event.register(NeoForgeRegistries.Keys.FLUID_TYPES, helper -> helper.register(MILK_TYPE.unwrapKey().orElseThrow(), new FluidType(
                     FluidType.Properties.create().density(1024).viscosity(1024)
-                            .sound(SoundActions.BUCKET_FILL, BUCKET_FILL_MILK.get())
-                            .sound(SoundActions.BUCKET_EMPTY, BUCKET_EMPTY_MILK.get())) {
+                            .sound(SoundActions.BUCKET_FILL, BUCKET_FILL_MILK.value())
+                            .sound(SoundActions.BUCKET_EMPTY, BUCKET_EMPTY_MILK.value())) {
                 @Override
                 public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
                     consumer.accept(new IClientFluidTypeExtensions() {
@@ -573,9 +578,9 @@ public class NeoForgeMod {
             }));
 
             // register fluids
-            event.register(ForgeRegistries.Keys.FLUIDS, helper -> {
+            event.register(Registries.FLUID, helper -> {
                 // set up properties
-                BaseFlowingFluid.Properties properties = new BaseFlowingFluid.Properties(MILK_TYPE, MILK, FLOWING_MILK).bucket(() -> Items.MILK_BUCKET);
+                BaseFlowingFluid.Properties properties = new BaseFlowingFluid.Properties(MILK_TYPE::value, MILK::value, FLOWING_MILK::value).bucket(() -> Items.MILK_BUCKET);
 
                 helper.register(MILK.getId(), new BaseFlowingFluid.Source(properties));
                 helper.register(FLOWING_MILK.getId(), new BaseFlowingFluid.Flowing(properties));
@@ -583,16 +588,16 @@ public class NeoForgeMod {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void registerVanillaDisplayContexts(RegisterEvent event) {
-        if (event.getRegistryKey().equals(ForgeRegistries.Keys.DISPLAY_CONTEXTS)) {
-            IForgeRegistryInternal<ItemDisplayContext> forgeRegistry = (IForgeRegistryInternal<ItemDisplayContext>) event.<ItemDisplayContext>getForgeRegistry();
-            if (forgeRegistry == null)
-                throw new IllegalStateException("Item display context was not a NeoForge registry, wtf???");
-
-            Arrays.stream(ItemDisplayContext.values())
-                    .filter(Predicate.not(ItemDisplayContext::isModded))
-                    .forEach(ctx -> forgeRegistry.register(ctx.getId(), new ResourceLocation("minecraft", ctx.getSerializedName()), ctx));
+        if (!event.getRegistryKey().equals(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS)) {
+            return;
         }
+        MappedRegistry<ItemDisplayContext> forgeRegistry = (MappedRegistry<ItemDisplayContext>) event.getRegistry();
+
+        Arrays.stream(ItemDisplayContext.values())
+                .filter(Predicate.not(ItemDisplayContext::isModded))
+                .forEach(ctx -> forgeRegistry.registerMapping(ctx.getId(), ResourceKey.create(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS, new ResourceLocation("minecraft", ctx.getSerializedName())), ctx, Lifecycle.stable()));
     }
 
     public void registerLootData(RegisterEvent event) {

@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
@@ -39,12 +38,6 @@ public class DeferredSpawnEggItem extends SpawnEggItem {
         this.typeSupplier = type;
 
         MOD_EGGS.add(this);
-    }
-
-    @Override
-    public EntityType<?> getType(@Nullable CompoundTag tag) {
-        EntityType<?> type = super.getType(tag);
-        return type != null ? type : typeSupplier.get();
     }
 
     @Nullable

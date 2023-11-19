@@ -7,16 +7,23 @@ package net.neoforged.neoforge.debug.block;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.*;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.*;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -26,10 +33,15 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -53,9 +65,10 @@ import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 import net.neoforged.neoforge.common.util.ConcatenatedListView;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,15 +77,13 @@ public class FullPotsAccessorDemo {
     public static final String MOD_ID = "full_pots_accessor_demo";
     private static final boolean ENABLED = true;
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
-    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MOD_ID);
+    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
 
-    private static final RegistryObject<Block> DIORITE_POT = BLOCKS.register("diorite_pot", DioriteFlowerPotBlock::new);
-    private static final RegistryObject<Item> DIORITE_POT_ITEM = ITEMS.register(
-            "diorite_pot",
-            () -> new BlockItem(DIORITE_POT.get(), new Item.Properties()));
-    private static final RegistryObject<BlockEntityType<DioriteFlowerPotBlockEntity>> DIORITE_POT_BLOCK_ENTITY = BLOCK_ENTITIES.register(
+    private static final DeferredBlock<Block> DIORITE_POT = BLOCKS.register("diorite_pot", DioriteFlowerPotBlock::new);
+    private static final DeferredItem<BlockItem> DIORITE_POT_ITEM = ITEMS.registerBlockItem(DIORITE_POT);
+    private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DioriteFlowerPotBlockEntity>> DIORITE_POT_BLOCK_ENTITY = BLOCK_ENTITIES.register(
             "diorite_pot",
             () -> BlockEntityType.Builder.of(DioriteFlowerPotBlockEntity::new, DIORITE_POT.get()).build(null));
 
@@ -103,7 +114,7 @@ public class FullPotsAccessorDemo {
         public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
             if (level.getBlockEntity(pos) instanceof DioriteFlowerPotBlockEntity be) {
                 ItemStack stack = player.getItemInHand(hand);
-                boolean isFlower = stack.getItem() instanceof BlockItem item && ((FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView().containsKey(ForgeRegistries.ITEMS.getKey(item));
+                boolean isFlower = stack.getItem() instanceof BlockItem item && ((FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView().containsKey(BuiltInRegistries.ITEM.getKey(item));
                 boolean hasFlower = be.plant != Blocks.AIR;
 
                 if (isFlower != hasFlower) {
@@ -189,7 +200,7 @@ public class FullPotsAccessorDemo {
 
         @Override
         public ClientboundBlockEntityDataPacket getUpdatePacket() {
-            return ClientboundBlockEntityDataPacket.create(this, be -> be.getUpdateTag());
+            return ClientboundBlockEntityDataPacket.create(this, BlockEntity::getUpdateTag);
         }
 
         @Override
@@ -202,13 +213,13 @@ public class FullPotsAccessorDemo {
         @Override
         public void load(CompoundTag tag) {
             super.load(tag);
-            plant = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(tag.getString("plant")));
+            plant = BuiltInRegistries.BLOCK.get(new ResourceLocation(tag.getString("plant")));
         }
 
         @Override
         protected void saveAdditional(CompoundTag tag) {
             //noinspection ConstantConditions
-            tag.putString("plant", ForgeRegistries.BLOCKS.getKey(plant).toString());
+            tag.putString("plant", BuiltInRegistries.BLOCK.getKey(plant).toString());
             super.saveAdditional(tag);
         }
     }
@@ -264,7 +275,7 @@ public class FullPotsAccessorDemo {
             }
 
             private List<BakedQuad> getPlantQuads(Block plant, @Nullable Direction face, RandomSource rand, @Nullable RenderType renderType) {
-                BlockState potState = ((FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView().getOrDefault(ForgeRegistries.BLOCKS.getKey(plant), ForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.AIR)).get().defaultBlockState();
+                BlockState potState = ((FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView().getOrDefault(BuiltInRegistries.BLOCK.getKey(plant), () -> Blocks.AIR).get().defaultBlockState();
                 BakedModel potModel = Minecraft.getInstance().getBlockRenderer().getBlockModel(potState);
 
                 return potModel.getQuads(potState, face, rand, ModelData.EMPTY, renderType)

@@ -19,7 +19,7 @@
        this.sound = p_239615_;
        this.lengthInTicks = p_239617_ * 20;
        BY_NAME.put(this.sound, this);
-+      this.soundSupplier = net.neoforged.neoforge.registries.ForgeRegistries.SOUND_EVENTS.getDelegateOrThrow(this.sound);
++      this.soundSupplier = () -> sound;
 +   }
 +
 +   /**
@@ -28,7 +28,7 @@
 +    *
 +    * @param comparatorValue The value this music disc should output on the comparator. Must be between 0 and 15.
 +    * @param soundSupplier A supplier that provides the sound that should be played. Use a
-+    *                      {@link net.neoforged.neoforge.registries.RegistryObject<SoundEvent>} or a
++    *                      {@link net.neoforged.neoforge.registries.DeferredHolder} or a
 +    *                      {@link net.minecraft.core.Holder<SoundEvent>} for this parameter.
 +    * @param builder A set of {@link Item.Properties} that describe this item.
 +    * @param lengthInTicks The length of the music disc track in ticks.

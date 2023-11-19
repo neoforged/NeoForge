@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.advancements.critereon.NbtPredicate;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -18,7 +19,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 
 /** Ingredient that matches the given items, performing a partial NBT match. Use {@link StrictNBTIngredient} if you want exact match on NBT */
 public class PartialNBTIngredient extends Ingredient {
@@ -26,14 +26,14 @@ public class PartialNBTIngredient extends Ingredient {
     public static final Codec<PartialNBTIngredient> CODEC = RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            NeoForgeExtraCodecs.singularOrPluralCodec(ForgeRegistries.ITEMS.getCodec(), "item").forGetter(PartialNBTIngredient::getContainedItems),
+                            NeoForgeExtraCodecs.singularOrPluralCodec(BuiltInRegistries.ITEM.byNameCodec(), "item").forGetter(PartialNBTIngredient::getContainedItems),
                             CompoundTag.CODEC.fieldOf("tag").forGetter(PartialNBTIngredient::getTag))
                     .apply(builder, PartialNBTIngredient::new));
 
     public static final Codec<PartialNBTIngredient> CODEC_NONEMPTY = RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            NeoForgeExtraCodecs.singularOrPluralCodecNotEmpty(ForgeRegistries.ITEMS.getCodec(), "item").forGetter(PartialNBTIngredient::getContainedItems),
+                            NeoForgeExtraCodecs.singularOrPluralCodecNotEmpty(BuiltInRegistries.ITEM.byNameCodec(), "item").forGetter(PartialNBTIngredient::getContainedItems),
                             CompoundTag.CODEC.fieldOf("tag").forGetter(PartialNBTIngredient::getTag))
                     .apply(builder, PartialNBTIngredient::new));
 
@@ -43,7 +43,7 @@ public class PartialNBTIngredient extends Ingredient {
             // copy NBT to prevent the stack from modifying the original, as capabilities or vanilla item durability will modify the tag
             stack.setTag(tag.copy());
             return new Ingredient.ItemValue(stack, PartialNBTIngredient::compareStacksUsingPredicate);
-        }), NeoForgeMod.PARTIAL_NBT_INGREDIENT_TYPE::get);
+        }), NeoForgeMod.PARTIAL_NBT_INGREDIENT_TYPE);
 
         if (items.isEmpty())
             throw new IllegalStateException("At least one item needs to be provided for a partial nbt matching ingredient.");

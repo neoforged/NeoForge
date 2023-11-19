@@ -7,6 +7,8 @@ package net.neoforged.neoforge.debug.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -22,8 +24,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.PlantType;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.ObjectHolder;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod(CustomPlantTypeTest.MODID)
@@ -33,14 +34,12 @@ public class CustomPlantTypeTest {
     private static final String CUSTOM_SOIL_BLOCK = "test_custom_block";
     private static final String CUSTOM_PLANT_BLOCK = "test_custom_plant";
 
-    @ObjectHolder(registryName = "block", value = CUSTOM_SOIL_BLOCK)
-    public static Block CUSTOM_SOIL;
-    @ObjectHolder(registryName = "block", value = CUSTOM_PLANT_BLOCK)
-    public static Block CUSTOM_PLANT;
+    public static final DeferredBlock<Block> CUSTOM_SOIL = DeferredBlock.createBlock(new ResourceLocation(MODID, CUSTOM_SOIL_BLOCK));
+    public static final DeferredBlock<Block> CUSTOM_PLANT = DeferredBlock.createBlock(new ResourceLocation(MODID, CUSTOM_PLANT_BLOCK));
 
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent event) {
-        event.register(ForgeRegistries.Keys.BLOCKS, helper -> {
+        event.register(Registries.BLOCK, helper -> {
             helper.register(CUSTOM_SOIL_BLOCK, new CustomBlock());
             helper.register(CUSTOM_PLANT_BLOCK, new CustomPlantBlock());
         });
@@ -48,9 +47,9 @@ public class CustomPlantTypeTest {
 
     @SubscribeEvent
     public static void registerItems(RegisterEvent event) {
-        event.register(ForgeRegistries.Keys.ITEMS, helper -> {
-            helper.register(CUSTOM_SOIL_BLOCK, new BlockItem(CUSTOM_SOIL, new Item.Properties()));
-            helper.register(CUSTOM_PLANT_BLOCK, new BlockItem(CUSTOM_PLANT, new Item.Properties()));
+        event.register(Registries.ITEM, helper -> {
+            helper.register(CUSTOM_SOIL_BLOCK, new BlockItem(CUSTOM_SOIL.get(), new Item.Properties()));
+            helper.register(CUSTOM_PLANT_BLOCK, new BlockItem(CUSTOM_PLANT.get(), new Item.Properties()));
         });
     }
 
@@ -95,7 +94,7 @@ public class CustomPlantTypeTest {
         @Override
         public boolean mayPlaceOn(BlockState state, BlockGetter worldIn, BlockPos pos) {
             Block block = state.getBlock();
-            return block == CUSTOM_SOIL;
+            return block == CUSTOM_SOIL.get();
         }
     }
 }

@@ -38,9 +38,9 @@ import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(TagBasedToolTypesTest.MODID)
 public class TagBasedToolTypesTest {
@@ -54,13 +54,13 @@ public class TagBasedToolTypesTest {
             new ResourceLocation(MODID, "my_tier"),
             List.of(Tiers.DIAMOND), List.of());
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-    private static final RegistryObject<Block> STONE = BLOCKS.register("test_stone", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).requiresCorrectToolForDrops().strength(1.5F, 6.0F)));
+    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
+    private static final DeferredBlock<Block> STONE = BLOCKS.registerBlock("test_stone", BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).requiresCorrectToolForDrops().strength(1.5F, 6.0F));
 
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     @SuppressWarnings("unused")
-    private static final RegistryObject<Item> ORE_ITEM = ITEMS.register(STONE.getId().getPath(), () -> new BlockItem(STONE.get(), (new Item.Properties())));
-    private static final RegistryObject<Item> TOOL = ITEMS.register("test_tool", () -> {
+    private static final DeferredItem<BlockItem> ORE_ITEM = ITEMS.registerBlockItem(STONE);
+    private static final DeferredItem<Item> TOOL = ITEMS.register("test_tool", () -> {
         return new DiggerItem(1, 1, MY_TIER, MINEABLE_TAG, new Item.Properties()) {
             @Override
             public float getDestroySpeed(ItemStack stack, BlockState state) {

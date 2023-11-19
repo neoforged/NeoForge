@@ -30,16 +30,7 @@
     @Nullable
     public BlockPlaceContext updatePlacementContext(BlockPlaceContext p_40609_) {
        return p_40609_;
-@@ -198,11 +_,19 @@
-    }
- 
-    public Block getBlock() {
-+      return this.getBlockRaw() == null ? null : net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getDelegateOrThrow(this.getBlockRaw()).get();
-+   }
-+
-+   private Block getBlockRaw() {
-       return this.block;
-    }
+@@ -203,6 +_,10 @@
  
     public void registerBlocks(Map<Block, Item> p_40607_, Item p_40608_) {
        p_40607_.put(this.getBlock(), p_40608_);

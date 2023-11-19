@@ -8,34 +8,31 @@ package net.neoforged.neoforge.registries;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * This event fires for each forge and vanilla registry when all registries are ready to have modded objects registered.
- * <p>
- * Fired on the {@link IModBusEvent mod bus}.
+ * Fired for each registry when it is ready to have modded objects registered.
+ * This event is fired for all builtin registries from vanilla (see {@link BuiltInRegistries}) and mods.
+ *
+ * <p>This event is fired on the {@linkplain net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+ * on both {@linkplain net.neoforged.fml.LogicalSide logical sides}.</p>
  *
  * @see #register(ResourceKey, ResourceLocation, Supplier)
  * @see #register(ResourceKey, Consumer)
  */
 public class RegisterEvent extends Event implements IModBusEvent {
-    @NotNull
     private final ResourceKey<? extends Registry<?>> registryKey;
-    @Nullable
-    final ForgeRegistry<?> forgeRegistry;
-    @Nullable
-    private final Registry<?> vanillaRegistry;
+    private final Registry<?> registry;
 
-    RegisterEvent(@NotNull ResourceKey<? extends Registry<?>> registryKey, @Nullable ForgeRegistry<?> forgeRegistry, @Nullable Registry<?> vanillaRegistry) {
+    RegisterEvent(ResourceKey<? extends Registry<?>> registryKey, Registry<?> registry) {
         this.registryKey = registryKey;
-        this.forgeRegistry = forgeRegistry;
-        this.vanillaRegistry = vanillaRegistry;
+        this.registry = registry;
     }
 
     /**
@@ -50,10 +47,7 @@ public class RegisterEvent extends Event implements IModBusEvent {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> void register(ResourceKey<? extends Registry<T>> registryKey, ResourceLocation name, Supplier<T> valueSupplier) {
         if (this.registryKey.equals(registryKey)) {
-            if (this.forgeRegistry != null)
-                ((IForgeRegistry) this.forgeRegistry).register(name, valueSupplier.get());
-            else if (this.vanillaRegistry != null)
-                Registry.register((Registry) this.vanillaRegistry, name, valueSupplier.get());
+            Registry.register((Registry) this.registry, name, valueSupplier.get());
         }
     }
 
@@ -64,41 +58,36 @@ public class RegisterEvent extends Event implements IModBusEvent {
      * @param <T>         the type of the registry
      * @see #register(ResourceKey, ResourceLocation, Supplier) a register variant targeted towards registering one or two objects
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> void register(ResourceKey<? extends Registry<T>> registryKey, Consumer<RegisterHelper<T>> consumer) {
         if (this.registryKey.equals(registryKey)) {
-            consumer.accept((name, value) -> register(registryKey, name, () -> value));
+            consumer.accept((name, value) -> Registry.register((Registry) this.registry, name, value));
         }
     }
 
     /**
      * @return The registry key linked to this event
      */
-    @NotNull
     public ResourceKey<? extends Registry<?>> getRegistryKey() {
-        return registryKey;
+        return this.registryKey;
     }
 
     /**
-     * @return The forge registry for the given registry key, or {@code null} if the registry is not a forge registry
+     * @return The registry linked to this event
      */
-    @Nullable
-    @SuppressWarnings("unchecked")
-    public <T> IForgeRegistry<T> getForgeRegistry() {
-        return (IForgeRegistry<T>) forgeRegistry;
+    public Registry<?> getRegistry() {
+        return this.registry;
     }
 
     /**
-     * @return The vanilla registry for the given registry key, or {@code null} if the registry is not a vanilla registry
+     * @param key the registry key to compare again {@link #getRegistryKey()}
+     * @return The registry typed to the given registry key if it matches {@link #getRegistryKey()},
+     *         or {@code null} if it does not match.
      */
-    @Nullable
     @SuppressWarnings("unchecked")
-    public <T> Registry<T> getVanillaRegistry() {
-        return (Registry<T>) vanillaRegistry;
-    }
-
-    @Override
-    public String toString() {
-        return "RegisterEvent";
+    @Nullable
+    public <T> Registry<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
+        return key == this.registryKey ? (Registry<T>) this.registry : null;
     }
 
     @FunctionalInterface

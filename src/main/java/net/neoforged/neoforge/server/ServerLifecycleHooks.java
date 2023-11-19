@@ -54,9 +54,9 @@ import net.neoforged.neoforge.network.ConnectionType;
 import net.neoforged.neoforge.network.NetworkConstants;
 import net.neoforged.neoforge.network.NetworkHooks;
 import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.ForgeRegistries.Keys;
-import net.neoforged.neoforge.registries.GameData;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries.Keys;
+import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.resource.PathPackResources;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import net.neoforged.neoforgespi.language.IModInfo;
@@ -121,7 +121,7 @@ public class ServerLifecycleHooks {
     }
 
     public static void handleServerStopped(final MinecraftServer server) {
-        if (!server.isDedicatedServer()) GameData.revertToFrozen();
+        if (!server.isDedicatedServer()) RegistryManager.revertToFrozen();
         NeoForge.EVENT_BUS.post(new ServerStoppedEvent(server));
         currentServer = null;
         LogicalSidedProvider.setServer(null);
@@ -211,7 +211,7 @@ public class ServerLifecycleHooks {
         final RegistryAccess registries = server.registryAccess();
 
         // The order of holders() is the order modifiers were loaded in.
-        final List<BiomeModifier> biomeModifiers = registries.registryOrThrow(ForgeRegistries.Keys.BIOME_MODIFIERS)
+        final List<BiomeModifier> biomeModifiers = registries.registryOrThrow(NeoForgeRegistries.Keys.BIOME_MODIFIERS)
                 .holders()
                 .map(Holder::value)
                 .toList();

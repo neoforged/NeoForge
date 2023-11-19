@@ -18,7 +18,7 @@ public interface ILivingEntityExtension extends IEntityExtension {
 
     @Override
     default boolean canSwimInFluidType(FluidType type) {
-        if (type == NeoForgeMod.WATER_TYPE.get()) return !self().isSensitiveToWater();
+        if (type == NeoForgeMod.WATER_TYPE.value()) return !self().isSensitiveToWater();
         else return IEntityExtension.super.canSwimInFluidType(type);
     }
 
@@ -28,7 +28,7 @@ public interface ILivingEntityExtension extends IEntityExtension {
      * @param type the type of the fluid
      */
     default void jumpInFluid(FluidType type) {
-        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) 0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED.get()), 0.0D));
+        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) 0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED.value()), 0.0D));
     }
 
     /**
@@ -37,7 +37,7 @@ public interface ILivingEntityExtension extends IEntityExtension {
      * @param type the type of the fluid
      */
     default void sinkInFluid(FluidType type) {
-        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) -0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED.get()), 0.0D));
+        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) -0.04F * self().getAttributeValue(NeoForgeMod.SWIM_SPEED.value()), 0.0D));
     }
 
     /**
@@ -47,7 +47,7 @@ public interface ILivingEntityExtension extends IEntityExtension {
      * @return {@code true} if the entity can drown in the fluid, {@code false} otherwise
      */
     default boolean canDrownInFluidType(FluidType type) {
-        if (type == NeoForgeMod.WATER_TYPE.get()) return !self().canBreatheUnderwater();
+        if (type == NeoForgeMod.WATER_TYPE.value()) return !self().canBreatheUnderwater();
         return type.canDrownIn(self());
     }
 

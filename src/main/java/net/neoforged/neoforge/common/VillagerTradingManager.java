@@ -12,13 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.npc.VillagerTrades.ItemListing;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 import net.neoforged.neoforge.event.village.WandererTradesEvent;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 
 public class VillagerTradingManager {
 
@@ -56,7 +56,7 @@ public class VillagerTradingManager {
      * Posts a VillagerTradesEvent for each registered profession.
      */
     private static void postVillagerEvents() {
-        for (VillagerProfession prof : ForgeRegistries.VILLAGER_PROFESSIONS) {
+        for (VillagerProfession prof : BuiltInRegistries.VILLAGER_PROFESSION) {
             Int2ObjectMap<ItemListing[]> trades = VANILLA_TRADES.getOrDefault(prof, new Int2ObjectOpenHashMap<>());
             Int2ObjectMap<List<ItemListing>> mutableTrades = new Int2ObjectOpenHashMap<>();
             for (int i = 1; i < 6; i++) {

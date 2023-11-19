@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.debug.block;
 
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -14,9 +13,9 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(StickyBlockTest.MODID)
 public class StickyBlockTest {
@@ -24,17 +23,17 @@ public class StickyBlockTest {
     static final String BLOCK_ID = "test_block";
     static final String BLOCK_ID_2 = "test_block_2";
 
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS.getRegistryName(), MODID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    public static final RegistryObject<Block> BLUE_BLOCK = BLOCKS.register(BLOCK_ID, () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)) {
+    public static final DeferredBlock<Block> BLUE_BLOCK = BLOCKS.register(BLOCK_ID, () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)) {
         @Override
         public boolean isStickyBlock(BlockState state) {
             return true;
         }
     });
 
-    public static final RegistryObject<Block> RED_BLOCK = BLOCKS.register(BLOCK_ID_2, () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)) {
+    public static final DeferredBlock<Block> RED_BLOCK = BLOCKS.register(BLOCK_ID_2, () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)) {
         @Override
         public boolean isStickyBlock(BlockState state) {
             return true;
@@ -52,8 +51,8 @@ public class StickyBlockTest {
         }
     });
 
-    public static final RegistryObject<Item> BLUE_BLOCK_ITEM = ITEMS.register(BLOCK_ID, () -> new BlockItem(BLUE_BLOCK.get(), new Item.Properties()));
-    public static final RegistryObject<Item> RED_BLOCK_ITEM = ITEMS.register(BLOCK_ID_2, () -> new BlockItem(RED_BLOCK.get(), new Item.Properties()));
+    public static final DeferredItem<BlockItem> BLUE_BLOCK_ITEM = ITEMS.registerBlockItem(BLUE_BLOCK);
+    public static final DeferredItem<BlockItem> RED_BLOCK_ITEM = ITEMS.registerBlockItem(RED_BLOCK);
 
     public StickyBlockTest() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();

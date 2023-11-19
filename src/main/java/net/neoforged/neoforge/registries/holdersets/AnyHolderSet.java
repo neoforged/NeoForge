@@ -42,7 +42,7 @@ public record AnyHolderSet<T>(HolderLookup.RegistryLookup<T> registryLookup) imp
 
     @Override
     public HolderSetType type() {
-        return NeoForgeMod.ANY_HOLDER_SET.get();
+        return NeoForgeMod.ANY_HOLDER_SET.value();
     }
 
     @Override

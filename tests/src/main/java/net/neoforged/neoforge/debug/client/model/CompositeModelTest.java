@@ -23,18 +23,18 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(CompositeModelTest.MODID)
 public class CompositeModelTest {
     public static final String MODID = "composite_model_test";
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    public static RegistryObject<Block> composite_block = BLOCKS.register("composite_block", () -> new Block(Block.Properties.of().mapColor(MapColor.WOOD).strength(10)) {
+    public static DeferredBlock<Block> composite_block = BLOCKS.register("composite_block", () -> new Block(Block.Properties.of().mapColor(MapColor.WOOD).strength(10)) {
         @Override
         protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
             builder.add(BlockStateProperties.HORIZONTAL_FACING);
@@ -62,7 +62,7 @@ public class CompositeModelTest {
         }
     });
 
-    public static RegistryObject<Item> composite_item = ITEMS.register("composite_block", () -> new BlockItem(composite_block.get(), new Item.Properties()) {
+    public static DeferredItem<Item> composite_item = ITEMS.register("composite_block", () -> new BlockItem(composite_block.get(), new Item.Properties()) {
         @Override
         public boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) {
             return armorType == EquipmentSlot.HEAD;

@@ -29,7 +29,7 @@
 -         .add(Attributes.MOVEMENT_SPEED, 0.1F)
 -         .add(Attributes.ATTACK_SPEED)
 -         .add(Attributes.LUCK);
-+      return LivingEntity.createLivingAttributes().add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.MOVEMENT_SPEED, (double) 0.1F).add(Attributes.ATTACK_SPEED).add(Attributes.LUCK).add(net.neoforged.neoforge.common.NeoForgeMod.BLOCK_REACH.get()).add(Attributes.ATTACK_KNOCKBACK).add(net.neoforged.neoforge.common.NeoForgeMod.ENTITY_REACH.get());
++      return LivingEntity.createLivingAttributes().add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.MOVEMENT_SPEED, (double) 0.1F).add(Attributes.ATTACK_SPEED).add(Attributes.LUCK).add(net.neoforged.neoforge.common.NeoForgeMod.BLOCK_REACH.value()).add(Attributes.ATTACK_KNOCKBACK).add(net.neoforged.neoforge.common.NeoForgeMod.ENTITY_REACH.value());
     }
  
     @Override

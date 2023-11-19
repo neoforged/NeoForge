@@ -20,7 +20,7 @@ public class StrictNBTIngredient extends Ingredient {
             ItemStack.CODEC.fieldOf("stack")).xmap(StrictNBTIngredient::new, StrictNBTIngredient::getStack).codec();
 
     protected StrictNBTIngredient(ItemStack stack) {
-        super(Stream.of(new Ingredient.ItemValue(stack, StrictNBTIngredient::compareStacksWithNbt)), NeoForgeMod.STRICT_NBT_INGREDIENT_TYPE::get);
+        super(Stream.of(new Ingredient.ItemValue(stack, StrictNBTIngredient::compareStacksWithNbt)), NeoForgeMod.STRICT_NBT_INGREDIENT_TYPE);
     }
 
     /** Creates a new ingredient matching the given stack and tag */

@@ -22,11 +22,11 @@
        this.stateCache.add(p_54694_.getFlowing(8, true));
        this.registerDefaultState(this.stateDefinition.any().setValue(LEVEL, Integer.valueOf(0)));
 +      fluidStateCacheInitialized = true;
-+      supplier = net.neoforged.neoforge.registries.ForgeRegistries.FLUIDS.getDelegateOrThrow(p_54694_);
++      supplier = () -> p_54694_;
 +   }
 +
 +   /**
-+    * @param fluid A fluid supplier such as {@link net.neoforged.neoforge.registries.RegistryObject<FlowingFluid>}
++    * @param fluid A fluid supplier such as {@link net.neoforged.neoforge.registries.DeferredHolder}
 +    */
 +   public LiquidBlock(java.util.function.Supplier<? extends FlowingFluid> fluid, BlockBehaviour.Properties p_54695_) {
 +      super(p_54695_);

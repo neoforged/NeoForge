@@ -9,20 +9,13 @@
     );
     public static final Block DETECTOR_RAIL = register(
        "detector_rail", new DetectorRailBlock(BlockBehaviour.Properties.of().noCollission().strength(0.7F).sound(SoundType.METAL))
-@@ -7400,16 +_,5 @@
- 
-    public static void rebuildCache() {
-       Block.BLOCK_STATE_REGISTRY.forEach(BlockBehaviour.BlockStateBase::initCache);
--   }
--
--   static {
--      for(Block block : BuiltInRegistries.BLOCK) {
--         for(BlockState blockstate : block.getStateDefinition().getPossibleStates()) {
+@@ -7405,7 +_,8 @@
+    static {
+       for(Block block : BuiltInRegistries.BLOCK) {
+          for(BlockState blockstate : block.getStateDefinition().getPossibleStates()) {
 -            Block.BLOCK_STATE_REGISTRY.add(blockstate);
--            blockstate.initCache();
--         }
--
--         block.getLootTable();
--      }
-    }
- }
++            // Neo: comment out, it's done in NeoForgeRegistryCallbacks
++            //Block.BLOCK_STATE_REGISTRY.add(blockstate);
+             blockstate.initCache();
+          }
+ 

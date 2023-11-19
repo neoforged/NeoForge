@@ -17,9 +17,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 /**
  * Tests if the patch to PlayerEntity to make it utilize Attributes.ATTACK_KNOCKBACK works
@@ -34,9 +33,9 @@ public class PlayerAttackKnockbackTest {
 
     static final float ATTACK_KNOCKBACK_VALUE = 2.0F; // Change this value for testing, but note that the attribute is capped at 5.0D
 
-    static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    static RegistryObject<Item> KNOCKBACK_SWORD = ITEMS.register("knockback_sword", () -> new KnockbackSwordItem(Tiers.IRON, 3, -2.4F, ATTACK_KNOCKBACK_VALUE, (new Item.Properties())));
+    static DeferredItem<Item> KNOCKBACK_SWORD = ITEMS.register("knockback_sword", () -> new KnockbackSwordItem(Tiers.IRON, 3, -2.4F, ATTACK_KNOCKBACK_VALUE, (new Item.Properties())));
 
     public PlayerAttackKnockbackTest() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();

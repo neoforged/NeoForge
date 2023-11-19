@@ -7,8 +7,8 @@ package net.neoforged.neoforge.common.conditions;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 
 public class ItemExistsCondition implements ICondition {
 
@@ -34,7 +34,7 @@ public class ItemExistsCondition implements ICondition {
 
     @Override
     public boolean test(IContext context) {
-        return ForgeRegistries.ITEMS.containsKey(item);
+        return BuiltInRegistries.ITEM.containsKey(item);
     }
 
     @Override

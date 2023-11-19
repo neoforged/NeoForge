@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.sounds.SoundEvent;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -221,7 +221,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
     }
 
     private boolean validateEvent(final String soundName, final ResourceLocation name) {
-        final boolean valid = this.sounds.containsKey(soundName) || ForgeRegistries.SOUND_EVENTS.containsKey(name);
+        final boolean valid = this.sounds.containsKey(soundName) || BuiltInRegistries.SOUND_EVENT.containsKey(name);
         if (!valid) {
             LOGGER.warn("Unable to find event '{}' referenced from '{}'", name, soundName);
         }

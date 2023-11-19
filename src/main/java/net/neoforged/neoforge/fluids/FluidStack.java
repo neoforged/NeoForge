@@ -18,10 +18,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * ItemStack substitute for Fluids.
@@ -51,28 +51,36 @@ public class FluidStack {
     private boolean isEmpty;
     private int amount;
     private CompoundTag tag;
-    private Holder.Reference<Fluid> fluidDelegate;
+    private final Fluid fluid;
 
     public FluidStack(Fluid fluid, int amount) {
         if (fluid == null) {
             LOGGER.fatal("Null fluid supplied to fluidstack. Did you try and create a stack for an unregistered fluid?");
             throw new IllegalArgumentException("Cannot create a fluidstack from a null fluid");
-        } else if (ForgeRegistries.FLUIDS.getKey(fluid) == null) {
-            LOGGER.fatal("Failed attempt to create a FluidStack for an unregistered Fluid {} (type {})", ForgeRegistries.FLUIDS.getKey(fluid), fluid.getClass().getName());
+        } else if (!BuiltInRegistries.FLUID.containsValue(fluid)) {
+            LOGGER.fatal("Failed attempt to create a FluidStack for an unregistered Fluid {} (type {})", fluid, fluid.getClass().getName());
             throw new IllegalArgumentException("Cannot create a fluidstack from an unregistered fluid");
         }
-        this.fluidDelegate = ForgeRegistries.FLUIDS.getDelegateOrThrow(fluid);
         this.amount = amount;
+        this.fluid = fluid;
 
         updateEmpty();
     }
 
-    public FluidStack(Fluid fluid, int amount, CompoundTag nbt) {
+    public FluidStack(Holder<Fluid> fluid, int amount) {
+        this(fluid.value(), amount);
+    }
+
+    public FluidStack(Fluid fluid, int amount, @Nullable CompoundTag nbt) {
         this(fluid, amount);
 
         if (nbt != null) {
             tag = nbt.copy();
         }
+    }
+
+    public FluidStack(Holder<Fluid> fluid, int amount, @Nullable CompoundTag nbt) {
+        this(fluid.value(), amount, nbt);
     }
 
     public FluidStack(FluidStack stack, int amount) {
@@ -92,8 +100,8 @@ public class FluidStack {
         }
 
         ResourceLocation fluidName = new ResourceLocation(nbt.getString("FluidName"));
-        Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidName);
-        if (fluid == null) {
+        Fluid fluid = BuiltInRegistries.FLUID.get(fluidName);
+        if (fluid == Fluids.EMPTY) {
             return EMPTY;
         }
         FluidStack stack = new FluidStack(fluid, nbt.getInt("Amount"));
@@ -105,7 +113,7 @@ public class FluidStack {
     }
 
     public CompoundTag writeToNBT(CompoundTag nbt) {
-        nbt.putString("FluidName", ForgeRegistries.FLUIDS.getKey(getFluid()).toString());
+        nbt.putString("FluidName", BuiltInRegistries.FLUID.getKey(getFluid()).toString());
         nbt.putInt("Amount", amount);
 
         if (tag != null) {
@@ -115,13 +123,13 @@ public class FluidStack {
     }
 
     public void writeToPacket(FriendlyByteBuf buf) {
-        buf.writeRegistryId(ForgeRegistries.FLUIDS, getFluid());
+        buf.writeId(BuiltInRegistries.FLUID, getFluid());
         buf.writeVarInt(getAmount());
         buf.writeNbt(tag);
     }
 
     public static FluidStack readFromPacket(FriendlyByteBuf buf) {
-        Fluid fluid = buf.readRegistryId();
+        Fluid fluid = buf.readById(BuiltInRegistries.FLUID);
         int amount = buf.readVarInt();
         CompoundTag tag = buf.readNbt();
         if (fluid == Fluids.EMPTY) return EMPTY;
@@ -129,11 +137,11 @@ public class FluidStack {
     }
 
     public final Fluid getFluid() {
-        return isEmpty ? Fluids.EMPTY : fluidDelegate.get();
+        return isEmpty ? Fluids.EMPTY : getRawFluid();
     }
 
     public final Fluid getRawFluid() {
-        return fluidDelegate.get();
+        return fluid;
     }
 
     public boolean isEmpty() {
@@ -141,7 +149,7 @@ public class FluidStack {
     }
 
     protected void updateEmpty() {
-        isEmpty = getRawFluid() == Fluids.EMPTY || amount <= 0;
+        isEmpty = fluid == Fluids.EMPTY || amount <= 0;
     }
 
     public int getAmount() {
@@ -149,7 +157,7 @@ public class FluidStack {
     }
 
     public void setAmount(int amount) {
-        if (getRawFluid() == Fluids.EMPTY) throw new IllegalStateException("Can't modify the empty stack.");
+        if (fluid == Fluids.EMPTY) throw new IllegalStateException("Can't modify the empty stack.");
         this.amount = amount;
         updateEmpty();
     }
@@ -171,7 +179,7 @@ public class FluidStack {
     }
 
     public void setTag(CompoundTag tag) {
-        if (getRawFluid() == Fluids.EMPTY) throw new IllegalStateException("Can't modify the empty stack.");
+        if (fluid == Fluids.EMPTY) throw new IllegalStateException("Can't modify the empty stack.");
         this.tag = tag;
     }
 

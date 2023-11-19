@@ -7,13 +7,11 @@ package net.neoforged.neoforge.debug.block;
 
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -23,12 +21,12 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 /**
  * Adds a block and item to test custom client-controlled breaking sounds.
- *
  * To test it, place the "custom_break_sound_test:testblock" and break it. Depending on the modulus 3 of the block's
  * X coordinate, the break sound has to be the cow's hurt sound, the zombie's death sound or the pig's hurt sound,
  * but never the default stone break sound
@@ -38,11 +36,11 @@ public class CustomBreakSoundTest {
     public static final String MOD_ID = "custom_break_sound_test";
     private static final boolean ENABLED = true;
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Registries.BLOCK, MOD_ID);
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, MOD_ID);
+    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
-    private static final RegistryObject<Block> TEST_BLOCK = BLOCKS.register("testblock", () -> new TestBlock(BlockBehaviour.Properties.of()));
-    private static final RegistryObject<Item> TEST_BLOCK_ITEM = ITEMS.register("testblock", () -> new BlockItem(TEST_BLOCK.get(), new Item.Properties()));
+    private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.registerBlock("testblock", TestBlock::new, BlockBehaviour.Properties.of());
+    private static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerBlockItem(TEST_BLOCK);
 
     public CustomBreakSoundTest() {
         if (ENABLED) {

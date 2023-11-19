@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.fluids.capability.wrappers;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
@@ -15,7 +16,6 @@ import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -81,7 +81,7 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
                         if (!resource.isFluidEqual(extracted)) {
                             //Be loud if something went wrong
                             LOGGER.error("Fluid removed without successfully being picked up. Fluid {} at {} in {} matched requested type, but after performing pickup was {}.",
-                                    ForgeRegistries.FLUIDS.getKey(fluidState.getType()), blockPos, world.dimension().location(), ForgeRegistries.FLUIDS.getKey(bucket.getFluid()));
+                                    BuiltInRegistries.FLUID.getKey(fluidState.getType()), blockPos, world.dimension().location(), BuiltInRegistries.FLUID.getKey(bucket.getFluid()));
                             return FluidStack.EMPTY;
                         }
                         return extracted;

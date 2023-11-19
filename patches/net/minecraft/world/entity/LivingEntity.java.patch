@@ -34,10 +34,10 @@
 +              .add(Attributes.ARMOR)
 +              .add(Attributes.ARMOR_TOUGHNESS)
 +              .add(Attributes.MAX_ABSORPTION)
-+              .add(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED.get())
-+              .add(net.neoforged.neoforge.common.NeoForgeMod.NAMETAG_DISTANCE.get())
-+              .add(net.neoforged.neoforge.common.NeoForgeMod.ENTITY_GRAVITY.get())
-+              .add(net.neoforged.neoforge.common.NeoForgeMod.STEP_HEIGHT.get());
++              .add(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED.value())
++              .add(net.neoforged.neoforge.common.NeoForgeMod.NAMETAG_DISTANCE.value())
++              .add(net.neoforged.neoforge.common.NeoForgeMod.ENTITY_GRAVITY.value())
++              .add(net.neoforged.neoforge.common.NeoForgeMod.STEP_HEIGHT.value());
     }
  
     @Override
@@ -412,13 +412,13 @@
 +   @Deprecated // FORGE: use sinkInFluid instead
     protected void goDownInWater() {
 -      this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.04F, 0.0));
-+      this.sinkInFluid(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.get());
++      this.sinkInFluid(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
     }
  
 +   @Deprecated // FORGE: use jumpInFluid instead
     protected void jumpInLiquid(TagKey<Fluid> p_204043_) {
 -      this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.04F, 0.0));
-+      this.setDeltaMovement(this.getDeltaMovement().add(0.0D, (double)0.04F * this.getAttribute(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED.get()).getValue(), 0.0D));
++      this.setDeltaMovement(this.getDeltaMovement().add(0.0D, (double)0.04F * this.getAttribute(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED.value()).getValue(), 0.0D));
     }
  
     protected float getWaterSlowDown() {
@@ -426,7 +426,7 @@
     public void travel(Vec3 p_21280_) {
        if (this.isControlledByLocalInstance()) {
           double d0 = 0.08;
-+         AttributeInstance gravity = this.getAttribute(net.neoforged.neoforge.common.NeoForgeMod.ENTITY_GRAVITY.get());
++         AttributeInstance gravity = this.getAttribute(net.neoforged.neoforge.common.NeoForgeMod.ENTITY_GRAVITY.value());
           boolean flag = this.getDeltaMovement().y <= 0.0;
           if (flag && this.hasEffect(MobEffects.SLOW_FALLING)) {
 -            d0 = 0.01;
@@ -438,7 +438,7 @@
  
           FluidState fluidstate = this.level().getFluidState(this.blockPosition());
 -         if (this.isInWater() && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
-+         if ((this.isInWater() || (this.isInFluidType(fluidstate) && fluidstate.getFluidType() != net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.get())) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
++         if ((this.isInWater() || (this.isInFluidType(fluidstate) && fluidstate.getFluidType() != net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value())) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
 +            if (this.isInWater() || (this.isInFluidType(fluidstate) && !this.moveInFluid(fluidstate, p_21280_, d0))) {
              double d9 = this.getY();
              float f4 = this.isSprinting() ? 0.9F : this.getWaterSlowDown();
@@ -447,7 +447,7 @@
                 f4 = 0.96F;
              }
  
-+            f5 *= (float)this.getAttribute(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED.get()).getValue();
++            f5 *= (float)this.getAttribute(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED.value()).getValue();
              this.moveRelative(f5, p_21280_);
              this.move(MoverType.SELF, this.getDeltaMovement());
              Vec3 vec36 = this.getDeltaMovement();
@@ -515,11 +515,11 @@
 +               } else this.jumpInFluid(fluidType);
              } else {
 -               this.jumpInLiquid(FluidTags.LAVA);
-+               this.jumpInFluid(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.get());
++               this.jumpInFluid(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
              }
           } else {
 -            this.jumpInLiquid(FluidTags.WATER);
-+            this.jumpInFluid(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.get());
++            this.jumpInFluid(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
           }
        } else {
           this.noJumpDelay = 0;

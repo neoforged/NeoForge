@@ -5,6 +5,8 @@ apply plugin: 'net.neoforged.licenser'
 
 def neoforgeProject = project(':neoforge')
 
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(project.java_version))
+
 repositories {
     mavenLocal()
     maven {

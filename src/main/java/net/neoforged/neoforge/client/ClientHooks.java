@@ -174,7 +174,7 @@ import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.NetworkConstants;
 import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.network.ServerStatusPing;
-import net.neoforged.neoforge.registries.GameData;
+import net.neoforged.neoforge.registries.RegistryManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -642,7 +642,7 @@ public class ClientHooks {
 
     public static boolean isNameplateInRenderDistance(Entity entity, double squareDistance) {
         if (entity instanceof LivingEntity) {
-            final AttributeInstance attribute = ((LivingEntity) entity).getAttribute(NeoForgeMod.NAMETAG_DISTANCE.get());
+            final AttributeInstance attribute = ((LivingEntity) entity).getAttribute(NeoForgeMod.NAMETAG_DISTANCE.value());
             if (attribute != null) {
                 return !(squareDistance > (attribute.getValue() * attribute.getValue()));
             }
@@ -777,7 +777,7 @@ public class ClientHooks {
         Connection client = getClientConnection();
         // ONLY revert a non-local connection
         if (client != null && !client.isMemoryConnection()) {
-            GameData.revertToFrozen();
+            RegistryManager.revertToFrozen();
         }
     }
 

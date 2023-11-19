@@ -20,6 +20,7 @@ import net.minecraft.Util;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -28,7 +29,6 @@ import net.minecraft.server.packs.PackType;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.VisibleForTesting;
 
 /**
@@ -198,7 +198,7 @@ public abstract class ParticleDescriptionProvider implements DataProvider {
      */
     protected void spriteSet(ParticleType<?> type, Iterable<ResourceLocation> textures) {
         // Make sure particle type is registered
-        var particle = Preconditions.checkNotNull(ForgeRegistries.PARTICLE_TYPES.getKey(type), "The particle type is not registered");
+        var particle = Preconditions.checkNotNull(BuiltInRegistries.PARTICLE_TYPE.getKey(type), "The particle type is not registered");
 
         // Validate textures
         List<String> desc = new ArrayList<>();

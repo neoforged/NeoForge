@@ -5,8 +5,8 @@
  public class ItemColors {
     private static final int DEFAULT = -1;
 -   private final IdMapper<ItemColor> itemColors = new IdMapper<>(32);
-+   // FORGE: Use registry delegate as non-Vanilla item ids are not constant
-+   private final java.util.Map<net.minecraft.core.Holder.Reference<Item>, ItemColor> itemColors = new java.util.HashMap<>();
++   // Neo: Use the item instance directly as non-Vanilla item ids are not constant
++   private final java.util.Map<Item, ItemColor> itemColors = new java.util.IdentityHashMap<>();
  
     public static ItemColors createDefault(BlockColors p_92684_) {
        ItemColors itemcolors = new ItemColors();
@@ -20,7 +20,7 @@
  
     public int getColor(ItemStack p_92677_, int p_92678_) {
 -      ItemColor itemcolor = this.itemColors.byId(BuiltInRegistries.ITEM.getId(p_92677_.getItem()));
-+      ItemColor itemcolor = this.itemColors.get(net.neoforged.neoforge.registries.ForgeRegistries.ITEMS.getDelegateOrThrow(p_92677_.getItem()));
++      ItemColor itemcolor = this.itemColors.get(p_92677_.getItem());
        return itemcolor == null ? -1 : itemcolor.getColor(p_92677_, p_92678_);
     }
  
@@ -29,7 +29,7 @@
     public void register(ItemColor p_92690_, ItemLike... p_92691_) {
        for(ItemLike itemlike : p_92691_) {
 -         this.itemColors.addMapping(p_92690_, Item.getId(itemlike.asItem()));
-+         this.itemColors.put(net.neoforged.neoforge.registries.ForgeRegistries.ITEMS.getDelegateOrThrow(itemlike.asItem()), p_92690_);
++         this.itemColors.put(itemlike.asItem(), p_92690_);
        }
     }
  }
