@@ -26,7 +26,7 @@ public class ObjModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuil
     private ResourceLocation mtlOverride;
 
     protected ObjModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(new ResourceLocation("neoforge:obj"), parent, existingFileHelper);
+        super(new ResourceLocation("neoforge:obj"), parent, existingFileHelper, false);
     }
 
     public ObjModelBuilder<T> modelLocation(ResourceLocation modelLocation) {
