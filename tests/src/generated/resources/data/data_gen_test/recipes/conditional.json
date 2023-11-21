@@ -1,7 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "building",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "neoforge:and",
       "values": [
@@ -22,6 +20,8 @@
       ]
     }
   ],
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
   "key": {
     "X": {
       "item": "minecraft:dirt"

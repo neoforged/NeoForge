@@ -33,13 +33,13 @@
              } else {
 -               list.add(DataProvider.saveStable(p_254020_, p_300927_.serializeRecipe(), RecipeProvider.this.recipePathProvider.json(p_300927_.id())));
 +               var serializedRecipe = p_300927_.serializeRecipe();
-+               net.neoforged.neoforge.common.conditions.ICondition.writeConditions(provider, serializedRecipe, "conditions", conditions);
++               net.neoforged.neoforge.common.conditions.ICondition.writeConditions(provider, serializedRecipe, conditions);
 +               list.add(DataProvider.saveStable(p_254020_, serializedRecipe, RecipeProvider.this.recipePathProvider.json(p_300927_.id())));
                 AdvancementHolder advancementholder = p_300927_.advancement();
                 if (advancementholder != null) {
                    JsonObject jsonobject = advancementholder.value().serializeToJson();
 -                  list.add(DataProvider.saveStable(p_254020_, jsonobject, RecipeProvider.this.advancementPathProvider.json(advancementholder.id())));
-+                  net.neoforged.neoforge.common.conditions.ICondition.writeConditions(provider, jsonobject, "conditions", conditions);
++                  net.neoforged.neoforge.common.conditions.ICondition.writeConditions(provider, jsonobject, conditions);
 +                  var saveAdvancementFuture = saveAdvancement(p_254020_, p_300927_, jsonobject);
 +                  if (saveAdvancementFuture != null)
 +                     list.add(saveAdvancementFuture);

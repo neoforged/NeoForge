@@ -299,5 +299,7 @@ modId="keymapping_test"
 modId="player_spawn_phantoms_event_test"
 [[mods]]
 modId="custom_predicate_test"
+[[mods]]
+modId="conditional_codec_test"
 
 # ADD ABOVE THIS LINE

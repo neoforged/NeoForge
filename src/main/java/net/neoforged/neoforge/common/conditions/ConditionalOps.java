@@ -9,13 +9,15 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.ObjIntConsumer;
-import java.util.stream.Stream;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.ExtraCodecs;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
+/**
+ * Extension of {@link RegistryOps} that also encapsulates a {@link ICondition.IContext}.
+ * This allows getting the {@link ICondition.IContext} while decoding an entry from within a codec.
+ */
 public class ConditionalOps<T> extends RegistryOps<T> {
 
     public static <T> ConditionalOps<T> create(RegistryOps<T> ops, ICondition.IContext context) {
@@ -29,6 +31,10 @@ public class ConditionalOps<T> extends RegistryOps<T> {
         this.context = context;
     }
 
+    /**
+     * Returns a codec that can retrieve a {@link ICondition.IContext} from a registry ops,
+     * for example with {@code retrieveContext().decode(ops, ops.emptyMap())}.
+     */
     public static MapCodec<ICondition.IContext> retrieveContext() {
         return ExtraCodecs.retrieveContext(ops -> {
             if (!(ops instanceof ConditionalOps<?> conditionalOps))
@@ -38,151 +44,150 @@ public class ConditionalOps<T> extends RegistryOps<T> {
         });
     }
 
-    public static <T> MapCodec<Optional<T>> createConditionalCodec(final Codec<T> ownerCodec) {
-        return createConditionalCodec(ownerCodec, "conditions");
+    /**
+     * Key used for the conditions inside an object.
+     */
+    public static final String DEFAULT_CONDITIONS_KEY = "neoforge:conditions";
+    /**
+     * Key used to store the value associated with conditions,
+     * when the value is not represented as a map.
+     * For example, if we wanted to store the value 2 with some conditions, we could do:
+     * 
+     * <pre>
+     * {
+     *     "neoforge:conditions": [ ... ],
+     *     "neoforge:value": 2
+     * }
+     * </pre>
+     */
+    public static final String CONDITIONAL_VALUE_KEY = "neoforge:value";
+
+    /**
+     * @see #createConditionalCodec(Codec, String)
+     */
+    public static <T> Codec<Optional<T>> createConditionalCodec(final Codec<T> ownerCodec) {
+        return createConditionalCodec(ownerCodec, DEFAULT_CONDITIONS_KEY);
     }
 
-    public static <T> MapCodec<Optional<T>> createConditionalCodec(final Codec<T> ownerCodec, String conditionalsKey) {
+    /**
+     * Creates a conditional codec.
+     *
+     * <p>The conditional codec is generally not suitable for use as a dispatch target because it is never a {@link MapCodec.MapCodecCodec}.
+     * If you need to dispatch on a conditional codec, consider using {@link NeoForgeExtraCodecs#dispatchUnsafe}.
+     */
+    public static <T> Codec<Optional<T>> createConditionalCodec(final Codec<T> ownerCodec, String conditionalsKey) {
         return createConditionalCodecWithConditions(ownerCodec, conditionalsKey).xmap(r -> r.map(WithConditions::carrier), r -> r.map(i -> new WithConditions<>(List.of(), i)));
     }
 
-    public static <T> Codec<List<T>> decodeListWithElementConditions(final Codec<T> ownerCodec, String conditionalsKey) {
-        final Codec<List<T>> delegate = ownerCodec.listOf();
-        final Decoder<List<T>> decoder = NeoForgeExtraCodecs.listDecoderWithOptionalElements(createConditionalDecoder(ownerCodec, conditionalsKey));
-        return Codec.of(delegate, decoder);
+    /**
+     * Creates a codec that can decode a list of elements, and will check for conditions on each element.
+     */
+    public static <T> Codec<List<T>> decodeListWithElementConditions(final Codec<T> ownerCodec) {
+        return Codec.of(
+                ownerCodec.listOf(),
+                NeoForgeExtraCodecs.listWithOptionalElements(createConditionalCodec(ownerCodec)));
     }
 
-    public static <T> Codec<List<T>> decodeListWithElementConditionsAndConsumeIndex(final Codec<T> ownerCodec, final String conditionalsKey, final ObjIntConsumer<T> consumer) {
-        final Codec<List<T>> list = ownerCodec.listOf();
-        return Codec.of(list, NeoForgeExtraCodecs.listOptionalUnwrapDecoder(
-                NeoForgeExtraCodecs.listDecoderWithIndexConsumer(
-                        NeoForgeExtraCodecs.listDecoder(createConditionalDecoder(ownerCodec, conditionalsKey)),
-                        (op, i) -> op.ifPresent(o -> consumer.accept(o, i))),
-                Function.identity()));
+    /**
+     * Creates a codec that can decode a list of elements, and will check for conditions on element.
+     * Additionally, a callback will be invoked with each deserialized element and its index in the list.
+     *
+     * <p>The index is computed before filtering out the elements with non-matching conditions,
+     * but the callback will only be invoked on the elements with matching conditions.
+     */
+    public static <T> Codec<List<T>> decodeListWithElementConditionsAndIndexedPeek(final Codec<T> ownerCodec, final ObjIntConsumer<T> consumer) {
+        return Codec.of(
+                ownerCodec.listOf(),
+                NeoForgeExtraCodecs.listWithoutEmpty(
+                        NeoForgeExtraCodecs.decodeOnly(
+                                NeoForgeExtraCodecs.listDecoderWithIndexedPeek(
+                                        createConditionalCodec(ownerCodec).listOf(),
+                                        (op, i) -> op.ifPresent(o -> consumer.accept(o, i))))));
     }
 
-    public static <T> Decoder<Optional<T>> createConditionalDecoder(final Decoder<T> ownerCodec) {
-        return createConditionalDecoder(ownerCodec, "conditions");
+    /**
+     * @see #createConditionalCodecWithConditions(Codec, String)
+     */
+    public static <T> Codec<Optional<WithConditions<T>>> createConditionalCodecWithConditions(final Codec<T> ownerCodec) {
+        return createConditionalCodecWithConditions(ownerCodec, DEFAULT_CONDITIONS_KEY);
     }
 
-    public static <T> Decoder<Optional<T>> createConditionalDecoder(final Decoder<T> ownerCodec, String conditionalsKey) {
-        return new ConditionalDecoder<T>(
-                conditionalsKey,
-                ICondition.LIST_CODEC,
-                retrieveContext().codec(),
-                ownerCodec).map(o -> o.map(WithConditions::carrier));
+    /**
+     * Creates a conditional codec.
+     *
+     * <p>The conditional codec is generally not suitable for use as a dispatch target because it is never a {@link MapCodec.MapCodecCodec}.
+     * If you need to dispatch on a conditional codec, consider using {@link NeoForgeExtraCodecs#dispatchUnsafe}.
+     */
+    public static <T> Codec<Optional<WithConditions<T>>> createConditionalCodecWithConditions(final Codec<T> ownerCodec, String conditionalsKey) {
+        return Codec.of(
+                new ConditionalEncoder<>(conditionalsKey, ICondition.LIST_CODEC, ownerCodec),
+                new ConditionalDecoder<>(conditionalsKey, ICondition.LIST_CODEC, retrieveContext().codec(), ownerCodec));
     }
 
-    public static <T> MapCodec<Optional<WithConditions<T>>> createConditionalCodecWithConditions(final Codec<T> ownerCodec) {
-        return createConditionalCodecWithConditions(ownerCodec, "conditions");
-    }
-
-    public static <T> MapCodec<Optional<WithConditions<T>>> createConditionalCodecWithConditions(final Codec<T> ownerCodec, String conditionalsKey) {
-        return new ConditionalCodec<T>(
-                conditionalsKey,
-                ICondition.LIST_CODEC,
-                retrieveContext().codec(),
-                ownerCodec);
-    }
-
-    private static final class ConditionalCodec<A> extends MapCodec<Optional<WithConditions<A>>> {
-
+    private static final class ConditionalEncoder<A> implements Encoder<Optional<WithConditions<A>>> {
         private final String conditionalsPropertyKey;
         public final Codec<List<ICondition>> conditionsCodec;
-        private final Codec<ICondition.IContext> contextCodec;
-        private final Codec<A> innerCodec;
-        private final String valuePropertyKey = "value";
+        private final Encoder<A> innerCodec;
 
-        private ConditionalCodec(String conditionalsPropertyKey, Codec<List<ICondition>> conditionsCodec, Codec<ICondition.IContext> contextCodec, Codec<A> innerCodec) {
+        private ConditionalEncoder(String conditionalsPropertyKey, Codec<List<ICondition>> conditionsCodec, Encoder<A> innerCodec) {
             this.conditionalsPropertyKey = conditionalsPropertyKey;
             this.conditionsCodec = conditionsCodec;
-            this.contextCodec = contextCodec;
             this.innerCodec = innerCodec;
         }
 
         @Override
-        public <T> Stream<T> keys(DynamicOps<T> ops) {
-            return Stream.of(conditionalsPropertyKey, valuePropertyKey).map(ops::createString);
-        }
-
-        @Override
-        public <T> DataResult<Optional<WithConditions<A>>> decode(DynamicOps<T> ops, MapLike<T> input) {
-            final T conditionsDataCarrier = input.get(conditionalsPropertyKey);
-            if (conditionsDataCarrier == null) {
-                return decodeInner(ops, input).map(result -> result.map(carrier -> new WithConditions<>(List.of(), carrier)));
-            }
-
-            return conditionsCodec.decode(ops, conditionsDataCarrier).flatMap(conditionsCarrier -> {
-                final List<ICondition> conditions = conditionsCarrier.getFirst();
-                final DataResult<Pair<ICondition.IContext, T>> contextDataResult = contextCodec.decode(ops, ops.emptyMap());
-
-                return contextDataResult.flatMap(contextCarrier -> {
-                    final ICondition.IContext context = contextCarrier.getFirst();
-
-                    final boolean conditionsMatch = conditions.stream().allMatch(c -> c.test(context));
-                    if (!conditionsMatch)
-                        return DataResult.error(() -> "Conditions did not match", Optional.empty());
-
-                    return decodeInner(ops, input).map(result -> result.map(carrier -> new WithConditions<>(conditions, carrier)));
-                });
-            });
-        }
-
-        private <T> DataResult<Optional<A>> decodeInner(DynamicOps<T> ops, MapLike<T> input) {
+        public <T> DataResult<T> encode(Optional<WithConditions<A>> input, DynamicOps<T> ops, T prefix) {
             if (ops.compressMaps()) {
-                final T value = input.get(ops.createString(valuePropertyKey));
-                if (value == null) {
-                    return DataResult.error(() -> "Input does not have a \"value\" entry: " + input);
-                }
-                return innerCodec.parse(ops, value).map(Optional::of);
+                // Compressing ops are not supported at the moment because they require special handling.
+                return DataResult.error(() -> "Cannot use ConditionalCodec with compressing DynamicOps");
             }
-            if (innerCodec instanceof MapCodecCodec<?>) {
-                return ((MapCodecCodec<? extends A>) innerCodec).codec().decode(ops, input).map(Optional::of);
-            }
-            return innerCodec.decode(ops, input.get(valuePropertyKey)).map(Pair::getFirst).map(Optional::of);
-        }
 
-        @Override
-        public <T> RecordBuilder<T> encode(Optional<WithConditions<A>> input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
             if (input.isEmpty()) {
-                return prefix;
+                // Optional must be present for encoding.
+                return DataResult.error(() -> "Cannot encode empty Optional with a ConditionalEncoder. We don't know what to encode to!");
             }
 
             final WithConditions<A> withConditions = input.get();
 
-            if (ops.compressMaps()) {
-                if (!withConditions.conditions().isEmpty()) {
-                    prefix.add(conditionalsPropertyKey, conditionsCodec.encodeStart(ops, withConditions.conditions()));
-                }
-
-                return prefix.add(valuePropertyKey, innerCodec.encodeStart(ops, withConditions.carrier()));
-            }
-            if (innerCodec instanceof MapCodecCodec<?>) {
-                final RecordBuilder<T> prefixWithInner = ((MapCodecCodec<A>) innerCodec).codec().encode(withConditions.carrier(), ops, prefix);
-
-                if (!withConditions.conditions().isEmpty()) {
-                    return prefixWithInner.add(conditionalsPropertyKey, conditionsCodec.encodeStart(ops, withConditions.conditions()));
-                }
-
-                return prefixWithInner;
+            if (withConditions.conditions().isEmpty()) {
+                // If there are no conditions, forward to the inner codec directly.
+                return innerCodec.encode(withConditions.carrier(), ops, prefix);
             }
 
-            final DataResult<T> result = innerCodec.encodeStart(ops, withConditions.carrier());
-            if (!withConditions.conditions().isEmpty()) {
-                prefix.add(conditionalsPropertyKey, conditionsCodec.encodeStart(ops, withConditions.conditions()));
-            }
-            prefix.add(valuePropertyKey, result);
-            return prefix;
+            // By now we know we will produce a map-like object, so let's start building one.
+            var recordBuilder = ops.mapBuilder();
+            // Add conditions
+            recordBuilder.add(conditionalsPropertyKey, conditionsCodec.encodeStart(ops, withConditions.conditions()));
+
+            // Serialize the object
+            var encodedInner = innerCodec.encodeStart(ops, withConditions.carrier());
+
+            return encodedInner.flatMap(inner -> {
+                return ops.getMap(inner).map(innerMap -> {
+                    // If the inner is a map...
+                    if (innerMap.get(conditionalsPropertyKey) != null || innerMap.get(CONDITIONAL_VALUE_KEY) != null) {
+                        // Conditional or value key cannot be used in the inner codec!
+                        return DataResult.<T>error(() -> "Cannot wrap a value that already uses the condition or value key with a ConditionalCodec.");
+                    }
+                    // Copy all fields to the record builder
+                    innerMap.entries().forEach(pair -> {
+                        recordBuilder.add(pair.getFirst(), pair.getSecond());
+                    });
+                    return recordBuilder.build(prefix);
+                }).result().orElseGet(() -> {
+                    // If the inner is not a map, write it to a value field
+                    recordBuilder.add(CONDITIONAL_VALUE_KEY, inner);
+                    return recordBuilder.build(prefix);
+                });
+            });
         }
     }
 
     private static final class ConditionalDecoder<A> implements Decoder<Optional<WithConditions<A>>> {
-
         private final String conditionalsPropertyKey;
         public final Codec<List<ICondition>> conditionsCodec;
         private final Codec<ICondition.IContext> contextCodec;
         private final Decoder<A> innerCodec;
-        private final String valuePropertyKey = "value";
 
         private ConditionalDecoder(String conditionalsPropertyKey, Codec<List<ICondition>> conditionsCodec, Codec<ICondition.IContext> contextCodec, Decoder<A> innerCodec) {
             this.conditionalsPropertyKey = conditionalsPropertyKey;
@@ -191,54 +196,59 @@ public class ConditionalOps<T> extends RegistryOps<T> {
             this.innerCodec = innerCodec;
         }
 
+        // Note: I am not too sure of what to return in the second element of the pair.
+        // If this turns out to be a problem, please change it but also document it and write some test cases.
         @Override
         public <T> DataResult<Pair<Optional<WithConditions<A>>, T>> decode(DynamicOps<T> ops, T input) {
-            final DataResult<T> conditionsDataCarrierResult = ops.get(input, conditionalsPropertyKey);
-
-            if (conditionsDataCarrierResult.error().isPresent()) {
-                return decodeInner(ops, input).map(result -> result.map(carrier -> new WithConditions<>(List.of(), carrier))).map(v -> Pair.of(v, input));
-            }
-
-            return conditionsDataCarrierResult.flatMap(conditionsDataCarrier -> conditionsCodec.decode(ops, conditionsDataCarrier).flatMap(conditionsCarrier -> {
-                final List<ICondition> conditions = conditionsCarrier.getFirst();
-                final DataResult<Pair<ICondition.IContext, T>> contextDataResult = contextCodec.decode(ops, ops.emptyMap());
-
-                return contextDataResult.flatMap(contextCarrier -> {
-                    final ICondition.IContext context = contextCarrier.getFirst();
-
-                    final boolean conditionsMatch = conditions.stream().allMatch(c -> c.test(context));
-                    if (!conditionsMatch)
-                        return DataResult.error(() -> "Conditions did not match", Optional.<WithConditions<A>>empty());
-
-                    return decodeInner(ops, input).map(result -> result.map(carrier -> new WithConditions<>(conditions, carrier)));
-                });
-            })).map(v -> Pair.of(v, input));
-        }
-
-        private <T> DataResult<Optional<A>> decodeInner(DynamicOps<T> ops, T input) {
             if (ops.compressMaps()) {
-                final DataResult<T> valueResult = ops.get(input, valuePropertyKey);
-                if (valueResult.error().map(DataResult.PartialResult::message).isPresent()) {
-                    return DataResult.error(() -> "Input does not have a \"value\" entry: " + input);
+                // Compressing ops are not supported at the moment because they require special handling.
+                return DataResult.error(() -> "Cannot use ConditionalCodec with compressing DynamicOps");
+            }
+
+            return ops.getMap(input).map(inputMap -> {
+                final T conditionsDataCarrier = inputMap.get(conditionalsPropertyKey);
+                if (conditionsDataCarrier == null) {
+                    // No conditions, forward to inner codec
+                    return innerCodec.decode(ops, input).map(result -> result.mapFirst(carrier -> Optional.of(new WithConditions<>(carrier))));
                 }
-                return valueResult.flatMap(value -> innerCodec.parse(ops, value).map(Optional::of));
-            }
-            if (innerCodec instanceof MapCodec.MapCodecCodec<A> mapCodec) {
-                return mapCodec.decode(ops, input).map(Pair::getFirst).map(Optional::of);
-            }
 
-            final DataResult<T> valueDataCarrierResult = ops.get(input, valuePropertyKey);
+                return conditionsCodec.decode(ops, conditionsDataCarrier).flatMap(conditionsCarrier -> {
+                    final List<ICondition> conditions = conditionsCarrier.getFirst();
+                    final DataResult<Pair<ICondition.IContext, T>> contextDataResult = contextCodec.decode(ops, ops.emptyMap());
 
-            if (valueDataCarrierResult.error().isPresent()) {
-                return innerCodec.decode(ops, input).map(Pair::getFirst).map(Optional::of);
-            }
+                    return contextDataResult.flatMap(contextCarrier -> {
+                        final ICondition.IContext context = contextCarrier.getFirst();
 
-            return valueDataCarrierResult.flatMap(valueDataCarrier -> innerCodec.decode(ops, valueDataCarrier).map(Pair::getFirst).map(Optional::of));
-        }
+                        final boolean conditionsMatch = conditions.stream().allMatch(c -> c.test(context));
+                        if (!conditionsMatch)
+                            return DataResult.success(Pair.of(Optional.empty(), input));
 
-        @Override
-        public String toString() {
-            return "Conditional[inner=" + innerCodec + ", conditionalsKey=" + conditionalsPropertyKey + "]";
+                        DataResult<Pair<A, T>> innerDecodeResult;
+
+                        T valueDataCarrier = inputMap.get(CONDITIONAL_VALUE_KEY);
+                        if (valueDataCarrier != null) {
+                            // If there is a value field use its contents to deserialize.
+                            innerDecodeResult = innerCodec.decode(ops, valueDataCarrier);
+                        } else {
+                            // Else copy the input into a new map without our custom key and decode from that.
+                            T conditionalsKey = ops.createString(conditionalsPropertyKey);
+                            var mapForDecoding = ops.createMap(inputMap
+                                    .entries()
+                                    .filter(pair -> !pair.getFirst().equals(conditionalsKey)));
+                            innerDecodeResult = innerCodec.decode(ops, mapForDecoding);
+                        }
+
+                        // Variable is required because type inference can't handle this
+                        DataResult<Pair<Optional<WithConditions<A>>, T>> ret = innerDecodeResult.map(
+                                result -> result.mapFirst(
+                                        carrier -> Optional.of(new WithConditions<>(conditions, carrier))));
+                        return ret;
+                    });
+                });
+            }).result().orElseGet(() -> {
+                // Not a map, forward to inner codec
+                return innerCodec.decode(ops, input).map(result -> result.mapFirst(carrier -> Optional.of(new WithConditions<>(carrier))));
+            });
         }
     }
 }
