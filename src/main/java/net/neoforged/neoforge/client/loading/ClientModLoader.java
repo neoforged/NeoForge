@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.repository.*;
@@ -35,7 +36,6 @@ import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.resource.DelegatingPackResources;
-import net.neoforged.neoforge.resource.PathPackResources;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.LanguageHook;
 import net.neoforged.neoforgespi.language.IModInfo;
@@ -143,13 +143,13 @@ public class ClientModLoader {
         return loading;
     }
 
-    private static RepositorySource buildPackFinder(Map<IModFile, ? extends PathPackResources> modResourcePacks) {
+    private static RepositorySource buildPackFinder(Map<IModFile, ? extends PackResources> modResourcePacks) {
         return packAcceptor -> clientPackFinder(modResourcePacks, packAcceptor);
     }
 
-    private static void clientPackFinder(Map<IModFile, ? extends PathPackResources> modResourcePacks, Consumer<Pack> packAcceptor) {
-        var hiddenPacks = new ArrayList<PathPackResources>();
-        for (Entry<IModFile, ? extends PathPackResources> e : modResourcePacks.entrySet()) {
+    private static void clientPackFinder(Map<IModFile, ? extends PackResources> modResourcePacks, Consumer<Pack> packAcceptor) {
+        var hiddenPacks = new ArrayList<PackResources>();
+        for (Entry<IModFile, ? extends PackResources> e : modResourcePacks.entrySet()) {
             IModInfo mod = e.getKey().getModInfos().get(0);
             final String name = "mod:" + mod.getModId();
             final Pack modPack = Pack.readMetaAndCreate(name, Component.literal(e.getValue().packId()), false, BuiltInPackSource.fixedResources(e.getValue()), PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT);

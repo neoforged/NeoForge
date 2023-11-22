@@ -8,7 +8,6 @@ package net.neoforged.neoforge.resource;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -16,11 +15,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.RepositorySource;
 import net.neoforged.fml.ModList;
@@ -29,18 +27,13 @@ import net.neoforged.neoforgespi.locating.IModFile;
 import org.jetbrains.annotations.NotNull;
 
 public class ResourcePackLoader {
-    private static Map<IModFile, PathPackResources> modResourcePacks;
+    private static Map<IModFile, PackResources> modResourcePacks;
 
-    public static Optional<PathPackResources> getPackFor(String modId) {
+    public static Optional<PackResources> getPackFor(String modId) {
         return Optional.ofNullable(ModList.get().getModFileById(modId)).map(IModFileInfo::getFile).map(mf -> modResourcePacks.get(mf));
     }
 
-    @Deprecated
-    public static void loadResourcePacks(PackRepository resourcePacks, BiFunction<Map<IModFile, ? extends PathPackResources>, BiConsumer<? super PathPackResources, Pack>, ? extends RepositorySource> packFinder) {
-        loadResourcePacks(resourcePacks, (map) -> packFinder.apply(map, (rp, p) -> {}));
-    }
-
-    public static void loadResourcePacks(PackRepository resourcePacks, Function<Map<IModFile, ? extends PathPackResources>, ? extends RepositorySource> packFinder) {
+    public static void loadResourcePacks(PackRepository resourcePacks, Function<Map<IModFile, ? extends PackResources>, ? extends RepositorySource> packFinder) {
         modResourcePacks = ModList.get().getModFiles().stream()
                 .filter(mf -> mf.requiredLanguageLoaders().stream().noneMatch(ls -> ls.languageName().equals("minecraft")))
                 .map(mf -> Pair.of(mf, createPackForMod(mf)))
@@ -51,16 +44,8 @@ public class ResourcePackLoader {
     }
 
     @NotNull
-    public static PathPackResources createPackForMod(IModFileInfo mf) {
-        return new PathPackResources(mf.getFile().getFileName(), true, mf.getFile().getFilePath()) {
-            private final IModFile modFile = mf.getFile();
-
-            @NotNull
-            @Override
-            protected Path resolve(@NotNull String... paths) {
-                return this.modFile.findResource(paths);
-            }
-        };
+    public static PackResources createPackForMod(IModFileInfo mf) {
+        return new PathPackResources(mf.getFile().getFileName(), mf.getFile().getSecureJar().getRootPath(), true);
     }
 
     public static List<String> getPackNames() {
