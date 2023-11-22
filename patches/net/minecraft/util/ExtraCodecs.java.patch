@@ -1,32 +1,25 @@
 --- a/net/minecraft/util/ExtraCodecs.java
 +++ b/net/minecraft/util/ExtraCodecs.java
-@@ -558,6 +_,7 @@
+@@ -558,9 +_,13 @@
  
     static class RecursiveCodec<T> implements Codec<T> {
        private final Supplier<Codec<T>> wrapped;
-+      private final java.util.concurrent.atomic.AtomicInteger recursion = new java.util.concurrent.atomic.AtomicInteger();
++      // Neo: cache name in the constructor to make sure that we call wrapped.toString() before the memoized supplier is called.
++      // Neo: as of MC 1.20.2, this is necessary for StructureTemplatePool.DIRECT_CODEC.toString() to not cause a stack overflow after loading a world once.
++      private final String name;
  
        RecursiveCodec(Function<Codec<T>, Codec<T>> p_298813_) {
           this.wrapped = Suppliers.memoize(() -> p_298813_.apply(this));
-@@ -573,9 +_,20 @@
-          return this.wrapped.get().encode(p_299151_, p_299238_, p_298526_);
++         this.name = "RecursiveCodec[" + this.wrapped + "]";
        }
  
-+      // Neo: add a recursion checker to make sure that .toString() does not cause infinite recursion if the codec is actually recursive.
-+      // Neo: as of MC 1.20.2, this is necessary for StructureTemplatePool.DIRECT_CODEC.toString() to not cause a stack overflow.
+       @Override
+@@ -575,7 +_,7 @@
+ 
        @Override
        public String toString() {
 -         return "RecursiveCodec[" + this.wrapped + "]";
-+         int recursion = this.recursion.getAndIncrement();
-+         try {
-+            if (recursion == 0) {
-+               return "RecursiveCodec[" + this.wrapped + "]";
-+            } else {
-+               return "RecursiveCodec[<infinite recursion>]";
-+            }
-+         } finally {
-+            this.recursion.decrementAndGet();
-+         }
++         return this.name;
        }
     }
  
