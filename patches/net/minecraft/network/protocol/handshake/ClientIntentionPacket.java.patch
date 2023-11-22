@@ -33,7 +33,7 @@
     public void write(FriendlyByteBuf p_134737_) {
        p_134737_.writeVarInt(this.protocolVersion);
 -      p_134737_.writeUtf(this.hostName);
-+      p_134737_.writeUtf(this.hostName + "\0" + this.fmlVersion + "\0");
++      p_134737_.writeUtf(this.hostName + "\0" + this.fmlVersion);
        p_134737_.writeShort(this.port);
        p_134737_.writeVarInt(this.intention.id());
     }
