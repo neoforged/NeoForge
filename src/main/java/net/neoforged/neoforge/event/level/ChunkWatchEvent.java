@@ -58,13 +58,11 @@ public abstract class ChunkWatchEvent extends Event {
     }
 
     /**
-     * This event is fired whenever a {@link ServerPlayer} begins watching a chunk.
+     * This event is fired whenever a {@link ServerPlayer} begins watching a chunk and the chunk is queued up for
+     * sending to the client (see {@link net.minecraft.server.level.ChunkMap#markChunkPendingToSend(ServerPlayer, LevelChunk)}).
      * <p>
-     * This event is fired when a chunk is added to the watched chunks of a {@link ServerPlayer}
-     * and the chunk's data is sent to the client (see
-     * {@code net.minecraft.server.level.ChunkMap#playerLoadedChunk(ServerPlayer, MutableObject, LevelChunk)}).
-     * <p>
-     * This event may be used to send additional chunk-related data to the client.
+     * This event must NOT be used to send additional chunk-related data to the client as the client will not be aware
+     * of the chunk yet when this event fires.
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
@@ -85,10 +83,36 @@ public abstract class ChunkWatchEvent extends Event {
     }
 
     /**
-     * This event is fired whenever a {@link ServerPlayer} stops watching a chunk.
+     * This event is fired whenever a chunk being watched by a {@link ServerPlayer} is transmitted to their client
+     * (see {@link net.minecraft.server.network.PlayerChunkSender#sendNextChunks(ServerPlayer)}).
+     * <p>
+     * This event may be used to send additional chunk-related data to the client.
+     * <p>
+     * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
+     * <p>
+     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus}
+     * only on the {@linkplain LogicalSide#SERVER logical server}.
+     **/
+    public static class Sent extends ChunkWatchEvent {
+        private final LevelChunk chunk;
+
+        public Sent(ServerPlayer player, LevelChunk chunk, ServerLevel level) {
+            super(player, chunk.getPos(), level);
+            this.chunk = chunk;
+        }
+
+        public LevelChunk getChunk() {
+            return this.chunk;
+        }
+    }
+
+    /**
+     * This event is fired whenever a {@link ServerPlayer} stops watching a chunk. The chunk this event fires for
+     * may never have actually been known to the client if the chunk goes out of range before being sent due to
+     * slow pacing of chunk sync on slow connections or to slow clients.
      * <p>
      * This event is fired when a chunk is removed from the watched chunks of an {@link ServerPlayer}
-     * in {@code net.minecraft.server.level.ChunkMap#updateChunkTracking(ServerPlayer, ChunkPos, Packet[], boolean, boolean)}.
+     * in {@link net.minecraft.server.level.ChunkMap#dropChunk(ServerPlayer, ChunkPos)}.
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
