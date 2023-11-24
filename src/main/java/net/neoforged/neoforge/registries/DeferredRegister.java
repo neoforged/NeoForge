@@ -42,8 +42,15 @@ import org.jetbrains.annotations.Nullable;
  * private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
  * private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
  *
- * public static final DeferredBlock<Block> ROCK_BLOCK = BLOCKS.registerBlock("rock", Block.Properties.create(Material.ROCK));
- * public static final DeferredItem<BlockItem> ROCK_ITEM = ITEMS.registerBlockItem(ROCK_BLOCK, new Item.Properties());
+ * // If you don't care about the actual Block class, use the simple variants
+ * public static final DeferredBlock<Block> ROCK_BLOCK = BLOCKS.registerSimpleBlock("rock", Block.Properties.create(Material.ROCK));
+ * public static final DeferredItem<BlockItem> ROCK_ITEM = ITEMS.registerSimpleBlockItem(ROCK_BLOCK, new Item.Properties());
+ *
+ * // Otherwise, use the regular (non-'simple') variants
+ * public static final DeferredBlock<SpecialRockBlock> SPECIAL_ROCK_BLOCK = BLOCKS.registerBlock("special_rock", SpecialRockBlock::new, Block.Properties.create(Material.ROCK));
+ * // (#registerSimpleBlockItem does not have a non-'simple' variant -- register an item in the usual way)
+ * public static final DeferredItem<SpecialRockItem> SPECIAL_ROCK_ITEM = ITEMS.register("special_rock", () -> new SpecialRockItem(SPECIAL_ROCK_BLOCK.get(), new Item.Properties()))
+ *
  * // (Can be DeferredHolder<BlockEntityType<?>, BlockEntityType<RockBlockEntity>> if you prefer)
  * public static final Supplier<BlockEntityType<RockBlockEntity>> ROCK_BLOCK_ENTITY = BLOCK_ENTITIES.register("rock", () -> BlockEntityType.Builder.of(RockBlockEntity::new, ROCK_BLOCK.get()).build(null));
  *
