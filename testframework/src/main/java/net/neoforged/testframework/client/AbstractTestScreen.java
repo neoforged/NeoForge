@@ -68,6 +68,11 @@ public abstract class AbstractTestScreen extends Screen {
         }
 
         @Override
+        protected boolean isValidMouseClick(int button) {
+            return button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT || button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE;
+        }
+
+        @Override
         protected int getScrollbarPosition() {
             return this.width / 2 + 144;
         }

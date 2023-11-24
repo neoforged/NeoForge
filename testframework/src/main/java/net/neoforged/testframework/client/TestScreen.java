@@ -92,6 +92,11 @@ public class TestScreen extends AbstractTestScreen {
     }
 
     @Override
+    public boolean mouseClicked(double p_94695_, double p_94696_, int p_94697_) {
+        return super.mouseClicked(p_94695_, p_94696_, p_94697_);
+    }
+
+    @Override
     public void render(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
         if (showAsGroup.getValue()) {
             filterMode.visible = false;
