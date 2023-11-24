@@ -45,7 +45,7 @@ public class LevelSensitiveLightBlockTest {
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
 
     private static final DeferredBlock<Block> LIGHT_BLOCK = BLOCKS.register("light_block", LightBlock::new);
-    private static final DeferredItem<BlockItem> LIGHT_BLOCK_ITEM = ITEMS.registerBlockItem(LIGHT_BLOCK);
+    private static final DeferredItem<BlockItem> LIGHT_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(LIGHT_BLOCK);
     private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LightBlockEntity>> LIGHT_BLOCK_ENTITY = BLOCK_ENTITIES.register(
             "light_block", () -> BlockEntityType.Builder.of(LightBlockEntity::new, LIGHT_BLOCK.get()).build(null));
 

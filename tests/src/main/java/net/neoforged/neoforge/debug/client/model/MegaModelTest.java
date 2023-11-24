@@ -75,7 +75,7 @@ public class MegaModelTest {
 
     private static final String REG_NAME = "test_block";
     public static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.register(REG_NAME, TestBlock::new);
-    public static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerBlockItem(TEST_BLOCK);
+    public static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> TEST_BLOCK_ENTITY = BLOCK_ENTITIES.register(REG_NAME, () -> new BlockEntityType<>(
             TestBlock.Entity::new, Set.of(TEST_BLOCK.get()), null));
 

@@ -28,7 +28,7 @@ public class EmissiveElementsTest {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
     public static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.register("emissive", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
-    public static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerBlockItem(TEST_BLOCK);
+    public static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
 
     public EmissiveElementsTest() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();

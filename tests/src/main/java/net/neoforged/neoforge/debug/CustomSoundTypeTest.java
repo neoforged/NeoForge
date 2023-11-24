@@ -36,10 +36,10 @@ public class CustomSoundTypeTest {
             () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, "block.sound_type_test.step")));
     private static final SoundType TEST_SOUND_TYPE = new DeferredSoundType(1.0F, 1.0F, TEST_STEP_EVENT, TEST_STEP_EVENT, TEST_STEP_EVENT, TEST_STEP_EVENT, TEST_STEP_EVENT);
 
-    private static final DeferredBlock<Block> TEST_STEP_BLOCK = BLOCKS.registerBlock("test_block",
+    private static final DeferredBlock<Block> TEST_STEP_BLOCK = BLOCKS.registerSimpleBlock("test_block",
             BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).sound(TEST_SOUND_TYPE));
 
-    private static final DeferredItem<BlockItem> TEST_STEP_BLOCK_ITEM = ITEMS.registerBlockItem(TEST_STEP_BLOCK);
+    private static final DeferredItem<BlockItem> TEST_STEP_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_STEP_BLOCK);
 
     public CustomSoundTypeTest() {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();

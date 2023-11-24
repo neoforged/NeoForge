@@ -38,7 +38,7 @@ public class ForgeChunkManagerTest {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final DeferredBlock<Block> CHUNK_LOADER_BLOCK = BLOCKS.register("chunk_loader", () -> new ChunkLoaderBlock(Properties.of().mapColor(MapColor.STONE)));
-    private static final DeferredItem<BlockItem> CHUNK_LOADER_ITEM = ITEMS.registerBlockItem(CHUNK_LOADER_BLOCK);
+    private static final DeferredItem<BlockItem> CHUNK_LOADER_ITEM = ITEMS.registerSimpleBlockItem(CHUNK_LOADER_BLOCK);
 
     public ForgeChunkManagerTest() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
