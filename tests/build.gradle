@@ -4,6 +4,7 @@ apply plugin: 'com.diffplug.spotless'
 apply plugin: 'net.neoforged.licenser'
 
 def neoforgeProject = project(':neoforge')
+def testframeworkProject = project(':testframework')
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(project.java_version))
 
@@ -29,6 +30,7 @@ sourceSets {
 
 dependencies {
     implementation neoforgeProject
+    implementation testframeworkProject
 
     implementation "org.junit.jupiter:junit-jupiter-api:${project.jupiter_api_version}"
     implementation "org.junit.vintage:junit-vintage-engine:${project.vintage_engine_version}"
@@ -83,6 +85,7 @@ runs {
 runs.configureEach {
     dependsOn(neoforgeProject.runtime.assets, neoforgeProject.runtime.natives)
     modSource neoforgeProject.sourceSets.main
+    modSource testframeworkProject.sourceSets.main
 }
 
 afterEvaluate {

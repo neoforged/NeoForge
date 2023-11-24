@@ -3,7 +3,7 @@ loaderVersion="[1,)"
 license="LGPL v2.1"
 
 [[mods]]
-    modId="eventtests"
+    modId="neotests"
 [[mods]]
     modId="client_command_test"
 [[mods]]
@@ -55,8 +55,6 @@ modId="base_block_place_event_test"
 modId="farmland_trample_test"
 [[mods]]
 modId="neighbor_notify_event_test"
-[[mods]]
-modId="block_place_event_test"
 [[mods]]
 modId="slipperiness_test"
 [[mods]]

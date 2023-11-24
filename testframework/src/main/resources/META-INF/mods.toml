@@ -1,0 +1,8 @@
+modLoader="lowcodefml"
+loaderVersion="[1,)"
+license="LGPL v2.1"
+[[mods]]
+modId="testframework"
+version="1"
+displayName="Test Framework"
+description="A test framework"
