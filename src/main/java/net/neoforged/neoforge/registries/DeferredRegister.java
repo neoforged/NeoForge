@@ -39,6 +39,12 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>Suppliers should return <em>new</em> instances every time they are invoked.
  *
+ * <p>To create an instance of this helper class, use any of the three factory methods: {@link #create(Registry, String)},
+ * {@link #create(ResourceKey, String)}, or {@link #create(ResourceLocation, String)}. There are also specialized
+ * subclasses of this helper for {@link Block}s and {@link Item}s, created through {@link #createBlocks(String)} and
+ * {@link #createItems(String)} respectively. (Be sure to <em>store the concrete type</em> of those subclasses, rather than
+ * storing them generically as {@code DeferredRegister<Block>} or {@code DeferredRegister<Item>}.)
+ *
  * <p>Here are some common examples for using this class:
  *
  * <pre>{@code
@@ -69,6 +75,9 @@ import org.jetbrains.annotations.Nullable;
  * }</pre>
  *
  * @param <T> the base registry type
+ *
+ * @see DeferredRegister.Blocks
+ * @see DeferredRegister.Items
  */
 public class DeferredRegister<T> {
     /**
