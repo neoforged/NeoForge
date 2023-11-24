@@ -31,11 +31,15 @@ import net.neoforged.bus.api.IEventBus;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A DeferredRegister is a helper class to aid in registering objects to modded and {@linkplain BuiltInRegistries vanilla registries} and provide deferred suppliers to access those objects. <br>
- * This class maintains a list of all suppliers for entries and registers them during the proper {@link RegisterEvent} event, after being {@linkplain #register(IEventBus) registered} to an event bus.
- * Suppliers should return NEW instances every time.
- * <p>
- * Example Usage:
+ * A helper class to aid in registering objects to modded and {@linkplain BuiltInRegistries vanilla registries} and
+ * provide deferred suppliers to access those objects.
+ *
+ * <p>This class maintains a list of all suppliers for entries and registers them during the proper {@link RegisterEvent}
+ * event, after being {@linkplain #register(IEventBus) registered} to an event bus.
+ *
+ * <p>Suppliers should return <em>new</em> instances every time they are invoked.
+ *
+ * <p>Here are some common examples for using this class:
  *
  * <pre>{@code
  * private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
