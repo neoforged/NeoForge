@@ -107,7 +107,7 @@ public class DeferredRegister<T> {
 
     /**
      * Factory for a specialized {@link DeferredRegister} for {@link Item Items}.
-     * 
+     *
      * @param modid The namespace for all objects registered to this {@link DeferredRegister}
      * @see #create(Registry, String)
      * @see #create(ResourceKey, String)
@@ -186,7 +186,7 @@ public class DeferredRegister<T> {
 
     /**
      * Create a {@link DeferredHolder} or an inheriting type to be stored.
-     * 
+     *
      * @param registryKey The key of the registry.
      * @param key         The resource location of the entry.
      * @return The new instance of {@link DeferredHolder} or an inheriting type.
@@ -465,7 +465,7 @@ public class DeferredRegister<T> {
          * Adds a new simple {@link BlockItem} for the given {@link Block} to the list of entries to be registered and
          * returns a {@link DeferredItem} that will be populated with the created item automatically.
          * Where the name is determined by the name of the given block.
-         * 
+         *
          * @param block      The {@link DeferredHolder} of the {@link Block} for the {@link BlockItem}.
          * @param properties The properties for the created {@link BlockItem}.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
@@ -481,7 +481,7 @@ public class DeferredRegister<T> {
          * Adds a new simple {@link BlockItem} for the given {@link Block} to the list of entries to be registered and
          * returns a {@link DeferredItem} that will be populated with the created item automatically.
          * Where the name is determined by the name of the given block and uses the default {@link Item.Properties}.
-         * 
+         *
          * @param block The {@link DeferredHolder} of the {@link Block} for the {@link BlockItem}.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
          * @see #registerSimpleBlockItem(String, Supplier, Item.Properties)
@@ -510,7 +510,7 @@ public class DeferredRegister<T> {
         /**
          * Adds a new item to the list of entries to be registered and returns a {@link DeferredItem} that will be populated with the created item automatically.
          * This method uses the default {@link Item.Properties}.
-         * 
+         *
          * @param name The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @param func A factory for the new item. The factory should not cache the created item.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
@@ -525,7 +525,7 @@ public class DeferredRegister<T> {
         /**
          * Adds a new simple {@link Item} with the given {@link Item.Properties properties} to the list of entries to be registered and
          * returns a {@link DeferredItem} that will be populated with the created item automatically.
-         * 
+         *
          * @param name  The new item's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @param props A factory for the new item. The factory should not cache the created item.
          * @return A {@link DeferredItem} that will track updates from the registry for this item.
