@@ -26,10 +26,13 @@ import org.lwjgl.glfw.GLFW;
 @Mod("neotests")
 public class TestsMod {
     public static final String TEMPLATE_3x3 = "neotests:empty_3x3";
+    public static final String TEMPLATE_9x9 = "neotests:empty_9x9";
     public static final String TEMPLATE_3x3_FLOOR = "neotests:empty_3x3_floor";
 
     @RegisterStructureTemplate(TEMPLATE_3x3)
     public static final StructureTemplate TEMPLATE3x3 = StructureTemplateBuilder.empty(3, 3, 3);
+    @RegisterStructureTemplate(TEMPLATE_9x9)
+    public static final StructureTemplate TEMPLATE9x9 = StructureTemplateBuilder.empty(9, 9, 9);
 
     @RegisterStructureTemplate(TEMPLATE_3x3_FLOOR)
     public static final StructureTemplate TEMPLATE3x3_FLOOR = StructureTemplateBuilder.withSize(3, 4, 3)

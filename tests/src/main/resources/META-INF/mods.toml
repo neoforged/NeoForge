@@ -29,8 +29,6 @@ license="LGPL v2.1"
     modId="custom_game_rule_test"
 [[mods]]
     modId="custom_preset_editor_test"
-[[mods]]
-    modId="level_sensitive_light_block_test"
 
 [[mods]]
     modId="living_swap_items_event_test"
@@ -54,8 +52,6 @@ modId="slipperiness_test"
 [[mods]]
 modId="vanilla_game_event_test"
 [[mods]]
-modId="custom_slime_block_test"
-[[mods]]
 modId="client_chat_event_test"
 [[mods]]
 modId="command_event_test"
@@ -69,8 +65,6 @@ modId="new_fluid_test"
 modId="milk_fluid_test"
 [[mods]]
 modId="data_gen_test"
-[[mods]]
-modId="piston_event_test"
 [[mods]]
 modId="flower_pot_test"
 [[mods]]
@@ -183,10 +177,6 @@ modId="lazy_capabilities_on_items"
 modId="gui_layer_test"
 [[mods]]
 modId="add_pack_finders_test"
-[[mods]]
-modId="be_onload_test"
-[[mods]]
-modId="forge_spawnegg_test"
 [[mods]]
 modId="custom_tooltip_test"
 [[mods]]

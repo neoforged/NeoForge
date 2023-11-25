@@ -58,7 +58,6 @@ runs {
 
         programArguments.addAll '--flat', '--all', '--validate',
                 '--mod', 'data_gen_test',
-                '--mod', 'piston_event_test',
                 '--mod', 'global_loot_test',
                 '--mod', 'scaffolding_test',
                 '--mod', 'custom_tag_types_test',
@@ -71,6 +70,8 @@ runs {
                 '--mod', 'structure_modifiers_test',
                 '--mod', 'custom_preset_editor_test',
                 '--mod', 'custom_predicate_test',
+                '--mod', 'neotests',
+                '--existing-mod', 'testframework',
                 '--existing', sourceSets.main.resources.srcDirs[0].absolutePath
 
         final File gameDir = project.file("runs/${name}") as File

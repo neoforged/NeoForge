@@ -23,6 +23,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.moddiscovery.ModAnnotation;
 import net.neoforged.neoforgespi.language.ModFileScanData;
+import net.neoforged.testframework.registration.RegistrationHelper;
 import org.objectweb.asm.Type;
 
 import java.lang.annotation.Annotation;
@@ -63,7 +64,8 @@ public final class Collectors {
 
         public static Collector<Test> forMethodsWithAnnotation(Class<? extends Annotation> annotation) {
             return (container, acceptor) -> findMethodsWithAnnotation(container, SIDE_FILTER, annotation)
-                    .filter(method -> method.getParameterTypes().length == 1 && method.getParameterTypes()[0].isAssignableFrom(MethodBasedTest.class))
+                    .filter(method -> (method.getParameterTypes().length == 1 && method.getParameterTypes()[0].isAssignableFrom(MethodBasedTest.class)) ||
+                            (method.getParameterTypes().length == 2 && method.getParameterTypes()[0].isAssignableFrom(MethodBasedTest.class) && method.getParameterTypes()[1] == RegistrationHelper.class))
                     .filter(method -> {
                         if (Modifier.isStatic(method.getModifiers())) {
                             return true;

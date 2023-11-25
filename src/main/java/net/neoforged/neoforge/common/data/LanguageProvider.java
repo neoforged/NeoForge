@@ -47,7 +47,7 @@ public abstract class LanguageProvider implements DataProvider {
 
     @Override
     public String getName() {
-        return "Languages: " + locale;
+        return "Languages: " + locale + " for mod: " + modid;
     }
 
     private CompletableFuture<?> save(CachedOutput cache, Path target) {

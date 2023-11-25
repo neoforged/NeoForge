@@ -5,6 +5,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
+import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -101,6 +102,16 @@ public interface DynamicTest extends Test {
     default void registerGameTestTemplate(Supplier<StructureTemplateBuilder> builder) {
         framework().dynamicStructures().register(new ResourceLocation(asGameTest().structureName()), () -> builder.get().build());
     }
+
+    /**
+     * {@return a new registration helper with the given {@code modId}}
+     */
+    RegistrationHelper registrationHelper(String modId);
+
+    /**
+     * {@return a new registration helper with a computed mod ID}
+     */
+    RegistrationHelper registrationHelper();
 
     /**
      * {@return if this test is currently running as a GameTest}

@@ -313,6 +313,7 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
     public void changeStatus(Test test, Test.Status newStatus, @Nullable Entity changer) {
         final Test.Status oldStatus = tests.getStatus(test.id());
         if (oldStatus.equals(newStatus)) return; // If the status is the same, don't waste power
+        if (!tests.isEnabled(test.id())) return; // If the test is disabled, we don't care
 
         tests.setStatus(test.id(), newStatus);
 

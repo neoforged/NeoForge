@@ -16,7 +16,6 @@ public class MethodBasedTest extends AbstractTest.Dynamic {
         this.method = method;
 
         configureFrom(AnnotationHolder.method(method));
-        configureGameTest(method.getAnnotation(GameTest.class));
 
         this.handle = HackyReflection.handle(method);
     }
@@ -29,8 +28,15 @@ public class MethodBasedTest extends AbstractTest.Dynamic {
     @Override
     public void init(@Nonnull TestFramework framework) {
         super.init(framework);
+
+        configureGameTest(method.getAnnotation(GameTest.class));
+
         try {
-            this.handle.invoke(this);
+            if (handle.type().parameterCount() == 1) {
+                this.handle.invoke(this);
+            } else {
+                this.handle.invoke(this, registrationHelper());
+            }
         } catch (Throwable e) {
             throw new RuntimeException("Encountered exception initiating method-based test: " + method, e);
         }

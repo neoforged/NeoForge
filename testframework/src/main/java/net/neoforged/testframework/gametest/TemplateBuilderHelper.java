@@ -24,12 +24,18 @@ public interface TemplateBuilderHelper<T extends TemplateBuilderHelper<T>> {
     }
 
     default T placeSustainedWater(int x, int y, int z, BlockState surrounding) {
-        set(x, y - 1, z, surrounding, null);
+        set(x, y, z, Blocks.WATER.defaultBlockState(), null);
+        return placeWaterConfinement(x, y, z, surrounding, true);
+    }
+
+    default T placeWaterConfinement(int x, int y, int z, BlockState surrounding, boolean bottom) {
+        if (bottom) {
+            set(x, y - 1, z, surrounding, null);
+        }
         set(x, y, z + 1, surrounding, null);
         set(x, y, z - 1, surrounding, null);
         set(x + 1, y, z, surrounding, null);
         set(x - 1, y, z, surrounding, null);
-        set(x, y, z, Blocks.WATER.defaultBlockState(), null);
         return (T) this;
     }
 }

@@ -24,6 +24,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.testframework.impl.reg.RegistrationHelperImpl;
+import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -52,11 +54,6 @@ public abstract class AbstractTest implements Test {
 
     protected AbstractTest() {
         configureFrom(AnnotationHolder.clazz(getClass()));
-
-        try {
-            final Method onGameTestMethod = getClass().getDeclaredMethod("onGameTest", GameTestHelper.class);
-            configureGameTest(onGameTestMethod.getAnnotation(GameTest.class));
-        } catch (Exception ignored) {}
     }
 
     protected final void configureFrom(AnnotationHolder holder) {
@@ -87,16 +84,25 @@ public abstract class AbstractTest implements Test {
         if (gameTest == null) return;
         this.gameTestData = new GameTestData(
                 gameTest.batch().equals("defaultBatch") ? null : gameTest.batch(),
-                gameTest.templateNamespace().isBlank() ? gameTest.template() : new ResourceLocation(gameTest.templateNamespace(), gameTest.template()).toString(),
+                gameTest.templateNamespace().isBlank() ? gameTestTemplate(gameTest) : new ResourceLocation(gameTest.templateNamespace(), gameTest.template()).toString(),
                 gameTest.required(), gameTest.attempts(), gameTest.requiredSuccesses(),
                 this::onGameTest, gameTest.timeoutTicks(), gameTest.setupTicks(),
                 StructureUtils.getRotationForRotationSteps(gameTest.rotationSteps())
         );
     }
 
+    protected String gameTestTemplate(GameTest gameTest) {
+        return gameTest.template();
+    }
+
     @Override
     public void init(TestFramework framework) {
         this.framework = framework;
+
+        try {
+            final Method onGameTestMethod = getClass().getDeclaredMethod("onGameTest", GameTestHelper.class);
+            configureGameTest(onGameTestMethod.getAnnotation(GameTest.class));
+        } catch (Exception ignored) {}
     }
 
     @Override
@@ -228,6 +234,42 @@ public abstract class AbstractTest implements Test {
         @Override
         public void onGameTest(Consumer<GameTestHelper> consumer) {
             this.onGameTest.add(consumer);
+        }
+
+        @Override
+        public RegistrationHelper registrationHelper(String modId) {
+            final var helper = new RegistrationHelperImpl(framework, modId);
+            framework.modEventBus().register(helper);
+            return helper;
+        }
+
+        @Override
+        public RegistrationHelper registrationHelper() {
+            return registrationHelper(createModId());
+        }
+
+        protected String createModId() {
+            final StringBuilder modId = new StringBuilder()
+                    .append(framework().id().getNamespace()).append('_');
+            boolean isInUpper = false;
+            for (char c : id().toCharArray()) {
+                if (Character.isUpperCase(c)) {
+                    if (!isInUpper) {
+                        isInUpper = true;
+                        modId.append('_');
+                    }
+                    modId.append(Character.toLowerCase(c));
+                } else {
+                    isInUpper = false;
+                    modId.append(c);
+                }
+            }
+            return modId.toString();
+        }
+
+        @Override
+        protected String gameTestTemplate(GameTest gameTest) {
+            return gameTest.template().isBlank() ? createModId() + ":gametest_template" : gameTest.template();
         }
 
         private boolean isDuringGameTest;
