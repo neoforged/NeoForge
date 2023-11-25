@@ -47,7 +47,7 @@ public class DeferredRegistryTest {
     private static final DeferredRegister<PosRuleTestType<?>> POS_RULE_TEST_TYPES = DeferredRegister.create(Registries.POS_RULE_TEST, MODID);
 
     private static final DeferredBlock<Block> BLOCK = BLOCKS.register("test", () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)));
-    private static final DeferredItem<BlockItem> ITEM = ITEMS.registerBlockItem(BLOCK);
+    private static final DeferredItem<BlockItem> ITEM = ITEMS.registerSimpleBlockItem(BLOCK);
     private static final DeferredHolder<Custom, Custom> CUSTOM = CUSTOMS.register("test", () -> new Custom() {});
     // Should never be created as the registry doesn't exist - this should silently fail and remain empty
     private static final DeferredHolder<Object, Object> DOESNT_EXIST = DOESNT_EXIST_REG.register("test", Object::new);

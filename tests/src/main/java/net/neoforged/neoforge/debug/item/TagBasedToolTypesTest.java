@@ -55,11 +55,11 @@ public class TagBasedToolTypesTest {
             List.of(Tiers.DIAMOND), List.of());
 
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    private static final DeferredBlock<Block> STONE = BLOCKS.registerBlock("test_stone", BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).requiresCorrectToolForDrops().strength(1.5F, 6.0F));
+    private static final DeferredBlock<Block> STONE = BLOCKS.registerSimpleBlock("test_stone", BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).requiresCorrectToolForDrops().strength(1.5F, 6.0F));
 
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     @SuppressWarnings("unused")
-    private static final DeferredItem<BlockItem> ORE_ITEM = ITEMS.registerBlockItem(STONE);
+    private static final DeferredItem<BlockItem> ORE_ITEM = ITEMS.registerSimpleBlockItem(STONE);
     private static final DeferredItem<Item> TOOL = ITEMS.register("test_tool", () -> {
         return new DiggerItem(1, 1, MY_TIER, MINEABLE_TAG, new Item.Properties()) {
             @Override

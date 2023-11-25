@@ -53,7 +53,7 @@ public class GameTestTest {
     private static final DeferredBlock<Block> ENERGY_BLOCK = BLOCKS.register("energy_block",
             () -> new EnergyBlock(Properties.of().mapColor(MapColor.STONE)));
     @SuppressWarnings("unused")
-    private static final DeferredItem<BlockItem> ENERGY_BLOCK_ITEM = ITEMS.registerBlockItem(ENERGY_BLOCK);
+    private static final DeferredItem<BlockItem> ENERGY_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(ENERGY_BLOCK);
     private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> ENERGY_BLOCK_ENTITY = BLOCK_ENTITIES.register("energy",
             () -> BlockEntityType.Builder.of(EnergyBlockEntity::new, ENERGY_BLOCK.get()).build(null));
 

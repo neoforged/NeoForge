@@ -38,7 +38,7 @@ public class CustomColorResolverTest {
         ITEMS.register(modBus);
         BLOCKS.register(modBus);
 
-        ITEMS.registerBlockItem(BLOCK);
+        ITEMS.registerSimpleBlockItem(BLOCK);
     }
 
     @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)

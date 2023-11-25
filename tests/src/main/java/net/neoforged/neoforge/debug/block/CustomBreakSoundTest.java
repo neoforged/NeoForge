@@ -40,7 +40,7 @@ public class CustomBreakSoundTest {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
     private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.registerBlock("testblock", TestBlock::new, BlockBehaviour.Properties.of());
-    private static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerBlockItem(TEST_BLOCK);
+    private static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
 
     public CustomBreakSoundTest() {
         if (ENABLED) {

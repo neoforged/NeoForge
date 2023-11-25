@@ -36,7 +36,7 @@ public class ValidRailShapeTest {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
     private static final DeferredBlock<Block> RAIL_SLOPE_BLOCK = BLOCKS.register("rail_slope", RailSlopeBlock::new);
-    private static final DeferredItem<BlockItem> RAIL_SLOPE_ITEM = ITEMS.registerBlockItem(RAIL_SLOPE_BLOCK);
+    private static final DeferredItem<BlockItem> RAIL_SLOPE_ITEM = ITEMS.registerSimpleBlockItem(RAIL_SLOPE_BLOCK);
 
     public ValidRailShapeTest() {
         if (ENABLED) {

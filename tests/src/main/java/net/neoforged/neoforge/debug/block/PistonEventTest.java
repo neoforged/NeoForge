@@ -55,7 +55,7 @@ public class PistonEventTest {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
     private static final DeferredBlock<Block> SHIFT_ON_MOVE = BLOCKS.register(blockName, () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)));
-    private static final DeferredItem<BlockItem> SHIFT_ON_MOVE_ITEM = ITEMS.registerBlockItem(SHIFT_ON_MOVE);
+    private static final DeferredItem<BlockItem> SHIFT_ON_MOVE_ITEM = ITEMS.registerSimpleBlockItem(SHIFT_ON_MOVE);
 
     public PistonEventTest() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
