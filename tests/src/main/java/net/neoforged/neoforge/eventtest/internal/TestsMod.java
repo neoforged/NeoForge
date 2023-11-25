@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -25,9 +26,15 @@ import org.lwjgl.glfw.GLFW;
 @Mod("neotests")
 public class TestsMod {
     public static final String TEMPLATE_3x3 = "neotests:empty_3x3";
+    public static final String TEMPLATE_3x3_FLOOR = "neotests:empty_3x3_floor";
 
     @RegisterStructureTemplate(TEMPLATE_3x3)
     public static final StructureTemplate TEMPLATE3x3 = StructureTemplateBuilder.empty(3, 3, 3);
+
+    @RegisterStructureTemplate(TEMPLATE_3x3_FLOOR)
+    public static final StructureTemplate TEMPLATE3x3_FLOOR = StructureTemplateBuilder.withSize(3, 4, 3)
+            .fill(0, 0, 0, 3, 1, 3, Blocks.IRON_BLOCK.defaultBlockState())
+            .build();
 
     public TestsMod(IEventBus modBus, ModContainer container) {
         final TestFrameworkInternal framework = FrameworkConfiguration.builder(new ResourceLocation("neotests:tests"))

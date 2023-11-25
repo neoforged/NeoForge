@@ -50,12 +50,6 @@ modId="containertypetest"
 [[mods]]
 modId="potion_event_test"
 [[mods]]
-modId="base_block_place_event_test"
-[[mods]]
-modId="farmland_trample_test"
-[[mods]]
-modId="neighbor_notify_event_test"
-[[mods]]
 modId="slipperiness_test"
 [[mods]]
 modId="vanilla_game_event_test"
@@ -117,8 +111,6 @@ modId="custom_head_test"
 modId="raid_enum_test"
 [[mods]]
 modId="player_name_event_test"
-[[mods]]
-modId="tool_interact_test"
 [[mods]]
 modId="custom_elytra_test"
 [[mods]]

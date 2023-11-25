@@ -61,6 +61,13 @@ public interface DynamicTest extends Test {
     void whenEnabled(final EnabledListener whenEnabled);
 
     /**
+     * {@return a listener group used to subscribe to events when the test is enabled}
+     *
+     * @see DynamicTest#whenEnabled(EnabledListener)
+     */
+    EventListenerGroup eventListeners();
+
+    /**
      * Registers a listener to run when this test is disabled.
      *
      * @param whenDisabled the listener

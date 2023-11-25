@@ -1,5 +1,7 @@
 package net.neoforged.testframework.impl;
 
+import net.minecraft.gametest.framework.GameTestInfo;
+import net.minecraft.gametest.framework.GameTestListener;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.gametest.GameTestData;
@@ -12,6 +14,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 @ApiStatus.Internal
 public final class GameTestRegistration {
@@ -33,7 +36,31 @@ public final class GameTestRegistration {
                             test.id(), data.structureName(),
                             data.rotation(), data.maxTicks(), data.setupTicks(),
                             data.required(), data.requiredSuccesses(), data.maxAttempts(),
-                            helper -> {
+                            rethrow(helper -> {
+                                HackyReflection.addListener(helper, new GameTestListener() {
+                                    @Override
+                                    public void testStructureLoaded(GameTestInfo info) {
+
+                                    }
+
+                                    @Override
+                                    public void testPassed(GameTestInfo info) {
+                                        if (!framework.tests().getStatus(test.id()).result().passed()) {
+                                            framework.changeStatus(test, new Test.Status(Test.Result.PASSED, "GameTest passed"), null);
+                                        }
+                                        disable();
+                                    }
+
+                                    @Override
+                                    public void testFailed(GameTestInfo info) {
+                                        disable();
+                                    }
+
+                                    private void disable() {
+                                        framework.setEnabled(test, false, null);
+                                    }
+                                });
+
                                 framework.setEnabled(test, true, null);
                                 framework.changeStatus(test, Test.Status.DEFAULT, null); // Reset the status, just in case
 
@@ -43,15 +70,23 @@ public final class GameTestRegistration {
                                     framework.tests().setStatus(test.id(), new Test.Status(Test.Result.FAILED, assertion.getMessage()));
                                     throw assertion;
                                 }
-
-                                final Test.Status status = framework.tests().getStatus(test.id());
-                                if (status.result().passed()) helper.succeed();
-                                else if (status.result().failed()) helper.fail(status.message());
-                            }
+                            }, GameTestAssertException.class, ex -> framework.setEnabled(test, false, null))
                     ));
                 }
             }
         }
         return tests;
+    }
+
+
+    private static <T, E extends RuntimeException> Consumer<T> rethrow(Consumer<T> consumer, Class<E> exClass, Consumer<E> ex) {
+        return t -> {
+            try {
+                consumer.accept(t);
+            } catch (RuntimeException e) {
+                if (exClass.isInstance(e)) ex.accept(exClass.cast(e));
+                throw e;
+            }
+        };
     }
 }

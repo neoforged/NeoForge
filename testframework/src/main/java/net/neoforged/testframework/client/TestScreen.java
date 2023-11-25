@@ -20,8 +20,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class TestScreen extends AbstractTestScreen {
-    protected FocusedEditBox activeTextField;
-    protected FocusedEditBox searchTextField;
+    protected EditBox searchTextField;
 
     private final List<Group> groups;
     protected GroupableList groupableList;
@@ -65,7 +64,7 @@ public class TestScreen extends AbstractTestScreen {
         groupableList.resetRows("");
         this.addWidget(groupableList);
 
-        this.searchTextField = new FocusedEditBox(this.font, this.width / 2 - 110, 22, 220, 20, Component.literal("Search"));
+        this.searchTextField = new EditBox(this.font, this.width / 2 - 110, 22, 220, 20, Component.literal("Search"));
         this.searchTextField.setResponder(s -> {
             suggestionProvider.accept(s);
             groupableList.resetRows(s.toLowerCase(Locale.ROOT));
@@ -108,22 +107,6 @@ public class TestScreen extends AbstractTestScreen {
         pPoseStack.drawCenteredString(font, getTitle(), this.width / 2, 7, 0xffffff);
     }
 
-    protected class FocusedEditBox extends EditBox {
-        public FocusedEditBox(Font font, int x, int y, int width, int height, Component label) {
-            super(font, x, y, width, height, label);
-        }
-
-//        @Override
-//        protected void onFocusedChanged(boolean focused) {
-//            super.onFocusedChanged(focused);
-//            if (focused) {
-//                if (TestScreen.this.activeTextField != null && TestScreen.this.activeTextField != this) {
-//                    TestScreen.this.activeTextField.setFocused(false);
-//                }
-//                TestScreen.this.activeTextField = this;
-//            }
-//        }
-    }
 
     public static <T> void updateSearchTextFieldSuggestion(EditBox editBox, String value, List<T> entries, Function<T, String> nameProvider) {
         if (!value.isEmpty()) {

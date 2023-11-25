@@ -1,6 +1,7 @@
 package net.neoforged.testframework;
 
 import net.neoforged.testframework.conf.FrameworkConfiguration;
+import net.neoforged.testframework.gametest.DynamicStructureTemplates;
 import net.neoforged.testframework.group.Group;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.resources.ResourceLocation;
@@ -66,6 +67,11 @@ public interface TestFramework {
      * @apiNote this is set in {@link TestFrameworkInternal#init(IEventBus, ModContainer)}
      */
     IEventBus modEventBus();
+
+    /**
+     * {@return a registrar for in-code structure templates}
+     */
+    DynamicStructureTemplates dynamicStructures();
 
     /**
      * Interface used for accessing a framework's tests.

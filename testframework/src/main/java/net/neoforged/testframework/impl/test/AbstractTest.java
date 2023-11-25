@@ -1,5 +1,6 @@
 package net.neoforged.testframework.impl.test;
 
+import com.google.common.base.Suppliers;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.TestFramework;
@@ -8,6 +9,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.annotation.WithListener;
 import net.neoforged.testframework.gametest.GameTestData;
+import net.neoforged.testframework.impl.EventListenerGroupImpl;
 import net.neoforged.testframework.impl.HackyReflection;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
 import net.neoforged.testframework.impl.TestFrameworkInternal;
@@ -33,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @ParametersAreNonnullByDefault
@@ -190,6 +193,17 @@ public abstract class AbstractTest implements Test {
         @Override
         public void whenEnabled(EnabledListener whenEnabled) {
             this.enabledListeners.add(whenEnabled);
+        }
+
+        private final Supplier<EventListenerGroup> eventListeners = Suppliers.memoize(() -> {
+            final var col = new EventListenerGroupImpl();
+            whenEnabled(l -> ((EventListenerGroupImpl) l).copyFrom(col));
+            return col;
+        });
+
+        @Override
+        public EventListenerGroup eventListeners() {
+            return eventListeners.get();
         }
 
         private final List<Runnable> disabledListeners = new ArrayList<>();

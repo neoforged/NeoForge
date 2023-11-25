@@ -147,8 +147,17 @@ public interface Test extends Groupable {
 
             /**
              * Unregisters all the listeners added through this collector.
+             *
+             * @param bus the bus to unregister from
              */
-            void unregisterAll();
+            void unregisterAll(IEventBus bus);
+
+            /**
+             * Registers all the listeners added through this collector.
+             *
+             * @param bus the bus to register
+             */
+            void registerAll(IEventBus bus);
 
             /**
              * Add a consumer listener with the specified {@link EventPriority} and potentially cancelled events. <br>

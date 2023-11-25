@@ -187,7 +187,7 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
                 final Iterator<Component> tests = newTests.stream()
                         .limit(20)
                         .flatMap(it -> tests().byId(it).stream())
-                        .<Component>map(it -> Component.literal("• ")
+                        .<Component>map(it -> Component.literal("- ")
                                 .append(it.visuals().title()).append(" - ").append(tests().isEnabled(it.id()) ?
                                         Component.literal("disable")
                                                 .withStyle(style -> style
@@ -223,6 +223,11 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
     }
 
     @Override
+    public DynamicStructureTemplates dynamicStructures() {
+        return structures;
+    }
+
+    @Override
     public String commandName() {
         return commandName;
     }
@@ -240,6 +245,7 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
         );
 
         this.modBus = modBus;
+        tests.buses = Map.of(Mod.EventBusSubscriber.Bus.FORGE, NeoForge.EVENT_BUS, Mod.EventBusSubscriber.Bus.MOD, modBus);
 
         byStage.get(OnInit.Stage.BEFORE_SETUP).forEach(cons -> cons.accept(this));
 
@@ -370,6 +376,7 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
         private final Map<String, EventListenerGroupImpl> collectors = new HashMap<>();
         private final Set<String> enabled = Collections.synchronizedSet(new LinkedHashSet<>());
         private final Map<String, Test.Status> statuses = new ConcurrentHashMap<>();
+        private Map<Mod.EventBusSubscriber.Bus, IEventBus> buses = Map.of();
 
         private final Set<TestListener> globalListeners = new HashSet<>();
 
@@ -405,10 +412,9 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
         @Override
         public void enable(String id) {
             if (enabled.contains(id)) return;
-            final EventListenerGroupImpl collector = collectors.computeIfAbsent(id, it -> new EventListenerGroupImpl()
-                    .add(Mod.EventBusSubscriber.Bus.MOD, modBus)
-                    .add(Mod.EventBusSubscriber.Bus.FORGE, NeoForge.EVENT_BUS));
+            final EventListenerGroupImpl collector = collectors.computeIfAbsent(id, it -> new EventListenerGroupImpl());
             byId(id).ifPresent(test -> test.onEnabled(collector));
+            collector.register(buses);
             enabled.add(id);
         }
 
@@ -416,7 +422,7 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
         public void disable(String id) {
             if (!enabled.contains(id)) return;
             byId(id).ifPresent(Test::onDisabled);
-            Optional.ofNullable(collectors.get(id)).ifPresent(EventListenerGroupImpl::unregister);
+            Optional.ofNullable(collectors.get(id)).ifPresent(col -> col.unregister(buses));
             enabled.remove(id);
         }
 

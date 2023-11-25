@@ -19,8 +19,10 @@ public record SummaryDumper(TestFrameworkInternal framework) {
                 .addRow("Test ID", "Status", "Extra Information");
 
 
-        enabledTests().forEach(test -> {
+        framework.tests().all().forEach(test -> {
             final Test.Status status = framework.tests().getStatus(test.id());
+            if (!framework.tests().isEnabled(test.id()) && status.result() == Test.Result.NOT_PROCESSED) return;
+
             final String actualMessage = status.message().isBlank() ? "-" : status.message();
             builder.addRow(test.id(), colouredStatusResult(status), switch (status.result()) {
                 case FAILED -> "<font color=red>" + actualMessage + "</red>";

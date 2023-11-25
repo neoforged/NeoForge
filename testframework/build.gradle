@@ -1,5 +1,7 @@
-apply plugin: 'net.neoforged.gradle.platform'
-apply plugin: 'java'
+plugins {
+    id 'java'
+    id 'net.neoforged.gradle.platform'
+}
 
 repositories {
     maven {
