@@ -92,11 +92,6 @@ public class ItemTests {
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.DISPENSER.defaultBlockState().setValue(DispenserBlock.FACING, Direction.UP)))
                 .thenExecute(() -> ((DispenserBlockEntity) helper.getBlockEntity(new BlockPos(1, 1, 1))).setItem(0, cowBucket.get().getDefaultInstance()))
                 .thenExecute(() -> helper.pulseRedstone(new BlockPos(1, 1, 2), 3))
-//                .thenExecute(() -> cowBucket.get().emptyContents(
-//                        helper.makeMockPlayer(), helper.getLevel(), helper.absolutePos(new BlockPos(1, 2, 1)),
-//                        new BlockHitResult(helper.absoluteVec(new BlockPos(1, 2, 1).getCenter()), Direction.UP, helper.absolutePos(new BlockPos(1, 2, 1)), true),
-//                        cowBucket.get().getDefaultInstance()
-//                ))
                 .thenIdle(5)
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.WATER, new BlockPos(1, 2, 1)))
                 .thenExecute(() -> helper.assertEntityPresent(EntityType.COW, 1, 3, 1))
