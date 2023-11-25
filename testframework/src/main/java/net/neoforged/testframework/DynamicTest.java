@@ -2,11 +2,14 @@ package net.neoforged.testframework;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * A special type of {@linkplain Test test} which may only be linked to one {@linkplain TestFramework framework} at a time. <br>
@@ -80,6 +83,24 @@ public interface DynamicTest extends Test {
      * @param consumer the listener
      */
     void onGameTest(final Consumer<GameTestHelper> consumer);
+
+    /**
+     * Register the template for this game test.
+     *
+     * @param builder the builder of the template
+     */
+    default void registerGameTestTemplate(StructureTemplateBuilder builder) {
+        framework().dynamicStructures().register(new ResourceLocation(asGameTest().structureName()), builder.build());
+    }
+
+    /**
+     * Register the template for this game test.
+     *
+     * @param builder a supplier of the builder of the template
+     */
+    default void registerGameTestTemplate(Supplier<StructureTemplateBuilder> builder) {
+        framework().dynamicStructures().register(new ResourceLocation(asGameTest().structureName()), () -> builder.get().build());
+    }
 
     /**
      * {@return if this test is currently running as a GameTest}
