@@ -1,6 +1,7 @@
 package net.neoforged.testframework.impl.test;
 
 import net.neoforged.testframework.TestFramework;
+import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.impl.HackyReflection;
 import net.minecraft.gametest.framework.GameTest;
 
@@ -29,7 +30,7 @@ public class MethodBasedTest extends AbstractTest.Dynamic {
     public void init(@Nonnull TestFramework framework) {
         super.init(framework);
 
-        configureGameTest(method.getAnnotation(GameTest.class));
+        configureGameTest(method.getAnnotation(GameTest.class), method.getAnnotation(EmptyTemplate.class));
 
         try {
             if (handle.type().parameterCount() == 1) {

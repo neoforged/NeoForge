@@ -26,12 +26,12 @@ import java.util.Objects;
 
 @ForEachTest(groups = BlockTests.GROUP + ".piston")
 public class PistonTests {
+    @GameTest
     @TestHolder(description = {
             "This test blocks pistons from moving cobblestone at all except indirectly.",
             "This test adds a block that moves upwards when pushed by a piston.",
             "This test mod makes black wool pushed by a piston drop after being pushed."
     })
-    @GameTest(template = "neotests:piston_event")
     static void pistonEvent(final DynamicTest test, final RegistrationHelper reg) {
         final var shiftOnPistonMove = reg.blocks().registerBlock("shift_on_piston_move", BlockBehaviour.Properties.of())
                 .withDefaultWhiteModel()

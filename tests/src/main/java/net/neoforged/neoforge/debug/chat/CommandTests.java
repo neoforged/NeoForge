@@ -21,15 +21,16 @@ import net.neoforged.neoforge.server.command.EnumArgument;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
+import net.neoforged.testframework.gametest.EmptyTemplate;
 
 import java.util.List;
 import java.util.UUID;
 
-@ForEachTest(groups = ChatTests.GROUP)
-public class ChatTests {
-    public static final String GROUP = "chat";
+@ForEachTest(groups = "chat.command")
+public class CommandTests {
 
-    @GameTest(template = TestsMod.TEMPLATE_3x3)
+    @GameTest
+    @EmptyTemplate
     @TestHolder(description = {"Tests if the command event works", "Redirects /attribute with no arguments to effect"})
     static void commandEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final CommandEvent event) -> {
@@ -73,7 +74,8 @@ public class ChatTests {
         });
     }
 
-    @GameTest(template = TestsMod.TEMPLATE_3x3)
+    @GameTest
+    @EmptyTemplate
     @TestHolder(description = {"Tests if the forge enum argument works", "Adds a /enumargumenttest command with a single {NV, BLD} enum argument"})
     static void enumArgument(final DynamicTest test) {
         enum TestArgument {

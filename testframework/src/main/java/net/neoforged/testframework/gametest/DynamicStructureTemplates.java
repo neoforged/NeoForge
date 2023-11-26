@@ -54,6 +54,10 @@ public class DynamicStructureTemplates {
         return templates.keySet().stream();
     }
 
+    public boolean contains(ResourceLocation id) {
+        return templates.containsKey(id);
+    }
+
     public void register(ResourceLocation id, Supplier<StructureTemplate> template) {
         templates.put(id, template);
     }

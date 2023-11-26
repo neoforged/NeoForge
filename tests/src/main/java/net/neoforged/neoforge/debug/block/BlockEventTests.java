@@ -20,6 +20,7 @@ import net.neoforged.neoforge.eventtest.internal.TestsMod;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
+import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 
 @ForEachTest(groups = BlockTests.GROUP + ".event")
@@ -84,7 +85,8 @@ public class BlockEventTests {
                 .thenSucceed());
     }
 
-    @GameTest(template = TestsMod.TEMPLATE_3x3_FLOOR)
+    @GameTest
+    @EmptyTemplate(floor = true, value = "3x3")
     @TestHolder(description = "Tests if the neighbor notify event is fired")
     public static void neighborNotifyEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final BlockEvent.NeighborNotifyEvent event) -> {
@@ -107,7 +109,7 @@ public class BlockEventTests {
                 .thenSucceed());
     }
 
-    @GameTest(template = "neotests:farmland_trample", timeoutTicks = 150)
+    @GameTest(timeoutTicks = 150)
     @TestHolder(description = "Tests if the farmland trample event is fired")
     public static void farmlandTrampleEvent(final DynamicTest test) {
         test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 4, 3)

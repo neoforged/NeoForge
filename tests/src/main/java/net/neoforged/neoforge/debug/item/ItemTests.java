@@ -41,6 +41,7 @@ import net.neoforged.neoforge.eventtest.internal.TestsMod;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
+import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
@@ -96,10 +97,11 @@ public class ItemTests {
                 .thenSucceed());
     }
 
+    @GameTest
+    @EmptyTemplate
     @TestHolder(description = {
             "Tests if the forge spawn egg works"
     })
-    @GameTest(template = TestsMod.TEMPLATE_3x3)
     static void forgeSpawnEggTest(final DynamicTest test, final RegistrationHelper reg) {
         final var testEntity = reg.entityTypes().registerType("test_entity", () -> EntityType.Builder.of(Pig::new, MobCategory.CREATURE)
                 .sized(1, 1)).withAttributes(() -> {

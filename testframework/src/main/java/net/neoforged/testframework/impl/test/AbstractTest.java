@@ -1,6 +1,7 @@
 package net.neoforged.testframework.impl.test;
 
 import com.google.common.base.Suppliers;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.TestFramework;
@@ -8,7 +9,9 @@ import net.neoforged.testframework.TestListener;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.annotation.WithListener;
+import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTestData;
+import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.impl.EventListenerGroupImpl;
 import net.neoforged.testframework.impl.HackyReflection;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
@@ -80,11 +83,30 @@ public abstract class AbstractTest implements Test {
         listeners.addAll(Stream.of(parent.listeners()).map(TestListener::instantiate).toList());
     }
 
-    protected final void configureGameTest(@Nullable GameTest gameTest) {
+    protected final void configureGameTest(@Nullable GameTest gameTest, @Nullable EmptyTemplate template) {
         if (gameTest == null) return;
+
+        ResourceLocation templateFromPattern = null;
+        if (template != null) {
+            var size = EmptyTemplate.Size.parse(template.value());
+            if (template.floor()) {
+                templateFromPattern = new ResourceLocation(framework.id().getNamespace(), "empty_" + size + "_floor");
+                if (!framework.dynamicStructures().contains(templateFromPattern)) {
+                    framework.dynamicStructures().register(templateFromPattern, StructureTemplateBuilder.withSize(size.length(), size.height() + 1, size.width())
+                            .fill(0, 0, 0, size.length(), 1, size.width(), Blocks.IRON_BLOCK.defaultBlockState())
+                            .build());
+                }
+            } else {
+                templateFromPattern = new ResourceLocation(framework.id().getNamespace(), "empty_" + size);
+                if (!framework.dynamicStructures().contains(templateFromPattern)) {
+                    framework.dynamicStructures().register(templateFromPattern, StructureTemplateBuilder.empty(size.length(), size.height(), size.width()));
+                }
+            }
+        }
+
         this.gameTestData = new GameTestData(
                 gameTest.batch().equals("defaultBatch") ? null : gameTest.batch(),
-                gameTest.templateNamespace().isBlank() ? gameTestTemplate(gameTest) : new ResourceLocation(gameTest.templateNamespace(), gameTest.template()).toString(),
+                gameTest.templateNamespace().isBlank() ? (templateFromPattern == null ? gameTestTemplate(gameTest) : templateFromPattern.toString()) : new ResourceLocation(gameTest.templateNamespace(), gameTest.template()).toString(),
                 gameTest.required(), gameTest.attempts(), gameTest.requiredSuccesses(),
                 this::onGameTest, gameTest.timeoutTicks(), gameTest.setupTicks(),
                 StructureUtils.getRotationForRotationSteps(gameTest.rotationSteps())
@@ -101,7 +123,7 @@ public abstract class AbstractTest implements Test {
 
         try {
             final Method onGameTestMethod = getClass().getDeclaredMethod("onGameTest", GameTestHelper.class);
-            configureGameTest(onGameTestMethod.getAnnotation(GameTest.class));
+            configureGameTest(onGameTestMethod.getAnnotation(GameTest.class), onGameTestMethod.getAnnotation(EmptyTemplate.class));
         } catch (Exception ignored) {}
     }
 
