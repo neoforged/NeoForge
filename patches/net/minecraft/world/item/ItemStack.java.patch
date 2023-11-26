@@ -58,15 +58,19 @@
           this.setDamageValue(this.getDamageValue());
        }
     }
-@@ -232,6 +_,15 @@
+@@ -232,6 +_,19 @@
     }
  
     public InteractionResult useOn(UseOnContext p_41662_) {
++      var useItemOnBlockEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_AFTER_BLOCK));
++      if (useItemOnBlockEvent.isCanceled()) return useItemOnBlockEvent.getCancellationResult();
 +      if (!p_41662_.getLevel().isClientSide) return net.neoforged.neoforge.common.CommonHooks.onPlaceItemIntoWorld(p_41662_);
 +      return onItemUse(p_41662_, (c) -> getItem().useOn(p_41662_));
 +   }
 +
 +   public InteractionResult onItemUseFirst(UseOnContext p_41662_) {
++      var useItemOnBlockEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_BEFORE_BLOCK));
++      if (useItemOnBlockEvent.isCanceled()) return useItemOnBlockEvent.getCancellationResult();
 +      return onItemUse(p_41662_, (c) -> getItem().onItemUseFirst(this, p_41662_));
 +   }
 +
