@@ -67,6 +67,12 @@ public interface IGameTestHelperExtension {
         }
     }
 
+    default ServerPlayer makeTickingMockServerPlayerInCorner(GameType gameType) {
+        final ServerPlayer player = makeTickingMockServerPlayerInLevel(gameType);
+        player.moveTo(self().absoluteVec(new BlockPos(0, 1, 0).getCenter()).subtract(0, 0.5, 0));
+        return player;
+    }
+
     default ServerPlayer makeTickingMockServerPlayerInLevel(GameType gameType) {
         CommonListenerCookie commonlistenercookie = CommonListenerCookie.createInitial(new GameProfile(UUID.randomUUID(), "test-mock-player"));
         ServerPlayer serverplayer = new ServerPlayer(

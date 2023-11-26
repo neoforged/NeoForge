@@ -18,8 +18,6 @@ license="LGPL v2.1"
     modId="biome_modifiers_test"
 
 [[mods]]
-    modId="advancement_event_test"
-[[mods]]
     modId="shader_resources_test"
 [[mods]]
     modId="crash_callable_test"
@@ -63,8 +61,6 @@ modId="milk_fluid_test"
 modId="data_gen_test"
 [[mods]]
 modId="flower_pot_test"
-[[mods]]
-modId="player_xp_event_test"
 [[mods]]
 modId="new_model_loader_test"
 [[mods]]
