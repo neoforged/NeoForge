@@ -85,15 +85,15 @@ public class NewModelLoaderTest {
         }
     });
 
-    public static DeferredItem<Item> custom_transforms = ITEMS.registerItem("custom_transforms");
+    public static DeferredItem<Item> custom_transforms = ITEMS.registerSimpleItem("custom_transforms");
 
-    public static DeferredItem<Item> custom_vanilla_loader = ITEMS.registerItem("custom_vanilla_loader");
+    public static DeferredItem<Item> custom_vanilla_loader = ITEMS.registerSimpleItem("custom_vanilla_loader");
 
-    public static DeferredItem<Item> custom_loader = ITEMS.registerItem("custom_loader");
+    public static DeferredItem<Item> custom_loader = ITEMS.registerSimpleItem("custom_loader");
 
-    public static DeferredItem<Item> item_layers = ITEMS.registerItem("item_layers");
+    public static DeferredItem<Item> item_layers = ITEMS.registerSimpleItem("item_layers");
 
-    public static DeferredItem<Item> separate_perspective = ITEMS.registerItem("separate_perspective");
+    public static DeferredItem<Item> separate_perspective = ITEMS.registerSimpleItem("separate_perspective");
 
     public NewModelLoaderTest() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();

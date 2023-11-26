@@ -33,7 +33,7 @@ public class RedstoneSidedConnectivityTest {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
     private static final DeferredBlock<Block> TEST_REDSTONE_BLOCK = BLOCKS.register(BLOCK_ID, EastRedstoneBlock::new);
-    private static final DeferredItem<BlockItem> TEST_REDSTONE_BLOCKITEM = ITEMS.registerBlockItem(TEST_REDSTONE_BLOCK);
+    private static final DeferredItem<BlockItem> TEST_REDSTONE_BLOCKITEM = ITEMS.registerSimpleBlockItem(TEST_REDSTONE_BLOCK);
 
     public RedstoneSidedConnectivityTest() {
         if (!ENABLE)

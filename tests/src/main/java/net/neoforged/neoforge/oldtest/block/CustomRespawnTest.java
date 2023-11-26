@@ -39,7 +39,7 @@ public class CustomRespawnTest {
     public static final DeferredBlock<Block> TEST_RESPAWN_BLOCK = BLOCKS.register("test_respawn_block", () -> new CustomRespawnBlock(Block.Properties.of().mapColor(MapColor.WOOD)));
 
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    public static final DeferredItem<BlockItem> TEST_RESPAWN_BLOCK_ITEM = ITEMS.registerBlockItem(TEST_RESPAWN_BLOCK);
+    public static final DeferredItem<BlockItem> TEST_RESPAWN_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_RESPAWN_BLOCK);
 
     public CustomRespawnTest() {
         if (ENABLE) {

@@ -34,7 +34,7 @@ public class HideNeighborFaceTest {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
     private static final DeferredBlock<Block> GLASS_SLAB = BLOCKS.register("glass_slab", GlassSlab::new);
-    private static final DeferredItem<BlockItem> GLASS_SLAB_ITEM = ITEMS.registerBlockItem(GLASS_SLAB);
+    private static final DeferredItem<BlockItem> GLASS_SLAB_ITEM = ITEMS.registerSimpleBlockItem(GLASS_SLAB);
 
     public HideNeighborFaceTest() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
