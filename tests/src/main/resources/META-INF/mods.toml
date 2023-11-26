@@ -100,8 +100,6 @@ modId="custom_head_test"
 [[mods]]
 modId="raid_enum_test"
 [[mods]]
-modId="player_name_event_test"
-[[mods]]
 modId="custom_elytra_test"
 [[mods]]
 modId="snow_boots_test"
@@ -145,8 +143,6 @@ modId="custom_respawn_test"
 modId="custom_tas_test"
 [[mods]]
 modId="dimension_settings_test"
-[[mods]]
-modId="player_attack_knockback_test"
 [[mods]]
 modId="entity_renderer_events_test"
 [[mods]]
