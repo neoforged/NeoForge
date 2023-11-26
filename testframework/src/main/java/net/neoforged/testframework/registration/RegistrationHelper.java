@@ -9,10 +9,28 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Consumer;
 
+/**
+ * A helper for registration in tests.
+ */
 public interface RegistrationHelper {
+    /**
+     * {@return a deferred register for the given {@code registry}}
+     */
     <T> DeferredRegister<T> registrar(ResourceKey<Registry<T>> registry);
+
+    /**
+     * {@return a helper for block registration}
+     */
     DeferredBlocks blocks();
+
+    /**
+     * {@return a helper for item registration}
+     */
     DeferredItems items();
+
+    /**
+     * {@return a helper for entity type registration}
+     */
     DeferredEntityTypes entityTypes();
 
     <T extends DataProvider> void provider(Class<T> type, Consumer<T> consumer);

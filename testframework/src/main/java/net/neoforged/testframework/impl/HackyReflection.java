@@ -1,11 +1,9 @@
 package net.neoforged.testframework.impl;
 
-import cpw.mods.modlauncher.api.INameMappingService;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import sun.misc.Unsafe;
 
 import javax.annotation.ParametersAreNonnullByDefault;
