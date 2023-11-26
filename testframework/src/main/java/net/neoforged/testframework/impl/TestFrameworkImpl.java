@@ -1,50 +1,22 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.impl;
+
+import static java.time.temporal.ChronoField.DAY_OF_MONTH;
+import static java.time.temporal.ChronoField.HOUR_OF_DAY;
+import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
+import static java.time.temporal.ChronoField.MONTH_OF_YEAR;
+import static java.time.temporal.ChronoField.YEAR;
 
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.testframework.Test;
-import net.neoforged.testframework.TestListener;
-import net.neoforged.testframework.annotation.OnInit;
-import net.neoforged.testframework.collector.CollectorType;
-import net.neoforged.testframework.conf.Feature;
-import net.neoforged.testframework.conf.FrameworkConfiguration;
-import net.neoforged.testframework.gametest.DynamicStructureTemplates;
-import net.neoforged.testframework.group.Group;
-import net.neoforged.testframework.impl.packet.ChangeEnabledPacket;
-import net.neoforged.testframework.impl.packet.ChangeStatusPacket;
-import net.neoforged.testframework.impl.packet.TFPackets;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.datafixers.util.Pair;
 import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
-import net.minecraft.ChatFormatting;
-import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
-import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.ZoneId;
@@ -70,12 +42,44 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.time.temporal.ChronoField.DAY_OF_MONTH;
-import static java.time.temporal.ChronoField.HOUR_OF_DAY;
-import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
-import static java.time.temporal.ChronoField.MONTH_OF_YEAR;
-import static java.time.temporal.ChronoField.YEAR;
+import javax.annotation.ParametersAreNonnullByDefault;
+import net.minecraft.ChatFormatting;
+import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterGameTestsEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
+import net.neoforged.testframework.Test;
+import net.neoforged.testframework.TestListener;
+import net.neoforged.testframework.annotation.OnInit;
+import net.neoforged.testframework.collector.CollectorType;
+import net.neoforged.testframework.conf.Feature;
+import net.neoforged.testframework.conf.FrameworkConfiguration;
+import net.neoforged.testframework.gametest.DynamicStructureTemplates;
+import net.neoforged.testframework.group.Group;
+import net.neoforged.testframework.impl.packet.ChangeEnabledPacket;
+import net.neoforged.testframework.impl.packet.ChangeStatusPacket;
+import net.neoforged.testframework.impl.packet.TFPackets;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApiStatus.Internal
 @ParametersAreNonnullByDefault
@@ -158,13 +162,13 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
             final Path dumpPath = Path.of("logs/tests/" + id().toString().replace(":", "_") + "/summary_" + LOG_FORMAT.format(ZonedDateTime.now()) + ".md");
             final String summary = """
                     # Test Summary
-                    
+
                     ## Disabled Tests
                     %s
-                    
+
                     ## Enabled Tests
                     %s
-                    
+
                     %s"""
                     .formatted(summaryDumper.createDisabledList(), summaryDumper.createEnabledList(), summaryDumper.dumpTable());
             LamdbaExceptionUtils.uncheck(() -> Files.createDirectories(dumpPath.getParent()));
@@ -188,16 +192,15 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
                         .limit(20)
                         .flatMap(it -> tests().byId(it).stream())
                         .<Component>map(it -> Component.literal("- ")
-                                .append(it.visuals().title()).append(" - ").append(tests().isEnabled(it.id()) ?
-                                        Component.literal("disable")
-                                                .withStyle(style -> style
-                                                        .withColor(ChatFormatting.RED).withBold(true)
-                                                        .withClickEvent(disableCommand(it.id()))) :
-                                        Component.literal("enable")
+                                .append(it.visuals().title()).append(" - ").append(tests().isEnabled(it.id()) ? Component.literal("disable")
+                                        .withStyle(style -> style
+                                                .withColor(ChatFormatting.RED).withBold(true)
+                                                .withClickEvent(disableCommand(it.id())))
+                                        : Component.literal("enable")
                                                 .withStyle(style -> style
                                                         .withColor(ChatFormatting.GREEN).withBold(true)
-                                                        .withClickEvent(enableCommand(it.id())))
-                                )).iterator();
+                                                        .withClickEvent(enableCommand(it.id())))))
+                        .iterator();
                 while (tests.hasNext()) {
                     final Component current = tests.next();
                     message = message.append(current);
@@ -238,11 +241,11 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
     }
 
     private IEventBus modBus;
+
     @Override
     public void init(final IEventBus modBus, final ModContainer container) {
         final SetMultimap<OnInit.Stage, Consumer<? super TestFrameworkInternal>> byStage = configuration.collector(CollectorType.INIT_LISTENERS).toMultimap(
-                container, Multimaps.newSetMultimap(new HashMap<>(), HashSet::new), Pair::getFirst, Pair::getSecond
-        );
+                container, Multimaps.newSetMultimap(new HashMap<>(), HashSet::new), Pair::getFirst, Pair::getSecond);
 
         this.modBus = modBus;
         tests.buses = Map.of(Mod.EventBusSubscriber.Bus.FORGE, NeoForge.EVENT_BUS, Mod.EventBusSubscriber.Bus.MOD, modBus);
@@ -326,8 +329,7 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
         sendPacketIfOn(
                 () -> channel.send(PacketDistributor.ALL.noArg(), packet),
                 () -> channel.sendToServer(packet),
-                null
-        );
+                null);
     }
 
     @Override
@@ -354,8 +356,7 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
         sendPacketIfOn(
                 () -> channel.send(PacketDistributor.ALL.noArg(), packet),
                 () -> channel.sendToServer(packet),
-                null
-        );
+                null);
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -393,7 +394,8 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
 
         @Override
         public Group getOrCreateGroup(String id) {
-            @Nullable Group group = groups.get(id);
+            @Nullable
+            Group group = groups.get(id);
             if (group != null) return group;
             group = addGroupToParents(new Group(id, new CopyOnWriteArrayList<>()));
             groups.put(id, group);
@@ -467,6 +469,7 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
         }
 
         private final Collection<Test> allView = Collections.unmodifiableCollection(tests.values());
+
         @Override
         public Collection<Test> all() {
             return allView;

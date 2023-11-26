@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.block;
 
 import net.minecraft.core.BlockPos;
@@ -23,7 +28,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 
-@ForEachTest(groups = {BlockTests.GROUP + ".event", "event"})
+@ForEachTest(groups = { BlockTests.GROUP + ".event", "event" })
 public class BlockEventTests {
 
     @GameTest(template = TestsMod.TEMPLATE_3x3)
@@ -41,8 +46,7 @@ public class BlockEventTests {
                 .thenExecute(() -> helper.setBlock(new BlockPos(1, 1, 1), Blocks.BAMBOO_BLOCK))
                 .thenExecute(() -> new ItemStack(Items.CHEST).useOn(new UseOnContext(
                         helper.getLevel(), helper.makeMockPlayer(), InteractionHand.MAIN_HAND, new ItemStack(Items.CHEST),
-                        new BlockHitResult(helper.absoluteVec(new Vec3(1, 2, 1)), Direction.UP, helper.absolutePos(new BlockPos(1, 2, 1)), false)
-                )))
+                        new BlockHitResult(helper.absoluteVec(new Vec3(1, 2, 1)), Direction.UP, helper.absolutePos(new BlockPos(1, 2, 1)), false))))
                 .thenIdle(3)
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.CHEST, new BlockPos(1, 1, 1)))
 
@@ -51,8 +55,7 @@ public class BlockEventTests {
                 .thenExecute(() -> helper.setBlock(new BlockPos(1, 1, 1), Blocks.DIAMOND_BLOCK))
                 .thenExecute(() -> new ItemStack(Items.CHEST).useOn(new UseOnContext(
                         helper.getLevel(), helper.makeMockPlayer(), InteractionHand.MAIN_HAND, new ItemStack(Items.CHEST),
-                        new BlockHitResult(helper.absoluteVec(new Vec3(1, 2, 1)), Direction.UP, helper.absolutePos(new BlockPos(1, 2, 1)), false)
-                )))
+                        new BlockHitResult(helper.absoluteVec(new Vec3(1, 2, 1)), Direction.UP, helper.absolutePos(new BlockPos(1, 2, 1)), false))))
                 .thenIdle(3)
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.CHEST, new BlockPos(1, 2, 1)))
                 .thenSucceed());

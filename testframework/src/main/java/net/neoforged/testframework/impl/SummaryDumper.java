@@ -1,14 +1,18 @@
-package net.neoforged.testframework.impl;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
-import net.neoforged.testframework.Test;
-import net.neoforged.testframework.impl.md.Alignment;
-import net.neoforged.testframework.impl.md.Table;
-import org.jetbrains.annotations.ApiStatus;
+package net.neoforged.testframework.impl;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import net.neoforged.testframework.Test;
+import net.neoforged.testframework.impl.md.Alignment;
+import net.neoforged.testframework.impl.md.Table;
+import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record SummaryDumper(TestFrameworkInternal framework) {
@@ -17,7 +21,6 @@ public record SummaryDumper(TestFrameworkInternal framework) {
                 .useFirstRowAsHeader(true)
                 .withAlignment(Alignment.CENTER)
                 .addRow("Test ID", "Status", "Extra Information");
-
 
         framework.tests().all().forEach(test -> {
             final Test.Status status = framework.tests().getStatus(test.id());

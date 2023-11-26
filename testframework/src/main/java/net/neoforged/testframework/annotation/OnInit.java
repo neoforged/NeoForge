@@ -1,14 +1,18 @@
-package net.neoforged.testframework.annotation;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
-import net.neoforged.testframework.TestFramework;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
+package net.neoforged.testframework.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.testframework.TestFramework;
+import net.neoforged.testframework.impl.TestFrameworkInternal;
 
 /**
  * Annotate a static method accepting exactly one parameter of {@linkplain TestFrameworkInternal} (or parent interfaces) to

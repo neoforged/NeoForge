@@ -1,17 +1,10 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.conf;
 
-import net.neoforged.testframework.collector.Collector;
-import net.neoforged.testframework.collector.CollectorType;
-import net.neoforged.testframework.impl.TestFrameworkImpl;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
-import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.commands.Commands;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
-import org.jetbrains.annotations.Nullable;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,14 +13,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import javax.annotation.ParametersAreNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.commands.Commands;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
+import net.neoforged.testframework.collector.Collector;
+import net.neoforged.testframework.collector.CollectorType;
+import net.neoforged.testframework.impl.TestFrameworkImpl;
+import net.neoforged.testframework.impl.TestFrameworkInternal;
+import org.jetbrains.annotations.Nullable;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public record FrameworkConfiguration(
         ResourceLocation id, Collection<Feature> enabledFeatures, int commandRequiredPermission,
         SimpleChannel networkingChannel, List<String> enabledTests, @Nullable Supplier<ClientConfiguration> clientConfiguration,
-        Map<CollectorType<?>, Collector<?>> collectors
-) {
+        Map<CollectorType<?>, Collector<?>> collectors) {
+
     public static Builder builder(ResourceLocation id) {
         return new Builder(id);
     }
@@ -105,17 +109,15 @@ public record FrameworkConfiguration(
         }
 
         public FrameworkConfiguration build() {
-            final SimpleChannel channel = networkingChannel == null ?
-                    NetworkRegistry.ChannelBuilder.named(id)
-                            .clientAcceptedVersions(e -> true)
-                            .serverAcceptedVersions(e -> true)
-                            .networkProtocolVersion(() -> "yes")
-                            .simpleChannel() : networkingChannel;
+            final SimpleChannel channel = networkingChannel == null ? NetworkRegistry.ChannelBuilder.named(id)
+                    .clientAcceptedVersions(e -> true)
+                    .serverAcceptedVersions(e -> true)
+                    .networkProtocolVersion(() -> "yes")
+                    .simpleChannel() : networkingChannel;
             return new FrameworkConfiguration(
                     id, features, commandRequiredPermission,
                     channel, enabledTests, clientConfiguration,
-                    Collections.unmodifiableMap(collectors)
-            );
+                    Collections.unmodifiableMap(collectors));
         }
     }
 }

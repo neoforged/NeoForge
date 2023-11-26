@@ -1,14 +1,18 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.impl.packet;
 
-import net.neoforged.testframework.impl.TestFrameworkInternal;
+import java.util.function.BiFunction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.network.simple.SimpleChannel;
 import net.neoforged.neoforge.network.simple.SimpleMessage;
+import net.neoforged.testframework.impl.TestFrameworkInternal;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.function.BiFunction;
 
 @ApiStatus.Internal
 public record TFPackets(SimpleChannel channel, TestFrameworkInternal framework) {

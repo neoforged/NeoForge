@@ -1,13 +1,17 @@
-package net.neoforged.testframework.group;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
-import net.neoforged.testframework.Test;
-import net.neoforged.testframework.impl.TestFrameworkImpl;
-import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+package net.neoforged.testframework.group;
 
 import java.util.List;
 import java.util.stream.Stream;
+import net.minecraft.network.chat.Component;
+import net.neoforged.testframework.Test;
+import net.neoforged.testframework.impl.TestFrameworkImpl;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class Group implements Groupable {
     private final String id;

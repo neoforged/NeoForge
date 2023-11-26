@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.entity.player;
 
 import net.minecraft.core.BlockPos;
@@ -12,7 +17,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 
-@ForEachTest(groups = {PlayerTests.GROUP + ".event.xp", "event"})
+@ForEachTest(groups = { PlayerTests.GROUP + ".event.xp", "event" })
 public class PlayerXpTests {
     @EmptyTemplate(floor = true)
     @GameTest(batch = "level.entity.player.event.xp.pickup") // Isolate this test as it can be impacted by the xp change one
@@ -38,8 +43,7 @@ public class PlayerXpTests {
                     // The player collected 2 orbs, 3 orbs remain
                     .thenExecute(() -> helper.assertTrue(
                             helper.getEntities(EntityType.EXPERIENCE_ORB, new BlockPos(1, 1, 1), 1.5).size() == 3,
-                            "Expected 3 orbs to remain"
-                    ))
+                            "Expected 3 orbs to remain"))
                     .thenSucceed();
         });
     }

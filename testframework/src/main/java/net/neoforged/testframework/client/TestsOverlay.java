@@ -1,21 +1,13 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.client;
 
-import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.testframework.Test;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
-
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Iterator;
@@ -24,6 +16,18 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
+import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
+import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
+import net.neoforged.testframework.Test;
+import net.neoforged.testframework.impl.TestFrameworkInternal;
 
 public final class TestsOverlay implements IGuiOverlay {
     public static final int MAX_DISPLAYED = 5;
@@ -100,7 +104,7 @@ public final class TestsOverlay implements IGuiOverlay {
                         RenderSystem.defaultBlendFunc();
                     });
 
-                    final XY xy = renderTest(gui, font, test, poseStack, maxWidth, x, y, ((int)(fade * 255f) << 24) | 0xffffff, renderingQueue.currentProgress());
+                    final XY xy = renderTest(gui, font, test, poseStack, maxWidth, x, y, ((int) (fade * 255f) << 24) | 0xffffff, renderingQueue.currentProgress());
                     y = xy.y() + 5;
                     maxX = Math.max(maxX, xy.x());
 
@@ -180,8 +184,7 @@ public final class TestsOverlay implements IGuiOverlay {
     static final Map<Test.Result, ResourceLocation> ICON_BY_RESULT = new EnumMap<>(Map.of(
             Test.Result.FAILED, new ResourceLocation("testframework", "textures/gui/test_failed.png"),
             Test.Result.PASSED, new ResourceLocation("testframework", "textures/gui/test_passed.png"),
-            Test.Result.NOT_PROCESSED, new ResourceLocation("testframework", "textures/gui/test_not_processed.png")
-    ));
+            Test.Result.NOT_PROCESSED, new ResourceLocation("testframework", "textures/gui/test_not_processed.png")));
 
     // TODO - maybe "group" together tests in the same group?
     private XY renderTest(ExtendedGui gui, Font font, Test test, GuiGraphics stack, int maxWidth, int x, int y, int colour, List<Runnable> rendering) {

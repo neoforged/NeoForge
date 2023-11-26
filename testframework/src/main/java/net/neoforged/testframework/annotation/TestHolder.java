@@ -1,19 +1,23 @@
-package net.neoforged.testframework.annotation;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
-import net.neoforged.testframework.Test;
-import net.neoforged.testframework.impl.test.AbstractTest;
-import net.neoforged.api.distmarker.Dist;
+package net.neoforged.testframework.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.testframework.Test;
+import net.neoforged.testframework.impl.test.AbstractTest;
 
 /**
  * Annotation used by {@link AbstractTest} in order to collect information about a test.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface TestHolder {
     /**
      * {@return the test's ID}
@@ -48,5 +52,5 @@ public @interface TestHolder {
     /**
      * {@return the sides this test should be registered on}
      */
-    Dist[] side() default {Dist.CLIENT, Dist.DEDICATED_SERVER};
+    Dist[] side() default { Dist.CLIENT, Dist.DEDICATED_SERVER };
 }

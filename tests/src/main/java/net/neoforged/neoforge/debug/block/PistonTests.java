@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.block;
 
+import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -21,8 +22,6 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
-
-import java.util.Objects;
 
 @ForEachTest(groups = BlockTests.GROUP + ".piston")
 public class PistonTests {

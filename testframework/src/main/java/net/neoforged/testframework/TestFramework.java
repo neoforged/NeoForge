@@ -1,21 +1,25 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework;
 
-import net.neoforged.testframework.conf.FrameworkConfiguration;
-import net.neoforged.testframework.gametest.DynamicStructureTemplates;
-import net.neoforged.testframework.group.Group;
+import java.util.Collection;
+import java.util.Optional;
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.testframework.conf.FrameworkConfiguration;
+import net.neoforged.testframework.gametest.DynamicStructureTemplates;
+import net.neoforged.testframework.group.Group;
 import net.neoforged.testframework.impl.TestFrameworkInternal;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.slf4j.Logger;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Collection;
-import java.util.Optional;
 
 /**
  * The backend of the testing framework.

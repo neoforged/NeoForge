@@ -1,5 +1,11 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.entity.player;
 
+import java.util.Objects;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -13,9 +19,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 
-import java.util.Objects;
-
-@ForEachTest(groups = {PlayerTests.GROUP + ".event", "event"})
+@ForEachTest(groups = { PlayerTests.GROUP + ".event", "event" })
 public class PlayerEventTests {
     @GameTest
     @EmptyTemplate
@@ -33,8 +37,7 @@ public class PlayerEventTests {
                     helper.makeMockPlayer(),
                     player -> player.getDisplayName().getString(),
                     "display name",
-                    "hello world"
-            );
+                    "hello world");
             helper.succeed();
         });
     }
@@ -47,8 +50,7 @@ public class PlayerEventTests {
             if (event.getAdvancement().id().equals(new ResourceLocation("story/root")) && event.getEntity() instanceof ServerPlayer player) {
                 player.getAdvancements().award(
                         Objects.requireNonNull(player.server.getAdvancements().get(new ResourceLocation("story/mine_stone"))),
-                        "get_stone"
-                );
+                        "get_stone");
             }
             test.pass();
         });
@@ -59,8 +61,7 @@ public class PlayerEventTests {
                     .thenExecute(() -> player.getInventory().add(Items.CRAFTING_TABLE.getDefaultInstance()))
                     .thenExecuteAfter(5, () -> helper.assertTrue(
                             player.getAdvancements().getOrStartProgress(player.server.getAdvancements().get(new ResourceLocation("story/mine_stone"))).isDone(),
-                            "Player did not receive advancement"
-                    ))
+                            "Player did not receive advancement"))
                     .thenSucceed();
         });
     }
@@ -72,7 +73,7 @@ public class PlayerEventTests {
         test.eventListeners().forge().addListener((final AdvancementEvent.AdvancementProgressEvent event) -> {
             if (event.getAdvancement().id().equals(new ResourceLocation("story/obtain_armor")) && event.getProgressType() == AdvancementEvent.AdvancementProgressEvent.ProgressType.GRANT && event.getEntity() instanceof ServerPlayer player) {
                 player.getAdvancements().getOrStartProgress(event.getAdvancement())
-                                .getRemainingCriteria().forEach(criteria -> player.getAdvancements().award(event.getAdvancement(), criteria));
+                        .getRemainingCriteria().forEach(criteria -> player.getAdvancements().award(event.getAdvancement(), criteria));
             }
             test.pass();
         });
@@ -83,8 +84,7 @@ public class PlayerEventTests {
                     .thenExecute(() -> player.getInventory().add(Items.IRON_HELMET.getDefaultInstance()))
                     .thenExecuteAfter(5, () -> helper.assertTrue(
                             player.getAdvancements().getOrStartProgress(player.server.getAdvancements().get(new ResourceLocation("story/obtain_armor"))).isDone(),
-                            "Player did not complete advancement"
-                    ))
+                            "Player did not complete advancement"))
                     .thenSucceed();
         });
     }

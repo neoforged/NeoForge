@@ -1,5 +1,12 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.registration;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -7,15 +14,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class DeferredItems extends DeferredRegister.Items {
     private final RegistrationHelper registrationHelper;
+
     public DeferredItems(String namespace, RegistrationHelper registrationHelper) {
         super(namespace);
         this.registrationHelper = registrationHelper;

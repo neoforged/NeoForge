@@ -1,5 +1,11 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.registration;
 
+import java.util.function.Consumer;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
@@ -12,10 +18,9 @@ import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.registries.DeferredBlock;
 
-import java.util.function.Consumer;
-
 public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
     private final RegistrationHelper helper;
+
     protected DeferredBlockBuilder(ResourceKey<Block> key, RegistrationHelper helper) {
         super(key);
         this.helper = helper;

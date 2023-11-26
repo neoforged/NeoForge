@@ -1,6 +1,13 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.block;
 
 import com.mojang.logging.LogUtils;
+import java.util.Locale;
+import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.level.Level;
@@ -19,9 +26,6 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-
-import java.util.Locale;
-import java.util.function.Supplier;
 
 @ForEachTest(groups = BlockTests.GROUP + ".entity")
 public class BlockEntityTests {
@@ -86,7 +90,7 @@ public class BlockEntityTests {
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(new BlockPos(1, 2, 1), block.get()))
-                .thenExecuteAfter(5, () -> helper.assertTrue(((TestBlockEntity)helper.getBlockEntity(new BlockPos(1, 2, 1))).loaded, "BE wasn't loaded!"))
+                .thenExecuteAfter(5, () -> helper.assertTrue(((TestBlockEntity) helper.getBlockEntity(new BlockPos(1, 2, 1))).loaded, "BE wasn't loaded!"))
                 .thenSucceed());
     }
 

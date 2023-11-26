@@ -1,5 +1,12 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.registration;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceKey;
@@ -12,11 +19,9 @@ import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 public class DeferredEntityTypeBuilder<E extends Entity, T extends EntityType<E>> extends DeferredHolder<EntityType<?>, T> {
     private final RegistrationHelper helper;
+
     protected DeferredEntityTypeBuilder(ResourceKey<EntityType<?>> key, RegistrationHelper helper) {
         super(key);
         this.helper = helper;
@@ -30,7 +35,7 @@ public class DeferredEntityTypeBuilder<E extends Entity, T extends EntityType<E>
     }
 
     public DeferredEntityTypeBuilder<E, T> withAttributes(Supplier<AttributeSupplier.Builder> attributes) {
-        helper.framework().modEventBus().addListener((final EntityAttributeCreationEvent event) -> event.put((EntityType)get(), attributes.get().build()));
+        helper.framework().modEventBus().addListener((final EntityAttributeCreationEvent event) -> event.put((EntityType) get(), attributes.get().build()));
         return this;
     }
 

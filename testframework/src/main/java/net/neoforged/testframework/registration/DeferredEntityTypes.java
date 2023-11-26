@@ -1,18 +1,22 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.registration;
 
+import java.util.function.Supplier;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
-import java.util.function.Supplier;
 
 public class DeferredEntityTypes extends DeferredRegister<EntityType<?>> {
     private final RegistrationHelper helper;
+
     public DeferredEntityTypes(String namespace, RegistrationHelper helper) {
         super(Registries.ENTITY_TYPE, namespace);
         this.helper = helper;

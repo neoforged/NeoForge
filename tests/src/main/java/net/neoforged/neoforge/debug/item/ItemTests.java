@@ -1,5 +1,11 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.item;
 
+import java.util.Map;
 import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -37,7 +43,6 @@ import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.eventtest.internal.TestsMod;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -45,8 +50,6 @@ import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 @ForEachTest(groups = ItemTests.GROUP)
 public class ItemTests {
@@ -69,7 +72,7 @@ public class ItemTests {
 
                 @Override
                 public ItemStack execute(BlockSource p_302435_, ItemStack p_123562_) {
-                    DispensibleContainerItem dispensiblecontaineritem = (DispensibleContainerItem)p_123562_.getItem();
+                    DispensibleContainerItem dispensiblecontaineritem = (DispensibleContainerItem) p_123562_.getItem();
                     BlockPos blockpos = p_302435_.pos().relative(p_302435_.state().getValue(DispenserBlock.FACING));
                     Level level = p_302435_.level();
                     if (dispensiblecontaineritem.emptyContents(null, level, blockpos, null, p_123562_)) {
@@ -105,42 +108,41 @@ public class ItemTests {
     static void forgeSpawnEggTest(final DynamicTest test, final RegistrationHelper reg) {
         final var testEntity = reg.entityTypes().registerType("test_entity", () -> EntityType.Builder.of(Pig::new, MobCategory.CREATURE)
                 .sized(1, 1)).withAttributes(() -> {
-            AttributeSupplier.Builder attributes = Pig.createAttributes();
-            //Remove step height attribute to validate that things are handled properly when an entity doesn't have it
-            Map<Attribute, AttributeInstance> builder = ObfuscationReflectionHelper.getPrivateValue(AttributeSupplier.Builder.class, attributes, "builder");
-            if (builder != null) {
-                builder.remove(NeoForgeMod.STEP_HEIGHT.value());
-            }
-            return attributes;
-        }).withRenderer(() -> PigRenderer::new).withLang("Test Pig spawn egg");
+                    AttributeSupplier.Builder attributes = Pig.createAttributes();
+                    //Remove step height attribute to validate that things are handled properly when an entity doesn't have it
+                    Map<Attribute, AttributeInstance> builder = ObfuscationReflectionHelper.getPrivateValue(AttributeSupplier.Builder.class, attributes, "builder");
+                    if (builder != null) {
+                        builder.remove(NeoForgeMod.STEP_HEIGHT.value());
+                    }
+                    return attributes;
+                }).withRenderer(() -> PigRenderer::new).withLang("Test Pig spawn egg");
 
         final var egg = reg.items().register("test_spawn_egg", () -> new DeferredSpawnEggItem(testEntity, 0x0000FF, 0xFF0000, new Item.Properties()) {
 
-                    @Override
-                    public InteractionResult useOn(UseOnContext ctx) {
-                        final var result = super.useOn(ctx);
-                        if (result.consumesAction()) {
-                            test.pass();
-                        }
-                        return result;
-                    }
+            @Override
+            public InteractionResult useOn(UseOnContext ctx) {
+                final var result = super.useOn(ctx);
+                if (result.consumesAction()) {
+                    test.pass();
+                }
+                return result;
+            }
 
-                    @Override
-                    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-                        final var sup = super.use(level, player, hand);
-                        if (sup.getResult().consumesAction()) {
-                            test.pass();
-                        }
-                        return sup;
-                    }
+            @Override
+            public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+                final var sup = super.use(level, player, hand);
+                if (sup.getResult().consumesAction()) {
+                    test.pass();
+                }
+                return sup;
+            }
 
-                    @Override
-                    public boolean spawnsEntity(@Nullable CompoundTag p_43231_, EntityType<?> p_43232_) {
-                        return super.spawnsEntity(p_43231_, p_43232_);
-                    }
-                })
-                .tab(CreativeModeTabs.SPAWN_EGGS).withModel(builder ->
-                        builder.parent(new ModelFile.UncheckedModelFile(new ResourceLocation("minecraft:item/template_spawn_egg"))));
+            @Override
+            public boolean spawnsEntity(@Nullable CompoundTag p_43231_, EntityType<?> p_43232_) {
+                return super.spawnsEntity(p_43231_, p_43232_);
+            }
+        })
+                .tab(CreativeModeTabs.SPAWN_EGGS).withModel(builder -> builder.parent(new ModelFile.UncheckedModelFile(new ResourceLocation("minecraft:item/template_spawn_egg"))));
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.IRON_BLOCK))

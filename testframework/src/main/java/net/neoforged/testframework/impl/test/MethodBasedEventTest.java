@@ -1,16 +1,20 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.impl.test;
 
-import net.neoforged.testframework.impl.HackyReflection;
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Method;
+import javax.annotation.Nonnull;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.testframework.Test;
-
-import javax.annotation.Nonnull;
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Method;
+import net.neoforged.testframework.impl.HackyReflection;
 
 public class MethodBasedEventTest extends AbstractTest.Dynamic {
     protected MethodHandle handle;

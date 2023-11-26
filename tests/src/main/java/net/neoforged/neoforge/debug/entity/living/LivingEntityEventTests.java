@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.entity.living;
 
 import net.minecraft.gametest.framework.GameTest;
@@ -12,7 +17,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 
-@ForEachTest(groups = {LivingEntityTests.GROUP + ".event", "event"})
+@ForEachTest(groups = { LivingEntityTests.GROUP + ".event", "event" })
 public class LivingEntityEventTests {
     @GameTest
     @EmptyTemplate(floor = true)

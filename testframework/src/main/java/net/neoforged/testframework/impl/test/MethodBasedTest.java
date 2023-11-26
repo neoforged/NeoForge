@@ -1,13 +1,17 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.impl.test;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Method;
+import javax.annotation.Nonnull;
+import net.minecraft.gametest.framework.GameTest;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.impl.HackyReflection;
-import net.minecraft.gametest.framework.GameTest;
-
-import javax.annotation.Nonnull;
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Method;
 
 public class MethodBasedTest extends AbstractTest.Dynamic {
     protected MethodHandle handle;

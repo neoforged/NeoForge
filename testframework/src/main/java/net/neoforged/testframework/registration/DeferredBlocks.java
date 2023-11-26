@@ -1,5 +1,13 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.registration;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -14,12 +22,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.apache.commons.lang3.function.TriFunction;
 
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 public class DeferredBlocks extends DeferredRegister.Blocks {
     private final RegistrationHelper registrationHelper;
+
     public DeferredBlocks(String namespace, RegistrationHelper registrationHelper) {
         super(namespace);
         this.registrationHelper = registrationHelper;
@@ -48,8 +53,7 @@ public class DeferredBlocks extends DeferredRegister.Blocks {
     public <B extends Block, E extends BlockEntity> DeferredBlockBuilder<B> registerBlockWithBEType(String name, BiFunction<BlockBehaviour.Properties, Supplier<BlockEntityType<E>>, ? extends B> func, TriFunction<BlockEntityType<?>, BlockPos, BlockState, E> beType, BlockBehaviour.Properties props) {
         final var be = registrationHelper.registrar(Registries.BLOCK_ENTITY_TYPE).register(name, () -> BlockEntityType.Builder.of(
                 (pos, state) -> beType.apply(BuiltInRegistries.BLOCK_ENTITY_TYPE.get(new ResourceLocation(getNamespace(), name)), pos, state),
-                BuiltInRegistries.BLOCK.get(new ResourceLocation(getNamespace(), name))
-        ).build(null));
+                BuiltInRegistries.BLOCK.get(new ResourceLocation(getNamespace(), name))).build(null));
         return registerBlock(name, properties -> func.apply(properties, be), props);
     }
 

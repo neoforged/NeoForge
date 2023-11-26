@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.impl;
 
 import net.neoforged.testframework.TestFramework;
@@ -32,13 +37,11 @@ public record LoggerSetup(TestFrameworkInternal framework) {
         loggerConfig.addAppender(
                 fileAppender(),
                 Level.DEBUG,
-                null
-        );
+                null);
         loggerConfig.addAppender(
                 consoleAppender(),
                 Level.INFO,
-                null
-        );
+                null);
     }
 
     private Appender fileAppender() {
@@ -48,11 +51,9 @@ public record LoggerSetup(TestFrameworkInternal framework) {
                 .withFilePattern("logs/%d{yyyy-MM-dd}-%i.log.gz")
                 .setLayout(PatternLayout.newBuilder()
                         .withPattern("[%d{ddMMMyyyy HH:mm:ss}] [%logger]: %minecraftFormatting{%msg}{strip}%n%xEx")
-                        .build()
-                )
+                        .build())
                 .withPolicy(
-                        OnStartupTriggeringPolicy.createPolicy(1)
-                ));
+                        OnStartupTriggeringPolicy.createPolicy(1)));
     }
 
     private Appender consoleAppender() {
@@ -60,8 +61,7 @@ public record LoggerSetup(TestFrameworkInternal framework) {
                 .setName("TestFramework " + framework.id() + " console log")
                 .setLayout(PatternLayout.newBuilder()
                         .withPattern("%highlightForge{Tests:}{FATAL=magenta, ERROR=magenta, WARN=magenta, INFO=magenta, DEBUG=magenta, TRACE=magenta} %highlightForge{[%d{ddMMMyyyy HH:mm:ss}] [%logger]: %minecraftFormatting{%msg}{strip}%n%xEx}")
-                        .build()
-                )
+                        .build())
                 .setIgnoreExceptions(false));
     }
 

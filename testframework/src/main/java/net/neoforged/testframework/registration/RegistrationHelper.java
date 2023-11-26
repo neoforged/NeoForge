@@ -1,13 +1,17 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.registration;
 
+import java.util.function.Consumer;
 import net.minecraft.core.Registry;
 import net.minecraft.data.DataProvider;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.testframework.TestFramework;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.function.Consumer;
 
 /**
  * A helper for registration in tests.

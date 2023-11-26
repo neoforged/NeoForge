@@ -1,18 +1,23 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.impl;
 
-import net.neoforged.testframework.client.FrameworkClientImpl;
-import net.neoforged.testframework.conf.ClientConfiguration;
+import java.util.Optional;
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Optional;
+import net.neoforged.testframework.client.FrameworkClientImpl;
+import net.neoforged.testframework.conf.ClientConfiguration;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public interface FrameworkClient {
     void init(IEventBus modBus, ModContainer container);
+
     interface Factory {
         FrameworkClient create(TestFrameworkInternal impl, ClientConfiguration clientConfiguration);
     }

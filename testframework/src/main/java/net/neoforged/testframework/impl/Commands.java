@@ -1,57 +1,60 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.impl;
 
-import net.neoforged.testframework.Test;
-import net.neoforged.testframework.group.Group;
-import net.neoforged.testframework.group.Groupable;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
+
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import net.minecraft.ChatFormatting;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.neoforged.neoforge.server.command.EnumArgument;
-import org.jetbrains.annotations.ApiStatus;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import static net.minecraft.commands.Commands.argument;
-import static net.minecraft.commands.Commands.literal;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.neoforged.neoforge.server.command.EnumArgument;
+import net.neoforged.testframework.Test;
+import net.neoforged.testframework.group.Group;
+import net.neoforged.testframework.group.Groupable;
+import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record Commands(TestFrameworkInternal framework) {
     public void register(LiteralArgumentBuilder<CommandSourceStack> node) {
-        final BiFunction<LiteralArgumentBuilder<CommandSourceStack>, Boolean, LiteralArgumentBuilder<CommandSourceStack>> commandEnabling = (stack, enabling) ->
-                stack.requires(it -> it.hasPermission(framework.configuration().commandRequiredPermission()))
-                        .then(argument("id", StringArgumentType.greedyString())
-                                .suggests(suggestGroupable(it -> !(it instanceof Test test) || framework.tests().isEnabled(test.id()) != enabling))
-                                .executes(ctx -> {
-                                    final String id = StringArgumentType.getString(ctx, "id");
-                                    parseGroupable(ctx.getSource(), id, group -> {
-                                        final List<Test> all = group.resolveAll();
-                                        if (all.stream().allMatch(it -> framework.tests().isEnabled(it.id()) == enabling)) {
-                                            ctx.getSource().sendFailure(Component.literal("All tests in group are " + (enabling ? "enabled" : "disabled") + "!"));
-                                        } else {
-                                            all.forEach(test -> framework.setEnabled(test, enabling, ctx.getSource().getEntity()));
-                                            ctx.getSource().sendSuccess(() -> Component.literal((enabling ? "Enabled" : "Disabled") + " test group!"), true);
-                                        }
-                                    }, test -> {
-                                        if (framework.tests().isEnabled(id) == enabling) {
-                                            ctx.getSource().sendFailure(Component.literal("Test is already " + (enabling ? "enabled" : "disabled") + "!"));
-                                        } else {
-                                            framework.setEnabled(framework.tests().byId(id).orElseThrow(), enabling, ctx.getSource().getEntity());
-                                            ctx.getSource().sendSuccess(() -> Component.literal((enabling ? "Enabled" : "Disabled") + " test!"), true);
-                                        }
-                                    });
-                                    return Command.SINGLE_SUCCESS;
-                                }));
+        final BiFunction<LiteralArgumentBuilder<CommandSourceStack>, Boolean, LiteralArgumentBuilder<CommandSourceStack>> commandEnabling = (stack, enabling) -> stack.requires(it -> it.hasPermission(framework.configuration().commandRequiredPermission()))
+                .then(argument("id", StringArgumentType.greedyString())
+                        .suggests(suggestGroupable(it -> !(it instanceof Test test) || framework.tests().isEnabled(test.id()) != enabling))
+                        .executes(ctx -> {
+                            final String id = StringArgumentType.getString(ctx, "id");
+                            parseGroupable(ctx.getSource(), id, group -> {
+                                final List<Test> all = group.resolveAll();
+                                if (all.stream().allMatch(it -> framework.tests().isEnabled(it.id()) == enabling)) {
+                                    ctx.getSource().sendFailure(Component.literal("All tests in group are " + (enabling ? "enabled" : "disabled") + "!"));
+                                } else {
+                                    all.forEach(test -> framework.setEnabled(test, enabling, ctx.getSource().getEntity()));
+                                    ctx.getSource().sendSuccess(() -> Component.literal((enabling ? "Enabled" : "Disabled") + " test group!"), true);
+                                }
+                            }, test -> {
+                                if (framework.tests().isEnabled(id) == enabling) {
+                                    ctx.getSource().sendFailure(Component.literal("Test is already " + (enabling ? "enabled" : "disabled") + "!"));
+                                } else {
+                                    framework.setEnabled(framework.tests().byId(id).orElseThrow(), enabling, ctx.getSource().getEntity());
+                                    ctx.getSource().sendSuccess(() -> Component.literal((enabling ? "Enabled" : "Disabled") + " test!"), true);
+                                }
+                            });
+                            return Command.SINGLE_SUCCESS;
+                        }));
 
         node.then(commandEnabling.apply(literal("enable"), true));
         node.then(commandEnabling.apply(literal("disable"), false));
@@ -65,8 +68,7 @@ public record Commands(TestFrameworkInternal framework) {
                                     parseGroupable(ctx.getSource(), id,
                                             group -> ctx.getSource().sendFailure(Component.literal("This command does not support groups!")),
                                             test -> ctx.getSource().sendSuccess(
-                                                    () -> Component.literal("Status of test '").append(id).append("' is: ").append(formatStatus(framework.tests().getStatus(id))), true
-                                            ));
+                                                    () -> Component.literal("Status of test '").append(id).append("' is: ").append(formatStatus(framework.tests().getStatus(id))), true));
                                     return Command.SINGLE_SUCCESS;
                                 })))
                 .then(literal("set")
@@ -83,9 +85,8 @@ public record Commands(TestFrameworkInternal framework) {
         return (context, builder) -> {
             String remaining = builder.getRemaining().toLowerCase(Locale.ROOT);
             Stream.concat(
-                            framework.tests().all().stream(),
-                            framework.tests().allGroups().stream()
-                    )
+                    framework.tests().all().stream(),
+                    framework.tests().allGroups().stream())
                     .filter(predicate)
                     .map(groupable -> groupable instanceof Test test ? test.id() : "g:" + ((Group) groupable).id())
                     .filter(it -> it.toLowerCase(Locale.ROOT).startsWith(remaining))
@@ -133,8 +134,7 @@ public record Commands(TestFrameworkInternal framework) {
                     final Test.Status status = new Test.Status(result, message);
                     framework.changeStatus(test, status, ctx.getSource().getEntity());
                     ctx.getSource().sendSuccess(
-                            () -> Component.literal("Status of test '").append(id).append("' has been changed to: ").append(formatStatus(status)), true
-                    );
+                            () -> Component.literal("Status of test '").append(id).append("' has been changed to: ").append(formatStatus(status)), true);
                 });
         return Command.SINGLE_SUCCESS;
     }

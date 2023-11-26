@@ -1,12 +1,16 @@
-package net.neoforged.testframework.annotation;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
-import net.neoforged.testframework.TestListener;
+package net.neoforged.testframework.annotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import net.neoforged.testframework.TestListener;
 
 /**
  * Apply this annotation to a class in order to add a common configuration to all child tests. <br>

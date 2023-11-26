@@ -1,9 +1,16 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.chat;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.ParsedCommandNode;
+import java.util.List;
+import java.util.UUID;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -16,22 +23,18 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.CommandEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.eventtest.internal.TestsMod;
 import net.neoforged.neoforge.server.command.EnumArgument;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 
-import java.util.List;
-import java.util.UUID;
-
 @ForEachTest(groups = "chat.command")
 public class CommandTests {
 
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = {"Tests if the command event works", "Redirects /attribute with no arguments to effect"})
+    @TestHolder(description = { "Tests if the command event works", "Redirects /attribute with no arguments to effect" })
     static void commandEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final CommandEvent event) -> {
             CommandDispatcher<CommandSourceStack> dispatcher = event.getParseResults().getContext().getDispatcher();
@@ -76,7 +79,7 @@ public class CommandTests {
 
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = {"Tests if the forge enum argument works", "Adds a /enumargumenttest command with a single {NV, BLD} enum argument"})
+    @TestHolder(description = { "Tests if the forge enum argument works", "Adds a /enumargumenttest command with a single {NV, BLD} enum argument" })
     static void enumArgument(final DynamicTest test) {
         enum TestArgument {
             BLD {
@@ -111,12 +114,10 @@ public class CommandTests {
             helper.startSequence()
                     .thenExecute(() -> helper.assertTrue(
                             helper.getLevel().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), "/enumargumenttest ABC") == 0,
-                            "Invalid command was successfully executed"
-                    ))
+                            "Invalid command was successfully executed"))
                     .thenExecute(() -> helper.assertTrue(
                             helper.getLevel().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), "/enumargumenttest NV") == 1,
-                            "Valid command was not executed"
-                    ))
+                            "Valid command was not executed"))
                     .thenExecuteAfter(3, () -> helper.assertLivingEntityHasMobEffect(player, MobEffects.NIGHT_VISION, 0))
                     .thenSucceed();
         });

@@ -1,23 +1,23 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.entity;
 
 import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pig;
-import net.minecraft.world.entity.monster.EnderMan;
-import net.minecraft.world.item.ChorusFruitItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Blocks;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 
-@ForEachTest(groups = {EntityTests.GROUP + ".event", "event"})
+@ForEachTest(groups = { EntityTests.GROUP + ".event", "event" })
 public class EntityEventTests {
     @GameTest
     @EmptyTemplate(value = "15x5x15", floor = true)

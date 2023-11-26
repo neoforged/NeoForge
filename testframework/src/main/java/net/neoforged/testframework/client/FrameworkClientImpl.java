@@ -1,8 +1,13 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.client;
 
-import net.neoforged.testframework.conf.ClientConfiguration;
-import net.neoforged.testframework.impl.FrameworkClient;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
+import java.util.List;
+import java.util.function.BooleanSupplier;
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -12,10 +17,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
-import java.util.function.BooleanSupplier;
+import net.neoforged.testframework.conf.ClientConfiguration;
+import net.neoforged.testframework.impl.FrameworkClient;
+import net.neoforged.testframework.impl.TestFrameworkInternal;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -49,8 +53,7 @@ public class FrameworkClientImpl implements FrameworkClient {
                 public void setDown(boolean pValue) {
                     if (pValue) {
                         Minecraft.getInstance().setScreen(new TestScreen(
-                                Component.literal("All tests"), impl, List.copyOf(impl.tests().allGroups())
-                        ));
+                                Component.literal("All tests"), impl, List.copyOf(impl.tests().allGroups())));
                     }
                     super.setDown(pValue);
                 }

@@ -1,15 +1,23 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.impl.reg;
 
-import com.google.common.base.Suppliers;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
@@ -24,15 +32,9 @@ import net.neoforged.testframework.registration.DeferredEntityTypes;
 import net.neoforged.testframework.registration.DeferredItems;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 public class RegistrationHelperImpl implements RegistrationHelper {
     private final TestFramework framework;
+
     public RegistrationHelperImpl(TestFramework framework, String modId) {
         this.framework = framework;
         this.modId = modId;
@@ -41,6 +43,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     private interface DataGenProvider<T extends DataProvider> {
         T create(PackOutput output, DataGenerator generator, ExistingFileHelper existingFileHelper, String modId, List<Consumer<T>> consumers);
     }
+
     private static final Map<Class<?>, DataGenProvider<?>> PROVIDERS;
     static {
         final Map<Class<?>, DataGenProvider<?>> providers = new IdentityHashMap<>();
@@ -76,6 +79,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
 
     private final String modId;
     private final ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers = Multimaps.newListMultimap(new IdentityHashMap<>(), ArrayList::new);
+
     @Override
     public <T> DeferredRegister<T> registrar(ResourceKey<Registry<T>> registry) {
         final var reg = DeferredRegister.create(registry, modId);
@@ -84,6 +88,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     private DeferredBlocks blocks;
+
     @Override
     public DeferredBlocks blocks() {
         if (blocks == null) {
@@ -94,6 +99,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     private DeferredItems items;
+
     @Override
     public DeferredItems items() {
         if (items == null) {
@@ -104,6 +110,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     private DeferredEntityTypes entityTypes;
+
     @Override
     public DeferredEntityTypes entityTypes() {
         if (entityTypes == null) {
@@ -126,7 +133,6 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     @SubscribeEvent
     void gather(final GatherDataEvent event) {
         providers.asMap().forEach((cls, cons) -> event.getGenerator().addProvider(true, PROVIDERS.get(cls).create(
-                event.getGenerator().getPackOutput(), event.getGenerator(), event.getExistingFileHelper(), modId, (List) cons
-        )));
+                event.getGenerator().getPackOutput(), event.getGenerator(), event.getExistingFileHelper(), modId, (List) cons)));
     }
 }

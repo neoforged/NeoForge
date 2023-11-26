@@ -1,15 +1,9 @@
-package net.neoforged.testframework.client;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
-import net.neoforged.testframework.Test;
-import net.neoforged.testframework.group.Group;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.CycleButton;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
+package net.neoforged.testframework.client;
 
 import java.util.Comparator;
 import java.util.List;
@@ -18,6 +12,15 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
+import net.neoforged.testframework.Test;
+import net.neoforged.testframework.group.Group;
+import net.neoforged.testframework.impl.TestFrameworkInternal;
+import org.jetbrains.annotations.NotNull;
 
 public class TestScreen extends AbstractTestScreen {
     protected EditBox searchTextField;
@@ -34,6 +37,7 @@ public class TestScreen extends AbstractTestScreen {
     }
 
     private static boolean isGroup = true;
+
     @Override
     protected void init() {
         final Runnable reloader = () -> {
@@ -48,7 +52,7 @@ public class TestScreen extends AbstractTestScreen {
                     isGroup = pValue;
                 }));
         this.filterMode = addRenderableWidget(CycleButton.<FilterMode>builder(mode -> mode.name)
-                .withValues(FilterMode.values()).create((this.width - 160) / 2 , this.height - 26, 150, 20, Component.literal("Filter"), (pCycleButton, pValue) -> reloader.run()));
+                .withValues(FilterMode.values()).create((this.width - 160) / 2, this.height - 26, 150, 20, Component.literal("Filter"), (pCycleButton, pValue) -> reloader.run()));
 
         final List<Test> tests = groups.stream().flatMap(it -> it.resolveAll().stream()).distinct().toList();
         this.groupableList = new GroupableList(() -> showAsGroup.getValue(), groups, () -> tests.stream()
@@ -107,7 +111,6 @@ public class TestScreen extends AbstractTestScreen {
         pPoseStack.drawCenteredString(font, getTitle(), this.width / 2, 7, 0xffffff);
     }
 
-
     public static <T> void updateSearchTextFieldSuggestion(EditBox editBox, String value, List<T> entries, Function<T, String> nameProvider) {
         if (!value.isEmpty()) {
             Optional<? extends String> optional = entries.stream().filter(info -> nameProvider.apply(info).toLowerCase(Locale.ROOT).startsWith(value.toLowerCase(Locale.ROOT))).map(nameProvider).min(Comparator.naturalOrder());
@@ -129,32 +132,38 @@ public class TestScreen extends AbstractTestScreen {
             public boolean test(TestFrameworkInternal framework, Test test) {
                 return true;
             }
-        }, NOT_PROCESSED("Not Processed") {
+        },
+        NOT_PROCESSED("Not Processed") {
             @Override
             public boolean test(TestFrameworkInternal framework, Test test) {
                 return framework.tests().getStatus(test.id()).result() == Test.Result.NOT_PROCESSED;
             }
-        }, PASSED("Passed") {
+        },
+        PASSED("Passed") {
             @Override
             public boolean test(TestFrameworkInternal framework, Test test) {
                 return framework.tests().getStatus(test.id()).result().passed();
             }
-        }, FAILED("Failed") {
+        },
+        FAILED("Failed") {
             @Override
             public boolean test(TestFrameworkInternal framework, Test test) {
                 return framework.tests().getStatus(test.id()).result() == Test.Result.FAILED;
             }
-        }, ENABLED("Enabled") {
+        },
+        ENABLED("Enabled") {
             @Override
             public boolean test(TestFrameworkInternal framework, Test test) {
                 return framework.tests().isEnabled(test.id());
             }
-        }, DISABLED("Disabled") {
+        },
+        DISABLED("Disabled") {
             @Override
             public boolean test(TestFrameworkInternal framework, Test test) {
                 return !framework.tests().isEnabled(test.id());
             }
         };
+
         private Component name;
 
         FilterMode(String name) {

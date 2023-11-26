@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'com.diffplug.spotless'
+    id 'net.neoforged.licenser'
     id 'net.neoforged.gradle.platform'
 }
 
@@ -19,4 +21,20 @@ dependencies {
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+}
+
+license {
+    header = rootProject.file('codeformat/HEADER.txt')
+    include '**/*.java'
+}
+
+spotless {
+    java {
+        endWithNewline()
+        indentWithSpaces()
+        removeUnusedImports()
+        toggleOffOn()
+        eclipse().configFile rootProject.file('codeformat/formatter-config.xml')
+        importOrder()
+    }
 }

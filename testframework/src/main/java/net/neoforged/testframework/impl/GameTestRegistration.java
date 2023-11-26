@@ -1,20 +1,24 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.impl;
 
-import net.minecraft.gametest.framework.GameTestInfo;
-import net.minecraft.gametest.framework.GameTestListener;
-import net.neoforged.testframework.Test;
-import net.neoforged.testframework.conf.Feature;
-import net.neoforged.testframework.gametest.GameTestData;
 import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
-import net.minecraft.gametest.framework.GameTestAssertException;
-import net.minecraft.gametest.framework.GameTestGenerator;
-import net.minecraft.gametest.framework.TestFunction;
-import org.jetbrains.annotations.ApiStatus;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.gametest.framework.GameTestGenerator;
+import net.minecraft.gametest.framework.GameTestInfo;
+import net.minecraft.gametest.framework.GameTestListener;
+import net.minecraft.gametest.framework.TestFunction;
+import net.neoforged.testframework.Test;
+import net.neoforged.testframework.conf.Feature;
+import net.neoforged.testframework.gametest.GameTestData;
+import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public final class GameTestRegistration {
@@ -70,14 +74,12 @@ public final class GameTestRegistration {
                                     framework.tests().setStatus(test.id(), new Test.Status(Test.Result.FAILED, "GameTest fail: " + assertion.getMessage()));
                                     throw assertion;
                                 }
-                            }, GameTestAssertException.class, ex -> framework.setEnabled(test, false, null))
-                    ));
+                            }, GameTestAssertException.class, ex -> framework.setEnabled(test, false, null))));
                 }
             }
         }
         return tests;
     }
-
 
     private static <T, E extends RuntimeException> Consumer<T> rethrow(Consumer<T> consumer, Class<E> exClass, Consumer<E> ex) {
         return t -> {

@@ -1,14 +1,18 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.collector;
 
 import com.google.common.collect.Multimap;
-import net.minecraft.MethodsReturnNonnullByDefault;
-import net.neoforged.fml.ModContainer;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import javax.annotation.ParametersAreNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;
+import net.neoforged.fml.ModContainer;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault

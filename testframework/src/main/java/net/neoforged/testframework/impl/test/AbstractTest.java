@@ -1,6 +1,32 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.impl.test;
 
 import com.google.common.base.Suppliers;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+import javax.annotation.ParametersAreNonnullByDefault;
+import net.minecraft.ChatFormatting;
+import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.gametest.framework.GameTestInfo;
+import net.minecraft.gametest.framework.GameTestListener;
+import net.minecraft.gametest.framework.StructureUtils;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.Test;
@@ -16,32 +42,10 @@ import net.neoforged.testframework.impl.EventListenerGroupImpl;
 import net.neoforged.testframework.impl.HackyReflection;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
 import net.neoforged.testframework.impl.TestFrameworkInternal;
-import net.minecraft.ChatFormatting;
-import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInfo;
-import net.minecraft.gametest.framework.GameTestListener;
-import net.minecraft.gametest.framework.StructureUtils;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.neoforged.testframework.impl.reg.RegistrationHelperImpl;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -69,8 +73,7 @@ public abstract class AbstractTest implements Test {
             enabledByDefault = marker.enabledByDefault();
             visuals = new Visuals(
                     Component.literal(marker.title().isBlank() ? TestFrameworkImpl.capitaliseWords(id(), "_") : marker.title()),
-                    Stream.of(marker.description()).<Component>map(Component::literal).toList()
-            );
+                    Stream.of(marker.description()).<Component>map(Component::literal).toList());
             groups.addAll(List.of(marker.groups()));
         }
 
@@ -109,8 +112,7 @@ public abstract class AbstractTest implements Test {
                 gameTest.templateNamespace().isBlank() ? (templateFromPattern == null ? gameTestTemplate(gameTest) : templateFromPattern.toString()) : new ResourceLocation(gameTest.templateNamespace(), gameTest.template()).toString(),
                 gameTest.required(), gameTest.attempts(), gameTest.requiredSuccesses(),
                 this::onGameTest, gameTest.timeoutTicks(), gameTest.setupTicks(),
-                StructureUtils.getRotationForRotationSteps(gameTest.rotationSteps())
-        );
+                StructureUtils.getRotationForRotationSteps(gameTest.rotationSteps()));
     }
 
     protected String gameTestTemplate(GameTest gameTest) {
@@ -129,6 +131,7 @@ public abstract class AbstractTest implements Test {
 
     @Override
     public void onDisabled() {}
+
     @Override
     public void onEnabled(EventListenerGroup buses) {}
 
@@ -195,18 +198,13 @@ public abstract class AbstractTest implements Test {
     protected final void requestConfirmation(Player player, Component message) {
         if (framework instanceof TestFrameworkInternal internal) {
             player.sendSystemMessage(message.copy().append(" ").append(
-                    Component.literal("Yes").withStyle(style ->
-                            style.withColor(ChatFormatting.GREEN).withBold(true)
-                                    .withClickEvent(internal.setStatusCommand(
-                                            id(), Result.PASSED, ""
-                                    ))
-            ).append(" ").append(
-                    Component.literal("No").withStyle(style ->
-                            style.withColor(ChatFormatting.RED).withBold(true)
-                                    .withClickEvent(internal.setStatusCommand(
-                                            id(), Result.FAILED, player.getGameProfile().getName() + " denied seeing the effects of the test"
-                                    ))
-            ))));
+                    Component.literal("Yes").withStyle(style -> style.withColor(ChatFormatting.GREEN).withBold(true)
+                            .withClickEvent(internal.setStatusCommand(
+                                    id(), Result.PASSED, "")))
+                            .append(" ").append(
+                                    Component.literal("No").withStyle(style -> style.withColor(ChatFormatting.RED).withBold(true)
+                                            .withClickEvent(internal.setStatusCommand(
+                                                    id(), Result.FAILED, player.getGameProfile().getName() + " denied seeing the effects of the test"))))));
         }
     }
 
@@ -218,6 +216,7 @@ public abstract class AbstractTest implements Test {
         }
 
         private final List<EnabledListener> enabledListeners = new ArrayList<>();
+
         @Override
         public void whenEnabled(EnabledListener whenEnabled) {
             this.enabledListeners.add(whenEnabled);
@@ -235,6 +234,7 @@ public abstract class AbstractTest implements Test {
         }
 
         private final List<Runnable> disabledListeners = new ArrayList<>();
+
         @Override
         public void whenDisabled(Runnable whenDisabled) {
             this.disabledListeners.add(whenDisabled);
@@ -253,6 +253,7 @@ public abstract class AbstractTest implements Test {
         }
 
         private final List<Consumer<GameTestHelper>> onGameTest = new ArrayList<>();
+
         @Override
         public void onGameTest(Consumer<GameTestHelper> consumer) {
             this.onGameTest.add(consumer);
@@ -295,6 +296,7 @@ public abstract class AbstractTest implements Test {
         }
 
         private boolean isDuringGameTest;
+
         @Override
         protected void onGameTest(GameTestHelper helper) {
             isDuringGameTest = true;
@@ -333,7 +335,8 @@ public abstract class AbstractTest implements Test {
     }
 
     protected interface AnnotationHolder {
-        @Nullable <T extends Annotation> T get(Class<T> type);
+        @Nullable
+        <T extends Annotation> T get(Class<T> type);
 
         AnnotationHolder parent();
 

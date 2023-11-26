@@ -1,13 +1,17 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework;
 
-import net.neoforged.testframework.impl.HackyReflection;
-import net.minecraft.world.entity.Entity;
-import org.jetbrains.annotations.ApiStatus;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.invoke.MethodType;
 import java.util.List;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import net.minecraft.world.entity.Entity;
+import net.neoforged.testframework.impl.HackyReflection;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A listener which listens for changes in tests.
@@ -23,8 +27,7 @@ public interface TestListener {
      * @param newStatus the new status of the test
      * @param changer   the entity that changed the status of the test
      */
-    default void onStatusChange(TestFramework framework, Test test, Test.Status oldStatus, Test.Status newStatus, @Nullable Entity changer) {
-    }
+    default void onStatusChange(TestFramework framework, Test test, Test.Status oldStatus, Test.Status newStatus, @Nullable Entity changer) {}
 
     /**
      * This method is called when a test is enabled.
@@ -33,8 +36,7 @@ public interface TestListener {
      * @param test      the test that was enabled
      * @param changer   the entity that enabled the test
      */
-    default void onEnabled(TestFramework framework, Test test, @Nullable Entity changer) {
-    }
+    default void onEnabled(TestFramework framework, Test test, @Nullable Entity changer) {}
 
     /**
      * This method is called when a test is disabled.
@@ -43,8 +45,7 @@ public interface TestListener {
      * @param test      the test that was disabled
      * @param changer   the entity that disabled the test
      */
-    default void onDisabled(TestFramework framework, Test test, @Nullable Entity changer) {
-    }
+    default void onDisabled(TestFramework framework, Test test, @Nullable Entity changer) {}
 
     @ApiStatus.Internal
     static TestListener instantiate(Class<? extends TestListener> clazz) {

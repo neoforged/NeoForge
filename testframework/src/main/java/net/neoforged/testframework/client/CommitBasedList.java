@@ -1,10 +1,14 @@
-package net.neoforged.testframework.client;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
-import org.jetbrains.annotations.NotNull;
+package net.neoforged.testframework.client;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class CommitBasedList<T> implements Iterable<T> {
     private final List<T> backend;

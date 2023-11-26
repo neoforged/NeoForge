@@ -1,7 +1,15 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework;
 
-import net.neoforged.testframework.gametest.GameTestData;
-import net.neoforged.testframework.group.Groupable;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.Event;
@@ -9,13 +17,9 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.testframework.gametest.GameTestData;
+import net.neoforged.testframework.group.Groupable;
 import org.jetbrains.annotations.Nullable;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /**
  * The base interface for tests in the TestFramework.
@@ -133,12 +137,12 @@ public interface Test extends Groupable {
              * Depending on what is passed as an argument, different listener creation behaviour is performed.
              *
              * <dl>
-             *     <dt>Object Instance</dt>
-             *     <dd>Scanned for <em>non-static</em> methods annotated with {@link SubscribeEvent} and creates listeners for
-             *     each method found.</dd>
-             *     <dt>Class Instance</dt>
-             *     <dd>Scanned for <em>static</em> methods annotated with {@link SubscribeEvent} and creates listeners for
-             *     each method found.</dd>
+             * <dt>Object Instance</dt>
+             * <dd>Scanned for <em>non-static</em> methods annotated with {@link SubscribeEvent} and creates listeners for
+             * each method found.</dd>
+             * <dt>Class Instance</dt>
+             * <dd>Scanned for <em>static</em> methods annotated with {@link SubscribeEvent} and creates listeners for
+             * each method found.</dd>
              * </dl>
              *
              * @param object either a {@link Class} instance or an arbitrary object, for scanning and event listener creation
@@ -249,6 +253,5 @@ public interface Test extends Groupable {
      * @param title       the human-readable title of the test
      * @param description the description of the test
      */
-    record Visuals(Component title, List<Component> description) {
-    }
+    record Visuals(Component title, List<Component> description) {}
 }

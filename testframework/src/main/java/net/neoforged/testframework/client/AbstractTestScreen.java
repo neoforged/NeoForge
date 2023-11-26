@@ -1,24 +1,13 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.client;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
-import net.neoforged.testframework.Test;
-import net.neoforged.testframework.group.Group;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.ChatFormatting;
-import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ObjectSelectionList;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.FormattedCharSequence;
-import org.lwjgl.glfw.GLFW;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,11 +21,27 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import javax.annotation.ParametersAreNonnullByDefault;
+import net.minecraft.ChatFormatting;
+import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
+import net.neoforged.testframework.Test;
+import net.neoforged.testframework.group.Group;
+import net.neoforged.testframework.impl.TestFrameworkInternal;
+import org.lwjgl.glfw.GLFW;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public abstract class AbstractTestScreen extends Screen {
     protected final TestFrameworkInternal framework;
+
     public AbstractTestScreen(Component title, TestFrameworkInternal framework) {
         super(title);
         this.framework = framework;
@@ -102,13 +107,11 @@ public abstract class AbstractTestScreen extends Screen {
             final ListMultimap<String, Test> withParent = tests.collect(Multimaps.toMultimap(
                     test -> test.groups().size() < 1 ? "ungrouped" : test.groups().get(0),
                     Function.identity(),
-                    () -> Multimaps.newListMultimap(new LinkedHashMap<>(), ArrayList::new)
-            ));
+                    () -> Multimaps.newListMultimap(new LinkedHashMap<>(), ArrayList::new)));
             final Predicate<String> isUngrouped = it -> it.equals("ungrouped") || (parent != null && it.equals(parent.id()));
             final Comparator<String> stringComparator = Comparator.naturalOrder();
             return withParent.asMap().entrySet()
-                    .stream()
-                    .<Map.Entry<Group, Collection<Test>>>map(entry -> new AbstractMap.SimpleEntry<>(framework.tests().getOrCreateGroup(entry.getKey()), entry.getValue()))
+                    .stream().<Map.Entry<Group, Collection<Test>>>map(entry -> new AbstractMap.SimpleEntry<>(framework.tests().getOrCreateGroup(entry.getKey()), entry.getValue()))
                     .sorted((o1, o2) -> {
                         if (isUngrouped.test(o1.getKey().id())) return -1;
                         else if (isUngrouped.test(o2.getKey().id())) return 1;
@@ -120,8 +123,7 @@ public abstract class AbstractTestScreen extends Screen {
                         } else {
                             return Stream.concat(
                                     Stream.of(new GroupEntry(entry.getKey(), true)),
-                                    entry.getValue().stream().map(TestEntry::new)
-                            );
+                                    entry.getValue().stream().map(TestEntry::new));
                         }
                     });
         }
@@ -137,11 +139,13 @@ public abstract class AbstractTestScreen extends Screen {
             public boolean canDisable() {
                 return isEnabled();
             }
+
             public boolean canEnable() {
                 return !isEnabled();
             }
 
             public abstract void enable(boolean enable);
+
             public abstract void reset();
 
             @Override
@@ -162,6 +166,7 @@ public abstract class AbstractTestScreen extends Screen {
 
         protected final class TestEntry extends Entry {
             private final Test test;
+
             private TestEntry(Test test) {
                 this.test = test;
             }
@@ -289,8 +294,7 @@ public abstract class AbstractTestScreen extends Screen {
             private void openBrowseGUI() {
                 Minecraft.getInstance().pushGuiLayer(new TestScreen(
                         Component.literal("Tests of group ").append(getTitle()),
-                        framework, List.of(group)
-                ) {
+                        framework, List.of(group)) {
                     @Override
                     protected void init() {
                         super.init();

@@ -1,18 +1,22 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.collector;
 
 import com.google.gson.reflect.TypeToken;
-import net.neoforged.testframework.Test;
-import net.neoforged.testframework.annotation.OnInit;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-
-import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.neoforged.testframework.Test;
+import net.neoforged.testframework.annotation.OnInit;
+import net.neoforged.testframework.impl.TestFrameworkInternal;
 
 public record CollectorType<A>(Type type) {
     public static final CollectorType<Test> TESTS = get(new TypeToken<>() {});

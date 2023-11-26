@@ -1,7 +1,15 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.common.extensions;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.embedded.EmbeddedChannel;
+import java.util.UUID;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestAssertException;
@@ -25,10 +33,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.UUID;
-import java.util.function.BiPredicate;
-import java.util.function.Function;
-
 public interface IGameTestHelperExtension {
     GameTestHelper self();
 
@@ -37,9 +41,7 @@ public interface IGameTestHelperExtension {
         pos = self().absolutePos(pos);
         item.useOn(new UseOnContext(
                 self().getLevel(), player, InteractionHand.MAIN_HAND, item, new BlockHitResult(
-                pos.getCenter(), direction, pos, false
-        )
-        ));
+                        pos.getCenter(), direction, pos, false)));
     }
 
     default void useBlock(BlockPos pos, Player player, ItemStack item) {
@@ -63,7 +65,7 @@ public interface IGameTestHelperExtension {
     default <T, E extends Entity> void assertEntityProperty(E entity, Function<E, T> function, String valueName, T expected, BiPredicate<T, T> tester) {
         final T value = function.apply(entity);
         if (!tester.test(value, expected)) {
-            throw new GameTestAssertException("Entity " + entity + " value " + valueName + "=" + value  + " is not equal to expected " + expected);
+            throw new GameTestAssertException("Entity " + entity + " value " + valueName + "=" + value + " is not equal to expected " + expected);
         }
     }
 
@@ -76,8 +78,7 @@ public interface IGameTestHelperExtension {
     default ServerPlayer makeTickingMockServerPlayerInLevel(GameType gameType) {
         CommonListenerCookie commonlistenercookie = CommonListenerCookie.createInitial(new GameProfile(UUID.randomUUID(), "test-mock-player"));
         ServerPlayer serverplayer = new ServerPlayer(
-                self().getLevel().getServer(), self().getLevel(), commonlistenercookie.gameProfile(), commonlistenercookie.clientInformation()
-        ) {
+                self().getLevel().getServer(), self().getLevel(), commonlistenercookie.gameProfile(), commonlistenercookie.clientInformation()) {
             @Override
             public boolean isSpectator() {
                 return gameType == GameType.SPECTATOR;

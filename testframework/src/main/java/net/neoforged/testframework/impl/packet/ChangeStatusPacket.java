@@ -1,14 +1,18 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.impl.packet;
 
-import net.neoforged.testframework.Test;
-import net.neoforged.testframework.conf.Feature;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
+import java.util.Objects;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.NetworkEvent;
 import net.neoforged.neoforge.network.simple.SimpleMessage;
-
-import java.util.Objects;
+import net.neoforged.testframework.Test;
+import net.neoforged.testframework.conf.Feature;
+import net.neoforged.testframework.impl.TestFrameworkInternal;
 
 public record ChangeStatusPacket(TestFrameworkInternal framework, String testId, Test.Status status) implements SimpleMessage {
     @Override

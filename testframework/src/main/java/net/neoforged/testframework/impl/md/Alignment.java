@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.impl.md;
 
 public enum Alignment {
@@ -50,5 +55,6 @@ public enum Alignment {
     };
 
     public abstract String align(String str);
+
     public abstract String fillAligned(String value, String fill, int length);
 }

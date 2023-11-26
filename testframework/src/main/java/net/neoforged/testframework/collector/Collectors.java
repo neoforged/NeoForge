@@ -1,31 +1,14 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.collector;
 
 import com.google.common.base.Suppliers;
-import net.neoforged.testframework.Test;
-import net.neoforged.testframework.annotation.OnInit;
-import net.neoforged.testframework.annotation.RegisterStructureTemplate;
-import net.neoforged.testframework.annotation.TestGroup;
-import net.neoforged.testframework.gametest.StructureTemplateBuilder;
-import net.neoforged.testframework.impl.HackyReflection;
-import net.neoforged.testframework.impl.TestFrameworkImpl;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
-import net.neoforged.testframework.impl.test.MethodBasedEventTest;
-import net.neoforged.testframework.impl.test.MethodBasedTest;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.Event;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.fml.loading.moddiscovery.ModAnnotation;
-import net.neoforged.neoforgespi.language.ModFileScanData;
-import net.neoforged.testframework.registration.RegistrationHelper;
-import org.objectweb.asm.Type;
-
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.invoke.MethodHandle;
@@ -39,6 +22,27 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.moddiscovery.ModAnnotation;
+import net.neoforged.neoforgespi.language.ModFileScanData;
+import net.neoforged.testframework.Test;
+import net.neoforged.testframework.annotation.OnInit;
+import net.neoforged.testframework.annotation.RegisterStructureTemplate;
+import net.neoforged.testframework.annotation.TestGroup;
+import net.neoforged.testframework.gametest.StructureTemplateBuilder;
+import net.neoforged.testframework.impl.HackyReflection;
+import net.neoforged.testframework.impl.TestFrameworkImpl;
+import net.neoforged.testframework.impl.TestFrameworkInternal;
+import net.neoforged.testframework.impl.test.MethodBasedEventTest;
+import net.neoforged.testframework.impl.test.MethodBasedTest;
+import net.neoforged.testframework.registration.RegistrationHelper;
+import org.objectweb.asm.Type;
 
 public final class Collectors {
     private static final Predicate<ModFileScanData.AnnotationData> SIDE_FILTER = data -> {
@@ -46,8 +50,8 @@ public final class Collectors {
         Object sidesValue = data.annotationData().get("side");
         if (sidesValue == null) sidesValue = data.annotationData().get("dist");
         if (sidesValue == null) return true;
-        @SuppressWarnings("unchecked") final EnumSet<Dist> sides = ((List<ModAnnotation.EnumHolder>) sidesValue).stream().map(eh -> Dist.valueOf(eh.getValue())).
-                collect(java.util.stream.Collectors.toCollection(() -> EnumSet.noneOf(Dist.class)));
+        @SuppressWarnings("unchecked")
+        final EnumSet<Dist> sides = ((List<ModAnnotation.EnumHolder>) sidesValue).stream().map(eh -> Dist.valueOf(eh.getValue())).collect(java.util.stream.Collectors.toCollection(() -> EnumSet.noneOf(Dist.class)));
         return sides.contains(current);
     };
 
@@ -178,8 +182,7 @@ public final class Collectors {
                     acceptor.accept(new CollectorType.GroupData(
                             groupId, title.apply(annotation),
                             isEnabledByDefault.apply(annotation),
-                            parents.apply(annotation)
-                    ));
+                            parents.apply(annotation)));
                 }));
     }
 
