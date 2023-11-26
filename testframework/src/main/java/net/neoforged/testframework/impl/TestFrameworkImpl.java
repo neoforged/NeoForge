@@ -444,6 +444,10 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
 
         @Override
         public void register(Test test) {
+            if (tests.containsKey(test.id())) {
+                throw new UnsupportedOperationException("Duplicate test with ID: " + test.id());
+            }
+
             tests.put(test.id(), test);
             if (test.groups().isEmpty()) {
                 getOrCreateGroup("ungrouped").add(test);

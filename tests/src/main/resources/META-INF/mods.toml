@@ -31,8 +31,6 @@ license="LGPL v2.1"
     modId="custom_preset_editor_test"
 
 [[mods]]
-    modId="living_swap_items_event_test"
-[[mods]]
     modId="custom_break_sound_test"
 
 # LEGACY TEST CASES
@@ -133,10 +131,6 @@ modId="custom_signs_test"
 modId="worldgen_registry_desync_test"
 [[mods]]
 modId="add_entity_attribute_test"
-[[mods]]
-modId="enum_argument_test"
-[[mods]]
-modId="entity_teleport_event_test"
 [[mods]]
 modId="fake_player_test"
 [[mods]]

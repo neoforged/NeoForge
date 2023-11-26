@@ -2,9 +2,11 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ItemSteerable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -12,6 +14,10 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.function.BiPredicate;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public interface IGameTestHelperExtension {
     GameTestHelper self();
@@ -41,6 +47,13 @@ public interface IGameTestHelperExtension {
         if (!interactionresult.consumesAction()) {
             UseOnContext useoncontext = new UseOnContext(player, InteractionHand.MAIN_HAND, hit);
             player.getItemInHand(InteractionHand.MAIN_HAND).useOn(useoncontext);
+        }
+    }
+
+    default <T, E extends Entity> void assertEntityProperty(E entity, Function<E, T> function, String valueName, T expected, BiPredicate<T, T> tester) {
+        final T value = function.apply(entity);
+        if (!tester.test(value, expected)) {
+            throw new GameTestAssertException("Entity " + entity + " value " + valueName + "=" + value  + " is not equal to expected " + expected);
         }
     }
 }

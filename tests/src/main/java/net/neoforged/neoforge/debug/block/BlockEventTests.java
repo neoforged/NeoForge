@@ -23,7 +23,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 
-@ForEachTest(groups = BlockTests.GROUP + ".event")
+@ForEachTest(groups = {BlockTests.GROUP + ".event", "event"})
 public class BlockEventTests {
 
     @GameTest(template = TestsMod.TEMPLATE_3x3)
