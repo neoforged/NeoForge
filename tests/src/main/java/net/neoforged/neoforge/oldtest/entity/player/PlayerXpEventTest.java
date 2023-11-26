@@ -19,12 +19,6 @@ public class PlayerXpEventTest {
     private static Logger logger = LogManager.getLogger(PlayerXpEventTest.class);
 
     @SubscribeEvent
-    public static void onPlayerPickupXp(PlayerXpEvent.PickupXp event) {
-        if (!ENABLE) return;
-        logger.info("{} picked up an experience orb worth {}", event.getEntity().getName().getString(), event.getOrb().getValue());
-    }
-
-    @SubscribeEvent
     public static void onPlayerXpChange(PlayerXpEvent.XpChange event) {
         if (!ENABLE) return;
         logger.info("{} has been given {} experience", event.getEntity().getName().getString(), event.getAmount());

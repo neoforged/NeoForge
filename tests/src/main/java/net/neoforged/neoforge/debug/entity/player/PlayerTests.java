@@ -18,7 +18,6 @@ import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 import net.neoforged.neoforge.debug.entity.EntityTests;
-import net.neoforged.neoforge.oldtest.entity.player.PlayerAttackKnockbackTest;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
