@@ -27,36 +27,36 @@ import org.slf4j.Logger;
 @Mod(UseItemOnBlockEventTest.MODID)
 public class UseItemOnBlockEventTest
 {
-	public static final String MODID = "use_item_on_block_event_test";
-	private static final Logger LOGGER = LogUtils.getLogger();
+    public static final String MODID = "use_item_on_block_event_test";
+    private static final Logger LOGGER = LogUtils.getLogger();
 
-	public UseItemOnBlockEventTest()
-	{
-		NeoForge.EVENT_BUS.addListener(this::onUseItemOnBlock);
-	}
+    public UseItemOnBlockEventTest()
+    {
+        NeoForge.EVENT_BUS.addListener(this::onUseItemOnBlock);
+    }
 
-	private void onUseItemOnBlock(UseItemOnBlockEvent event)
-	{
-		UseOnContext context = event.getUseOnContext();
-		Level level = context.getLevel();
-		LOGGER.info("phase={}; hand={}; isClient={}", event.getUsePhase(), event.getUseOnContext().getHand(), level.isClientSide);
-		// cancel item logic if dirt is placed on top of grass
-		if (event.getUsePhase() == UseItemOnBlockEvent.UsePhase.ITEM_AFTER_BLOCK)
-		{
-			ItemStack stack = context.getItemInHand();
-			Item item = stack.getItem();
-			if (item instanceof BlockItem blockItem && blockItem.getBlock() == Blocks.DIRT)
-			{
-				BlockPos placePos = context.getClickedPos().relative(context.getClickedFace());
-				if (level.getBlockState(placePos.below()).getBlock() == Blocks.DISPENSER)
-				{
-					if (!level.isClientSide)
-					{
-						context.getPlayer().displayClientMessage(Component.literal("Can't place dirt on dispenser"), false);
-					}
-					event.cancelWithResult(InteractionResult.SUCCESS);
-				}
-			}
-		}
-	}
+    private void onUseItemOnBlock(UseItemOnBlockEvent event)
+    {
+        UseOnContext context = event.getUseOnContext();
+        Level level = context.getLevel();
+        LOGGER.info("phase={}; hand={}; isClient={}", event.getUsePhase(), event.getUseOnContext().getHand(), level.isClientSide);
+        // cancel item logic if dirt is placed on top of grass
+        if (event.getUsePhase() == UseItemOnBlockEvent.UsePhase.ITEM_AFTER_BLOCK)
+        {
+            ItemStack stack = context.getItemInHand();
+            Item item = stack.getItem();
+            if (item instanceof BlockItem blockItem && blockItem.getBlock() == Blocks.DIRT)
+            {
+                BlockPos placePos = context.getClickedPos().relative(context.getClickedFace());
+                if (level.getBlockState(placePos.below()).getBlock() == Blocks.DISPENSER)
+                {
+                    if (!level.isClientSide)
+                    {
+                        context.getPlayer().displayClientMessage(Component.literal("Can't place dirt on dispenser"), false);
+                    }
+                    event.cancelWithResult(InteractionResult.SUCCESS);
+                }
+            }
+        }
+    }
 }
