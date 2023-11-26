@@ -35,7 +35,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
     }
 
     public DeferredBlockBuilder<T> withBlockItem(Item.Properties properties, Consumer<DeferredItemBuilder<BlockItem>> consumer) {
-        consumer.accept(helper.items().registerBlockItem(this, properties));
+        consumer.accept(helper.items().registerSimpleBlockItem(this, properties));
         hasItem = true;
         return this;
     }

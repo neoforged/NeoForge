@@ -58,7 +58,7 @@ public class DeferredBlocks extends DeferredRegister.Blocks {
     }
 
     @Override
-    public DeferredBlockBuilder<Block> registerBlock(String name, BlockBehaviour.Properties props) {
-        return (DeferredBlockBuilder<Block>) super.registerBlock(name, props);
+    public DeferredBlockBuilder<Block> registerSimpleBlock(String name, BlockBehaviour.Properties props) {
+        return (DeferredBlockBuilder<Block>) super.registerSimpleBlock(name, props);
     }
 }

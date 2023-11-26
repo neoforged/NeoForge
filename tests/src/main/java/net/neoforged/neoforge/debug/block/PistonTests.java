@@ -32,7 +32,7 @@ public class PistonTests {
             "This test mod makes black wool pushed by a piston drop after being pushed."
     })
     static void pistonEvent(final DynamicTest test, final RegistrationHelper reg) {
-        final var shiftOnPistonMove = reg.blocks().registerBlock("shift_on_piston_move", BlockBehaviour.Properties.of())
+        final var shiftOnPistonMove = reg.blocks().registerSimpleBlock("shift_on_piston_move", BlockBehaviour.Properties.of())
                 .withDefaultWhiteModel()
                 .withBlockItem()
                 .withLang("Shift on piston move");

@@ -10,8 +10,10 @@ import java.util.function.Supplier;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
@@ -121,6 +123,14 @@ public interface DynamicTest extends Test {
      * {@return if this test is currently running as a GameTest}
      */
     boolean isDuringGameTest();
+
+    /**
+     * Requests a confirmation of the test passing from a player.
+     *
+     * @param player  the player to request the confirmation from
+     * @param message the confirmation message
+     */
+    void requestConfirmation(Player player, Component message);
 
     @FunctionalInterface
     interface EnabledListener {

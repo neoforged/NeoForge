@@ -40,23 +40,23 @@ public class DeferredItems extends DeferredRegister.Items {
     }
 
     @Override
-    public DeferredItemBuilder<BlockItem> registerBlockItem(String name, Supplier<? extends Block> block, Item.Properties properties) {
-        return (DeferredItemBuilder<BlockItem>) super.registerBlockItem(name, block, properties);
+    public DeferredItemBuilder<BlockItem> registerSimpleBlockItem(String name, Supplier<? extends Block> block, Item.Properties properties) {
+        return (DeferredItemBuilder<BlockItem>) super.registerSimpleBlockItem(name, block, properties);
     }
 
     @Override
-    public DeferredItemBuilder<BlockItem> registerBlockItem(String name, Supplier<? extends Block> block) {
-        return (DeferredItemBuilder<BlockItem>) super.registerBlockItem(name, block);
+    public DeferredItemBuilder<BlockItem> registerSimpleBlockItem(String name, Supplier<? extends Block> block) {
+        return (DeferredItemBuilder<BlockItem>) super.registerSimpleBlockItem(name, block);
     }
 
     @Override
-    public DeferredItemBuilder<BlockItem> registerBlockItem(Holder<Block> block, Item.Properties properties) {
-        return (DeferredItemBuilder<BlockItem>) super.registerBlockItem(block, properties);
+    public DeferredItemBuilder<BlockItem> registerSimpleBlockItem(Holder<Block> block, Item.Properties properties) {
+        return (DeferredItemBuilder<BlockItem>) super.registerSimpleBlockItem(block, properties);
     }
 
     @Override
-    public DeferredItemBuilder<BlockItem> registerBlockItem(Holder<Block> block) {
-        return (DeferredItemBuilder<BlockItem>) super.registerBlockItem(block);
+    public DeferredItemBuilder<BlockItem> registerSimpleBlockItem(Holder<Block> block) {
+        return (DeferredItemBuilder<BlockItem>) super.registerSimpleBlockItem(block);
     }
 
     @Override
@@ -70,12 +70,12 @@ public class DeferredItems extends DeferredRegister.Items {
     }
 
     @Override
-    public DeferredItemBuilder<Item> registerItem(String name, Item.Properties props) {
-        return (DeferredItemBuilder<Item>) super.registerItem(name, props);
+    public DeferredItemBuilder<Item> registerSimpleItem(String name, Item.Properties props) {
+        return (DeferredItemBuilder<Item>) super.registerSimpleItem(name, props);
     }
 
     @Override
-    public DeferredItemBuilder<Item> registerItem(String name) {
-        return (DeferredItemBuilder<Item>) super.registerItem(name);
+    public DeferredItemBuilder<Item> registerSimpleItem(String name) {
+        return (DeferredItemBuilder<Item>) super.registerSimpleItem(name);
     }
 }

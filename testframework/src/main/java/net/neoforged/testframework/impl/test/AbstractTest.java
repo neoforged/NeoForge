@@ -195,7 +195,7 @@ public abstract class AbstractTest implements Test {
         updateStatus(new Status(Result.PASSED, ""), null);
     }
 
-    protected final void requestConfirmation(Player player, Component message) {
+    public final void requestConfirmation(Player player, Component message) {
         if (framework instanceof TestFrameworkInternal internal) {
             player.sendSystemMessage(message.copy().append(" ").append(
                     Component.literal("Yes").withStyle(style -> style.withColor(ChatFormatting.GREEN).withBold(true)
