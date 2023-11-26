@@ -5,7 +5,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
-import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -33,8 +32,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
@@ -60,9 +57,9 @@ public class ItemTests {
     })
     static void customMobBucket(final DynamicTest test, final RegistrationHelper reg) {
         final var cowBucket = reg.items().register("cow_bucket", () -> new MobBucketItem(
-                EntityType.COW,
-                Fluids.WATER,
-                SoundEvents.BUCKET_EMPTY_FISH,
+                () -> EntityType.COW,
+                () -> Fluids.WATER,
+                () -> SoundEvents.BUCKET_EMPTY_FISH,
                 (new Item.Properties()).stacksTo(1)))
                 .withLang("Cow bucket");
         test.framework().modEventBus().addListener((final FMLCommonSetupEvent event) -> {

@@ -54,8 +54,6 @@ modId="vanilla_game_event_test"
 [[mods]]
 modId="client_chat_event_test"
 [[mods]]
-modId="command_event_test"
-[[mods]]
 modId="entity_selector_test"
 [[mods]]
 modId="gravity_attribute_test"

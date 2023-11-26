@@ -1,0 +1,11 @@
+--- a/net/minecraft/gametest/framework/TestCommand.java
++++ b/net/minecraft/gametest/framework/TestCommand.java
+@@ -315,7 +_,7 @@
+ 
+    private static void runTest(ServerLevel p_127930_, BlockPos p_127931_, @Nullable MultipleTestTracker p_127932_) {
+       StructureBlockEntity structureblockentity = (StructureBlockEntity)p_127930_.getBlockEntity(p_127931_);
+-      String s = structureblockentity.getStructurePath();
++      String s = structureblockentity.getAuthor().isBlank() ? structureblockentity.getStructureName() : structureblockentity.getAuthor();
+       TestFunction testfunction = GameTestRegistry.getTestFunction(s);
+       GameTestInfo gametestinfo = new GameTestInfo(testfunction, structureblockentity.getRotation(), p_127930_);
+       if (p_127932_ != null) {

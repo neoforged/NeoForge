@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/level/block/entity/StructureBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/StructureBlockEntity.java
+@@ -461,4 +_,7 @@
+       LOAD_AREA,
+       SCAN_AREA;
+    }
++
++   public String getAuthor() { return author; }
++   public void setAuthor(String author) { this.author = author; }
+ }

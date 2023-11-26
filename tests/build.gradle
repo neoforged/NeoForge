@@ -47,10 +47,10 @@ runs {
     server {
         configure neoforgeProject.runTypes.server
     }
-    "GameTest Server" {
+    gameTestServer {
         configure neoforgeProject.runTypes.gameTestServer
     }
-    "GameTest Client" {
+    gameTestClient {
         configure neoforgeProject.runTypes.gameTestClient
     }
     data {
