@@ -44,7 +44,7 @@
        this.byLocation.put(p_256594_.location(), reference);
        this.byValue.put(p_256374_, reference);
 -      this.byId.size(Math.max(this.byId.size(), p_256563_ + 1));
-+      while(this.byId.size() < (p_256563_ + 1)) this.byId.add(null);
++      while (this.byId.size() < (p_256563_ + 1)) this.byId.add(null);
        this.byId.set(p_256563_, reference);
        this.toId.put(p_256374_, p_256563_);
        if (this.nextId <= p_256563_) {
@@ -155,7 +155,7 @@
 +         this.nextId = id + 1;
 +      }
 +      var holder = byKey.get(key);
-+      while(this.byId.size() < (id + 1)) this.byId.add(null);
++      while (this.byId.size() < (id + 1)) this.byId.add(null);
 +      this.byId.set(id, holder);
 +      this.toId.put(holder.value(), id);
 +   }
