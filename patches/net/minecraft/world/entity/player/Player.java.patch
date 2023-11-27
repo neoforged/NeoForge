@@ -121,15 +121,6 @@
        if (this.isInvulnerableTo(p_36154_)) {
           return false;
        } else if (this.abilities.invulnerable && !p_36154_.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-@@ -865,7 +_,7 @@
-    @Override
-    protected void blockUsingShield(LivingEntity p_36295_) {
-       super.blockUsingShield(p_36295_);
--      if (p_36295_.canDisableShield()) {
-+      if (p_36295_.getMainHandItem().canDisableShield(this.useItem, this, p_36295_)) {
-          this.disableShield(true);
-       }
-    }
 @@ -897,7 +_,7 @@
  
     @Override
