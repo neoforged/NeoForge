@@ -9,7 +9,10 @@ import com.mojang.authlib.GameProfile;
 import io.netty.channel.embedded.EmbeddedChannel;
 import java.util.UUID;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestAssertException;
@@ -30,6 +33,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -121,6 +125,11 @@ public interface IGameTestHelperExtension {
             }
         });
         return serverplayer;
+    }
+
+    default Stream<BlockPos> blocksBetween(int x, int y, int z, int length, int height, int width) {
+        final AABB bounds = new AABB(self().absolutePos(new BlockPos(x, y, z)), self().absolutePos(new BlockPos(x + length, y + height, z + width)));
+        return BlockPos.MutableBlockPos.betweenClosedStream(bounds);
     }
 
     void addListener(final GameTestListener listener);

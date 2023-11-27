@@ -13,8 +13,6 @@ license="LGPL v2.1"
 [[mods]]
     modId="potentialspawnsevent_test"
 [[mods]]
-    modId="block_grow_feature_test"
-[[mods]]
     modId="biome_modifiers_test"
 
 [[mods]]
@@ -247,8 +245,6 @@ modId="trade_with_villager_event_test"
 modId="chunk_event_load_new_chunk_test"
 [[mods]]
 modId="custom_fluid_container_test"
-[[mods]]
-modId="alter_ground_event_test"
 [[mods]]
 modId="keymapping_test"
 [[mods]]
