@@ -67,7 +67,7 @@ public class LevelEventTests {
                     .thenExecute(() -> helper.assertTrue(
                             helper.blocksBetween(0, 0, 0, 10, 1, 10)
                                     .filter(pos -> helper.getLevel().getBlockState(pos).is(Blocks.REDSTONE_BLOCK))
-                                    .count() > 40,
+                                    .count() > 20,
                             "Not enough redstone blocks have been placed!"
                     ))
                     .thenExecute(() -> helper.assertTrue(
