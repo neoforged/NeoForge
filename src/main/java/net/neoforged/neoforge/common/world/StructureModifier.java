@@ -12,10 +12,9 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.resources.RegistryFileCodec;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.neoforge.common.world.ModifiableStructureInfo.StructureInfo;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 /**
  * JSON-serializable structure modifier.
@@ -38,20 +37,20 @@ public interface StructureModifier {
      * Codec for (de)serializing structure modifiers inline.
      * Mods can use this for data generation.
      */
-    Codec<StructureModifier> DIRECT_CODEC = ExtraCodecs.lazyInitializedCodec(() -> ForgeRegistries.STRUCTURE_MODIFIER_SERIALIZERS.get().getCodec())
+    Codec<StructureModifier> DIRECT_CODEC = NeoForgeRegistries.STRUCTURE_MODIFIER_SERIALIZERS.byNameCodec()
             .dispatch(StructureModifier::codec, Function.identity());
 
     /**
      * Codec for referring to structure modifiers by id in other datapack registry files.
      * Can only be used with {@link RegistryOps}.
      */
-    Codec<Holder<StructureModifier>> REFERENCE_CODEC = RegistryFileCodec.create(ForgeRegistries.Keys.STRUCTURE_MODIFIERS, DIRECT_CODEC);
+    Codec<Holder<StructureModifier>> REFERENCE_CODEC = RegistryFileCodec.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, DIRECT_CODEC);
 
     /**
      * Codec for referring to structure modifiers by id, list of id, or tags.
      * Can only be used with {@link RegistryOps}.
      */
-    Codec<HolderSet<StructureModifier>> LIST_CODEC = RegistryCodecs.homogeneousList(ForgeRegistries.Keys.STRUCTURE_MODIFIERS, DIRECT_CODEC);
+    Codec<HolderSet<StructureModifier>> LIST_CODEC = RegistryCodecs.homogeneousList(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, DIRECT_CODEC);
 
     /**
      * Modifies the information via the provided structure builder.

@@ -7,6 +7,7 @@ package net.neoforged.neoforge.debug.item;
 
 import java.util.Map;
 import net.minecraft.client.renderer.entity.PigRenderer;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -25,20 +26,20 @@ import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(value = ForgeSpawnEggItemTest.MODID)
 public class ForgeSpawnEggItemTest {
     static final String MODID = "forge_spawnegg_test";
     static final boolean ENABLED = true;
 
-    private static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
-    private static final RegistryObject<EntityType<Pig>> ENTITY = ENTITIES.register("test_entity", () -> EntityType.Builder.of(Pig::new, MobCategory.CREATURE).sized(1, 1).build("test_entity"));
+    private static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, MODID);
+    private static final DeferredHolder<EntityType<?>, EntityType<Pig>> ENTITY = ENTITIES.register("test_entity", () -> EntityType.Builder.of(Pig::new, MobCategory.CREATURE).sized(1, 1).build("test_entity"));
 
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-    private static final RegistryObject<DeferredSpawnEggItem> EGG = ITEMS.register("test_spawn_egg", () -> new DeferredSpawnEggItem(ENTITY, 0x0000FF, 0xFF0000, new Item.Properties()));
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
+    private static final DeferredItem<DeferredSpawnEggItem> EGG = ITEMS.register("test_spawn_egg", () -> new DeferredSpawnEggItem(ENTITY, 0x0000FF, 0xFF0000, new Item.Properties()));
 
     public ForgeSpawnEggItemTest() {
         if (ENABLED) {
@@ -61,7 +62,7 @@ public class ForgeSpawnEggItemTest {
         //Remove step height attribute to validate that things are handled properly when an entity doesn't have it
         Map<Attribute, AttributeInstance> builder = ObfuscationReflectionHelper.getPrivateValue(AttributeSupplier.Builder.class, attributes, "builder");
         if (builder != null) {
-            builder.remove(NeoForgeMod.STEP_HEIGHT.get());
+            builder.remove(NeoForgeMod.STEP_HEIGHT.value());
         }
         event.put(ENTITY.get(), attributes.build());
     }

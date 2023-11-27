@@ -17,3 +17,58 @@
     }
  
     public static void _texParameter(int p_84332_, int p_84333_, int p_84334_) {
+@@ -945,5 +_,54 @@
+       public static int height() {
+          return INSTANCE.height;
+       }
++   }
++
++   public static void _backupGlState(net.neoforged.neoforge.client.GlStateBackup state) {
++      state.blendEnabled = BLEND.mode.enabled;
++      state.blendSrcRgb = BLEND.srcRgb;
++      state.blendDestRgb = BLEND.dstRgb;
++      state.blendSrcAlpha = BLEND.srcAlpha;
++      state.blendDestAlpha = BLEND.dstAlpha;
++      state.depthEnabled = DEPTH.mode.enabled;
++      state.depthMask = DEPTH.mask;
++      state.depthFunc = DEPTH.func;
++      state.cullEnabled = CULL.enable.enabled;
++      state.polyOffsetFillEnabled = POLY_OFFSET.fill.enabled;
++      state.polyOffsetLineEnabled = POLY_OFFSET.line.enabled;
++      state.polyOffsetFactor = POLY_OFFSET.factor;
++      state.polyOffsetUnits = POLY_OFFSET.units;
++      state.colorLogicEnabled = COLOR_LOGIC.enable.enabled;
++      state.colorLogicOp = COLOR_LOGIC.op;
++      state.stencilFuncFunc = STENCIL.func.func;
++      state.stencilFuncRef = STENCIL.func.ref;
++      state.stencilFuncMask = STENCIL.func.mask;
++      state.stencilMask = STENCIL.mask;
++      state.stencilFail = STENCIL.fail;
++      state.stencilZFail = STENCIL.zfail;
++      state.stencilZPass = STENCIL.zpass;
++      state.scissorEnabled = SCISSOR.mode.enabled;
++      state.colorMaskRed = COLOR_MASK.red;
++      state.colorMaskGreen = COLOR_MASK.green;
++      state.colorMaskBlue = COLOR_MASK.blue;
++      state.colorMaskAlpha = COLOR_MASK.alpha;
++   }
++
++   public static void _restoreGlState(net.neoforged.neoforge.client.GlStateBackup state) {
++      BLEND.mode.setEnabled(state.blendEnabled);
++      _blendFuncSeparate(state.blendSrcRgb, state.blendDestRgb, state.blendSrcAlpha, state.blendDestAlpha);
++      DEPTH.mode.setEnabled(state.depthEnabled);
++      _depthMask(state.depthMask);
++      _depthFunc(state.depthFunc);
++      CULL.enable.setEnabled(state.cullEnabled);
++      POLY_OFFSET.fill.setEnabled(state.polyOffsetFillEnabled);
++      POLY_OFFSET.line.setEnabled(state.polyOffsetLineEnabled);
++      _polygonOffset(state.polyOffsetFactor, state.polyOffsetUnits);
++      COLOR_LOGIC.enable.setEnabled(state.colorLogicEnabled);
++      _logicOp(state.colorLogicOp);
++      _stencilFunc(state.stencilFuncFunc, state.stencilFuncRef, state.stencilFuncMask);
++      _stencilMask(state.stencilMask);
++      _stencilOp(state.stencilFail, state.stencilZFail, state.stencilZPass);
++      SCISSOR.mode.setEnabled(state.scissorEnabled);
++      _colorMask(state.colorMaskRed, state.colorMaskGreen, state.colorMaskBlue, state.colorMaskAlpha);
+    }
+ }

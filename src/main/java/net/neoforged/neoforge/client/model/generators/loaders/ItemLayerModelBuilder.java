@@ -33,7 +33,7 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
     private final IntSet layersWithRenderTypes = new IntOpenHashSet();
 
     protected ItemLayerModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(new ResourceLocation("neoforge:item_layers"), parent, existingFileHelper);
+        super(new ResourceLocation("neoforge:item_layers"), parent, existingFileHelper, false);
     }
 
     /**

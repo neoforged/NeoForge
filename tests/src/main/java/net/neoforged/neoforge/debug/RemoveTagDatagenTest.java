@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +23,6 @@ import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 
 @Mod(RemoveTagDatagenTest.MODID)
 public class RemoveTagDatagenTest {
@@ -70,10 +70,10 @@ public class RemoveTagDatagenTest {
     }
 
     private static ResourceLocation key(Block value) {
-        return ForgeRegistries.BLOCKS.getKey(value);
+        return BuiltInRegistries.BLOCK.getKey(value);
     }
 
     private static ResourceLocation key(Item value) {
-        return ForgeRegistries.ITEMS.getKey(value);
+        return BuiltInRegistries.ITEM.getKey(value);
     }
 }

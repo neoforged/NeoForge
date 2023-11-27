@@ -15,8 +15,8 @@
  
 -   public static final Codec<ItemDisplayContext> CODEC = StringRepresentable.fromEnum(ItemDisplayContext::values);
 -   public static final IntFunction<ItemDisplayContext> BY_ID = ByIdMap.continuous(ItemDisplayContext::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
-+   public static final Codec<ItemDisplayContext> CODEC = net.minecraft.util.ExtraCodecs.lazyInitializedCodec(() -> net.neoforged.neoforge.registries.ForgeRegistries.DISPLAY_CONTEXTS.get().getCodec());
-+   public static final IntFunction<ItemDisplayContext> BY_ID = id -> java.util.Objects.requireNonNullElse(((net.neoforged.neoforge.registries.IForgeRegistryInternal<ItemDisplayContext>) net.neoforged.neoforge.registries.ForgeRegistries.DISPLAY_CONTEXTS.get()).getValue(id < 0 ? Byte.MAX_VALUE + -id : id), NONE);
++   public static final Codec<ItemDisplayContext> CODEC = net.neoforged.neoforge.registries.NeoForgeRegistries.DISPLAY_CONTEXTS.byNameCodec();
++   public static final IntFunction<ItemDisplayContext> BY_ID = id -> java.util.Objects.requireNonNullElse(net.neoforged.neoforge.registries.NeoForgeRegistries.DISPLAY_CONTEXTS.byId(id < 0 ? Byte.MAX_VALUE + -id : id), NONE);
     private byte id;
     private final String name;
  
@@ -56,5 +56,5 @@
 +   public static ItemDisplayContext create(String keyName, net.minecraft.resources.ResourceLocation serializedName, @javax.annotation.Nullable ItemDisplayContext fallback) {
 +      throw new IllegalStateException("Enum not extended!");
 +   }
-+   public static final net.neoforged.neoforge.registries.IForgeRegistry.AddCallback<ItemDisplayContext> ADD_CALLBACK = (owner, stage, id, key, obj, oldObj) -> obj.id = id > Byte.MAX_VALUE ? (byte) -(id - Byte.MAX_VALUE) : (byte) id; // if the ID is > 127 start doing negative IDs
++   public static final net.neoforged.neoforge.registries.callback.AddCallback<ItemDisplayContext> ADD_CALLBACK = (registry, id, key, obj) -> obj.id = id > Byte.MAX_VALUE ? (byte) -(id - Byte.MAX_VALUE) : (byte) id; // if the ID is > 127 start doing negative IDs
  }

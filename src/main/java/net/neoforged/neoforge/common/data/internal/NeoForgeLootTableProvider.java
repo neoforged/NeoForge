@@ -188,7 +188,7 @@ public final class NeoForgeLootTableProvider extends LootTableProvider {
                 builder = EmptyLootItem.emptyItem();
             } else if (singleton instanceof LootItem lootItem) {
                 Holder<Item> item = getPrivateValue(LootItem.class, lootItem, "item");
-                builder = LootItem.lootTableItem(item.get());
+                builder = LootItem.lootTableItem(item.value());
             } else if (singleton instanceof TagEntry tagEntry) {
                 TagKey<Item> tag = getPrivateValue(TagEntry.class, tagEntry, "tag");
                 boolean expand = getPrivateValue(TagEntry.class, tagEntry, "expand");

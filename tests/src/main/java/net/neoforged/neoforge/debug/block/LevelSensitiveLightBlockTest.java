@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
@@ -15,7 +16,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -28,9 +28,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 /**
  * Adds a light source block that can be switched on and off by right-clicking and saves its state in a BlockEntity
@@ -39,14 +40,13 @@ import net.neoforged.neoforge.registries.RegistryObject;
 @Mod(LevelSensitiveLightBlockTest.MOD_ID)
 public class LevelSensitiveLightBlockTest {
     static final String MOD_ID = "level_sensitive_light_block_test";
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
-    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MOD_ID);
+    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
 
-    private static final RegistryObject<Block> LIGHT_BLOCK = BLOCKS.register("light_block", LightBlock::new);
-    private static final RegistryObject<Item> LIGHT_BLOCK_ITEM = ITEMS.register(
-            "light_block", () -> new BlockItem(LIGHT_BLOCK.get(), new Item.Properties()));
-    private static final RegistryObject<BlockEntityType<LightBlockEntity>> LIGHT_BLOCK_ENTITY = BLOCK_ENTITIES.register(
+    private static final DeferredBlock<Block> LIGHT_BLOCK = BLOCKS.register("light_block", LightBlock::new);
+    private static final DeferredItem<BlockItem> LIGHT_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(LIGHT_BLOCK);
+    private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LightBlockEntity>> LIGHT_BLOCK_ENTITY = BLOCK_ENTITIES.register(
             "light_block", () -> BlockEntityType.Builder.of(LightBlockEntity::new, LIGHT_BLOCK.get()).build(null));
 
     public LevelSensitiveLightBlockTest() {

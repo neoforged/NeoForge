@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -17,7 +18,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -125,14 +125,14 @@ public class FluidUtilTest {
 
     private static void checkItemStack(ItemStack stack, Item item, int count) {
         if (stack.getItem() != item)
-            throw new AssertionError("Expected item " + ForgeRegistries.ITEMS.getKey(item) + ", got: " + ForgeRegistries.ITEMS.getKey(stack.getItem()));
+            throw new AssertionError("Expected item " + BuiltInRegistries.ITEM.getKey(item) + ", got: " + BuiltInRegistries.ITEM.getKey(stack.getItem()));
         if (stack.getCount() != count)
             throw new AssertionError("Expected count " + count + ", got: " + stack.getCount());
     }
 
     private static void checkFluidStack(FluidStack stack, Fluid fluid, int amount) {
         if (stack.getFluid() != fluid)
-            throw new AssertionError("Expected fluid " + ForgeRegistries.FLUIDS.getKey(fluid) + ", got: " + ForgeRegistries.FLUIDS.getKey(stack.getFluid()));
+            throw new AssertionError("Expected fluid " + BuiltInRegistries.FLUID.getKey(fluid) + ", got: " + BuiltInRegistries.FLUID.getKey(stack.getFluid()));
         if (stack.getAmount() != amount)
             throw new AssertionError("Expected amount " + amount + ", got: " + stack.getAmount());
     }

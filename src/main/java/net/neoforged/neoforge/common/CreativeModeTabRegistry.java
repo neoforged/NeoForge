@@ -185,13 +185,13 @@ public final class CreativeModeTabRegistry {
         DEFAULT_TABS.add(BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabs.INVENTORY));
 
         final List<Holder<CreativeModeTab>> indexed = new ArrayList<>();
-        BuiltInRegistries.CREATIVE_MODE_TAB.holders().filter(c -> !DEFAULT_TABS.contains(c.get())).forEach(indexed::add);
+        BuiltInRegistries.CREATIVE_MODE_TAB.holders().filter(c -> !DEFAULT_TABS.contains(c.value())).forEach(indexed::add);
         int vanillaTabs = 10;
 
         for (int i = 0; i < vanillaTabs; i++) // Vanilla ordering
         {
             final Holder<CreativeModeTab> value = indexed.get(i);
-            final CreativeModeTab tab = value.get();
+            final CreativeModeTab tab = value.value();
             final ResourceLocation name = value.unwrapKey().orElseThrow().location();
 
             if (!tab.tabsBefore.isEmpty() || !tab.tabsAfter.isEmpty())
@@ -208,7 +208,7 @@ public final class CreativeModeTabRegistry {
         ResourceLocation lastVanilla = indexed.get(vanillaTabs - 1).unwrapKey().orElseThrow().location();
         for (int i = vanillaTabs; i < indexed.size(); i++) {
             final Holder<CreativeModeTab> value = indexed.get(i);
-            final CreativeModeTab tab = value.get();
+            final CreativeModeTab tab = value.value();
             final ResourceLocation name = value.unwrapKey().orElseThrow().location();
 
             if (!tab.tabsBefore.isEmpty() || !tab.tabsAfter.isEmpty())

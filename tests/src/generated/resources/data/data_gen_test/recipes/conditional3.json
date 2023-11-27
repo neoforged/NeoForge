@@ -1,4 +1,10 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:tag_empty",
+      "tag": "minecraft:planks"
+    }
+  ],
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {

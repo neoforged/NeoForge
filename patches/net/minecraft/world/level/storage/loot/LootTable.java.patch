@@ -6,8 +6,8 @@
                 ExtraCodecs.strictOptionalField(ResourceLocation.CODEC, "random_sequence").forGetter(p_297998_ -> p_297998_.randomSequence),
 -               ExtraCodecs.strictOptionalField(LootPool.CODEC.listOf(), "pools", List.of()).forGetter(p_298002_ -> p_298002_.pools),
 -               ExtraCodecs.strictOptionalField(LootItemFunctions.CODEC.listOf(), "functions", List.of()).forGetter(p_298000_ -> p_298000_.functions)
-+               ExtraCodecs.strictOptionalField(net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditionsAndConsumeIndex(LootPool.CODEC, "neoforge:conditions", (pool, i) -> { if (pool.getName() == null) pool.setName("custom#" + i); }), "pools", List.of()).forGetter(p_298002_ -> p_298002_.pools),
-+               ExtraCodecs.strictOptionalField(net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(LootItemFunctions.CODEC, "neoforge:conditions"), "functions", List.of()).forGetter(p_298000_ -> p_298000_.functions)
++               ExtraCodecs.strictOptionalField(net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditionsAndIndexedPeek(LootPool.CODEC, (pool, i) -> { if (pool.getName() == null) pool.setName("custom#" + i); }), "pools", List.of()).forGetter(p_298002_ -> p_298002_.pools),
++               ExtraCodecs.strictOptionalField(net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(LootItemFunctions.CODEC), "functions", List.of()).forGetter(p_298000_ -> p_298000_.functions)
              )
              .apply(p_297999_, LootTable::new)
     );

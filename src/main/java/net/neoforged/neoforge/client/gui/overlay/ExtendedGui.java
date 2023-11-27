@@ -200,7 +200,7 @@ public class ExtendedGui extends Gui {
         int top = height - rightHeight;
 
         int air = player.getAirSupply();
-        if (player.isEyeInFluidType(NeoForgeMod.WATER_TYPE.get()) || air < 300) {
+        if (player.isEyeInFluidType(NeoForgeMod.WATER_TYPE.value()) || air < 300) {
             int full = Mth.ceil((double) (air - 2) * 10.0D / 300.0D);
             int partial = Mth.ceil((double) air * 10.0D / 300.0D) - full;
 

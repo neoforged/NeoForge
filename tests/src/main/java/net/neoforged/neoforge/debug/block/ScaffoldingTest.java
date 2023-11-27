@@ -27,9 +27,8 @@ import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 /**
  * This test mod allows a custom scaffolding to move down
@@ -38,10 +37,10 @@ import net.neoforged.neoforge.registries.RegistryObject;
 @Mod(ScaffoldingTest.MODID)
 public class ScaffoldingTest {
     static final String MODID = "scaffolding_test";
-    static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
+    static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     static final TagKey<Block> SCAFFOLDING = BlockTags.create(new ResourceLocation("forge", "scaffolding"));
 
-    static final RegistryObject<Block> SCAFFOLDING_METHOD_TEST = BLOCKS.register("scaffolding_method_test", () -> new ScaffoldingMethodTestBlock(Properties.of().mapColor(MapColor.SAND).noCollission().sound(SoundType.SCAFFOLDING).dynamicShape()));
+    static final DeferredBlock<Block> SCAFFOLDING_METHOD_TEST = BLOCKS.register("scaffolding_method_test", () -> new ScaffoldingMethodTestBlock(Properties.of().mapColor(MapColor.SAND).noCollission().sound(SoundType.SCAFFOLDING).dynamicShape()));
 
     public ScaffoldingTest() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();

@@ -110,15 +110,6 @@
     public SoundType getSoundType(BlockState p_49963_) {
        return this.soundType;
     }
-@@ -466,7 +_,7 @@
-          this.item = Item.byBlock(this);
-       }
- 
--      return this.item;
-+      return net.neoforged.neoforge.registries.ForgeRegistries.ITEMS.getDelegateOrThrow(this.item).get(); // Forge: Vanilla caches the items, update with registry replacements.
-    }
- 
-    public boolean hasDynamicShape() {
 @@ -490,6 +_,75 @@
        return this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), p_152459_));
     }

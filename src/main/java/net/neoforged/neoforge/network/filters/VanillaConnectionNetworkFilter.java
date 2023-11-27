@@ -33,7 +33,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagNetworkSerialization;
 import net.neoforged.neoforge.network.NetworkHooks;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -69,7 +68,7 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
         ClientboundUpdateAttributesPacket newPacket = new ClientboundUpdateAttributesPacket(msg.getEntityId(), Collections.emptyList());
         msg.getValues().stream()
                 .filter(snapshot -> {
-                    ResourceLocation key = ForgeRegistries.ATTRIBUTES.getKey(snapshot.getAttribute());
+                    ResourceLocation key = BuiltInRegistries.ATTRIBUTE.getKey(snapshot.getAttribute());
                     return key != null && key.getNamespace().equals("minecraft");
                 })
                 .forEach(snapshot -> newPacket.getValues().add(snapshot));

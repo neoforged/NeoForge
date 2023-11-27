@@ -21,13 +21,13 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.DimensionArgument;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -46,7 +46,7 @@ class EntityCommand {
             return Commands.literal("list")
                     .requires(cs -> cs.hasPermission(2)) //permission
                     .then(Commands.argument("filter", StringArgumentType.string())
-                            .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(ForgeRegistries.ENTITY_TYPES.getKeys().stream().map(ResourceLocation::toString).map(StringArgumentType::escapeIfRequired), builder))
+                            .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(BuiltInRegistries.ENTITY_TYPE.keySet().stream().map(ResourceLocation::toString).map(StringArgumentType::escapeIfRequired), builder))
                             .then(Commands.argument("dim", DimensionArgument.dimension())
                                     .executes(ctx -> execute(ctx.getSource(), StringArgumentType.getString(ctx, "filter"), DimensionArgument.getDimension(ctx, "dim").dimension())))
                             .executes(ctx -> execute(ctx.getSource(), StringArgumentType.getString(ctx, "filter"), ctx.getSource().getLevel().dimension())))
@@ -56,7 +56,7 @@ class EntityCommand {
         private static int execute(CommandSourceStack sender, String filter, ResourceKey<Level> dim) throws CommandSyntaxException {
             final String cleanFilter = filter.replace("?", ".?").replace("*", ".*?");
 
-            Set<ResourceLocation> names = ForgeRegistries.ENTITY_TYPES.getKeys().stream().filter(n -> n.toString().matches(cleanFilter)).collect(Collectors.toSet());
+            Set<ResourceLocation> names = BuiltInRegistries.ENTITY_TYPE.keySet().stream().filter(n -> n.toString().matches(cleanFilter)).collect(Collectors.toSet());
 
             if (names.isEmpty())
                 throw INVALID_FILTER.create();
@@ -67,7 +67,7 @@ class EntityCommand {
 
             Map<ResourceLocation, MutablePair<Integer, Map<ChunkPos, Integer>>> list = Maps.newHashMap();
             level.getEntities().getAll().forEach(e -> {
-                MutablePair<Integer, Map<ChunkPos, Integer>> info = list.computeIfAbsent(ForgeRegistries.ENTITY_TYPES.getKey(e.getType()), k -> MutablePair.of(0, Maps.newHashMap()));
+                MutablePair<Integer, Map<ChunkPos, Integer>> info = list.computeIfAbsent(BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()), k -> MutablePair.of(0, Maps.newHashMap()));
                 ChunkPos chunk = new ChunkPos(e.blockPosition());
                 info.left++;
                 info.right.put(chunk, info.right.getOrDefault(chunk, 0) + 1);

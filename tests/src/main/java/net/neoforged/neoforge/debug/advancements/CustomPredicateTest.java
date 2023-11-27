@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.FrameType;
@@ -29,15 +28,16 @@ import net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate
 import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 @Mod("custom_predicate_test")
 public class CustomPredicateTest {
     public static final String MOD_ID = "custom_predicate_test";
 
-    private static final DeferredRegister<Codec<? extends ICustomItemPredicate>> ITEM_PREDICATE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.ITEM_PREDICATE_SERIALIZERS, MOD_ID);
-    private static final Supplier<? extends Codec<CustomNamePredicate>> CUSTOM_NAME_PREDICATE = ITEM_PREDICATE_SERIALIZERS.register("custom_name",
+    private static final DeferredRegister<Codec<? extends ICustomItemPredicate>> ITEM_PREDICATE_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.ITEM_PREDICATE_SERIALIZERS, MOD_ID);
+    private static final DeferredHolder<Codec<? extends ICustomItemPredicate>, ? extends Codec<CustomNamePredicate>> CUSTOM_NAME_PREDICATE = ITEM_PREDICATE_SERIALIZERS.register("custom_name",
             () -> {
                 Codec<CustomNamePredicate> codec = RecordCodecBuilder.create(g -> g.group(
                         Codec.INT.fieldOf("data1").forGetter(CustomNamePredicate::data1),
@@ -86,7 +86,7 @@ public class CustomPredicateTest {
         }
     }
 
-    public record AdvancementGenerator() implements AdvancementProvider.AdvancementGenerator {
+    public static class AdvancementGenerator implements AdvancementProvider.AdvancementGenerator {
         @Override
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
             Advancement.Builder.advancement()

@@ -29,7 +29,7 @@
 -         .add(Attributes.MOVEMENT_SPEED, 0.1F)
 -         .add(Attributes.ATTACK_SPEED)
 -         .add(Attributes.LUCK);
-+      return LivingEntity.createLivingAttributes().add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.MOVEMENT_SPEED, (double) 0.1F).add(Attributes.ATTACK_SPEED).add(Attributes.LUCK).add(net.neoforged.neoforge.common.NeoForgeMod.BLOCK_REACH.get()).add(Attributes.ATTACK_KNOCKBACK).add(net.neoforged.neoforge.common.NeoForgeMod.ENTITY_REACH.get());
++      return LivingEntity.createLivingAttributes().add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.MOVEMENT_SPEED, (double) 0.1F).add(Attributes.ATTACK_SPEED).add(Attributes.LUCK).add(net.neoforged.neoforge.common.NeoForgeMod.BLOCK_REACH.value()).add(Attributes.ATTACK_KNOCKBACK).add(net.neoforged.neoforge.common.NeoForgeMod.ENTITY_REACH.value());
     }
  
     @Override
@@ -121,15 +121,6 @@
        if (this.isInvulnerableTo(p_36154_)) {
           return false;
        } else if (this.abilities.invulnerable && !p_36154_.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-@@ -865,7 +_,7 @@
-    @Override
-    protected void blockUsingShield(LivingEntity p_36295_) {
-       super.blockUsingShield(p_36295_);
--      if (p_36295_.canDisableShield()) {
-+      if (p_36295_.getMainHandItem().canDisableShield(this.useItem, this, p_36295_)) {
-          this.disableShield(true);
-       }
-    }
 @@ -897,7 +_,7 @@
  
     @Override

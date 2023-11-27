@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:recipes/root",
-  "conditions" : [
+  "neoforge:conditions" : [
     {
-      "type" : "forge:false"
+      "type" : "neoforge:false"
     }
   ],
   "rewards": {

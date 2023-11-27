@@ -27,7 +27,7 @@
 +
 +   @Override
 +   public void jumpInFluid(net.neoforged.neoforge.fluids.FluidType type) {
-+      this.jumpInLiquidInternal(() -> type == net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.get(), () -> super.jumpInFluid(type));
++      this.jumpInLiquidInternal(() -> type == net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value(), () -> super.jumpInFluid(type));
     }
  
     @Override

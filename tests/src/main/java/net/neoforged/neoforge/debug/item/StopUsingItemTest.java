@@ -26,9 +26,8 @@ import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.VanillaGameEvent;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 /**
  * This test mod provides two items for testing the Forge onStopUsing hook. Both items attempt to create an item that increases FOV and allows creative flight when used
@@ -44,7 +43,7 @@ import net.neoforged.neoforge.registries.RegistryObject;
 @Mod(StopUsingItemTest.MODID)
 public class StopUsingItemTest {
     protected static final String MODID = "stop_using_item";
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
     /**
      * Current FOV change, consumed by the event.
@@ -60,7 +59,7 @@ public class StopUsingItemTest {
     }
 
     /** Attempt at a "reverse scope" that also makes you fly without using the Forge method. Will not remove the speed if you scroll away or swap items */
-    public static RegistryObject<Item> BAD = ITEMS.register("bad_scope", () -> new InvertedTelescope(new Item.Properties()) {
+    public static DeferredItem<Item> BAD = ITEMS.register("bad_scope", () -> new InvertedTelescope(new Item.Properties()) {
         @Override
         public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity living) {
             removeFov(living);
@@ -74,7 +73,7 @@ public class StopUsingItemTest {
     });
 
     /** Successful "scope item" using the Forge method, all cases of stopping using the item will stop the FOV change */
-    public static RegistryObject<Item> GOOD = ITEMS.register("good_scope", () -> new InvertedTelescope(new Item.Properties()) {
+    public static DeferredItem<Item> GOOD = ITEMS.register("good_scope", () -> new InvertedTelescope(new Item.Properties()) {
         @Override
         public void onStopUsing(ItemStack stack, LivingEntity living, int count) {
             removeFov(living);

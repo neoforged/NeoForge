@@ -52,12 +52,9 @@
     public static RenderType getRenderType(ItemStack p_109280_, boolean p_109281_) {
        Item item = p_109280_.getItem();
        if (item instanceof BlockItem) {
-@@ -365,8 +_,73 @@
-    }
- 
+@@ -367,6 +_,67 @@
     public static RenderType getRenderLayer(FluidState p_109288_) {
--      RenderType rendertype = TYPE_BY_FLUID.get(p_109288_.getType());
-+      RenderType rendertype = FLUID_RENDER_TYPES.get(net.neoforged.neoforge.registries.ForgeRegistries.FLUIDS.getDelegateOrThrow(p_109288_.getType()));
+       RenderType rendertype = TYPE_BY_FLUID.get(p_109288_.getType());
        return rendertype != null ? rendertype : RenderType.solid();
 +   }
 +
@@ -65,18 +62,14 @@
 +
 +   private static final net.neoforged.neoforge.client.ChunkRenderTypeSet CUTOUT_MIPPED = net.neoforged.neoforge.client.ChunkRenderTypeSet.of(RenderType.cutoutMipped());
 +   private static final net.neoforged.neoforge.client.ChunkRenderTypeSet SOLID = net.neoforged.neoforge.client.ChunkRenderTypeSet.of(RenderType.solid());
-+   private static final Map<net.minecraft.core.Holder.Reference<Block>, net.neoforged.neoforge.client.ChunkRenderTypeSet> BLOCK_RENDER_TYPES = Util.make(new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(TYPE_BY_BLOCK.size(), 0.5F), map -> {
++
++   private static final Map<Block, net.neoforged.neoforge.client.ChunkRenderTypeSet> BLOCK_RENDER_TYPES = Util.make(new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(TYPE_BY_BLOCK.size(), 0.5F), map -> {
 +      map.defaultReturnValue(SOLID);
 +      for(Map.Entry<Block, RenderType> entry : TYPE_BY_BLOCK.entrySet()) {
-+         map.put(net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getDelegateOrThrow(entry.getKey()), net.neoforged.neoforge.client.ChunkRenderTypeSet.of(entry.getValue()));
++         map.put(entry.getKey(), net.neoforged.neoforge.client.ChunkRenderTypeSet.of(entry.getValue()));
 +      }
 +   });
-+   private static final Map<net.minecraft.core.Holder.Reference<Fluid>, RenderType> FLUID_RENDER_TYPES = Util.make(new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(TYPE_BY_FLUID.size(), 0.5F), map -> {
-+      map.defaultReturnValue(RenderType.solid());
-+      for(Map.Entry<Fluid, RenderType> entry : TYPE_BY_FLUID.entrySet()) {
-+         map.put(net.neoforged.neoforge.registries.ForgeRegistries.FLUIDS.getDelegateOrThrow(entry.getKey()), entry.getValue());
-+      }
-+   });
++
 +
 +   /** @deprecated Use {@link net.minecraft.client.resources.model.BakedModel#getRenderTypes(BlockState, net.minecraft.util.RandomSource, net.neoforged.neoforge.client.model.data.ModelData)}. */
 +   @Deprecated(since = "1.19")
@@ -85,7 +78,7 @@
 +      if (block instanceof LeavesBlock) {
 +         return renderCutout ? CUTOUT_MIPPED : SOLID;
 +      } else {
-+         return BLOCK_RENDER_TYPES.get(net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getDelegateOrThrow(block));
++         return BLOCK_RENDER_TYPES.get(block);
 +      }
 +   }
 +
@@ -106,13 +99,13 @@
 +   @Deprecated(since = "1.19")
 +   public static synchronized void setRenderLayer(Block block, net.neoforged.neoforge.client.ChunkRenderTypeSet layers) {
 +      checkClientLoading();
-+      BLOCK_RENDER_TYPES.put(net.neoforged.neoforge.registries.ForgeRegistries.BLOCKS.getDelegateOrThrow(block), layers);
++      BLOCK_RENDER_TYPES.put(block, layers);
 +   }
 +
 +   public static synchronized void setRenderLayer(Fluid fluid, RenderType type) {
 +      com.google.common.base.Preconditions.checkArgument(type.getChunkLayerId() >= 0, "The argument must be a valid chunk render type returned by RenderType#chunkBufferLayers().");
 +      checkClientLoading();
-+      FLUID_RENDER_TYPES.put(net.neoforged.neoforge.registries.ForgeRegistries.FLUIDS.getDelegateOrThrow(fluid), type);
++      TYPE_BY_FLUID.put(fluid, type);
 +   }
 +
 +   private static void checkClientLoading() {

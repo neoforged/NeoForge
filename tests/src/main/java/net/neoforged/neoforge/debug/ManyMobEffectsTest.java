@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug;
 
 import java.util.List;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -26,10 +27,9 @@ import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import net.neoforged.neoforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,11 +52,11 @@ public class ManyMobEffectsTest {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MODID);
-    private static final RegistryObject<MobEffect> LAST_EFFECT;
+    private static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, MODID);
+    private static final DeferredHolder<MobEffect, MobEffect> LAST_EFFECT;
 
     static {
-        RegistryObject<MobEffect> effect = null;
+        DeferredHolder<MobEffect, MobEffect> effect = null;
         for (int i = 0; i < 255; i++) {
             final var index = i;
             effect = MOB_EFFECTS.register("effect_" + i, () -> new MobEffect(MobEffectCategory.NEUTRAL, 0xFF0000) {
@@ -107,7 +107,7 @@ public class ManyMobEffectsTest {
             } else if (heldItem.isEmpty()) {
                 var effect = ((MobEffect) ObfuscationReflectionHelper.getPrivateValue(MushroomCow.class, cow, "effect"));
                 if (effect != null) {
-                    event.getEntity().sendSystemMessage(Component.literal(String.valueOf(ForgeRegistries.MOB_EFFECTS.getKey(effect))));
+                    event.getEntity().sendSystemMessage(Component.literal(String.valueOf(BuiltInRegistries.MOB_EFFECT.getKey(effect))));
                 }
             }
         }

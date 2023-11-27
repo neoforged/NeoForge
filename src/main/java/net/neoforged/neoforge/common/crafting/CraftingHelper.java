@@ -21,7 +21,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -81,12 +81,12 @@ public class CraftingHelper {
     // Choose between dispatch codec for custom ingredients and vanilla codec
     private static Codec<Ingredient> makeIngredientCodec0(boolean allowEmpty, Codec<Ingredient> vanillaCodec) {
         // Dispatch codec for custom ingredient types:
-        Codec<Ingredient> dispatchCodec = ExtraCodecs.lazyInitializedCodec(
+        Codec<Ingredient> dispatchCodec =
                 // Use dispatchUnsafe to always inline the dispatched type parameters into the root ingredient object, next to the "type"
-                () -> NeoForgeExtraCodecs.dispatchUnsafe(
-                        ForgeRegistries.INGREDIENT_TYPES.get().getCodec(),
+                NeoForgeExtraCodecs.dispatchUnsafe(
+                        NeoForgeRegistries.INGREDIENT_TYPES.byNameCodec(),
                         Ingredient::getType,
-                        ingredientType -> ingredientType.codec(allowEmpty)));
+                        ingredientType -> ingredientType.codec(allowEmpty));
         // Either codec to combine with the vanilla ingredient codec:
         Codec<Either<Ingredient, Ingredient>> eitherCodec = ExtraCodecs.either(
                 dispatchCodec,

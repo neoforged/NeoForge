@@ -9,8 +9,8 @@ import java.util.function.Supplier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * A possible solution of initializing {@code SoundEvent}s first would require static initialization of the
  * {@code SoundEvent} instances and later registration, which goes against the contract of the registry system and
- * prevents the use of {@link DeferredRegister} and {@link RegistryObject}s.
+ * prevents the use of {@link DeferredRegister} and {@link DeferredHolder}s.
  * <p>
  * This class offers an alternative and preferable solution, by allowing mods to create {@link SoundType}s using
  * {@link Supplier}s of {@link SoundEvent}s instead, which do not require static initialization of {@code SoundEvent}s

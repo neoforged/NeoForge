@@ -74,7 +74,6 @@ import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
@@ -175,7 +174,7 @@ import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.NetworkConstants;
 import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.network.ServerStatusPing;
-import net.neoforged.neoforge.registries.GameData;
+import net.neoforged.neoforge.registries.RegistryManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -435,17 +434,6 @@ public class ClientHooks {
     }
 
     @SuppressWarnings("deprecation")
-    public static TextureAtlasSprite[] getFluidSprites(BlockAndTintGetter level, BlockPos pos, FluidState fluidStateIn) {
-        IClientFluidTypeExtensions props = IClientFluidTypeExtensions.of(fluidStateIn);
-        ResourceLocation overlayTexture = props.getOverlayTexture(fluidStateIn, level, pos);
-        return new TextureAtlasSprite[] {
-                Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(props.getStillTexture(fluidStateIn, level, pos)),
-                Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(props.getFlowingTexture(fluidStateIn, level, pos)),
-                overlayTexture == null ? null : Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(overlayTexture),
-        };
-    }
-
-    @SuppressWarnings("deprecation")
     public static Material getBlockMaterial(ResourceLocation loc) {
         return new Material(TextureAtlas.LOCATION_BLOCKS, loc);
     }
@@ -654,7 +642,7 @@ public class ClientHooks {
 
     public static boolean isNameplateInRenderDistance(Entity entity, double squareDistance) {
         if (entity instanceof LivingEntity) {
-            final AttributeInstance attribute = ((LivingEntity) entity).getAttribute(NeoForgeMod.NAMETAG_DISTANCE.get());
+            final AttributeInstance attribute = ((LivingEntity) entity).getAttribute(NeoForgeMod.NAMETAG_DISTANCE.value());
             if (attribute != null) {
                 return !(squareDistance > (attribute.getValue() * attribute.getValue()));
             }
@@ -789,7 +777,7 @@ public class ClientHooks {
         Connection client = getClientConnection();
         // ONLY revert a non-local connection
         if (client != null && !client.isMemoryConnection()) {
-            GameData.revertToFrozen();
+            RegistryManager.revertToFrozen();
         }
     }
 

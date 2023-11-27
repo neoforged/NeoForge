@@ -234,20 +234,17 @@
              }
              break;
           case 1011:
-@@ -3032,11 +_,8 @@
+@@ -3031,8 +_,8 @@
+             break;
           case 2001:
              BlockState blockstate1 = Block.stateById(p_234307_);
-             if (!blockstate1.isAir()) {
+-            if (!blockstate1.isAir()) {
 -               SoundType soundtype = blockstate1.getSoundType();
--               this.level
--                  .playLocalSound(
--                     p_234306_, soundtype.getBreakSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F, false
--                  );
++            if (!blockstate1.isAir() && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(blockstate1).playBreakSound(blockstate1, this.level, p_234306_)) {
 +               SoundType soundtype = blockstate1.getSoundType(this.level, p_234306_, null);
-+               this.level.playLocalSound(p_234306_, soundtype.getBreakSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F, false);
-             }
- 
-             this.level.addDestroyBlockEffect(p_234306_, blockstate1);
+                this.level
+                   .playLocalSound(
+                      p_234306_, soundtype.getBreakSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F, false
 @@ -3367,7 +_,7 @@
        } else {
           int i = p_109538_.getBrightness(LightLayer.SKY, p_109540_);

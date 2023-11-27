@@ -9,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -19,9 +18,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(RedstoneSidedConnectivityTest.MODID)
@@ -30,11 +29,11 @@ public class RedstoneSidedConnectivityTest {
     static final String MODID = "redstone_sided_connectivity_test";
     static final String BLOCK_ID = "test_east_redstone_connect";
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    private static final RegistryObject<Block> TEST_REDSTONE_BLOCK = BLOCKS.register(BLOCK_ID, EastRedstoneBlock::new);
-    private static final RegistryObject<Item> TEST_REDSTONE_BLOCKITEM = ITEMS.register(BLOCK_ID, () -> new BlockItem(TEST_REDSTONE_BLOCK.get(), new Item.Properties()));
+    private static final DeferredBlock<Block> TEST_REDSTONE_BLOCK = BLOCKS.register(BLOCK_ID, EastRedstoneBlock::new);
+    private static final DeferredItem<BlockItem> TEST_REDSTONE_BLOCKITEM = ITEMS.registerSimpleBlockItem(TEST_REDSTONE_BLOCK);
 
     public RedstoneSidedConnectivityTest() {
         if (!ENABLE)

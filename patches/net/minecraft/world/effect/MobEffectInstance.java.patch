@@ -17,15 +17,6 @@
     }
  
     public boolean update(MobEffectInstance p_19559_) {
-@@ -160,7 +_,7 @@
-    }
- 
-    public MobEffect getEffect() {
--      return this.effect;
-+      return this.effect == null ? null : net.neoforged.neoforge.registries.ForgeRegistries.MOB_EFFECTS.getDelegateOrThrow(this.effect).get();
-    }
- 
-    public int getDuration() {
 @@ -272,6 +_,7 @@
     public CompoundTag save(CompoundTag p_19556_) {
        ResourceLocation resourcelocation = BuiltInRegistries.MOB_EFFECT.getKey(this.effect);

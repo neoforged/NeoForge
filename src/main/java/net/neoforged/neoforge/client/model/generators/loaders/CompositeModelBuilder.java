@@ -23,7 +23,7 @@ public class CompositeModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
     private final List<String> itemRenderOrder = new ArrayList<>();
 
     protected CompositeModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(new ResourceLocation("neoforge:composite"), parent, existingFileHelper);
+        super(new ResourceLocation("neoforge:composite"), parent, existingFileHelper, false);
     }
 
     public CompositeModelBuilder<T> child(String name, T modelBuilder) {

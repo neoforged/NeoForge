@@ -21,10 +21,10 @@ import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.world.ModifiableStructureInfo.StructureInfo.Builder;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.ForgeRegistries.Keys;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries.Keys;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -86,7 +86,7 @@ generator.addProvider(event.includeServer(), structureModifierProvider);*/
     public record TestModifier(HolderSet<Structure> structures, MobCategory category, MobSpawnSettings.SpawnerData spawn)
             implements StructureModifier {
 
-        private static final RegistryObject<Codec<? extends StructureModifier>> SERIALIZER = RegistryObject.create(ADD_SPAWNS_TO_STRUCTURE_RL, ForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, MODID);
+        private static final DeferredHolder<Codec<? extends StructureModifier>, Codec<? extends StructureModifier>> SERIALIZER = DeferredHolder.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, ADD_SPAWNS_TO_STRUCTURE_RL);
 
         @Override
         public void modify(Holder<Structure> structure, Phase phase, Builder builder) {

@@ -89,7 +89,7 @@ public class DelegatingPackResources extends AbstractPackResources {
         for (PackResources pack : getCandidatePacks(type, location)) {
             IoSupplier<InputStream> ioSupplier = pack.getResource(type, location);
             if (ioSupplier != null)
-                return pack.getResource(type, location);
+                return ioSupplier;
         }
 
         return null;

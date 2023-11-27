@@ -1,0 +1,17 @@
+--- a/com/mojang/blaze3d/systems/RenderSystem.java
++++ b/com/mojang/blaze3d/systems/RenderSystem.java
+@@ -1025,4 +_,14 @@
+          void accept(it.unimi.dsi.fastutil.ints.IntConsumer p_157488_, int p_157489_);
+       }
+    }
++
++   public static void backupGlState(net.neoforged.neoforge.client.GlStateBackup state) {
++      assertOnRenderThread();
++      GlStateManager._backupGlState(state);
++   }
++
++   public static void restoreGlState(net.neoforged.neoforge.client.GlStateBackup state) {
++      assertOnRenderThread();
++      GlStateManager._restoreGlState(state);
++   }
+ }

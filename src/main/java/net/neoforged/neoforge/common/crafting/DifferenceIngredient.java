@@ -38,7 +38,7 @@ public class DifferenceIngredient extends Ingredient {
     private final Ingredient subtracted;
 
     protected DifferenceIngredient(Ingredient base, Ingredient subtracted) {
-        super(Arrays.stream(base.getValues()).map(value -> new SubtractingValue(value, subtracted)), NeoForgeMod.DIFFERENCE_INGREDIENT_TYPE::get);
+        super(Arrays.stream(base.getValues()).map(value -> new SubtractingValue(value, subtracted)), NeoForgeMod.DIFFERENCE_INGREDIENT_TYPE);
 
         this.base = base;
         this.subtracted = subtracted;

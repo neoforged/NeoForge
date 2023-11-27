@@ -72,6 +72,19 @@ public interface IClientBlockExtensions {
     }
 
     /**
+     * Play breaking sound(s) when the block is destroyed. This allows playing sounds dependent on BE data
+     * as it is called before the block and BE are actually removed on the client.
+     *
+     * @param state The current state
+     * @param level The current level
+     * @param pos   The position of the block
+     * @return True to prevent vanilla break sounds from playing
+     */
+    default boolean playBreakSound(BlockState state, Level level, BlockPos pos) {
+        return false;
+    }
+
+    /**
      * NOT CURRENTLY IMPLEMENTED
      * <p>
      * Use this to change the fog color used when the entity is "inside" a material.

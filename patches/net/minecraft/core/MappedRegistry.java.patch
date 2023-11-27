@@ -1,6 +1,15 @@
 --- a/net/minecraft/core/MappedRegistry.java
 +++ b/net/minecraft/core/MappedRegistry.java
-@@ -125,7 +_,16 @@
+@@ -33,7 +_,7 @@
+ import org.apache.commons.lang3.Validate;
+ import org.slf4j.Logger;
+ 
+-public class MappedRegistry<T> implements WritableRegistry<T> {
++public class MappedRegistry<T> extends net.neoforged.neoforge.registries.BaseMappedRegistry<T> implements WritableRegistry<T> {
+    private static final Logger LOGGER = LogUtils.getLogger();
+    final ResourceKey<? extends Registry<T>> key;
+    private final ObjectList<Holder.Reference<T>> byId = new ObjectArrayList<>(256);
+@@ -125,10 +_,22 @@
        }
     }
  
@@ -17,7 +26,13 @@
        this.validateWrite(p_256594_);
        Validate.notNull(p_256594_);
        Validate.notNull(p_256374_);
-@@ -147,6 +_,8 @@
++      if (p_256563_ > this.getMaxId())
++         throw new IllegalStateException(String.format(java.util.Locale.ENGLISH, "Invalid id %d - maximum id range of %d exceeded.", p_256563_, this.getMaxId()));
++
+       if (this.byLocation.containsKey(p_256594_.location())) {
+          Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + p_256594_ + "' to registry"));
+       }
+@@ -147,12 +_,14 @@
           reference.bindKey(p_256594_);
        } else {
           reference = this.byKey.computeIfAbsent(p_256594_, p_258168_ -> Holder.Reference.createStandAlone(this.holderOwner(), p_258168_));
@@ -26,6 +41,48 @@
        }
  
        this.byKey.put(p_256594_, reference);
+       this.byLocation.put(p_256594_.location(), reference);
+       this.byValue.put(p_256374_, reference);
+-      this.byId.size(Math.max(this.byId.size(), p_256563_ + 1));
++      while (this.byId.size() < (p_256563_ + 1)) this.byId.add(null);
+       this.byId.set(p_256563_, reference);
+       this.toId.put(p_256374_, p_256563_);
+       if (this.nextId <= p_256563_) {
+@@ -162,6 +_,7 @@
+       this.lifecycles.put(p_256374_, p_256469_);
+       this.registryLifecycle = this.registryLifecycle.add(p_256469_);
+       this.holdersInOrder = null;
++      this.addCallbacks.forEach(addCallback -> addCallback.onAdd(this, p_256563_, p_256594_, p_256374_));
+       return reference;
+    }
+ 
+@@ -190,7 +_,7 @@
+    @Nullable
+    @Override
+    public T get(@Nullable ResourceKey<T> p_122714_) {
+-      return getValueFromNullable(this.byKey.get(p_122714_));
++      return getValueFromNullable(this.byKey.get(resolve(p_122714_)));
+    }
+ 
+    @Nullable
+@@ -206,7 +_,7 @@
+ 
+    @Override
+    public Optional<Holder.Reference<T>> getHolder(ResourceKey<T> p_205905_) {
+-      return Optional.ofNullable(this.byKey.get(p_205905_));
++      return Optional.ofNullable(this.byKey.get(resolve(p_205905_)));
+    }
+ 
+    @Override
+@@ -216,7 +_,7 @@
+    }
+ 
+    Holder.Reference<T> getOrCreateHolderOrThrow(ResourceKey<T> p_248831_) {
+-      return this.byKey.computeIfAbsent(p_248831_, p_258169_ -> {
++      return this.byKey.computeIfAbsent(resolve(p_248831_), p_258169_ -> {
+          if (this.unregisteredIntrusiveHolders != null) {
+             throw new IllegalStateException("This registry can't create new holders without value");
+          } else {
 @@ -325,13 +_,18 @@
        return this.byKey.containsKey(p_175392_);
     }
@@ -46,13 +103,75 @@
           List<ResourceLocation> list = this.byKey
              .entrySet()
              .stream()
-@@ -347,7 +_,8 @@
+@@ -347,8 +_,10 @@
                    throw new IllegalStateException("Some intrusive holders were not registered: " + this.unregisteredIntrusiveHolders.values());
                 }
  
 -               this.unregisteredIntrusiveHolders = null;
-+               // Forge: We freeze/unfreeze vanilla registries more than once, so we need to keep the unregistered intrusive holders map around.
++               // Neo: We freeze/unfreeze vanilla registries more than once, so we need to keep the unregistered intrusive holders map around.
 +               // this.unregisteredIntrusiveHolders = null;
              }
++            this.bakeCallbacks.forEach(bakeCallback -> bakeCallback.onBake(this));
  
              return this;
+          }
+@@ -443,5 +_,59 @@
+    @Override
+    public HolderLookup.RegistryLookup<T> asLookup() {
+       return this.lookup;
++   }
++
++   @Override
++   protected void clear(boolean full) {
++      this.validateWrite();
++      this.clearCallbacks.forEach(clearCallback -> clearCallback.onClear(this, full));
++      super.clear(full);
++      this.byId.clear();
++      this.toId.clear();
++      nextId = 0;
++      if (holdersInOrder != null) holdersInOrder = null;
++      if (full) {
++         this.byLocation.clear();
++         this.byKey.clear();
++         this.byValue.clear();
++         this.tags.clear();
++         this.lifecycles.clear();
++         if (unregisteredIntrusiveHolders != null) {
++            unregisteredIntrusiveHolders.clear();
++            unregisteredIntrusiveHolders = null;
++         }
++      }
++   }
++
++   @Override
++   protected void registerIdMapping(ResourceKey<T> key, int id) {
++      this.validateWrite(key);
++      if (id > this.getMaxId())
++         throw new IllegalStateException(String.format(java.util.Locale.ENGLISH, "Invalid id %d - maximum id range of %d exceeded.", id, this.getMaxId()));
++      if (0 <= id && id < this.byId.size() && this.byId.get(id) != null) { // Don't use byId() method, it will return the default value if the entry is absent
++         throw new IllegalStateException("Duplicate id " + id + " for " + key + " and " + this.getKey(this.byId.get(id).value()));
++      }
++      if (this.nextId <= id) {
++         this.nextId = id + 1;
++      }
++      var holder = byKey.get(key);
++      while (this.byId.size() < (id + 1)) this.byId.add(null);
++      this.byId.set(id, holder);
++      this.toId.put(holder.value(), id);
++   }
++
++   @Override
++   public int getId(ResourceLocation name) {
++      return toId.getOrDefault(get(name), -1);
++   }
++
++   @Override
++   public int getId(ResourceKey<T> key) {
++      return toId.getOrDefault(get(key), -1);
++   }
++
++   @Override
++   public boolean containsValue(T value) {
++      return byValue.containsKey(value);
+    }
+ }

@@ -13,9 +13,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 @Mod(RangedMobsUseModdedWeaponsTest.MOD_ID)
 public class RangedMobsUseModdedWeaponsTest {
@@ -28,10 +27,10 @@ public class RangedMobsUseModdedWeaponsTest {
     public static final boolean ENABLE = true;
 
     public static final String MOD_ID = "ranged_mobs_use_modded_weapons_test";
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
-    private static final RegistryObject<Item> MODDED_BOW = ITEMS.register("modded_bow", () -> new BowItem(new Item.Properties().defaultDurability(384)));
-    private static final RegistryObject<Item> MODDED_CROSSBOW = ITEMS.register("modded_crossbow", () -> new CrossbowItem(new Item.Properties().defaultDurability(326)));
+    private static final DeferredItem<Item> MODDED_BOW = ITEMS.register("modded_bow", () -> new BowItem(new Item.Properties().defaultDurability(384)));
+    private static final DeferredItem<Item> MODDED_CROSSBOW = ITEMS.register("modded_crossbow", () -> new CrossbowItem(new Item.Properties().defaultDurability(326)));
 
     public RangedMobsUseModdedWeaponsTest() {
         if (ENABLE) {
