@@ -26,6 +26,7 @@ import net.minecraft.network.protocol.handshake.ClientIntent;
 import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
 import net.minecraft.network.protocol.login.ClientboundLoginDisconnectPacket;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.BuiltInPackSource;
 import net.minecraft.server.packs.repository.Pack;
@@ -57,7 +58,6 @@ import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistries.Keys;
 import net.neoforged.neoforge.registries.RegistryManager;
-import net.neoforged.neoforge.resource.PathPackResources;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import net.neoforged.neoforgespi.language.IModInfo;
 import net.neoforged.neoforgespi.locating.IModFile;
@@ -187,12 +187,12 @@ public class ServerLifecycleHooks {
     }
 
     @ApiStatus.Internal
-    public static RepositorySource buildPackFinder(Map<IModFile, ? extends PathPackResources> modResourcePacks) {
+    public static RepositorySource buildPackFinder(Map<IModFile, ? extends PackResources> modResourcePacks) {
         return packAcceptor -> serverPackFinder(modResourcePacks, packAcceptor);
     }
 
-    private static void serverPackFinder(Map<IModFile, ? extends PathPackResources> modResourcePacks, Consumer<Pack> packAcceptor) {
-        for (Entry<IModFile, ? extends PathPackResources> e : modResourcePacks.entrySet()) {
+    private static void serverPackFinder(Map<IModFile, ? extends PackResources> modResourcePacks, Consumer<Pack> packAcceptor) {
+        for (Entry<IModFile, ? extends PackResources> e : modResourcePacks.entrySet()) {
             IModInfo mod = e.getKey().getModInfos().get(0);
             if (Objects.equals(mod.getModId(), "minecraft")) continue; // skip the minecraft "mod"
             final String name = "mod:" + mod.getModId();

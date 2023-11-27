@@ -745,7 +745,7 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
     }
 
     @SuppressWarnings("unused")
-    private static class Range<V extends Comparable<? super V>> implements Predicate<Object> {
+    public static class Range<V extends Comparable<? super V>> implements Predicate<Object> {
         private final Class<? extends V> clazz;
         private final V min;
         private final V max;
