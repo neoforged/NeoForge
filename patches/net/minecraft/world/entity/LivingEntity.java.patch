@@ -771,8 +771,12 @@
        Equipable equipable = Equipable.get(p_147234_);
        return equipable != null ? equipable.getEquipmentSlot() : EquipmentSlot.MAINHAND;
     }
-@@ -3438,6 +_,11 @@
-       return this.getMainHandItem().getItem() instanceof AxeItem;
+@@ -3435,9 +_,14 @@
+    }
+ 
+    public boolean canDisableShield() {
+-      return this.getMainHandItem().getItem() instanceof AxeItem;
++      return this.getMainHandItem().canDisableShield(this.useItem, this, this);
     }
  
 +   /**
