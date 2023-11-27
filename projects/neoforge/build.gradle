@@ -88,7 +88,8 @@ dependencies {
     }
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
-    compileOnly "io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}"
+
+    userdevCompileOnly "io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}"
 }
 
 runTypes {
@@ -229,8 +230,7 @@ afterEvaluate {
 
         into "META-INF/jars/", {
             from project.configurations.detachedConfiguration(
-                    project.dependencies.create("io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}")
-            ).files
+                    project.dependencies.create("io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}"))
         }
         into "META-INF/jarjar/", {
             from project.file("jarjar_metadata.json")
