@@ -62,7 +62,7 @@ public abstract class ChunkWatchEvent extends Event {
      * sending to the client (see {@link net.minecraft.server.level.ChunkMap#markChunkPendingToSend(ServerPlayer, LevelChunk)}).
      * <p>
      * This event must NOT be used to send additional chunk-related data to the client as the client will not be aware
-     * of the chunk yet when this event fires.
+     * of the chunk yet when this event fires. {@link ChunkWatchEvent.Sent} should be used for this purpose instead
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable} and does not {@linkplain HasResult have a result}.
      * <p>
