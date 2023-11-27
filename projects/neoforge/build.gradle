@@ -226,7 +226,7 @@ minecraft {
 // Bundle MixinExtras in the universal jar
 afterEvaluate {
     tasks.universalJar.configure {
-        inputs.property "mixinextras_version", project.mixin_extras_version
+        inputs.property "mixin_extras_version", project.mixin_extras_version
 
         into "META-INF/jars/", {
             from project.configurations.detachedConfiguration(
@@ -235,7 +235,7 @@ afterEvaluate {
         into "META-INF/jarjar/", {
             from project.file("jarjar_metadata.json")
             rename "jarjar_metadata.json", "metadata.json"
-            expand "mixinextras_version": project.mixin_extras_version
+            expand "mixin_extras_version": project.mixin_extras_version
         }
     }
 }
