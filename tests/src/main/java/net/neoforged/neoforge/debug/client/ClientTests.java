@@ -1,58 +1,43 @@
-/*
- * Copyright (c) Forge Development LLC and contributors
- * SPDX-License-Identifier: LGPL-2.1-only
- */
+package net.neoforged.neoforge.debug.client;
 
-package net.neoforged.neoforge.oldtest.client;
-
-import java.nio.ByteBuffer;
-import java.util.concurrent.CompletableFuture;
-import javax.sound.sampled.AudioFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.AudioStream;
 import net.minecraft.client.sounds.SoundBufferLibrary;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.testframework.DynamicTest;
+import net.neoforged.testframework.annotation.ForEachTest;
+import net.neoforged.testframework.annotation.TestHolder;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
 
-/**
- * Tests support for custom {@link AudioStream}s ({@link SoundInstance#getStream(SoundBufferLibrary, Sound, boolean)}.
- *
- * When the message "sine wave" is sent in chat, this should play a sine wave of 220Hz at the player's current position.
- */
-@Mod(AudioStreamTest.MOD_ID)
-public class AudioStreamTest {
-    private static final boolean ENABLED = true;
-    static final String MOD_ID = "audio_stream_test";
+import javax.sound.sampled.AudioFormat;
+import java.nio.ByteBuffer;
+import java.util.concurrent.CompletableFuture;
 
-    public AudioStreamTest() {
-        if (ENABLED && FMLLoader.getDist().isClient()) {
-            NeoForge.EVENT_BUS.addListener(ClientHandler::onClientChatEvent);
+@ForEachTest(side = Dist.CLIENT, groups = "client")
+public class ClientTests {
+    @TestHolder(description = {"Tests if custom audio streams work", "When the message \"sine wave\" is sent in chat, this should play a sine wave of 220Hz at the player's current position"})
+    static void audioStreamTest(final ClientChatEvent event, final DynamicTest test) {
+        if (event.getMessage().equalsIgnoreCase("sine wave")) {
+            event.setCanceled(true);
+            var mc = Minecraft.getInstance();
+            mc.getSoundManager().play(new SineSound(mc.player.position()));
+
+            test.requestConfirmation(mc.player, Component.literal("Did you hear the correct sound (sine wave of 220Hz) being played?"));
         }
     }
 
-    public static class ClientHandler {
-        public static void onClientChatEvent(ClientChatEvent event) {
-            if (event.getMessage().equalsIgnoreCase("sine wave")) {
-                event.setCanceled(true);
-                var mc = Minecraft.getInstance();
-                mc.getSoundManager().play(new SineSound(mc.player.position()));
-            }
-        }
-    }
-
-    public static class SineSound extends AbstractSoundInstance {
-        protected SineSound(Vec3 position) {
-            super(new ResourceLocation(MOD_ID, "sine_wave"), SoundSource.BLOCKS, SoundInstance.createUnseededRandom());
+    private static final class SineSound extends AbstractSoundInstance {
+        SineSound(Vec3 position) {
+            super(new ResourceLocation("neotests_audio_stream_test", "sine_wave"), SoundSource.BLOCKS, SoundInstance.createUnseededRandom());
             x = position.x;
             y = position.y;
             z = position.z;
@@ -65,7 +50,7 @@ public class AudioStreamTest {
         }
     }
 
-    public static class SineStream implements AudioStream {
+    private static final class SineStream implements AudioStream {
         private static final AudioFormat FORMAT = new AudioFormat(44100, 8, 1, false, false);
         private static final double DT = 2 * Math.PI * 220 / 44100;
 
