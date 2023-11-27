@@ -9,6 +9,29 @@ import com.google.common.base.Suppliers;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.moddiscovery.ModAnnotation;
+import net.neoforged.neoforgespi.language.ModFileScanData;
+import net.neoforged.testframework.Test;
+import net.neoforged.testframework.annotation.ForEachTest;
+import net.neoforged.testframework.annotation.OnInit;
+import net.neoforged.testframework.annotation.RegisterStructureTemplate;
+import net.neoforged.testframework.annotation.TestGroup;
+import net.neoforged.testframework.gametest.StructureTemplateBuilder;
+import net.neoforged.testframework.impl.HackyReflection;
+import net.neoforged.testframework.impl.TestFrameworkImpl;
+import net.neoforged.testframework.impl.TestFrameworkInternal;
+import net.neoforged.testframework.impl.test.MethodBasedEventTest;
+import net.neoforged.testframework.impl.test.MethodBasedTest;
+import net.neoforged.testframework.registration.RegistrationHelper;
+import org.objectweb.asm.Type;
+
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.invoke.MethodHandle;
@@ -22,27 +45,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.Event;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.fml.loading.moddiscovery.ModAnnotation;
-import net.neoforged.neoforgespi.language.ModFileScanData;
-import net.neoforged.testframework.Test;
-import net.neoforged.testframework.annotation.OnInit;
-import net.neoforged.testframework.annotation.RegisterStructureTemplate;
-import net.neoforged.testframework.annotation.TestGroup;
-import net.neoforged.testframework.gametest.StructureTemplateBuilder;
-import net.neoforged.testframework.impl.HackyReflection;
-import net.neoforged.testframework.impl.TestFrameworkImpl;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
-import net.neoforged.testframework.impl.test.MethodBasedEventTest;
-import net.neoforged.testframework.impl.test.MethodBasedTest;
-import net.neoforged.testframework.registration.RegistrationHelper;
-import org.objectweb.asm.Type;
 
 public final class Collectors {
     private static final Predicate<ModFileScanData.AnnotationData> SIDE_FILTER = data -> {
@@ -191,9 +193,18 @@ public final class Collectors {
     }
 
     public static Stream<Method> findMethodsWithAnnotation(ModContainer container, Predicate<ModFileScanData.AnnotationData> annotationPredicate, Class<? extends Annotation> annotation) {
+        final Type forEach = Type.getType(ForEachTest.class);
+
+        final var excludedSides = container.getModInfo().getOwningFile().getFile().getScanResult()
+                .getAnnotations().stream().filter(it -> forEach.equals(it.annotationType()) && it.targetType() == ElementType.TYPE)
+                .filter(data -> !SIDE_FILTER.test(data))
+                .map(data -> data.clazz().getClassName())
+                .collect(java.util.stream.Collectors.toSet());
+
         final Type annType = Type.getType(annotation);
         return container.getModInfo().getOwningFile().getFile().getScanResult()
                 .getAnnotations().stream().filter(it -> annType.equals(it.annotationType()) && it.targetType() == ElementType.METHOD && annotationPredicate.test(it))
+                .filter(it -> !excludedSides.contains(it.clazz().getClassName()))
                 .map(LamdbaExceptionUtils.rethrowFunction(annotationData -> {
                     final Class<?> clazz = Class.forName(annotationData.clazz().getClassName());
                     final String methodName = annotationData.memberName().substring(0, annotationData.memberName().indexOf("("));

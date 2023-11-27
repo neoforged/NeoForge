@@ -20,9 +20,9 @@ import net.neoforged.testframework.annotation.TestHolder;
 import java.util.Objects;
 import java.util.Random;
 
-@ForEachTest(groups = "client.gui")
+@ForEachTest(groups = "client.gui", side = Dist.CLIENT)
 public class GuiTests {
-    @TestHolder(side = Dist.CLIENT, description = "Adds a button to containers that prompts the user a layered GUI and asks them whether they saw it")
+    @TestHolder(description = "Adds a button to containers that prompts the user a layered GUI and asks them whether they saw it")
     static void testGuiLayering(final DynamicTest test) {
         test.eventListeners().forge().addListener((final ScreenEvent.Init.Post event) -> {
             if (event.getScreen() instanceof AbstractContainerScreen) {
@@ -39,22 +39,20 @@ public class GuiTests {
         });
     }
 
-    @TestHolder(side = Dist.CLIENT, description = "Tests if the potion size event is fired", groups = "event")
-    static void testPotionSizeEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final ScreenEvent.RenderInventoryMobEffects event) -> {
-            final LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
+    @TestHolder(description = "Tests if the potion size event is fired", groups = "event")
+    static void testPotionSizeEvent(final ScreenEvent.RenderInventoryMobEffects event, final DynamicTest test) {
+        final LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
 
-            if (player.getActiveEffects().size() <= 3) {
-                event.setCompact(true); // Force compact mode for 3 or less active effects
-            } else {
-                event.setCompact(false); // Force classic mode for 4 or more active effects
-            }
-            if (player.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
-                event.addHorizontalOffset(20); // Move the effect rendering to the right when slowness is enabled
-            }
+        if (player.getActiveEffects().size() <= 3) {
+            event.setCompact(true); // Force compact mode for 3 or less active effects
+        } else {
+            event.setCompact(false); // Force classic mode for 4 or more active effects
+        }
+        if (player.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
+            event.addHorizontalOffset(20); // Move the effect rendering to the right when slowness is enabled
+        }
 
-            test.pass();
-        });
+        test.pass();
     }
 
     private static class TestLayer extends Screen {
