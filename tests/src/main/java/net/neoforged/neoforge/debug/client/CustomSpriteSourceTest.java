@@ -56,8 +56,7 @@ public class CustomSpriteSourceTest {
     private record CustomSpriteSource(ResourceLocation id) implements SpriteSource {
         private static final Logger LOGGER = LogUtils.getLogger();
         private static final Codec<CustomSpriteSource> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-                ResourceLocation.CODEC.fieldOf("id").forGetter(CustomSpriteSource::id)
-        ).apply(inst, CustomSpriteSource::new));
+                ResourceLocation.CODEC.fieldOf("id").forGetter(CustomSpriteSource::id)).apply(inst, CustomSpriteSource::new));
 
         @Override
         public void run(ResourceManager manager, Output output) {
@@ -97,8 +96,7 @@ public class CustomSpriteSourceTest {
                 }
 
                 @Override
-                public void close() {
-                }
+                public void close() {}
             }
         }
     }
