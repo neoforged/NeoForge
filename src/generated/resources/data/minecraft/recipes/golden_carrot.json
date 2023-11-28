@@ -2,20 +2,20 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "I": {
-      "tag": "forge:ingots/iron"
+    "#": {
+      "tag": "forge:nuggets/gold"
     },
-    "N": {
-      "tag": "forge:nuggets/iron"
+    "X": {
+      "item": "minecraft:carrot"
     }
   },
   "pattern": [
-    "N",
-    "I",
-    "N"
+    "###",
+    "#X#",
+    "###"
   ],
   "result": {
-    "item": "minecraft:chain"
+    "item": "minecraft:golden_carrot"
   },
   "show_notification": true
 }

@@ -59,7 +59,9 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     protected void buildRecipes(RecipeOutput recipeOutput) {
         replace(Items.STICK, Tags.Items.RODS_WOODEN);
         replace(Items.GOLD_INGOT, Tags.Items.INGOTS_GOLD);
+        replace(Items.GOLD_NUGGET, Tags.Items.NUGGETS_GOLD);
         replace(Items.IRON_INGOT, Tags.Items.INGOTS_IRON);
+        replace(Items.IRON_NUGGET, Tags.Items.NUGGETS_IRON);
         replace(Items.NETHERITE_INGOT, Tags.Items.INGOTS_NETHERITE);
         replace(Items.COPPER_INGOT, Tags.Items.INGOTS_COPPER);
         replace(Items.AMETHYST_SHARD, Tags.Items.GEMS_AMETHYST);
