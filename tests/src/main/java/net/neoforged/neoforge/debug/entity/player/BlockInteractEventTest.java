@@ -12,11 +12,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
+import net.neoforged.neoforge.event.entity.player.BlockInteractEvent;
 import org.slf4j.Logger;
 
 /**
- * Test mod for the UseItemOnBlockEvent.
+ * Test mod for the BlockInteractEvent.
  *
  * When the player uses an item targeting a block,
  * each phase of the event is logged on both client and server threads.
@@ -24,24 +24,24 @@ import org.slf4j.Logger;
  * Additionally, attempting to sneak-place a dirt block on top of a dispenser block will
  * prevent the placement (but will not prevent opening the chest when not sneaking).
  */
-@Mod(UseItemOnBlockEventTest.MODID)
-public class UseItemOnBlockEventTest
+@Mod(BlockInteractEventTest.MODID)
+public class BlockInteractEventTest
 {
-    public static final String MODID = "use_item_on_block_event_test";
+    public static final String MODID = "block_interact_event_test";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public UseItemOnBlockEventTest()
+    public BlockInteractEventTest()
     {
         NeoForge.EVENT_BUS.addListener(this::onUseItemOnBlock);
     }
 
-    private void onUseItemOnBlock(UseItemOnBlockEvent event)
+    private void onUseItemOnBlock(BlockInteractEvent event)
     {
         UseOnContext context = event.getUseOnContext();
         Level level = context.getLevel();
         LOGGER.info("phase={}; hand={}; isClient={}", event.getUsePhase(), event.getUseOnContext().getHand(), level.isClientSide);
         // cancel item logic if dirt is placed on top of grass
-        if (event.getUsePhase() == UseItemOnBlockEvent.UsePhase.ITEM_AFTER_BLOCK)
+        if (event.getUsePhase() == BlockInteractEvent.UsePhase.ITEM_AFTER_BLOCK)
         {
             ItemStack stack = context.getItemInHand();
             Item item = stack.getItem();

@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
+@@ -74,6 +_,7 @@
+ import net.minecraft.world.phys.shapes.CollisionContext;
+ import net.minecraft.world.phys.shapes.Shapes;
+ import net.minecraft.world.phys.shapes.VoxelShape;
++import net.neoforged.neoforge.event.entity.player.BlockInteractEvent;
+ 
+ public abstract class BlockBehaviour implements FeatureElement {
+    protected static final Direction[] UPDATE_SHAPE_ORDER = new Direction[]{
 @@ -104,6 +_,17 @@
        this.dynamicShape = p_60452_.dynamicShape;
        this.requiredFeatures = p_60452_.requiredFeatures;
@@ -117,7 +125,7 @@
  
        public InteractionResult use(Level p_60665_, Player p_60666_, InteractionHand p_60667_, BlockHitResult p_60668_) {
 +         var useOnContext = new net.minecraft.world.item.context.UseOnContext(p_60665_, p_60666_, p_60667_, p_60666_.getItemInHand(p_60667_).copy(), p_60668_);
-+         var useItemOnBlockEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(useOnContext, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.BLOCK));
++         var useItemOnBlockEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new BlockInteractEvent(useOnContext, BlockInteractEvent.UsePhase.BLOCK));
 +         if (useItemOnBlockEvent.isCanceled()) return useItemOnBlockEvent.getCancellationResult();
           return this.getBlock().use(this.asState(), p_60665_, p_60668_.getBlockPos(), p_60666_, p_60667_, p_60668_);
        }

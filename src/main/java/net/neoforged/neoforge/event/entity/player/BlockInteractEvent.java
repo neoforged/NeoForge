@@ -20,13 +20,13 @@ import net.neoforged.neoforge.common.extensions.IItemExtension;
  * then the normal interaction behavior for that phase will not run,
  * and the specified {@link InteractionResult} will be returned instead.</p>
  */
-public class UseItemOnBlockEvent extends Event implements ICancellableEvent
+public class BlockInteractEvent extends Event implements ICancellableEvent
 {
     private final UseOnContext context;
     private final UsePhase usePhase;
     private InteractionResult cancellationResult = InteractionResult.PASS;
 
-    public UseItemOnBlockEvent(UseOnContext context, UsePhase usePhase)
+    public BlockInteractEvent(UseOnContext context, UsePhase usePhase)
     {
         this.context = context;
         this.usePhase = usePhase;

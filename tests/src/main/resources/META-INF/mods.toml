@@ -302,6 +302,6 @@ modId="custom_predicate_test"
 [[mods]]
 modId="conditional_codec_test"
 [[mods]]
-modId="use_item_on_block_event_test"
+modId="block_interact_event_test"
 
 # ADD ABOVE THIS LINE

@@ -1,7 +1,10 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -77,7 +_,7 @@
+@@ -75,9 +_,10 @@
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.block.state.pattern.BlockInWorld;
++import net.neoforged.neoforge.event.entity.player.BlockInteractEvent;
  import org.slf4j.Logger;
  
 -public final class ItemStack {
@@ -62,14 +65,14 @@
     }
  
     public InteractionResult useOn(UseOnContext p_41662_) {
-+      var useItemOnBlockEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_AFTER_BLOCK));
++      var useItemOnBlockEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new BlockInteractEvent(p_41662_, BlockInteractEvent.UsePhase.ITEM_AFTER_BLOCK));
 +      if (useItemOnBlockEvent.isCanceled()) return useItemOnBlockEvent.getCancellationResult();
 +      if (!p_41662_.getLevel().isClientSide) return net.neoforged.neoforge.common.CommonHooks.onPlaceItemIntoWorld(p_41662_);
 +      return onItemUse(p_41662_, (c) -> getItem().useOn(p_41662_));
 +   }
 +
 +   public InteractionResult onItemUseFirst(UseOnContext p_41662_) {
-+      var useItemOnBlockEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_BEFORE_BLOCK));
++      var useItemOnBlockEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new BlockInteractEvent(p_41662_, BlockInteractEvent.UsePhase.ITEM_BEFORE_BLOCK));
 +      if (useItemOnBlockEvent.isCanceled()) return useItemOnBlockEvent.getCancellationResult();
 +      return onItemUse(p_41662_, (c) -> getItem().onItemUseFirst(this, p_41662_));
 +   }
