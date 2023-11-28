@@ -34,7 +34,7 @@ public class CustomTASTest {
     private static final boolean ENABLED = true;
     static final String MOD_ID = "custom_tas_test";
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
-    private static final Holder<Item> TEST_ITEM = ITEMS.register("test_item", () -> new Item(new Item.Properties()));
+    private static final Holder<Item> TEST_ITEM = ITEMS.registerSimpleItem("test_item");
 
     public CustomTASTest() {
         if (ENABLED) {
