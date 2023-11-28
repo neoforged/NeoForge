@@ -9,7 +9,6 @@ import java.util.function.Consumer;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Fired in order to register chunk {@link TicketController ticket controllers}.
@@ -18,8 +17,7 @@ import org.jetbrains.annotations.ApiStatus;
 public class RegisterTicketControllersEvent extends Event implements IModBusEvent {
     private final Consumer<TicketController> registrar;
 
-    @ApiStatus.Internal
-    public RegisterTicketControllersEvent(Consumer<TicketController> registrar) {
+    RegisterTicketControllersEvent(Consumer<TicketController> registrar) {
         this.registrar = registrar;
     }
 

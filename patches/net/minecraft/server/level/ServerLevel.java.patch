@@ -38,7 +38,7 @@
        this.handlingTick = false;
        profilerfiller.pop();
 -      boolean flag = !this.players.isEmpty() || !this.getForcedChunks().isEmpty();
-+      boolean flag = !this.players.isEmpty() || net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.hasForcedChunks(this); //Forge: Replace vanilla's has forced chunk check with forge's that checks both the vanilla and forge added ones
++      boolean flag = !this.players.isEmpty() || net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.hasForcedChunks(this); // Neo: Replace vanilla's has forced chunk check with neo's that checks both the vanilla and neo added ones
        if (flag) {
           this.resetEmptyTime();
        }
