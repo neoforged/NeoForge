@@ -1,7 +1,7 @@
 {
   "loader": "neoforge:composite",
   "_comment": "This should show a block with 9 different small blocks in it (8 in the corners, 1 in the center)",
-  "parts": {
+  "children": {
     "offset_from_opposing_corner": {
       "_comment": "No rotation, using offset from opposing corner (default) origin",
       "parent": "minecraft:block/dirt",
