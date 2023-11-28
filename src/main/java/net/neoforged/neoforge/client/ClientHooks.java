@@ -1043,6 +1043,7 @@ public class ClientHooks {
         return SPRITE_SOURCE_TYPES_MAP;
     }
 
+    @ApiStatus.Internal
     public static void registerSpriteSourceTypes() {
         ModLoader.get().postEvent(new RegisterSpriteSourceTypesEvent(SPRITE_SOURCE_TYPES_MAP));
     }

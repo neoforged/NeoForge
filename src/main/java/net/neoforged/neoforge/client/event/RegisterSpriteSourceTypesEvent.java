@@ -16,6 +16,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 /**
  * Fired to allow mods to register their own {@linkplain SpriteSourceType}. This event is fired once during the construction of the {@link Minecraft} instance or before datagen when client datagen is enabled.
@@ -28,6 +29,7 @@ import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 public class RegisterSpriteSourceTypesEvent extends Event implements IModBusEvent {
     private final BiMap<ResourceLocation, SpriteSourceType> types;
 
+    @Internal
     public RegisterSpriteSourceTypesEvent(BiMap<ResourceLocation, SpriteSourceType> types) {
         this.types = types;
     }
