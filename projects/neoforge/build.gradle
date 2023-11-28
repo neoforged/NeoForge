@@ -89,7 +89,9 @@ dependencies {
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
 
-    userdevCompileOnly "io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}"
+    userdevCompileOnly jarJar("io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}"), {
+        jarJar.ranged(it, "[${project.mixin_extras_version},)")
+    }
 }
 
 runTypes {
@@ -221,23 +223,6 @@ artifacts {
 
 minecraft {
     modIdentifier 'minecraft'
-}
-
-// Bundle MixinExtras in the universal jar
-afterEvaluate {
-    tasks.universalJar.configure {
-        inputs.property "mixin_extras_version", project.mixin_extras_version
-
-        into "META-INF/jars/", {
-            from project.configurations.detachedConfiguration(
-                    project.dependencies.create("io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}"))
-        }
-        into "META-INF/jarjar/", {
-            from project.file("jarjar_metadata.json")
-            rename "jarjar_metadata.json", "metadata.json"
-            expand "mixin_extras_version": project.mixin_extras_version
-        }
-    }
 }
 
 publishing {
