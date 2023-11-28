@@ -1,0 +1,32 @@
+--- a/net/minecraft/client/renderer/texture/atlas/SpriteResourceLoader.java
++++ b/net/minecraft/client/renderer/texture/atlas/SpriteResourceLoader.java
+@@ -24,7 +24,7 @@
+    Logger LOGGER = LogUtils.getLogger();
+ 
+    static SpriteResourceLoader create(Collection<MetadataSectionSerializer<?>> p_296204_) {
+-      return (p_293680_, p_293681_) -> {
++      return (p_293680_, p_293681_, constructor) -> {
+          ResourceMetadata resourcemetadata;
+          try {
+             resourcemetadata = p_293681_.metadata().copySections(p_296204_);
+@@ -45,7 +45,7 @@
+             .orElse(AnimationMetadataSection.EMPTY);
+          FrameSize framesize = animationmetadatasection.calculateFrameSize(nativeimage.getWidth(), nativeimage.getHeight());
+          if (Mth.isMultipleOf(nativeimage.getWidth(), framesize.width()) && Mth.isMultipleOf(nativeimage.getHeight(), framesize.height())) {
+-            return new SpriteContents(p_293680_, framesize, nativeimage, resourcemetadata);
++            return constructor.create(p_293680_, framesize, nativeimage, resourcemetadata);
+          } else {
+             LOGGER.error(
+                "Image {} size {},{} is not multiple of frame size {},{}",
+@@ -62,5 +62,10 @@
+    }
+ 
+    @Nullable
+-   SpriteContents loadSprite(ResourceLocation p_295581_, Resource p_294329_);
++   default SpriteContents loadSprite(ResourceLocation p_295581_, Resource p_294329_) {
++      return loadSprite(p_295581_, p_294329_, SpriteContents::new);
++   }
++
++   @Nullable
++   SpriteContents loadSprite(ResourceLocation id, Resource resource, net.neoforged.neoforge.client.textures.SpriteContentConstructor constructor);
+ }
