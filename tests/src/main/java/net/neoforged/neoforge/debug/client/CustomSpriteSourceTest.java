@@ -77,8 +77,8 @@ public class CustomSpriteSourceTest {
 
         static final class CustomSpriteContents extends SpriteContents {
 
-            public CustomSpriteContents(ResourceLocation p_249787_, FrameSize p_251031_, NativeImage p_252131_, ResourceMetadata p_294742_) {
-                super(p_249787_, p_251031_, p_252131_, p_294742_);
+            public CustomSpriteContents(ResourceLocation name, FrameSize size, NativeImage image, ResourceMetadata metadata) {
+                super(name, size, image, metadata);
             }
 
             @Override
@@ -90,9 +90,9 @@ public class CustomSpriteSourceTest {
                 final RandomSource random = RandomSource.create();
 
                 @Override
-                public void tickAndUpload(int p_248847_, int p_250486_) {
+                public void tickAndUpload(int x, int y) {
                     CustomSpriteContents.this.byMipLevel[0].fillRect(0, 0, 16, 16, 0xFF000000 | random.nextInt(0xFFFFFF));
-                    CustomSpriteContents.this.uploadFirstFrame(p_248847_, p_250486_);
+                    CustomSpriteContents.this.uploadFirstFrame(x, y);
                 }
 
                 @Override
