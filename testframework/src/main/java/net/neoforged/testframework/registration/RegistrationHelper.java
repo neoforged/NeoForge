@@ -6,9 +6,12 @@
 package net.neoforged.testframework.registration;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
+
 import net.minecraft.core.Registry;
 import net.minecraft.data.DataProvider;
 import net.minecraft.resources.ResourceKey;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.testframework.TestFramework;
 import org.jetbrains.annotations.ApiStatus;
@@ -36,6 +39,13 @@ public interface RegistrationHelper {
      * {@return a helper for entity type registration}
      */
     DeferredEntityTypes entityTypes();
+
+    /**
+     * {@return the mod id of this helper}
+     */
+    String modId();
+
+    void addProvider(Function<GatherDataEvent, DataProvider> provider);
 
     <T extends DataProvider> void provider(Class<T> type, Consumer<T> consumer);
 

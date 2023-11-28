@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "type": "custom_predicate_test:custom_name",
+            "type": "neotests_custom_predicate_test:custom_name",
             "data1": 1,
             "data2": 2
           }

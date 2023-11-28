@@ -5,8 +5,8 @@
     {
       "type": "neoforge:partial_nbt",
       "items": [
-        "minecraft:stone_pickaxe",
         "minecraft:wooden_pickaxe",
+        "minecraft:stone_pickaxe",
         "minecraft:iron_pickaxe"
       ],
       "tag": {

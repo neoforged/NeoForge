@@ -11,8 +11,12 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Function;
+
 import net.minecraft.core.Registry;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -79,6 +83,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
 
     private final String modId;
     private final ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers = Multimaps.newListMultimap(new IdentityHashMap<>(), ArrayList::new);
+    private final List<Function<GatherDataEvent, DataProvider>> directProviders = new ArrayList<>();
 
     @Override
     public <T> DeferredRegister<T> registrar(ResourceKey<Registry<T>> registry) {
@@ -121,8 +126,18 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     @Override
+    public String modId() {
+        return modId;
+    }
+
+    @Override
     public <T extends DataProvider> void provider(Class<T> type, Consumer<T> consumer) {
         providers.put(type, consumer);
+    }
+
+    @Override
+    public void addProvider(Function<GatherDataEvent, DataProvider> provider) {
+        directProviders.add(provider);
     }
 
     @Override
@@ -134,5 +149,19 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     void gather(final GatherDataEvent event) {
         providers.asMap().forEach((cls, cons) -> event.getGenerator().addProvider(true, PROVIDERS.get(cls).create(
                 event.getGenerator().getPackOutput(), event.getGenerator(), event.getExistingFileHelper(), modId, (List) cons)));
+
+        directProviders.forEach(func ->
+                event.getGenerator().addProvider(true, new DataProvider() {
+                    final DataProvider p = func.apply(event);
+                    @Override
+                    public CompletableFuture<?> run(CachedOutput output) {
+                        return p.run(output);
+                    }
+
+                    @Override
+                    public String getName() {
+                        return modId + " generator " + p.getName();
+                    }
+                }));
     }
 }
