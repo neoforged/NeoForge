@@ -1,5 +1,5 @@
 {
   "parent": "neoforge:item/bucket_drip",
-  "loader": "neoforge:bucket",
+  "loader": "neoforge:fluid_container",
   "fluid": "new_fluid_test:test_fluid"
 }
