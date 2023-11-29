@@ -4,10 +4,23 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Shearable;
+import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent;
 import net.neoforged.neoforge.event.level.SaplingGrowTreeEvent;
 import net.neoforged.testframework.DynamicTest;
@@ -75,6 +88,59 @@ public class LevelEventTests {
                                     .noneMatch(pos -> helper.getLevel().getBlockState(pos).is(Blocks.PODZOL)),
                             "Podzol was still placed!"
                     ))
+                    .thenSucceed();
+        });
+    }
+
+    /**
+     * Tests {@link VanillaGameEvent} by listening for and printing out any uses of shears in the overworld.
+     */
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests the vanilla game event by hurting entities that are sheared in the overworld")
+    static void vanillaGameEvent(final DynamicTest test) {
+        test.eventListeners().forge().addListener((final VanillaGameEvent event) -> {
+            if (event.getVanillaEvent() == GameEvent.SHEAR && event.getLevel().dimension() == Level.OVERWORLD) {
+                final var entities = event.getLevel().getEntitiesOfClass(Entity.class, new AABB(BlockPos.containing(event.getEventPosition())), e -> e instanceof Shearable);
+                entities.get(0).hurt(event.getLevel().damageSources().generic(), event.getCause() == null ? 1 : 3);
+                test.pass();
+            }
+        });
+
+        test.onGameTest(helper -> {
+            final Sheep sheep = helper.spawnWithNoFreeWill(EntityType.SHEEP, new BlockPos(1, 2, 1));
+            sheep.setColor(DyeColor.BLACK);
+            sheep.setSheared(false);
+
+            // Prepare a dispenser to shear the sheep in the second phase
+            helper.setBlock(1, 1, 1, Blocks.DISPENSER.defaultBlockState().setValue(DispenserBlock.FACING, Direction.UP));
+            helper.requireBlockEntity(1, 1, 1, DispenserBlockEntity.class).setItem(0, Items.SHEARS.getDefaultInstance());
+
+            helper.startSequence()
+                    .thenIdle(5)
+                    .thenExecute(() -> Items.SHEARS.getDefaultInstance().interactLivingEntity(
+                            helper.makeMockPlayer(), sheep, InteractionHand.MAIN_HAND
+                    )) // Make a player shear the sheep
+                    .thenExecute(() -> helper.assertItemEntityPresent(Items.BLACK_WOOL, new BlockPos(1, 2, 1), 2)) // Make sure wool was dropped
+                    .thenExecute(() -> helper.assertEntityProperty(sheep, Sheep::getHealth, "health", 8f - 3f)) // player did it, so hurt by 3
+
+                    .thenExecuteAfter(5, () -> {
+                        // Prepare the sheep; reset its color and its state
+                        sheep.setColor(DyeColor.BLUE);
+                        sheep.setSheared(false);
+                    })
+                    .thenIdle(5)
+
+                    // Power the dispenser
+                    .thenExecute(() -> helper.setBlock(2, 1, 1, Blocks.REDSTONE_BLOCK))
+                    .thenIdle(1)
+                    .thenExecute(() -> helper.assertItemEntityPresent(Items.BLUE_WOOL, new BlockPos(1, 2, 1), 2)) // Make sure wool was dropped
+                    .thenExecute(() -> helper.assertEntityProperty(sheep, Sheep::getHealth, "health", (8f - 3f) - 1f)) // dispenser did it, so hurt by 1
+
+                    .thenIdle(5)
+                    .thenExecute(() -> helper.killAllEntitiesOfClass(Sheep.class))
+                    .thenExecute(() -> helper.killAllEntitiesOfClass(ItemEntity.class))
+
                     .thenSucceed();
         });
     }

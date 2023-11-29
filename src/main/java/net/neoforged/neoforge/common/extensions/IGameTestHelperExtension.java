@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.gametest.framework.GameTestAssertPosException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
@@ -32,10 +33,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 public interface IGameTestHelperExtension {
     GameTestHelper self();
@@ -132,5 +135,35 @@ public interface IGameTestHelperExtension {
         return BlockPos.MutableBlockPos.betweenClosedStream(bounds);
     }
 
+    @Nullable
+    default <T extends BlockEntity> T getBlockEntity(BlockPos pos, Class<T> type) {
+        final var be = self().getBlockEntity(pos);
+        if (be == null) return null;
+        if (!type.isInstance(be)) {
+            throw new GameTestAssertPosException("Expected block entity of type " + type + " but was " + be.getClass(), this.self().absolutePos(pos), pos, getInfo().getTick());
+        }
+        return type.cast(be);
+    }
+
+    @Nullable
+    default <T extends BlockEntity> T getBlockEntity(int x, int y, int z, Class<T> type) {
+        return getBlockEntity(new BlockPos(x, y, z), type);
+    }
+
+    default <T extends BlockEntity> T requireBlockEntity(BlockPos pos, Class<T> type) {
+        final var be = getBlockEntity(pos, type);
+        if (be == null) {
+            throw new GameTestAssertPosException("Expected block entity of type " + type + " but there was none", this.self().absolutePos(pos), pos, getInfo().getTick());
+        }
+        return be;
+    }
+
+    default <T extends BlockEntity> T requireBlockEntity(int x, int y, int z, Class<T> type) {
+        return requireBlockEntity(new BlockPos(x, y, z), type);
+    }
+
     void addListener(final GameTestListener listener);
+
+    // TODO - replace with AT; also GameTestInfo#getTick
+    GameTestInfo getInfo();
 }

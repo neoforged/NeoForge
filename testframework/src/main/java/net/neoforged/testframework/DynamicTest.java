@@ -120,6 +120,11 @@ public interface DynamicTest extends Test {
     RegistrationHelper registrationHelper();
 
     /**
+     * {@return a computed mod id based on this test's ID}
+     */
+    String createModId();
+
+    /**
      * {@return if this test is currently running as a GameTest}
      */
     boolean isDuringGameTest();

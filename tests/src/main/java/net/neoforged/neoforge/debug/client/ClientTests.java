@@ -1,5 +1,7 @@
 package net.neoforged.neoforge.debug.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.client.resources.sounds.Sound;
@@ -9,9 +11,14 @@ import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -33,6 +40,43 @@ public class ClientTests {
 
             test.requestConfirmation(mc.player, Component.literal("Did you hear the correct sound (sine wave of 220Hz) being played?"));
         }
+    }
+
+    @TestHolder(description = {"Tests if key mappings work", "Adds two keys both bound to backslash by default", "Will pass if the 'stick_key' key is pressed with a stick in the main hand, or if the 'rock_key' one is pressed with cobblestone in the main hand"})
+    static void keyMappingTest(final DynamicTest test) {
+        // these are two separate keys to stand in for keys added by different
+        // mods that each do something similar with a held item from the
+        // respective mod, so the user wants them on the same physical key.
+        final KeyMapping stickKey = new KeyMapping("stick_key", InputConstants.KEY_BACKSLASH, KeyMapping.CATEGORY_MISC);
+        final KeyMapping rockKey = new KeyMapping("rock_key", InputConstants.KEY_BACKSLASH, KeyMapping.CATEGORY_MISC);
+
+        test.registrationHelper().provider(LanguageProvider.class, lang -> {
+            lang.add(stickKey.getName(), "Stick key");
+            lang.add(rockKey.getName(), "Rock key");
+        });
+
+        test.framework().modEventBus().addListener((final RegisterKeyMappingsEvent event) -> {
+            event.register(rockKey);
+            event.register(stickKey);
+        });
+
+        test.eventListeners().forge().addListener((final TickEvent.ClientTickEvent event) -> {
+            if (event.phase != TickEvent.Phase.START) return;
+            if (stickKey.consumeClick()) {
+                Player player = Minecraft.getInstance().player;
+                if (player != null && player.getMainHandItem().is(Items.STICK)) {
+                    player.sendSystemMessage(Component.literal("stick found!"));
+                    test.pass();
+                }
+            }
+            if (rockKey.consumeClick()) {
+                Player player = Minecraft.getInstance().player;
+                if (player != null && player.getMainHandItem().is(Items.COBBLESTONE)) {
+                    player.sendSystemMessage(Component.literal("rock found!"));
+                    test.pass();
+                }
+            }
+        });
     }
 
     private static final class SineSound extends AbstractSoundInstance {
@@ -74,6 +118,7 @@ public class ClientTests {
         }
 
         @Override
-        public void close() {}
+        public void close() {
+        }
     }
 }

@@ -271,7 +271,8 @@ public abstract class AbstractTest implements Test {
             return registrationHelper(createModId());
         }
 
-        protected String createModId() {
+        @Override
+        public String createModId() {
             final StringBuilder modId = new StringBuilder()
                     .append(framework().id().getNamespace()).append('_');
             boolean isInUpper = false;
