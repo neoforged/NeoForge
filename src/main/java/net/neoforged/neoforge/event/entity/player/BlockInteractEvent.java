@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.event.entity.player;
 
 import net.minecraft.world.InteractionResult;
@@ -20,7 +25,7 @@ import net.neoforged.neoforge.common.extensions.IItemExtension;
  * then the normal interaction behavior for that phase will not run,
  * and the specified {@link InteractionResult} will be returned instead.</p>
  */
-public class BlockInteractEvent extends Event implements ICancellableEvent
+public class BlockInteractEvent extends PlayerInteractEvent implements ICancellableEvent
 {
     private final UseOnContext context;
     private final UsePhase usePhase;
@@ -28,6 +33,7 @@ public class BlockInteractEvent extends Event implements ICancellableEvent
 
     public BlockInteractEvent(UseOnContext context, UsePhase usePhase)
     {
+        super(context.getPlayer(), context.getHand(), context.getClickedPos(), context.getClickedFace());
         this.context = context;
         this.usePhase = usePhase;
     }
