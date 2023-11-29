@@ -28,5 +28,5 @@
 +   }
 +
 +   @Nullable
-+   SpriteContents loadSprite(ResourceLocation id, Resource resource, net.neoforged.neoforge.client.textures.SpriteContentConstructor constructor);
++   SpriteContents loadSprite(ResourceLocation id, Resource resource, net.neoforged.neoforge.client.textures.SpriteContentsConstructor constructor);
  }

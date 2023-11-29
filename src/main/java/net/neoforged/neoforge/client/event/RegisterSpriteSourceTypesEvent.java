@@ -19,7 +19,9 @@ import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 /**
- * Fired to allow mods to register their own {@linkplain SpriteSourceType}. This event is fired once during the construction of the {@link Minecraft} instance or before datagen when client datagen is enabled.
+ * Fired to allow mods to register their own {@linkplain SpriteSourceType}.
+ * This event is fired once during the construction of the {@link Minecraft} instance or
+ * before datagen when client datagen is enabled.
  *
  * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
  *

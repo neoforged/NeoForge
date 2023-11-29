@@ -17,7 +17,16 @@ import org.jetbrains.annotations.Nullable;
  * but nullable to support skipping based on metadata.
  */
 @FunctionalInterface
-public interface SpriteContentConstructor {
+public interface SpriteContentsConstructor {
+    /**
+     * Construct an instance of SpriteContents or return null to not load the sprite.
+     * 
+     * @param id               the id of the sprite
+     * @param frameSize        the frame size of the sprite
+     * @param nativeImage      the image of the sprite
+     * @param resourceMetadata the metadata of the resource
+     * @return an instance of SpriteContents or return null to not load the sprite
+     */
     @Nullable
     SpriteContents create(ResourceLocation id, FrameSize frameSize, NativeImage nativeImage, ResourceMetadata resourceMetadata);
 }

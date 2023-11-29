@@ -31,6 +31,9 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+/**
+ * A test creating a custom sprite source provider a sprite using it and an item using that sprite.
+ */
 @Mod(CustomSpriteSourceTest.MOD_ID)
 public class CustomSpriteSourceTest {
     private static final boolean ENABLED = true;
