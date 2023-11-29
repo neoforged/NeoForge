@@ -1,6 +1,6 @@
 --- a/net/minecraft/gametest/framework/GameTestHelper.java
 +++ b/net/minecraft/gametest/framework/GameTestHelper.java
-@@ -54,7 +_,16 @@
+@@ -54,7 +_,20 @@
  import net.minecraft.world.phys.BlockHitResult;
  import net.minecraft.world.phys.Vec3;
  
@@ -12,7 +12,11 @@
 +   }
 +   @Override
 +   public void addListener(GameTestListener listener) {
-+      self().testInfo.addListener(listener);
++      testInfo.addListener(listener);
++   }
++   @Override
++   public GameTestInfo getInfo() {
++      return testInfo;
 +   }
 +
     private final GameTestInfo testInfo;
