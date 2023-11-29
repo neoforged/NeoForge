@@ -107,19 +107,19 @@ public interface IGameTestHelperExtension {
         embeddedchannel.attr(Connection.ATTRIBUTE_SERVERBOUND_PROTOCOL).set(ConnectionProtocol.PLAY.codec(PacketFlow.SERVERBOUND));
         self().getLevel().getServer().getPlayerList().placeNewPlayer(connection, serverplayer, commonlistenercookie);
         self().getLevel().getServer().getConnection().getConnections().add(connection);
-        addListener(new GameTestListener() {
+        self().testInfo.addListener(new GameTestListener() {
             @Override
-            public void testStructureLoaded(GameTestInfo info) {
+            public void testStructureLoaded(GameTestInfo i) {
 
             }
 
             @Override
-            public void testPassed(GameTestInfo p_177494_) {
+            public void testPassed(GameTestInfo i) {
                 disconnect();
             }
 
             @Override
-            public void testFailed(GameTestInfo p_127652_) {
+            public void testFailed(GameTestInfo i) {
                 disconnect();
             }
 
@@ -140,7 +140,7 @@ public interface IGameTestHelperExtension {
         final var be = self().getBlockEntity(pos);
         if (be == null) return null;
         if (!type.isInstance(be)) {
-            throw new GameTestAssertPosException("Expected block entity of type " + type + " but was " + be.getClass(), this.self().absolutePos(pos), pos, getInfo().getTick());
+            throw new GameTestAssertPosException("Expected block entity of type " + type + " but was " + be.getClass(), this.self().absolutePos(pos), pos, self().getTick());
         }
         return type.cast(be);
     }
@@ -153,7 +153,7 @@ public interface IGameTestHelperExtension {
     default <T extends BlockEntity> T requireBlockEntity(BlockPos pos, Class<T> type) {
         final var be = getBlockEntity(pos, type);
         if (be == null) {
-            throw new GameTestAssertPosException("Expected block entity of type " + type + " but there was none", this.self().absolutePos(pos), pos, getInfo().getTick());
+            throw new GameTestAssertPosException("Expected block entity of type " + type + " but there was none", this.self().absolutePos(pos), pos, self().getTick());
         }
         return be;
     }
@@ -161,9 +161,4 @@ public interface IGameTestHelperExtension {
     default <T extends BlockEntity> T requireBlockEntity(int x, int y, int z, Class<T> type) {
         return requireBlockEntity(new BlockPos(x, y, z), type);
     }
-
-    void addListener(final GameTestListener listener);
-
-    // TODO - replace with AT; also GameTestInfo#getTick
-    GameTestInfo getInfo();
 }

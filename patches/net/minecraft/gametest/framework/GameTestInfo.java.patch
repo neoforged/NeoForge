@@ -8,12 +8,3 @@
        StructureUtils.addCommandBlockAndButtonToStartTest(this.structureBlockPos, new BlockPos(1, 0, -1), this.getRotation(), this.level);
        this.listeners.forEach(p_127630_ -> p_127630_.testStructureLoaded(this));
     }
-@@ -219,7 +_,7 @@
-       }
-    }
- 
--   long getTick() {
-+   public long getTick() {
-       return this.tickCount;
-    }
- 
