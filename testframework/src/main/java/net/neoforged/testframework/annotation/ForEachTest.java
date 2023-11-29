@@ -5,14 +5,13 @@
 
 package net.neoforged.testframework.annotation;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.testframework.TestListener;
-
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.testframework.TestListener;
 
 /**
  * Apply this annotation to a class in order to add a common configuration to all child tests. <br>

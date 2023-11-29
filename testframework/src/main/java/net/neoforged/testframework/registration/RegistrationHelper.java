@@ -7,7 +7,6 @@ package net.neoforged.testframework.registration;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
-
 import net.minecraft.core.Registry;
 import net.minecraft.data.DataProvider;
 import net.minecraft.resources.ResourceKey;

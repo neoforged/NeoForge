@@ -1,5 +1,12 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.client;
 
+import java.util.Objects;
+import java.util.Random;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -16,9 +23,6 @@ import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
-
-import java.util.Objects;
-import java.util.Random;
 
 @ForEachTest(groups = "client.gui", side = Dist.CLIENT)
 public class GuiTests {

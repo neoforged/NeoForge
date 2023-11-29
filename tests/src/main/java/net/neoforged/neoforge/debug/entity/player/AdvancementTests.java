@@ -1,12 +1,19 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.entity.player;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.FrameType;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -23,12 +30,6 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.registration.RegistrationHelper;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @ForEachTest(groups = PlayerTests.GROUP + ".advancement")
 public class AdvancementTests {
@@ -86,8 +87,8 @@ public class AdvancementTests {
         final AtomicReference<Supplier<Codec<? extends ICustomItemPredicate>>> serializer = new AtomicReference<>();
         serializer.set(reg.registrar(NeoForgeRegistries.Keys.ITEM_PREDICATE_SERIALIZERS)
                 .register("custom_name", () -> RecordCodecBuilder.<CustomNamePredicate>create(g -> g.group(
-                                Codec.INT.fieldOf("data1").forGetter(CustomNamePredicate::data1),
-                                Codec.INT.fieldOf("data2").forGetter(CustomNamePredicate::data2))
+                        Codec.INT.fieldOf("data1").forGetter(CustomNamePredicate::data1),
+                        Codec.INT.fieldOf("data2").forGetter(CustomNamePredicate::data2))
                         .apply(g, (d1, d2) -> new CustomNamePredicate(d1, d2, serializer.get())))));
 
         reg.addProvider(event -> new AdvancementProvider(
@@ -100,8 +101,7 @@ public class AdvancementTests {
                             .display(Items.ANVIL, Component.literal("Named!"), Component.literal("Get a named item"), null, FrameType.TASK, true, true, false)
                             .addCriterion("has_named_item", InventoryChangeTrigger.TriggerInstance.hasItems(new CustomNamePredicate(1, 2, serializer.get()).toVanilla()))
                             .save(saver, new ResourceLocation(reg.modId(), "named_item"), existingFileHelper);
-                })
-        ));
+                })));
 
         test.onGameTest(helper -> {
             final ServerPlayer player = helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL);

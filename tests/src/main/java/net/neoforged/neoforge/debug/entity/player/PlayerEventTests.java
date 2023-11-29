@@ -5,14 +5,8 @@
 
 package net.neoforged.neoforge.debug.entity.player;
 
-import java.util.Objects;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.GameType;
-import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;

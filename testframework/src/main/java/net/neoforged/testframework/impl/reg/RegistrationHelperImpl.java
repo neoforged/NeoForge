@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
 import net.minecraft.core.Registry;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
@@ -150,18 +149,18 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         providers.asMap().forEach((cls, cons) -> event.getGenerator().addProvider(true, PROVIDERS.get(cls).create(
                 event.getGenerator().getPackOutput(), event.getGenerator(), event.getExistingFileHelper(), modId, (List) cons)));
 
-        directProviders.forEach(func ->
-                event.getGenerator().addProvider(true, new DataProvider() {
-                    final DataProvider p = func.apply(event);
-                    @Override
-                    public CompletableFuture<?> run(CachedOutput output) {
-                        return p.run(output);
-                    }
+        directProviders.forEach(func -> event.getGenerator().addProvider(true, new DataProvider() {
+            final DataProvider p = func.apply(event);
 
-                    @Override
-                    public String getName() {
-                        return modId + " generator " + p.getName();
-                    }
-                }));
+            @Override
+            public CompletableFuture<?> run(CachedOutput output) {
+                return p.run(output);
+            }
+
+            @Override
+            public String getName() {
+                return modId + " generator " + p.getName();
+            }
+        }));
     }
 }

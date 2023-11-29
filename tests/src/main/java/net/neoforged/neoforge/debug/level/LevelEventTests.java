@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.level;
 
 import net.minecraft.core.BlockPos;
@@ -29,7 +34,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 
-@ForEachTest(groups = {LevelTests.GROUP + ".event", "event"})
+@ForEachTest(groups = { LevelTests.GROUP + ".event", "event" })
 public class LevelEventTests {
     @GameTest
     @EmptyTemplate(value = "9x9x9", floor = true)
@@ -81,13 +86,11 @@ public class LevelEventTests {
                             helper.blocksBetween(0, 0, 0, 10, 1, 10)
                                     .filter(pos -> helper.getLevel().getBlockState(pos).is(Blocks.REDSTONE_BLOCK))
                                     .count() > 20,
-                            "Not enough redstone blocks have been placed!"
-                    ))
+                            "Not enough redstone blocks have been placed!"))
                     .thenExecute(() -> helper.assertTrue(
                             helper.blocksBetween(0, 0, 0, 10, 1, 10)
                                     .noneMatch(pos -> helper.getLevel().getBlockState(pos).is(Blocks.PODZOL)),
-                            "Podzol was still placed!"
-                    ))
+                            "Podzol was still placed!"))
                     .thenSucceed();
         });
     }
@@ -119,8 +122,7 @@ public class LevelEventTests {
             helper.startSequence()
                     .thenIdle(5)
                     .thenExecute(() -> Items.SHEARS.getDefaultInstance().interactLivingEntity(
-                            helper.makeMockPlayer(), sheep, InteractionHand.MAIN_HAND
-                    )) // Make a player shear the sheep
+                            helper.makeMockPlayer(), sheep, InteractionHand.MAIN_HAND)) // Make a player shear the sheep
                     .thenExecute(() -> helper.assertItemEntityPresent(Items.BLACK_WOOL, new BlockPos(1, 2, 1), 2)) // Make sure wool was dropped
                     .thenExecute(() -> helper.assertEntityProperty(sheep, Sheep::getHealth, "health", 8f - 3f)) // player did it, so hurt by 3
 

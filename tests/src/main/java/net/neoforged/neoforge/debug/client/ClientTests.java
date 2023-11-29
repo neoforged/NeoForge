@@ -1,6 +1,14 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import java.nio.ByteBuffer;
+import java.util.concurrent.CompletableFuture;
+import javax.sound.sampled.AudioFormat;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
@@ -25,13 +33,9 @@ import net.neoforged.testframework.annotation.TestHolder;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
 
-import javax.sound.sampled.AudioFormat;
-import java.nio.ByteBuffer;
-import java.util.concurrent.CompletableFuture;
-
 @ForEachTest(side = Dist.CLIENT, groups = "client")
 public class ClientTests {
-    @TestHolder(description = {"Tests if custom audio streams work", "When the message \"sine wave\" is sent in chat, this should play a sine wave of 220Hz at the player's current position"})
+    @TestHolder(description = { "Tests if custom audio streams work", "When the message \"sine wave\" is sent in chat, this should play a sine wave of 220Hz at the player's current position" })
     static void audioStreamTest(final ClientChatEvent event, final DynamicTest test) {
         if (event.getMessage().equalsIgnoreCase("sine wave")) {
             event.setCanceled(true);
@@ -42,7 +46,7 @@ public class ClientTests {
         }
     }
 
-    @TestHolder(description = {"Tests if key mappings work", "Adds two keys both bound to backslash by default", "Will pass if the 'stick_key' key is pressed with a stick in the main hand, or if the 'rock_key' one is pressed with cobblestone in the main hand"})
+    @TestHolder(description = { "Tests if key mappings work", "Adds two keys both bound to backslash by default", "Will pass if the 'stick_key' key is pressed with a stick in the main hand, or if the 'rock_key' one is pressed with cobblestone in the main hand" })
     static void keyMappingTest(final DynamicTest test) {
         // these are two separate keys to stand in for keys added by different
         // mods that each do something similar with a held item from the
@@ -118,7 +122,6 @@ public class ClientTests {
         }
 
         @Override
-        public void close() {
-        }
+        public void close() {}
     }
 }
