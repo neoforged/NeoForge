@@ -7,7 +7,6 @@ package net.neoforged.neoforge.common.extensions;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.embedded.EmbeddedChannel;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.function.BiPredicate;
@@ -19,19 +18,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestAssertPosException;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInfo;
-import net.minecraft.gametest.framework.GameTestListener;
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -165,8 +159,7 @@ public interface IGameTestHelperExtension {
                     "Expected at least " + lowerLimit + " " + item.getDescription().getString() + " items to exist (found " + count + ")",
                     blockpos,
                     pos,
-                    self().getTick()
-            );
+                    self().getTick());
         }
     }
 }

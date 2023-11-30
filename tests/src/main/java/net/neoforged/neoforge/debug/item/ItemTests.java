@@ -7,7 +7,6 @@ package net.neoforged.neoforge.debug.item;
 
 import java.util.Map;
 import java.util.function.Supplier;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.core.BlockPos;
@@ -167,11 +166,9 @@ public class ItemTests {
         test.onGameTest(helper -> helper.startSequence(() -> item.get().getDefaultInstance())
                 .thenMap(stack -> stack.getDisplayName().getStyle())
                 .thenExecute(style -> helper.assertTrue(
-                        style.isItalic(), "custom rarity did not make component italic"
-                ))
+                        style.isItalic(), "custom rarity did not make component italic"))
                 .thenExecute(style -> helper.assertTrue(
-                        style.getColor().getValue() == ChatFormatting.DARK_AQUA.getColor(), "custom rarity did not make component italic"
-                ))
+                        style.getColor().getValue() == ChatFormatting.DARK_AQUA.getColor(), "custom rarity did not make component italic"))
                 .thenSucceed());
     }
 }

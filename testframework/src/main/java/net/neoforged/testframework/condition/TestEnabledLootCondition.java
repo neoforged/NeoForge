@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.condition;
 
 import com.mojang.serialization.Codec;
@@ -11,10 +16,10 @@ import net.neoforged.testframework.impl.TestFrameworkInternal;
 import net.neoforged.testframework.impl.TestFrameworkMod;
 
 public record TestEnabledLootCondition(TestFramework framework, String testId) implements LootItemCondition {
+
     public static final Codec<TestEnabledLootCondition> CODEC = RecordCodecBuilder.create(in -> in.group(
             TestFrameworkInternal.REFERENCE_CODEC.fieldOf("framework").forGetter(TestEnabledLootCondition::framework),
-            Codec.STRING.fieldOf("test").forGetter(TestEnabledLootCondition::testId)
-    ).apply(in, TestEnabledLootCondition::new));
+            Codec.STRING.fieldOf("test").forGetter(TestEnabledLootCondition::testId)).apply(in, TestEnabledLootCondition::new));
 
     public TestEnabledLootCondition(DynamicTest test) {
         this(test.framework(), test.id());

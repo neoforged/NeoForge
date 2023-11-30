@@ -1,8 +1,9 @@
-package net.neoforged.neoforge.gametest;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
-import com.google.common.base.Suppliers;
-import net.minecraft.gametest.framework.GameTestInfo;
-import net.minecraft.gametest.framework.GameTestSequence;
+package net.neoforged.neoforge.gametest;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
@@ -10,11 +11,14 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.gametest.framework.GameTestInfo;
+import net.minecraft.gametest.framework.GameTestSequence;
 
 public class ParametrizedGameTestSequence<T> {
     private final GameTestInfo info;
     private final GameTestSequence sequence;
     private final Supplier<T> value;
+
     public ParametrizedGameTestSequence(GameTestInfo info, GameTestSequence sequence, Supplier<T> value) {
         this.info = info;
         this.sequence = sequence;

@@ -14,9 +14,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.impl.reg.RegistrationHelperImpl;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A helper for registration in tests.

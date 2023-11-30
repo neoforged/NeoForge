@@ -9,6 +9,10 @@ import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
@@ -60,11 +64,6 @@ import net.neoforged.testframework.condition.TestEnabledLootCondition;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @ForEachTest(groups = "loot", idPrefix = "glm_")
 public class GlobalLootModifiersTest {
@@ -159,10 +158,10 @@ public class GlobalLootModifiersTest {
      */
     private static class WheatSeedsConverterModifier extends LootModifier {
         public static final Supplier<Codec<WheatSeedsConverterModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(inst -> codecStart(inst).and(
-                        inst.group(
-                                Codec.INT.fieldOf("numSeeds").forGetter(m -> m.numSeedsToConvert),
-                                BuiltInRegistries.ITEM.byNameCodec().fieldOf("seedItem").forGetter(m -> m.itemToCheck),
-                                BuiltInRegistries.ITEM.byNameCodec().fieldOf("replacement").forGetter(m -> m.itemReward)))
+                inst.group(
+                        Codec.INT.fieldOf("numSeeds").forGetter(m -> m.numSeedsToConvert),
+                        BuiltInRegistries.ITEM.byNameCodec().fieldOf("seedItem").forGetter(m -> m.itemToCheck),
+                        BuiltInRegistries.ITEM.byNameCodec().fieldOf("replacement").forGetter(m -> m.itemReward)))
                 .apply(inst, WheatSeedsConverterModifier::new)));
 
         private final int numSeedsToConvert;
@@ -251,18 +250,16 @@ public class GlobalLootModifiersTest {
                 .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, Items.DIAMOND_PICKAXE.getDefaultInstance()))
                 .thenExecute(player -> player.getItemInHand(InteractionHand.MAIN_HAND).enchant(SMELT.get(), 1))
 
-                .thenSequence((sq, player) ->
-                        sq.thenMap(() -> new BlockPos(1, 2, 1))
-                                .thenExecute(pos -> helper.setBlock(pos, Blocks.IRON_ORE))
-                                .thenExecute(pos -> player.get().gameMode.destroyBlock(helper.absolutePos(pos)))
-                                .thenIdle(5))
+                .thenSequence((sq, player) -> sq.thenMap(() -> new BlockPos(1, 2, 1))
+                        .thenExecute(pos -> helper.setBlock(pos, Blocks.IRON_ORE))
+                        .thenExecute(pos -> player.get().gameMode.destroyBlock(helper.absolutePos(pos)))
+                        .thenIdle(5))
 
                 .thenIdle(5)
-                .thenSequence((sq, player) ->
-                        sq.thenMap(() -> new BlockPos(1, 3, 1))
-                                .thenExecute(pos -> helper.setBlock(pos, Blocks.EMERALD_BLOCK))
-                                .thenExecute(pos -> player.get().gameMode.destroyBlock(helper.absolutePos(pos)))
-                                .thenIdle(5))
+                .thenSequence((sq, player) -> sq.thenMap(() -> new BlockPos(1, 3, 1))
+                        .thenExecute(pos -> helper.setBlock(pos, Blocks.EMERALD_BLOCK))
+                        .thenExecute(pos -> player.get().gameMode.destroyBlock(helper.absolutePos(pos)))
+                        .thenIdle(5))
 
                 .thenIdle(5)
                 .thenMap(() -> new BlockPos(1, 2, 1))
@@ -325,15 +322,14 @@ public class GlobalLootModifiersTest {
 
                 .thenMapToSequence(stacks -> helper
                         .startSequence(() -> helper.getLevel().getServer().getLootData().getLootTable(new ResourceLocation("chests/simple_dungeon"))
-                        .getRandomItems(new LootParams.Builder(helper.getLevel())
-                                .withParameter(LootContextParams.ORIGIN, helper.absoluteVec(new Vec3(1, 3, 1)))
-                                .create(LootContextParamSets.CHEST), 124424))
+                                .getRandomItems(new LootParams.Builder(helper.getLevel())
+                                        .withParameter(LootContextParams.ORIGIN, helper.absoluteVec(new Vec3(1, 3, 1)))
+                                        .create(LootContextParamSets.CHEST), 124424))
                         .thenMap(base -> base.stream()
                                 .collect(Collectors.toMap(ItemStack::getItem, stack -> Math.min(stack.getMaxStackSize(), stack.getCount() * 2))))
                         .thenExecute(expected -> helper.assertTrue(
                                 stacks.get().equals(expected),
-                                "Stacks weren't as expected"
-                        )))
+                                "Stacks weren't as expected")))
                 .thenSucceed());
     }
 }

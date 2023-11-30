@@ -16,7 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
@@ -26,7 +25,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelProvider;
@@ -35,7 +33,6 @@ import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.registration.DeferredBlocks;
 import net.neoforged.testframework.registration.DeferredEntityTypes;
 import net.neoforged.testframework.registration.DeferredItems;
@@ -156,6 +153,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     private IEventBus bus;
+
     @Override
     public void register(IEventBus bus) {
         this.bus = bus;
@@ -165,6 +163,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     private final List<Consumer<? extends Event>> listeners = new ArrayList<>();
+
     @Override
     public Consumer<Consumer<? extends Event>> eventListeners() {
         return bus == null ? listeners::add : bus::addListener;

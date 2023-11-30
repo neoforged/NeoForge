@@ -1,6 +1,14 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.gametest;
 
 import com.mojang.authlib.GameProfile;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
@@ -14,12 +22,9 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.EntityItemPickupEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
 public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     private final GameTestHelper helper;
+
     public GameTestPlayer(MinecraftServer server, ServerLevel level, GameProfile profile, ClientInformation information, GameTestHelper helper) {
         super(server, level, profile, information);
         this.helper = helper;
@@ -58,10 +63,12 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     }
 
     private final List<Consumer<? extends Event>> listeners = new ArrayList<>();
+
     public void subscribe(Consumer<? extends Event> listener) {
         this.listeners.add(listener);
         NeoForge.EVENT_BUS.addListener(listener);
     }
+
     private void disconnectGameTest() {
         connection.disconnect(Component.literal("Test finished"));
         this.listeners.forEach(NeoForge.EVENT_BUS::unregister);

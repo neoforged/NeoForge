@@ -6,12 +6,11 @@
 package net.neoforged.testframework.impl;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.ParametersAreNonnullByDefault;
-
-import com.mojang.serialization.Codec;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ClickEvent;
@@ -39,8 +38,7 @@ public interface TestFrameworkInternal extends TestFramework {
                     .filter(testFramework -> testFramework.id().equals(rl))
                     .findFirst()
                     .orElseThrow(),
-            TestFramework::id
-    );
+            TestFramework::id);
 
     FrameworkConfiguration configuration();
 

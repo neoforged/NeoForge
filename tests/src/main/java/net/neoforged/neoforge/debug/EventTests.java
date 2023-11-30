@@ -1,5 +1,11 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug;
 
+import java.util.function.Consumer;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -10,8 +16,6 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
-
-import java.util.function.Consumer;
 
 @ForEachTest(groups = EventTests.GROUP)
 public class EventTests {
@@ -41,8 +45,7 @@ public class EventTests {
                         p -> p.getInventory().getItem(0),
                         "item at index 0",
                         Items.ACACIA_FENCE.getDefaultInstance(),
-                        ItemStack::isSameItem
-                ))
+                        ItemStack::isSameItem))
                 .thenSucceed());
     }
 }
