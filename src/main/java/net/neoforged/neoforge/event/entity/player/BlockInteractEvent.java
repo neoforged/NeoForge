@@ -24,14 +24,12 @@ import net.neoforged.neoforge.common.extensions.IItemExtension;
  * then the normal interaction behavior for that phase will not run,
  * and the specified {@link InteractionResult} will be returned instead.</p>
  */
-public class BlockInteractEvent extends PlayerInteractEvent implements ICancellableEvent
-{
+public class BlockInteractEvent extends PlayerInteractEvent implements ICancellableEvent {
     private final UseOnContext context;
     private final UsePhase usePhase;
     private InteractionResult cancellationResult = InteractionResult.PASS;
 
-    public BlockInteractEvent(UseOnContext context, UsePhase usePhase)
-    {
+    public BlockInteractEvent(UseOnContext context, UsePhase usePhase) {
         super(context.getPlayer(), context.getHand(), context.getClickedPos(), context.getClickedFace());
         this.context = context;
         this.usePhase = usePhase;
@@ -40,16 +38,14 @@ public class BlockInteractEvent extends PlayerInteractEvent implements ICancella
     /**
      * @return context
      */
-    public UseOnContext getUseOnContext()
-    {
+    public UseOnContext getUseOnContext() {
         return this.context;
     }
 
     /**
      * @return The Use Phase of the interaction, see {@link UsePhase} for semantics
      */
-    public UsePhase getUsePhase()
-    {
+    public UsePhase getUsePhase() {
         return this.usePhase;
     }
 
@@ -60,33 +56,30 @@ public class BlockInteractEvent extends PlayerInteractEvent implements ICancella
      * <p>Invoke this if you intend to prevent the default interaction behavior and replace it with your own.</p>
      *
      * @param result The interaction result to return to the interaction logic.
-     * <ul>
-     * <li>SUCCESS, CONSUME, CONSUME_PARTIAL, and FAIL will prevent further types of interaction attempts
-     * when provided from the ITEM_BEFORE_BLOCK phase.
-     * <li>SUCCESS, CONSUME, and CONSUME_PARTIAL will trigger advancements on the server (except in the ITEM_BEFORE_BLOCK phase),
-     * and will also prevent the ITEM_AFTER_BLOCK item interaction from occurring if provided during the BLOCK phase.
-     * <li>SUCCESS will trigger the arm-swinging mechanic.
-     * <li>PASS will always allow proceeding to the next phase.
-     * </ul>
+     *               <ul>
+     *               <li>SUCCESS, CONSUME, CONSUME_PARTIAL, and FAIL will prevent further types of interaction attempts
+     *               when provided from the ITEM_BEFORE_BLOCK phase.
+     *               <li>SUCCESS, CONSUME, and CONSUME_PARTIAL will trigger advancements on the server (except in the ITEM_BEFORE_BLOCK phase),
+     *               and will also prevent the ITEM_AFTER_BLOCK item interaction from occurring if provided during the BLOCK phase.
+     *               <li>SUCCESS will trigger the arm-swinging mechanic.
+     *               <li>PASS will always allow proceeding to the next phase.
+     *               </ul>
      */
-    public void cancelWithResult(InteractionResult result)
-    {
+    public void cancelWithResult(InteractionResult result) {
         this.cancellationResult = result;
         this.setCanceled(true);
     }
 
     /**
      * @return The result that the canceller cancelled this event with.<br>
-     * Not meaningful unless and until this event has been cancelled; intended to be
-     * used by the event firer.
+     *         Not meaningful unless and until this event has been cancelled; intended to be
+     *         used by the event firer.
      */
-    public InteractionResult getCancellationResult()
-    {
+    public InteractionResult getCancellationResult() {
         return this.cancellationResult;
     }
 
-    public static enum UsePhase
-    {
+    public static enum UsePhase {
         /**
          * The item's pre-block use-item-on-block interaction (this is a modding extension and not used by vanilla items).
          * This is noop/PASS for most items, but some mods' items have interactions here.

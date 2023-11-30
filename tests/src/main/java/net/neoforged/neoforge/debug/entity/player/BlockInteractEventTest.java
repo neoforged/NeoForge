@@ -30,33 +30,26 @@ import org.slf4j.Logger;
  * prevent the placement (but will not prevent opening the chest when not sneaking).
  */
 @Mod(BlockInteractEventTest.MODID)
-public class BlockInteractEventTest
-{
+public class BlockInteractEventTest {
     public static final String MODID = "block_interact_event_test";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public BlockInteractEventTest()
-    {
+    public BlockInteractEventTest() {
         NeoForge.EVENT_BUS.addListener(this::onUseItemOnBlock);
     }
 
-    private void onUseItemOnBlock(BlockInteractEvent event)
-    {
+    private void onUseItemOnBlock(BlockInteractEvent event) {
         UseOnContext context = event.getUseOnContext();
         Level level = context.getLevel();
         LOGGER.info("phase={}; hand={}; isClient={}", event.getUsePhase(), event.getUseOnContext().getHand(), level.isClientSide);
         // cancel item logic if dirt is placed on top of grass
-        if (event.getUsePhase() == BlockInteractEvent.UsePhase.ITEM_AFTER_BLOCK)
-        {
+        if (event.getUsePhase() == BlockInteractEvent.UsePhase.ITEM_AFTER_BLOCK) {
             ItemStack stack = context.getItemInHand();
             Item item = stack.getItem();
-            if (item instanceof BlockItem blockItem && blockItem.getBlock() == Blocks.DIRT)
-            {
+            if (item instanceof BlockItem blockItem && blockItem.getBlock() == Blocks.DIRT) {
                 BlockPos placePos = context.getClickedPos().relative(context.getClickedFace());
-                if (level.getBlockState(placePos.below()).getBlock() == Blocks.DISPENSER)
-                {
-                    if (!level.isClientSide)
-                    {
+                if (level.getBlockState(placePos.below()).getBlock() == Blocks.DISPENSER) {
+                    if (!level.isClientSide) {
                         context.getPlayer().displayClientMessage(Component.literal("Can't place dirt on dispenser"), false);
                     }
                     event.cancelWithResult(InteractionResult.SUCCESS);
