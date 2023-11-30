@@ -30,20 +30,16 @@ public class LivingEntityEventTests {
             test.pass();
         });
 
-        test.onGameTest(helper -> {
-            final Allay allay = helper.spawnWithNoFreeWill(EntityType.ALLAY, 1, 2, 1);
-            allay.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.ACACIA_BOAT));
-            allay.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.APPLE));
+        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.ALLAY, 1, 2, 1))
+                .thenExecute(allay -> allay.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.ACACIA_BOAT)))
+                .thenExecute(allay -> allay.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.APPLE)))
 
-            allay.handleEntityEvent((byte) 55);
+                .thenExecute(allay -> allay.handleEntityEvent((byte) 55))
 
-            helper.assertEntityProperty(allay, p -> p.getItemInHand(InteractionHand.MAIN_HAND), "main hand item", new ItemStack(Items.CHEST), ItemStack::isSameItem);
-            helper.assertEntityProperty(allay, p -> p.getItemInHand(InteractionHand.OFF_HAND), "off-hand item", new ItemStack(Items.ACACIA_BOAT), ItemStack::isSameItem);
+                .thenExecute(allay -> helper.assertEntityProperty(allay, p -> p.getItemInHand(InteractionHand.MAIN_HAND), "main hand item", new ItemStack(Items.CHEST), ItemStack::isSameItem))
+                .thenExecute(allay -> helper.assertEntityProperty(allay, p -> p.getItemInHand(InteractionHand.OFF_HAND), "off-hand item", new ItemStack(Items.ACACIA_BOAT), ItemStack::isSameItem))
 
-            helper.runAfterDelay(5, () -> {
-                helper.killAllEntitiesOfClass(Allay.class);
-                helper.succeed();
-            });
-        });
+                .thenExecuteAfter(5, () -> helper.killAllEntitiesOfClass(Allay.class))
+                .thenSucceed());
     }
 }

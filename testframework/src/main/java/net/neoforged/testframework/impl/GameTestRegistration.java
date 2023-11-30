@@ -57,6 +57,7 @@ public final class GameTestRegistration {
 
                                     @Override
                                     public void testFailed(GameTestInfo info) {
+                                        framework.changeStatus(test, new Test.Status(Test.Result.FAILED, "GameTest fail: " + info.getError().getMessage()), null);
                                         disable();
                                     }
 

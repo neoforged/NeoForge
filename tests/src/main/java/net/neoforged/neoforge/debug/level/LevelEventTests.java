@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -47,16 +48,12 @@ public class LevelEventTests {
             test.pass();
         });
 
-        test.onGameTest(helper -> {
-            final Player player = helper.makeMockPlayer();
-
-            helper.startSequence()
-                    .thenExecute(() -> helper.setBlock(4, 1, 4, Blocks.DIRT))
-                    .thenExecute(() -> helper.setBlock(4, 2, 4, Blocks.SPRUCE_SAPLING))
-                    .thenExecuteFor(10, () -> helper.useOn(new BlockPos(4, 2, 4), Items.BONE_MEAL.getDefaultInstance(), player, Direction.UP))
-                    .thenExecute(() -> helper.assertBlockPresent(Blocks.BIRCH_LOG, 4, 2, 4))
-                    .thenSucceed();
-        });
+        test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
+                .thenExecute(() -> helper.setBlock(4, 1, 4, Blocks.DIRT))
+                .thenExecute(() -> helper.setBlock(4, 2, 4, Blocks.SPRUCE_SAPLING))
+                .thenExecuteFor(20, player -> helper.useOn(new BlockPos(4, 2, 4), Items.BONE_MEAL.getDefaultInstance(), player, Direction.UP))
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.BIRCH_LOG, 4, 2, 4))
+                .thenSucceed());
     }
 
     @GameTest
@@ -77,22 +74,18 @@ public class LevelEventTests {
             });
         });
 
-        test.onGameTest(helper -> {
-            final Player player = helper.makeMockPlayer();
-
-            helper.startSequence()
-                    .thenExecuteFor(5, () -> helper.useOn(new BlockPos(4, 2, 4), Items.BONE_MEAL.getDefaultInstance(), player, Direction.UP))
-                    .thenExecute(() -> helper.assertTrue(
-                            helper.blocksBetween(0, 0, 0, 10, 1, 10)
-                                    .filter(pos -> helper.getLevel().getBlockState(pos).is(Blocks.REDSTONE_BLOCK))
-                                    .count() > 20,
-                            "Not enough redstone blocks have been placed!"))
-                    .thenExecute(() -> helper.assertTrue(
-                            helper.blocksBetween(0, 0, 0, 10, 1, 10)
-                                    .noneMatch(pos -> helper.getLevel().getBlockState(pos).is(Blocks.PODZOL)),
-                            "Podzol was still placed!"))
-                    .thenSucceed();
-        });
+        test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
+                .thenExecuteFor(5, player -> helper.useOn(new BlockPos(4, 2, 4), Items.BONE_MEAL.getDefaultInstance(), player, Direction.UP))
+                .thenExecute(player -> helper.assertTrue(
+                        helper.blocksBetween(0, 0, 0, 10, 1, 10)
+                                .filter(pos -> helper.getLevel().getBlockState(pos).is(Blocks.REDSTONE_BLOCK))
+                                .count() > 10,
+                        "Not enough redstone blocks have been placed!"))
+                .thenExecute(player -> helper.assertTrue(
+                        helper.blocksBetween(0, 0, 0, 10, 1, 10)
+                                .noneMatch(pos -> helper.getLevel().getBlockState(pos).is(Blocks.PODZOL)),
+                        "Podzol was still placed!"))
+                .thenSucceed());
     }
 
     /**
@@ -110,40 +103,38 @@ public class LevelEventTests {
             }
         });
 
-        test.onGameTest(helper -> {
-            final Sheep sheep = helper.spawnWithNoFreeWill(EntityType.SHEEP, new BlockPos(1, 2, 1));
-            sheep.setColor(DyeColor.BLACK);
-            sheep.setSheared(false);
+        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.SHEEP, new BlockPos(1, 2, 1)))
+                .thenExecute(sheep -> sheep.setColor(DyeColor.BLACK))
+                .thenExecute(sheep -> sheep.setSheared(false))
 
-            // Prepare a dispenser to shear the sheep in the second phase
-            helper.setBlock(1, 1, 1, Blocks.DISPENSER.defaultBlockState().setValue(DispenserBlock.FACING, Direction.UP));
-            helper.requireBlockEntity(1, 1, 1, DispenserBlockEntity.class).setItem(0, Items.SHEARS.getDefaultInstance());
+                // Prepare a dispenser to shear the sheep in the second phase
+                .thenSequence(sequence -> sequence
+                        .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.DISPENSER.defaultBlockState().setValue(DispenserBlock.FACING, Direction.UP)))
+                        .thenMap(() -> helper.requireBlockEntity(1, 1, 1, DispenserBlockEntity.class))
+                        .thenExecute(dispenser -> dispenser.setItem(1, Items.SHEARS.getDefaultInstance())))
 
-            helper.startSequence()
-                    .thenIdle(5)
-                    .thenExecute(() -> Items.SHEARS.getDefaultInstance().interactLivingEntity(
-                            helper.makeMockPlayer(), sheep, InteractionHand.MAIN_HAND)) // Make a player shear the sheep
-                    .thenExecute(() -> helper.assertItemEntityPresent(Items.BLACK_WOOL, new BlockPos(1, 2, 1), 2)) // Make sure wool was dropped
-                    .thenExecute(() -> helper.assertEntityProperty(sheep, Sheep::getHealth, "health", 8f - 3f)) // player did it, so hurt by 3
+                .thenIdle(5)
+                .thenExecute(sheep -> Items.SHEARS.getDefaultInstance().interactLivingEntity(
+                        helper.makeMockPlayer(), sheep, InteractionHand.MAIN_HAND)) // Make a player shear the sheep
+                .thenExecute(() -> helper.assertItemEntityPresent(Items.BLACK_WOOL, new BlockPos(1, 2, 1), 2)) // Make sure wool was dropped
+                .thenExecute(sheep -> helper.assertEntityProperty(sheep, Sheep::getHealth, "health", 8f - 3f)) // player did it, so hurt by 3
 
-                    .thenExecuteAfter(5, () -> {
-                        // Prepare the sheep; reset its color and its state
-                        sheep.setColor(DyeColor.BLUE);
-                        sheep.setSheared(false);
-                    })
-                    .thenIdle(5)
+                .thenExecuteAfter(5, sheep -> {
+                    // Prepare the sheep; reset its color and its state
+                    sheep.setColor(DyeColor.BLUE);
+                    sheep.setSheared(false);
+                })
+                .thenIdle(5)
 
-                    // Power the dispenser
-                    .thenExecute(() -> helper.setBlock(2, 1, 1, Blocks.REDSTONE_BLOCK))
-                    .thenIdle(1)
-                    .thenExecute(() -> helper.assertItemEntityPresent(Items.BLUE_WOOL, new BlockPos(1, 2, 1), 2)) // Make sure wool was dropped
-                    .thenExecute(() -> helper.assertEntityProperty(sheep, Sheep::getHealth, "health", (8f - 3f) - 1f)) // dispenser did it, so hurt by 1
+                // Power the dispenser
+                .thenExecute(() -> helper.setBlock(2, 1, 1, Blocks.REDSTONE_BLOCK))
+                .thenIdle(5)
+                .thenExecute(() -> helper.assertItemEntityPresent(Items.BLUE_WOOL, new BlockPos(1, 2, 1), 2)) // Make sure wool was dropped
+                .thenExecute(sheep -> helper.assertEntityProperty(sheep, Sheep::getHealth, "health", (8f - 3f) - 1f)) // dispenser did it, so hurt by 1
 
-                    .thenIdle(5)
-                    .thenExecute(() -> helper.killAllEntitiesOfClass(Sheep.class))
-                    .thenExecute(() -> helper.killAllEntitiesOfClass(ItemEntity.class))
+                .thenIdle(5)
+                .thenExecute(() -> helper.killAllEntitiesOfClass(Sheep.class, ItemEntity.class))
 
-                    .thenSucceed();
-        });
+                .thenSucceed());
     }
 }

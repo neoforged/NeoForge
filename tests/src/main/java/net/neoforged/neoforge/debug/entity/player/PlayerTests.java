@@ -41,13 +41,9 @@ public class PlayerTests {
         final var sword = reg.items().register("knockback_sword", () -> new KnockbackSwordItem(Tiers.IRON, 3, -2.4F, 2, new Item.Properties()))
                 .withLang("Knockback Sword");
 
-        test.onGameTest(helper -> helper.startSequence()
-                .thenExecute(() -> {
-                    final Pig pig = helper.spawnWithNoFreeWill(EntityType.PIG, 3, 2, 3);
-                    final Player player = helper.makeMockPlayer();
-                    player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(sword.get()));
-                    player.attack(pig);
-                })
+        test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
+                .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(sword.get())))
+                .thenExecute(player -> player.attack(helper.spawnWithNoFreeWill(EntityType.PIG, 3, 2, 3)))
                 .thenExecuteAfter(3, () -> helper.assertEntityPresent(EntityType.PIG, new BlockPos(3, 2, 4), 0.5))
                 .thenExecuteAfter(2, () -> helper.killAllEntitiesOfClass(Pig.class))
                 .thenSucceed());

@@ -10,6 +10,7 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import java.util.UUID;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -27,6 +28,7 @@ import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -36,6 +38,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.gametest.ParametrizedGameTestSequence;
 import org.jetbrains.annotations.Nullable;
 
 public interface IGameTestHelperExtension {
@@ -158,5 +161,15 @@ public interface IGameTestHelperExtension {
 
     default <T extends BlockEntity> T requireBlockEntity(int x, int y, int z, Class<T> type) {
         return requireBlockEntity(new BlockPos(x, y, z), type);
+    }
+
+    default <T> ParametrizedGameTestSequence<T> startSequence(Supplier<T> value) {
+        return new ParametrizedGameTestSequence<>(self().testInfo, self().startSequence(), value);
+    }
+
+    default void killAllEntitiesOfClass(Class<?>... types) {
+        for (Class<?> type : types) {
+            self().killAllEntitiesOfClass(type);
+        }
     }
 }

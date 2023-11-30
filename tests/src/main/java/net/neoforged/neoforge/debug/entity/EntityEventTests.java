@@ -34,17 +34,18 @@ public class EntityEventTests {
         });
 
         test.onGameTest(helper -> helper.startSequence()
-                .thenExecute(() -> {
-                    final Pig pig = helper.spawnWithNoFreeWill(EntityType.PIG, 7, 2, 7);
-                    new ItemStack(Items.CHORUS_FRUIT).finishUsingItem(helper.getLevel(), pig);
-                    helper.assertEntityPresent(EntityType.PIG, 7, 2, 7);
-                })
+                .thenSequence(seq -> seq
+                        .thenMap(() -> helper.spawnWithNoFreeWill(EntityType.PIG, 7, 2, 7))
+                        .thenExecute(pig -> new ItemStack(Items.CHORUS_FRUIT).finishUsingItem(helper.getLevel(), pig))
+                        .thenExecute(() -> helper.assertEntityPresent(EntityType.PIG, 7, 2, 7)))
+
                 .thenIdle(10)
-                .thenExecute(() -> {
-                    final Cow cow = helper.spawnWithNoFreeWill(EntityType.COW, 7, 2, 7);
-                    new ItemStack(Items.CHORUS_FRUIT).finishUsingItem(helper.getLevel(), cow);
-                    helper.assertEntityNotPresent(EntityType.COW, 7, 2, 7);
-                })
+
+                .thenSequence(seq -> seq
+                        .thenMap(() -> helper.spawnWithNoFreeWill(EntityType.COW, 7, 2, 7))
+                        .thenExecute(cow -> new ItemStack(Items.CHORUS_FRUIT).finishUsingItem(helper.getLevel(), cow))
+                        .thenExecute(() -> helper.assertEntityNotPresent(EntityType.COW, 7, 2, 7)))
+
                 .thenIdle(10)
                 .thenExecute(helper::killAllEntities)
                 .thenSucceed());
