@@ -2,20 +2,20 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "I": {
-      "tag": "forge:ingots/iron"
+    "#": {
+      "item": "minecraft:soul_torch"
     },
-    "N": {
+    "X": {
       "tag": "forge:nuggets/iron"
     }
   },
   "pattern": [
-    "N",
-    "I",
-    "N"
+    "XXX",
+    "X#X",
+    "XXX"
   ],
   "result": {
-    "item": "minecraft:chain"
+    "item": "minecraft:soul_lantern"
   },
   "show_notification": true
 }

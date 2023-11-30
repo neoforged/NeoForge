@@ -1,21 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
+  "group": "iron_ingot",
   "key": {
-    "I": {
-      "tag": "forge:ingots/iron"
-    },
-    "N": {
+    "#": {
       "tag": "forge:nuggets/iron"
     }
   },
   "pattern": [
-    "N",
-    "I",
-    "N"
+    "###",
+    "###",
+    "###"
   ],
   "result": {
-    "item": "minecraft:chain"
+    "item": "minecraft:iron_ingot"
   },
   "show_notification": true
 }

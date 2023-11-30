@@ -1,6 +1,6 @@
 {
   "parent": "block/block",
-  "loader": "minecraft:elements",
+  "loader": "neoforge:elements",
   "display": {
     "firstperson_righthand": {
       "rotation": [ 0, 135, 0 ],
