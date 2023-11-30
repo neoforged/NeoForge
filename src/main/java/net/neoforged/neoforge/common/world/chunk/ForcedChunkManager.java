@@ -124,18 +124,22 @@ public class ForcedChunkManager {
      * @apiNote Internal
      */
     public static void reinstatePersistentChunks(ServerLevel level, ForcedChunksSavedData saveData) {
-        if (controllers.values().stream().anyMatch(controller -> controller.callback() != LoadingValidationCallback.NOOP)) {
+        final var controllers = ForcedChunkManager.controllers.entrySet().stream()
+                .filter(c -> c.getValue().callback() != null)
+                .toList();
+
+        if (!controllers.isEmpty()) {
             //If we have any callbacks, gather all owned tickets by controller for both blocks and entities
             final Map<ResourceLocation, Map<BlockPos, TicketSet>> blockTickets = gatherTicketsById(saveData.getBlockForcedChunks());
             final Map<ResourceLocation, Map<UUID, TicketSet>> entityTickets = gatherTicketsById(saveData.getEntityForcedChunks());
             //Fire the callbacks allowing them to remove any tickets they don't want anymore
-            controllers.forEach((id, controller) -> {
-                boolean hasBlockTicket = blockTickets.containsKey(id);
-                boolean hasEntityTicket = entityTickets.containsKey(id);
+            controllers.forEach((value) -> {
+                boolean hasBlockTicket = blockTickets.containsKey(value.getKey());
+                boolean hasEntityTicket = entityTickets.containsKey(value.getKey());
                 if (hasBlockTicket || hasEntityTicket) {
-                    Map<BlockPos, TicketSet> ownedBlockTickets = hasBlockTicket ? Collections.unmodifiableMap(blockTickets.get(id)) : Collections.emptyMap();
-                    Map<UUID, TicketSet> ownedEntityTickets = hasEntityTicket ? Collections.unmodifiableMap(entityTickets.get(id)) : Collections.emptyMap();
-                    controller.callback().validateTickets(level, new TicketHelper(saveData, id, ownedBlockTickets, ownedEntityTickets));
+                    Map<BlockPos, TicketSet> ownedBlockTickets = hasBlockTicket ? Collections.unmodifiableMap(blockTickets.get(value.getKey())) : Collections.emptyMap();
+                    Map<UUID, TicketSet> ownedEntityTickets = hasEntityTicket ? Collections.unmodifiableMap(entityTickets.get(value.getKey())) : Collections.emptyMap();
+                    value.getValue().callback().validateTickets(level, new TicketHelper(saveData, value.getKey(), ownedBlockTickets, ownedEntityTickets));
                 }
             });
         }

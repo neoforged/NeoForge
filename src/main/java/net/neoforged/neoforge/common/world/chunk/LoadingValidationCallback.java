@@ -9,8 +9,6 @@ import net.minecraft.server.level.ServerLevel;
 
 @FunctionalInterface
 public interface LoadingValidationCallback {
-    LoadingValidationCallback NOOP = (level, ticketHelper) -> {};
-
     /**
      * Called back when tickets are about to be loaded and reinstated to allow mods to invalidate and remove specific tickets that may no longer be valid.
      *
