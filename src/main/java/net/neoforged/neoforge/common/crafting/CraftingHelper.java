@@ -11,9 +11,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import java.util.function.Function;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipeCodecs;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -65,6 +67,30 @@ public class CraftingHelper {
             throw new UnsupportedOperationException("Empty recipe has no type");
         }
     };
+
+    @ApiStatus.Internal
+    public static Codec<ItemStack> smeltingResultCodec() {
+        return ExtraCodecs
+                .either(
+                        BuiltInRegistries.ITEM.byNameCodec(),
+                        CraftingRecipeCodecs.ITEMSTACK_OBJECT_CODEC)
+                .xmap(
+                        either -> either.map(ItemStack::new, Function.identity()),
+                        stack -> {
+                            if (stack.getCount() != 1) {
+                                return Either.right(stack);
+                            }
+
+                            // Check if not writing the NBT would still give the correct item.
+                            // Just checking for tag != null is not enough: damageable items get a tag set in the stack constructor,
+                            // but we don't want to write it to the recipe file.
+                            if (ItemStack.matches(stack, new ItemStack(stack.getItem()))) {
+                                return Either.left(stack.getItem());
+                            } else {
+                                return Either.right(stack);
+                            }
+                        });
+    }
 
     @ApiStatus.Internal
     public static Codec<Ingredient> makeIngredientCodec(boolean allowEmpty, Codec<Ingredient> vanillaCodec) {
