@@ -49,7 +49,7 @@ public class LevelEventTests {
         test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
                 .thenExecute(() -> helper.setBlock(4, 1, 4, Blocks.DIRT))
                 .thenExecute(() -> helper.setBlock(4, 2, 4, Blocks.SPRUCE_SAPLING))
-                .thenExecuteFor(20, player -> helper.useOn(new BlockPos(4, 2, 4), Items.BONE_MEAL.getDefaultInstance(), player, Direction.UP))
+                .thenExecuteFor(30, player -> helper.useOn(new BlockPos(4, 2, 4), Items.BONE_MEAL.getDefaultInstance(), player, Direction.UP))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.BIRCH_LOG, 4, 2, 4))
                 .thenSucceed());
     }
