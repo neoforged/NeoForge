@@ -1,0 +1,8 @@
+{
+  "sources": [
+    {
+      "type": "custom_sprite_source_test:custom_sprite_source",
+      "id": "custom_sprite_source_test:test_item"
+    }
+  ]
+}

@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.client;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
@@ -74,6 +76,7 @@ import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
@@ -145,6 +148,7 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import net.neoforged.neoforge.client.event.RegisterSpriteSourceTypesEvent;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
 import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
@@ -1033,6 +1037,17 @@ public class ClientHooks {
             output.accept(entry.getKey(), entry.getValue());
     }
 
+    private static final BiMap<ResourceLocation, SpriteSourceType> SPRITE_SOURCE_TYPES_MAP = HashBiMap.create();
+
+    public static BiMap<ResourceLocation, SpriteSourceType> makeSpriteSourceTypesMap() {
+        return SPRITE_SOURCE_TYPES_MAP;
+    }
+
+    @ApiStatus.Internal
+    public static void registerSpriteSourceTypes() {
+        ModLoader.get().postEvent(new RegisterSpriteSourceTypesEvent(SPRITE_SOURCE_TYPES_MAP));
+    }
+
     // Make sure the below method is only ever called once (by forge).
     private static boolean initializedClientHooks = false;
 
@@ -1045,6 +1060,7 @@ public class ClientHooks {
         initializedClientHooks = true;
 
         GameTestHooks.registerGametests();
+        registerSpriteSourceTypes();
         ModLoader.get().postEvent(new RegisterClientReloadListenersEvent(resourceManager));
         ModLoader.get().postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
         ModLoader.get().postEvent(new EntityRenderersEvent.RegisterRenderers());
