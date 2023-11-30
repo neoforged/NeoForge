@@ -261,8 +261,8 @@ public abstract class AbstractTest implements Test {
 
         @Override
         public RegistrationHelper registrationHelper(String modId) {
-            final var helper = new RegistrationHelperImpl(framework, modId);
-            framework.modEventBus().register(helper);
+            final var helper = new RegistrationHelperImpl(modId);
+            helper.register(framework.modEventBus());
             return helper;
         }
 

@@ -10,9 +10,12 @@ import java.util.function.Function;
 import net.minecraft.core.Registry;
 import net.minecraft.data.DataProvider;
 import net.minecraft.resources.ResourceKey;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.testframework.TestFramework;
+import net.neoforged.testframework.impl.reg.RegistrationHelperImpl;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -48,6 +51,11 @@ public interface RegistrationHelper {
 
     <T extends DataProvider> void provider(Class<T> type, Consumer<T> consumer);
 
-    @ApiStatus.Internal
-    TestFramework framework();
+    Consumer<Consumer<? extends Event>> eventListeners();
+
+    void register(IEventBus bus);
+
+    static RegistrationHelper create(String modId) {
+        return new RegistrationHelperImpl(modId);
+    }
 }

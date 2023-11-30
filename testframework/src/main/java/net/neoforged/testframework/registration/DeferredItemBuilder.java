@@ -29,7 +29,7 @@ public class DeferredItemBuilder<I extends Item> extends DeferredItem<I> {
     }
 
     public DeferredItemBuilder<I> tab(ResourceKey<CreativeModeTab> tab) {
-        registrationHelper.framework().modEventBus().addListener((final BuildCreativeModeTabContentsEvent event) -> {
+        registrationHelper.eventListeners().accept((final BuildCreativeModeTabContentsEvent event) -> {
             if (event.getTabKey() == tab) {
                 event.accept(this);
             }

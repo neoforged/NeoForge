@@ -6,6 +6,9 @@
 package net.neoforged.neoforge.debug.item;
 
 import java.util.Map;
+import java.util.function.Supplier;
+
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -32,6 +35,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MobBucketItem;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -149,6 +153,25 @@ public class ItemTests {
                 .thenExecute(() -> helper.useBlock(new BlockPos(1, 1, 1), helper.makeMockPlayer(), egg.get().getDefaultInstance(), Direction.UP))
                 .thenExecuteAfter(10, () -> helper.assertEntityPresent(testEntity.get(), 1, 2, 1))
                 .thenExecute(() -> helper.killAllEntitiesOfClass(Pig.class))
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if custom rarities (with custom styles) work on items")
+    static void itemCustomRarity(final DynamicTest test, final RegistrationHelper reg) {
+        final Rarity rarity = Rarity.create(reg.modId() + "_CUSTOM", style -> style.withItalic(true).withColor(ChatFormatting.DARK_AQUA));
+        final Supplier<Item> item = reg.items().registerSimpleItem("test", new Item.Properties().rarity(rarity))
+                .withLang("Custom rarity test");
+
+        test.onGameTest(helper -> helper.startSequence(() -> item.get().getDefaultInstance())
+                .thenMap(stack -> stack.getDisplayName().getStyle())
+                .thenExecute(style -> helper.assertTrue(
+                        style.isItalic(), "custom rarity did not make component italic"
+                ))
+                .thenExecute(style -> helper.assertTrue(
+                        style.getColor().getValue() == ChatFormatting.DARK_AQUA.getColor(), "custom rarity did not make component italic"
+                ))
                 .thenSucceed());
     }
 }

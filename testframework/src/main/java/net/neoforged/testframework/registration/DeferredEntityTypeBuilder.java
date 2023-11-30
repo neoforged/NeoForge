@@ -29,13 +29,13 @@ public class DeferredEntityTypeBuilder<E extends Entity, T extends EntityType<E>
 
     public DeferredEntityTypeBuilder<E, T> withRenderer(Supplier<Function<EntityRendererProvider.Context, EntityRenderer<E>>> renderer) {
         if (FMLLoader.getDist().isClient()) {
-            helper.framework().modEventBus().addListener((final EntityRenderersEvent.RegisterRenderers event) -> event.registerEntityRenderer(value(), renderer.get()::apply));
+            helper.eventListeners().accept((final EntityRenderersEvent.RegisterRenderers event) -> event.registerEntityRenderer(value(), renderer.get()::apply));
         }
         return this;
     }
 
     public DeferredEntityTypeBuilder<E, T> withAttributes(Supplier<AttributeSupplier.Builder> attributes) {
-        helper.framework().modEventBus().addListener((final EntityAttributeCreationEvent event) -> event.put((EntityType) get(), attributes.get().build()));
+        helper.eventListeners().accept((final EntityAttributeCreationEvent event) -> event.put((EntityType) get(), attributes.get().build()));
         return this;
     }
 

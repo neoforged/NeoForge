@@ -7,6 +7,8 @@ package net.neoforged.neoforge.common.extensions;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.embedded.EmbeddedChannel;
+
+import java.util.List;
 import java.util.UUID;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -28,8 +30,11 @@ import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
@@ -38,6 +43,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.gametest.GameTestPlayer;
 import net.neoforged.neoforge.gametest.ParametrizedGameTestSequence;
 import org.jetbrains.annotations.Nullable;
 
@@ -77,27 +83,14 @@ public interface IGameTestHelperExtension {
         }
     }
 
-    default ServerPlayer makeTickingMockServerPlayerInCorner(GameType gameType) {
-        final ServerPlayer player = makeTickingMockServerPlayerInLevel(gameType);
-        player.moveTo(self().absoluteVec(new BlockPos(0, 1, 0).getCenter()).subtract(0, 0.5, 0));
-        return player;
+    default GameTestPlayer makeTickingMockServerPlayerInCorner(GameType gameType) {
+        return makeTickingMockServerPlayerInLevel(gameType).moveToCorner();
     }
 
-    default ServerPlayer makeTickingMockServerPlayerInLevel(GameType gameType) {
-        CommonListenerCookie commonlistenercookie = CommonListenerCookie.createInitial(new GameProfile(UUID.randomUUID(), "test-mock-player"));
-        ServerPlayer serverplayer = new ServerPlayer(
-                self().getLevel().getServer(), self().getLevel(), commonlistenercookie.gameProfile(), commonlistenercookie.clientInformation()) {
-            @Override
-            public boolean isSpectator() {
-                return gameType == GameType.SPECTATOR;
-            }
-
-            @Override
-            public boolean isCreative() {
-                return gameType == GameType.CREATIVE;
-            }
-        };
-        Connection connection = new Connection(PacketFlow.SERVERBOUND) {
+    default GameTestPlayer makeTickingMockServerPlayerInLevel(GameType gameType) {
+        final CommonListenerCookie commonlistenercookie = CommonListenerCookie.createInitial(new GameProfile(UUID.randomUUID(), "test-mock-player"));
+        final GameTestPlayer serverplayer = new GameTestPlayer(self().getLevel().getServer(), self().getLevel(), commonlistenercookie.gameProfile(), commonlistenercookie.clientInformation(), self());
+        final Connection connection = new Connection(PacketFlow.SERVERBOUND) {
             @Override
             public void tick() {
                 super.tick();
@@ -108,26 +101,8 @@ public interface IGameTestHelperExtension {
         embeddedchannel.attr(Connection.ATTRIBUTE_SERVERBOUND_PROTOCOL).set(ConnectionProtocol.PLAY.codec(PacketFlow.SERVERBOUND));
         self().getLevel().getServer().getPlayerList().placeNewPlayer(connection, serverplayer, commonlistenercookie);
         self().getLevel().getServer().getConnection().getConnections().add(connection);
-        self().testInfo.addListener(new GameTestListener() {
-            @Override
-            public void testStructureLoaded(GameTestInfo i) {
-
-            }
-
-            @Override
-            public void testPassed(GameTestInfo i) {
-                disconnect();
-            }
-
-            @Override
-            public void testFailed(GameTestInfo i) {
-                disconnect();
-            }
-
-            private void disconnect() {
-                connection.disconnect(Component.literal("test finished"));
-            }
-        });
+        self().testInfo.addListener(serverplayer);
+        serverplayer.gameMode.changeGameModeForPlayer(gameType);
         return serverplayer;
     }
 
@@ -170,6 +145,28 @@ public interface IGameTestHelperExtension {
     default void killAllEntitiesOfClass(Class<?>... types) {
         for (Class<?> type : types) {
             self().killAllEntitiesOfClass(type);
+        }
+    }
+
+    default void assertItemEntityCountIsAtLeast(Item item, BlockPos pos, double range, int lowerLimit) {
+        final BlockPos blockpos = self().absolutePos(pos);
+        final List<ItemEntity> list = self().getLevel().getEntities(EntityType.ITEM, new AABB(blockpos).inflate(range), Entity::isAlive);
+        int count = 0;
+
+        for (final ItemEntity itementity : list) {
+            ItemStack itemstack = itementity.getItem();
+            if (itemstack.is(item)) {
+                count += itemstack.getCount();
+            }
+        }
+
+        if (count < lowerLimit) {
+            throw new GameTestAssertPosException(
+                    "Expected at least " + lowerLimit + " " + item.getDescription().getString() + " items to exist (found " + count + ")",
+                    blockpos,
+                    pos,
+                    self().getTick()
+            );
         }
     }
 }

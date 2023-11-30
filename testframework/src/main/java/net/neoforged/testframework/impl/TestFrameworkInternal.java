@@ -10,9 +10,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import com.mojang.serialization.Codec;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.testframework.Test;
@@ -31,6 +34,14 @@ import org.jetbrains.annotations.ApiStatus;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public interface TestFrameworkInternal extends TestFramework {
+    Codec<TestFramework> REFERENCE_CODEC = ResourceLocation.CODEC.xmap(
+            rl -> TestFrameworkImpl.FRAMEWORKS.stream()
+                    .filter(testFramework -> testFramework.id().equals(rl))
+                    .findFirst()
+                    .orElseThrow(),
+            TestFramework::id
+    );
+
     FrameworkConfiguration configuration();
 
     void init(final IEventBus modBus, final ModContainer container);

@@ -64,8 +64,6 @@ modId="trsr_transformer_test"
 [[mods]]
 modId="nameplate_render_test"
 [[mods]]
-modId="global_loot_test"
-[[mods]]
 modId="custom_plant_type_test"
 [[mods]]
 modId="chunk_data_event_save_null_world_test"
@@ -134,8 +132,6 @@ modId="dimension_settings_test"
 [[mods]]
 modId="entity_renderer_events_test"
 [[mods]]
-modId="send_datapacks_to_client"
-[[mods]]
 modId="remove_tag_datagen_test"
 [[mods]]
 modId="tag_based_tool_types"
@@ -201,8 +197,6 @@ modId="server_world_creation_test"
 modId="valid_railshape_test"
 [[mods]]
 modId="player_negotiation_event_test"
-[[mods]]
-modId="custom_rarity_test"
 [[modsDisabled]]
 modId="data_pack_registries_test"
 [[mods]]

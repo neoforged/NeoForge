@@ -12,20 +12,26 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -36,10 +42,8 @@ import net.neoforged.testframework.registration.DeferredItems;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 public class RegistrationHelperImpl implements RegistrationHelper {
-    private final TestFramework framework;
 
-    public RegistrationHelperImpl(TestFramework framework, String modId) {
-        this.framework = framework;
+    public RegistrationHelperImpl(String modId) {
         this.modId = modId;
     }
 
@@ -76,6 +80,12 @@ public class RegistrationHelperImpl implements RegistrationHelper {
                 consumers.forEach(c -> c.accept(this));
             }
         });
+        reg.register(GlobalLootModifierProvider.class, (output, generator, existingFileHelper, modId, consumers) -> new GlobalLootModifierProvider(output, modId) {
+            @Override
+            protected void start() {
+                consumers.forEach(c -> c.accept(this));
+            }
+        });
 
         PROVIDERS = Map.copyOf(providers);
     }
@@ -83,12 +93,15 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     private final String modId;
     private final ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers = Multimaps.newListMultimap(new IdentityHashMap<>(), ArrayList::new);
     private final List<Function<GatherDataEvent, DataProvider>> directProviders = new ArrayList<>();
+    private final Map<ResourceKey<? extends Registry<?>>, DeferredRegister<?>> registrars = new ConcurrentHashMap<>();
 
     @Override
     public <T> DeferredRegister<T> registrar(ResourceKey<Registry<T>> registry) {
-        final var reg = DeferredRegister.create(registry, modId);
-        reg.register(framework.modEventBus());
-        return reg;
+        return (DeferredRegister<T>) registrars.computeIfAbsent(registry, k -> {
+            final var dr = DeferredRegister.create(registry, modId);
+            if (this.bus != null) dr.register(bus);
+            return dr;
+        });
     }
 
     private DeferredBlocks blocks;
@@ -97,7 +110,8 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     public DeferredBlocks blocks() {
         if (blocks == null) {
             blocks = new DeferredBlocks(modId, this);
-            blocks.register(framework.modEventBus());
+            registrars.put(Registries.BLOCK, blocks);
+            if (this.bus != null) blocks.register(bus);
         }
         return blocks;
     }
@@ -108,7 +122,8 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     public DeferredItems items() {
         if (items == null) {
             items = new DeferredItems(modId, this);
-            items.register(framework.modEventBus());
+            registrars.put(Registries.ITEM, items);
+            if (this.bus != null) items.register(bus);
         }
         return items;
     }
@@ -119,7 +134,8 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     public DeferredEntityTypes entityTypes() {
         if (entityTypes == null) {
             entityTypes = new DeferredEntityTypes(modId, this);
-            entityTypes.register(framework.modEventBus());
+            registrars.put(Registries.ENTITY_TYPE, entityTypes);
+            if (this.bus != null) entityTypes.register(bus);
         }
         return entityTypes;
     }
@@ -139,13 +155,22 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         directProviders.add(provider);
     }
 
+    private IEventBus bus;
     @Override
-    public TestFramework framework() {
-        return framework;
+    public void register(IEventBus bus) {
+        this.bus = bus;
+        bus.addListener(this::gather);
+        listeners.forEach(bus::addListener);
+        registrars.values().forEach(r -> r.register(bus));
     }
 
-    @SubscribeEvent
-    void gather(final GatherDataEvent event) {
+    private final List<Consumer<? extends Event>> listeners = new ArrayList<>();
+    @Override
+    public Consumer<Consumer<? extends Event>> eventListeners() {
+        return bus == null ? listeners::add : bus::addListener;
+    }
+
+    private void gather(final GatherDataEvent event) {
         providers.asMap().forEach((cls, cons) -> event.getGenerator().addProvider(true, PROVIDERS.get(cls).create(
                 event.getGenerator().getPackOutput(), event.getGenerator(), event.getExistingFileHelper(), modId, (List) cons)));
 

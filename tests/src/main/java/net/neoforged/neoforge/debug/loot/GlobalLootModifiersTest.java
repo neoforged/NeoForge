@@ -3,21 +3,22 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.oldtest.loot;
+package net.neoforged.neoforge.debug.loot;
 
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.PackOutput;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
@@ -29,7 +30,10 @@ import net.minecraft.world.item.enchantment.Enchantment.Rarity;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -38,35 +42,36 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.testframework.DynamicTest;
+import net.neoforged.testframework.TestFramework;
+import net.neoforged.testframework.annotation.ForEachTest;
+import net.neoforged.testframework.annotation.OnInit;
+import net.neoforged.testframework.annotation.TestHolder;
+import net.neoforged.testframework.condition.TestEnabledLootCondition;
+import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.NotNull;
 
-@Mod(GlobalLootModifiersTest.MODID)
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+@ForEachTest(groups = "loot", idPrefix = "glm_")
 public class GlobalLootModifiersTest {
-    public static final String MODID = "global_loot_test";
-    public static final boolean ENABLE = true;
+    public static final RegistrationHelper HELPER = RegistrationHelper.create("neotests_glm_test");
 
-    public GlobalLootModifiersTest() {
-        if (ENABLE) {
-            GLM.register(FMLJavaModLoadingContext.get().getModEventBus());
-            ENCHANTS.register(FMLJavaModLoadingContext.get().getModEventBus());
-        }
-    }
-
-    private static final DeferredRegister<Codec<? extends IGlobalLootModifier>> GLM = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MODID);
-    private static final DeferredRegister<Enchantment> ENCHANTS = DeferredRegister.create(BuiltInRegistries.ENCHANTMENT, MODID);
+    private static final DeferredRegister<Codec<? extends IGlobalLootModifier>> GLM = HELPER.registrar(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS);
+    private static final DeferredRegister<Enchantment> ENCHANTS = HELPER.registrar(Registries.ENCHANTMENT);
 
     private static final DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<DungeonLootEnhancerModifier>> DUNGEON_LOOT = GLM.register("dungeon_loot", DungeonLootEnhancerModifier.CODEC);
     private static final DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<SmeltingEnchantmentModifier>> SMELTING = GLM.register("smelting", SmeltingEnchantmentModifier.CODEC);
@@ -74,41 +79,9 @@ public class GlobalLootModifiersTest {
     private static final DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<SilkTouchTestModifier>> SILKTOUCH = GLM.register("silk_touch_bamboo", SilkTouchTestModifier.CODEC);
     private static final DeferredHolder<Enchantment, Enchantment> SMELT = ENCHANTS.register("smelt", () -> new SmelterEnchantment(Rarity.UNCOMMON, EnchantmentCategory.DIGGER, EquipmentSlot.MAINHAND));
 
-    @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD)
-    public static class EventHandlers {
-        @SubscribeEvent
-        public static void runData(GatherDataEvent event) {
-            if (ENABLE)
-                event.getGenerator().addProvider(event.includeServer(), new DataProvider(event.getGenerator().getPackOutput(), MODID));
-        }
-    }
-
-    private static class DataProvider extends GlobalLootModifierProvider {
-        public DataProvider(PackOutput output, String modid) {
-            super(output, modid);
-        }
-
-        @Override
-        protected void start() {
-            add("smelting", new SmeltingEnchantmentModifier(
-                    new LootItemCondition[] {
-                            MatchTool.toolMatches(
-                                    ItemPredicate.Builder.item().hasEnchantment(
-                                            new EnchantmentPredicate(SMELT.get(), MinMaxBounds.Ints.atLeast(1))))
-                                    .build()
-                    }));
-
-            add("wheat_harvest", new WheatSeedsConverterModifier(
-                    new LootItemCondition[] {
-                            MatchTool.toolMatches(ItemPredicate.Builder.item().of(Items.SHEARS)).build(),
-                            LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.WHEAT).build()
-                    },
-                    3, Items.WHEAT_SEEDS, Items.WHEAT));
-
-            add("dungeon_loot", new DungeonLootEnhancerModifier(
-                    new LootItemCondition[] { LootTableIdCondition.builder(new ResourceLocation("chests/simple_dungeon")).build() },
-                    2));
-        }
+    @OnInit
+    static void init(final TestFramework framework) {
+        HELPER.register(framework.modEventBus());
     }
 
     private static class SmelterEnchantment extends Enchantment {
@@ -119,7 +92,6 @@ public class GlobalLootModifiersTest {
 
     /**
      * The smelting enchantment causes this modifier to be invoked, via the smelting loot_modifier json
-     *
      */
     private static class SmeltingEnchantmentModifier extends LootModifier {
         public static final Supplier<Codec<SmeltingEnchantmentModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, SmeltingEnchantmentModifier::new)));
@@ -152,7 +124,6 @@ public class GlobalLootModifiersTest {
 
     /**
      * When harvesting blocks with bamboo, this modifier is invoked, via the silk_touch_bamboo loot_modifier json
-     *
      */
     private static class SilkTouchTestModifier extends LootModifier {
         public static final Supplier<Codec<SilkTouchTestModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, SilkTouchTestModifier::new)));
@@ -166,7 +137,8 @@ public class GlobalLootModifiersTest {
         public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
             ItemStack ctxTool = context.getParamOrNull(LootContextParams.TOOL);
             //return early if silk-touch is already applied (otherwise we'll get stuck in an infinite loop).
-            if (ctxTool == null || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, ctxTool) > 0) return generatedLoot;
+            if (ctxTool == null || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, ctxTool) > 0)
+                return generatedLoot;
             ItemStack fakeTool = ctxTool.copy();
             fakeTool.enchant(Enchantments.SILK_TOUCH, 1);
             LootParams.Builder builder = new LootParams.Builder(context.getLevel());
@@ -184,14 +156,13 @@ public class GlobalLootModifiersTest {
     /**
      * When harvesting wheat with shears, this modifier is invoked via the wheat_harvest loot_modifier json<br/>
      * This modifier checks how many seeds were harvested and turns X seeds into Y wheat (3:1)
-     *
      */
     private static class WheatSeedsConverterModifier extends LootModifier {
         public static final Supplier<Codec<WheatSeedsConverterModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(inst -> codecStart(inst).and(
-                inst.group(
-                        Codec.INT.fieldOf("numSeeds").forGetter(m -> m.numSeedsToConvert),
-                        BuiltInRegistries.ITEM.byNameCodec().fieldOf("seedItem").forGetter(m -> m.itemToCheck),
-                        BuiltInRegistries.ITEM.byNameCodec().fieldOf("replacement").forGetter(m -> m.itemReward)))
+                        inst.group(
+                                Codec.INT.fieldOf("numSeeds").forGetter(m -> m.numSeedsToConvert),
+                                BuiltInRegistries.ITEM.byNameCodec().fieldOf("seedItem").forGetter(m -> m.itemToCheck),
+                                BuiltInRegistries.ITEM.byNameCodec().fieldOf("replacement").forGetter(m -> m.itemReward)))
                 .apply(inst, WheatSeedsConverterModifier::new)));
 
         private final int numSeedsToConvert;
@@ -247,15 +218,122 @@ public class GlobalLootModifiersTest {
 
         @Override
         protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-            return generatedLoot.stream()
-                    .map(ItemStack::copy)
-                    .peek(stack -> stack.setCount(Math.min(stack.getMaxStackSize(), stack.getCount() * this.multiplicationFactor)))
-                    .collect(Collectors.toCollection(ObjectArrayList::new));
+            if (context.hasParam(LootContextParams.THIS_ENTITY)) {
+                // Only modify if a player attempts to open it
+                return generatedLoot.stream()
+                        .map(ItemStack::copy)
+                        .peek(stack -> stack.setCount(Math.min(stack.getMaxStackSize(), stack.getCount() * this.multiplicationFactor)))
+                        .collect(Collectors.toCollection(ObjectArrayList::new));
+            }
+            return generatedLoot;
         }
 
         @Override
         public Codec<? extends IGlobalLootModifier> codec() {
             return CODEC.get();
         }
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if a GLM smelting the loot table rolls works")
+    static void smeltingModifierTest(final DynamicTest test) {
+        HELPER.provider(GlobalLootModifierProvider.class, prov -> prov.add("smelting", new SmeltingEnchantmentModifier(
+                new LootItemCondition[] {
+                        MatchTool.toolMatches(
+                                ItemPredicate.Builder.item().hasEnchantment(
+                                        new EnchantmentPredicate(SMELT.get(), MinMaxBounds.Ints.atLeast(1))))
+                                .build(),
+                        new TestEnabledLootCondition(test)
+                })));
+
+        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL).preventItemPickup())
+                .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, Items.DIAMOND_PICKAXE.getDefaultInstance()))
+                .thenExecute(player -> player.getItemInHand(InteractionHand.MAIN_HAND).enchant(SMELT.get(), 1))
+
+                .thenSequence((sq, player) ->
+                        sq.thenMap(() -> new BlockPos(1, 2, 1))
+                                .thenExecute(pos -> helper.setBlock(pos, Blocks.IRON_ORE))
+                                .thenExecute(pos -> player.get().gameMode.destroyBlock(helper.absolutePos(pos)))
+                                .thenIdle(5))
+
+                .thenIdle(5)
+                .thenSequence((sq, player) ->
+                        sq.thenMap(() -> new BlockPos(1, 3, 1))
+                                .thenExecute(pos -> helper.setBlock(pos, Blocks.EMERALD_BLOCK))
+                                .thenExecute(pos -> player.get().gameMode.destroyBlock(helper.absolutePos(pos)))
+                                .thenIdle(5))
+
+                .thenIdle(5)
+                .thenMap(() -> new BlockPos(1, 2, 1))
+                .thenExecute(pos -> helper.assertItemEntityCountIs(Items.IRON_INGOT, pos, 1d, 1))
+                .thenExecute(pos -> helper.assertItemEntityCountIs(Items.EMERALD_BLOCK, pos, 1d, 1))
+
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if a GLM replacing loot table values works, by replacing seeds with wheat when harvesting wheat")
+    static void wheatSeedReplacerTest(final DynamicTest test) {
+        HELPER.provider(GlobalLootModifierProvider.class, prov -> prov.add("wheat_harvest", new WheatSeedsConverterModifier(
+                new LootItemCondition[] {
+                        MatchTool.toolMatches(ItemPredicate.Builder.item().of(Items.SHEARS)).build(),
+                        LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.WHEAT).build(),
+                        new TestEnabledLootCondition(test)
+                },
+                1, Items.WHEAT_SEEDS, Items.WHEAT)));
+
+        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL).preventItemPickup())
+                .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, Items.SHEARS.getDefaultInstance()))
+
+                .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.FARMLAND))
+                .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.WHEAT.defaultBlockState().setValue(CropBlock.AGE, 7)))
+
+                .thenIdle(5)
+                .thenExecute(player -> player.gameMode.destroyBlock(helper.absolutePos(new BlockPos(1, 2, 1))))
+                .thenIdle(5)
+                // At least one seed will be dropped (which will be converted to wheat), and one wheat
+                .thenExecute(player -> helper.assertItemEntityCountIsAtLeast(Items.WHEAT, new BlockPos(1, 2, 1), 1d, 2))
+                .thenExecute(player -> helper.assertItemEntityNotPresent(Items.WHEAT_SEEDS, new BlockPos(1, 2, 1), 1d))
+
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if dungeon loot modifiers work, by rolling the simple_dungeon loot table")
+    static void dungeonLootTest(final DynamicTest test) {
+        HELPER.provider(GlobalLootModifierProvider.class, prov -> prov.add("dungeon_loot", new DungeonLootEnhancerModifier(
+                new LootItemCondition[] {
+                        LootTableIdCondition.builder(new ResourceLocation("chests/simple_dungeon")).build(),
+                        new TestEnabledLootCondition(test)
+                },
+                2)));
+
+        test.onGameTest(helper -> helper.startSequence()
+                .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.CHEST.defaultBlockState()))
+                .thenMap(() -> helper.requireBlockEntity(1, 2, 1, ChestBlockEntity.class))
+                .thenExecute(chest -> chest.setLootTable(new ResourceLocation("chests/simple_dungeon"), 124424))
+
+                .thenExecute(chest -> chest.unpackLootTable(helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL)))
+
+                .thenMap(chest -> IntStream.range(0, 27)
+                        .mapToObj(chest::getItem)
+                        .filter(Predicate.not(ItemStack::isEmpty))
+                        .collect(Collectors.toMap(ItemStack::getItem, ItemStack::getCount, Integer::sum)))
+
+                .thenMapToSequence(stacks -> helper
+                        .startSequence(() -> helper.getLevel().getServer().getLootData().getLootTable(new ResourceLocation("chests/simple_dungeon"))
+                        .getRandomItems(new LootParams.Builder(helper.getLevel())
+                                .withParameter(LootContextParams.ORIGIN, helper.absoluteVec(new Vec3(1, 3, 1)))
+                                .create(LootContextParamSets.CHEST), 124424))
+                        .thenMap(base -> base.stream()
+                                .collect(Collectors.toMap(ItemStack::getItem, stack -> Math.min(stack.getMaxStackSize(), stack.getCount() * 2))))
+                        .thenExecute(expected -> helper.assertTrue(
+                                stacks.get().equals(expected),
+                                "Stacks weren't as expected"
+                        )))
+                .thenSucceed());
     }
 }

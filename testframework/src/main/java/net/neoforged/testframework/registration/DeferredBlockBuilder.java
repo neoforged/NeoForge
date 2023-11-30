@@ -81,8 +81,8 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
     }
 
     private void colorInternal(int color) {
-        helper.framework().modEventBus().addListener((final RegisterColorHandlersEvent.Block event) -> event.register((p_92567_, p_92568_, p_92569_, p_92570_) -> color, value()));
-        helper.framework().modEventBus().addListener((final RegisterColorHandlersEvent.Item event) -> {
+        helper.eventListeners().accept((final RegisterColorHandlersEvent.Block event) -> event.register((p_92567_, p_92568_, p_92569_, p_92570_) -> color, value()));
+        helper.eventListeners().accept((final RegisterColorHandlersEvent.Item event) -> {
             if (hasItem) {
                 event.register((stack, index) -> color, value());
             }

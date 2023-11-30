@@ -98,8 +98,12 @@ public class ParametrizedGameTestSequence<T> {
         return new ParametrizedGameTestSequence<>(info, this.sequence, value::get);
     }
 
-    public ParametrizedGameTestSequence<T> thenSequence(BiConsumer<ParametrizedGameTestSequence<T>, T> sequence) {
-        return thenSequence((sq) -> sequence.accept(sq, value.get()));
+    public <Z> ParametrizedGameTestSequence<Z> thenMapToSequence(Function<Supplier<T>, ParametrizedGameTestSequence<Z>> sequence) {
+        return thenMapToSequence((seq, val) -> sequence.apply(val));
+    }
+
+    public ParametrizedGameTestSequence<T> thenSequence(BiConsumer<ParametrizedGameTestSequence<T>, Supplier<T>> sequence) {
+        return thenSequence((sq) -> sequence.accept(sq, value));
     }
 
     public ParametrizedGameTestSequence<T> thenSequence(Consumer<ParametrizedGameTestSequence<T>> sequence) {
