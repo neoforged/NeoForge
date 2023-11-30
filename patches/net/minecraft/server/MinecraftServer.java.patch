@@ -37,7 +37,7 @@
                 ChunkPos chunkpos = new ChunkPos(i);
                 serverlevel1.getChunkSource().updateChunkForced(chunkpos, true);
              }
-+            net.neoforged.neoforge.common.world.ForcedChunkManager.reinstatePersistentChunks(serverlevel1, forcedchunkssaveddata);
++            net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.reinstatePersistentChunks(serverlevel1, forcedchunkssaveddata);
           }
        }
  

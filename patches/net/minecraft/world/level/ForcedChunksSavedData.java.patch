@@ -1,19 +1,19 @@
 --- a/net/minecraft/world/level/ForcedChunksSavedData.java
 +++ b/net/minecraft/world/level/ForcedChunksSavedData.java
-@@ -24,16 +_,32 @@
+@@ -24,16 +_,31 @@
     }
  
     public static ForcedChunksSavedData load(CompoundTag p_151484_) {
 -      return new ForcedChunksSavedData(new LongOpenHashSet(p_151484_.getLongArray("Forced")));
 +      ForcedChunksSavedData savedData = new ForcedChunksSavedData(new LongOpenHashSet(p_151484_.getLongArray("Forced")));
-+      net.neoforged.neoforge.common.world.ForcedChunkManager.readModForcedChunks(p_151484_, savedData.blockForcedChunks, savedData.entityForcedChunks);
++      net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.readModForcedChunks(p_151484_, savedData.blockForcedChunks, savedData.entityForcedChunks);
 +      return savedData;
     }
  
     @Override
     public CompoundTag save(CompoundTag p_46120_) {
        p_46120_.putLongArray("Forced", this.chunks.toLongArray());
-+      net.neoforged.neoforge.common.world.ForcedChunkManager.readModForcedChunks(p_46120_, this.blockForcedChunks, this.entityForcedChunks);
++      net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.writeModForcedChunks(p_46120_, this.blockForcedChunks, this.entityForcedChunks);
        return p_46120_;
     }
  
@@ -22,15 +22,14 @@
 +   }
 +
 +   /* ======================================== FORGE START =====================================*/
-+   // TODO: not sure if these are being written correctly. load used to refer to these directly.
-+   private net.neoforged.neoforge.common.world.ForcedChunkManager.TicketTracker<net.minecraft.core.BlockPos> blockForcedChunks = new net.neoforged.neoforge.common.world.ForcedChunkManager.TicketTracker<>();
-+   private net.neoforged.neoforge.common.world.ForcedChunkManager.TicketTracker<java.util.UUID> entityForcedChunks = new net.neoforged.neoforge.common.world.ForcedChunkManager.TicketTracker<>();
++   private final net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<net.minecraft.core.BlockPos> blockForcedChunks = new net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<>();
++   private final net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<java.util.UUID> entityForcedChunks = new net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<>();
 +
-+   public net.neoforged.neoforge.common.world.ForcedChunkManager.TicketTracker<net.minecraft.core.BlockPos> getBlockForcedChunks() {
++   public net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<net.minecraft.core.BlockPos> getBlockForcedChunks() {
 +      return this.blockForcedChunks;
 +   }
 +
-+   public net.neoforged.neoforge.common.world.ForcedChunkManager.TicketTracker<java.util.UUID> getEntityForcedChunks() {
++   public net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<java.util.UUID> getEntityForcedChunks() {
 +      return this.entityForcedChunks;
     }
  }
