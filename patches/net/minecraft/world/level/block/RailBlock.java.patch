@@ -4,9 +4,9 @@
                    return p_55405_.setValue(SHAPE, RailShape.SOUTH_EAST);
                 case NORTH_EAST:
                    return p_55405_.setValue(SHAPE, RailShape.SOUTH_WEST);
-+         case NORTH_SOUTH: //Forge fix: MC-196102
-+         case EAST_WEST:
-+            return p_55405_;
++               case NORTH_SOUTH: //Forge fix: MC-104231
++               case EAST_WEST:
++                  return p_55405_;
              }
           case COUNTERCLOCKWISE_90:
              switch((RailShape)p_55405_.getValue(SHAPE)) {

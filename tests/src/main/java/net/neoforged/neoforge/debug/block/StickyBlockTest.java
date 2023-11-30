@@ -51,8 +51,8 @@ public class StickyBlockTest {
         }
     });
 
-    public static final DeferredItem<BlockItem> BLUE_BLOCK_ITEM = ITEMS.registerBlockItem(BLUE_BLOCK);
-    public static final DeferredItem<BlockItem> RED_BLOCK_ITEM = ITEMS.registerBlockItem(RED_BLOCK);
+    public static final DeferredItem<BlockItem> BLUE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(BLUE_BLOCK);
+    public static final DeferredItem<BlockItem> RED_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(RED_BLOCK);
 
     public StickyBlockTest() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();

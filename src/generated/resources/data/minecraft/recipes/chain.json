@@ -6,7 +6,7 @@
       "tag": "forge:ingots/iron"
     },
     "N": {
-      "item": "minecraft:iron_nugget"
+      "tag": "forge:nuggets/iron"
     }
   },
   "pattern": [

@@ -19,3 +19,11 @@
        LOGGER.warn("Unknown custom packet payload: {}", p_296412_.id());
     }
  
+@@ -92,6 +_,7 @@
+          );
+       this.connection.resumeInboundAfterProtocolChange();
+       this.connection.send(new ServerboundFinishConfigurationPacket());
++      net.neoforged.neoforge.network.NetworkHooks.handleClientLoginSuccess(this.connection);
+    }
+ 
+    @Override

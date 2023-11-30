@@ -67,7 +67,7 @@
                    return p_55240_.setValue(SHAPE, RailShape.SOUTH_EAST);
                 case NORTH_EAST:
                    return p_55240_.setValue(SHAPE, RailShape.SOUTH_WEST);
-+               case NORTH_SOUTH: //Forge fix: MC-196102
++               case NORTH_SOUTH: //Forge fix: MC-104231
 +               case EAST_WEST:
 +                  return p_55240_;
              }
