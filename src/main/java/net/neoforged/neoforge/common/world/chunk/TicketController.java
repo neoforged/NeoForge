@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.world.chunk;
 
+import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -17,13 +18,18 @@ import net.minecraft.world.level.ForcedChunksSavedData;
 /**
  * A class used to manage chunk loading tickets associated with a specific ID.
  * <p>
- * Controllers must be registered via {@link RegisterTicketControllersEvent}. A controller that isn't registered will have all of its tickets discarded, and the chunks will no longer be forcefully loaded.
+ * Controllers must be registered via {@link RegisterTicketControllersEvent}. A controller that isn't registered will have all of its tickets discarded when the world is loaded, and any attempts at force-loading a chunk through it will result in an {@link IllegalArgumentException}.
  *
  * @param id       the ID of this controller
  * @param callback a callback to be called when the tickets are loaded, in order to validate whether they're still active or not. {@code null} should be used when a callback needn't be provided
  */
 @ParametersAreNonnullByDefault
 public record TicketController(ResourceLocation id, @Nullable LoadingValidationCallback callback) {
+
+    public TicketController {
+        Objects.requireNonNull(id, "id must not be null");
+    }
+
     /**
      * Creates a ticket controller without a validation callback.
      *

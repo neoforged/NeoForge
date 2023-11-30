@@ -78,13 +78,17 @@ public class ForcedChunkManager {
      *
      * @implNote Based on {@link ServerLevel#setChunkForced(int, int, boolean)}
      */
-    static <T extends Comparable<? super T>> boolean forceChunk(ServerLevel level, ResourceLocation modId, T owner, int chunkX, int chunkZ, boolean add, boolean ticking,
+    static <T extends Comparable<? super T>> boolean forceChunk(ServerLevel level, ResourceLocation id, T owner, int chunkX, int chunkZ, boolean add, boolean ticking,
             TicketType<TicketOwner<T>> type, Function<ForcedChunksSavedData, TicketTracker<T>> ticketGetter) {
+        if (!controllers.containsKey(id)) {
+            throw new IllegalArgumentException("Controller with ID " + id + " is not registered!");
+        }
+
         ForcedChunksSavedData saveData = level.getDataStorage().computeIfAbsent(ForcedChunksSavedData.factory(), "chunks");
         ChunkPos pos = new ChunkPos(chunkX, chunkZ);
         long chunk = pos.toLong();
         TicketTracker<T> tickets = ticketGetter.apply(saveData);
-        TicketOwner<T> ticketOwner = new TicketOwner<>(modId, owner);
+        TicketOwner<T> ticketOwner = new TicketOwner<>(id, owner);
         boolean success;
         if (add) {
             success = tickets.add(ticketOwner, chunk, ticking);
@@ -120,9 +124,8 @@ public class ForcedChunkManager {
     /**
      * Reinstates NeoForge's forced chunks when vanilla initially loads a level and reinstates their forced chunks. This method also will validate all the forced
      * chunks with the registered {@link LoadingValidationCallback}s.
-     *
-     * @apiNote Internal
      */
+    @ApiStatus.Internal
     public static void reinstatePersistentChunks(ServerLevel level, ForcedChunksSavedData saveData) {
         final var controllers = ForcedChunkManager.controllers.entrySet().stream()
                 .filter(c -> c.getValue().callback() != null)
@@ -284,7 +287,7 @@ public class ForcedChunkManager {
     /**
      * Helper class to keep track of a ticket owner by controller ID and owner object
      */
-    public static class TicketOwner<T extends Comparable<? super T>> implements Comparable<TicketOwner<T>> {
+    static class TicketOwner<T extends Comparable<? super T>> implements Comparable<TicketOwner<T>> {
         private final ResourceLocation id;
         private final T owner;
 
