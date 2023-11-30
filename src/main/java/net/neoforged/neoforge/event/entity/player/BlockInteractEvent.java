@@ -27,7 +27,6 @@ import net.neoforged.neoforge.common.extensions.IItemExtension;
 public class BlockInteractEvent extends PlayerInteractEvent implements ICancellableEvent {
     private final UseOnContext context;
     private final UsePhase usePhase;
-    private InteractionResult cancellationResult = InteractionResult.PASS;
 
     public BlockInteractEvent(UseOnContext context, UsePhase usePhase) {
         super(context.getPlayer(), context.getHand(), context.getClickedPos(), context.getClickedFace());
@@ -43,7 +42,8 @@ public class BlockInteractEvent extends PlayerInteractEvent implements ICancella
     }
 
     /**
-     * @return The Use Phase of the interaction, see {@link UsePhase} for semantics
+     * {@return The Use Phase of the interaction}
+     * @see UsePhase for semantics
      */
     public UsePhase getUsePhase() {
         return this.usePhase;
@@ -55,7 +55,7 @@ public class BlockInteractEvent extends PlayerInteractEvent implements ICancella
      *
      * <p>Invoke this if you intend to prevent the default interaction behavior and replace it with your own.</p>
      *
-     * @param result The interaction result to return to the interaction logic.
+     * @param result InteractionResult to return to the interaction logic
      *               <ul>
      *               <li>SUCCESS, CONSUME, CONSUME_PARTIAL, and FAIL will prevent further types of interaction attempts
      *               when provided from the ITEM_BEFORE_BLOCK phase.
@@ -66,17 +66,8 @@ public class BlockInteractEvent extends PlayerInteractEvent implements ICancella
      *               </ul>
      */
     public void cancelWithResult(InteractionResult result) {
-        this.cancellationResult = result;
+        this.setCancellationResult(result);
         this.setCanceled(true);
-    }
-
-    /**
-     * @return The result that the canceller cancelled this event with.<br>
-     *         Not meaningful unless and until this event has been cancelled; intended to be
-     *         used by the event firer.
-     */
-    public InteractionResult getCancellationResult() {
-        return this.cancellationResult;
     }
 
     public static enum UsePhase {
