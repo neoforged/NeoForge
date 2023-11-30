@@ -9,7 +9,7 @@
           VertexConsumer vertexconsumer = material.buffer(p_112366_, RenderType::entityCutout);
           if (flag1) {
              if (chesttype == ChestType.LEFT) {
-@@ -164,5 +_,9 @@
+@@ -164,5 +_,15 @@
        p_112372_.render(p_112370_, p_112371_, p_112376_, p_112377_);
        p_112373_.render(p_112370_, p_112371_, p_112376_, p_112377_);
        p_112374_.render(p_112370_, p_112371_, p_112376_, p_112377_);
@@ -17,5 +17,11 @@
 +
 +   protected Material getMaterial(T blockEntity, ChestType chestType) {
 +      return Sheets.chooseMaterial(blockEntity, chestType, this.xmasTextures);
++   }
++
++   @Override
++   public net.minecraft.world.phys.AABB getRenderBoundingBox(T blockEntity) {
++      net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++      return new net.minecraft.world.phys.AABB(pos.offset(-1, 0, -1), pos.offset(2, 2, 2));
     }
  }
