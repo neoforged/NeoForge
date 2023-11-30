@@ -43,6 +43,7 @@ public class BlockInteractEvent extends PlayerInteractEvent implements ICancella
 
     /**
      * {@return The Use Phase of the interaction}
+     * 
      * @see UsePhase for semantics
      */
     public UsePhase getUsePhase() {
