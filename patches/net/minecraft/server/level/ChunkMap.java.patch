@@ -47,6 +47,18 @@
              this.write(chunkpos, compoundtag);
              this.markPosition(chunkpos, chunkstatus.getChunkType());
              return true;
+@@ -894,9 +_,11 @@
+ 
+    private static void markChunkPendingToSend(ServerPlayer p_295834_, LevelChunk p_296281_) {
+       p_295834_.connection.chunkSender.markChunkPendingToSend(p_296281_);
++      net.neoforged.neoforge.event.EventHooks.fireChunkWatch(p_295834_, p_296281_, p_295834_.serverLevel());
+    }
+ 
+    private static void dropChunk(ServerPlayer p_294215_, ChunkPos p_294758_) {
++      net.neoforged.neoforge.event.EventHooks.fireChunkUnWatch(p_294215_, p_294758_, p_294215_.serverLevel());
+       p_294215_.connection.chunkSender.dropChunk(p_294215_, p_294758_);
+    }
+ 
 @@ -1089,6 +_,7 @@
              this.playerMap.unIgnorePlayer(p_140185_);
           }
