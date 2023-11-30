@@ -5,13 +5,13 @@
 
 package net.neoforged.testframework.gametest;
 
+import java.util.function.Supplier;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestSequence;
 
-import java.util.function.Supplier;
-
 public class ExtendedSequence extends GameTestSequence {
     private final GameTestInfo gameTestInfo;
+
     public ExtendedSequence(GameTestInfo p_177542_) {
         super(p_177542_);
         this.gameTestInfo = p_177542_;

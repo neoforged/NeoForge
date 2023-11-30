@@ -7,6 +7,12 @@ package net.neoforged.testframework.gametest;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.embedded.EmbeddedChannel;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestAssertException;
@@ -34,13 +40,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.function.BiPredicate;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
 public class ExtendedGameTestHelper extends GameTestHelper {
     public ExtendedGameTestHelper(GameTestInfo info) {
         super(info);
@@ -58,7 +57,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         pos = this.absolutePos(pos);
         item.useOn(new UseOnContext(
                 this.getLevel(), player, InteractionHand.MAIN_HAND, item, new BlockHitResult(
-                pos.getCenter(), direction, pos, false)));
+                        pos.getCenter(), direction, pos, false)));
     }
 
     public void useBlock(BlockPos pos, Player player, ItemStack item) {
