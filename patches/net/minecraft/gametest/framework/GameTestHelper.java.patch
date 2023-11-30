@@ -1,15 +1,9 @@
 --- a/net/minecraft/gametest/framework/GameTestHelper.java
 +++ b/net/minecraft/gametest/framework/GameTestHelper.java
-@@ -54,7 +_,12 @@
- import net.minecraft.world.phys.BlockHitResult;
+@@ -55,6 +_,7 @@
  import net.minecraft.world.phys.Vec3;
  
--public class GameTestHelper {
-+public class GameTestHelper implements net.neoforged.neoforge.common.extensions.IGameTestHelperExtension {
-+   @Override
-+   public GameTestHelper self() {
-+      return this;
-+   }
+ public class GameTestHelper {
 +
     public final GameTestInfo testInfo;
     private boolean finalCheckAdded;

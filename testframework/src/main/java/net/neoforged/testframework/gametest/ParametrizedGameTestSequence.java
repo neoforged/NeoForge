@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.gametest;
+package net.neoforged.testframework.gametest;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
@@ -16,10 +16,10 @@ import net.minecraft.gametest.framework.GameTestSequence;
 
 public class ParametrizedGameTestSequence<T> {
     private final GameTestInfo info;
-    private final GameTestSequence sequence;
+    private final ExtendedSequence sequence;
     private final Supplier<T> value;
 
-    public ParametrizedGameTestSequence(GameTestInfo info, GameTestSequence sequence, Supplier<T> value) {
+    public ParametrizedGameTestSequence(GameTestInfo info, ExtendedSequence sequence, Supplier<T> value) {
         this.info = info;
         this.sequence = sequence;
 

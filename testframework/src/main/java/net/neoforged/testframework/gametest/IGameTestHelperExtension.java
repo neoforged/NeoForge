@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common.extensions;
+package net.neoforged.testframework.gametest;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.embedded.EmbeddedChannel;
@@ -37,12 +37,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.GameTestPlayer;
-import net.neoforged.neoforge.gametest.ParametrizedGameTestSequence;
 import org.jetbrains.annotations.Nullable;
 
 public interface IGameTestHelperExtension {
-    GameTestHelper self();
+    ExtendedGameTestHelper self();
 
     default void useOn(BlockPos pos, ItemStack item, Player player, Direction direction) {
         player.setItemInHand(InteractionHand.MAIN_HAND, item);

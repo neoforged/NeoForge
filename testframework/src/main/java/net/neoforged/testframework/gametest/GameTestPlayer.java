@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.gametest;
+package net.neoforged.testframework.gametest;
 
 import com.mojang.authlib.GameProfile;
 import java.util.ArrayList;

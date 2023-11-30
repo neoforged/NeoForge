@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
@@ -89,7 +90,7 @@ public interface DynamicTest extends Test {
      *
      * @param consumer the listener
      */
-    void onGameTest(final Consumer<GameTestHelper> consumer);
+    void onGameTest(final Consumer<ExtendedGameTestHelper> consumer);
 
     /**
      * Register the template for this game test.

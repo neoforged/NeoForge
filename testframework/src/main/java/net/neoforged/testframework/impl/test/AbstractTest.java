@@ -36,6 +36,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.annotation.WithListener;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTestData;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.impl.EventListenerGroupImpl;
@@ -252,10 +253,10 @@ public abstract class AbstractTest implements Test {
             disabledListeners.forEach(Runnable::run);
         }
 
-        private final List<Consumer<GameTestHelper>> onGameTest = new ArrayList<>();
+        private final List<Consumer<ExtendedGameTestHelper>> onGameTest = new ArrayList<>();
 
         @Override
-        public void onGameTest(Consumer<GameTestHelper> consumer) {
+        public void onGameTest(Consumer<ExtendedGameTestHelper> consumer) {
             this.onGameTest.add(consumer);
         }
 
@@ -316,7 +317,8 @@ public abstract class AbstractTest implements Test {
                     isDuringGameTest = false;
                 }
             });
-            this.onGameTest.forEach(test -> test.accept(helper));
+            final var actualHelper = new ExtendedGameTestHelper(helper.testInfo);
+            this.onGameTest.forEach(test -> test.accept(actualHelper));
         }
 
         @Override
