@@ -40,9 +40,22 @@ public class RegisterNamedRenderTypesEvent extends Event implements IModBusEvent
      * @param name             The name
      * @param blockRenderType  One of the values returned by {@link RenderType#chunkBufferLayers()}
      * @param entityRenderType A {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY}
+     * @deprecated Use {@link #register(ResourceLocation, RenderType, RenderType) the RL-explicit variant} instead; mod ID inference will be removed in a later update, alongside the move of registration events to the NeoForge main bus
      */
+    @Deprecated(forRemoval = true, since = "1.20.2")
     public void register(String name, RenderType blockRenderType, RenderType entityRenderType) {
-        register(name, blockRenderType, entityRenderType, entityRenderType);
+        register(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name), blockRenderType, entityRenderType, entityRenderType);
+    }
+
+    /**
+     * Registers a named {@link RenderTypeGroup}.
+     *
+     * @param key              The ID of the group
+     * @param blockRenderType  One of the values returned by {@link RenderType#chunkBufferLayers()}
+     * @param entityRenderType A {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY}
+     */
+    public void register(ResourceLocation key, RenderType blockRenderType, RenderType entityRenderType) {
+        register(key, blockRenderType, entityRenderType, entityRenderType);
     }
 
     /**
@@ -53,9 +66,23 @@ public class RegisterNamedRenderTypesEvent extends Event implements IModBusEvent
      * @param entityRenderType         A {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY}
      * @param fabulousEntityRenderType A {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY} for use when
      *                                 "fabulous" rendering is enabled
+     * @deprecated Use {@link #register(ResourceLocation, RenderType, RenderType, RenderType) the RL-explicit variant} instead; mod ID inference will be removed in a later update, alongside the move of registration events to the NeoForge main bus
      */
+    @Deprecated(forRemoval = true, since = "1.20.2")
     public void register(String name, RenderType blockRenderType, RenderType entityRenderType, RenderType fabulousEntityRenderType) {
-        var key = new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name);
+        register(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name), blockRenderType, entityRenderType, fabulousEntityRenderType);
+    }
+
+    /**
+     * Registers a named {@link RenderTypeGroup}.
+     *
+     * @param key                      The ID of the group
+     * @param blockRenderType          One of the values returned by {@link RenderType#chunkBufferLayers()}
+     * @param entityRenderType         A {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY}
+     * @param fabulousEntityRenderType A {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY} for use when
+     *                                 "fabulous" rendering is enabled
+     */
+    public void register(ResourceLocation key, RenderType blockRenderType, RenderType entityRenderType, RenderType fabulousEntityRenderType) {
         Preconditions.checkArgument(!renderTypes.containsKey(key), "Render type already registered: " + key);
         Preconditions.checkArgument(blockRenderType.format() == DefaultVertexFormat.BLOCK, "The block render type must use the BLOCK vertex format.");
         Preconditions.checkArgument(blockRenderType.getChunkLayerId() >= 0, "Only chunk render types can be used for block rendering. Query RenderType#chunkBufferLayers() for a list.");
