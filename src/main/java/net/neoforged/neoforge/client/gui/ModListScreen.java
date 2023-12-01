@@ -33,6 +33,7 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.fml.ModContainer;
@@ -48,7 +49,6 @@ import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.I18nExtension;
 import net.neoforged.neoforge.common.util.MavenVersionStringHelper;
 import net.neoforged.neoforge.common.util.Size2i;
-import net.neoforged.neoforge.resource.PathPackResources;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.commons.lang3.tuple.Pair;
@@ -379,7 +379,7 @@ public class ModListScreen extends Screen {
         @SuppressWarnings("resource")
         Pair<ResourceLocation, Size2i> logoData = selectedMod.getLogoFile().map(logoFile -> {
             TextureManager tm = this.minecraft.getTextureManager();
-            final PathPackResources resourcePack = ResourcePackLoader.getPackFor(selectedMod.getModId())
+            final PackResources resourcePack = ResourcePackLoader.getPackFor(selectedMod.getModId())
                     .orElse(ResourcePackLoader.getPackFor("neoforge").orElseThrow(() -> new RuntimeException("Can't find neoforge, WHAT!")));
             try {
                 NativeImage logo = null;

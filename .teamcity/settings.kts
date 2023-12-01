@@ -62,8 +62,8 @@ project {
     features {
         githubIssues {
             id = "MinecraftForge_MinecraftForge__IssueTracker"
-            displayName = "MinecraftForge/MinecraftForge"
-            repositoryURL = "https://github.com/MinecraftForge/MinecraftForge"
+            displayName = "neoforged/NeoForge"
+            repositoryURL = "https://github.com/neoforged/NeoForge"
         }
     }
 }

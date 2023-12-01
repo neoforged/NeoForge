@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.client;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
@@ -72,8 +74,11 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
@@ -116,6 +121,7 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.FogType;
@@ -145,6 +151,7 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import net.neoforged.neoforge.client.event.RegisterSpriteSourceTypesEvent;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
 import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
@@ -1033,6 +1040,24 @@ public class ClientHooks {
             output.accept(entry.getKey(), entry.getValue());
     }
 
+    private static final BiMap<ResourceLocation, SpriteSourceType> SPRITE_SOURCE_TYPES_MAP = HashBiMap.create();
+
+    public static BiMap<ResourceLocation, SpriteSourceType> makeSpriteSourceTypesMap() {
+        return SPRITE_SOURCE_TYPES_MAP;
+    }
+
+    @ApiStatus.Internal
+    public static void registerSpriteSourceTypes() {
+        ModLoader.get().postEvent(new RegisterSpriteSourceTypesEvent(SPRITE_SOURCE_TYPES_MAP));
+    }
+
+    @ApiStatus.Internal
+    @SuppressWarnings("unchecked")
+    public static <T extends BlockEntity> boolean isBlockEntityRendererVisible(BlockEntityRenderDispatcher dispatcher, BlockEntity blockEntity, Frustum frustum) {
+        BlockEntityRenderer<T> renderer = (BlockEntityRenderer<T>) dispatcher.getRenderer(blockEntity);
+        return renderer != null && frustum.isVisible(renderer.getRenderBoundingBox((T) blockEntity));
+    }
+
     // Make sure the below method is only ever called once (by forge).
     private static boolean initializedClientHooks = false;
 
@@ -1045,6 +1070,7 @@ public class ClientHooks {
         initializedClientHooks = true;
 
         GameTestHooks.registerGametests();
+        registerSpriteSourceTypes();
         ModLoader.get().postEvent(new RegisterClientReloadListenersEvent(resourceManager));
         ModLoader.get().postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
         ModLoader.get().postEvent(new EntityRenderersEvent.RegisterRenderers());

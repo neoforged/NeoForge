@@ -583,19 +583,6 @@
           if (!this.level().isClientSide) {
              this.setLivingEntityFlag(1, true);
              this.setLivingEntityFlag(2, p_21159_ == InteractionHand.OFF_HAND);
-@@ -3019,7 +_,11 @@
-          vec31 = vec31.xRot(-this.getXRot() * (float) (Math.PI / 180.0));
-          vec31 = vec31.yRot(-this.getYRot() * (float) (Math.PI / 180.0));
-          vec31 = vec31.add(this.getX(), this.getEyeY(), this.getZ());
--         this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, p_21061_), vec31.x, vec31.y, vec31.z, vec3.x, vec3.y + 0.05, vec3.z);
-+         if (this.level() instanceof ServerLevel serverLevel) { //Forge: Fix MC-2518 spawnParticle is nooped on server, need to use server specific variant
-+            serverLevel.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, p_21061_), vec31.x, vec31.y, vec31.z, 1, vec3.x, vec3.y + 0.05D, vec3.z, 0.0D);
-+         } else {
-+            this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, p_21061_), vec31.x, vec31.y, vec31.z, vec3.x, vec3.y + 0.05, vec3.z);
-+         }
-       }
-    }
- 
 @@ -3031,7 +_,8 @@
           } else {
              if (!this.useItem.isEmpty() && this.isUsingItem()) {
@@ -771,8 +758,12 @@
        Equipable equipable = Equipable.get(p_147234_);
        return equipable != null ? equipable.getEquipmentSlot() : EquipmentSlot.MAINHAND;
     }
-@@ -3438,6 +_,11 @@
-       return this.getMainHandItem().getItem() instanceof AxeItem;
+@@ -3435,9 +_,14 @@
+    }
+ 
+    public boolean canDisableShield() {
+-      return this.getMainHandItem().getItem() instanceof AxeItem;
++      return this.getMainHandItem().canDisableShield(this.useItem, this, this);
     }
  
 +   /**

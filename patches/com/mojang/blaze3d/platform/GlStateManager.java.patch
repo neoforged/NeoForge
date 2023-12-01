@@ -17,7 +17,7 @@
     }
  
     public static void _texParameter(int p_84332_, int p_84333_, int p_84334_) {
-@@ -945,5 +952,54 @@
+@@ -945,5 +_,54 @@
        public static int height() {
           return INSTANCE.height;
        }
