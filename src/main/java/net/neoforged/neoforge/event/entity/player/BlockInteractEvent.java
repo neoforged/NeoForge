@@ -7,18 +7,23 @@ package net.neoforged.neoforge.event.entity.player;
 
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.extensions.IItemExtension;
 
 /**
- * <p></p>Fires on both the client and server thread when a player uses an item targeting a block.
+ * <p></p>Fires on both the client and server thread when a player interacts with a block.
  *
  * <p>The event fires in three phases, corresponding with the three interaction behaviors:
  * {@link IItemExtension#onItemUseFirst},
  * {@link BlockBehaviour#use},
  * and {@link Item#useOn}.</p>
+ *
+ * <p>The event fires after the interaction logic decides to run the particular interaction behavior,
+ * as opposed to {@link net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock}
+ * which fires once-per-right-click, before the behavior-choosing logic.</p>
  *
  * <p>If the event is cancelled via {@link #cancelWithResult},
  * then the normal interaction behavior for that phase will not run,
@@ -73,19 +78,19 @@ public class BlockInteractEvent extends PlayerInteractEvent implements ICancella
 
     public static enum UsePhase {
         /**
-         * The item's pre-block use-item-on-block interaction (this is a modding extension and not used by vanilla items).
+         * The {@link IItemExtension#onItemUseFirst(ItemStack, UseOnContext)} interaction.
          * This is noop/PASS for most items, but some mods' items have interactions here.
          */
         ITEM_BEFORE_BLOCK,
 
         /**
-         * The block's right-click-block interaction. Skipped if the player is sneaking
-         * and holding an item that skips the block while sneaking (most items).
+         * The {@link BlockBehaviour#use} interaction.
+         * Skipped if the player is sneaking and holding an item that skips the block while sneaking (most items).
          */
         BLOCK,
 
         /**
-         * The item's standard use-item-on-block interaction.
+         * The {@link Item#useOn} interaction.
          */
         ITEM_AFTER_BLOCK
     }

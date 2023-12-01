@@ -42,7 +42,7 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
     private final Direction face;
     private InteractionResult cancellationResult = InteractionResult.PASS;
 
-    public PlayerInteractEvent(Player player, InteractionHand hand, BlockPos pos, @Nullable Direction face) {
+    protected PlayerInteractEvent(Player player, InteractionHand hand, BlockPos pos, @Nullable Direction face) {
         super(Preconditions.checkNotNull(player, "Null player in PlayerInteractEvent!"));
         this.hand = Preconditions.checkNotNull(hand, "Null hand in PlayerInteractEvent!");
         this.pos = Preconditions.checkNotNull(pos, "Null position in PlayerInteractEvent!");
