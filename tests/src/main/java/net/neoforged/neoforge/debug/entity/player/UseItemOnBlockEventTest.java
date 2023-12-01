@@ -30,8 +30,7 @@ import org.slf4j.Logger;
  * prevent the placement (but will not prevent opening the chest when not sneaking).
  */
 @Mod(UseItemOnBlockEventTest.MODID)
-public class UseItemOnBlockEventTest
-{
+public class UseItemOnBlockEventTest {
     public static final String MODID = "use_item_on_block_event_test";
     private static final Logger LOGGER = LogUtils.getLogger();
 
