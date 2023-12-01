@@ -11,9 +11,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -29,8 +29,8 @@ import org.apache.logging.log4j.LogManager;
 public class FluidUtilTest {
     public static final String MODID = "fluid_util_test";
 
-    public FluidUtilTest() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(FluidUtilTest::runTests);
+    public FluidUtilTest(ModContainer modContainer) {
+        modContainer.getEventBus().addListener(FluidUtilTest::runTests);
     }
 
     private static void runTests(FMLCommonSetupEvent commonSetupEvent) {

@@ -15,8 +15,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -30,8 +30,8 @@ public class HiddenTooltipPartsTest {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
     private static final DeferredItem<Item> TEST_ITEM = ITEMS.register("test_item", () -> new TestItem(new Item.Properties()));
 
-    public HiddenTooltipPartsTest() {
-        var modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public HiddenTooltipPartsTest(ModContainer modContainer) {
+        var modBus = modContainer.getEventBus();
         ITEMS.register(modBus);
         modBus.addListener(this::addCreative);
     }

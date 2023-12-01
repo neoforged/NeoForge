@@ -45,7 +45,6 @@ import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.GsonHelper;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
@@ -75,8 +74,7 @@ public class LoginPacketSplitTest {
     public static final boolean ENABLED = false;
     public static final ResourceKey<Registry<BigData>> BIG_DATA = ResourceKey.createRegistryKey(new ResourceLocation(MOD_ID, "big_data"));
 
-    public LoginPacketSplitTest() {
-        final IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+    public LoginPacketSplitTest(final IEventBus bus) {
         bus.addListener((final DataPackRegistryEvent.NewRegistry event) -> event.dataPackRegistry(BIG_DATA, BigData.CODEC, BigData.CODEC));
         if (ENABLED) {
             bus.addListener((final AddPackFindersEvent event) -> {

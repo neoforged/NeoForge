@@ -25,9 +25,9 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 @EventBusSubscriber
 public class SlipperinessTest {
     static final String MOD_ID = "slipperiness_test";
-    static final String BLOCK_ID = "test_block";
+    static final ResourceLocation BLOCK_ID = new ResourceLocation(MOD_ID, "test_block");
 
-    public static final DeferredBlock<Block> BB_BLOCK = DeferredBlock.createBlock(new ResourceLocation(MOD_ID, BLOCK_ID));
+    public static final DeferredBlock<Block> BB_BLOCK = DeferredBlock.createBlock(BLOCK_ID);
 
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent e) {

@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.client;
 
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -19,18 +20,19 @@ import net.neoforged.neoforge.client.model.EmptyModel;
 import net.neoforged.neoforge.client.model.ItemLayerModel;
 import net.neoforged.neoforge.client.model.SeparateTransformsModel;
 import net.neoforged.neoforge.client.model.obj.ObjLoader;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = "neoforge")
+@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = NeoForgeVersion.MOD_ID)
 public class ClientNeoForgeMod {
     @SubscribeEvent
     public static void onRegisterGeometryLoaders(ModelEvent.RegisterGeometryLoaders event) {
-        event.register("empty", EmptyModel.LOADER);
-        event.register("elements", ElementsModel.Loader.INSTANCE);
-        event.register("obj", ObjLoader.INSTANCE);
-        event.register("fluid_container", DynamicFluidContainerModel.Loader.INSTANCE);
-        event.register("composite", CompositeModel.Loader.INSTANCE);
-        event.register("item_layers", ItemLayerModel.Loader.INSTANCE);
-        event.register("separate_transforms", SeparateTransformsModel.Loader.INSTANCE);
+        event.register(new ResourceLocation(NeoForgeVersion.MOD_ID, "empty"), EmptyModel.LOADER);
+        event.register(new ResourceLocation(NeoForgeVersion.MOD_ID, "elements"), ElementsModel.Loader.INSTANCE);
+        event.register(new ResourceLocation(NeoForgeVersion.MOD_ID, "obj"), ObjLoader.INSTANCE);
+        event.register(new ResourceLocation(NeoForgeVersion.MOD_ID, "fluid_container"), DynamicFluidContainerModel.Loader.INSTANCE);
+        event.register(new ResourceLocation(NeoForgeVersion.MOD_ID, "composite"), CompositeModel.Loader.INSTANCE);
+        event.register(new ResourceLocation(NeoForgeVersion.MOD_ID, "item_layers"), ItemLayerModel.Loader.INSTANCE);
+        event.register(new ResourceLocation(NeoForgeVersion.MOD_ID, "separate_transforms"), SeparateTransformsModel.Loader.INSTANCE);
     }
 
     @SubscribeEvent
@@ -40,6 +42,6 @@ public class ClientNeoForgeMod {
 
     @SubscribeEvent
     public static void onRegisterNamedRenderTypes(RegisterNamedRenderTypesEvent event) {
-        event.register("item_unlit", RenderType.translucent(), NeoForgeRenderTypes.ITEM_UNSORTED_UNLIT_TRANSLUCENT.get());
+        event.register(new ResourceLocation(NeoForgeVersion.MOD_ID, "item_unlit"), RenderType.translucent(), NeoForgeRenderTypes.ITEM_UNSORTED_UNLIT_TRANSLUCENT.get());
     }
 }

@@ -24,7 +24,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -41,9 +40,8 @@ public class CustomRespawnTest {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     public static final DeferredItem<BlockItem> TEST_RESPAWN_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_RESPAWN_BLOCK);
 
-    public CustomRespawnTest() {
+    public CustomRespawnTest(IEventBus eventBus) {
         if (ENABLE) {
-            final IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
             BLOCKS.register(eventBus);
             ITEMS.register(eventBus);
         }

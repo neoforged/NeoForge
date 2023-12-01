@@ -12,8 +12,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.RecordItem;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -31,8 +31,8 @@ public class MusicDiscTest {
     private static final DeferredItem<Item> TEST_MUSIC_DISC = ITEMS.register("test_music_disc",
             () -> new RecordItem(1, TEST_SOUND_EVENT, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 20));
 
-    public MusicDiscTest() {
-        final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public MusicDiscTest(ModContainer modContainer) {
+        final IEventBus modBus = modContainer.getEventBus();
         ITEMS.register(modBus);
         SOUND_EVENTS.register(modBus);
     }

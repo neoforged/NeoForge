@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -54,8 +53,7 @@ public class StickyBlockTest {
     public static final DeferredItem<BlockItem> BLUE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(BLUE_BLOCK);
     public static final DeferredItem<BlockItem> RED_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(RED_BLOCK);
 
-    public StickyBlockTest() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public StickyBlockTest(IEventBus modEventBus) {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
     }

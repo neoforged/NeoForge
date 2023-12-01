@@ -12,15 +12,15 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.fml.javafmlmod.FMLModContainer;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Fired for each registry when it is ready to have modded objects registered.
  * This event is fired for all builtin registries from vanilla (see {@link BuiltInRegistries}) and mods.
  *
- * <p>This event is fired on the {@linkplain net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+ * <p>This event is fired on the {@linkplain FMLModContainer#getEventBus() mod-specific event bus},
  * on both {@linkplain net.neoforged.fml.LogicalSide logical sides}.</p>
  *
  * @see #register(ResourceKey, ResourceLocation, Supplier)
@@ -100,8 +100,8 @@ public class RegisterEvent extends Event implements IModBusEvent {
          * @param name  the name of the object to register as its key with the namespaced inferred from the active mod container
          * @param value the object value
          */
-        default void register(String name, T value) {
-            register(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name), value);
+        default void register(String namespace, String name, T value) {
+            register(new ResourceLocation(namespace, name), value);
         }
 
         /**

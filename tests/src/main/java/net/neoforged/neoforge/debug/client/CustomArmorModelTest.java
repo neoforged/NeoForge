@@ -22,7 +22,6 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.Item.Properties;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -41,8 +40,7 @@ public class CustomArmorModelTest {
     private static final DeferredItem<Item> ENDERMAN_CHESTPLATE = ITEMS.register("enderman_chestplate", () -> new EndermanArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.CHESTPLATE, new Properties().stacksTo(1)));
     private static final DeferredItem<Item> ENDERMAN_BOOTS = ITEMS.register("enderman_boots", () -> new EndermanArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.BOOTS, new Properties().stacksTo(1)));
 
-    public CustomArmorModelTest() {
-        final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public CustomArmorModelTest(IEventBus modBus) {
         ITEMS.register(modBus);
         modBus.addListener(this::addCreative);
     }

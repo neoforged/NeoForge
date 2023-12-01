@@ -13,16 +13,16 @@ import net.minecraft.commands.arguments.selector.options.EntitySelectorOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.command.EntitySelectorManager;
 import net.neoforged.neoforge.common.command.IEntitySelectorType;
 
 @Mod("entity_selector_test")
 public class EntitySelectorTest {
-    public EntitySelectorTest() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+    public EntitySelectorTest(IEventBus modEventBus) {
+        modEventBus.addListener(this::setup);
     }
 
     public void setup(FMLCommonSetupEvent event) {

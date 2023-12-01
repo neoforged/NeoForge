@@ -10,8 +10,8 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -25,8 +25,8 @@ public class CustomShieldTest {
     private static final DeferredItem<CustomShieldItem> CUSTOM_SHIELD_ITEM = ITEMS.register("custom_shield",
             () -> new CustomShieldItem((new Item.Properties()).durability(336)));
 
-    public CustomShieldTest() {
-        var modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public CustomShieldTest(ModContainer modContainer) {
+        var modBus = modContainer.getEventBus();
         ITEMS.register(modBus);
         modBus.addListener(this::addCreative);
     }

@@ -18,7 +18,6 @@ import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.capabilities.CapabilityProvider;
 import net.neoforged.neoforge.common.util.TextTable;
@@ -41,11 +40,10 @@ public class LazyCapabilitiesOnItemsTest {
     private static final List<ItemStack> NO_CAPS_ENABLED_RESULTS = new ArrayList<>(SAMPLE_SIZE);
     private static final List<ItemStack> WITH_CAPS_ENABLED_RESULTS = new ArrayList<>(SAMPLE_SIZE);
 
-    public LazyCapabilitiesOnItemsTest() {
+    public LazyCapabilitiesOnItemsTest(final IEventBus modBus) {
         if (!ENABLED)
             return;
 
-        final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(this::onCommonSetup);
     }
 

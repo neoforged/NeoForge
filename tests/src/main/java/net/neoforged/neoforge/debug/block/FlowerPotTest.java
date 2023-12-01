@@ -16,7 +16,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -44,8 +43,7 @@ public class FlowerPotTest {
         }
     }
 
-    public FlowerPotTest() {
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public FlowerPotTest(IEventBus modBus) {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
     }

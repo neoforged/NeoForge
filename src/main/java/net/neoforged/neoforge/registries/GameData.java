@@ -91,7 +91,7 @@ public class GameData {
 
                 StartupMessageManager.modLoaderConsumer().ifPresent(s -> s.accept("REGISTERING " + registryKey.location()));
 
-                ModLoader.get().postEventWrapContainerInModOrder(registerEvent);
+                ModLoader.get().postEventInModOrder(registerEvent);
             } catch (Throwable t) {
                 aggregate.addSuppressed(t);
             }

@@ -36,7 +36,7 @@ public final class DimensionSpecialEffectsManager {
         var effects = new HashMap<ResourceLocation, DimensionSpecialEffects>();
         DEFAULT_EFFECTS = preRegisterVanillaEffects(effects);
         var event = new RegisterDimensionSpecialEffectsEvent(effects);
-        ModLoader.get().postEventWrapContainerInModOrder(event);
+        ModLoader.get().postEventInModOrder(event);
         EFFECTS = ImmutableMap.copyOf(effects);
     }
 

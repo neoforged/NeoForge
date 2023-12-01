@@ -11,7 +11,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen;
 import net.neoforged.neoforge.network.NetworkRegistry;
@@ -43,13 +42,12 @@ public class ModMismatchTest {
     private static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, MOD_ID);
     private static final String CHANNEL_PROTOCOL_VERSION = FMLEnvironment.dist == Dist.CLIENT ? "V1" : "V2";
 
-    public ModMismatchTest() {
+    public ModMismatchTest(IEventBus eventBus) {
         if (ENABLED) {
             if ((FMLEnvironment.dist == Dist.DEDICATED_SERVER && REGISTER_FOR_SERVER) || (FMLEnvironment.dist == Dist.CLIENT && REGISTER_FOR_CLIENT)) {
                 NetworkRegistry.newSimpleChannel(new ResourceLocation(MOD_ID, "channel"), () -> CHANNEL_PROTOCOL_VERSION, p -> p.equals(CHANNEL_PROTOCOL_VERSION), (p) -> p.equals(CHANNEL_PROTOCOL_VERSION));
             }
             if (REGISTER_REGISTRY_ENTRY && FMLEnvironment.dist == Dist.DEDICATED_SERVER) {
-                IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
                 SOUND_EVENTS.register("mismatching_sound_event", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MOD_ID, "server.connect.fail")));
                 SOUND_EVENTS.register(eventBus);
             }

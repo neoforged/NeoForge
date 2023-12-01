@@ -16,14 +16,14 @@ import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.javafmlmod.FMLModContainer;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Fired for registering block and item color handlers at the appropriate time.
  * See the two subclasses for registering block or item color handlers.
  *
- * <p>These events are fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+ * <p>These events are fired on the {@linkplain FMLModContainer#getEventBus() mod-specific event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
  * @see RegisterColorHandlersEvent.Block
@@ -36,9 +36,9 @@ public abstract class RegisterColorHandlersEvent extends Event implements IModBu
     /**
      * Fired for registering block color handlers.
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+     * <p>This event is fired on the {@linkplain FMLModContainer#getEventBus() mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Block extends RegisterColorHandlersEvent {
@@ -75,9 +75,9 @@ public abstract class RegisterColorHandlersEvent extends Event implements IModBu
      * <p>The block colors should only be used for referencing or delegating item colors to their respective block
      * colors. Use {@link RegisterColorHandlersEvent.Block} for registering your block color handlers.</p>
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+     * <p>This event is fired on the {@linkplain FMLModContainer#getEventBus() mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Item extends RegisterColorHandlersEvent {

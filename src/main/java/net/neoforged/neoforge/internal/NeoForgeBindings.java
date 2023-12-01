@@ -16,8 +16,8 @@ import net.neoforged.neoforge.common.NeoForge;
 
 public class NeoForgeBindings implements IBindingsProvider {
     @Override
-    public Supplier<IEventBus> getForgeBusSupplier() {
-        return () -> NeoForge.EVENT_BUS;
+    public IEventBus getForgeBusSupplier() {
+        return NeoForge.EVENT_BUS;
     }
 
     @Override

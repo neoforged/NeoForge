@@ -30,8 +30,8 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.model.IModelBuilder;
 import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
@@ -95,8 +95,8 @@ public class NewModelLoaderTest {
 
     public static DeferredItem<Item> separate_perspective = ITEMS.registerSimpleItem("separate_perspective");
 
-    public NewModelLoaderTest() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public NewModelLoaderTest(ModContainer modContainer) {
+        IEventBus modEventBus = modContainer.getEventBus();
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
@@ -119,7 +119,7 @@ public class NewModelLoaderTest {
     }
 
     public void modelRegistry(ModelEvent.RegisterGeometryLoaders event) {
-        event.register("custom_loader", new TestLoader());
+        event.register(new ResourceLocation(MODID, "custom_loader"), new TestLoader());
     }
 
     static class TestLoader implements IGeometryLoader<TestModel> {

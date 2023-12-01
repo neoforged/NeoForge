@@ -14,9 +14,8 @@ import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.javafmlmod.FMLModContainer;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -38,9 +37,9 @@ public abstract class ModelEvent extends Event {
      * must therefore not be accessed in this event.
      * </p>
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+     * <p>This event is fired on the {@linkplain FMLModContainer#getEventBus() mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class ModifyBakingResult extends ModelEvent implements IModBusEvent {
@@ -74,9 +73,9 @@ public abstract class ModelEvent extends Event {
      * The model registry given by this event is unmodifiable. To modify the model registry, use
      * {@link ModelEvent.ModifyBakingResult} instead.
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+     * <p>This event is fired on the {@linkplain FMLModContainer#getEventBus() mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class BakingCompleted extends ModelEvent implements IModBusEvent {
@@ -117,9 +116,9 @@ public abstract class ModelEvent extends Event {
      * Fired when the {@link net.minecraft.client.resources.model.ModelBakery} is notified of the resource manager reloading.
      * Allows developers to register models to be loaded, along with their dependencies.
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+     * <p>This event is fired on the {@linkplain FMLModContainer#getEventBus() mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class RegisterAdditional extends ModelEvent implements IModBusEvent {
@@ -141,9 +140,9 @@ public abstract class ModelEvent extends Event {
     /**
      * Allows users to register their own {@link IGeometryLoader geometry loaders} for use in block/item models.
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+     * <p>This event is fired on the {@linkplain FMLModContainer#getEventBus() mod-specific event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class RegisterGeometryLoaders extends ModelEvent implements IModBusEvent {
@@ -157,8 +156,7 @@ public abstract class ModelEvent extends Event {
         /**
          * Registers a new geometry loader.
          */
-        public void register(String name, IGeometryLoader<?> loader) {
-            var key = new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name);
+        public void register(ResourceLocation key, IGeometryLoader<?> loader) {
             Preconditions.checkArgument(!loaders.containsKey(key), "Geometry loader already registered: " + key);
             loaders.put(key, loader);
         }

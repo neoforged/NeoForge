@@ -14,8 +14,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -37,8 +37,8 @@ public class PlayerAttackKnockbackTest {
 
     static DeferredItem<Item> KNOCKBACK_SWORD = ITEMS.register("knockback_sword", () -> new KnockbackSwordItem(Tiers.IRON, 3, -2.4F, ATTACK_KNOCKBACK_VALUE, (new Item.Properties())));
 
-    public PlayerAttackKnockbackTest() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public PlayerAttackKnockbackTest(ModContainer modContainer) {
+        IEventBus modEventBus = modContainer.getEventBus();
         ITEMS.register(modEventBus);
         modEventBus.addListener(this::addCreative);
     }

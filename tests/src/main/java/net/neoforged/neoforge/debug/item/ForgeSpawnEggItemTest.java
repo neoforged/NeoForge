@@ -18,8 +18,8 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
@@ -41,9 +41,9 @@ public class ForgeSpawnEggItemTest {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final DeferredItem<DeferredSpawnEggItem> EGG = ITEMS.register("test_spawn_egg", () -> new DeferredSpawnEggItem(ENTITY, 0x0000FF, 0xFF0000, new Item.Properties()));
 
-    public ForgeSpawnEggItemTest() {
+    public ForgeSpawnEggItemTest(ModContainer modContainer) {
         if (ENABLED) {
-            var eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+            var eventBus = modContainer.getEventBus();
             ITEMS.register(eventBus);
             ENTITIES.register(eventBus);
             eventBus.register(this);

@@ -31,7 +31,7 @@ public final class PresetEditorManager {
 
         // Gather mods' entries
         RegisterPresetEditorsEvent event = new RegisterPresetEditorsEvent(gatheredEditors);
-        ModLoader.get().postEventWrapContainerInModOrder(event);
+        ModLoader.get().postEventInModOrder(event);
 
         editors = gatheredEditors;
     }

@@ -31,11 +31,11 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 @Mod.EventBusSubscriber(bus = Bus.MOD)
 public class CustomPlantTypeTest {
     static final String MODID = "custom_plant_type_test";
-    private static final String CUSTOM_SOIL_BLOCK = "test_custom_block";
-    private static final String CUSTOM_PLANT_BLOCK = "test_custom_plant";
+    private static final ResourceLocation CUSTOM_SOIL_BLOCK = new ResourceLocation(MODID, "test_custom_block");
+    private static final ResourceLocation CUSTOM_PLANT_BLOCK = new ResourceLocation(MODID, "test_custom_plant");
 
-    public static final DeferredBlock<Block> CUSTOM_SOIL = DeferredBlock.createBlock(new ResourceLocation(MODID, CUSTOM_SOIL_BLOCK));
-    public static final DeferredBlock<Block> CUSTOM_PLANT = DeferredBlock.createBlock(new ResourceLocation(MODID, CUSTOM_PLANT_BLOCK));
+    public static final DeferredBlock<Block> CUSTOM_SOIL = DeferredBlock.createBlock(CUSTOM_SOIL_BLOCK);
+    public static final DeferredBlock<Block> CUSTOM_PLANT = DeferredBlock.createBlock(CUSTOM_PLANT_BLOCK);
 
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent event) {

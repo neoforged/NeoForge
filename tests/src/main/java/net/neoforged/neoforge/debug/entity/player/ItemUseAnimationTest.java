@@ -14,8 +14,8 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -36,8 +36,8 @@ public class ItemUseAnimationTest {
 
     private static final DeferredItem<Item> THING = ITEMS.register("thing", () -> new ThingItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(4).alwaysEat().build())));
 
-    public ItemUseAnimationTest() {
-        var modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public ItemUseAnimationTest(ModContainer modContainer) {
+        var modBus = modContainer.getEventBus();
         ITEMS.register(modBus);
         modBus.addListener(this::addCreative);
     }

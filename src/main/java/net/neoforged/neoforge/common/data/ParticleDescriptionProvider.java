@@ -26,7 +26,7 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.javafmlmod.FMLModContainer;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -36,7 +36,7 @@ import org.jetbrains.annotations.VisibleForTesting;
  *
  * <p>To use this provider, extend this class and implement {@link #addDescriptions()}.
  * Then, register an instance using {@link net.minecraft.data.DataGenerator#addProvider(boolean, Factory)}
- * via the {@link GatherDataEvent} on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod event bus}.
+ * via the {@link GatherDataEvent} on the {@linkplain FMLModContainer#getEventBus() mod event bus}.
  *
  * <p>A description can be added to a {@link ParticleType} which uses a {@linkplain #sprite(ParticleType, ResourceLocation) sprite}
  * or {@linkplain #spriteSet(ParticleType, Iterable) sprite set}.

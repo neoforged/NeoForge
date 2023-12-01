@@ -36,7 +36,7 @@ public final class ClientTooltipComponentManager {
     public static void init() {
         var factories = new HashMap<Class<? extends TooltipComponent>, Function<TooltipComponent, ClientTooltipComponent>>();
         var event = new RegisterClientTooltipComponentFactoriesEvent(factories);
-        ModLoader.get().postEventWrapContainerInModOrder(event);
+        ModLoader.get().postEventInModOrder(event);
         FACTORIES = ImmutableMap.copyOf(factories);
     }
 

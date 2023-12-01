@@ -12,9 +12,9 @@ import net.minecraft.server.packs.repository.BuiltInPackSource;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 
 @Mod(AddPackFinderEventTest.MODID)
@@ -22,11 +22,11 @@ public class AddPackFinderEventTest {
     private static final boolean ENABLE = false;
     public static final String MODID = "add_pack_finders_test";
 
-    public AddPackFinderEventTest() {
+    public AddPackFinderEventTest(ModContainer modContainer) {
         if (!ENABLE)
             return;
 
-        FMLJavaModLoadingContext.get().getModEventBus().register(this);
+        modContainer.getEventBus().register(this);
     }
 
     @SubscribeEvent

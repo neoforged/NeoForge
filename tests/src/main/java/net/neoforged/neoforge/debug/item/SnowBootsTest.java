@@ -8,8 +8,8 @@ package net.neoforged.neoforge.debug.item;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.*;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -26,8 +26,8 @@ public class SnowBootsTest {
         }
     });
 
-    public SnowBootsTest() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public SnowBootsTest(ModContainer modContainer) {
+        IEventBus modEventBus = modContainer.getEventBus();
         ITEMS.register(modEventBus);
         modEventBus.addListener(this::addCreative);
     }

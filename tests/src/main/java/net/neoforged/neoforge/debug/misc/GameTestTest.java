@@ -26,8 +26,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.capabilities.Capabilities;
 import net.neoforged.neoforge.common.capabilities.Capability;
 import net.neoforged.neoforge.common.util.LazyOptional;
@@ -57,9 +57,9 @@ public class GameTestTest {
     private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> ENERGY_BLOCK_ENTITY = BLOCK_ENTITIES.register("energy",
             () -> BlockEntityType.Builder.of(EnergyBlockEntity::new, ENERGY_BLOCK.get()).build(null));
 
-    public GameTestTest() {
+    public GameTestTest(ModContainer modContainer) {
         if (ENABLED) {
-            IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+            IEventBus modBus = modContainer.getEventBus();
             modBus.register(this);
 
             BLOCKS.register(modBus);

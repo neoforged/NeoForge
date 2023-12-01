@@ -16,15 +16,15 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.javafmlmod.FMLModContainer;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Allows users to register custom categories for the vanilla recipe book, making it usable in modded GUIs.
  *
- * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+ * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  *
- * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+ * <p>This event is fired on the {@linkplain FMLModContainer#getEventBus() mod-specific event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class RegisterRecipeBookCategoriesEvent extends Event implements IModBusEvent {

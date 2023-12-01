@@ -12,18 +12,17 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.javafmlmod.FMLModContainer;
 import net.neoforged.neoforge.client.RenderTypeGroup;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Allows users to register custom named {@link RenderType render types}.
  *
- * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+ * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  *
- * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+ * <p>This event is fired on the {@linkplain FMLModContainer#getEventBus() mod-specific event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class RegisterNamedRenderTypesEvent extends Event implements IModBusEvent {
@@ -41,21 +40,20 @@ public class RegisterNamedRenderTypesEvent extends Event implements IModBusEvent
      * @param blockRenderType  One of the values returned by {@link RenderType#chunkBufferLayers()}
      * @param entityRenderType A {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY}
      */
-    public void register(String name, RenderType blockRenderType, RenderType entityRenderType) {
+    public void register(ResourceLocation name, RenderType blockRenderType, RenderType entityRenderType) {
         register(name, blockRenderType, entityRenderType, entityRenderType);
     }
 
     /**
      * Registers a named {@link RenderTypeGroup}.
      *
-     * @param name                     The name
+     * @param key                      The name
      * @param blockRenderType          One of the values returned by {@link RenderType#chunkBufferLayers()}
      * @param entityRenderType         A {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY}
      * @param fabulousEntityRenderType A {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY} for use when
      *                                 "fabulous" rendering is enabled
      */
-    public void register(String name, RenderType blockRenderType, RenderType entityRenderType, RenderType fabulousEntityRenderType) {
-        var key = new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name);
+    public void register(ResourceLocation key, RenderType blockRenderType, RenderType entityRenderType, RenderType fabulousEntityRenderType) {
         Preconditions.checkArgument(!renderTypes.containsKey(key), "Render type already registered: " + key);
         Preconditions.checkArgument(blockRenderType.format() == DefaultVertexFormat.BLOCK, "The block render type must use the BLOCK vertex format.");
         Preconditions.checkArgument(blockRenderType.getChunkLayerId() >= 0, "Only chunk render types can be used for block rendering. Query RenderType#chunkBufferLayers() for a list.");

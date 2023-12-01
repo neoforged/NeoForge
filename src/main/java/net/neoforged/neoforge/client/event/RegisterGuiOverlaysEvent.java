@@ -11,9 +11,8 @@ import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.javafmlmod.FMLModContainer;
 import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import net.neoforged.neoforge.client.gui.overlay.VanillaGuiOverlay;
 import org.jetbrains.annotations.ApiStatus;
@@ -23,9 +22,9 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Allows users to register custom {@link IGuiOverlay GUI overlays}.
  *
- * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+ * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  *
- * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+ * <p>This event is fired on the {@linkplain FMLModContainer#getEventBus() mod-specific event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent {
@@ -44,7 +43,7 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent {
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
      */
-    public void registerBelowAll(@NotNull String id, @NotNull IGuiOverlay overlay) {
+    public void registerBelowAll(@NotNull ResourceLocation id, @NotNull IGuiOverlay overlay) {
         register(Ordering.BEFORE, null, id, overlay);
     }
 
@@ -56,7 +55,7 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent {
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
      */
-    public void registerBelow(@NotNull ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay) {
+    public void registerBelow(@NotNull ResourceLocation other, @NotNull ResourceLocation id, @NotNull IGuiOverlay overlay) {
         register(Ordering.BEFORE, other, id, overlay);
     }
 
@@ -68,7 +67,7 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent {
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
      */
-    public void registerAbove(@NotNull ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay) {
+    public void registerAbove(@NotNull ResourceLocation other, @NotNull ResourceLocation id, @NotNull IGuiOverlay overlay) {
         register(Ordering.AFTER, other, id, overlay);
     }
 
@@ -78,12 +77,11 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent {
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
      */
-    public void registerAboveAll(@NotNull String id, @NotNull IGuiOverlay overlay) {
+    public void registerAboveAll(@NotNull ResourceLocation id, @NotNull IGuiOverlay overlay) {
         register(Ordering.AFTER, null, id, overlay);
     }
 
-    private void register(@NotNull Ordering ordering, @Nullable ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay) {
-        var key = new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), id);
+    private void register(@NotNull Ordering ordering, @Nullable ResourceLocation other, @NotNull ResourceLocation key, @NotNull IGuiOverlay overlay) {
         Preconditions.checkArgument(!overlays.containsKey(key), "Overlay already registered: " + key);
 
         int insertPosition;

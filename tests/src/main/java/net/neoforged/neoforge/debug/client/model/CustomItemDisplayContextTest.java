@@ -37,9 +37,9 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
@@ -69,7 +69,8 @@ public class CustomItemDisplayContextTest {
 
     @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
     private static class RendererEvents {
-        public static final ItemDisplayContext HANGING = ItemDisplayContext.create("custom_transformtype_test_hanging", new ResourceLocation("custom_transformtype_test", "hanging"), null);
+        public static final ResourceLocation HANGING_NAME = new ResourceLocation(MODID, "hanging");
+        public static final ItemDisplayContext HANGING = ItemDisplayContext.create("custom_transformtype_test_hanging", HANGING_NAME, null);
 
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -78,7 +79,7 @@ public class CustomItemDisplayContextTest {
 
         @SubscribeEvent
         public static void registerContext(final RegisterEvent event) {
-            event.register(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS, helper -> helper.register("hanging", HANGING));
+            event.register(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS, helper -> helper.register(HANGING_NAME, HANGING));
         }
 
         private static class ItemHangerBlockEntityRenderer
@@ -116,8 +117,7 @@ public class CustomItemDisplayContextTest {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemHangerBlockEntity>> ITEM_HANGER_BE = BLOCK_ENTITY_TYPES.register("item_hanger", () -> BlockEntityType.Builder.of(ItemHangerBlockEntity::new, ITEM_HANGER_BLOCK.get()).build(null));
     public static final DeferredItem<Item> ITEM_HANGER_ITEM = ITEMS.register("item_hanger", () -> new ItemHangerItem(ITEM_HANGER_BLOCK.get(), new Item.Properties()));
 
-    public CustomItemDisplayContextTest() {
-        var modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public CustomItemDisplayContextTest(IEventBus modBus) {
         modBus.addListener(this::gatherData);
         BLOCKS.register(modBus);
         BLOCK_ENTITY_TYPES.register(modBus);

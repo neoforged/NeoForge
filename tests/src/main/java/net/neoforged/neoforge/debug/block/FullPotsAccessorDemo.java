@@ -54,7 +54,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.model.BakedModelWrapper;
@@ -87,9 +86,8 @@ public class FullPotsAccessorDemo {
             "diorite_pot",
             () -> BlockEntityType.Builder.of(DioriteFlowerPotBlockEntity::new, DIORITE_POT.get()).build(null));
 
-    public FullPotsAccessorDemo() {
+    public FullPotsAccessorDemo(IEventBus bus) {
         if (ENABLED) {
-            IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
             BLOCKS.register(bus);
             ITEMS.register(bus);
             BLOCK_ENTITIES.register(bus);
@@ -228,7 +226,7 @@ public class FullPotsAccessorDemo {
     private static class ClientHandler {
         @SubscribeEvent
         public static void registerLoader(final ModelEvent.RegisterGeometryLoaders event) {
-            event.register("diorite_pot", new DioritePotGeometryLoader());
+            event.register(new ResourceLocation(MOD_ID, "diorite_pot"), new DioritePotGeometryLoader());
         }
 
         private static class DioritePotGeometryLoader implements IGeometryLoader<DioritePotModelGeometry> {

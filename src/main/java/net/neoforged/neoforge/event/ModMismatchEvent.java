@@ -15,9 +15,8 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.javafmlmod.FMLModContainer;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.jetbrains.annotations.ApiStatus;
@@ -33,8 +32,8 @@ import org.jetbrains.annotations.Nullable;
  * unsafe to access server or level information during handling of this event.
  * </p>
  *
- * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
- * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+ * <p>This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+ * <p>This event is fired on the {@linkplain FMLModContainer#getEventBus() mod-specific event bus},
  * on both {@linkplain LogicalSide logical sides}.</p>
  */
 public class ModMismatchEvent extends Event implements IModBusEvent {
@@ -101,8 +100,7 @@ public class ModMismatchEvent extends Event implements IModBusEvent {
     /**
      * Marks the mod version mismatch as having been resolved safely by the current mod.
      */
-    public void markResolved(String modId) {
-        final var resolvedBy = ModLoadingContext.get().getActiveContainer();
+    public void markResolved(String modId, ModContainer resolvedBy) {
         resolved.putIfAbsent(modId, resolvedBy);
     }
 

@@ -21,9 +21,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,8 +56,8 @@ public class RegistryCodecTest {
             BuiltInRegistries.BLOCK.byNameCodec().fieldOf("block").forGetter(Pair::getFirst),
             BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(Pair::getSecond)).apply(codecInstance, Pair::of));
 
-    public RegistryCodecTest() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
+    public RegistryCodecTest(ModContainer modContainer) {
+        modContainer.getEventBus().addListener(this::commonSetup);
     }
 
     public void commonSetup(final FMLCommonSetupEvent event) {

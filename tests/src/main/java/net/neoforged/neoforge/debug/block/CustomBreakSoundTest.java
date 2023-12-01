@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -42,9 +41,8 @@ public class CustomBreakSoundTest {
     private static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.registerBlock("testblock", TestBlock::new, BlockBehaviour.Properties.of());
     private static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
 
-    public CustomBreakSoundTest() {
+    public CustomBreakSoundTest(IEventBus modBus) {
         if (ENABLED) {
-            IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
             BLOCKS.register(modBus);
             ITEMS.register(modBus);
             modBus.addListener(CustomBreakSoundTest::addCreative);

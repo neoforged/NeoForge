@@ -74,13 +74,13 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.CrashReportCallables;
 import net.neoforged.fml.IExtensionPoint;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.StartupMessageManager;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.fml.javafmlmod.FMLModContainer;
 import net.neoforged.neoforge.client.ClientCommandHandler;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.conditions.AndCondition;
@@ -453,7 +453,7 @@ public class NeoForgeMod {
         enableMilkFluid = true;
     }
 
-    public NeoForgeMod(IEventBus modEventBus, Dist dist) {
+    public NeoForgeMod(IEventBus modEventBus, FMLModContainer modContainer, Dist dist) {
         LOGGER.info(NEOFORGEMOD, "NeoForge mod loading, version {}, for MC {} with MCP {}", NeoForgeVersion.getVersion(), NeoFormVersion.getMCVersion(), NeoFormVersion.getMCPVersion());
         ForgeSnapshotsMod.logStartupWarning();
 
@@ -489,13 +489,13 @@ public class NeoForgeMod {
         CONDITION_CODECS.register(modEventBus);
         RECIPE_SERIALIZERS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.clientSpec);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, NeoForgeConfig.serverSpec);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, NeoForgeConfig.commonSpec);
+        modContainer.addConfig(new ModConfig(ModConfig.Type.CLIENT, NeoForgeConfig.clientSpec, modContainer));
+        modContainer.addConfig(new ModConfig(ModConfig.Type.SERVER, NeoForgeConfig.serverSpec, modContainer));
+        modContainer.addConfig(new ModConfig(ModConfig.Type.COMMON, NeoForgeConfig.commonSpec, modContainer));
         modEventBus.register(NeoForgeConfig.class);
         NeoForgeRegistriesSetup.setup(modEventBus);
         // Forge does not display problems when the remote is not matching.
-        ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> "ANY", (remote, isServer) -> true));
+        modContainer.registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> "ANY", (remote, isServer) -> true));
         StartupMessageManager.addModMessage("NeoForge version " + NeoForgeVersion.getVersion());
 
         NeoForge.EVENT_BUS.addListener(VillagerTradingManager::loadTrades);

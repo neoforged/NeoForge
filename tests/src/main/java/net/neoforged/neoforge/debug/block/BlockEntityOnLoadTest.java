@@ -22,7 +22,6 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -44,9 +43,8 @@ public class BlockEntityOnLoadTest {
     private static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
     private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TestBlockEntity>> TEST_BE_TYPE = BE_TYPES.register("be_onload_testbe", () -> BlockEntityType.Builder.of(TestBlockEntity::new, TEST_BLOCK.get()).build(null));
 
-    public BlockEntityOnLoadTest() {
+    public BlockEntityOnLoadTest(IEventBus modBus) {
         if (ENABLED) {
-            IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
             BLOCKS.register(modBus);
             ITEMS.register(modBus);
             BE_TYPES.register(modBus);

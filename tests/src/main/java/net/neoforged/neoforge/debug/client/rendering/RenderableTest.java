@@ -19,8 +19,9 @@ import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.client.event.ModelEvent;
@@ -57,10 +58,10 @@ public class RenderableTest {
 
     public static final boolean ENABLED = false; // Renders at (0, 120, 0)
 
-    public RenderableTest() {
+    public RenderableTest(ModContainer modContainer) {
         if (ENABLED) {
             if (FMLEnvironment.dist == Dist.CLIENT) {
-                Client.init();
+                Client.init(modContainer.getEventBus());
             }
         }
     }
@@ -71,13 +72,11 @@ public class RenderableTest {
         private static IRenderable<CompositeRenderable.Transforms> renderable;
         private static IRenderable<ModelData> bakedRenderable;
 
-        public static void init() {
-            var modBus = FMLJavaModLoadingContext.get().getModEventBus();
-            var forgeBus = NeoForge.EVENT_BUS;
+        public static void init(IEventBus modBus) {
             modBus.addListener(Client::registerModels);
             modBus.addListener(Client::registerReloadListeners);
             modBus.addListener(Client::registerStage);
-            forgeBus.addListener(Client::renderStage);
+            NeoForge.EVENT_BUS.addListener(Client::renderStage);
         }
 
         private static void registerModels(ModelEvent.RegisterAdditional event) {

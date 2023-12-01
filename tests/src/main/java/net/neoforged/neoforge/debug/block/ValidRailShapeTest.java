@@ -22,7 +22,6 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -38,9 +37,8 @@ public class ValidRailShapeTest {
     private static final DeferredBlock<Block> RAIL_SLOPE_BLOCK = BLOCKS.register("rail_slope", RailSlopeBlock::new);
     private static final DeferredItem<BlockItem> RAIL_SLOPE_ITEM = ITEMS.registerSimpleBlockItem(RAIL_SLOPE_BLOCK);
 
-    public ValidRailShapeTest() {
+    public ValidRailShapeTest(IEventBus bus) {
         if (ENABLED) {
-            IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
             BLOCKS.register(bus);
             ITEMS.register(bus);
         }

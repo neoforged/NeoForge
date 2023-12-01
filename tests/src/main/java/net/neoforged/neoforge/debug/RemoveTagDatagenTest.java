@@ -17,9 +17,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -30,9 +29,8 @@ public class RemoveTagDatagenTest {
     public static final String MODID = "remove_tag_datagen_test";
     public static final TagKey<Block> TEST_TAG = BlockTags.create(new ResourceLocation("test_tag"));
 
-    public RemoveTagDatagenTest() {
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modBus.addListener(this::onGatherData);
+    public RemoveTagDatagenTest(ModContainer modContainer) {
+        modContainer.getEventBus().addListener(this::onGatherData);
     }
 
     private void onGatherData(GatherDataEvent event) {

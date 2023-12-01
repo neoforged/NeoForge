@@ -27,8 +27,8 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelFile.UncheckedModelFile;
@@ -82,8 +82,8 @@ public class TagBasedToolTypesTest {
         };
     });
 
-    public TagBasedToolTypesTest() {
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public TagBasedToolTypesTest(ModContainer modContainer) {
+        final IEventBus modEventBus = modContainer.getEventBus();
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         modEventBus.addListener(this::gatherData);

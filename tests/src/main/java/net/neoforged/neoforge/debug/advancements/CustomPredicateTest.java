@@ -22,8 +22,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate;
 import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -45,8 +45,7 @@ public class CustomPredicateTest {
                 return codec.xmap(Function.identity(), Function.identity());
             });
 
-    public CustomPredicateTest() {
-        var modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public CustomPredicateTest(IEventBus modBus) {
         ITEM_PREDICATE_SERIALIZERS.register(modBus);
         modBus.addListener(CustomPredicateTest::generateData);
     }

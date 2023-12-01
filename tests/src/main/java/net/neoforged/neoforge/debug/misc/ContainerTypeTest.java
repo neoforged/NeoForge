@@ -24,9 +24,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -36,7 +36,8 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod("containertypetest")
 public class ContainerTypeTest {
-    public static final DeferredHolder<MenuType<?>, MenuType<TestContainer>> TYPE = DeferredHolder.create(Registries.MENU, new ResourceLocation("containertypetest", "container"));
+    public static final ResourceLocation CONTAINER_NAME = new ResourceLocation("containertypetest", "container");
+    public static final DeferredHolder<MenuType<?>, MenuType<TestContainer>> TYPE = DeferredHolder.create(Registries.MENU, CONTAINER_NAME);
 
     public static class TestContainer extends AbstractContainerMenu {
         private final String text;
@@ -75,14 +76,14 @@ public class ContainerTypeTest {
         }
     }
 
-    public ContainerTypeTest() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerContainers);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+    public ContainerTypeTest(ModContainer modContainer) {
+        modContainer.getEventBus().addListener(this::registerContainers);
+        modContainer.getEventBus().addListener(this::setup);
         NeoForge.EVENT_BUS.addListener(this::onRightClick);
     }
 
     private void registerContainers(final RegisterEvent event) {
-        event.register(Registries.MENU, helper -> helper.register("container", IMenuTypeExtension.create(TestContainer::new)));
+        event.register(Registries.MENU, helper -> helper.register(CONTAINER_NAME, IMenuTypeExtension.create(TestContainer::new)));
     }
 
     private void setup(FMLClientSetupEvent event) {

@@ -9,8 +9,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -32,9 +32,9 @@ public class CustomRarityTest {
                 }
             });
 
-    public CustomRarityTest() {
+    public CustomRarityTest(ModContainer modContainer) {
         if (ENABLED) {
-            ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
+            ITEMS.register(modContainer.getEventBus());
         }
     }
 }

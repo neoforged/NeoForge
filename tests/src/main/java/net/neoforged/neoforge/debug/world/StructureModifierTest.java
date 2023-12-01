@@ -17,7 +17,6 @@ import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.world.ModifiableStructureInfo.StructureInfo.Builder;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -47,11 +46,9 @@ public class StructureModifierTest {
     public static final String MODIFY_STRONGHOLD = "modify_stronghold";
     public static final ResourceLocation MODIFY_STRONGHOLD_RL = new ResourceLocation(MODID, MODIFY_STRONGHOLD);
 
-    public StructureModifierTest() {
+    public StructureModifierTest(IEventBus modBus) {
         if (!ENABLED)
             return;
-
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         // Serializer types can be registered via deferred register.
         final DeferredRegister<Codec<? extends StructureModifier>> serializers = DeferredRegister.create(Keys.STRUCTURE_MODIFIER_SERIALIZERS, MODID);

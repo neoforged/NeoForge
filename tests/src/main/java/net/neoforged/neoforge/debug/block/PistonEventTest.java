@@ -27,7 +27,6 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -57,8 +56,7 @@ public class PistonEventTest {
     private static final DeferredBlock<Block> SHIFT_ON_MOVE = BLOCKS.register(blockName, () -> new Block(Block.Properties.of().mapColor(MapColor.STONE)));
     private static final DeferredItem<BlockItem> SHIFT_ON_MOVE_ITEM = ITEMS.registerSimpleBlockItem(SHIFT_ON_MOVE);
 
-    public PistonEventTest() {
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public PistonEventTest(IEventBus modBus) {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         modBus.addListener(this::gatherData);

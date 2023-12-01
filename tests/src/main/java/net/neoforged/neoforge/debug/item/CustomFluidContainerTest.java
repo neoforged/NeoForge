@@ -21,8 +21,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.fluids.FluidActionResult;
@@ -42,9 +42,9 @@ public class CustomFluidContainerTest {
 
     public static final DeferredItem<Item> CUSTOM_FLUID_CONTAINER = ITEMS.register("custom_fluid_container", () -> new CustomFluidContainer((new Item.Properties()).stacksTo(1)));
 
-    public CustomFluidContainerTest() {
+    public CustomFluidContainerTest(ModContainer modContainer) {
         if (ENABLED) {
-            IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+            IEventBus modEventBus = modContainer.getEventBus();
             ITEMS.register(modEventBus);
             modEventBus.addListener(this::addCreative);
         }

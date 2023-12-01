@@ -39,9 +39,9 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePrope
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
@@ -58,10 +58,10 @@ public class GlobalLootModifiersTest {
     public static final String MODID = "global_loot_test";
     public static final boolean ENABLE = true;
 
-    public GlobalLootModifiersTest() {
+    public GlobalLootModifiersTest(ModContainer modContainer) {
         if (ENABLE) {
-            GLM.register(FMLJavaModLoadingContext.get().getModEventBus());
-            ENCHANTS.register(FMLJavaModLoadingContext.get().getModEventBus());
+            GLM.register(modContainer.getEventBus());
+            ENCHANTS.register(modContainer.getEventBus());
         }
     }
 
