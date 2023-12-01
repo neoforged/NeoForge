@@ -13,7 +13,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import org.jetbrains.annotations.Nullable;
 
 public class ConditionalRecipe<T extends Recipe<?>> implements RecipeSerializer<T> {
     public static final Codec<Recipe<?>> CONDITIONAL_RECIPES_CODEC = RecipeManager.CONDITIONAL_DISPATCH.listOf().fieldOf("recipes")
