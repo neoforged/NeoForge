@@ -2,18 +2,18 @@
 +++ b/net/minecraft/world/entity/animal/Pig.java
 @@ -215,7 +_,7 @@
  
-    @Override
-    public void thunderHit(ServerLevel p_29473_, LightningBolt p_29474_) {
--      if (p_29473_.getDifficulty() != Difficulty.PEACEFUL) {
-+      if (p_29473_.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.ZOMBIFIED_PIGLIN, (timer) -> {})) {
-          ZombifiedPiglin zombifiedpiglin = EntityType.ZOMBIFIED_PIGLIN.create(p_29473_);
-          if (zombifiedpiglin != null) {
-             zombifiedpiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
+     @Override
+     public void thunderHit(ServerLevel p_29473_, LightningBolt p_29474_) {
+-        if (p_29473_.getDifficulty() != Difficulty.PEACEFUL) {
++        if (p_29473_.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.ZOMBIFIED_PIGLIN, (timer) -> {})) {
+             ZombifiedPiglin zombifiedpiglin = EntityType.ZOMBIFIED_PIGLIN.create(p_29473_);
+             if (zombifiedpiglin != null) {
+                 zombifiedpiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
 @@ -228,6 +_,7 @@
-             }
+                 }
  
-             zombifiedpiglin.setPersistenceRequired();
-+            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, zombifiedpiglin);
-             p_29473_.addFreshEntity(zombifiedpiglin);
-             this.discard();
-          } else {
+                 zombifiedpiglin.setPersistenceRequired();
++                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, zombifiedpiglin);
+                 p_29473_.addFreshEntity(zombifiedpiglin);
+                 this.discard();
+             } else {

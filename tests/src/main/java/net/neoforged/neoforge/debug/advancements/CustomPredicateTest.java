@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.advancements.FrameType;
+import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
@@ -91,7 +91,7 @@ public class CustomPredicateTest {
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
             Advancement.Builder.advancement()
                     .parent(new ResourceLocation("story/root"))
-                    .display(Items.ANVIL, Component.literal("Named!"), Component.literal("Get a named item"), null, FrameType.TASK, true, true, false)
+                    .display(Items.ANVIL, Component.literal("Named!"), Component.literal("Get a named item"), null, AdvancementType.TASK, true, true, false)
                     .addCriterion("has_named_item", InventoryChangeTrigger.TriggerInstance.hasItems(new CustomNamePredicate(1, 2).toVanilla()))
                     .save(saver, new ResourceLocation(MOD_ID, "named_item"), existingFileHelper);
         }

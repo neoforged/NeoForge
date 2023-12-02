@@ -17,11 +17,7 @@
   "display": {
     "announce_to_chat": false,
     "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
-    "description": {
-      "text": "You got cobblestone"
-    },
-    "frame": "task",
-    "hidden": false,
+    "description": "You got cobblestone",
     "icon": {
       "item": "minecraft:cobblestone"
     },

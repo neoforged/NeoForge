@@ -1,661 +1,655 @@
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -123,7 +_,7 @@
+@@ -124,7 +_,7 @@
  import org.joml.Vector3f;
  import org.slf4j.Logger;
  
--public abstract class Entity implements Nameable, EntityAccess, CommandSource {
-+public abstract class Entity extends net.neoforged.neoforge.common.capabilities.CapabilityProvider<Entity> implements Nameable, EntityAccess, CommandSource, net.neoforged.neoforge.common.extensions.IEntityExtension {
-    private static final Logger LOGGER = LogUtils.getLogger();
-    public static final String ID_TAG = "id";
-    public static final String PASSENGERS_TAG = "Passengers";
-@@ -144,6 +_,7 @@
-    private static final double LAVA_SLOW_FLOW_SCALE = 0.0023333333333333335;
-    public static final String UUID_TAG = "UUID";
-    private static double viewScale = 1.0;
-+   @Deprecated // Forge: Use the getter to allow overriding in mods
-    private final EntityType<?> type;
-    private int id = ENTITY_COUNTER.incrementAndGet();
-    public boolean blocksBuilding;
-@@ -190,8 +_,10 @@
-    public int tickCount;
-    private int remainingFireTicks = -this.getFireImmuneTicks();
-    protected boolean wasTouchingWater;
-+   @Deprecated // Forge: Use forgeFluidTypeHeight instead
-    protected Object2DoubleMap<TagKey<Fluid>> fluidHeight = new Object2DoubleArrayMap<>(2);
-    protected boolean wasEyeInWater;
-+   @Deprecated // Forge: Use forgeFluidTypeOnEyes instead
-    private final Set<TagKey<Fluid>> fluidOnEyes = new HashSet<>();
-    public int invulnerableTime;
-    protected boolean firstTick = true;
-@@ -242,6 +_,7 @@
-    private BlockState feetBlockState = null;
+-public abstract class Entity implements Nameable, EntityAccess, CommandSource, ScoreHolder {
++public abstract class Entity extends net.neoforged.neoforge.common.capabilities.CapabilityProvider<Entity> implements Nameable, EntityAccess, CommandSource, ScoreHolder, net.neoforged.neoforge.common.extensions.IEntityExtension {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     public static final String ID_TAG = "id";
+     public static final String PASSENGERS_TAG = "Passengers";
+@@ -145,6 +_,7 @@
+     private static final double LAVA_SLOW_FLOW_SCALE = 0.0023333333333333335;
+     public static final String UUID_TAG = "UUID";
+     private static double viewScale = 1.0;
++    @Deprecated // Forge: Use the getter to allow overriding in mods
+     private final EntityType<?> type;
+     private int id = ENTITY_COUNTER.incrementAndGet();
+     public boolean blocksBuilding;
+@@ -191,8 +_,10 @@
+     public int tickCount;
+     private int remainingFireTicks = -this.getFireImmuneTicks();
+     protected boolean wasTouchingWater;
++    @Deprecated // Forge: Use forgeFluidTypeHeight instead
+     protected Object2DoubleMap<TagKey<Fluid>> fluidHeight = new Object2DoubleArrayMap<>(2);
+     protected boolean wasEyeInWater;
++    @Deprecated // Forge: Use forgeFluidTypeOnEyes instead
+     private final Set<TagKey<Fluid>> fluidOnEyes = new HashSet<>();
+     public int invulnerableTime;
+     protected boolean firstTick = true;
+@@ -243,6 +_,7 @@
+     private BlockState feetBlockState = null;
  
-    public Entity(EntityType<?> p_19870_, Level p_19871_) {
-+      super(Entity.class);
-       this.type = p_19870_;
-       this.level = p_19871_;
-       this.dimensions = p_19870_.getDimensions();
-@@ -259,7 +_,11 @@
-       this.entityData.define(DATA_TICKS_FROZEN, 0);
-       this.defineSynchedData();
-       this.setPos(0.0, 0.0, 0.0);
--      this.eyeHeight = this.getEyeHeight(Pose.STANDING, this.dimensions);
-+      net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.EventHooks.getEntitySizeForge(this, Pose.STANDING, this.dimensions, this.getEyeHeight(Pose.STANDING, this.dimensions));
-+      this.dimensions = sizeEvent.getNewSize();
-+      this.eyeHeight = sizeEvent.getNewEyeHeight();
-+      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityEvent.EntityConstructing(this));
-+      this.gatherCapabilities();
-    }
+     public Entity(EntityType<?> p_19870_, Level p_19871_) {
++        super(Entity.class);
+         this.type = p_19870_;
+         this.level = p_19871_;
+         this.dimensions = p_19870_.getDimensions();
+@@ -260,7 +_,11 @@
+         this.entityData.define(DATA_TICKS_FROZEN, 0);
+         this.defineSynchedData();
+         this.setPos(0.0, 0.0, 0.0);
+-        this.eyeHeight = this.getEyeHeight(Pose.STANDING, this.dimensions);
++        net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.EventHooks.getEntitySizeForge(this, Pose.STANDING, this.dimensions, this.getEyeHeight(Pose.STANDING, this.dimensions));
++        this.dimensions = sizeEvent.getNewSize();
++        this.eyeHeight = sizeEvent.getNewEyeHeight();
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityEvent.EntityConstructing(this));
++        this.gatherCapabilities();
+     }
  
-    public boolean isColliding(BlockPos p_20040_, BlockState p_20041_) {
-@@ -351,6 +_,7 @@
+     public boolean isColliding(BlockPos p_20040_, BlockState p_20041_) {
+@@ -352,6 +_,7 @@
  
-    public void remove(Entity.RemovalReason p_146834_) {
-       this.setRemoved(p_146834_);
-+      this.invalidateCaps();
-    }
+     public void remove(Entity.RemovalReason p_146834_) {
+         this.setRemoved(p_146834_);
++        this.invalidateCaps();
+     }
  
-    public void onClientRemoval() {
-@@ -467,7 +_,7 @@
+     public void onClientRemoval() {
+@@ -468,7 +_,7 @@
  
-       if (this.isInLava()) {
-          this.lavaHurt();
--         this.fallDistance *= 0.5F;
-+         this.fallDistance *= this.getFluidFallDistanceModifier(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
-       }
+         if (this.isInLava()) {
+             this.lavaHurt();
+-            this.fallDistance *= 0.5F;
++            this.fallDistance *= this.getFluidFallDistanceModifier(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
+         }
  
-       this.checkBelowWorld();
-@@ -672,7 +_,7 @@
-                double d1 = vec3.x;
-                double d2 = vec3.y;
-                double d3 = vec3.z;
--               this.flyDist += (float)(vec3.length() * 0.6);
-+               this.flyDist = (float)((double)this.flyDist + vec3.length() * 0.6D);
-                BlockPos blockpos1 = this.getOnPos();
-                BlockState blockstate1 = this.level().getBlockState(blockpos1);
-                boolean flag1 = this.isStateClimbable(blockstate1);
-@@ -716,16 +_,16 @@
-                   this.setRemainingFireTicks(-this.getFireImmuneTicks());
-                }
+         this.checkBelowWorld();
+@@ -675,7 +_,7 @@
+                     double d1 = vec3.x;
+                     double d2 = vec3.y;
+                     double d3 = vec3.z;
+-                    this.flyDist += (float)(vec3.length() * 0.6);
++                    this.flyDist = (float)((double)this.flyDist + vec3.length() * 0.6D);
+                     BlockPos blockpos1 = this.getOnPos();
+                     BlockState blockstate1 = this.level().getBlockState(blockpos1);
+                     boolean flag1 = this.isStateClimbable(blockstate1);
+@@ -719,16 +_,16 @@
+                         this.setRemainingFireTicks(-this.getFireImmuneTicks());
+                     }
  
--               if (this.wasOnFire && (this.isInPowderSnow || this.isInWaterRainOrBubble())) {
-+               if (this.wasOnFire && (this.isInPowderSnow || this.isInWaterRainOrBubble() || this.isInFluidType((fluidType, height) -> this.canFluidExtinguish(fluidType)))) {
-                   this.playEntityOnFireExtinguishedSound();
-                }
+-                    if (this.wasOnFire && (this.isInPowderSnow || this.isInWaterRainOrBubble())) {
++                    if (this.wasOnFire && (this.isInPowderSnow || this.isInWaterRainOrBubble() || this.isInFluidType((fluidType, height) -> this.canFluidExtinguish(fluidType)))) {
+                         this.playEntityOnFireExtinguishedSound();
+                     }
+                 }
+ 
+-                if (this.isOnFire() && (this.isInPowderSnow || this.isInWaterRainOrBubble())) {
++                if (this.isOnFire() && (this.isInPowderSnow || this.isInWaterRainOrBubble() || this.isInFluidType((fluidType, height) -> this.canFluidExtinguish(fluidType)))) {
+                     this.setRemainingFireTicks(-this.getFireImmuneTicks());
+                 }
+ 
+-                this.level().getProfiler().pop();
++                this.level.getProfiler().pop();
+             }
+         }
+     }
+@@ -814,9 +_,7 @@
+                 return blockpos;
+             } else {
+                 BlockState blockstate = this.level().getBlockState(blockpos);
+-                return (!((double)p_216987_ <= 0.5) || !blockstate.is(BlockTags.FENCES))
+-                        && !blockstate.is(BlockTags.WALLS)
+-                        && !(blockstate.getBlock() instanceof FenceGateBlock)
++                return (!((double)p_216987_ <= 0.5) || !blockstate.collisionExtendsVertically(this.level(), blockpos, this))
+                     ? blockpos.atY(Mth.floor(this.position.y - (double)p_216987_))
+                     : blockpos;
+             }
+@@ -889,12 +_,13 @@
+         boolean flag1 = p_20273_.y != vec3.y;
+         boolean flag2 = p_20273_.z != vec3.z;
+         boolean flag3 = this.onGround() || flag1 && p_20273_.y < 0.0;
+-        if (this.maxUpStep() > 0.0F && flag3 && (flag || flag2)) {
+-            Vec3 vec31 = collideBoundingBox(this, new Vec3(p_20273_.x, (double)this.maxUpStep(), p_20273_.z), aabb, this.level(), list);
++        float stepHeight = getStepHeight();
++        if (stepHeight > 0.0F && flag3 && (flag || flag2)) {
++            Vec3 vec31 = collideBoundingBox(this, new Vec3(p_20273_.x, (double)stepHeight, p_20273_.z), aabb, this.level(), list);
+             Vec3 vec32 = collideBoundingBox(
+-                this, new Vec3(0.0, (double)this.maxUpStep(), 0.0), aabb.expandTowards(p_20273_.x, 0.0, p_20273_.z), this.level(), list
++                this, new Vec3(0.0D, (double)stepHeight, 0.0D), aabb.expandTowards(p_20273_.x, 0.0D, p_20273_.z), this.level(), list
+             );
+-            if (vec32.y < (double)this.maxUpStep()) {
++            if (vec32.y < (double)stepHeight) {
+                 Vec3 vec33 = collideBoundingBox(this, new Vec3(p_20273_.x, 0.0, p_20273_.z), aabb.move(vec32), this.level(), list).add(vec32);
+                 if (vec33.horizontalDistanceSqr() > vec31.horizontalDistanceSqr()) {
+                     vec31 = vec33;
+@@ -1042,19 +_,19 @@
+         return !blockstate.is(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !blockstate.is(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? p_278049_ : blockpos;
+     }
+ 
+-    protected void playCombinationStepSounds(BlockState p_277472_, BlockState p_277630_) {
+-        SoundType soundtype = p_277472_.getSoundType();
++    protected void playCombinationStepSounds(BlockState p_277472_, BlockState p_277630_, BlockPos primaryPos, BlockPos secondaryPos) {
++        SoundType soundtype = p_277472_.getSoundType(this.level, primaryPos, this);
+         this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
+-        this.playMuffledStepSound(p_277630_);
++        this.playMuffledStepSound(p_277630_, secondaryPos);
+     }
+ 
+-    protected void playMuffledStepSound(BlockState p_283110_) {
+-        SoundType soundtype = p_283110_.getSoundType();
++    protected void playMuffledStepSound(BlockState p_283110_, BlockPos pos) {
++        SoundType soundtype = p_283110_.getSoundType(this.level, pos, this);
+         this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.05F, soundtype.getPitch() * 0.8F);
+     }
+ 
+     protected void playStepSound(BlockPos p_20135_, BlockState p_20136_) {
+-        SoundType soundtype = p_20136_.getSoundType();
++        SoundType soundtype = p_20136_.getSoundType(this.level, p_20135_, this);
+         this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
+     }
+ 
+@@ -1192,20 +_,23 @@
+ 
+     public void updateSwimming() {
+         if (this.isSwimming()) {
+-            this.setSwimming(this.isSprinting() && this.isInWater() && !this.isPassenger());
++            this.setSwimming(this.isSprinting() && (this.isInWater() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType))) && !this.isPassenger());
+         } else {
+             this.setSwimming(
+-                this.isSprinting() && this.isUnderWater() && !this.isPassenger() && this.level().getFluidState(this.blockPosition).is(FluidTags.WATER)
++                this.isSprinting() && (this.isUnderWater() || this.canStartSwimming()) && !this.isPassenger()
+             );
+         }
+     }
+ 
+     protected boolean updateInWaterStateAndDoFluidPushing() {
+         this.fluidHeight.clear();
++        this.forgeFluidTypeHeight.clear();
+         this.updateInWaterStateAndDoWaterCurrentPushing();
+-        double d0 = this.level().dimensionType().ultraWarm() ? 0.007 : 0.0023333333333333335;
+-        boolean flag = this.updateFluidHeightAndDoFluidPushing(FluidTags.LAVA, d0);
+-        return this.isInWater() || flag;
++        if (!(this.getVehicle() instanceof Boat)) {
++            this.fallDistance *= this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().filter(e -> !e.getKey().isAir() && !e.getKey().isVanilla()).map(e -> this.getFluidFallDistanceModifier(e.getKey())).min(Float::compare).orElse(1F);
++            if (this.isInFluidType((fluidType, height) -> !fluidType.isAir() && !fluidType.isVanilla() && this.canFluidExtinguish(fluidType))) this.clearFire();
++        }
++        return this.isInFluidType();
+     }
+ 
+     void updateInWaterStateAndDoWaterCurrentPushing() {
+@@ -1231,6 +_,7 @@
+     private void updateFluidOnEyes() {
+         this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
+         this.fluidOnEyes.clear();
++        this.forgeFluidTypeOnEyes = net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.value();
+         double d0 = this.getEyeY() - 0.11111111F;
+         Entity entity = this.getVehicle();
+         if (entity instanceof Boat boat && !boat.isUnderWater() && boat.getBoundingBox().maxY >= d0 && boat.getBoundingBox().minY <= d0) {
+@@ -1241,7 +_,7 @@
+         FluidState fluidstate = this.level().getFluidState(blockpos);
+         double d1 = (double)((float)blockpos.getY() + fluidstate.getHeight(this.level(), blockpos));
+         if (d1 > d0) {
+-            fluidstate.getTags().forEach(this.fluidOnEyes::add);
++            this.forgeFluidTypeOnEyes = fluidstate.getFluidType();
+         }
+     }
+ 
+@@ -1286,12 +_,13 @@
+     }
+ 
+     public boolean canSpawnSprintParticle() {
+-        return this.isSprinting() && !this.isInWater() && !this.isSpectator() && !this.isCrouching() && !this.isInLava() && this.isAlive();
++        return this.isSprinting() && !this.isInWater() && !this.isSpectator() && !this.isCrouching() && !this.isInLava() && this.isAlive() && !this.isInFluidType();
+     }
+ 
+     protected void spawnSprintParticle() {
+         BlockPos blockpos = this.getOnPosLegacy();
+         BlockState blockstate = this.level().getBlockState(blockpos);
++        if(!blockstate.addRunningEffects(level, blockpos, this))
+         if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
+             Vec3 vec3 = this.getDeltaMovement();
+             BlockPos blockpos1 = this.blockPosition();
+@@ -1305,16 +_,19 @@
+                 d1 = Mth.clamp(d1, (double)blockpos.getZ(), (double)blockpos.getZ() + 1.0);
              }
  
--            if (this.isOnFire() && (this.isInPowderSnow || this.isInWaterRainOrBubble())) {
-+            if (this.isOnFire() && (this.isInPowderSnow || this.isInWaterRainOrBubble() || this.isInFluidType((fluidType, height) -> this.canFluidExtinguish(fluidType)))) {
-                this.setRemainingFireTicks(-this.getFireImmuneTicks());
+-            this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockstate), d0, this.getY() + 0.1, d1, vec3.x * -4.0, 1.5, vec3.z * -4.0);
++            this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockstate).setPos(blockpos), d0, this.getY() + 0.1, d1, vec3.x * -4.0, 1.5, vec3.z * -4.0);
+         }
+     }
+ 
++    @Deprecated // Forge: Use isEyeInFluidType instead
+     public boolean isEyeInFluid(TagKey<Fluid> p_204030_) {
++        if (p_204030_ == FluidTags.WATER) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
++        else if (p_204030_ == FluidTags.LAVA) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
+         return this.fluidOnEyes.contains(p_204030_);
+     }
+ 
+     public boolean isInLava() {
+-        return !this.firstTick && this.fluidHeight.getDouble(FluidTags.LAVA) > 0.0;
++        return !this.firstTick && this.forgeFluidTypeHeight.getDouble(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value()) > 0.0D;
+     }
+ 
+     public void moveRelative(float p_19921_, Vec3 p_19922_) {
+@@ -1631,6 +_,8 @@
+                 p_20241_.putBoolean("HasVisualFire", this.hasVisualFire);
              }
  
--            this.level().getProfiler().pop();
-+            this.level.getProfiler().pop();
-          }
-       }
-    }
-@@ -811,9 +_,7 @@
-             return blockpos;
-          } else {
-             BlockState blockstate = this.level().getBlockState(blockpos);
--            return (!((double)p_216987_ <= 0.5) || !blockstate.is(BlockTags.FENCES))
--                  && !blockstate.is(BlockTags.WALLS)
--                  && !(blockstate.getBlock() instanceof FenceGateBlock)
-+            return (!((double)p_216987_ <= 0.5) || !blockstate.collisionExtendsVertically(this.level(), blockpos, this))
-                ? blockpos.atY(Mth.floor(this.position.y - (double)p_216987_))
-                : blockpos;
-          }
-@@ -886,12 +_,11 @@
-       boolean flag1 = p_20273_.y != vec3.y;
-       boolean flag2 = p_20273_.z != vec3.z;
-       boolean flag3 = this.onGround() || flag1 && p_20273_.y < 0.0;
--      if (this.maxUpStep() > 0.0F && flag3 && (flag || flag2)) {
--         Vec3 vec31 = collideBoundingBox(this, new Vec3(p_20273_.x, (double)this.maxUpStep(), p_20273_.z), aabb, this.level(), list);
--         Vec3 vec32 = collideBoundingBox(
--            this, new Vec3(0.0, (double)this.maxUpStep(), 0.0), aabb.expandTowards(p_20273_.x, 0.0, p_20273_.z), this.level(), list
--         );
--         if (vec32.y < (double)this.maxUpStep()) {
-+      float stepHeight = getStepHeight();
-+      if (stepHeight > 0.0F && flag3 && (flag || flag2)) {
-+         Vec3 vec31 = collideBoundingBox(this, new Vec3(p_20273_.x, (double)stepHeight, p_20273_.z), aabb, this.level, list);
-+         Vec3 vec32 = collideBoundingBox(this, new Vec3(0.0D, (double)stepHeight, 0.0D), aabb.expandTowards(p_20273_.x, 0.0D, p_20273_.z), this.level, list);
-+         if (vec32.y < (double)stepHeight) {
-             Vec3 vec33 = collideBoundingBox(this, new Vec3(p_20273_.x, 0.0, p_20273_.z), aabb.move(vec32), this.level(), list).add(vec32);
-             if (vec33.horizontalDistanceSqr() > vec31.horizontalDistanceSqr()) {
-                vec31 = vec33;
-@@ -1039,19 +_,20 @@
-       return !blockstate.is(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !blockstate.is(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? p_278049_ : blockpos;
-    }
- 
--   protected void playCombinationStepSounds(BlockState p_277472_, BlockState p_277630_) {
--      SoundType soundtype = p_277472_.getSoundType();
-+   protected void playCombinationStepSounds(BlockState p_277472_, BlockState p_277630_, BlockPos primaryPos, BlockPos secondaryPos) {
-+      SoundType soundtype = p_277472_.getSoundType(this.level, primaryPos, this);
-+      SoundType soundtype1 = p_277630_.getSoundType(this.level, secondaryPos, this);
-       this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
--      this.playMuffledStepSound(p_277630_);
-+      this.playMuffledStepSound(p_277630_, secondaryPos);
-    }
- 
--   protected void playMuffledStepSound(BlockState p_283110_) {
--      SoundType soundtype = p_283110_.getSoundType();
-+   protected void playMuffledStepSound(BlockState p_283110_, BlockPos pos) {
-+      SoundType soundtype = p_283110_.getSoundType(this.level, pos, this);
-       this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.05F, soundtype.getPitch() * 0.8F);
-    }
- 
-    protected void playStepSound(BlockPos p_20135_, BlockState p_20136_) {
--      SoundType soundtype = p_20136_.getSoundType();
-+      SoundType soundtype = p_20136_.getSoundType(this.level, p_20135_, this);
-       this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
-    }
- 
-@@ -1187,20 +_,21 @@
- 
-    public void updateSwimming() {
-       if (this.isSwimming()) {
--         this.setSwimming(this.isSprinting() && this.isInWater() && !this.isPassenger());
-+         this.setSwimming(this.isSprinting() && (this.isInWater() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType))) && !this.isPassenger());
-       } else {
--         this.setSwimming(
--            this.isSprinting() && this.isUnderWater() && !this.isPassenger() && this.level().getFluidState(this.blockPosition).is(FluidTags.WATER)
--         );
-+         this.setSwimming(this.isSprinting() && (this.isUnderWater() || this.canStartSwimming()) && !this.isPassenger());
-       }
-    }
- 
-    protected boolean updateInWaterStateAndDoFluidPushing() {
-       this.fluidHeight.clear();
-+      this.forgeFluidTypeHeight.clear();
-       this.updateInWaterStateAndDoWaterCurrentPushing();
--      double d0 = this.level().dimensionType().ultraWarm() ? 0.007 : 0.0023333333333333335;
--      boolean flag = this.updateFluidHeightAndDoFluidPushing(FluidTags.LAVA, d0);
--      return this.isInWater() || flag;
-+      if (!(this.getVehicle() instanceof Boat)) {
-+         this.fallDistance *= this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().filter(e -> !e.getKey().isAir() && !e.getKey().isVanilla()).map(e -> this.getFluidFallDistanceModifier(e.getKey())).min(Float::compare).orElse(1F);
-+         if (this.isInFluidType((fluidType, height) -> !fluidType.isAir() && !fluidType.isVanilla() && this.canFluidExtinguish(fluidType))) this.clearFire();
-+      }
-+      return this.isInFluidType();
-    }
- 
-    void updateInWaterStateAndDoWaterCurrentPushing() {
-@@ -1226,6 +_,7 @@
-    private void updateFluidOnEyes() {
-       this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
-       this.fluidOnEyes.clear();
-+      this.forgeFluidTypeOnEyes = net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.value();
-       double d0 = this.getEyeY() - 0.11111111F;
-       Entity entity = this.getVehicle();
-       if (entity instanceof Boat boat && !boat.isUnderWater() && boat.getBoundingBox().maxY >= d0 && boat.getBoundingBox().minY <= d0) {
-@@ -1236,7 +_,7 @@
-       FluidState fluidstate = this.level().getFluidState(blockpos);
-       double d1 = (double)((float)blockpos.getY() + fluidstate.getHeight(this.level(), blockpos));
-       if (d1 > d0) {
--         fluidstate.getTags().forEach(this.fluidOnEyes::add);
-+         this.forgeFluidTypeOnEyes = fluidstate.getFluidType();
-       }
-    }
- 
-@@ -1281,12 +_,13 @@
-    }
- 
-    public boolean canSpawnSprintParticle() {
--      return this.isSprinting() && !this.isInWater() && !this.isSpectator() && !this.isCrouching() && !this.isInLava() && this.isAlive();
-+      return this.isSprinting() && !this.isInWater() && !this.isSpectator() && !this.isCrouching() && !this.isInLava() && this.isAlive() && !this.isInFluidType();
-    }
- 
-    protected void spawnSprintParticle() {
-       BlockPos blockpos = this.getOnPosLegacy();
-       BlockState blockstate = this.level().getBlockState(blockpos);
-+      if(!blockstate.addRunningEffects(level, blockpos, this))
-       if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
-          Vec3 vec3 = this.getDeltaMovement();
-          BlockPos blockpos1 = this.blockPosition();
-@@ -1299,17 +_,23 @@
-          if (blockpos1.getZ() != blockpos.getZ()) {
-             d1 = Mth.clamp(d1, (double)blockpos.getZ(), (double)blockpos.getZ() + 1.0);
-          }
--
--         this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockstate), d0, this.getY() + 0.1, d1, vec3.x * -4.0, 1.5, vec3.z * -4.0);
-+         
-+         this.level()
-+               .addParticle(
-+                     new BlockParticleOption(ParticleTypes.BLOCK, blockstate).setPos(blockpos), d0, this.getY() + 0.1, d1, vec3.x * -4.0, 1.5, vec3.z * -4.0
-+               );
-       }
-    }
- 
-+   @Deprecated // Forge: Use isEyeInFluidType instead
-    public boolean isEyeInFluid(TagKey<Fluid> p_204030_) {
-+      if (p_204030_ == FluidTags.WATER) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
-+      else if (p_204030_ == FluidTags.LAVA) return this.isEyeInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
-       return this.fluidOnEyes.contains(p_204030_);
-    }
- 
-    public boolean isInLava() {
--      return !this.firstTick && this.fluidHeight.getDouble(FluidTags.LAVA) > 0.0;
-+      return !this.firstTick && this.forgeFluidTypeHeight.getDouble(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value()) > 0.0D;
-    }
- 
-    public void moveRelative(float p_19921_, Vec3 p_19922_) {
-@@ -1626,6 +_,8 @@
-             p_20241_.putBoolean("HasVisualFire", this.hasVisualFire);
-          }
- 
-+         p_20241_.putBoolean("CanUpdate", canUpdate);
++            p_20241_.putBoolean("CanUpdate", canUpdate);
 +
-          if (!this.tags.isEmpty()) {
-             ListTag listtag = new ListTag();
+             if (!this.tags.isEmpty()) {
+                 ListTag listtag = new ListTag();
  
-@@ -1636,6 +_,10 @@
-             p_20241_.put("Tags", listtag);
-          }
- 
-+         CompoundTag caps = serializeCaps();
-+         if (caps != null) p_20241_.put("ForgeCaps", caps);
-+         if (persistentData != null) p_20241_.put("NeoForgeData", persistentData.copy());
-+
-          this.addAdditionalSaveData(p_20241_);
-          if (this.isVehicle()) {
-             ListTag listtag1 = new ListTag();
-@@ -1716,6 +_,9 @@
-             this.setGlowingTag(p_20259_.getBoolean("Glowing"));
-             this.setTicksFrozen(p_20259_.getInt("TicksFrozen"));
-             this.hasVisualFire = p_20259_.getBoolean("HasVisualFire");
-+               if (p_20259_.contains("NeoForgeData", 10)) persistentData = p_20259_.getCompound("NeoForgeData");
-+               if (p_20259_.contains("CanUpdate", 99)) this.canUpdate(p_20259_.getBoolean("CanUpdate"));
-+               if (p_20259_.contains("ForgeCaps", 10)) deserializeCaps(p_20259_.getCompound("ForgeCaps"));
-             if (p_20259_.contains("Tags", 9)) {
-                this.tags.clear();
-                ListTag listtag3 = p_20259_.getList("Tags", 8);
-@@ -1800,6 +_,8 @@
-       } else {
-          ItemEntity itementity = new ItemEntity(this.level(), this.getX(), this.getY() + (double)p_19986_, this.getZ(), p_19985_);
-          itementity.setDefaultPickUpDelay();
-+         if (captureDrops() != null) captureDrops().add(itementity);
-+         else
-          this.level().addFreshEntity(itementity);
-          return itementity;
-       }
-@@ -1846,6 +_,7 @@
- 
-    public void rideTick() {
-       this.setDeltaMovement(Vec3.ZERO);
-+      if (canUpdate())
-       this.tick();
-       if (this.isPassenger()) {
-          this.getVehicle().positionRider(this);
-@@ -1902,6 +_,7 @@
+@@ -1641,6 +_,10 @@
+                 p_20241_.put("Tags", listtag);
              }
-          }
  
-+      if (!net.neoforged.neoforge.event.EventHooks.canMountEntity(this, p_19966_, true)) return false;
-          if (p_19967_ || this.canRide(p_19966_) && p_19966_.canAddPassenger(this)) {
-             if (this.isPassenger()) {
-                this.stopRiding();
-@@ -1933,6 +_,7 @@
-    public void removeVehicle() {
-       if (this.vehicle != null) {
-          Entity entity = this.vehicle;
-+         if (!net.neoforged.neoforge.event.EventHooks.canMountEntity(this, entity, false)) return;
-          this.vehicle = null;
-          entity.removePassenger(this);
-       }
-@@ -1982,6 +_,8 @@
-       return this.passengers.isEmpty();
-    }
++            CompoundTag caps = serializeCaps();
++            if (caps != null) p_20241_.put("ForgeCaps", caps);
++            if (persistentData != null) p_20241_.put("NeoForgeData", persistentData.copy());
++
+             this.addAdditionalSaveData(p_20241_);
+             if (this.isVehicle()) {
+                 ListTag listtag1 = new ListTag();
+@@ -1721,6 +_,9 @@
+                 this.setGlowingTag(p_20259_.getBoolean("Glowing"));
+                 this.setTicksFrozen(p_20259_.getInt("TicksFrozen"));
+                 this.hasVisualFire = p_20259_.getBoolean("HasVisualFire");
++                if (p_20259_.contains("NeoForgeData", 10)) persistentData = p_20259_.getCompound("NeoForgeData");
++                if (p_20259_.contains("CanUpdate", 99)) this.canUpdate(p_20259_.getBoolean("CanUpdate"));
++                if (p_20259_.contains("ForgeCaps", 10)) deserializeCaps(p_20259_.getCompound("ForgeCaps"));
+                 if (p_20259_.contains("Tags", 9)) {
+                     this.tags.clear();
+                     ListTag listtag3 = p_20259_.getList("Tags", 8);
+@@ -1805,6 +_,8 @@
+         } else {
+             ItemEntity itementity = new ItemEntity(this.level(), this.getX(), this.getY() + (double)p_19986_, this.getZ(), p_19985_);
+             itementity.setDefaultPickUpDelay();
++            if (captureDrops() != null) captureDrops().add(itementity);
++            else
+             this.level().addFreshEntity(itementity);
+             return itementity;
+         }
+@@ -1851,6 +_,7 @@
  
-+   /** @deprecated Forge: Use {@link #canBeRiddenUnderFluidType(net.neoforged.neoforge.fluids.FluidType, Entity) rider sensitive version} */
-+   @Deprecated
-    protected boolean couldAcceptPassenger() {
-       return true;
-    }
-@@ -2187,7 +_,7 @@
-    }
+     public void rideTick() {
+         this.setDeltaMovement(Vec3.ZERO);
++        if (canUpdate())
+         this.tick();
+         if (this.isPassenger()) {
+             this.getVehicle().positionRider(this);
+@@ -1908,6 +_,7 @@
+                 }
+             }
  
-    public boolean isVisuallyCrawling() {
--      return this.isVisuallySwimming() && !this.isInWater();
-+      return this.isVisuallySwimming() && !this.isInWater() && !this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType));
-    }
++        if (!net.neoforged.neoforge.event.EventHooks.canMountEntity(this, p_19966_, true)) return false;
+             if (p_19967_ || this.canRide(p_19966_) && p_19966_.canAddPassenger(this)) {
+                 if (this.isPassenger()) {
+                     this.stopRiding();
+@@ -1939,6 +_,7 @@
+     public void removeVehicle() {
+         if (this.vehicle != null) {
+             Entity entity = this.vehicle;
++            if (!net.neoforged.neoforge.event.EventHooks.canMountEntity(this, entity, false)) return;
+             this.vehicle = null;
+             entity.removePassenger(this);
+         }
+@@ -1988,6 +_,8 @@
+         return this.passengers.isEmpty();
+     }
  
-    public void setSwimming(boolean p_20283_) {
-@@ -2296,7 +_,7 @@
-          this.setSecondsOnFire(8);
-       }
++    /** @deprecated Forge: Use {@link #canBeRiddenUnderFluidType(net.neoforged.neoforge.fluids.FluidType, Entity) rider sensitive version} */
++    @Deprecated
+     protected boolean couldAcceptPassenger() {
+         return true;
+     }
+@@ -2193,7 +_,7 @@
+     }
  
--      this.hurt(this.damageSources().lightningBolt(), 5.0F);
-+      this.hurt(this.damageSources().lightningBolt(), p_19928_.getDamage());
-    }
+     public boolean isVisuallyCrawling() {
+-        return this.isVisuallySwimming() && !this.isInWater();
++        return this.isVisuallySwimming() && !this.isInWater() && !this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType));
+     }
  
-    public void onAboveBubbleCol(boolean p_20313_) {
-@@ -2391,7 +_,7 @@
-    }
+     public void setSwimming(boolean p_20283_) {
+@@ -2302,7 +_,7 @@
+             this.setSecondsOnFire(8);
+         }
  
-    protected Component getTypeName() {
--      return this.type.getDescription();
-+      return this.getType().getDescription(); // Forge: Use getter to allow overriding by mods
-    }
+-        this.hurt(this.damageSources().lightningBolt(), 5.0F);
++        this.hurt(this.damageSources().lightningBolt(), p_19928_.getDamage());
+     }
  
-    public boolean is(Entity p_20356_) {
-@@ -2474,14 +_,20 @@
+     public void onAboveBubbleCol(boolean p_20313_) {
+@@ -2397,7 +_,7 @@
+     }
  
-    @Nullable
-    public Entity changeDimension(ServerLevel p_20118_) {
-+      return this.changeDimension(p_20118_, p_20118_.getPortalForcer());
-+   }
-+   @Nullable
-+   public Entity changeDimension(ServerLevel p_20118_, net.neoforged.neoforge.common.util.ITeleporter teleporter) {
-+      if (!net.neoforged.neoforge.common.CommonHooks.onTravelToDimension(this, p_20118_.dimension())) return null;
-       if (this.level() instanceof ServerLevel && !this.isRemoved()) {
-          this.level().getProfiler().push("changeDimension");
-          this.unRide();
-          this.level().getProfiler().push("reposition");
--         PortalInfo portalinfo = this.findDimensionEntryPoint(p_20118_);
-+         PortalInfo portalinfo = teleporter.getPortalInfo(this, p_20118_, this::findDimensionEntryPoint);
-          if (portalinfo == null) {
+     protected Component getTypeName() {
+-        return this.type.getDescription();
++        return this.getType().getDescription(); // Forge: Use getter to allow overriding by mods
+     }
+ 
+     public boolean is(Entity p_20356_) {
+@@ -2480,14 +_,20 @@
+ 
+     @Nullable
+     public Entity changeDimension(ServerLevel p_20118_) {
++        return this.changeDimension(p_20118_, p_20118_.getPortalForcer());
++    }
++    @Nullable
++    public Entity changeDimension(ServerLevel p_20118_, net.neoforged.neoforge.common.util.ITeleporter teleporter) {
++        if (!net.neoforged.neoforge.common.CommonHooks.onTravelToDimension(this, p_20118_.dimension())) return null;
+         if (this.level() instanceof ServerLevel && !this.isRemoved()) {
+             this.level().getProfiler().push("changeDimension");
+             this.unRide();
+             this.level().getProfiler().push("reposition");
+-            PortalInfo portalinfo = this.findDimensionEntryPoint(p_20118_);
++            PortalInfo portalinfo = teleporter.getPortalInfo(this, p_20118_, this::findDimensionEntryPoint);
+             if (portalinfo == null) {
+                 return null;
+             } else {
++                Entity transportedEntity = teleporter.placeEntity(this, (ServerLevel) this.level, p_20118_, this.yRot, spawnPortal -> { //Forge: Start vanilla logic
+                 this.level().getProfiler().popPush("reloading");
+                 Entity entity = this.getType().create(p_20118_);
+                 if (entity != null) {
+@@ -2495,17 +_,19 @@
+                     entity.moveTo(portalinfo.pos.x, portalinfo.pos.y, portalinfo.pos.z, portalinfo.yRot, entity.getXRot());
+                     entity.setDeltaMovement(portalinfo.speed);
+                     p_20118_.addDuringTeleport(entity);
+-                    if (p_20118_.dimension() == Level.END) {
++                    if (spawnPortal && p_20118_.dimension() == Level.END) {
+                         ServerLevel.makeObsidianPlatform(p_20118_);
+                     }
+                 }
++                return entity;
++                }); //Forge: End vanilla logic
+ 
+                 this.removeAfterChangingDimensions();
+                 this.level().getProfiler().pop();
+                 ((ServerLevel)this.level()).resetEmptyTime();
+                 p_20118_.resetEmptyTime();
+                 this.level().getProfiler().pop();
+-                return entity;
++                return transportedEntity;
+             }
+         } else {
              return null;
-          } else {
-+            Entity transportedEntity = teleporter.placeEntity(this, (ServerLevel) this.level, p_20118_, this.yRot, spawnPortal -> { //Forge: Start vanilla logic
-             this.level().getProfiler().popPush("reloading");
-             Entity entity = this.getType().create(p_20118_);
-             if (entity != null) {
-@@ -2489,17 +_,19 @@
-                entity.moveTo(portalinfo.pos.x, portalinfo.pos.y, portalinfo.pos.z, portalinfo.yRot, entity.getXRot());
-                entity.setDeltaMovement(portalinfo.speed);
-                p_20118_.addDuringTeleport(entity);
--               if (p_20118_.dimension() == Level.END) {
-+               if (spawnPortal && p_20118_.dimension() == Level.END) {
-                   ServerLevel.makeObsidianPlatform(p_20118_);
-                }
-             }
-+            return entity;
-+            }); //Forge: End vanilla logic
+@@ -2641,6 +_,7 @@
+         return this.stringUUID;
+     }
  
-             this.removeAfterChangingDimensions();
-             this.level().getProfiler().pop();
-             ((ServerLevel)this.level()).resetEmptyTime();
-             p_20118_.resetEmptyTime();
-             this.level().getProfiler().pop();
--            return entity;
-+            return transportedEntity;
-          }
-       } else {
-          return null;
-@@ -2629,6 +_,7 @@
-       return this.stringUUID;
-    }
++    @Deprecated // Forge: Use FluidType sensitive version
+     public boolean isPushedByFluid() {
+         return true;
+     }
+@@ -2764,8 +_,10 @@
+         EntityDimensions entitydimensions = this.dimensions;
+         Pose pose = this.getPose();
+         EntityDimensions entitydimensions1 = this.getDimensions(pose);
++        net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.EventHooks.getEntitySizeForge(this, pose, entitydimensions, entitydimensions1, this.getEyeHeight(pose, entitydimensions1));
++        entitydimensions1 = sizeEvent.getNewSize();
+         this.dimensions = entitydimensions1;
+-        this.eyeHeight = this.getEyeHeight(pose, entitydimensions1);
++        this.eyeHeight = sizeEvent.getNewEyeHeight();
+         this.reapplyPosition();
+         boolean flag = (double)entitydimensions1.width <= 4.0 && (double)entitydimensions1.height <= 4.0;
+         if (!this.level().isClientSide
+@@ -2778,9 +_,10 @@
+             double d0 = (double)Math.max(0.0F, entitydimensions1.width - entitydimensions.width) + 1.0E-6;
+             double d1 = (double)Math.max(0.0F, entitydimensions1.height - entitydimensions.height) + 1.0E-6;
+             VoxelShape voxelshape = Shapes.create(AABB.ofSize(vec3, d0, d1, d0));
++            EntityDimensions finalEntitydimensions = entitydimensions1;
+             this.level()
+                 .findFreePosition(this, voxelshape, vec3, (double)entitydimensions1.width, (double)entitydimensions1.height, (double)entitydimensions1.width)
+-                .ifPresent(p_185956_ -> this.setPos(p_185956_.add(0.0, (double)(-entitydimensions1.height) / 2.0, 0.0)));
++                .ifPresent(p_185956_ -> this.setPos(p_185956_.add(0.0, (double)(-finalEntitydimensions.height) / 2.0, 0.0)));
+         }
+     }
  
-+   @Deprecated // Forge: Use FluidType sensitive version
-    public boolean isPushedByFluid() {
-       return true;
-    }
-@@ -2752,8 +_,10 @@
-       EntityDimensions entitydimensions = this.dimensions;
-       Pose pose = this.getPose();
-       EntityDimensions entitydimensions1 = this.getDimensions(pose);
-+      net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.EventHooks.getEntitySizeForge(this, pose, entitydimensions, entitydimensions1, this.getEyeHeight(pose, entitydimensions1));
-+      entitydimensions1 = sizeEvent.getNewSize();
-       this.dimensions = entitydimensions1;
--      this.eyeHeight = this.getEyeHeight(pose, entitydimensions1);
-+      this.eyeHeight = sizeEvent.getNewEyeHeight();
-       this.reapplyPosition();
-       boolean flag = (double)entitydimensions1.width <= 4.0 && (double)entitydimensions1.height <= 4.0;
-       if (!this.level().isClientSide
-@@ -2766,9 +_,10 @@
-          double d0 = (double)Math.max(0.0F, entitydimensions1.width - entitydimensions.width) + 1.0E-6;
-          double d1 = (double)Math.max(0.0F, entitydimensions1.height - entitydimensions.height) + 1.0E-6;
-          VoxelShape voxelshape = Shapes.create(AABB.ofSize(vec3, d0, d1, d0));
-+         EntityDimensions finalEntitydimensions = entitydimensions1;
-          this.level()
-             .findFreePosition(this, voxelshape, vec3, (double)entitydimensions1.width, (double)entitydimensions1.height, (double)entitydimensions1.width)
--            .ifPresent(p_185956_ -> this.setPos(p_185956_.add(0.0, (double)(-entitydimensions1.height) / 2.0, 0.0)));
-+            .ifPresent(p_185956_ -> this.setPos(p_185956_.add(0.0, (double)(-finalEntitydimensions.height) / 2.0, 0.0)));
-       }
-    }
+@@ -3076,9 +_,17 @@
+         this.yRotO = this.getYRot();
+     }
  
-@@ -3060,9 +_,17 @@
-       this.yRotO = this.getYRot();
-    }
- 
-+   @Deprecated // Forge: Use no parameter version instead, only for vanilla Tags
-    public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_, double p_204033_) {
-+      this.updateFluidHeightAndDoFluidPushing();
-+      if(p_204032_ == FluidTags.WATER) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
-+      else if (p_204032_ == FluidTags.LAVA) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
-+      else return false;
-+   }
++    @Deprecated // Forge: Use no parameter version instead, only for vanilla Tags
+     public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> p_204032_, double p_204033_) {
++        this.updateFluidHeightAndDoFluidPushing();
++        if(p_204032_ == FluidTags.WATER) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
++        else if (p_204032_ == FluidTags.LAVA) return this.isInFluidType(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
++        else return false;
++    }
 +
-+   public void updateFluidHeightAndDoFluidPushing() {
-       if (this.touchingUnloadedChunk()) {
--         return false;
-+         return;
-       } else {
-          AABB aabb = this.getBoundingBox().deflate(0.001);
-          int i = Mth.floor(aabb.minX);
-@@ -3077,25 +_,28 @@
-          Vec3 vec3 = Vec3.ZERO;
-          int k1 = 0;
-          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-+         it.unimi.dsi.fastutil.objects.Object2ObjectMap<net.neoforged.neoforge.fluids.FluidType, org.apache.commons.lang3.tuple.MutableTriple<Double, Vec3, Integer>> interimCalcs = new it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<>(net.neoforged.neoforge.fluids.FluidType.SIZE.get() - 1);
++    public void updateFluidHeightAndDoFluidPushing() {
+         if (this.touchingUnloadedChunk()) {
+-            return false;
++            return;
+         } else {
+             AABB aabb = this.getBoundingBox().deflate(0.001);
+             int i = Mth.floor(aabb.minX);
+@@ -3093,25 +_,28 @@
+             Vec3 vec3 = Vec3.ZERO;
+             int k1 = 0;
+             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
++            it.unimi.dsi.fastutil.objects.Object2ObjectMap<net.neoforged.neoforge.fluids.FluidType, org.apache.commons.lang3.tuple.MutableTriple<Double, Vec3, Integer>> interimCalcs = new it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<>(net.neoforged.neoforge.fluids.FluidType.SIZE.get() - 1);
  
-          for(int l1 = i; l1 < j; ++l1) {
-             for(int i2 = k; i2 < l; ++i2) {
-                for(int j2 = i1; j2 < j1; ++j2) {
-                   blockpos$mutableblockpos.set(l1, i2, j2);
-                   FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
--                  if (fluidstate.is(p_204032_)) {
-+                  net.neoforged.neoforge.fluids.FluidType fluidType = fluidstate.getFluidType();
-+                  if (!fluidType.isAir()) {
-                      double d1 = (double)((float)i2 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos));
-                      if (d1 >= aabb.minY) {
-                         flag1 = true;
--                        d0 = Math.max(d1 - aabb.minY, d0);
--                        if (flag) {
-+                        org.apache.commons.lang3.tuple.MutableTriple<Double, Vec3, Integer> interim = interimCalcs.computeIfAbsent(fluidType, t -> org.apache.commons.lang3.tuple.MutableTriple.of(0.0D, Vec3.ZERO, 0));
-+                        interim.setLeft(Math.max(d1 - aabb.minY, interim.getLeft()));
-+                        if (this.isPushedByFluid(fluidType)) {
-                            Vec3 vec31 = fluidstate.getFlow(this.level(), blockpos$mutableblockpos);
--                           if (d0 < 0.4) {
--                              vec31 = vec31.scale(d0);
-+                           if (interim.getLeft() < 0.4D) {
-+                              vec31 = vec31.scale(interim.getLeft());
-                            }
+             for(int l1 = i; l1 < j; ++l1) {
+                 for(int i2 = k; i2 < l; ++i2) {
+                     for(int j2 = i1; j2 < j1; ++j2) {
+                         blockpos$mutableblockpos.set(l1, i2, j2);
+                         FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
+-                        if (fluidstate.is(p_204032_)) {
++                        net.neoforged.neoforge.fluids.FluidType fluidType = fluidstate.getFluidType();
++                        if (!fluidType.isAir()) {
+                             double d1 = (double)((float)i2 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos));
+                             if (d1 >= aabb.minY) {
+                                 flag1 = true;
+-                                d0 = Math.max(d1 - aabb.minY, d0);
+-                                if (flag) {
++                                org.apache.commons.lang3.tuple.MutableTriple<Double, Vec3, Integer> interim = interimCalcs.computeIfAbsent(fluidType, t -> org.apache.commons.lang3.tuple.MutableTriple.of(0.0D, Vec3.ZERO, 0));
++                                interim.setLeft(Math.max(d1 - aabb.minY, interim.getLeft()));
++                                if (this.isPushedByFluid(fluidType)) {
+                                     Vec3 vec31 = fluidstate.getFlow(this.level(), blockpos$mutableblockpos);
+-                                    if (d0 < 0.4) {
+-                                        vec31 = vec31.scale(d0);
++                                    if (interim.getLeft() < 0.4D) {
++                                        vec31 = vec31.scale(interim.getLeft());
+                                     }
  
--                           vec3 = vec3.add(vec31);
--                           ++k1;
-+                           interim.setMiddle(interim.getMiddle().add(vec31));
-+                           interim.setRight(interim.getRight() + 1);
+-                                    vec3 = vec3.add(vec31);
+-                                    ++k1;
++                                    interim.setMiddle(interim.getMiddle().add(vec31));
++                                    interim.setRight(interim.getRight() + 1);
+                                 }
+                             }
                          }
-                      }
-                   }
-@@ -3103,27 +_,28 @@
-             }
-          }
- 
--         if (vec3.length() > 0.0) {
--            if (k1 > 0) {
--               vec3 = vec3.scale(1.0 / (double)k1);
-+         interimCalcs.forEach((fluidType, interim) -> {
-+         if (interim.getMiddle().length() > 0.0D) {
-+            if (interim.getRight() > 0) {
-+               interim.setMiddle(interim.getMiddle().scale(1.0D / (double)interim.getRight()));
+@@ -3119,27 +_,28 @@
+                 }
              }
  
-             if (!(this instanceof Player)) {
--               vec3 = vec3.normalize();
-+               interim.setMiddle(interim.getMiddle().normalize());
+-            if (vec3.length() > 0.0) {
+-                if (k1 > 0) {
+-                    vec3 = vec3.scale(1.0 / (double)k1);
++            interimCalcs.forEach((fluidType, interim) -> {
++            if (interim.getMiddle().length() > 0.0D) {
++                if (interim.getRight() > 0) {
++                    interim.setMiddle(interim.getMiddle().scale(1.0D / (double)interim.getRight()));
+                 }
+ 
+                 if (!(this instanceof Player)) {
+-                    vec3 = vec3.normalize();
++                    interim.setMiddle(interim.getMiddle().normalize());
+                 }
+ 
+                 Vec3 vec32 = this.getDeltaMovement();
+-                vec3 = vec3.scale(p_204033_ * 1.0);
++                interim.setMiddle(interim.getMiddle().scale(this.getFluidMotionScale(fluidType)));
+                 double d2 = 0.003;
+-                if (Math.abs(vec32.x) < 0.003 && Math.abs(vec32.z) < 0.003 && vec3.length() < 0.0045000000000000005) {
+-                    vec3 = vec3.normalize().scale(0.0045000000000000005);
++                if (Math.abs(vec32.x) < 0.003D && Math.abs(vec32.z) < 0.003D && interim.getMiddle().length() < 0.0045000000000000005D) {
++                    interim.setMiddle(interim.getMiddle().normalize().scale(0.0045000000000000005D));
+                 }
+ 
+-                this.setDeltaMovement(this.getDeltaMovement().add(vec3));
++                this.setDeltaMovement(this.getDeltaMovement().add(interim.getMiddle()));
              }
  
-             Vec3 vec32 = this.getDeltaMovement();
--            vec3 = vec3.scale(p_204033_ * 1.0);
-+            interim.setMiddle(interim.getMiddle().scale(this.getFluidMotionScale(fluidType)));
-             double d2 = 0.003;
--            if (Math.abs(vec32.x) < 0.003 && Math.abs(vec32.z) < 0.003 && vec3.length() < 0.0045000000000000005) {
--               vec3 = vec3.normalize().scale(0.0045000000000000005);
-+            if (Math.abs(vec32.x) < 0.003D && Math.abs(vec32.z) < 0.003D && interim.getMiddle().length() < 0.0045000000000000005D) {
-+               interim.setMiddle(interim.getMiddle().normalize().scale(0.0045000000000000005D));
-             }
+-            this.fluidHeight.put(p_204032_, d0);
+-            return flag1;
++            this.setFluidTypeHeight(fluidType, interim.getLeft());
++            });
+         }
+     }
  
--            this.setDeltaMovement(this.getDeltaMovement().add(vec3));
-+            this.setDeltaMovement(this.getDeltaMovement().add(interim.getMiddle()));
-          }
+@@ -3152,7 +_,10 @@
+         return !this.level().hasChunksAt(i, k, j, l);
+     }
  
--         this.fluidHeight.put(p_204032_, d0);
--         return flag1;
-+         this.setFluidTypeHeight(fluidType, interim.getLeft());
-+         });
-       }
-    }
++    @Deprecated // Forge: Use getFluidTypeHeight instead
+     public double getFluidHeight(TagKey<Fluid> p_204037_) {
++        if (p_204037_ == FluidTags.WATER) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
++        else if (p_204037_ == FluidTags.LAVA) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
+         return this.fluidHeight.getDouble(p_204037_);
+     }
  
-@@ -3136,7 +_,10 @@
-       return !this.level().hasChunksAt(i, k, j, l);
-    }
+@@ -3289,6 +_,7 @@
  
-+   @Deprecated // Forge: Use getFluidTypeHeight instead
-    public double getFluidHeight(TagKey<Fluid> p_204037_) {
-+      if (p_204037_ == FluidTags.WATER) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
-+      else if (p_204037_ == FluidTags.LAVA) return getFluidTypeHeight(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
-       return this.fluidHeight.getDouble(p_204037_);
-    }
+             this.levelCallback.onMove();
+         }
++        if (this.isAddedToWorld() && !this.level.isClientSide && !this.isRemoved()) this.level.getChunk((int) Math.floor(p_20344_) >> 4, (int) Math.floor(p_20346_) >> 4); // Forge - ensure target chunk is loaded.
+     }
  
-@@ -3273,6 +_,7 @@
+     public void checkDespawn() {
+@@ -3360,10 +_,27 @@
+         return false;
+     }
  
-          this.levelCallback.onMove();
-       }
-+      if (this.isAddedToWorld() && !this.level.isClientSide && !this.isRemoved()) this.level.getChunk((int) Math.floor(p_20344_) >> 4, (int) Math.floor(p_20346_) >> 4); // Forge - ensure target chunk is loaded.
-    }
++    /**
++     * Gets the value of the legacy {@link #maxUpStep} field. Only used by players when the modified value causes issues.
++     * @deprecated Use {@link IEntityExtension#getStepHeight()} to get the real step height value.
++     */
++    @Deprecated
+     public float maxUpStep() {
+         return this.maxUpStep;
+     }
  
-    public void checkDespawn() {
-@@ -3344,10 +_,27 @@
-       return false;
-    }
- 
-+   /**
-+    * Gets the value of the legacy {@link #maxUpStep} field. Only used by players when the modified value causes issues.
-+    * @deprecated Use {@link IEntityExtension#getStepHeight()} to get the real step height value.
-+    */
-+   @Deprecated
-    public float maxUpStep() {
-       return this.maxUpStep;
-    }
- 
-+   /**
-+    * Changes the legacy {@link #maxUpStep} field. Only used by vanilla entities to improve maintainability.
-+    * <p>
-+    * For your own entities, you should change the default value of {@linkplain net.neoforged.neoforge.common.NeoForgeMod#STEP_HEIGHT NeoForgeMod#STEP_HEIGHT}
-+    * during attribute creation.
-+    * <p>
-+    * For modifying the step height of other entities, you should use {@link net.minecraft.world.entity.ai.attributes.AttributeModifier AttributeModifiers} for
-+    * {@link net.neoforged.neoforge.common.NeoForgeMod#STEP_HEIGHT NeoForgeMod#STEP_HEIGHT}.
-+    *
-+    * @deprecated Use attribute modifiers for the {@link net.neoforged.neoforge.common.NeoForgeMod#STEP_HEIGHT NeoForgeMod#STEP_HEIGHT} attribute.
-+    */
-+   @Deprecated
-    public void setMaxUpStep(float p_275672_) {
-       this.maxUpStep = p_275672_;
-    }
-@@ -3403,6 +_,103 @@
-    public boolean mayInteract(Level p_146843_, BlockPos p_146844_) {
-       return true;
-    }
++    /**
++     * Changes the legacy {@link #maxUpStep} field. Only used by vanilla entities to improve maintainability.
++     * <p>
++     * For your own entities, you should change the default value of {@linkplain net.neoforged.neoforge.common.NeoForgeMod#STEP_HEIGHT NeoForgeMod#STEP_HEIGHT}
++     * during attribute creation.
++     * <p>
++     * For modifying the step height of other entities, you should use {@link net.minecraft.world.entity.ai.attributes.AttributeModifier AttributeModifiers} for
++     * {@link net.neoforged.neoforge.common.NeoForgeMod#STEP_HEIGHT NeoForgeMod#STEP_HEIGHT}.
++     *
++     * @deprecated Use attribute modifiers for the {@link net.neoforged.neoforge.common.NeoForgeMod#STEP_HEIGHT NeoForgeMod#STEP_HEIGHT} attribute.
++     */
++    @Deprecated
+     public void setMaxUpStep(float p_275672_) {
+         this.maxUpStep = p_275672_;
+     }
+@@ -3419,6 +_,103 @@
+     public boolean mayInteract(Level p_146843_, BlockPos p_146844_) {
+         return true;
+     }
 +
-+   /* ================================== Forge Start =====================================*/
++    /* ================================== Forge Start =====================================*/
 +
-+   private boolean canUpdate = true;
-+   @Override
-+   public void canUpdate(boolean value) {
-+      this.canUpdate = value;
-+   }
-+   @Override
-+   public boolean canUpdate() {
-+      return this.canUpdate;
-+   }
-+   private java.util.Collection<ItemEntity> captureDrops = null;
-+   @Override
-+   public java.util.Collection<ItemEntity> captureDrops() {
-+      return captureDrops;
-+   }
-+   @Override
-+   public java.util.Collection<ItemEntity> captureDrops(java.util.Collection<ItemEntity> value) {
-+      java.util.Collection<ItemEntity> ret = captureDrops;
-+      this.captureDrops = value;
-+      return ret;
-+   }
-+   private CompoundTag persistentData;
-+   @Override
-+   public CompoundTag getPersistentData() {
-+      if (persistentData == null)
-+         persistentData = new CompoundTag();
-+      return persistentData;
-+   }
-+   @Override
-+   public boolean canTrample(BlockState state, BlockPos pos, float fallDistance) {
-+      return level.random.nextFloat() < fallDistance - 0.5F
-+          && this instanceof LivingEntity
-+          && (this instanceof Player || net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(level, this))
-+          && this.getBbWidth() * this.getBbWidth() * this.getBbHeight() > 0.512F;
-+   }
++    private boolean canUpdate = true;
++    @Override
++    public void canUpdate(boolean value) {
++        this.canUpdate = value;
++    }
++    @Override
++    public boolean canUpdate() {
++        return this.canUpdate;
++    }
++    private java.util.Collection<ItemEntity> captureDrops = null;
++    @Override
++    public java.util.Collection<ItemEntity> captureDrops() {
++        return captureDrops;
++    }
++    @Override
++    public java.util.Collection<ItemEntity> captureDrops(java.util.Collection<ItemEntity> value) {
++        java.util.Collection<ItemEntity> ret = captureDrops;
++        this.captureDrops = value;
++        return ret;
++    }
++    private CompoundTag persistentData;
++    @Override
++    public CompoundTag getPersistentData() {
++        if (persistentData == null)
++            persistentData = new CompoundTag();
++        return persistentData;
++    }
++    @Override
++    public boolean canTrample(BlockState state, BlockPos pos, float fallDistance) {
++        return level.random.nextFloat() < fallDistance - 0.5F
++             && this instanceof LivingEntity
++             && (this instanceof Player || net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(level, this))
++             && this.getBbWidth() * this.getBbWidth() * this.getBbHeight() > 0.512F;
++    }
 +
-+   /**
-+    * Internal use for keeping track of entities that are tracked by a world, to
-+    * allow guarantees that entity position changes will force a chunk load, avoiding
-+    * potential issues with entity desyncing and bad chunk data.
-+    */
-+   private boolean isAddedToWorld;
++    /**
++     * Internal use for keeping track of entities that are tracked by a world, to
++     * allow guarantees that entity position changes will force a chunk load, avoiding
++     * potential issues with entity desyncing and bad chunk data.
++     */
++    private boolean isAddedToWorld;
 +
-+   @Override
-+   public final boolean isAddedToWorld() { return this.isAddedToWorld; }
++    @Override
++    public final boolean isAddedToWorld() { return this.isAddedToWorld; }
 +
-+   @Override
-+   public void onAddedToWorld() { this.isAddedToWorld = true; }
++    @Override
++    public void onAddedToWorld() { this.isAddedToWorld = true; }
 +
-+   @Override
-+   public void onRemovedFromWorld() { this.isAddedToWorld = false; }
++    @Override
++    public void onRemovedFromWorld() { this.isAddedToWorld = false; }
 +
-+   @Override
-+   public void revive() {
-+      this.unsetRemoved();
-+      this.reviveCaps();
-+   }
++    @Override
++    public void revive() {
++        this.unsetRemoved();
++        this.reviveCaps();
++    }
 +
-+   // no AT because of overrides
-+   /**
-+    * Accessor method for {@link #getEyeHeight(Pose, EntityDimensions)}
-+    */
-+   public float getEyeHeightAccess(Pose pose, EntityDimensions size) {
-+      return this.getEyeHeight(pose, size);
-+   }
++    // no AT because of overrides
++    /**
++     * Accessor method for {@link #getEyeHeight(Pose, EntityDimensions)}
++     */
++    public float getEyeHeightAccess(Pose pose, EntityDimensions size) {
++        return this.getEyeHeight(pose, size);
++    }
 +
-+   protected Object2DoubleMap<net.neoforged.neoforge.fluids.FluidType> forgeFluidTypeHeight = new Object2DoubleArrayMap<>(net.neoforged.neoforge.fluids.FluidType.SIZE.get());
-+   private net.neoforged.neoforge.fluids.FluidType forgeFluidTypeOnEyes = net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.value();
-+   protected final void setFluidTypeHeight(net.neoforged.neoforge.fluids.FluidType type, double height) {
-+      this.forgeFluidTypeHeight.put(type, height);
-+   }
-+   @Override
-+   public final double getFluidTypeHeight(net.neoforged.neoforge.fluids.FluidType type) {
-+      return this.forgeFluidTypeHeight.getDouble(type);
-+   }
-+   @Override
-+   public final boolean isInFluidType(java.util.function.BiPredicate<net.neoforged.neoforge.fluids.FluidType, Double> predicate, boolean forAllTypes) {
-+      return forAllTypes ? this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().allMatch(e -> predicate.test(e.getKey(), e.getDoubleValue()))
-+              : this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().anyMatch(e -> predicate.test(e.getKey(), e.getDoubleValue()));
-+   }
-+   @Override
-+   public final boolean isInFluidType() {
-+      return this.forgeFluidTypeHeight.size() > 0;
-+   }
++    protected Object2DoubleMap<net.neoforged.neoforge.fluids.FluidType> forgeFluidTypeHeight = new Object2DoubleArrayMap<>(net.neoforged.neoforge.fluids.FluidType.SIZE.get());
++    private net.neoforged.neoforge.fluids.FluidType forgeFluidTypeOnEyes = net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.value();
++    protected final void setFluidTypeHeight(net.neoforged.neoforge.fluids.FluidType type, double height) {
++        this.forgeFluidTypeHeight.put(type, height);
++    }
++    @Override
++    public final double getFluidTypeHeight(net.neoforged.neoforge.fluids.FluidType type) {
++        return this.forgeFluidTypeHeight.getDouble(type);
++    }
++    @Override
++    public final boolean isInFluidType(java.util.function.BiPredicate<net.neoforged.neoforge.fluids.FluidType, Double> predicate, boolean forAllTypes) {
++        return forAllTypes ? this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().allMatch(e -> predicate.test(e.getKey(), e.getDoubleValue()))
++                  : this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().anyMatch(e -> predicate.test(e.getKey(), e.getDoubleValue()));
++    }
++    @Override
++    public final boolean isInFluidType() {
++        return this.forgeFluidTypeHeight.size() > 0;
++    }
 +  @Override
 +  public final net.neoforged.neoforge.fluids.FluidType getEyeInFluidType() {
-+      return forgeFluidTypeOnEyes;
-+   }
-+   @Override
-+   public net.neoforged.neoforge.fluids.FluidType getMaxHeightFluidType() {
-+      return this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(Object2DoubleMap.Entry::getDoubleValue)).map(Object2DoubleMap.Entry::getKey).orElseGet(net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE::value);
-+   }
++        return forgeFluidTypeOnEyes;
++    }
++    @Override
++    public net.neoforged.neoforge.fluids.FluidType getMaxHeightFluidType() {
++        return this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(Object2DoubleMap.Entry::getDoubleValue)).map(Object2DoubleMap.Entry::getKey).orElseGet(net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE::value);
++    }
 +
-+   /* ================================== Forge End =====================================*/
++    /* ================================== Forge End =====================================*/
 +
  
-    public Level level() {
-       return this.level;
+     public Level level() {
+         return this.level;

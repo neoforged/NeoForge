@@ -98,7 +98,16 @@ public class CustomHeadTest {
     }
 
     private enum SkullType implements SkullBlock.Type {
-        BLAZE
+        BLAZE;
+
+        SkullType() {
+            TYPES.put(name().toLowerCase(), this);
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name().toLowerCase();
+        }
     }
 
     @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Bus.MOD, modid = MODID)

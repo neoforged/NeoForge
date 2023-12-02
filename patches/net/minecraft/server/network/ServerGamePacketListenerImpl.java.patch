@@ -1,144 +1,111 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -186,6 +_,12 @@
-    ServerPlayerConnection,
-    TickablePacketListener {
-    static final Logger LOGGER = LogUtils.getLogger();
-+   /**
-+    * Forge: Deprecated in favor of range/reach attributes.
-+    * @see net.neoforged.neoforge.common.NeoForgeMod#BLOCK_REACH
-+    * @see net.neoforged.neoforge.common.NeoForgeMod#ENTITY_REACH
-+    */
-+   @Deprecated
-    public static final double MAX_INTERACTION_DISTANCE = Mth.square(6.0);
-    private static final int NO_BLOCK_UPDATES_TO_ACK = -1;
-    private static final int TRACKED_MESSAGE_DISCONNECT_THRESHOLD = 4096;
-@@ -426,9 +_,11 @@
+@@ -187,6 +_,12 @@
+     ServerPlayerConnection,
+     TickablePacketListener {
+     static final Logger LOGGER = LogUtils.getLogger();
++    /**
++     * Forge: Deprecated in favor of range/reach attributes.
++     * @see net.neoforged.neoforge.common.NeoForgeMod#BLOCK_REACH
++     * @see net.neoforged.neoforge.common.NeoForgeMod#ENTITY_REACH
++     */
++    @Deprecated
+     public static final double MAX_INTERACTION_DISTANCE = Mth.square(6.0);
+     private static final int NO_BLOCK_UPDATES_TO_ACK = -1;
+     private static final int TRACKED_MESSAGE_DISCONNECT_THRESHOLD = 4096;
+@@ -424,9 +_,11 @@
+                 }
+ 
+                 entity.absMoveTo(d3, d4, d5, f, f1);
++                resyncPlayerWithVehicle(entity); // Neo - Resync player position on vehicle moving
+                 boolean flag3 = serverlevel.noCollision(entity, entity.getBoundingBox().deflate(0.0625));
+                 if (flag && (flag2 || !flag3)) {
+                     entity.absMoveTo(d0, d1, d2, f, f1);
++                    resyncPlayerWithVehicle(entity); // Neo - Resync player position on vehicle moving
+                     this.send(new ClientboundMoveVehiclePacket(entity));
+                     return;
+                 }
+@@ -445,6 +_,23 @@
+         }
+     }
+ 
++    private void resyncPlayerWithVehicle(Entity vehicle) {
++        Vec3 oldPos = this.player.position();
++        float yRot = this.player.getYRot();
++        float xRot = this.player.getXRot();
++        float yHeadRot = this.player.getYHeadRot();
++
++        vehicle.positionRider(this.player);
++
++        // preserve old rotation and store old position in xo/yo/zo
++        this.player.setYRot(yRot);
++        this.player.setXRot(xRot);
++        this.player.setYHeadRot(yHeadRot);
++        this.player.xo = oldPos.x;
++        this.player.yo = oldPos.y;
++        this.player.zo = oldPos.z;
++    }
++
+     private boolean noBlocksAround(Entity p_9794_) {
+         return p_9794_.level()
+             .getBlockStates(p_9794_.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
+@@ -1028,8 +_,10 @@
+             case SWAP_ITEM_WITH_OFFHAND:
+                 if (!this.player.isSpectator()) {
+                     ItemStack itemstack = this.player.getItemInHand(InteractionHand.OFF_HAND);
+-                    this.player.setItemInHand(InteractionHand.OFF_HAND, this.player.getItemInHand(InteractionHand.MAIN_HAND));
+-                    this.player.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
++                    var event = net.neoforged.neoforge.common.CommonHooks.onLivingSwapHandItems(this.player);
++                    if (event.isCanceled()) return;
++                    this.player.setItemInHand(InteractionHand.OFF_HAND, event.getItemSwappedToOffHand());
++                    this.player.setItemInHand(InteractionHand.MAIN_HAND, event.getItemSwappedToMainHand());
+                     this.player.stopUsingItem();
+                 }
+ 
+@@ -1057,7 +_,7 @@
+                     .handleBlockBreakAction(
+                         blockpos, serverboundplayeractionpacket$action, p_9889_.getDirection(), this.player.level().getMaxBuildHeight(), p_9889_.getSequence()
+                     );
+-                this.player.connection.ackBlockChangesUpTo(p_9889_.getSequence());
++                this.player.connection.ackBlockChangesUpTo =p_9889_.getSequence();
+                 return;
+             default:
+                 throw new IllegalArgumentException("Invalid player action");
+@@ -1076,7 +_,7 @@
+     @Override
+     public void handleUseItemOn(ServerboundUseItemOnPacket p_9930_) {
+         PacketUtils.ensureRunningOnSameThread(p_9930_, this, this.player.serverLevel());
+-        this.player.connection.ackBlockChangesUpTo(p_9930_.getSequence());
++        this.player.connection.ackBlockChangesUpTo = p_9930_.getSequence();
+         ServerLevel serverlevel = this.player.serverLevel();
+         InteractionHand interactionhand = p_9930_.getHand();
+         ItemStack itemstack = this.player.getItemInHand(interactionhand);
+@@ -1085,7 +_,7 @@
+             Vec3 vec3 = blockhitresult.getLocation();
+             BlockPos blockpos = blockhitresult.getBlockPos();
+             Vec3 vec31 = Vec3.atCenterOf(blockpos);
+-            if (!(this.player.getEyePosition().distanceToSqr(vec31) > MAX_INTERACTION_DISTANCE)) {
++            if (this.player.canReach(blockpos, 1.5)) { // Vanilla uses eye-to-center distance < 6, which implies a padding of 1.5
+                 Vec3 vec32 = vec3.subtract(vec31);
+                 double d0 = 1.0000001;
+                 if (Math.abs(vec32.x()) < 1.0000001 && Math.abs(vec32.y()) < 1.0000001 && Math.abs(vec32.z()) < 1.0000001) {
+@@ -1225,8 +_,9 @@
+                     }
+ 
+                     CompletableFuture<FilteredText> completablefuture = this.filterTextPacket(playerchatmessage.signedContent());
+-                    Component component = this.server.getChatDecorator().decorate(this.player, playerchatmessage.decoratedContent());
++                    Component component = net.neoforged.neoforge.common.CommonHooks.getServerChatSubmittedDecorator().decorate(this.player, playerchatmessage.decoratedContent());
+                     this.chatMessageChain.append(completablefuture, p_300785_ -> {
++                        if (component == null) return; // Forge: ServerChatEvent was canceled if this is null.
+                         PlayerChatMessage playerchatmessage1 = playerchatmessage.withUnsignedContent(component).filter(p_300785_.mask());
+                         this.broadcastChatMessage(playerchatmessage1);
+                     });
+@@ -1478,7 +_,7 @@
              }
  
-             entity.absMoveTo(d3, d4, d5, f, f1);
-+            resyncPlayerWithVehicle(entity); // Neo - Resync player position on vehicle moving
-             boolean flag3 = serverlevel.noCollision(entity, entity.getBoundingBox().deflate(0.0625));
-             if (flag && (flag2 || !flag3)) {
-                entity.absMoveTo(d0, d1, d2, f, f1);
-+               resyncPlayerWithVehicle(entity); // Neo - Resync player position on vehicle moving
-                this.send(new ClientboundMoveVehiclePacket(entity));
-                return;
-             }
-@@ -443,6 +_,23 @@
-       }
-    }
- 
-+   private void resyncPlayerWithVehicle(Entity vehicle) {
-+      Vec3 oldPos = this.player.position();
-+      float yRot = this.player.getYRot();
-+      float xRot = this.player.getXRot();
-+      float yHeadRot = this.player.getYHeadRot();
-+
-+      vehicle.positionRider(this.player);
-+
-+      // preserve old rotation and store old position in xo/yo/zo
-+      this.player.setYRot(yRot);
-+      this.player.setXRot(xRot);
-+      this.player.setYHeadRot(yHeadRot);
-+      this.player.xo = oldPos.x;
-+      this.player.yo = oldPos.y;
-+      this.player.zo = oldPos.z;
-+   }
-+
-    private boolean noBlocksAround(Entity p_9794_) {
-       return p_9794_.level()
-          .getBlockStates(p_9794_.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
-@@ -1004,8 +_,10 @@
-          case SWAP_ITEM_WITH_OFFHAND:
-             if (!this.player.isSpectator()) {
-                ItemStack itemstack = this.player.getItemInHand(InteractionHand.OFF_HAND);
--               this.player.setItemInHand(InteractionHand.OFF_HAND, this.player.getItemInHand(InteractionHand.MAIN_HAND));
--               this.player.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
-+               var event = net.neoforged.neoforge.common.CommonHooks.onLivingSwapHandItems(this.player);
-+               if (event.isCanceled()) return;
-+               this.player.setItemInHand(InteractionHand.OFF_HAND, event.getItemSwappedToOffHand());
-+               this.player.setItemInHand(InteractionHand.MAIN_HAND, event.getItemSwappedToMainHand());
-                this.player.stopUsingItem();
-             }
- 
-@@ -1033,7 +_,7 @@
-                .handleBlockBreakAction(
-                   blockpos, serverboundplayeractionpacket$action, p_9889_.getDirection(), this.player.level().getMaxBuildHeight(), p_9889_.getSequence()
-                );
--            this.player.connection.ackBlockChangesUpTo(p_9889_.getSequence());
-+            this.player.connection.ackBlockChangesUpTo =p_9889_.getSequence();
-             return;
-          default:
-             throw new IllegalArgumentException("Invalid player action");
-@@ -1052,7 +_,7 @@
-    @Override
-    public void handleUseItemOn(ServerboundUseItemOnPacket p_9930_) {
-       PacketUtils.ensureRunningOnSameThread(p_9930_, this, this.player.serverLevel());
--      this.player.connection.ackBlockChangesUpTo(p_9930_.getSequence());
-+      this.player.connection.ackBlockChangesUpTo = p_9930_.getSequence();
-       ServerLevel serverlevel = this.player.serverLevel();
-       InteractionHand interactionhand = p_9930_.getHand();
-       ItemStack itemstack = this.player.getItemInHand(interactionhand);
-@@ -1061,7 +_,7 @@
-          Vec3 vec3 = blockhitresult.getLocation();
-          BlockPos blockpos = blockhitresult.getBlockPos();
-          Vec3 vec31 = Vec3.atCenterOf(blockpos);
--         if (!(this.player.getEyePosition().distanceToSqr(vec31) > MAX_INTERACTION_DISTANCE)) {
-+         if (this.player.canReach(blockpos, 1.5)) { // Vanilla uses eye-to-center distance < 6, which implies a padding of 1.5
-             Vec3 vec32 = vec3.subtract(vec31);
-             double d0 = 1.0000001;
-             if (Math.abs(vec32.x()) < 1.0000001 && Math.abs(vec32.y()) < 1.0000001 && Math.abs(vec32.z()) < 1.0000001) {
-@@ -1070,17 +_,17 @@
-                int i = this.player.level().getMaxBuildHeight();
-                if (blockpos.getY() < i) {
-                   if (this.awaitingPositionFromClient == null
--                     && this.player.distanceToSqr((double)blockpos.getX() + 0.5, (double)blockpos.getY() + 0.5, (double)blockpos.getZ() + 0.5) < 64.0
--                     && serverlevel.mayInteract(this.player, blockpos)) {
--                     InteractionResult interactionresult = this.player.gameMode.useItemOn(this.player, serverlevel, itemstack, interactionhand, blockhitresult);
--                     if (direction == Direction.UP
--                        && !interactionresult.consumesAction()
--                        && blockpos.getY() >= i - 1
--                        && wasBlockPlacementAttempt(this.player, itemstack)) {
--                        Component component = Component.translatable("build.tooHigh", i - 1).withStyle(ChatFormatting.RED);
--                        this.player.sendSystemMessage(component, true);
--                     } else if (interactionresult.shouldSwing()) {
--                        this.player.swing(interactionhand, true);
-+                          && this.player.distanceToSqr((double)blockpos.getX() + 0.5, (double)blockpos.getY() + 0.5, (double)blockpos.getZ() + 0.5)
-+                          < 64.0
-+                          && serverlevel.mayInteract(this.player, blockpos)) {
-+                     if (this.awaitingPositionFromClient == null && serverlevel.mayInteract(this.player, blockpos)) {
-+                        InteractionResult interactionresult = this.player.gameMode.useItemOn(this.player, serverlevel, itemstack, interactionhand, blockhitresult);
-+                        if (direction == Direction.UP && !interactionresult.consumesAction() && blockpos.getY() >= i - 1 && wasBlockPlacementAttempt(this.player, itemstack)) {
-+                           Component component = Component.translatable("build.tooHigh", i - 1).withStyle(ChatFormatting.RED);
-+                           this.player.sendSystemMessage(component, true);
-+                        } else if (interactionresult.shouldSwing()) {
-+                           this.player.swing(interactionhand, true);
-+                        }
-                      }
-                   }
-                } else {
-@@ -1196,9 +_,12 @@
-                }
- 
-                CompletableFuture<FilteredText> completablefuture = this.filterTextPacket(playerchatmessage.signedContent());
--               Component component = this.server.getChatDecorator().decorate(this.player, playerchatmessage.decoratedContent());
-+               CompletableFuture<Component> completablefuture1 = CompletableFuture.completedFuture(net.neoforged.neoforge.common.CommonHooks.getServerChatSubmittedDecorator().decorate(this.player, playerchatmessage.decoratedContent()));
-                this.chatMessageChain.append(p_300782_ -> completablefuture.thenAcceptAsync(p_300785_ -> {
--                     PlayerChatMessage playerchatmessage1 = playerchatmessage.withUnsignedContent(component).filter(p_300785_.mask());
-+                     Component decoratedContent = completablefuture1.join();
-+                     if (decoratedContent == null)
-+                        return; // Forge: ServerChatEvent was canceled if this is null.
-+                     PlayerChatMessage playerchatmessage1 = playerchatmessage.withUnsignedContent(decoratedContent).filter(completablefuture.join().mask());
-                      this.broadcastChatMessage(playerchatmessage1);
-                   }, p_300782_));
-             });
-@@ -1466,7 +_,7 @@
-          }
- 
-          AABB aabb = entity.getBoundingBox();
--         if (aabb.distanceToSqr(this.player.getEyePosition()) < MAX_INTERACTION_DISTANCE) {
-+         if (this.player.canReach(entity, 3)) { // Vanilla padding is 3.0 (distSq < 6.0 * 6.0)
-             p_9866_.dispatch(
-                new ServerboundInteractPacket.Handler() {
-                   private void performInteraction(InteractionHand p_143679_, ServerGamePacketListenerImpl.EntityInteraction p_143680_) {
+             AABB aabb = entity.getBoundingBox();
+-            if (aabb.distanceToSqr(this.player.getEyePosition()) < MAX_INTERACTION_DISTANCE) {
++            if (this.player.canReach(entity, 3)) { // Vanilla padding is 3.0 (distSq < 6.0 * 6.0)
+                 p_9866_.dispatch(
+                     new ServerboundInteractPacket.Handler() {
+                         private void performInteraction(InteractionHand p_143679_, ServerGamePacketListenerImpl.EntityInteraction p_143680_) {

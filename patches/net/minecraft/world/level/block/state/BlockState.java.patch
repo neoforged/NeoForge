@@ -6,6 +6,6 @@
  
 -public class BlockState extends BlockBehaviour.BlockStateBase {
 +public class BlockState extends BlockBehaviour.BlockStateBase implements net.neoforged.neoforge.common.extensions.IBlockStateExtension {
-    public static final Codec<BlockState> CODEC = codec(BuiltInRegistries.BLOCK.byNameCodec(), Block::defaultBlockState).stable();
+     public static final Codec<BlockState> CODEC = codec(BuiltInRegistries.BLOCK.byNameCodec(), Block::defaultBlockState).stable();
  
-    public BlockState(Block p_61042_, ImmutableMap<Property<?>, Comparable<?>> p_61043_, MapCodec<BlockState> p_61044_) {
+     public BlockState(Block p_61042_, ImmutableMap<Property<?>, Comparable<?>> p_61043_, MapCodec<BlockState> p_61044_) {

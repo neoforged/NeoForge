@@ -15,19 +15,11 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
-    "description": {
-      "text": "Get a named item"
-    },
-    "frame": "task",
-    "hidden": false,
+    "description": "Get a named item",
     "icon": {
       "item": "minecraft:anvil"
     },
-    "show_toast": true,
-    "title": {
-      "text": "Named!"
-    }
+    "title": "Named!"
   },
   "requirements": [
     [

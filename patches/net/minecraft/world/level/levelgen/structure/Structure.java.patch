@@ -2,53 +2,53 @@
 +++ b/net/minecraft/world/level/levelgen/structure/Structure.java
 @@ -42,10 +_,11 @@
  public abstract class Structure {
-    public static final Codec<Structure> DIRECT_CODEC = BuiltInRegistries.STRUCTURE_TYPE.byNameCodec().dispatch(Structure::type, StructureType::codec);
-    public static final Codec<Holder<Structure>> CODEC = RegistryFileCodec.create(Registries.STRUCTURE, DIRECT_CODEC);
--   protected final Structure.StructureSettings settings;
-+   //Forge: Make this field private so that the redirect coremod can target it
-+   private final Structure.StructureSettings settings;
+     public static final Codec<Structure> DIRECT_CODEC = BuiltInRegistries.STRUCTURE_TYPE.byNameCodec().dispatch(Structure::type, StructureType::codec);
+     public static final Codec<Holder<Structure>> CODEC = RegistryFileCodec.create(Registries.STRUCTURE, DIRECT_CODEC);
+-    protected final Structure.StructureSettings settings;
++    //Forge: Make this field private so that the redirect coremod can target it
++    private final Structure.StructureSettings settings;
  
-    public static <S extends Structure> RecordCodecBuilder<S, Structure.StructureSettings> settingsCodec(Instance<S> p_226568_) {
--      return Structure.StructureSettings.CODEC.forGetter(p_226595_ -> p_226595_.settings);
-+      return Structure.StructureSettings.CODEC.forGetter(p_226595_ -> p_226595_.modifiableStructureInfo().getOriginalStructureInfo().structureSettings()); // FORGE: Patch codec to ignore field redirect coremods.
-    }
+     public static <S extends Structure> RecordCodecBuilder<S, Structure.StructureSettings> settingsCodec(Instance<S> p_226568_) {
+-        return Structure.StructureSettings.CODEC.forGetter(p_226595_ -> p_226595_.settings);
++        return Structure.StructureSettings.CODEC.forGetter(p_226595_ -> p_226595_.modifiableStructureInfo().getOriginalStructureInfo().structureSettings()); // FORGE: Patch codec to ignore field redirect coremods.
+     }
  
-    public static <S extends Structure> Codec<S> simpleCodec(Function<Structure.StructureSettings, S> p_226608_) {
+     public static <S extends Structure> Codec<S> simpleCodec(Function<Structure.StructureSettings, S> p_226608_) {
 @@ -54,6 +_,7 @@
  
-    protected Structure(Structure.StructureSettings p_226558_) {
-       this.settings = p_226558_;
-+      this.modifiableStructureInfo = new net.neoforged.neoforge.common.world.ModifiableStructureInfo(new net.neoforged.neoforge.common.world.ModifiableStructureInfo.StructureInfo(p_226558_)); // FORGE: cache original structure info on construction so we can bypass our field read coremods where necessary
-    }
+     protected Structure(Structure.StructureSettings p_226558_) {
+         this.settings = p_226558_;
++        this.modifiableStructureInfo = new net.neoforged.neoforge.common.world.ModifiableStructureInfo(new net.neoforged.neoforge.common.world.ModifiableStructureInfo.StructureInfo(p_226558_)); // FORGE: cache original structure info on construction so we can bypass our field read coremods where necessary
+     }
  
-    public HolderSet<Biome> biomes() {
-@@ -189,6 +_,29 @@
-    }
+     public HolderSet<Biome> biomes() {
+@@ -191,6 +_,29 @@
+     }
  
-    public abstract StructureType<?> type();
+     public abstract StructureType<?> type();
 +
-+   // FORGE START
++    // FORGE START
 +
-+   private final net.neoforged.neoforge.common.world.ModifiableStructureInfo modifiableStructureInfo;
++    private final net.neoforged.neoforge.common.world.ModifiableStructureInfo modifiableStructureInfo;
 +
-+   /**
-+    * {@return Cache of original structure data and structure data modified by structure modifiers}
-+    * Modified structure data is set by server after datapacks and serverconfigs load.
-+    * Settings field reads are coremodded to redirect to this.
-+    **/
-+   public net.neoforged.neoforge.common.world.ModifiableStructureInfo modifiableStructureInfo()
-+   {
-+      return this.modifiableStructureInfo;
-+   }
++    /**
++     * {@return Cache of original structure data and structure data modified by structure modifiers}
++     * Modified structure data is set by server after datapacks and serverconfigs load.
++     * Settings field reads are coremodded to redirect to this.
++     **/
++    public net.neoforged.neoforge.common.world.ModifiableStructureInfo modifiableStructureInfo()
++    {
++        return this.modifiableStructureInfo;
++    }
 +
-+   /**
-+    * {@return The structure's settings, with modifications if called after modifiers are applied in server init.}
-+    */
-+   public StructureSettings getModifiedStructureSettings() {
-+      return this.modifiableStructureInfo().get().structureSettings();
-+   }
++    /**
++     * {@return The structure's settings, with modifications if called after modifiers are applied in server init.}
++     */
++    public StructureSettings getModifiedStructureSettings() {
++        return this.modifiableStructureInfo().get().structureSettings();
++    }
 +
-+   // FORGE END
++    // FORGE END
  
-    public static record GenerationContext(
-       RegistryAccess registryAccess,
+     public static record GenerationContext(
+         RegistryAccess registryAccess,

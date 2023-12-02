@@ -7,25 +7,25 @@
 -public record MapDecoration(MapDecoration.Type type, byte x, byte y, byte rot, @Nullable Component name) {
 +public record MapDecoration(MapDecoration.Type type, byte x, byte y, byte rot, @Nullable Component name, it.unimi.dsi.fastutil.ints.Int2BooleanFunction shouldRenderForIndex) {
 +
-+   public MapDecoration(Type type, byte x, byte y, byte rot, @Nullable Component name) {
-+      this(type, x, y, rot, name, (i) -> false);
-+   }
++    public MapDecoration(Type type, byte x, byte y, byte rot, @Nullable Component name) {
++        this(type, x, y, rot, name, (i) -> false);
++    }
 +
-    public byte getImage() {
-       return this.type.getIcon();
-    }
+     public byte getImage() {
+         return this.type.getIcon();
+     }
  
-    public boolean renderOnFrame() {
-       return this.type.isRenderedOnFrame();
-+   }
+     public boolean renderOnFrame() {
+         return this.type.isRenderedOnFrame();
++    }
 +
-+   /**
-+    * Renders this decoration, useful for custom sprite sheets.
-+    * @param index The index of this icon in the MapData's list. Used by vanilla to offset the Z-coordinate to prevent Z-fighting
-+    * @return false to run vanilla logic for this decoration, true to skip it
-+    */
-+   public boolean render(int index) {
-+      return shouldRenderForIndex().get(index);
-    }
++    /**
++     * Renders this decoration, useful for custom sprite sheets.
++     * @param index The index of this icon in the MapData's list. Used by vanilla to offset the Z-coordinate to prevent Z-fighting
++     * @return false to run vanilla logic for this decoration, true to skip it
++     */
++    public boolean render(int index) {
++        return shouldRenderForIndex().get(index);
+     }
  
-    public static enum Type implements StringRepresentable {
+     public static enum Type implements StringRepresentable {

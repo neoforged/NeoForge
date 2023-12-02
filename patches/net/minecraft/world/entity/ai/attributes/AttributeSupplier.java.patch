@@ -1,33 +1,33 @@
 --- a/net/minecraft/world/entity/ai/attributes/AttributeSupplier.java
 +++ b/net/minecraft/world/entity/ai/attributes/AttributeSupplier.java
 @@ -69,6 +_,22 @@
-    public static class Builder {
-       private final Map<Attribute, AttributeInstance> builder = Maps.newHashMap();
-       private boolean instanceFrozen;
-+      private final java.util.List<AttributeSupplier.Builder> others = new java.util.ArrayList<>();
+     public static class Builder {
+         private final Map<Attribute, AttributeInstance> builder = Maps.newHashMap();
+         private boolean instanceFrozen;
++        private final java.util.List<AttributeSupplier.Builder> others = new java.util.ArrayList<>();
 +
-+      public Builder() { }
++        public Builder() { }
 +
-+      public Builder(AttributeSupplier attributeMap) {
-+         this.builder.putAll(attributeMap.instances);
-+      }
++        public Builder(AttributeSupplier attributeMap) {
++            this.builder.putAll(attributeMap.instances);
++        }
 +
-+      public void combine(Builder other) {
-+         this.builder.putAll(other.builder);
-+         others.add(other);
-+      }
++        public void combine(Builder other) {
++            this.builder.putAll(other.builder);
++            others.add(other);
++        }
 +
-+      public boolean hasAttribute(Attribute attribute) {
-+         return this.builder.containsKey(attribute);
-+      }
++        public boolean hasAttribute(Attribute attribute) {
++            return this.builder.containsKey(attribute);
++        }
  
-       private AttributeInstance create(Attribute p_22275_) {
-          AttributeInstance attributeinstance = new AttributeInstance(p_22275_, p_258260_ -> {
-@@ -93,6 +_,7 @@
+         private AttributeInstance create(Attribute p_22275_) {
+             AttributeInstance attributeinstance = new AttributeInstance(
+@@ -98,6 +_,7 @@
  
-       public AttributeSupplier build() {
-          this.instanceFrozen = true;
-+         others.forEach(b -> b.instanceFrozen = true);
-          return new AttributeSupplier(this.builder);
-       }
-    }
+         public AttributeSupplier build() {
+             this.instanceFrozen = true;
++            others.forEach(b -> b.instanceFrozen = true);
+             return new AttributeSupplier(this.builder);
+         }
+     }

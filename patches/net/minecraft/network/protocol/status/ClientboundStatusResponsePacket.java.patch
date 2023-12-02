@@ -6,18 +6,18 @@
  
 -public record ClientboundStatusResponsePacket(ServerStatus status) implements Packet<ClientStatusPacketListener> {
 +public record ClientboundStatusResponsePacket(ServerStatus status, @org.jetbrains.annotations.Nullable String cachedStatus) implements Packet<ClientStatusPacketListener> {
-+   public ClientboundStatusResponsePacket(ServerStatus status) {
-+      this(status, null);
-+   }
++    public ClientboundStatusResponsePacket(ServerStatus status) {
++        this(status, null);
++    }
 +
-    public ClientboundStatusResponsePacket(FriendlyByteBuf p_179834_) {
-       this(p_179834_.readJsonWithCodec(ServerStatus.CODEC));
-    }
+     public ClientboundStatusResponsePacket(FriendlyByteBuf p_179834_) {
+         this(p_179834_.readJsonWithCodec(ServerStatus.CODEC));
+     }
  
-    @Override
-    public void write(FriendlyByteBuf p_134899_) {
-+      if (cachedStatus != null) p_134899_.writeUtf(cachedStatus);
-+      else
-       p_134899_.writeJsonWithCodec(ServerStatus.CODEC, this.status);
-    }
+     @Override
+     public void write(FriendlyByteBuf p_134899_) {
++        if (cachedStatus != null) p_134899_.writeUtf(cachedStatus);
++        else
+         p_134899_.writeJsonWithCodec(ServerStatus.CODEC, this.status);
+     }
  

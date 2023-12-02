@@ -2,15 +2,15 @@
 +++ b/net/minecraft/world/entity/monster/Spider.java
 @@ -132,7 +_,12 @@
  
-    @Override
-    public boolean canBeAffected(MobEffectInstance p_33809_) {
--      return p_33809_.getEffect() == MobEffects.POISON ? false : super.canBeAffected(p_33809_);
-+      if (p_33809_.getEffect() == MobEffects.POISON) {
-+         net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable event = new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable(this, p_33809_);
-+         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
-+         return event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW;
-+      }
-+      return super.canBeAffected(p_33809_);
-    }
+     @Override
+     public boolean canBeAffected(MobEffectInstance p_33809_) {
+-        return p_33809_.getEffect() == MobEffects.POISON ? false : super.canBeAffected(p_33809_);
++        if (p_33809_.getEffect() == MobEffects.POISON) {
++            net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable event = new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable(this, p_33809_);
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
++            return event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW;
++        }
++        return super.canBeAffected(p_33809_);
+     }
  
-    public boolean isClimbing() {
+     public boolean isClimbing() {

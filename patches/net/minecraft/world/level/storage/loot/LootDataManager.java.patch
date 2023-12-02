@@ -1,47 +1,47 @@
 --- a/net/minecraft/world/level/storage/loot/LootDataManager.java
 +++ b/net/minecraft/world/level/storage/loot/LootDataManager.java
-@@ -22,7 +_,7 @@
+@@ -23,7 +_,7 @@
  import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
  import org.slf4j.Logger;
  
 -public class LootDataManager implements PreparableReloadListener, LootDataResolver {
 +public class LootDataManager extends net.neoforged.neoforge.resource.ContextAwareReloadListener implements PreparableReloadListener, LootDataResolver {
-    private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Gson GSON = new GsonBuilder().create();
-    public static final LootDataId<LootTable> EMPTY_LOOT_TABLE_KEY = new LootDataId<>(LootDataType.TABLE, BuiltInLootTables.EMPTY);
-@@ -38,22 +_,33 @@
-       Executor p_279148_,
-       Executor p_279169_
-    ) {
-+      final var decodeOps = net.neoforged.neoforge.common.conditions.ConditionalOps.create(net.minecraft.resources.RegistryOps.create(com.mojang.serialization.JsonOps.INSTANCE, registryAccess), this.conditionContext);
-       Map<LootDataType<?>, Map<ResourceLocation, ?>> map = new HashMap<>();
-       CompletableFuture<?>[] completablefuture = LootDataType.values()
--         .map(p_279242_ -> scheduleElementParse(p_279242_, p_279377_, p_279148_, map))
-+         .map(p_279242_ -> scheduleElementParse(p_279242_, p_279377_, p_279148_, map, decodeOps))
-          .toArray(p_279126_ -> new CompletableFuture[p_279126_]);
-       return CompletableFuture.allOf(completablefuture).thenCompose(p_279240_::wait).thenAcceptAsync(p_279096_ -> this.apply(map), p_279169_);
-    }
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final Gson GSON = new GsonBuilder().create();
+     public static final LootDataId<LootTable> EMPTY_LOOT_TABLE_KEY = new LootDataId<>(LootDataType.TABLE, BuiltInLootTables.EMPTY);
+@@ -39,22 +_,33 @@
+         Executor p_279148_,
+         Executor p_279169_
+     ) {
++        final var decodeOps = net.neoforged.neoforge.common.conditions.ConditionalOps.create(net.minecraft.resources.RegistryOps.create(com.mojang.serialization.JsonOps.INSTANCE, registryAccess), this.conditionContext);
+         Map<LootDataType<?>, Map<ResourceLocation, ?>> map = new HashMap<>();
+         CompletableFuture<?>[] completablefuture = LootDataType.values()
+-            .map(p_279242_ -> scheduleElementParse(p_279242_, p_279377_, p_279148_, map))
++            .map(p_279242_ -> scheduleElementParse(p_279242_, p_279377_, p_279148_, map, decodeOps))
+             .toArray(p_279126_ -> new CompletableFuture[p_279126_]);
+         return CompletableFuture.allOf(completablefuture).thenCompose(p_279240_::wait).thenAcceptAsync(p_279096_ -> this.apply(map), p_279169_);
+     }
  
-+   /**
-+    * @deprecated Neo: use the variant with a custom codec ops
-+    */
-+   @Deprecated
-    private static <T> CompletableFuture<?> scheduleElementParse(
-       LootDataType<T> p_279205_, ResourceManager p_279441_, Executor p_279233_, Map<LootDataType<?>, Map<ResourceLocation, ?>> p_279241_
-    ) {
-+      return scheduleElementParse(p_279205_, p_279441_, p_279233_, p_279241_, com.mojang.serialization.JsonOps.INSTANCE);
-+   }
-+   private static <T> CompletableFuture<?> scheduleElementParse(
-+      LootDataType<T> p_279205_, ResourceManager p_279441_, Executor p_279233_, Map<LootDataType<?>, Map<ResourceLocation, ?>> p_279241_,
-+      com.mojang.serialization.DynamicOps<JsonElement> decodeOps
-+   ) {
-       Map<ResourceLocation, T> map = new HashMap<>();
-       p_279241_.put(p_279205_, map);
-       return CompletableFuture.runAsync(() -> {
-          Map<ResourceLocation, JsonElement> map1 = new HashMap<>();
-          SimpleJsonResourceReloadListener.scanDirectory(p_279441_, p_279205_.directory(), GSON, map1);
--         map1.forEach((p_279416_, p_279151_) -> p_279205_.deserialize(p_279416_, p_279151_).ifPresent(p_279295_ -> map.put(p_279416_, p_279295_)));
-+         map1.forEach((p_279416_, p_279151_) -> p_279205_.deserializeOrDefault(p_279416_,  decodeOps, p_279151_).ifPresent(p_279295_ -> map.put(p_279416_, p_279295_)));
-       }, p_279233_);
-    }
++    /**
++     * @deprecated Neo: use the variant with a custom codec ops
++     */
++    @Deprecated
+     private static <T> CompletableFuture<?> scheduleElementParse(
+         LootDataType<T> p_279205_, ResourceManager p_279441_, Executor p_279233_, Map<LootDataType<?>, Map<ResourceLocation, ?>> p_279241_
+     ) {
++        return scheduleElementParse(p_279205_, p_279441_, p_279233_, p_279241_, com.mojang.serialization.JsonOps.INSTANCE);
++    }
++    private static <T> CompletableFuture<?> scheduleElementParse(
++        LootDataType<T> p_279205_, ResourceManager p_279441_, Executor p_279233_, Map<LootDataType<?>, Map<ResourceLocation, ?>> p_279241_,
++        com.mojang.serialization.DynamicOps<JsonElement> decodeOps
++    ) {
+         Map<ResourceLocation, T> map = new HashMap<>();
+         p_279241_.put(p_279205_, map);
+         return CompletableFuture.runAsync(() -> {
+             Map<ResourceLocation, JsonElement> map1 = new HashMap<>();
+             SimpleJsonResourceReloadListener.scanDirectory(p_279441_, p_279205_.directory(), GSON, map1);
+-            map1.forEach((p_279416_, p_279151_) -> p_279205_.deserialize(p_279416_, p_279151_).ifPresent(p_279295_ -> map.put(p_279416_, p_279295_)));
++            map1.forEach((p_279416_, p_279151_) -> p_279205_.deserializeOrDefault(p_279416_,  decodeOps, p_279151_).ifPresent(p_279295_ -> map.put(p_279416_, p_279295_)));
+         }, p_279233_);
+     }
  

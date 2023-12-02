@@ -1,16 +1,16 @@
 --- a/net/minecraft/world/item/BannerItem.java
 +++ b/net/minecraft/world/item/BannerItem.java
 @@ -37,9 +_,10 @@
-                holder.unwrapKey()
-                   .map(p_220002_ -> p_220002_.location().toShortLanguageKey())
-                   .ifPresent(
--                     p_220006_ -> p_40544_.add(
--                           Component.translatable("block.minecraft.banner." + p_220006_ + "." + dyecolor.getName()).withStyle(ChatFormatting.GRAY)
--                        )
-+                     p_220006_ -> {
-+                        net.minecraft.resources.ResourceLocation fileLoc = new net.minecraft.resources.ResourceLocation(p_220006_);
-+                        p_40544_.add(Component.translatable("block." + fileLoc.getNamespace() + ".banner." + fileLoc.getPath() + "." + dyecolor.getSerializedName()).withStyle(ChatFormatting.GRAY));
-+                     }
-                   );
+                     holder.unwrapKey()
+                         .map(p_220002_ -> p_220002_.location().toShortLanguageKey())
+                         .ifPresent(
+-                            p_220006_ -> p_40544_.add(
+-                                    Component.translatable("block.minecraft.banner." + p_220006_ + "." + dyecolor.getName()).withStyle(ChatFormatting.GRAY)
+-                                )
++                            p_220006_ -> {
++                                net.minecraft.resources.ResourceLocation fileLoc = new net.minecraft.resources.ResourceLocation(p_220006_);
++                                p_40544_.add(Component.translatable("block." + fileLoc.getNamespace() + ".banner." + fileLoc.getPath() + "." + dyecolor.getSerializedName()).withStyle(ChatFormatting.GRAY));
++                            }
+                         );
+                 }
              }
-          }

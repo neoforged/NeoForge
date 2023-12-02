@@ -1,23 +1,23 @@
 --- a/net/minecraft/world/level/block/MushroomBlock.java
 +++ b/net/minecraft/world/level/block/MushroomBlock.java
-@@ -74,7 +_,7 @@
-       if (blockstate.is(BlockTags.MUSHROOM_GROW_BLOCK)) {
-          return true;
-       } else {
--         return p_54881_.getRawBrightness(p_54882_, 0) < 13 && this.mayPlaceOn(blockstate, p_54881_, blockpos);
-+         return p_54881_.getRawBrightness(p_54882_, 0) < 13 && blockstate.canSustainPlant(p_54881_, blockpos, net.minecraft.core.Direction.UP, this);
-       }
-    }
- 
-@@ -85,8 +_,10 @@
-       if (optional.isEmpty()) {
-          return false;
-       } else {
-+         var event = net.neoforged.neoforge.event.EventHooks.blockGrowFeature(p_221774_, p_221777_, p_221775_, optional.get());
-+         if (event.getResult().equals(net.neoforged.bus.api.Event.Result.DENY)) return false;
-          p_221774_.removeBlock(p_221775_, false);
--         if (optional.get().value().place(p_221774_, p_221774_.getChunkSource().getGenerator(), p_221777_, p_221775_)) {
-+         if (event.getFeature().value().place(p_221774_, p_221774_.getChunkSource().getGenerator(), p_221777_, p_221775_)) {
+@@ -88,7 +_,7 @@
+         if (blockstate.is(BlockTags.MUSHROOM_GROW_BLOCK)) {
              return true;
-          } else {
-             p_221774_.setBlock(p_221775_, p_221776_, 3);
+         } else {
+-            return p_54881_.getRawBrightness(p_54882_, 0) < 13 && this.mayPlaceOn(blockstate, p_54881_, blockpos);
++            return p_54881_.getRawBrightness(p_54882_, 0) < 13 && blockstate.canSustainPlant(p_54881_, blockpos, net.minecraft.core.Direction.UP, this);
+         }
+     }
+ 
+@@ -99,8 +_,10 @@
+         if (optional.isEmpty()) {
+             return false;
+         } else {
++            var event = net.neoforged.neoforge.event.EventHooks.blockGrowFeature(p_221774_, p_221777_, p_221775_, optional.get());
++            if (event.getResult().equals(net.neoforged.bus.api.Event.Result.DENY)) return false;
+             p_221774_.removeBlock(p_221775_, false);
+-            if (optional.get().value().place(p_221774_, p_221774_.getChunkSource().getGenerator(), p_221777_, p_221775_)) {
++            if (event.getFeature().value().place(p_221774_, p_221774_.getChunkSource().getGenerator(), p_221777_, p_221775_)) {
+                 return true;
+             } else {
+                 p_221774_.setBlock(p_221775_, p_221776_, 3);

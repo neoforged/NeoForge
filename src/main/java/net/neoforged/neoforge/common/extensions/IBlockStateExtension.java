@@ -206,7 +206,7 @@ public interface IBlockStateExtension {
      * @param target The full target the player is looking at
      * @return A ItemStack to add to the player's inventory, empty itemstack if nothing should be added.
      */
-    default ItemStack getCloneItemStack(HitResult target, BlockGetter level, BlockPos pos, Player player) {
+    default ItemStack getCloneItemStack(HitResult target, LevelReader level, BlockPos pos, Player player) {
         return self().getBlock().getCloneItemStack(self(), target, level, pos, player);
     }
 

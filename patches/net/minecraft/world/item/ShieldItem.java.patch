@@ -1,16 +1,16 @@
 --- a/net/minecraft/world/item/ShieldItem.java
 +++ b/net/minecraft/world/item/ShieldItem.java
 @@ -59,6 +_,13 @@
-       return compoundtag != null ? DyeColor.byId(compoundtag.getInt("Base")) : DyeColor.WHITE;
-    }
+         return compoundtag != null ? DyeColor.byId(compoundtag.getInt("Base")) : DyeColor.WHITE;
+     }
  
-+   /* ******************** FORGE START ******************** */
++    /* ******************** FORGE START ******************** */
 +
-+   @Override
-+   public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ToolAction toolAction) {
-+      return net.neoforged.neoforge.common.ToolActions.DEFAULT_SHIELD_ACTIONS.contains(toolAction);
-+   }
++    @Override
++    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ToolAction toolAction) {
++        return net.neoforged.neoforge.common.ToolActions.DEFAULT_SHIELD_ACTIONS.contains(toolAction);
++    }
 +
-    @Override
-    public EquipmentSlot getEquipmentSlot() {
-       return EquipmentSlot.OFFHAND;
+     @Override
+     public EquipmentSlot getEquipmentSlot() {
+         return EquipmentSlot.OFFHAND;

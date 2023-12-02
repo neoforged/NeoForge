@@ -1,23 +1,23 @@
 --- a/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
-@@ -230,7 +_,7 @@
+@@ -231,7 +_,7 @@
  
-    @Override
-    public boolean canPlaceItemThroughFace(int p_59663_, ItemStack p_59664_, @Nullable Direction p_59665_) {
--      return !(Block.byItem(p_59664_.getItem()) instanceof ShulkerBoxBlock);
-+      return !(Block.byItem(p_59664_.getItem()) instanceof ShulkerBoxBlock) && p_59664_.getItem().canFitInsideContainerItems(); // FORGE: Make shulker boxes respect Item#canFitInsideContainerItems
-    }
+     @Override
+     public boolean canPlaceItemThroughFace(int p_59663_, ItemStack p_59664_, @Nullable Direction p_59665_) {
+-        return !(Block.byItem(p_59664_.getItem()) instanceof ShulkerBoxBlock);
++        return !(Block.byItem(p_59664_.getItem()) instanceof ShulkerBoxBlock) && p_59664_.getItem().canFitInsideContainerItems(); // FORGE: Make shulker boxes respect Item#canFitInsideContainerItems
+     }
  
-    @Override
-@@ -254,6 +_,11 @@
+     @Override
+@@ -255,6 +_,11 @@
  
-    public boolean isClosed() {
-       return this.animationStatus == ShulkerBoxBlockEntity.AnimationStatus.CLOSED;
-+   }
+     public boolean isClosed() {
+         return this.animationStatus == ShulkerBoxBlockEntity.AnimationStatus.CLOSED;
++    }
 +
-+   @Override
-+   protected net.neoforged.neoforge.items.IItemHandler createUnSidedHandler() {
-+      return new net.neoforged.neoforge.items.wrapper.SidedInvWrapper(this, Direction.UP);
-    }
++    @Override
++    protected net.neoforged.neoforge.items.IItemHandler createUnSidedHandler() {
++        return new net.neoforged.neoforge.items.wrapper.SidedInvWrapper(this, Direction.UP);
+     }
  
-    public static enum AnimationStatus {
+     public static enum AnimationStatus {

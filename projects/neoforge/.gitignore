@@ -1,5 +1,4 @@
 src
-#src*
 build
 .gradle
 run

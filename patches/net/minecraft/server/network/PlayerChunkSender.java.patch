@@ -1,10 +1,10 @@
 --- a/net/minecraft/server/network/PlayerChunkSender.java
 +++ b/net/minecraft/server/network/PlayerChunkSender.java
 @@ -77,6 +_,7 @@
-       p_295237_.send(new ClientboundLevelChunkWithLightPacket(p_295144_, p_294963_.getLightEngine(), null, null));
-       ChunkPos chunkpos = p_295144_.getPos();
-       DebugPackets.sendPoiPacketsForChunk(p_294963_, chunkpos);
-+      net.neoforged.neoforge.event.EventHooks.fireChunkSent(p_295237_.player, p_295144_, p_294963_);
-    }
+         p_295237_.send(new ClientboundLevelChunkWithLightPacket(p_295144_, p_294963_.getLightEngine(), null, null));
+         ChunkPos chunkpos = p_295144_.getPos();
+         DebugPackets.sendPoiPacketsForChunk(p_294963_, chunkpos);
++        net.neoforged.neoforge.event.EventHooks.fireChunkSent(p_295237_.player, p_295144_, p_294963_);
+     }
  
-    private List<LevelChunk> collectChunksToSend(ChunkMap p_296053_, ChunkPos p_295659_) {
+     private List<LevelChunk> collectChunksToSend(ChunkMap p_296053_, ChunkPos p_295659_) {

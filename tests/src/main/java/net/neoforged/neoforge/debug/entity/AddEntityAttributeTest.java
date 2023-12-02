@@ -19,7 +19,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class AddEntityAttributeTest {
     public static final boolean ENABLE = true;
     private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(BuiltInRegistries.ATTRIBUTE, "add_entity_attribute_test");
-    public static final DeferredHolder<Attribute, Attribute> TEST_ATTR = ATTRIBUTES.register("test_attr", () -> new RangedAttribute("forge.test_attr", 1.0D, 0.0D, 1024.0D).setSyncable(true));
+    public static final DeferredHolder<Attribute, Attribute> TEST_ATTR = ATTRIBUTES.register("test_attr", () -> new RangedAttribute("neoforge.test_attr", 1.0D, 0.0D, 1024.0D).setSyncable(true));
 
     public AddEntityAttributeTest() {
         if (ENABLE) {

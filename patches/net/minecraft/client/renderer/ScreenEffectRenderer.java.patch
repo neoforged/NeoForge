@@ -1,63 +1,63 @@
 --- a/net/minecraft/client/renderer/ScreenEffectRenderer.java
 +++ b/net/minecraft/client/renderer/ScreenEffectRenderer.java
 @@ -30,18 +_,22 @@
-    public static void renderScreenEffect(Minecraft p_110719_, PoseStack p_110720_) {
-       Player player = p_110719_.player;
-       if (!player.noPhysics) {
--         BlockState blockstate = getViewBlockingState(player);
--         if (blockstate != null) {
--            renderTex(p_110719_.getBlockRenderer().getBlockModelShaper().getParticleIcon(blockstate), p_110720_);
-+         org.apache.commons.lang3.tuple.Pair<BlockState, BlockPos> overlay = getOverlayBlock(player);
-+         if (overlay != null) {
-+            if (!net.neoforged.neoforge.client.ClientHooks.renderBlockOverlay(player, p_110720_, net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK, overlay.getLeft(), overlay.getRight()))
-+               renderTex(p_110719_.getBlockRenderer().getBlockModelShaper().getTexture(overlay.getLeft(), p_110719_.level, overlay.getRight()), p_110720_);
-          }
-       }
+     public static void renderScreenEffect(Minecraft p_110719_, PoseStack p_110720_) {
+         Player player = p_110719_.player;
+         if (!player.noPhysics) {
+-            BlockState blockstate = getViewBlockingState(player);
+-            if (blockstate != null) {
+-                renderTex(p_110719_.getBlockRenderer().getBlockModelShaper().getParticleIcon(blockstate), p_110720_);
++            org.apache.commons.lang3.tuple.Pair<BlockState, BlockPos> overlay = getOverlayBlock(player);
++            if (overlay != null) {
++                if (!net.neoforged.neoforge.client.ClientHooks.renderBlockOverlay(player, p_110720_, net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK, overlay.getLeft(), overlay.getRight()))
++                    renderTex(p_110719_.getBlockRenderer().getBlockModelShaper().getTexture(overlay.getLeft(), p_110719_.level, overlay.getRight()), p_110720_);
+             }
+         }
  
-       if (!p_110719_.player.isSpectator()) {
-          if (p_110719_.player.isEyeInFluid(FluidTags.WATER)) {
-+            if (!net.neoforged.neoforge.client.ClientHooks.renderWaterOverlay(player, p_110720_))
-             renderWater(p_110719_, p_110720_);
-          }
-+         else if (!player.getEyeInFluidType().isAir()) net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(player.getEyeInFluidType()).renderOverlay(p_110719_, p_110720_);
+         if (!p_110719_.player.isSpectator()) {
+             if (p_110719_.player.isEyeInFluid(FluidTags.WATER)) {
++                if (!net.neoforged.neoforge.client.ClientHooks.renderWaterOverlay(player, p_110720_))
+                 renderWater(p_110719_, p_110720_);
+             }
++            else if (!player.getEyeInFluidType().isAir()) net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(player.getEyeInFluidType()).renderOverlay(p_110719_, p_110720_);
  
-          if (p_110719_.player.isOnFire()) {
-+            if (!net.neoforged.neoforge.client.ClientHooks.renderFireOverlay(player, p_110720_))
-             renderFire(p_110719_, p_110720_);
-          }
-       }
+             if (p_110719_.player.isOnFire()) {
++                if (!net.neoforged.neoforge.client.ClientHooks.renderFireOverlay(player, p_110720_))
+                 renderFire(p_110719_, p_110720_);
+             }
+         }
 @@ -49,6 +_,11 @@
  
-    @Nullable
-    private static BlockState getViewBlockingState(Player p_110717_) {
-+      return getOverlayBlock(p_110717_).getLeft();
-+   }
+     @Nullable
+     private static BlockState getViewBlockingState(Player p_110717_) {
++        return getOverlayBlock(p_110717_).getLeft();
++    }
 +
-+   @Nullable
-+   private static org.apache.commons.lang3.tuple.Pair<BlockState, BlockPos> getOverlayBlock(Player p_110717_) {
-       BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
++    @Nullable
++    private static org.apache.commons.lang3.tuple.Pair<BlockState, BlockPos> getOverlayBlock(Player p_110717_) {
+         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
-       for(int i = 0; i < 8; ++i) {
+         for(int i = 0; i < 8; ++i) {
 @@ -58,7 +_,7 @@
-          blockpos$mutableblockpos.set(d0, d1, d2);
-          BlockState blockstate = p_110717_.level().getBlockState(blockpos$mutableblockpos);
-          if (blockstate.getRenderShape() != RenderShape.INVISIBLE && blockstate.isViewBlocking(p_110717_.level(), blockpos$mutableblockpos)) {
--            return blockstate;
-+            return org.apache.commons.lang3.tuple.Pair.of(blockstate, blockpos$mutableblockpos.immutable());
-          }
-       }
+             blockpos$mutableblockpos.set(d0, d1, d2);
+             BlockState blockstate = p_110717_.level().getBlockState(blockpos$mutableblockpos);
+             if (blockstate.getRenderShape() != RenderShape.INVISIBLE && blockstate.isViewBlocking(p_110717_.level(), blockpos$mutableblockpos)) {
+-                return blockstate;
++                return org.apache.commons.lang3.tuple.Pair.of(blockstate, blockpos$mutableblockpos.immutable());
+             }
+         }
  
 @@ -89,8 +_,12 @@
-    }
+     }
  
-    private static void renderWater(Minecraft p_110726_, PoseStack p_110727_) {
-+      renderFluid(p_110726_, p_110727_, UNDERWATER_LOCATION);
-+   }
+     private static void renderWater(Minecraft p_110726_, PoseStack p_110727_) {
++        renderFluid(p_110726_, p_110727_, UNDERWATER_LOCATION);
++    }
 +
-+   public static void renderFluid(Minecraft p_110726_, PoseStack p_110727_, ResourceLocation texture) {
-       RenderSystem.setShader(GameRenderer::getPositionTexShader);
--      RenderSystem.setShaderTexture(0, UNDERWATER_LOCATION);
-+      RenderSystem.setShaderTexture(0, texture);
-       BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-       BlockPos blockpos = BlockPos.containing(p_110726_.player.getX(), p_110726_.player.getEyeY(), p_110726_.player.getZ());
-       float f = LightTexture.getBrightness(p_110726_.player.level().dimensionType(), p_110726_.player.level().getMaxLocalRawBrightness(blockpos));
++    public static void renderFluid(Minecraft p_110726_, PoseStack p_110727_, ResourceLocation texture) {
+         RenderSystem.setShader(GameRenderer::getPositionTexShader);
+-        RenderSystem.setShaderTexture(0, UNDERWATER_LOCATION);
++        RenderSystem.setShaderTexture(0, texture);
+         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+         BlockPos blockpos = BlockPos.containing(p_110726_.player.getX(), p_110726_.player.getEyeY(), p_110726_.player.getZ());
+         float f = LightTexture.getBrightness(p_110726_.player.level().dimensionType(), p_110726_.player.level().getMaxLocalRawBrightness(blockpos));

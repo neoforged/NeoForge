@@ -4,13 +4,13 @@
  import net.minecraft.world.damagesource.DamageTypes;
  
  public class DamageTypeTagsProvider extends TagsProvider<DamageType> {
-+   /** @deprecated Forge: Use the {@linkplain #DamageTypeTagsProvider(PackOutput, CompletableFuture, String, net.neoforged.neoforge.common.data.ExistingFileHelper) mod id variant} */
-+   @Deprecated
-    public DamageTypeTagsProvider(PackOutput p_270719_, CompletableFuture<HolderLookup.Provider> p_270256_) {
-       super(p_270719_, Registries.DAMAGE_TYPE, p_270256_);
-+   }
-+   public DamageTypeTagsProvider(PackOutput p_270719_, CompletableFuture<HolderLookup.Provider> p_270256_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
-+      super(p_270719_, Registries.DAMAGE_TYPE, p_270256_, modId, existingFileHelper);
-    }
++    /** @deprecated Forge: Use the {@linkplain #DamageTypeTagsProvider(PackOutput, CompletableFuture, String, net.neoforged.neoforge.common.data.ExistingFileHelper) mod id variant} */
++    @Deprecated
+     public DamageTypeTagsProvider(PackOutput p_270719_, CompletableFuture<HolderLookup.Provider> p_270256_) {
+         super(p_270719_, Registries.DAMAGE_TYPE, p_270256_);
++    }
++    public DamageTypeTagsProvider(PackOutput p_270719_, CompletableFuture<HolderLookup.Provider> p_270256_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
++        super(p_270719_, Registries.DAMAGE_TYPE, p_270256_, modId, existingFileHelper);
+     }
  
-    @Override
+     @Override

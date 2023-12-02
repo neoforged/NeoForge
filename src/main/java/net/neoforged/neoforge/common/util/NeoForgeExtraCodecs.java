@@ -22,7 +22,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.ObjIntConsumer;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.item.crafting.Recipe;
+import net.neoforged.neoforge.common.conditions.ConditionalOps;
+import net.neoforged.neoforge.common.conditions.WithConditions;
 
 /**
  * {@link Codec}-related helper functions that are not in {@link ExtraCodecs}, but useful to NeoForge and other mods.
@@ -30,6 +34,9 @@ import net.minecraft.util.ExtraCodecs;
  * @see ExtraCodecs
  */
 public class NeoForgeExtraCodecs {
+    public static final Codec<Optional<WithConditions<Recipe<?>>>> CONDITIONAL_RECIPE_CODEC = ConditionalOps.createConditionalCodecWithConditions(Recipe.CODEC);
+    public static final Codec<Optional<WithConditions<Advancement>>> CONDITIONAL_ADVANCEMENT_CODEC = ConditionalOps.createConditionalCodecWithConditions(Advancement.CODEC);
+
     public static <T> MapCodec<T> aliasedFieldOf(final Codec<T> codec, final String... names) {
         if (names.length == 0)
             throw new IllegalArgumentException("Must have at least one name!");

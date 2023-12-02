@@ -30,8 +30,8 @@ class TPSCommand {
                     for (ServerLevel dim : ctx.getSource().getServer().getAllLevels())
                         sendTime(ctx.getSource(), dim);
 
-                    @SuppressWarnings("resource")
-                    double meanTickTime = mean(ctx.getSource().getServer().tickTimes) * 1.0E-6D;
+                    long[] times = ctx.getSource().getServer().getTickTimesNanos();
+                    double meanTickTime = mean(times) * 1.0E-6D;
                     double meanTPS = Math.min(1000.0 / meanTickTime, 20);
                     ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.tps.summary.all", TIME_FORMATTER.format(meanTickTime), TIME_FORMATTER.format(meanTPS)), false);
 

@@ -50,7 +50,6 @@ function initializeCoreMod() {
             },
             'transformer': function(classNode) {
                 ASMAPI.redirectFieldToMethod(classNode, 'base', 'getModelBlock')
-                ASMAPI.redirectFieldToMethod(classNode, 'baseState', 'getModelState')
                 return classNode;
             }
         },
@@ -60,7 +59,7 @@ function initializeCoreMod() {
                 'name': 'net.minecraft.world.level.block.FlowerPotBlock'
             },
             'transformer': function(classNode) {
-                ASMAPI.redirectFieldToMethod(classNode, 'content', 'getContent') // flower
+                ASMAPI.redirectFieldToMethod(classNode, 'potted', 'getPotted') // flower
                 return classNode;
             }
         }

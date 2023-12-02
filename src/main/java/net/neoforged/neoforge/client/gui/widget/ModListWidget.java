@@ -30,7 +30,7 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
     private ModListScreen parent;
 
     public ModListWidget(ModListScreen parent, int listWidth, int top, int bottom) {
-        super(parent.getMinecraftInstance(), listWidth, parent.height, top, bottom, parent.getFontRenderer().lineHeight * 2 + 8);
+        super(parent.getMinecraftInstance(), listWidth, bottom - top, top, parent.getFontRenderer().lineHeight * 2 + 8);
         this.parent = parent;
         this.listWidth = listWidth;
         this.setRenderBackground(false);
@@ -53,9 +53,9 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
     }
 
     @Override
-    public void render(GuiGraphics p_282708_, int p_283242_, int p_282891_, float p_283683_) {
+    public void renderWidget(GuiGraphics p_282708_, int p_283242_, int p_282891_, float p_283683_) {
         this.parent.renderBackground(p_282708_, p_283242_, p_282891_, p_283683_);
-        super.render(p_282708_, p_283242_, p_282891_, p_283683_);
+        super.renderWidget(p_282708_, p_283242_, p_282891_, p_283683_);
     }
 
     public class ModEntry extends ObjectSelectionList.Entry<ModEntry> {
@@ -84,7 +84,7 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
                 //TODO: Consider adding more icons for visualization
                 RenderSystem.setShaderColor(1, 1, 1, 1);
                 guiGraphics.pose().pushPose();
-                guiGraphics.blit(VERSION_CHECK_ICONS, getLeft() + width - 12, top + entryHeight / 4, vercheck.status().getSheetOffset() * 8, (vercheck.status().isAnimated() && ((System.currentTimeMillis() / 800 & 1)) == 1) ? 8 : 0, 8, 8, 64, 16);
+                guiGraphics.blit(VERSION_CHECK_ICONS, getX() + width - 12, top + entryHeight / 4, vercheck.status().getSheetOffset() * 8, (vercheck.status().isAnimated() && ((System.currentTimeMillis() / 800 & 1)) == 1) ? 8 : 0, 8, 8, 64, 16);
                 guiGraphics.pose().popPose();
             }
         }
