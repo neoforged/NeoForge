@@ -7,7 +7,6 @@ pluginManagement {
 }
 
 plugins {
-
     id 'net.neoforged.gradle.platform' version '7.0.57'
 }
 
