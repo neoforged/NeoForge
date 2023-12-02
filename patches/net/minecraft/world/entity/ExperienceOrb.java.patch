@@ -10,14 +10,6 @@
        }
  
        this.setDeltaMovement(this.getDeltaMovement().multiply((double)f, 0.98, (double)f));
-@@ -182,6 +_,7 @@
- 
-    @Override
-    public boolean hurt(DamageSource p_20785_, float p_20786_) {
-+      if (this.level().isClientSide || this.isRemoved()) return false; //Forge: Fixes MC-53850
-       if (this.isInvulnerableTo(p_20785_)) {
-          return false;
-       } else if (this.level().isClientSide) {
 @@ -217,6 +_,7 @@
     public void playerTouch(Player p_20792_) {
        if (!this.level().isClientSide) {

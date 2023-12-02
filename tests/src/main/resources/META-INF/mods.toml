@@ -166,7 +166,7 @@ modId="fishing_bobber_event_test"
 [[mods]]
 modId="custom_respawn_test"
 [[mods]]
-modId="custom_tas_test"
+modId="custom_sprite_source_test"
 [[mods]]
 modId="dimension_settings_test"
 [[mods]]
@@ -301,5 +301,7 @@ modId="player_spawn_phantoms_event_test"
 modId="custom_predicate_test"
 [[mods]]
 modId="conditional_codec_test"
+[[mods]]
+modId="use_item_on_block_event_test"
 
 # ADD ABOVE THIS LINE

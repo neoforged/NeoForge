@@ -112,6 +112,16 @@
           return this.pushReaction;
        }
  
+@@ -703,6 +_,9 @@
+       }
+ 
+       public InteractionResult use(Level p_60665_, Player p_60666_, InteractionHand p_60667_, BlockHitResult p_60668_) {
++         var useOnContext = new net.minecraft.world.item.context.UseOnContext(p_60665_, p_60666_, p_60667_, p_60666_.getItemInHand(p_60667_).copy(), p_60668_);
++         var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(useOnContext, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.BLOCK));
++         if (e.isCanceled()) return e.getCancellationResult();
+          return this.getBlock().use(this.asState(), p_60665_, p_60668_.getBlockPos(), p_60666_, p_60667_, p_60668_);
+       }
+ 
 @@ -929,11 +_,12 @@
        PushReaction pushReaction = PushReaction.NORMAL;
        boolean spawnTerrainParticles = true;

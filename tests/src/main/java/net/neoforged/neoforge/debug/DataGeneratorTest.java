@@ -77,7 +77,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings("deprecation")
 @Mod(DataGeneratorTest.MODID)
 @Mod.EventBusSubscriber(bus = Bus.MOD)
 public class DataGeneratorTest {
@@ -106,7 +105,7 @@ public class DataGeneratorTest {
 
         gen.addProvider(true, new PackMetadataGenerator(packOutput)
                 .add(PackMetadataSection.TYPE, new PackMetadataSection(
-                        Component.literal("Forge tests resource pack"),
+                        Component.literal("NeoForge tests resource pack"),
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
                         Arrays.stream(PackType.values()).collect(Collectors.toMap(Function.identity(), DetectedVersion.BUILT_IN::getPackVersion)))));
         gen.addProvider(event.includeClient(), new Lang(packOutput));
@@ -971,7 +970,7 @@ public class DataGeneratorTest {
                     false,
                     false)
                     .addCriterion("get_cobbleStone", InventoryChangeTrigger.TriggerInstance.hasItems(Items.COBBLESTONE))
-                    .parent(new ResourceLocation("forge", "dummy_parent"))
+                    .parent(new ResourceLocation("neoforge", "dummy_parent"))
                     .save(saver, new ResourceLocation("good_parent"), existingFileHelper);
         }
     }
@@ -1025,14 +1024,14 @@ public class DataGeneratorTest {
 
                             // Check texture size
                             if (existingTextures.size() != generatedTextures.size()) {
-                                LOGGER.error("%s had a different number of sprites, expected %s, actual %s", particle, existingTextures.size(), generatedTextures.size());
+                                LOGGER.error("{} had a different number of sprites, expected {}, actual {}", particle, existingTextures.size(), generatedTextures.size());
                                 return particle;
                             }
 
                             boolean error = false;
                             for (int i = 0; i < generatedTextures.size(); ++i) {
                                 if (!existingTextures.get(i).getAsString().equals(generatedTextures.get(i))) {
-                                    LOGGER.error("%s index %s: expected %s, actual %s", particle, i, existingTextures.get(i).getAsString(), generatedTextures.get(i));
+                                    LOGGER.error("{} index {}: expected {}, actual {}", particle, i, existingTextures.get(i).getAsString(), generatedTextures.get(i));
                                     error = true;
                                 }
                             }

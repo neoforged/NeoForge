@@ -8,3 +8,19 @@
        return builder.build();
     }
  
+@@ -108,5 +_,15 @@
+       } else {
+          return RenderType.entityCutoutNoCullZOffset(resourcelocation);
+       }
++   }
++
++   @Override
++   public net.minecraft.world.phys.AABB getRenderBoundingBox(SkullBlockEntity blockEntity) {
++      SkullBlock.Type type = ((AbstractSkullBlock) blockEntity.getBlockState().getBlock()).getType();
++      if (type == SkullBlock.Types.DRAGON) {
++         net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++         return new net.minecraft.world.phys.AABB(pos.getX() - .5, pos.getY(), pos.getZ() - .5, pos.getX() + 1.5, pos.getY() + 1.5, pos.getZ() + 1.5);
++      }
++      return BlockEntityRenderer.super.getRenderBoundingBox(blockEntity);
+    }
+ }

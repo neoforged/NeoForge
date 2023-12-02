@@ -691,6 +691,10 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new ChunkWatchEvent.Watch(entity, chunk, level));
     }
 
+    public static void fireChunkSent(ServerPlayer entity, LevelChunk chunk, ServerLevel level) {
+        NeoForge.EVENT_BUS.post(new ChunkWatchEvent.Sent(entity, chunk, level));
+    }
+
     public static void fireChunkUnWatch(ServerPlayer entity, ChunkPos chunkpos, ServerLevel level) {
         NeoForge.EVENT_BUS.post(new ChunkWatchEvent.UnWatch(entity, chunkpos, level));
     }

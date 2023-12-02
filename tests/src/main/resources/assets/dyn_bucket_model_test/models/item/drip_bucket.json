@@ -1,6 +1,6 @@
 {
   "parent": "neoforge:item/default",
-  "loader": "neoforge:bucket",
+  "loader": "neoforge:fluid_container",
   "textures": {
     "base": "minecraft:item/bucket",
     "fluid": "dyn_bucket_model_test:item/drip_bucket"

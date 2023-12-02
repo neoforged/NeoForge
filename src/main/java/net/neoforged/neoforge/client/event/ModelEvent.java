@@ -156,9 +156,21 @@ public abstract class ModelEvent extends Event {
 
         /**
          * Registers a new geometry loader.
+         * 
+         * @deprecated Use {@link #register(ResourceLocation, IGeometryLoader) the RL-explicit variant} instead; mod ID inference will be removed in a later update, alongside the move of registration events to the NeoForge main bus
          */
+        @Deprecated(forRemoval = true, since = "1.20.2")
         public void register(String name, IGeometryLoader<?> loader) {
-            var key = new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name);
+            register(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name), loader);
+        }
+
+        /**
+         * Registers a new geometry loader.
+         * 
+         * @param key    the ID of the loader
+         * @param loader the geometry loader to register
+         */
+        public void register(ResourceLocation key, IGeometryLoader<?> loader) {
             Preconditions.checkArgument(!loaders.containsKey(key), "Geometry loader already registered: " + key);
             loaders.put(key, loader);
         }

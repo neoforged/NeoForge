@@ -8,7 +8,7 @@
       "required": false
     },
     {
-      "id": "#forge:storage_blocks/ruby",
+      "id": "#neoforge:storage_blocks/ruby",
       "required": false
     }
   ]
