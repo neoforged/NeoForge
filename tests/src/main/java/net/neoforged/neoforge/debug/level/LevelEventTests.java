@@ -49,7 +49,7 @@ public class LevelEventTests {
         test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
                 .thenExecute(() -> helper.setBlock(4, 1, 4, Blocks.DIRT))
                 .thenExecute(() -> helper.setBlock(4, 2, 4, Blocks.SPRUCE_SAPLING))
-                .thenExecuteFor(30, player -> helper.useOn(new BlockPos(4, 2, 4), Items.BONE_MEAL.getDefaultInstance(), player, Direction.UP))
+                .thenExecuteFor(10, player -> helper.boneMeal(4, 2, 4, player))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.BIRCH_LOG, 4, 2, 4))
                 .thenSucceed());
     }
@@ -73,7 +73,7 @@ public class LevelEventTests {
         });
 
         test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
-                .thenExecuteFor(5, player -> helper.useOn(new BlockPos(4, 2, 4), Items.BONE_MEAL.getDefaultInstance(), player, Direction.UP))
+                .thenExecuteFor(5, player -> helper.boneMeal(4, 2, 4, player))
                 .thenExecute(player -> helper.assertTrue(
                         helper.blocksBetween(0, 0, 0, 10, 1, 10)
                                 .filter(pos -> helper.getLevel().getBlockState(pos).is(Blocks.REDSTONE_BLOCK))

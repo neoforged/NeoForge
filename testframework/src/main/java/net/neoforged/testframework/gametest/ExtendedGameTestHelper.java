@@ -31,6 +31,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -169,5 +170,13 @@ public class ExtendedGameTestHelper extends GameTestHelper {
                     pos,
                     this.getTick());
         }
+    }
+
+    public void boneMeal(BlockPos pos, Player player) {
+        useOn(pos, Items.BONE_MEAL.getDefaultInstance(), player, Direction.UP);
+    }
+
+    public void boneMeal(int x, int y, int z, Player player) {
+        boneMeal(new BlockPos(x, y, z), player);
     }
 }
