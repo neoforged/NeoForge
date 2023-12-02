@@ -1,12 +1,12 @@
 --- a/net/minecraft/client/renderer/blockentity/StructureBlockRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/StructureBlockRenderer.java
 @@ -134,4 +_,9 @@
-    public int getViewDistance() {
-       return 96;
-    }
+     public int getViewDistance() {
+         return 96;
+     }
 +
-+   @Override
-+   public net.minecraft.world.phys.AABB getRenderBoundingBox(StructureBlockEntity blockEntity) {
-+      return INFINITE_EXTENT_AABB;
-+   }
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(StructureBlockEntity blockEntity) {
++        return INFINITE_EXTENT_AABB;
++    }
  }

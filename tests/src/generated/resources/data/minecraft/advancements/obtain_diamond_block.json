@@ -15,17 +15,12 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
-    "description": {
-      "text": "You obtained a DiamondBlock"
-    },
+    "description": "You obtained a DiamondBlock",
     "frame": "challenge",
-    "hidden": false,
     "icon": {
       "item": "minecraft:diamond_block"
     },
-    "show_toast": true,
     "title": {
       "translate": "block.minecraft.diamond_block"
     }

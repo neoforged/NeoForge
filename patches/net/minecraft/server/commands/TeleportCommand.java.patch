@@ -1,17 +1,17 @@
 --- a/net/minecraft/server/commands/TeleportCommand.java
 +++ b/net/minecraft/server/commands/TeleportCommand.java
-@@ -266,6 +_,14 @@
-       float p_139023_,
-       @Nullable TeleportCommand.LookAt p_139024_
-    ) throws CommandSyntaxException {
-+      net.neoforged.neoforge.event.entity.EntityTeleportEvent.TeleportCommand event = net.neoforged.neoforge.event.EventHooks.onEntityTeleportCommand(p_139016_, p_139018_, p_139019_, p_139020_);
-+      if (event.isCanceled()) {
-+          return;
-+      }
-+      p_139018_ = event.getTargetX();
-+      p_139019_ = event.getTargetY();
-+      p_139020_ = event.getTargetZ();
+@@ -270,6 +_,14 @@
+         float p_139023_,
+         @Nullable TeleportCommand.LookAt p_139024_
+     ) throws CommandSyntaxException {
++        net.neoforged.neoforge.event.entity.EntityTeleportEvent.TeleportCommand event = net.neoforged.neoforge.event.EventHooks.onEntityTeleportCommand(p_139016_, p_139018_, p_139019_, p_139020_);
++        if (event.isCanceled()) {
++             return;
++        }
++        p_139018_ = event.getTargetX();
++        p_139019_ = event.getTargetY();
++        p_139020_ = event.getTargetZ();
 +
-       BlockPos blockpos = BlockPos.containing(p_139018_, p_139019_, p_139020_);
-       if (!Level.isInSpawnableBounds(blockpos)) {
-          throw INVALID_POSITION.create();
+         BlockPos blockpos = BlockPos.containing(p_139018_, p_139019_, p_139020_);
+         if (!Level.isInSpawnableBounds(blockpos)) {
+             throw INVALID_POSITION.create();

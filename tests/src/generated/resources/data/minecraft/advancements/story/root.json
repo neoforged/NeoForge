@@ -16,11 +16,7 @@
   "display": {
     "announce_to_chat": false,
     "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
-    "description": {
-      "text": "Changed Description"
-    },
-    "frame": "task",
-    "hidden": false,
+    "description": "Changed Description",
     "icon": {
       "item": "minecraft:grass_block"
     },

@@ -1,33 +1,33 @@
 --- a/net/minecraft/server/commands/SpreadPlayersCommand.java
 +++ b/net/minecraft/server/commands/SpreadPlayersCommand.java
-@@ -249,15 +_,22 @@
-             spreadplayerscommand$position = p_138732_[i++];
-          }
+@@ -257,15 +_,22 @@
+                 spreadplayerscommand$position = p_138732_[i++];
+             }
  
--         entity.teleportTo(
--            p_138731_,
--            (double)Mth.floor(spreadplayerscommand$position.x) + 0.5,
--            (double)spreadplayerscommand$position.getSpawnY(p_138731_, p_138733_),
--            (double)Mth.floor(spreadplayerscommand$position.z) + 0.5,
--            Set.of(),
--            entity.getYRot(),
--            entity.getXRot()
-+         net.neoforged.neoforge.event.entity.EntityTeleportEvent.SpreadPlayersCommand event = net.neoforged.neoforge.event.EventHooks.onEntityTeleportSpreadPlayersCommand(entity,
-+                 (double)Mth.floor(spreadplayerscommand$position.x) + 0.5,
-+                 spreadplayerscommand$position.getSpawnY(p_138731_, p_138733_),
-+                 (double)Mth.floor(spreadplayerscommand$position.z) + 0.5
-          );
-+         if (!event.isCanceled()) {
-+            entity.teleportTo(
-+                    p_138731_,
-+                    event.getTargetX(),
-+                    event.getTargetY(),
-+                    event.getTargetZ(),
-+                    Set.of(),
-+                    entity.getYRot(),
-+                    entity.getXRot()
-+            );
-+         }
-          double d2 = Double.MAX_VALUE;
+-            entity.teleportTo(
+-                p_138731_,
+-                (double)Mth.floor(spreadplayerscommand$position.x) + 0.5,
+-                (double)spreadplayerscommand$position.getSpawnY(p_138731_, p_138733_),
+-                (double)Mth.floor(spreadplayerscommand$position.z) + 0.5,
+-                Set.of(),
+-                entity.getYRot(),
+-                entity.getXRot()
++            net.neoforged.neoforge.event.entity.EntityTeleportEvent.SpreadPlayersCommand event = net.neoforged.neoforge.event.EventHooks.onEntityTeleportSpreadPlayersCommand(entity,
++                      (double)Mth.floor(spreadplayerscommand$position.x) + 0.5,
++                      spreadplayerscommand$position.getSpawnY(p_138731_, p_138733_),
++                      (double)Mth.floor(spreadplayerscommand$position.z) + 0.5
+             );
++            if (!event.isCanceled()) {
++                entity.teleportTo(
++                          p_138731_,
++                          event.getTargetX(),
++                          event.getTargetY(),
++                          event.getTargetZ(),
++                          Set.of(),
++                          entity.getYRot(),
++                          entity.getXRot()
++                );
++            }
+             double d2 = Double.MAX_VALUE;
  
-          for(SpreadPlayersCommand.Position spreadplayerscommand$position1 : p_138732_) {
+             for(SpreadPlayersCommand.Position spreadplayerscommand$position1 : p_138732_) {

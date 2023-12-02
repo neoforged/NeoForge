@@ -1,10 +1,10 @@
 --- a/net/minecraft/data/registries/VanillaRegistries.java
 +++ b/net/minecraft/data/registries/VanillaRegistries.java
 @@ -56,6 +_,7 @@
-       .add(Registries.TRIM_PATTERN, TrimPatterns::bootstrap)
-       .add(Registries.TRIM_MATERIAL, TrimMaterials::bootstrap)
-       .add(Registries.DAMAGE_TYPE, DamageTypes::bootstrap);
-+   public static final List<? extends net.minecraft.resources.ResourceKey<? extends net.minecraft.core.Registry<?>>> DATAPACK_REGISTRY_KEYS = BUILDER.getEntryKeys();
+         .add(Registries.TRIM_PATTERN, TrimPatterns::bootstrap)
+         .add(Registries.TRIM_MATERIAL, TrimMaterials::bootstrap)
+         .add(Registries.DAMAGE_TYPE, DamageTypes::bootstrap);
++    public static final List<? extends net.minecraft.resources.ResourceKey<? extends net.minecraft.core.Registry<?>>> DATAPACK_REGISTRY_KEYS = BUILDER.getEntryKeys();
  
-    private static void validateThatAllBiomeFeaturesHaveBiomeFilter(HolderLookup.Provider p_256242_) {
-       validateThatAllBiomeFeaturesHaveBiomeFilter(p_256242_.lookupOrThrow(Registries.PLACED_FEATURE), p_256242_.lookupOrThrow(Registries.BIOME));
+     private static void validateThatAllBiomeFeaturesHaveBiomeFilter(HolderLookup.Provider p_256242_) {
+         validateThatAllBiomeFeaturesHaveBiomeFilter(p_256242_.lookupOrThrow(Registries.PLACED_FEATURE), p_256242_.lookupOrThrow(Registries.BIOME));

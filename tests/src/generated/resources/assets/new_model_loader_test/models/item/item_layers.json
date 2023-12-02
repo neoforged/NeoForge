@@ -1,5 +1,6 @@
 {
   "parent": "neoforge:item/default",
+  "loader": "neoforge:item_layers",
   "neoforge_data": {
     "layers": {
       "1": {
@@ -8,7 +9,6 @@
       }
     }
   },
-  "loader": "neoforge:item_layers",
   "render_types": {},
   "textures": {
     "layer0": "minecraft:item/coal",

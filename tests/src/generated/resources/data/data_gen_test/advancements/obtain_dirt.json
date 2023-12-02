@@ -14,17 +14,13 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
     "description": {
       "translate": "dirt_description"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
       "item": "minecraft:dirt"
     },
-    "show_toast": true,
     "title": {
       "translate": "block.minecraft.dirt"
     }

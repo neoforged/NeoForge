@@ -2,9 +2,9 @@
 +++ b/net/minecraft/world/item/enchantment/DiggingEnchantment.java
 @@ -26,6 +_,6 @@
  
-    @Override
-    public boolean canEnchant(ItemStack p_44668_) {
--      return p_44668_.is(Items.SHEARS) ? true : super.canEnchant(p_44668_);
-+      return p_44668_.getItem() instanceof net.minecraft.world.item.ShearsItem ? true : super.canEnchant(p_44668_);
-    }
+     @Override
+     public boolean canEnchant(ItemStack p_44668_) {
+-        return p_44668_.is(Items.SHEARS) ? true : super.canEnchant(p_44668_);
++        return p_44668_.getItem() instanceof net.minecraft.world.item.ShearsItem ? true : super.canEnchant(p_44668_);
+     }
  }

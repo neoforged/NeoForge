@@ -1,100 +1,19 @@
 --- a/net/minecraft/util/datafix/schemas/V2832.java
 +++ b/net/minecraft/util/datafix/schemas/V2832.java
-@@ -52,51 +_,52 @@
-                   DSL.constType(namespacedString()),
-                   DSL.fields(
-                      "generator",
--                     DSL.taggedChoiceLazy(
--                        "type",
--                        DSL.string(),
--                        ImmutableMap.of(
--                           "minecraft:debug",
--                           DSL::remainder,
--                           "minecraft:flat",
--                           () -> DSL.optionalFields(
--                                 "settings",
--                                 DSL.optionalFields(
--                                    "biome",
--                                    References.BIOME.in(p_185234_),
--                                    "layers",
--                                    DSL.list(DSL.optionalFields("block", References.BLOCK_NAME.in(p_185234_)))
--                                 )
--                              ),
--                           "minecraft:noise",
--                           () -> DSL.optionalFields(
--                                 "biome_source",
--                                 DSL.taggedChoiceLazy(
--                                    "type",
--                                    DSL.string(),
--                                    ImmutableMap.of(
--                                       "minecraft:fixed",
--                                       () -> DSL.fields("biome", References.BIOME.in(p_185234_)),
--                                       "minecraft:multi_noise",
--                                       () -> DSL.or(
--                                             DSL.fields("preset", References.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST.in(p_185234_)),
--                                             DSL.list(DSL.fields("biome", References.BIOME.in(p_185234_)))
--                                          ),
--                                       "minecraft:checkerboard",
--                                       () -> DSL.fields("biomes", DSL.list(References.BIOME.in(p_185234_))),
--                                       "minecraft:the_end",
--                                       DSL::remainder
--                                    )
--                                 ),
--                                 "settings",
--                                 DSL.or(
--                                    DSL.constType(DSL.string()),
--                                    DSL.optionalFields(
--                                       "default_block", References.BLOCK_NAME.in(p_185234_), "default_fluid", References.BLOCK_NAME.in(p_185234_)
--                                    )
--                                 )
--                              )
--                        )
-+                     DSL.or(
-+                         DSL.taggedChoiceLazy(
-+                            "type",
-+                            DSL.string(),
-+                            ImmutableMap.of(
-+                               "minecraft:debug",
-+                               DSL::remainder,
-+                               "minecraft:flat",
-+                               () -> DSL.optionalFields(
-+                                     "settings",
-+                                     DSL.optionalFields(
-+                                        "biome",
-+                                        References.BIOME.in(p_185234_),
-+                                        "layers",
-+                                        DSL.list(DSL.optionalFields("block", References.BLOCK_NAME.in(p_185234_)))
-+                                     )
-+                                  ),
-+                               "minecraft:noise",
-+                               () -> DSL.optionalFields(
-+                                     "biome_source",
-+                                     DSL.taggedChoiceLazy(
-+                                        "type",
-+                                        DSL.string(),
-+                                        ImmutableMap.of(
-+                                           "minecraft:fixed",
-+                                           () -> DSL.fields("biome", References.BIOME.in(p_185234_)),
-+                                           "minecraft:multi_noise",
-+                                           () -> DSL.or(
-+                                                 DSL.fields("preset", References.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST.in(p_185234_)),
-+                                                 DSL.list(DSL.fields("biome", References.BIOME.in(p_185234_)))
-+                                              ),
-+                                           "minecraft:checkerboard",
-+                                           () -> DSL.fields("biomes", DSL.list(References.BIOME.in(p_185234_))),
-+                                           "minecraft:the_end",
-+                                           DSL::remainder
-+                                        )
-+                                     ),
-+                                     "settings",
-+                                     DSL.or(
-+                                        DSL.constType(DSL.string()),
-+                                        DSL.optionalFields("default_block", References.BLOCK_NAME.in(p_185234_), "default_fluid", References.BLOCK_NAME.in(p_185234_))
-+                                     )
-+                                  )
-+                            )
-+                         ),
-+                         DSL.remainder()
-                      )
-                   )
-                )
+@@ -52,6 +_,7 @@
+                         DSL.constType(namespacedString()),
+                         DSL.fields(
+                             "generator",
++                            DSL.or(
+                             DSL.taggedChoiceLazy(
+                                 "type",
+                                 DSL.string(),
+@@ -97,6 +_,8 @@
+                                             )
+                                         )
+                                 )
++                            ),
++                            DSL.remainder()
+                             )
+                         )
+                     )

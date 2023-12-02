@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/entity/animal/horse/Horse.java
 +++ b/net/minecraft/world/entity/animal/horse/Horse.java
 @@ -148,6 +_,8 @@
-       if (this.random.nextInt(10) == 0) {
-          this.playSound(SoundEvents.HORSE_BREATHE, p_30709_.getVolume() * 0.6F, p_30709_.getPitch());
-       }
-+      ItemStack stack = this.inventory.getItem(1);
-+      if (isArmor(stack)) stack.onHorseArmorTick(level(), this);
-    }
+         if (this.random.nextInt(10) == 0) {
+             this.playSound(SoundEvents.HORSE_BREATHE, p_30709_.getVolume() * 0.6F, p_30709_.getPitch());
+         }
++        ItemStack stack = this.inventory.getItem(1);
++        if (isArmor(stack)) stack.onHorseArmorTick(level(), this);
+     }
  
-    @Override
+     @Override

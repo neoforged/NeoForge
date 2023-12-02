@@ -2,24 +2,24 @@
 +++ b/net/minecraft/resources/ResourceKey.java
 @@ -7,7 +_,7 @@
  import net.minecraft.core.Registry;
- import net.minecraft.core.registries.BuiltInRegistries;
+ import net.minecraft.core.registries.Registries;
  
 -public class ResourceKey<T> {
 +public class ResourceKey<T> implements Comparable<ResourceKey<?>> {
-    private static final ConcurrentMap<ResourceKey.InternKey, ResourceKey<?>> VALUES = new MapMaker().weakValues().makeMap();
-    private final ResourceLocation registryName;
-    private final ResourceLocation location;
+     private static final ConcurrentMap<ResourceKey.InternKey, ResourceKey<?>> VALUES = new MapMaker().weakValues().makeMap();
+     private final ResourceLocation registryName;
+     private final ResourceLocation location;
 @@ -54,6 +_,13 @@
  
-    public ResourceLocation registry() {
-       return this.registryName;
-+   }
+     public ResourceLocation registry() {
+         return this.registryName;
++    }
 +
-+   @Override
-+   public int compareTo(ResourceKey<?> o) {
-+      int ret = this.registry().compareTo(o.registry());
-+      if (ret == 0) ret = this.location().compareTo(o.location());
-+      return ret;
-    }
++    @Override
++    public int compareTo(ResourceKey<?> o) {
++        int ret = this.registry().compareTo(o.registry());
++        if (ret == 0) ret = this.location().compareTo(o.location());
++        return ret;
+     }
  
-    static record InternKey(ResourceLocation registry, ResourceLocation location) {
+     static record InternKey(ResourceLocation registry, ResourceLocation location) {

@@ -1,22 +1,22 @@
 --- a/net/minecraft/world/entity/projectile/AbstractArrow.java
 +++ b/net/minecraft/world/entity/projectile/AbstractArrow.java
-@@ -155,7 +_,7 @@
-          --this.shakeTime;
-       }
+@@ -163,7 +_,7 @@
+             --this.shakeTime;
+         }
  
--      if (this.isInWaterOrRain() || blockstate.is(Blocks.POWDER_SNOW)) {
-+      if (this.isInWaterOrRain() || blockstate.is(Blocks.POWDER_SNOW) || this.isInFluidType((fluidType, height) -> this.canFluidExtinguish(fluidType))) {
-          this.clearFire();
-       }
+-        if (this.isInWaterOrRain() || blockstate.is(Blocks.POWDER_SNOW)) {
++        if (this.isInWaterOrRain() || blockstate.is(Blocks.POWDER_SNOW) || this.isInFluidType((fluidType, height) -> this.canFluidExtinguish(fluidType))) {
+             this.clearFire();
+         }
  
-@@ -191,7 +_,9 @@
-                }
-             }
+@@ -199,7 +_,9 @@
+                     }
+                 }
  
--            if (hitresult != null && !flag) {
-+            if (hitresult != null && hitresult.getType() != HitResult.Type.MISS && !flag) {
-+               if (net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult))
-+                  break;
-                this.onHit(hitresult);
-                this.hasImpulse = true;
-             }
+-                if (hitresult != null && !flag) {
++                if (hitresult != null && hitresult.getType() != HitResult.Type.MISS && !flag) {
++                    if (net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult))
++                        break;
+                     this.onHit(hitresult);
+                     this.hasImpulse = true;
+                 }

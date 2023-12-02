@@ -2,11 +2,11 @@
 +++ b/net/minecraft/client/particle/BreakingItemParticle.java
 @@ -33,7 +_,8 @@
  
-    protected BreakingItemParticle(ClientLevel p_105665_, double p_105666_, double p_105667_, double p_105668_, ItemStack p_105669_) {
-       super(p_105665_, p_105666_, p_105667_, p_105668_, 0.0, 0.0, 0.0);
--      this.setSprite(Minecraft.getInstance().getItemRenderer().getModel(p_105669_, p_105665_, null, 0).getParticleIcon());
-+      var model = Minecraft.getInstance().getItemRenderer().getModel(p_105669_, p_105665_, null, 0);
-+      this.setSprite(model.getOverrides().resolve(model, p_105669_, p_105665_, null, 0).getParticleIcon(net.neoforged.neoforge.client.model.data.ModelData.EMPTY));
-       this.gravity = 1.0F;
-       this.quadSize /= 2.0F;
-       this.uo = this.random.nextFloat() * 3.0F;
+     protected BreakingItemParticle(ClientLevel p_105665_, double p_105666_, double p_105667_, double p_105668_, ItemStack p_105669_) {
+         super(p_105665_, p_105666_, p_105667_, p_105668_, 0.0, 0.0, 0.0);
+-        this.setSprite(Minecraft.getInstance().getItemRenderer().getModel(p_105669_, p_105665_, null, 0).getParticleIcon());
++        var model = Minecraft.getInstance().getItemRenderer().getModel(p_105669_, p_105665_, null, 0);
++        this.setSprite(model.getOverrides().resolve(model, p_105669_, p_105665_, null, 0).getParticleIcon(net.neoforged.neoforge.client.model.data.ModelData.EMPTY));
+         this.gravity = 1.0F;
+         this.quadSize /= 2.0F;
+         this.uo = this.random.nextFloat() * 3.0F;

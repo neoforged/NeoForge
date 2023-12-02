@@ -1,37 +1,37 @@
 --- a/net/minecraft/resources/RegistryDataLoader.java
 +++ b/net/minecraft/resources/RegistryDataLoader.java
-@@ -140,7 +_,7 @@
-    }
+@@ -143,7 +_,7 @@
+     }
  
-    private static String registryDirPath(ResourceLocation p_252033_) {
--      return p_252033_.getPath();
-+      return net.neoforged.neoforge.common.CommonHooks.prefixNamespace(p_252033_); // FORGE: add non-vanilla registry namespace to loader directory, same format as tag directory (see net.minecraft.tags.TagManager#getTagDir(ResourceKey))
-    }
+     private static String registryDirPath(ResourceLocation p_252033_) {
+-        return p_252033_.getPath();
++        return net.neoforged.neoforge.common.CommonHooks.prefixNamespace(p_252033_); // FORGE: add non-vanilla registry namespace to loader directory, same format as tag directory (see net.minecraft.tags.TagManager#getTagDir(ResourceKey))
+     }
  
-    static <E> void loadRegistryContents(
-@@ -153,7 +_,8 @@
-    ) {
-       String s = registryDirPath(p_255792_.location());
-       FileToIdConverter filetoidconverter = FileToIdConverter.json(s);
--      RegistryOps<JsonElement> registryops = RegistryOps.create(JsonOps.INSTANCE, p_256369_);
-+      RegistryOps<JsonElement> registryops = net.neoforged.neoforge.common.conditions.ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, p_256369_), net.neoforged.neoforge.common.conditions.ICondition.IContext.TAGS_INVALID);
-+      Decoder<Optional<E>> decoder = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.decodeOnly(p_256232_));
+     static <E> void loadRegistryContents(
+@@ -156,7 +_,8 @@
+     ) {
+         String s = registryDirPath(p_255792_.location());
+         FileToIdConverter filetoidconverter = FileToIdConverter.json(s);
+-        RegistryOps<JsonElement> registryops = RegistryOps.create(JsonOps.INSTANCE, p_256369_);
++        RegistryOps<JsonElement> registryops = net.neoforged.neoforge.common.conditions.ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, p_256369_), net.neoforged.neoforge.common.conditions.ICondition.IContext.TAGS_INVALID);
++        Decoder<Optional<E>> decoder = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.decodeOnly(p_256232_));
  
-       for(Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(p_256349_).entrySet()) {
-          ResourceLocation resourcelocation = entry.getKey();
-@@ -162,10 +_,12 @@
+         for(Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(p_256349_).entrySet()) {
+             ResourceLocation resourcelocation = entry.getKey();
+@@ -165,10 +_,12 @@
  
-          try (Reader reader = resource.openAsReader()) {
-             JsonElement jsonelement = JsonParser.parseReader(reader);
--            DataResult<E> dataresult = p_256232_.parse(registryops, jsonelement);
--            E e = dataresult.getOrThrow(false, p_248715_ -> {
-+            DataResult<Optional<E>> dataresult = decoder.parse(registryops, jsonelement);
-+            Optional<E> candidate = dataresult.getOrThrow(true, p_248715_ -> {
-             });
--            p_256211_.register(resourcekey, e, resource.isBuiltin() ? Lifecycle.stable() : dataresult.lifecycle());
-+            candidate.ifPresentOrElse(e -> {
-+               p_256211_.register(resourcekey, e, resource.isBuiltin() ? Lifecycle.stable() : dataresult.lifecycle());
-+            }, () -> LOGGER.debug("Skipping loading registry entry {} as it's conditions were not met", resourcelocation));
-          } catch (Exception exception) {
-             p_255884_.put(
-                resourcekey,
+             try (Reader reader = resource.openAsReader()) {
+                 JsonElement jsonelement = JsonParser.parseReader(reader);
+-                DataResult<E> dataresult = p_256232_.parse(registryops, jsonelement);
+-                E e = dataresult.getOrThrow(false, p_248715_ -> {
++                DataResult<Optional<E>> dataresult = decoder.parse(registryops, jsonelement);
++                Optional<E> candidate = dataresult.getOrThrow(true, p_248715_ -> {
+                 });
+-                p_256211_.register(resourcekey, e, resource.isBuiltin() ? Lifecycle.stable() : dataresult.lifecycle());
++                candidate.ifPresentOrElse(e -> {
++                    p_256211_.register(resourcekey, e, resource.isBuiltin() ? Lifecycle.stable() : dataresult.lifecycle());
++                }, () -> LOGGER.debug("Skipping loading registry entry {} as it's conditions were not met", resourcelocation));
+             } catch (Exception exception) {
+                 p_255884_.put(
+                     resourcekey,

@@ -1,178 +1,178 @@
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -117,6 +_,9 @@
-    private CompoundTag leashInfoTag;
-    private BlockPos restrictCenter = BlockPos.ZERO;
-    private float restrictRadius = -1.0F;
-+   @Nullable
-+   private MobSpawnType spawnType;
-+   private boolean spawnCancelled = false;
+@@ -118,6 +_,9 @@
+     private CompoundTag leashInfoTag;
+     private BlockPos restrictCenter = BlockPos.ZERO;
+     private float restrictRadius = -1.0F;
++    @Nullable
++    private MobSpawnType spawnType;
++    private boolean spawnCancelled = false;
  
-    protected Mob(EntityType<? extends Mob> p_21368_, Level p_21369_) {
-       super(p_21368_, p_21369_);
-@@ -220,7 +_,10 @@
-    }
+     protected Mob(EntityType<? extends Mob> p_21368_, Level p_21369_) {
+         super(p_21368_, p_21369_);
+@@ -221,7 +_,10 @@
+     }
  
-    public void setTarget(@Nullable LivingEntity p_21544_) {
--      this.target = p_21544_;
-+      net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent changeTargetEvent = net.neoforged.neoforge.common.CommonHooks.onLivingChangeTarget(this, p_21544_, net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET);
-+      if(!changeTargetEvent.isCanceled()) {
-+          this.target = changeTargetEvent.getNewTarget();
-+      }
-    }
+     public void setTarget(@Nullable LivingEntity p_21544_) {
+-        this.target = p_21544_;
++        net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent changeTargetEvent = net.neoforged.neoforge.common.CommonHooks.onLivingChangeTarget(this, p_21544_, net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET);
++        if(!changeTargetEvent.isCanceled()) {
++             this.target = changeTargetEvent.getNewTarget();
++        }
+     }
  
-    @Override
-@@ -423,6 +_,9 @@
-       if (this.isNoAi()) {
-          p_21484_.putBoolean("NoAI", this.isNoAi());
-       }
-+      if (this.spawnType != null) {
-+         p_21484_.putString("neoforge:spawn_type", this.spawnType.name());
-+      }
-    }
+     @Override
+@@ -424,6 +_,9 @@
+         if (this.isNoAi()) {
+             p_21484_.putBoolean("NoAI", this.isNoAi());
+         }
++        if (this.spawnType != null) {
++            p_21484_.putString("neoforge:spawn_type", this.spawnType.name());
++        }
+     }
  
-    @Override
-@@ -476,6 +_,14 @@
-       }
+     @Override
+@@ -477,6 +_,14 @@
+         }
  
-       this.setNoAi(p_21450_.getBoolean("NoAI"));
+         this.setNoAi(p_21450_.getBoolean("NoAI"));
 +
-+      if (p_21450_.contains("neoforge:spawn_type")) {
-+         try {
-+            this.spawnType = MobSpawnType.valueOf(p_21450_.getString("neoforge:spawn_type"));
-+         } catch (Exception ex) {
-+            p_21450_.remove("neoforge:spawn_type");
-+         }
-+      }
-    }
++        if (p_21450_.contains("neoforge:spawn_type")) {
++            try {
++                this.spawnType = MobSpawnType.valueOf(p_21450_.getString("neoforge:spawn_type"));
++            } catch (Exception ex) {
++                p_21450_.remove("neoforge:spawn_type");
++            }
++        }
+     }
  
-    @Override
-@@ -520,15 +_,12 @@
-    public void aiStep() {
-       super.aiStep();
-       this.level().getProfiler().push("looting");
--      if (!this.level().isClientSide
--         && this.canPickUpLoot()
--         && this.isAlive()
--         && !this.dead
--         && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
--         Vec3i vec3i = this.getPickupReach();
+     @Override
+@@ -521,15 +_,12 @@
+     public void aiStep() {
+         super.aiStep();
+         this.level().getProfiler().push("looting");
+-        if (!this.level().isClientSide
+-            && this.canPickUpLoot()
+-            && this.isAlive()
+-            && !this.dead
+-            && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+-            Vec3i vec3i = this.getPickupReach();
 -
--         for(ItemEntity itementity : this.level()
--            .getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ()))) {
-+      Vec3i vec3i = this.getPickupReach();
-+      
-+      for(ItemEntity itementity : this.level()
-+                                        .getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ()))) {
-+         if (!this.level().isClientSide && this.canPickUpLoot() && this.isAlive() && !this.dead &&
-+                   net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), this)) {
-             if (!itementity.isRemoved() && !itementity.getItem().isEmpty() && !itementity.hasPickUpDelay() && this.wantsToPickUp(itementity.getItem())) {
-                this.pickUpItem(itementity);
-             }
-@@ -697,6 +_,14 @@
-          this.discard();
-       } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
-          Entity entity = this.level().getNearestPlayer(this, -1.0);
-+         net.neoforged.bus.api.Event.Result result = net.neoforged.neoforge.event.EventHooks.canEntityDespawn(this, (ServerLevel) this.level());
-+         if (result == net.neoforged.bus.api.Event.Result.DENY) {
-+            noActionTime = 0;
-+            entity = null;
-+         } else if (result == net.neoforged.bus.api.Event.Result.ALLOW) {
-+            this.discard();
-+            entity = null;
-+         }
-          if (entity != null) {
-             double d0 = entity.distanceToSqr(this);
-             int i = this.getType().getCategory().getDespawnDistance();
-@@ -1030,6 +_,16 @@
-       }
-    }
+-            for(ItemEntity itementity : this.level()
+-                .getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ()))) {
++        Vec3i vec3i = this.getPickupReach();
++        
++        for(ItemEntity itementity : this.level()
++                                                     .getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ()))) {
++            if (!this.level().isClientSide && this.canPickUpLoot() && this.isAlive() && !this.dead &&
++                         net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), this)) {
+                 if (!itementity.isRemoved() && !itementity.getItem().isEmpty() && !itementity.hasPickUpDelay() && this.wantsToPickUp(itementity.getItem())) {
+                     this.pickUpItem(itementity);
+                 }
+@@ -698,6 +_,14 @@
+             this.discard();
+         } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
+             Entity entity = this.level().getNearestPlayer(this, -1.0);
++            net.neoforged.bus.api.Event.Result result = net.neoforged.neoforge.event.EventHooks.canEntityDespawn(this, (ServerLevel) this.level());
++            if (result == net.neoforged.bus.api.Event.Result.DENY) {
++                noActionTime = 0;
++                entity = null;
++            } else if (result == net.neoforged.bus.api.Event.Result.ALLOW) {
++                this.discard();
++                entity = null;
++            }
+             if (entity != null) {
+                 double d0 = entity.distanceToSqr(this);
+                 int i = this.getType().getCategory().getDespawnDistance();
+@@ -1031,6 +_,16 @@
+         }
+     }
  
-+   /**
-+    * Forge: Override-Only, call via EventHooks.onFinalizeSpawn.<br>
-+    * Overrides are allowed. Do not wrap super calls within override (as that will cause stack overflows).<br>
-+    * Vanilla calls are replaced with a transformer, and are not visible in source.<br>
++    /**
++     * Forge: Override-Only, call via EventHooks.onFinalizeSpawn.<br>
++     * Overrides are allowed. Do not wrap super calls within override (as that will cause stack overflows).<br>
++     * Vanilla calls are replaced with a transformer, and are not visible in source.<br>
++     * <p>
++     * Be certain to either call super.finalizeSpawn or set the {@link #spawnType} field from within your override.
++     * @see {@link net.neoforged.neoforge.event.EventHooks#onFinalizeSpawn onFinalizeSpawn} for additional documentation.
++     */
++    @Deprecated
++    @org.jetbrains.annotations.ApiStatus.OverrideOnly
+     @Nullable
+     public SpawnGroupData finalizeSpawn(
+         ServerLevelAccessor p_21434_, DifficultyInstance p_21435_, MobSpawnType p_21436_, @Nullable SpawnGroupData p_21437_, @Nullable CompoundTag p_21438_
+@@ -1046,6 +_,7 @@
+             this.setLeftHanded(false);
+         }
+ 
++        this.spawnType = p_21436_;
+         return p_21437_;
+     }
+ 
+@@ -1442,14 +_,24 @@
+     }
+ 
+     @Override
++    @Deprecated // FORGE: use jumpInFluid instead
+     protected void jumpInLiquid(TagKey<Fluid> p_204045_) {
++        this.jumpInLiquidInternal(() -> super.jumpInLiquid(p_204045_));
++    }
++
++    private void jumpInLiquidInternal(Runnable onSuper) {
+         if (this.getNavigation().canFloat()) {
+-            super.jumpInLiquid(p_204045_);
++            onSuper.run();
+         } else {
+             this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.3, 0.0));
+         }
+     }
+ 
++    @Override
++    public void jumpInFluid(net.neoforged.neoforge.fluids.FluidType type) {
++        this.jumpInLiquidInternal(() -> super.jumpInFluid(type));
++    }
++
+     @VisibleForTesting
+     public void removeFreeWill() {
+         this.removeAllGoals(p_262562_ -> true);
+@@ -1476,5 +_,40 @@
+     public ItemStack getPickResult() {
+         SpawnEggItem spawneggitem = SpawnEggItem.byId(this.getType());
+         return spawneggitem == null ? null : new ItemStack(spawneggitem);
++    }
++
++    /**
++    * Returns the type of spawn that created this mob, if applicable.
++    * If it could not be determined, this will return null.
 +    * <p>
-+    * Be certain to either call super.finalizeSpawn or set the {@link #spawnType} field from within your override.
-+    * @see {@link net.neoforged.neoforge.event.EventHooks#onFinalizeSpawn onFinalizeSpawn} for additional documentation.
++    * This is set via {@link Mob#finalizeSpawn}, so you should not call this from within that method, instead using the parameter.
 +    */
-+   @Deprecated
-+   @org.jetbrains.annotations.ApiStatus.OverrideOnly
-    @Nullable
-    public SpawnGroupData finalizeSpawn(
-       ServerLevelAccessor p_21434_, DifficultyInstance p_21435_, MobSpawnType p_21436_, @Nullable SpawnGroupData p_21437_, @Nullable CompoundTag p_21438_
-@@ -1045,6 +_,7 @@
-          this.setLeftHanded(false);
-       }
- 
-+      this.spawnType = p_21436_;
-       return p_21437_;
-    }
- 
-@@ -1441,14 +_,24 @@
-    }
- 
-    @Override
-+   @Deprecated // FORGE: use jumpInFluid instead
-    protected void jumpInLiquid(TagKey<Fluid> p_204045_) {
-+      this.jumpInLiquidInternal(() -> super.jumpInLiquid(p_204045_));
-+   }
++    @Nullable
++    public final MobSpawnType getSpawnType() {
++        return this.spawnType;
++    }
 +
-+   private void jumpInLiquidInternal(Runnable onSuper) {
-       if (this.getNavigation().canFloat()) {
--         super.jumpInLiquid(p_204045_);
-+         onSuper.run();
-       } else {
-          this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.3, 0.0));
-       }
-    }
- 
-+   @Override
-+   public void jumpInFluid(net.neoforged.neoforge.fluids.FluidType type) {
-+      this.jumpInLiquidInternal(() -> super.jumpInFluid(type));
-+   }
++    /**
++     * This method exists so that spawns can be cancelled from the {@link net.neoforged.neoforge.event.entity.living.MobSpawnEvent.FinalizeSpawn FinalizeSpawnEvent}
++     * without needing to hook up an additional handler for the {@link net.neoforged.neoforge.event.entity.EntityJoinLevelEvent EntityJoinLevelEvent}.
++     * @return if this mob will be blocked from spawning during {@link Level#addFreshEntity(Entity)}
++     * @apiNote Not public-facing API.
++     */
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public final boolean isSpawnCancelled() {
++        return this.spawnCancelled;
++    }
 +
-    public void removeFreeWill() {
-       this.removeAllGoals(p_262562_ -> true);
-       this.getBrain().removeAllBehaviors();
-@@ -1474,5 +_,40 @@
-    public ItemStack getPickResult() {
-       SpawnEggItem spawneggitem = SpawnEggItem.byId(this.getType());
-       return spawneggitem == null ? null : new ItemStack(spawneggitem);
-+   }
-+
-+   /**
-+   * Returns the type of spawn that created this mob, if applicable.
-+   * If it could not be determined, this will return null.
-+   * <p>
-+   * This is set via {@link Mob#finalizeSpawn}, so you should not call this from within that method, instead using the parameter.
-+   */
-+   @Nullable
-+   public final MobSpawnType getSpawnType() {
-+      return this.spawnType;
-+   }
-+
-+   /**
-+    * This method exists so that spawns can be cancelled from the {@link net.neoforged.neoforge.event.entity.living.MobSpawnEvent.FinalizeSpawn FinalizeSpawnEvent}
-+    * without needing to hook up an additional handler for the {@link net.neoforged.neoforge.event.entity.EntityJoinLevelEvent EntityJoinLevelEvent}.
-+    * @return if this mob will be blocked from spawning during {@link Level#addFreshEntity(Entity)}
-+    * @apiNote Not public-facing API.
-+    */
-+   @org.jetbrains.annotations.ApiStatus.Internal
-+   public final boolean isSpawnCancelled() {
-+      return this.spawnCancelled;
-+   }
-+
-+   /**
-+    * Marks this mob as being disallowed to spawn during {@link Level#addFreshEntity(Entity)}.<p>
-+    * @throws UnsupportedOperationException if this entity has already been {@link Entity#isAddedToWorld() added to the world}.
-+    * @apiNote Not public-facing API.
-+    */
-+   @org.jetbrains.annotations.ApiStatus.Internal
-+   public final void setSpawnCancelled(boolean cancel) {
-+      if (this.isAddedToWorld()) {
-+         throw new UnsupportedOperationException("Late invocations of Mob#setSpawnCancelled are not permitted.");
-+      }
-+      this.spawnCancelled = cancel;
-    }
++    /**
++     * Marks this mob as being disallowed to spawn during {@link Level#addFreshEntity(Entity)}.<p>
++     * @throws UnsupportedOperationException if this entity has already been {@link Entity#isAddedToWorld() added to the world}.
++     * @apiNote Not public-facing API.
++     */
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public final void setSpawnCancelled(boolean cancel) {
++        if (this.isAddedToWorld()) {
++            throw new UnsupportedOperationException("Late invocations of Mob#setSpawnCancelled are not permitted.");
++        }
++        this.spawnCancelled = cancel;
+     }
  }

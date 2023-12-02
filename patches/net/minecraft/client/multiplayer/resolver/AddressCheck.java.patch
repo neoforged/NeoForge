@@ -1,11 +1,11 @@
 --- a/net/minecraft/client/multiplayer/resolver/AddressCheck.java
 +++ b/net/minecraft/client/multiplayer/resolver/AddressCheck.java
 @@ -16,7 +_,7 @@
-    boolean isAllowed(ServerAddress p_171830_);
+     boolean isAllowed(ServerAddress p_171830_);
  
-    static AddressCheck createFromService() {
--      final ImmutableList<Predicate<String>> immutablelist = Streams.stream(ServiceLoader.load(BlockListSupplier.class))
-+      final ImmutableList<Predicate<String>> immutablelist = Streams.stream(ServiceLoader.load(BlockListSupplier.class, net.neoforged.fml.loading.FMLLoader.class.getClassLoader()))
-          .map(BlockListSupplier::createBlockList)
-          .filter(Objects::nonNull)
-          .collect(ImmutableList.toImmutableList());
+     static AddressCheck createFromService() {
+-        final ImmutableList<Predicate<String>> immutablelist = Streams.stream(ServiceLoader.load(BlockListSupplier.class))
++        final ImmutableList<Predicate<String>> immutablelist = Streams.stream(ServiceLoader.load(BlockListSupplier.class, net.neoforged.fml.loading.FMLLoader.class.getClassLoader()))
+             .map(BlockListSupplier::createBlockList)
+             .filter(Objects::nonNull)
+             .collect(ImmutableList.toImmutableList());

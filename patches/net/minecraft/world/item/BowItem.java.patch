@@ -1,50 +1,50 @@
 --- a/net/minecraft/world/item/BowItem.java
 +++ b/net/minecraft/world/item/BowItem.java
 @@ -27,18 +_,23 @@
-          Player player = (Player)p_40669_;
-          boolean flag = player.getAbilities().instabuild || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, p_40667_) > 0;
-          ItemStack itemstack = player.getProjectile(p_40667_);
+             Player player = (Player)p_40669_;
+             boolean flag = player.getAbilities().instabuild || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, p_40667_) > 0;
+             ItemStack itemstack = player.getProjectile(p_40667_);
 +
-+         int i = this.getUseDuration(p_40667_) - p_40670_;
-+         i = net.neoforged.neoforge.event.EventHooks.onArrowLoose(p_40667_, p_40668_, player, i, !itemstack.isEmpty() || flag);
-+         if (i < 0) return;
++            int i = this.getUseDuration(p_40667_) - p_40670_;
++            i = net.neoforged.neoforge.event.EventHooks.onArrowLoose(p_40667_, p_40668_, player, i, !itemstack.isEmpty() || flag);
++            if (i < 0) return;
 +
-          if (!itemstack.isEmpty() || flag) {
-             if (itemstack.isEmpty()) {
-                itemstack = new ItemStack(Items.ARROW);
-             }
+             if (!itemstack.isEmpty() || flag) {
+                 if (itemstack.isEmpty()) {
+                     itemstack = new ItemStack(Items.ARROW);
+                 }
  
--            int i = this.getUseDuration(p_40667_) - p_40670_;
-             float f = getPowerForTime(i);
-             if (!((double)f < 0.1)) {
--               boolean flag1 = flag && itemstack.is(Items.ARROW);
-+               boolean flag1 = player.getAbilities().instabuild || (itemstack.getItem() instanceof ArrowItem && ((ArrowItem)itemstack.getItem()).isInfinite(itemstack, p_40667_, player));
-                if (!p_40668_.isClientSide) {
-                   ArrowItem arrowitem = (ArrowItem)(itemstack.getItem() instanceof ArrowItem ? itemstack.getItem() : Items.ARROW);
-                   AbstractArrow abstractarrow = arrowitem.createArrow(p_40668_, itemstack, player);
-+                  abstractarrow = customArrow(abstractarrow);
-                   abstractarrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, f * 3.0F, 1.0F);
-                   if (f == 1.0F) {
-                      abstractarrow.setCritArrow(true);
+-                int i = this.getUseDuration(p_40667_) - p_40670_;
+                 float f = getPowerForTime(i);
+                 if (!((double)f < 0.1)) {
+-                    boolean flag1 = flag && itemstack.is(Items.ARROW);
++                    boolean flag1 = player.getAbilities().instabuild || (itemstack.getItem() instanceof ArrowItem && ((ArrowItem)itemstack.getItem()).isInfinite(itemstack, p_40667_, player));
+                     if (!p_40668_.isClientSide) {
+                         ArrowItem arrowitem = (ArrowItem)(itemstack.getItem() instanceof ArrowItem ? itemstack.getItem() : Items.ARROW);
+                         AbstractArrow abstractarrow = arrowitem.createArrow(p_40668_, itemstack, player);
++                        abstractarrow = customArrow(abstractarrow);
+                         abstractarrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, f * 3.0F, 1.0F);
+                         if (f == 1.0F) {
+                             abstractarrow.setCritArrow(true);
 @@ -113,6 +_,10 @@
-    public InteractionResultHolder<ItemStack> use(Level p_40672_, Player p_40673_, InteractionHand p_40674_) {
-       ItemStack itemstack = p_40673_.getItemInHand(p_40674_);
-       boolean flag = !p_40673_.getProjectile(itemstack).isEmpty();
+     public InteractionResultHolder<ItemStack> use(Level p_40672_, Player p_40673_, InteractionHand p_40674_) {
+         ItemStack itemstack = p_40673_.getItemInHand(p_40674_);
+         boolean flag = !p_40673_.getProjectile(itemstack).isEmpty();
 +
-+      InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.event.EventHooks.onArrowNock(itemstack, p_40672_, p_40673_, p_40674_, flag);
-+      if (ret != null) return ret;
++        InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.event.EventHooks.onArrowNock(itemstack, p_40672_, p_40673_, p_40674_, flag);
++        if (ret != null) return ret;
 +
-       if (!p_40673_.getAbilities().instabuild && !flag) {
-          return InteractionResultHolder.fail(itemstack);
-       } else {
+         if (!p_40673_.getAbilities().instabuild && !flag) {
+             return InteractionResultHolder.fail(itemstack);
+         } else {
 @@ -124,6 +_,10 @@
-    @Override
-    public Predicate<ItemStack> getAllSupportedProjectiles() {
-       return ARROW_ONLY;
-+   }
+     @Override
+     public Predicate<ItemStack> getAllSupportedProjectiles() {
+         return ARROW_ONLY;
++    }
 +
-+   public AbstractArrow customArrow(AbstractArrow arrow) {
-+      return arrow;
-    }
++    public AbstractArrow customArrow(AbstractArrow arrow) {
++        return arrow;
+     }
  
-    @Override
+     @Override

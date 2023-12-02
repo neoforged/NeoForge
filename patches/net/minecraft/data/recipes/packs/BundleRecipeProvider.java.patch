@@ -4,10 +4,10 @@
  import net.minecraft.world.item.Items;
  
  public class BundleRecipeProvider extends RecipeProvider {
--   public BundleRecipeProvider(PackOutput p_248813_) {
--      super(p_248813_);
-+   public BundleRecipeProvider(PackOutput p_248813_, java.util.concurrent.CompletableFuture<net.minecraft.core.HolderLookup.Provider> lookupProvider) {
-+      super(p_248813_, lookupProvider);
-    }
+-    public BundleRecipeProvider(PackOutput p_248813_) {
+-        super(p_248813_);
++    public BundleRecipeProvider(PackOutput p_248813_, java.util.concurrent.CompletableFuture<net.minecraft.core.HolderLookup.Provider> lookupProvider) {
++        super(p_248813_, lookupProvider);
+     }
  
-    @Override
+     @Override

@@ -4,8 +4,8 @@
  
  @OnlyIn(Dist.CLIENT)
  public class SpriteSources {
--   private static final BiMap<ResourceLocation, SpriteSourceType> TYPES = HashBiMap.create();
-+   private static final BiMap<ResourceLocation, SpriteSourceType> TYPES = net.neoforged.neoforge.client.ClientHooks.makeSpriteSourceTypesMap();
-    public static final SpriteSourceType SINGLE_FILE = register("single", SingleFile.CODEC);
-    public static final SpriteSourceType DIRECTORY = register("directory", DirectoryLister.CODEC);
-    public static final SpriteSourceType FILTER = register("filter", SourceFilter.CODEC);
+-    private static final BiMap<ResourceLocation, SpriteSourceType> TYPES = HashBiMap.create();
++    private static final BiMap<ResourceLocation, SpriteSourceType> TYPES = net.neoforged.neoforge.client.ClientHooks.makeSpriteSourceTypesMap();
+     public static final SpriteSourceType SINGLE_FILE = register("single", SingleFile.CODEC);
+     public static final SpriteSourceType DIRECTORY = register("directory", DirectoryLister.CODEC);
+     public static final SpriteSourceType FILTER = register("filter", SourceFilter.CODEC);

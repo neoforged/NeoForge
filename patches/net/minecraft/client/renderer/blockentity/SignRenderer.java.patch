@@ -1,18 +1,18 @@
 --- a/net/minecraft/client/renderer/blockentity/SignRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/SignRenderer.java
-@@ -234,6 +_,15 @@
-       return LayerDefinition.create(meshdefinition, 64, 32);
-    }
+@@ -250,6 +_,15 @@
+         return LayerDefinition.create(meshdefinition, 64, 32);
+     }
  
-+   @Override
-+   public net.minecraft.world.phys.AABB getRenderBoundingBox(SignBlockEntity blockEntity) {
-+      if (blockEntity.getBlockState().getBlock() instanceof StandingSignBlock) {
-+         net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
-+         return new net.minecraft.world.phys.AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.125, pos.getZ() + 1.0);
-+      }
-+      return BlockEntityRenderer.super.getRenderBoundingBox(blockEntity);
-+   }
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(SignBlockEntity blockEntity) {
++        if (blockEntity.getBlockState().getBlock() instanceof StandingSignBlock) {
++            net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++            return new net.minecraft.world.phys.AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.125, pos.getZ() + 1.0);
++        }
++        return BlockEntityRenderer.super.getRenderBoundingBox(blockEntity);
++    }
 +
-    @OnlyIn(Dist.CLIENT)
-    public static final class SignModel extends Model {
-       public final ModelPart root;
+     @OnlyIn(Dist.CLIENT)
+     public static final class SignModel extends Model {
+         public final ModelPart root;

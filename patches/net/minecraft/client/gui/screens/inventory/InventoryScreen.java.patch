@@ -1,33 +1,33 @@
 --- a/net/minecraft/client/gui/screens/inventory/InventoryScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/InventoryScreen.java
-@@ -118,9 +_,29 @@
-    ) {
-       float f = (float)(p_275688_ + p_275535_) / 2.0F;
-       float f1 = (float)(p_275245_ + p_294406_) / 2.0F;
--      p_282802_.enableScissor(p_275688_, p_275245_, p_275535_, p_294406_);
-       float f2 = (float)Math.atan((double)((f - p_275546_) / 40.0F));
-       float f3 = (float)Math.atan((double)((f1 - p_295352_) / 40.0F));
-+      // Forge: Allow passing in direct angle components instead of mouse position
-+      renderEntityInInventoryFollowsAngle(p_282802_, p_275688_, p_275245_, p_275535_, p_294406_, p_294663_, p_275604_, f2, f3, p_275689_);
-+   }
+@@ -120,9 +_,29 @@
+     ) {
+         float f = (float)(p_275688_ + p_275535_) / 2.0F;
+         float f1 = (float)(p_275245_ + p_294406_) / 2.0F;
+-        p_282802_.enableScissor(p_275688_, p_275245_, p_275535_, p_294406_);
+         float f2 = (float)Math.atan((double)((f - p_275546_) / 40.0F));
+         float f3 = (float)Math.atan((double)((f1 - p_295352_) / 40.0F));
++        // Forge: Allow passing in direct angle components instead of mouse position
++        renderEntityInInventoryFollowsAngle(p_282802_, p_275688_, p_275245_, p_275535_, p_294406_, p_294663_, p_275604_, f2, f3, p_275689_);
++    }
 +
-+   public static void renderEntityInInventoryFollowsAngle(
-+      GuiGraphics p_282802_,
-+      int p_275688_,
-+      int p_275245_,
-+      int p_275535_,
-+      int p_294406_,
-+      int p_294663_,
-+      float p_275604_,
-+      float angleXComponent,
-+      float angleYComponent,
-+      LivingEntity p_275689_
-+   ) {
-+      float f = (float)(p_275688_ + p_275535_) / 2.0F;
-+      float f1 = (float)(p_275245_ + p_294406_) / 2.0F;
-+      p_282802_.enableScissor(p_275688_, p_275245_, p_275535_, p_294406_);
-+      float f2 = angleXComponent;
-+      float f3 = angleYComponent;
-       Quaternionf quaternionf = new Quaternionf().rotateZ((float) Math.PI);
-       Quaternionf quaternionf1 = new Quaternionf().rotateX(f3 * 20.0F * (float) (Math.PI / 180.0));
-       quaternionf.mul(quaternionf1);
++    public static void renderEntityInInventoryFollowsAngle(
++        GuiGraphics p_282802_,
++        int p_275688_,
++        int p_275245_,
++        int p_275535_,
++        int p_294406_,
++        int p_294663_,
++        float p_275604_,
++        float angleXComponent,
++        float angleYComponent,
++        LivingEntity p_275689_
++    ) {
++        float f = (float)(p_275688_ + p_275535_) / 2.0F;
++        float f1 = (float)(p_275245_ + p_294406_) / 2.0F;
++        p_282802_.enableScissor(p_275688_, p_275245_, p_275535_, p_294406_);
++        float f2 = angleXComponent;
++        float f3 = angleYComponent;
+         Quaternionf quaternionf = new Quaternionf().rotateZ((float) Math.PI);
+         Quaternionf quaternionf1 = new Quaternionf().rotateX(f3 * 20.0F * (float) (Math.PI / 180.0));
+         quaternionf.mul(quaternionf1);

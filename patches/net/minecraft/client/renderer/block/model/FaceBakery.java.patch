@@ -1,18 +1,18 @@
 --- a/net/minecraft/client/renderer/block/model/FaceBakery.java
 +++ b/net/minecraft/client/renderer/block/model/FaceBakery.java
 @@ -59,7 +_,14 @@
-          this.recalculateWinding(aint, direction);
-       }
+             this.recalculateWinding(aint, direction);
+         }
  
--      return new BakedQuad(aint, p_111603_.tintIndex, direction, p_111604_, p_111608_);
-+      net.neoforged.neoforge.client.ClientHooks.fillNormal(aint, direction);
-+      var data = p_111603_.getFaceData();
-+      var quad = new BakedQuad(aint, p_111603_.tintIndex, direction, p_111604_, p_111608_, data.ambientOcclusion());
-+      if (!net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT.equals(data)) {
-+         net.neoforged.neoforge.client.model.QuadTransformers.applyingLightmap(data.blockLight(), data.skyLight()).processInPlace(quad);
-+         net.neoforged.neoforge.client.model.QuadTransformers.applyingColor(data.color()).processInPlace(quad);
-+      }
-+      return quad;
-    }
+-        return new BakedQuad(aint, p_111603_.tintIndex, direction, p_111604_, p_111608_);
++        net.neoforged.neoforge.client.ClientHooks.fillNormal(aint, direction);
++        var data = p_111603_.getFaceData();
++        var quad = new BakedQuad(aint, p_111603_.tintIndex, direction, p_111604_, p_111608_, data.ambientOcclusion());
++        if (!net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT.equals(data)) {
++            net.neoforged.neoforge.client.model.QuadTransformers.applyingLightmap(data.blockLight(), data.skyLight()).processInPlace(quad);
++            net.neoforged.neoforge.client.model.QuadTransformers.applyingColor(data.color()).processInPlace(quad);
++        }
++        return quad;
+     }
  
-    public static BlockFaceUV recomputeUVs(BlockFaceUV p_111582_, Direction p_111583_, Transformation p_111584_, ResourceLocation p_111585_) {
+     public static BlockFaceUV recomputeUVs(BlockFaceUV p_111582_, Direction p_111583_, Transformation p_111584_, ResourceLocation p_111585_) {

@@ -1,24 +1,19 @@
 --- a/net/minecraft/world/level/block/ChorusFlowerBlock.java
 +++ b/net/minecraft/world/level/block/ChorusFlowerBlock.java
-@@ -53,7 +_,7 @@
-       BlockPos blockpos = p_220982_.above();
-       if (p_220981_.isEmptyBlock(blockpos) && blockpos.getY() < p_220981_.getMaxBuildHeight()) {
-          int i = p_220980_.getValue(AGE);
--         if (i < 5) {
-+         if (i < 5 && net.neoforged.neoforge.common.CommonHooks.onCropsGrowPre(p_220981_, blockpos, p_220980_, true)) {
-             boolean flag = false;
-             boolean flag1 = false;
-             BlockState blockstate = p_220981_.getBlockState(p_220982_.below());
-@@ -111,10 +_,11 @@
-             } else {
-                this.placeDeadFlower(p_220981_, p_220982_);
+@@ -65,7 +_,7 @@
+         BlockPos blockpos = p_220982_.above();
+         if (p_220981_.isEmptyBlock(blockpos) && blockpos.getY() < p_220981_.getMaxBuildHeight()) {
+             int i = p_220980_.getValue(AGE);
+-            if (i < 5) {
++            if (i < 5 && net.neoforged.neoforge.common.CommonHooks.onCropsGrowPre(p_220981_, blockpos, p_220980_, true)) {
+                 boolean flag = false;
+                 boolean flag1 = false;
+                 BlockState blockstate = p_220981_.getBlockState(p_220982_.below());
+@@ -123,6 +_,7 @@
+                 } else {
+                     this.placeDeadFlower(p_220981_, p_220982_);
+                 }
++                net.neoforged.neoforge.common.CommonHooks.onCropsGrowPost(p_220981_, p_220982_, p_220980_);
              }
-+            net.neoforged.neoforge.common.CommonHooks.onCropsGrowPost(p_220981_, p_220982_, p_220980_);
-          }
-       }
-    }
--
-+   
-    private void placeGrownFlower(Level p_51662_, BlockPos p_51663_, int p_51664_) {
-       p_51662_.setBlock(p_51663_, this.defaultBlockState().setValue(AGE, Integer.valueOf(p_51664_)), 2);
-       p_51662_.levelEvent(1033, p_51663_, 0);
+         }
+     }

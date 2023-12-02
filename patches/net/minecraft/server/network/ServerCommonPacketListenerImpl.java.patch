@@ -2,13 +2,13 @@
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -68,6 +_,11 @@
  
-    @Override
-    public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) {
-+      if (p_294276_.payload() instanceof net.neoforged.neoforge.network.custom.payload.SimplePayload simplePayload && net.neoforged.neoforge.network.NetworkHooks.onCustomPayload(p_294276_, simplePayload, connection)) {
-+         return;
-+      }
-+      
-+      LOGGER.warn("Unknown custom packet payload: {}", p_294276_.payload().id());
-    }
+     @Override
+     public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) {
++        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.custom.payload.SimplePayload simplePayload && net.neoforged.neoforge.network.NetworkHooks.onCustomPayload(p_294276_, simplePayload, connection)) {
++            return;
++        }
++        
++        LOGGER.warn("Unknown custom packet payload: {}", p_294276_.payload().id());
+     }
  
-    @Override
+     @Override

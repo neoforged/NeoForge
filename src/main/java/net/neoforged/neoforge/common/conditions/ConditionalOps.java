@@ -181,6 +181,11 @@ public class ConditionalOps<T> extends RegistryOps<T> {
                 });
             });
         }
+
+        @Override
+        public String toString() {
+            return "Conditional[" + innerCodec + "]";
+        }
     }
 
     private static final class ConditionalDecoder<A> implements Decoder<Optional<WithConditions<A>>> {

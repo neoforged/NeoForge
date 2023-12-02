@@ -1,265 +1,280 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -77,7 +_,7 @@
+@@ -81,7 +_,7 @@
  import net.minecraft.world.level.block.state.pattern.BlockInWorld;
  import org.slf4j.Logger;
  
 -public final class ItemStack {
 +public final class ItemStack extends net.neoforged.neoforge.common.capabilities.CapabilityProvider<ItemStack> implements net.neoforged.neoforge.common.extensions.IItemStackExtension {
-    public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
-       p_258963_ -> p_258963_.group(
-                BuiltInRegistries.ITEM.byNameCodec().fieldOf("id").forGetter(ItemStack::getItem),
-@@ -86,6 +_,7 @@
-             )
-             .apply(p_258963_, ItemStack::new)
-    );
-+   private CompoundTag capNBT;
-    private static final Logger LOGGER = LogUtils.getLogger();
-    public static final ItemStack EMPTY = new ItemStack((Void)null);
-    public static final DecimalFormat ATTRIBUTE_MODIFIER_FORMAT = Util.make(
-@@ -140,27 +_,35 @@
-       this(p_220155_.value(), p_220156_);
-    }
+     public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
+         p_311716_ -> p_311716_.group(
+                     BuiltInRegistries.ITEM.holderByNameCodec().fieldOf("id").forGetter(ItemStack::getItemHolder),
+@@ -104,7 +_,8 @@
+     public static final Codec<ItemStack> ITEM_WITH_COUNT_CODEC = RecordCodecBuilder.create(
+         p_311720_ -> p_311720_.group(
+                     ITEM_NON_AIR_CODEC.fieldOf("item").forGetter(ItemStack::getItem),
+-                    ExtraCodecs.strictOptionalField(ExtraCodecs.POSITIVE_INT, "count", 1).forGetter(ItemStack::getCount)
++                    ExtraCodecs.strictOptionalField(ExtraCodecs.POSITIVE_INT, "count", 1).forGetter(ItemStack::getCount),
++                    ExtraCodecs.strictOptionalField(ExtraCodecs.withAlternative(net.minecraft.nbt.TagParser.AS_CODEC, net.minecraft.nbt.CompoundTag.CODEC), "nbt").forGetter(stack -> java.util.Optional.ofNullable(net.neoforged.neoforge.common.crafting.CraftingHelper.getTagForWriting(stack)))
+                 )
+                 .apply(p_311720_, ItemStack::new)
+     );
+@@ -116,6 +_,7 @@
+                 )
+                 .apply(p_311721_, ItemStack::new)
+     );
++    private CompoundTag capNBT;
+     private static final Logger LOGGER = LogUtils.getLogger();
+     public static final ItemStack EMPTY = new ItemStack((Void)null);
+     public static final DecimalFormat ATTRIBUTE_MODIFIER_FORMAT = Util.make(
+@@ -162,6 +_,9 @@
+     }
  
--   public ItemStack(ItemLike p_41601_, int p_41602_) {
--      this.item = p_41601_.asItem();
--      this.count = p_41602_;
--      if (this.item.canBeDepleted()) {
-+   public ItemStack(ItemLike p_41601_, int p_41602_) { this(p_41601_, p_41602_, (CompoundTag) null); }
-+   public ItemStack(ItemLike p_41604_, int p_41605_, @Nullable CompoundTag p_41606_) {
-+      super(ItemStack.class, true);
-+      this.capNBT = p_41606_;
-+      this.item = p_41604_.asItem();
-+      this.count = p_41605_;
-+      this.forgeInit();
-+      if (this.item.isDamageable(this)) {
-          this.setDamageValue(this.getDamageValue());
-       }
-    }
+     public ItemStack(Holder<Item> p_312081_, int p_41605_, Optional<CompoundTag> p_41606_) {
++        this(p_312081_.value(), p_41605_, p_41606_);
++    }
++    public ItemStack(ItemLike p_312081_, int p_41605_, Optional<CompoundTag> p_41606_) {
+         this(p_312081_, p_41605_);
+         p_41606_.ifPresent(this::setTag);
+     }
+@@ -170,27 +_,35 @@
+         this(p_220155_.value(), p_220156_);
+     }
  
-    private ItemStack(@Nullable Void p_282703_) {
-+      super(ItemStack.class, true);
-       this.item = null;
-    }
+-    public ItemStack(ItemLike p_41601_, int p_41602_) {
++    public ItemStack(ItemLike p_41601_, int p_41602_) { this(p_41601_, p_41602_, (CompoundTag) null); }
++    public ItemStack(ItemLike p_41601_, int p_41602_, @Nullable CompoundTag p_41606_) {
++        super(ItemStack.class, true);
++        this.capNBT = p_41606_;
+         this.item = p_41601_.asItem();
+         this.count = p_41602_;
+-        if (this.item.canBeDepleted()) {
++        this.forgeInit();
++        if (this.item.isDamageable(this)) {
+             this.setDamageValue(this.getDamageValue());
+         }
+     }
  
-    private ItemStack(CompoundTag p_41608_) {
-+      super(ItemStack.class, true);
-+      this.capNBT = p_41608_.contains("ForgeCaps") ? p_41608_.getCompound("ForgeCaps") : null;
-       this.item = BuiltInRegistries.ITEM.get(new ResourceLocation(p_41608_.getString("id")));
-       this.count = p_41608_.getByte("Count");
-       if (p_41608_.contains("tag", 10)) {
-          this.tag = p_41608_.getCompound("tag");
-          this.getItem().verifyTagAfterLoad(this.tag);
-       }
-+      this.forgeInit();
+     private ItemStack(@Nullable Void p_282703_) {
++        super(ItemStack.class, true);
+         this.item = null;
+     }
  
--      if (this.getItem().canBeDepleted()) {
-+      if (this.getItem().isDamageable(this)) {
-          this.setDamageValue(this.getDamageValue());
-       }
-    }
-@@ -232,6 +_,19 @@
-    }
+     private ItemStack(CompoundTag p_41608_) {
++        super(ItemStack.class, true);
++        this.capNBT = p_41608_.contains("ForgeCaps") ? p_41608_.getCompound("ForgeCaps") : null;
+         this.item = BuiltInRegistries.ITEM.get(new ResourceLocation(p_41608_.getString("id")));
+         this.count = p_41608_.getByte("Count");
+         if (p_41608_.contains("tag", 10)) {
+             this.tag = p_41608_.getCompound("tag").copy();
+             this.getItem().verifyTagAfterLoad(this.tag);
+         }
++        this.forgeInit();
  
-    public InteractionResult useOn(UseOnContext p_41662_) {
-+      var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_AFTER_BLOCK));
-+      if (e.isCanceled()) return e.getCancellationResult();
-+      if (!p_41662_.getLevel().isClientSide) return net.neoforged.neoforge.common.CommonHooks.onPlaceItemIntoWorld(p_41662_);
-+      return onItemUse(p_41662_, (c) -> getItem().useOn(p_41662_));
-+   }
+-        if (this.getItem().canBeDepleted()) {
++        if (this.getItem().isDamageable(this)) {
+             this.setDamageValue(this.getDamageValue());
+         }
+     }
+@@ -262,6 +_,19 @@
+     }
+ 
+     public InteractionResult useOn(UseOnContext p_41662_) {
++        var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_AFTER_BLOCK));
++        if (e.isCanceled()) return e.getCancellationResult();
++        if (!p_41662_.getLevel().isClientSide) return net.neoforged.neoforge.common.CommonHooks.onPlaceItemIntoWorld(p_41662_);
++        return onItemUse(p_41662_, (c) -> getItem().useOn(p_41662_));
++    }
 +
-+   public InteractionResult onItemUseFirst(UseOnContext p_41662_) {
-+      var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_BEFORE_BLOCK));
-+      if (e.isCanceled()) return e.getCancellationResult();
-+      return onItemUse(p_41662_, (c) -> getItem().onItemUseFirst(this, p_41662_));
-+   }
++    public InteractionResult onItemUseFirst(UseOnContext p_41662_) {
++        var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_BEFORE_BLOCK));
++        if (e.isCanceled()) return e.getCancellationResult();
++        return onItemUse(p_41662_, (c) -> getItem().onItemUseFirst(this, p_41662_));
++    }
 +
-+   private InteractionResult onItemUse(UseOnContext p_41662_, java.util.function.Function<UseOnContext, InteractionResult> callback) {
-       Player player = p_41662_.getPlayer();
-       BlockPos blockpos = p_41662_.getClickedPos();
-       BlockInWorld blockinworld = new BlockInWorld(p_41662_.getLevel(), blockpos, false);
-@@ -241,7 +_,7 @@
-          return InteractionResult.PASS;
-       } else {
-          Item item = this.getItem();
--         InteractionResult interactionresult = item.useOn(p_41662_);
-+         InteractionResult interactionresult = callback.apply(p_41662_);
-          if (player != null && interactionresult.shouldAwardStats()) {
-             player.awardStat(Stats.ITEM_USED.get(item));
-          }
-@@ -270,11 +_,15 @@
-          p_41740_.put("tag", this.tag.copy());
-       }
- 
-+      CompoundTag cnbt = this.serializeCaps();
-+      if (cnbt != null && !cnbt.isEmpty()) {
-+         p_41740_.put("ForgeCaps", cnbt);
-+      }
-       return p_41740_;
-    }
- 
-    public int getMaxStackSize() {
--      return this.getItem().getMaxStackSize();
-+      return this.getItem().getMaxStackSize(this);
-    }
- 
-    public boolean isStackable() {
-@@ -282,7 +_,7 @@
-    }
- 
-    public boolean isDamageableItem() {
--      if (!this.isEmpty() && this.getItem().getMaxDamage() > 0) {
-+      if (!this.isEmpty() && this.getItem().isDamageable(this)) {
-          CompoundTag compoundtag = this.getTag();
-          return compoundtag == null || !compoundtag.getBoolean("Unbreakable");
-       } else {
-@@ -291,19 +_,19 @@
-    }
- 
-    public boolean isDamaged() {
--      return this.isDamageableItem() && this.getDamageValue() > 0;
-+      return this.isDamageableItem() && getItem().isDamaged(this);
-    }
- 
-    public int getDamageValue() {
--      return this.tag == null ? 0 : this.tag.getInt("Damage");
-+      return this.getItem().getDamage(this);
-    }
- 
-    public void setDamageValue(int p_41722_) {
--      this.getOrCreateTag().putInt("Damage", Math.max(0, p_41722_));
-+      this.getItem().setDamage(this, p_41722_);
-    }
- 
-    public int getMaxDamage() {
--      return this.getItem().getMaxDamage();
-+      return this.getItem().getMaxDamage(this);
-    }
- 
-    public boolean hurt(int p_220158_, RandomSource p_220159_, @Nullable ServerPlayer p_220160_) {
-@@ -339,6 +_,7 @@
-    public <T extends LivingEntity> void hurtAndBreak(int p_41623_, T p_41624_, Consumer<T> p_41625_) {
-       if (!p_41624_.level().isClientSide && (!(p_41624_ instanceof Player) || !((Player)p_41624_).getAbilities().instabuild)) {
-          if (this.isDamageableItem()) {
-+            p_41623_ = this.getItem().damageItem(this, p_41623_, p_41624_, p_41625_);
-             if (this.hurt(p_41623_, p_41624_.getRandom(), p_41624_ instanceof ServerPlayer ? (ServerPlayer)p_41624_ : null)) {
-                p_41625_.accept(p_41624_);
-                Item item = this.getItem();
-@@ -388,7 +_,7 @@
-    }
- 
-    public boolean isCorrectToolForDrops(BlockState p_41736_) {
--      return this.getItem().isCorrectToolForDrops(p_41736_);
-+      return this.getItem().isCorrectToolForDrops(this, p_41736_);
-    }
- 
-    public InteractionResult interactLivingEntity(Player p_41648_, LivingEntity p_41649_, InteractionHand p_41650_) {
-@@ -399,7 +_,7 @@
-       if (this.isEmpty()) {
-          return EMPTY;
-       } else {
--         ItemStack itemstack = new ItemStack(this.getItem(), this.count);
-+         ItemStack itemstack = new ItemStack(this.getItem(), this.count, this.serializeCaps());
-          itemstack.setPopTime(this.getPopTime());
-          if (this.tag != null) {
-             itemstack.tag = this.tag.copy();
-@@ -435,7 +_,7 @@
-       if (!p_150943_.is(p_150944_.getItem())) {
-          return false;
-       } else {
--         return p_150943_.isEmpty() && p_150944_.isEmpty() ? true : Objects.equals(p_150943_.tag, p_150944_.tag);
-+         return p_150943_.isEmpty() && p_150944_.isEmpty() ? true : Objects.equals(p_150943_.tag, p_150944_.tag) && p_150943_.areCapsCompatible(p_150944_);
-       }
-    }
- 
-@@ -526,7 +_,7 @@
- 
-    public void setTag(@Nullable CompoundTag p_41752_) {
-       this.tag = p_41752_;
--      if (this.getItem().canBeDepleted()) {
-+      if (this.getItem().isDamageable(this)) {
-          this.setDamageValue(this.getDamageValue());
-       }
- 
-@@ -585,7 +_,7 @@
- 
-    public List<Component> getTooltipLines(@Nullable Player p_41652_, TooltipFlag p_41653_) {
-       List<Component> list = Lists.newArrayList();
--      MutableComponent mutablecomponent = Component.empty().append(this.getHoverName()).withStyle(this.getRarity().color);
-+      MutableComponent mutablecomponent = Component.empty().append(this.getHoverName()).withStyle(this.getRarity().getStyleModifier());
-       if (this.hasCustomHoverName()) {
-          mutablecomponent.withStyle(ChatFormatting.ITALIC);
-       }
-@@ -757,6 +_,7 @@
-          list.add(DISABLED_ITEM_TOOLTIP);
-       }
- 
-+      net.neoforged.neoforge.event.EventHooks.onItemTooltip(this, p_41652_, list, p_41653_);
-       return list;
-    }
- 
-@@ -765,7 +_,7 @@
-    }
- 
-    private int getHideFlags() {
--      return this.hasTag() && this.tag.contains("HideFlags", 99) ? this.tag.getInt("HideFlags") : 0;
-+      return this.hasTag() && this.tag.contains("HideFlags", 99) ? this.tag.getInt("HideFlags") : this.getItem().getDefaultTooltipHideFlags(this);
-    }
- 
-    public void hideTooltipPart(ItemStack.TooltipPart p_41655_) {
-@@ -886,9 +_,10 @@
++    private InteractionResult onItemUse(UseOnContext p_41662_, java.util.function.Function<UseOnContext, InteractionResult> callback) {
+         Player player = p_41662_.getPlayer();
+         BlockPos blockpos = p_41662_.getClickedPos();
+         BlockInWorld blockinworld = new BlockInWorld(p_41662_.getLevel(), blockpos, false);
+@@ -271,7 +_,7 @@
+             return InteractionResult.PASS;
+         } else {
+             Item item = this.getItem();
+-            InteractionResult interactionresult = item.useOn(p_41662_);
++            InteractionResult interactionresult = callback.apply(p_41662_);
+             if (player != null && interactionresult.shouldAwardStats()) {
+                 player.awardStat(Stats.ITEM_USED.get(item));
              }
-          }
-       } else {
--         multimap = this.getItem().getDefaultAttributeModifiers(p_41639_);
-+         multimap = this.getItem().getAttributeModifiers(p_41639_, this);
-       }
+@@ -300,11 +_,15 @@
+             p_41740_.put("tag", this.tag.copy());
+         }
  
-+      multimap = net.neoforged.neoforge.common.CommonHooks.getAttributeModifiers(this, p_41639_, multimap);
-       return multimap;
-    }
++        CompoundTag cnbt = this.serializeCaps();
++        if (cnbt != null && !cnbt.isEmpty()) {
++            p_41740_.put("ForgeCaps", cnbt);
++        }
+         return p_41740_;
+     }
  
-@@ -916,8 +_,9 @@
+     public int getMaxStackSize() {
+-        return this.getItem().getMaxStackSize();
++        return this.getItem().getMaxStackSize(this);
+     }
  
-       MutableComponent mutablecomponent1 = ComponentUtils.wrapInSquareBrackets(mutablecomponent);
-       if (!this.isEmpty()) {
--         mutablecomponent1.withStyle(this.getRarity().color)
--            .withStyle(p_220170_ -> p_220170_.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(this))));
-+         mutablecomponent1.withStyle(this.getRarity().getStyleModifier()).withStyle((p_220170_) -> {
-+            return p_220170_.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(this)));
-+         });
-       }
+     public boolean isStackable() {
+@@ -312,7 +_,7 @@
+     }
  
-       return mutablecomponent1;
-@@ -967,12 +_,31 @@
-       this.getItem().onUseTick(p_41732_, p_41733_, this, p_41734_);
-    }
+     public boolean isDamageableItem() {
+-        if (!this.isEmpty() && this.getItem().getMaxDamage() > 0) {
++        if (!this.isEmpty() && this.getItem().isDamageable(this)) {
+             CompoundTag compoundtag = this.getTag();
+             return compoundtag == null || !compoundtag.getBoolean("Unbreakable");
+         } else {
+@@ -321,19 +_,19 @@
+     }
  
-+   /** @deprecated Forge: Use {@linkplain IItemStackExtension#onDestroyed(ItemEntity, net.minecraft.world.damagesource.DamageSource) damage source sensitive version} */
-+   @Deprecated
-    public void onDestroyed(ItemEntity p_150925_) {
-       this.getItem().onDestroyed(p_150925_);
-    }
+     public boolean isDamaged() {
+-        return this.isDamageableItem() && this.getDamageValue() > 0;
++        return this.isDamageableItem() && getItem().isDamaged(this);
+     }
  
-    public boolean isEdible() {
-       return this.getItem().isEdible();
-+   }
+     public int getDamageValue() {
+-        return this.tag == null ? 0 : this.tag.getInt("Damage");
++        return this.getItem().getDamage(this);
+     }
+ 
+     public void setDamageValue(int p_41722_) {
+-        this.getOrCreateTag().putInt("Damage", Math.max(0, p_41722_));
++        this.getItem().setDamage(this, p_41722_);
+     }
+ 
+     public int getMaxDamage() {
+-        return this.getItem().getMaxDamage();
++        return this.getItem().getMaxDamage(this);
+     }
+ 
+     public boolean hurt(int p_220158_, RandomSource p_220159_, @Nullable ServerPlayer p_220160_) {
+@@ -369,6 +_,7 @@
+     public <T extends LivingEntity> void hurtAndBreak(int p_41623_, T p_41624_, Consumer<T> p_41625_) {
+         if (!p_41624_.level().isClientSide && (!(p_41624_ instanceof Player) || !((Player)p_41624_).getAbilities().instabuild)) {
+             if (this.isDamageableItem()) {
++                p_41623_ = this.getItem().damageItem(this, p_41623_, p_41624_, p_41625_);
+                 if (this.hurt(p_41623_, p_41624_.getRandom(), p_41624_ instanceof ServerPlayer ? (ServerPlayer)p_41624_ : null)) {
+                     p_41625_.accept(p_41624_);
+                     Item item = this.getItem();
+@@ -418,7 +_,7 @@
+     }
+ 
+     public boolean isCorrectToolForDrops(BlockState p_41736_) {
+-        return this.getItem().isCorrectToolForDrops(p_41736_);
++        return this.getItem().isCorrectToolForDrops(this, p_41736_);
+     }
+ 
+     public InteractionResult interactLivingEntity(Player p_41648_, LivingEntity p_41649_, InteractionHand p_41650_) {
+@@ -429,7 +_,7 @@
+         if (this.isEmpty()) {
+             return EMPTY;
+         } else {
+-            ItemStack itemstack = new ItemStack(this.getItem(), this.count);
++            ItemStack itemstack = new ItemStack(this.getItem(), this.count, this.serializeCaps());
+             itemstack.setPopTime(this.getPopTime());
+             if (this.tag != null) {
+                 itemstack.tag = this.tag.copy();
+@@ -465,7 +_,7 @@
+         if (!p_150943_.is(p_150944_.getItem())) {
+             return false;
+         } else {
+-            return p_150943_.isEmpty() && p_150944_.isEmpty() ? true : Objects.equals(p_150943_.tag, p_150944_.tag);
++            return p_150943_.isEmpty() && p_150944_.isEmpty() ? true : Objects.equals(p_150943_.tag, p_150944_.tag) && p_150943_.areCapsCompatible(p_150944_);
+         }
+     }
+ 
+@@ -560,7 +_,7 @@
+ 
+     public void setTag(@Nullable CompoundTag p_41752_) {
+         this.tag = p_41752_;
+-        if (this.getItem().canBeDepleted()) {
++        if (this.getItem().isDamageable(this)) {
+             this.setDamageValue(this.getDamageValue());
+         }
+ 
+@@ -619,7 +_,7 @@
+ 
+     public List<Component> getTooltipLines(@Nullable Player p_41652_, TooltipFlag p_41653_) {
+         List<Component> list = Lists.newArrayList();
+-        MutableComponent mutablecomponent = Component.empty().append(this.getHoverName()).withStyle(this.getRarity().color);
++        MutableComponent mutablecomponent = Component.empty().append(this.getHoverName()).withStyle(this.getRarity().getStyleModifier());
+         if (this.hasCustomHoverName()) {
+             mutablecomponent.withStyle(ChatFormatting.ITALIC);
+         }
+@@ -792,6 +_,7 @@
+             list.add(DISABLED_ITEM_TOOLTIP);
+         }
+ 
++        net.neoforged.neoforge.event.EventHooks.onItemTooltip(this, p_41652_, list, p_41653_);
+         return list;
+     }
+ 
+@@ -800,7 +_,7 @@
+     }
+ 
+     private int getHideFlags() {
+-        return this.hasTag() && this.tag.contains("HideFlags", 99) ? this.tag.getInt("HideFlags") : 0;
++        return this.hasTag() && this.tag.contains("HideFlags", 99) ? this.tag.getInt("HideFlags") : this.getItem().getDefaultTooltipHideFlags(this);
+     }
+ 
+     public void hideTooltipPart(ItemStack.TooltipPart p_41655_) {
+@@ -921,9 +_,10 @@
+                 }
+             }
+         } else {
+-            multimap = this.getItem().getDefaultAttributeModifiers(p_41639_);
++            multimap = this.getItem().getAttributeModifiers(p_41639_, this);
+         }
+ 
++        multimap = net.neoforged.neoforge.common.CommonHooks.getAttributeModifiers(this, p_41639_, multimap);
+         return multimap;
+     }
+ 
+@@ -951,7 +_,7 @@
+ 
+         MutableComponent mutablecomponent1 = ComponentUtils.wrapInSquareBrackets(mutablecomponent);
+         if (!this.isEmpty()) {
+-            mutablecomponent1.withStyle(this.getRarity().color)
++            mutablecomponent1.withStyle(this.getRarity().getStyleModifier())
+                 .withStyle(p_220170_ -> p_220170_.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(this))));
+         }
+ 
+@@ -1002,12 +_,31 @@
+         this.getItem().onUseTick(p_41732_, p_41733_, this, p_41734_);
+     }
+ 
++    /** @deprecated Forge: Use {@linkplain IItemStackExtension#onDestroyed(ItemEntity, net.minecraft.world.damagesource.DamageSource) damage source sensitive version} */
++    @Deprecated
+     public void onDestroyed(ItemEntity p_150925_) {
+         this.getItem().onDestroyed(p_150925_);
+     }
+ 
+     public boolean isEdible() {
+         return this.getItem().isEdible();
++    }
 +
-+   // FORGE START
-+   public void deserializeNBT(CompoundTag nbt) {
-+      final ItemStack itemStack = ItemStack.of(nbt);
-+      this.setTag(itemStack.getTag());
-+      if (itemStack.capNBT != null) deserializeCaps(itemStack.capNBT);
-+   }
++    // FORGE START
++    public void deserializeNBT(CompoundTag nbt) {
++        final ItemStack itemStack = ItemStack.of(nbt);
++        this.setTag(itemStack.getTag());
++        if (itemStack.capNBT != null) deserializeCaps(itemStack.capNBT);
++    }
 +
-+   /**
-+    * Set up forge's ItemStack additions.
-+    */
-+   private void forgeInit() {
-+      if (this.item != null) {
-+         this.gatherCapabilities(() -> item.initCapabilities(this, this.capNBT));
-+         if (this.capNBT != null) deserializeCaps(this.capNBT);
-+      }
-    }
++    /**
++     * Set up forge's ItemStack additions.
++     */
++    private void forgeInit() {
++        if (this.item != null) {
++            this.gatherCapabilities(() -> item.initCapabilities(this, this.capNBT));
++            if (this.capNBT != null) deserializeCaps(this.capNBT);
++        }
+     }
  
-    public SoundEvent getDrinkingSound() {
+     public SoundEvent getDrinkingSound() {

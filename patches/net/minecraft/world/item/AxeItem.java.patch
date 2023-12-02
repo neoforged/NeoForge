@@ -1,36 +1,56 @@
 --- a/net/minecraft/world/item/AxeItem.java
 +++ b/net/minecraft/world/item/AxeItem.java
-@@ -55,10 +_,9 @@
-       BlockPos blockpos = p_40529_.getClickedPos();
-       Player player = p_40529_.getPlayer();
-       BlockState blockstate = level.getBlockState(blockpos);
--      Optional<BlockState> optional = this.getStripped(blockstate);
--      Optional<BlockState> optional1 = WeatheringCopper.getPrevious(blockstate);
--      Optional<BlockState> optional2 = Optional.ofNullable(HoneycombItem.WAX_OFF_BY_BLOCK.get().get(blockstate.getBlock()))
--         .map(p_150694_ -> p_150694_.withPropertiesOf(blockstate));
-+      Optional<BlockState> optional = Optional.ofNullable(blockstate.getToolModifiedState(p_40529_, net.neoforged.neoforge.common.ToolActions.AXE_STRIP, false));
-+      Optional<BlockState> optional1 = optional.isPresent() ? Optional.empty() : Optional.ofNullable(blockstate.getToolModifiedState(p_40529_, net.neoforged.neoforge.common.ToolActions.AXE_SCRAPE, false));
-+      Optional<BlockState> optional2 = optional.isPresent() || optional1.isPresent() ? Optional.empty() : Optional.ofNullable(blockstate.getToolModifiedState(p_40529_, net.neoforged.neoforge.common.ToolActions.AXE_WAX_OFF, false));
-       ItemStack itemstack = p_40529_.getItemInHand();
-       Optional<BlockState> optional3 = Optional.empty();
-       if (optional.isPresent()) {
-@@ -91,8 +_,19 @@
-       }
-    }
+@@ -55,7 +_,7 @@
+         Level level = p_40529_.getLevel();
+         BlockPos blockpos = p_40529_.getClickedPos();
+         Player player = p_40529_.getPlayer();
+-        Optional<BlockState> optional = this.evaluateNewBlockState(level, blockpos, player, level.getBlockState(blockpos));
++        Optional<BlockState> optional = this.evaluateNewBlockState(level, blockpos, player, level.getBlockState(blockpos), p_40529_);
+         if (optional.isEmpty()) {
+             return InteractionResult.PASS;
+         } else {
+@@ -74,20 +_,19 @@
+         }
+     }
  
-+   @org.jetbrains.annotations.Nullable
-+   public static BlockState getAxeStrippingState(BlockState originalState) {
-+      Block block = STRIPPABLES.get(originalState.getBlock());
-+      return block != null ? block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, originalState.getValue(RotatedPillarBlock.AXIS)) : null;
-+   }
+-    private Optional<BlockState> evaluateNewBlockState(Level p_308922_, BlockPos p_308899_, @Nullable Player p_309192_, BlockState p_308900_) {
+-        Optional<BlockState> optional = this.getStripped(p_308900_);
++    private Optional<BlockState> evaluateNewBlockState(Level p_308922_, BlockPos p_308899_, @Nullable Player p_309192_, BlockState p_308900_, UseOnContext p_40529_) {
++        Optional<BlockState> optional = Optional.ofNullable(p_308900_.getToolModifiedState(p_40529_, net.neoforged.neoforge.common.ToolActions.AXE_STRIP, false));
+         if (optional.isPresent()) {
+             p_308922_.playSound(p_309192_, p_308899_, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1.0F, 1.0F);
+             return optional;
+         } else {
+-            Optional<BlockState> optional1 = WeatheringCopper.getPrevious(p_308900_);
++            Optional<BlockState> optional1 = Optional.ofNullable(p_308900_.getToolModifiedState(p_40529_, net.neoforged.neoforge.common.ToolActions.AXE_SCRAPE, false));
+             if (optional1.isPresent()) {
+                 p_308922_.playSound(p_309192_, p_308899_, SoundEvents.AXE_SCRAPE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                 p_308922_.levelEvent(p_309192_, 3005, p_308899_, 0);
+                 return optional1;
+             } else {
+-                Optional<BlockState> optional2 = Optional.ofNullable(HoneycombItem.WAX_OFF_BY_BLOCK.get().get(p_308900_.getBlock()))
+-                    .map(p_150694_ -> p_150694_.withPropertiesOf(p_308900_));
++                Optional<BlockState> optional2 = Optional.ofNullable(p_308900_.getToolModifiedState(p_40529_, net.neoforged.neoforge.common.ToolActions.AXE_WAX_OFF, false));
+                 if (optional2.isPresent()) {
+                     p_308922_.playSound(p_309192_, p_308899_, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
+                     p_308922_.levelEvent(p_309192_, 3004, p_308899_, 0);
+@@ -99,8 +_,19 @@
+         }
+     }
+ 
++    @org.jetbrains.annotations.Nullable
++    public static BlockState getAxeStrippingState(BlockState originalState) {
++        Block block = STRIPPABLES.get(originalState.getBlock());
++        return block != null ? block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, originalState.getValue(RotatedPillarBlock.AXIS)) : null;
++    }
 +
-    private Optional<BlockState> getStripped(BlockState p_150691_) {
-       return Optional.ofNullable(STRIPPABLES.get(p_150691_.getBlock()))
-          .map(p_150689_ -> p_150689_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
-+   }
+     private Optional<BlockState> getStripped(BlockState p_150691_) {
+         return Optional.ofNullable(STRIPPABLES.get(p_150691_.getBlock()))
+             .map(p_150689_ -> p_150689_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
++    }
 +
-+   @Override
-+   public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ToolAction toolAction) {
-+      return net.neoforged.neoforge.common.ToolActions.DEFAULT_AXE_ACTIONS.contains(toolAction);
-    }
++    @Override
++    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ToolAction toolAction) {
++        return net.neoforged.neoforge.common.ToolActions.DEFAULT_AXE_ACTIONS.contains(toolAction);
+     }
  }

@@ -1,51 +1,40 @@
 --- a/net/minecraft/world/level/block/FlowerBlock.java
 +++ b/net/minecraft/world/level/block/FlowerBlock.java
-@@ -13,8 +_,26 @@
- public class FlowerBlock extends BushBlock implements SuspiciousEffectHolder {
-    protected static final float AABB_OFFSET = 3.0F;
-    protected static final VoxelShape SHAPE = Block.box(5.0, 0.0, 5.0, 11.0, 10.0, 11.0);
--   private final List<SuspiciousEffectHolder.EffectEntry> suspiciousStewEffects;
--
-+   private final java.util.function.Supplier<java.util.List<net.minecraft.world.level.block.SuspiciousEffectHolder.EffectEntry>> suspiciousStewEffectSupplier;
+@@ -21,20 +_,27 @@
+     );
+     protected static final float AABB_OFFSET = 3.0F;
+     protected static final VoxelShape SHAPE = Block.box(5.0, 0.0, 5.0, 11.0, 10.0, 11.0);
+-    private final List<SuspiciousEffectHolder.EffectEntry> suspiciousStewEffects;
++    private final java.util.function.Supplier<java.util.List<net.minecraft.world.level.block.SuspiciousEffectHolder.EffectEntry>> suspiciousStewEffectSupplier;
 +
-+   public FlowerBlock(java.util.function.Supplier<net.minecraft.world.effect.MobEffect> effectSupplier, int p_53513_, BlockBehaviour.Properties p_53514_) {
-+      super(p_53514_);
-+      
-+      this.suspiciousStewEffectSupplier = () -> {
-+         final MobEffect p_53512_ = effectSupplier.get();
-+         int i;
-+         if (p_53512_.isInstantenous()) {
-+            i = p_53513_;
-+         } else {
-+            i = p_53513_ * 20;
-+         }
-+         
-+         return List.of(new SuspiciousEffectHolder.EffectEntry(p_53512_, i));
-+      };
-+   }
-+
-+   /** @deprecated FORGE: Use supplier version instead */
-+   @Deprecated
-    public FlowerBlock(MobEffect p_53512_, int p_53513_, BlockBehaviour.Properties p_53514_) {
-       super(p_53514_);
-       int i;
-@@ -24,10 +_,9 @@
-          i = p_53513_ * 20;
-       }
++    public FlowerBlock(java.util.function.Supplier<net.minecraft.world.effect.MobEffect> effectSupplier, int p_53513_, BlockBehaviour.Properties p_53514_) {
++        super(p_53514_);
++        this.suspiciousStewEffectSupplier = () -> makeEffectList(effectSupplier.get(), p_53513_);
++    }
  
--      this.suspiciousStewEffects = List.of(new SuspiciousEffectHolder.EffectEntry(p_53512_, i));
-+      this.suspiciousStewEffectSupplier = () -> List.of(new SuspiciousEffectHolder.EffectEntry(p_53512_, i));
-    }
+     @Override
+     public MapCodec<? extends FlowerBlock> codec() {
+         return CODEC;
+     }
  
--   @Override
-    public VoxelShape getShape(BlockState p_53517_, BlockGetter p_53518_, BlockPos p_53519_, CollisionContext p_53520_) {
-       Vec3 vec3 = p_53517_.getOffset(p_53518_, p_53519_);
-       return SHAPE.move(vec3.x, vec3.y, vec3.z);
-@@ -35,6 +_,6 @@
++    /** @deprecated FORGE: Use supplier version instead */
++    @Deprecated
+     public FlowerBlock(MobEffect p_53512_, int p_53513_, BlockBehaviour.Properties p_53514_) {
+         this(makeEffectList(p_53512_, p_53513_), p_53514_);
+     }
  
-    @Override
-    public List<SuspiciousEffectHolder.EffectEntry> getSuspiciousEffects() {
--      return this.suspiciousStewEffects;
-+      return this.suspiciousStewEffectSupplier.get();
-    }
+     public FlowerBlock(List<SuspiciousEffectHolder.EffectEntry> p_304513_, BlockBehaviour.Properties p_304822_) {
+         super(p_304822_);
+-        this.suspiciousStewEffects = p_304513_;
++        this.suspiciousStewEffectSupplier = () -> p_304513_;
+     }
+ 
+     protected static List<SuspiciousEffectHolder.EffectEntry> makeEffectList(MobEffect p_304981_, int p_304406_) {
+@@ -56,6 +_,6 @@
+ 
+     @Override
+     public List<SuspiciousEffectHolder.EffectEntry> getSuspiciousEffects() {
+-        return this.suspiciousStewEffects;
++        return this.suspiciousStewEffectSupplier.get();
+     }
  }

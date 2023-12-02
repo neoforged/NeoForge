@@ -6,6 +6,6 @@
  
 -public interface Registry<T> extends Keyable, IdMap<T> {
 +public interface Registry<T> extends Keyable, IdMap<T>, net.neoforged.neoforge.registries.IRegistryExtension<T> {
-    ResourceKey<? extends Registry<T>> key();
+     ResourceKey<? extends Registry<T>> key();
  
-    default Codec<T> byNameCodec() {
+     default Codec<T> byNameCodec() {

@@ -1,14 +1,12 @@
 {
   "pack": {
-    "description": {
-      "text": "NeoForge tests resource pack"
-    },
+    "description": "NeoForge tests resource pack",
     "neoforge": {
       "versions": {
-        "client_resources": 18,
-        "server_data": 18
+        "client_resources": 22,
+        "server_data": 26
       }
     },
-    "pack_format": 18
+    "pack_format": 22
   }
 }
