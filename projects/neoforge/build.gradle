@@ -88,6 +88,10 @@ dependencies {
     }
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
+
+    userdevCompileOnly jarJar("io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}"), {
+        jarJar.ranged(it, "[${project.mixin_extras_version},)")
+    }
 }
 
 runTypes {
