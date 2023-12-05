@@ -5,10 +5,12 @@
 
 package net.neoforged.neoforge.internal;
 
+import net.neoforged.neoforge.capabilities.CapabilityHooks;
 import net.neoforged.neoforge.common.world.chunk.ForcedChunkManager;
 
 class RegistrationEvents {
     public static void init() {
+        CapabilityHooks.init();
         ForcedChunkManager.init();
     }
 }

@@ -12,7 +12,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
@@ -33,7 +33,7 @@ public class FluidUtilTest {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(FluidUtilTest::runTests);
     }
 
-    private static void runTests(FMLCommonSetupEvent commonSetupEvent) {
+    private static void runTests(FMLLoadCompleteEvent commonSetupEvent) {
         test_tryEmptyContainer();
         test_tryFillContainer();
         test_tryEmptyContainerAndStow_stackable();

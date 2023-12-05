@@ -11,7 +11,6 @@ import java.util.List;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
@@ -154,14 +153,5 @@ public abstract class EntityEquipmentInvWrapper implements IItemHandlerModifiabl
             throw new IllegalArgumentException("Slot " + slot + " not in valid range - [0," + slots.size() + ")");
 
         return slots.get(slot);
-    }
-
-    public static LazyOptional<IItemHandlerModifiable>[] create(LivingEntity entity) {
-        @SuppressWarnings("unchecked")
-        LazyOptional<IItemHandlerModifiable>[] ret = new LazyOptional[3];
-        ret[0] = LazyOptional.of(() -> new EntityHandsInvWrapper(entity));
-        ret[1] = LazyOptional.of(() -> new EntityArmorInvWrapper(entity));
-        ret[2] = LazyOptional.of(() -> new CombinedInvWrapper(ret[0].orElse(null), ret[1].orElse(null)));
-        return ret;
     }
 }

@@ -22,10 +22,11 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.common.capabilities.ICapabilitySerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-public interface IBlockEntityExtension extends ICapabilitySerializable<CompoundTag> {
+public interface IBlockEntityExtension extends INBTSerializable<CompoundTag> {
     private BlockEntity self() {
         return (BlockEntity) this;
     }
@@ -165,5 +166,19 @@ public interface IBlockEntityExtension extends ICapabilitySerializable<CompoundT
      */
     default boolean hasCustomOutlineRendering(Player player) {
         return false;
+    }
+
+    /**
+     * Notify all listeners that the capabilities at the positions of this block entity might have changed.
+     * This includes new capabilities becoming available.
+     * <p>
+     * This is just a convenience method for {@link Level#invalidateCapabilities(BlockPos)}.
+     */
+    @ApiStatus.NonExtendable
+    default void invalidateCapabilities() {
+        BlockEntity be = self();
+        Level level = be.getLevel();
+        if (level != null)
+            level.invalidateCapabilities(be.getBlockPos());
     }
 }

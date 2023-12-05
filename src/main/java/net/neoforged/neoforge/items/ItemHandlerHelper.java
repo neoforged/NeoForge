@@ -36,7 +36,7 @@ public class ItemHandlerHelper {
         if (a.isEmpty() || !ItemStack.isSameItem(a, b) || a.hasTag() != b.hasTag())
             return false;
 
-        return (!a.hasTag() || a.getTag().equals(b.getTag())) && a.areCapsCompatible(b);
+        return (!a.hasTag() || a.getTag().equals(b.getTag())) && a.areAttachmentsCompatible(b);
     }
 
     /**
@@ -60,7 +60,7 @@ public class ItemHandlerHelper {
         if (a.hasTag() != b.hasTag())
             return false;
 
-        return (!a.hasTag() || a.getTag().equals(b.getTag())) && a.areCapsCompatible(b);
+        return (!a.hasTag() || a.getTag().equals(b.getTag())) && a.areAttachmentsCompatible(b);
     }
 
     @NotNull

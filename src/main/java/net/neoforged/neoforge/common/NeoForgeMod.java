@@ -81,6 +81,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.neoforge.capabilities.CapabilityHooks;
 import net.neoforged.neoforge.client.ClientCommandHandler;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.conditions.AndCondition;
@@ -506,6 +507,12 @@ public class NeoForgeMod {
         TierSortingRegistry.init();
         if (dist == Dist.CLIENT) ClientCommandHandler.init();
         DualStackUtils.initialise();
+
+        modEventBus.addListener(CapabilityHooks::registerVanillaProviders);
+        // These 3 listeners use the default priority for now, can be re-evaluated later.
+        NeoForge.EVENT_BUS.addListener(CapabilityHooks::invalidateCapsOnChunkLoad);
+        NeoForge.EVENT_BUS.addListener(CapabilityHooks::invalidateCapsOnChunkUnload);
+        NeoForge.EVENT_BUS.addListener(CapabilityHooks::cleanCapabilityListenerReferencesOnTick);
     }
 
     public void preInit(FMLCommonSetupEvent evt) {

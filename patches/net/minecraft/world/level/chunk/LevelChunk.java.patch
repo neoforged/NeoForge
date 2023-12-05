@@ -5,18 +5,10 @@
  import org.slf4j.Logger;
  
 -public class LevelChunk extends ChunkAccess {
-+public class LevelChunk extends ChunkAccess implements net.neoforged.neoforge.common.capabilities.ICapabilityProviderImpl<LevelChunk> {
++public class LevelChunk extends ChunkAccess implements net.neoforged.neoforge.attachment.IAttachmentHolder {
      static final Logger LOGGER = LogUtils.getLogger();
      private static final TickingBlockEntity NULL_TICKER = new TickingBlockEntity() {
          @Override
-@@ -109,6 +_,7 @@
-         this.postLoad = p_196861_;
-         this.blockTicks = p_196857_;
-         this.fluidTicks = p_196858_;
-+        this.capProvider.initInternal();
-     }
- 
-     public LevelChunk(ServerLevel p_196850_, ProtoChunk p_196851_, @Nullable LevelChunk.PostLoadProcessor p_196852_) {
 @@ -270,14 +_,14 @@
                  boolean flag2 = blockstate.hasBlockEntity();
                  if (!this.level.isClientSide) {
@@ -103,42 +95,27 @@
          this.blockEntities.values().forEach(p_187988_ -> {
              Level level = this.level;
              if (level instanceof ServerLevel serverlevel) {
-@@ -646,6 +_,41 @@
+@@ -646,6 +_,26 @@
          return new LevelChunk.BoundTickingBlockEntity<>(p_156376_, p_156377_);
      }
  
 +    // FORGE START
-+    private final net.neoforged.neoforge.common.capabilities.CapabilityProvider.AsField<LevelChunk> capProvider = new net.neoforged.neoforge.common.capabilities.CapabilityProvider.AsField<>(LevelChunk.class, this);
++    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField();
 +
-+    @org.jetbrains.annotations.NotNull
 +    @Override
-+    public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(@org.jetbrains.annotations.NotNull net.neoforged.neoforge.common.capabilities.Capability<T> cap, @org.jetbrains.annotations.Nullable net.minecraft.core.Direction side)
-+    {
-+        return capProvider.getCapability(cap, side);
++    public boolean hasData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
++        return attachmentHolder.hasData(type);
 +    }
 +
 +    @Override
-+    public boolean areCapsCompatible(net.neoforged.neoforge.common.capabilities.CapabilityProvider<LevelChunk> other)
-+    {
-+        return capProvider.areCapsCompatible(other);
++    public <T> T getData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
++        return attachmentHolder.getData(type);
 +    }
 +
 +    @Override
-+    public boolean areCapsCompatible(@org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.capabilities.CapabilityDispatcher other)
-+    {
-+        return capProvider.areCapsCompatible(other);
-+    }
-+
-+    @Override
-+    public void invalidateCaps()
-+    {
-+        capProvider.invalidateCaps();
-+    }
-+
-+    @Override
-+    public void reviveCaps()
-+    {
-+        capProvider.reviveCaps();
++    public <T> @Nullable T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
++        setUnsaved(true);
++        return attachmentHolder.setData(type, data);
 +    }
 +    // FORGE END
 +
@@ -178,10 +155,10 @@
 +     * <p>
 +     * Only public for use in {@link net.minecraft.world.level.chunk.storage.ChunkSerializer}.
 +     */
-+    @java.lang.Deprecated
-+    @org.jetbrains.annotations.Nullable
-+    public final CompoundTag writeCapsToNBT() {
-+        return capProvider.serializeInternal();
++    @org.jetbrains.annotations.ApiStatus.Internal
++    @Nullable
++    public final CompoundTag writeAttachmentsToNBT() {
++        return attachmentHolder.serializeAttachments();
 +    }
 +
 +    /**
@@ -190,9 +167,9 @@
 +     * Only public for use in {@link net.minecraft.world.level.chunk.storage.ChunkSerializer}.
 +     *
 +     */
-+    @java.lang.Deprecated
-+    public final void readCapsFromNBT(CompoundTag tag) {
-+        capProvider.deserializeInternal(tag);
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public final void readAttachmentsFromNBT(CompoundTag tag) {
++        attachmentHolder.deserializeInternal(tag);
 +    }
 +
 +    @Override

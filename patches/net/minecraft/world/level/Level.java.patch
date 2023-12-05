@@ -5,7 +5,7 @@
  import net.minecraft.world.scores.Scoreboard;
  
 -public abstract class Level implements LevelAccessor, AutoCloseable {
-+public abstract class Level extends net.neoforged.neoforge.common.capabilities.CapabilityProvider<Level> implements LevelAccessor, AutoCloseable, net.neoforged.neoforge.common.extensions.ILevelExtension {
++public abstract class Level implements LevelAccessor, AutoCloseable, net.neoforged.neoforge.common.extensions.ILevelExtension {
      public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceKey.codec(Registries.DIMENSION);
      public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("overworld"));
      public static final ResourceKey<Level> NETHER = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("the_nether"));
@@ -21,14 +21,6 @@
  
      protected Level(
          WritableLevelData p_270739_,
-@@ -124,6 +_,7 @@
-         long p_270248_,
-         int p_270466_
-     ) {
-+        super(Level.class);
-         this.profiler = p_270692_;
-         this.levelData = p_270739_;
-         this.dimensionTypeRegistration = p_270240_;
 @@ -215,11 +_,40 @@
          } else {
              LevelChunk levelchunk = this.getChunkAt(p_46605_);

@@ -19,15 +19,10 @@
          Container container = getSourceContainer(p_155553_, p_155554_);
          if (container != null) {
              Direction direction = Direction.DOWN;
-@@ -421,5 +_,14 @@
+@@ -421,5 +_,9 @@
      @Override
      protected AbstractContainerMenu createMenu(int p_59312_, Inventory p_59313_) {
          return new HopperMenu(p_59312_, p_59313_, this);
-+    }
-+
-+    @Override
-+    protected net.neoforged.neoforge.items.IItemHandler createUnSidedHandler() {
-+        return new net.neoforged.neoforge.items.VanillaHopperItemHandler(this);
 +    }
 +
 +    public long getLastUpdateTime() {

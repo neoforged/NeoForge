@@ -4,7 +4,7 @@
                  postLoadChunk(p_188231_, p_188234_),
                  blendingdata
              );
-+            if (p_188234_.contains("ForgeCaps")) ((LevelChunk)chunkaccess).readCapsFromNBT(p_188234_.getCompound("ForgeCaps"));
++            if (p_188234_.contains(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND)) ((LevelChunk)chunkaccess).readAttachmentsFromNBT(p_188234_.getCompound(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY));
          } else {
              ProtoChunkTicks<Block> protochunkticks = ProtoChunkTicks.load(
                  p_188234_.getList("block_ticks", 10), p_258992_ -> BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(p_258992_)), p_188233_
@@ -31,10 +31,10 @@
 +        }
 +        else if (p_63456_ instanceof LevelChunk levelChunk){
 +             try {
-+                  final CompoundTag capTag = levelChunk.writeCapsToNBT();
-+                  if (capTag != null) compoundtag.put("ForgeCaps", capTag);
++                  final CompoundTag capTag = levelChunk.writeAttachmentsToNBT();
++                  if (capTag != null) compoundtag.put(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, capTag);
 +             } catch (Exception exception) {
-+                  LOGGER.error("A capability provider has thrown an exception trying to write state. It will not persist. Report this to the mod author", exception);
++                  LOGGER.error("Failed to write chunk attachments. An attachment has likely thrown an exception trying to write state. It will not persist. Report this to the mod author", exception);
 +             }
          }
  

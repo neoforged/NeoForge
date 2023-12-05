@@ -12,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
@@ -28,16 +27,6 @@ public class SidedInvWrapper implements IItemHandlerModifiable {
 
     private interface InsertLimit {
         int limitInsert(int wrapperSlot, int invSlot, ItemStack stack);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static LazyOptional<IItemHandlerModifiable>[] create(WorldlyContainer inv, Direction... sides) {
-        LazyOptional<IItemHandlerModifiable>[] ret = new LazyOptional[sides.length];
-        for (int x = 0; x < sides.length; x++) {
-            final Direction side = sides[x];
-            ret[x] = LazyOptional.of(() -> new SidedInvWrapper(inv, side));
-        }
-        return ret;
     }
 
     public SidedInvWrapper(WorldlyContainer inv, @Nullable Direction side) {

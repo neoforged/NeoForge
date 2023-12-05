@@ -33,16 +33,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
-import net.neoforged.neoforge.common.capabilities.ICapabilitySerializable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /*
  * Extension added to ItemStack that bounces to ItemSack sensitive Item methods. Typically this is just for convince.
  */
-public interface IItemStackExtension extends ICapabilitySerializable<CompoundTag> {
+public interface IItemStackExtension {
     // Helpers for accessing Item data
     private ItemStack self() {
         return (ItemStack) this;
@@ -92,12 +92,6 @@ public interface IItemStackExtension extends ICapabilitySerializable<CompoundTag
 
             return enumactionresult;
         }
-    }
-
-    default CompoundTag serializeNBT() {
-        CompoundTag ret = new CompoundTag();
-        self().save(ret);
-        return ret;
     }
 
     /**
@@ -534,5 +528,15 @@ public interface IItemStackExtension extends ICapabilitySerializable<CompoundTag
      */
     default boolean canGrindstoneRepair() {
         return self().getItem().canGrindstoneRepair(self());
+    }
+
+    @Nullable
+    default <T, C> T getCapability(ItemCapability<T, C> capability, C context) {
+        return capability.getCapability(self(), context);
+    }
+
+    @Nullable
+    default <T> T getCapability(ItemCapability<T, Void> capability) {
+        return capability.getCapability(self(), null);
     }
 }

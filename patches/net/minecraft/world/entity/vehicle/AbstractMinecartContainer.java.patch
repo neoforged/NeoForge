@@ -9,32 +9,3 @@
          return this.interactWithContainerVehicle(p_38232_);
      }
  
-@@ -134,6 +_,28 @@
-     }
- 
-     protected abstract AbstractContainerMenu createMenu(int p_38222_, Inventory p_38223_);
-+
-+    // Forge Start
-+    private net.neoforged.neoforge.common.util.LazyOptional<?> itemHandler = net.neoforged.neoforge.common.util.LazyOptional.of(() -> new net.neoforged.neoforge.items.wrapper.InvWrapper(this));
-+
-+    @Override
-+    public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(net.neoforged.neoforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
-+        if (this.isAlive() && capability == net.neoforged.neoforge.common.capabilities.Capabilities.ITEM_HANDLER)
-+            return itemHandler.cast();
-+        return super.getCapability(capability, facing);
-+    }
-+
-+    @Override
-+    public void invalidateCaps() {
-+        super.invalidateCaps();
-+        itemHandler.invalidate();
-+    }
-+
-+    @Override
-+    public void reviveCaps() {
-+        super.reviveCaps();
-+        itemHandler = net.neoforged.neoforge.common.util.LazyOptional.of(() -> new net.neoforged.neoforge.items.wrapper.InvWrapper(this));
-+    }
- 
-     @Nullable
-     @Override

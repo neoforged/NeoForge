@@ -5,54 +5,49 @@
  import org.slf4j.Logger;
  
 -public abstract class BlockEntity {
-+public abstract class BlockEntity extends net.neoforged.neoforge.common.capabilities.CapabilityProvider<BlockEntity> implements net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
++public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
      private static final Logger LOGGER = LogUtils.getLogger();
      private final BlockEntityType<?> type;
      @Nullable
-@@ -23,11 +_,14 @@
+@@ -23,6 +_,7 @@
      protected final BlockPos worldPosition;
      protected boolean remove;
      private BlockState blockState;
 +    private CompoundTag customPersistentData;
  
      public BlockEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
-+        super(BlockEntity.class);
          this.type = p_155228_;
-         this.worldPosition = p_155229_.immutable();
-         this.blockState = p_155230_;
-+        this.gatherCapabilities();
-     }
- 
-     public static BlockPos getPosFromTag(CompoundTag p_187473_) {
-@@ -48,9 +_,13 @@
+@@ -48,9 +_,14 @@
      }
  
      public void load(CompoundTag p_155245_) {
-+        if (p_155245_.contains("NeoForgeData")) this.customPersistentData = p_155245_.getCompound("NeoForgeData");
-+        if (getCapabilities() != null && p_155245_.contains("ForgeCaps")) deserializeCaps(p_155245_.getCompound("ForgeCaps"));
++        if (p_155245_.contains("NeoForgeData", net.minecraft.nbt.Tag.TAG_COMPOUND)) this.customPersistentData = p_155245_.getCompound("NeoForgeData");
++        if (p_155245_.contains(ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND)) deserializeAttachments(p_155245_.getCompound(ATTACHMENTS_NBT_KEY));
      }
  
      protected void saveAdditional(CompoundTag p_187471_) {
 +        if (this.customPersistentData != null) p_187471_.put("NeoForgeData", this.customPersistentData.copy());
-+        if (getCapabilities() != null) p_187471_.put("ForgeCaps", serializeCaps());
++        var attachmentsTag = serializeAttachments();
++        if (attachmentsTag != null) p_187471_.put(ATTACHMENTS_NBT_KEY, attachmentsTag);
      }
  
      public final CompoundTag saveWithFullMetadata() {
-@@ -161,6 +_,13 @@
+@@ -161,10 +_,14 @@
  
      public void setRemoved() {
          this.remove = true;
-+        this.invalidateCaps();
++        this.invalidateCapabilities();
 +        requestModelDataUpdate();
-+    }
-+
-+    @Override
-+    public void onChunkUnloaded() {
-+        this.invalidateCaps();
      }
  
      public void clearRemoved() {
-@@ -185,6 +_,13 @@
+         this.remove = false;
++        // Neo: invalidate capabilities on block entity placement
++        invalidateCapabilities();
+     }
+ 
+     public boolean triggerEvent(int p_58889_, int p_58890_) {
+@@ -185,6 +_,19 @@
  
      public BlockEntityType<?> getType() {
          return this.type;
@@ -63,6 +58,12 @@
 +        if (this.customPersistentData == null)
 +            this.customPersistentData = new CompoundTag();
 +        return this.customPersistentData;
++    }
++
++    @Override
++    public final <T> @Nullable T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
++        setChanged();
++        return super.setData(type, data);
      }
  
      @Deprecated

@@ -77,7 +77,7 @@
              return false;
          } else if (p_32028_.hasTag() ^ p_32027_.hasTag()) {
              return false;
-+        } else if (!p_32027_.areCapsCompatible(p_32028_)) {
++        } else if (!p_32027_.areAttachmentsCompatible(p_32028_)) {
 +            return false;
          } else {
              return !p_32028_.hasTag() || p_32028_.getTag().equals(p_32027_.getTag());

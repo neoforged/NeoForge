@@ -99,7 +99,7 @@
                      liquidblockcontainer1.placeLiquid(p_150717_, p_150718_, blockstate, flowingfluid.getSource(false));
                      this.playEmptySound(p_150716_, p_150717_, p_150718_);
                      return true;
-@@ -172,8 +_,25 @@
+@@ -172,8 +_,17 @@
      }
  
      protected void playEmptySound(@Nullable Player p_40696_, LevelAccessor p_40697_, BlockPos p_40698_) {
@@ -108,14 +108,6 @@
 +        if(soundevent == null) soundevent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
          p_40697_.playSound(p_40696_, p_40698_, soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
          p_40697_.gameEvent(p_40696_, GameEvent.FLUID_PLACE, p_40698_);
-+    }
-+
-+    @Override
-+    public net.neoforged.neoforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable net.minecraft.nbt.CompoundTag nbt) {
-+        if (this.getClass() == BucketItem.class)
-+            return new net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper(stack);
-+        else
-+            return super.initCapabilities(stack, nbt);
 +    }
 +
 +    private final java.util.function.Supplier<? extends Fluid> fluidSupplier;
