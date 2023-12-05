@@ -128,7 +128,7 @@
              RenderStateShard.PARTICLES_TARGET.setupRenderState();
              profilerfiller.popPush("particles");
 -            this.minecraft.particleEngine.render(p_109600_, multibuffersource$buffersource, p_109606_, p_109604_, f);
-+            this.minecraft.particleEngine.render(p_109600_, multibuffersource$buffersource, p_109606_, p_109604_, p_109601_, frustum);
++            this.minecraft.particleEngine.render(p_109600_, multibuffersource$buffersource, p_109606_, p_109604_, f, frustum);
 +            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES, this, p_109600_, p_254120_, this.ticks, p_109604_, frustum);
              RenderStateShard.PARTICLES_TARGET.clearRenderState();
          } else {
@@ -138,7 +138,7 @@
              this.renderSectionLayer(RenderType.tripwire(), p_109600_, d0, d1, d2, p_254120_);
              profilerfiller.popPush("particles");
 -            this.minecraft.particleEngine.render(p_109600_, multibuffersource$buffersource, p_109606_, p_109604_, f);
-+            this.minecraft.particleEngine.render(p_109600_, multibuffersource$buffersource, p_109606_, p_109604_, p_109601_, frustum);
++            this.minecraft.particleEngine.render(p_109600_, multibuffersource$buffersource, p_109606_, p_109604_, f, frustum);
 +            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES, this, p_109600_, p_254120_, this.ticks, p_109604_, frustum);
          }
  
