@@ -1,45 +1,17 @@
 --- a/net/minecraft/world/level/block/entity/ChestBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ChestBlockEntity.java
-@@ -172,6 +_,45 @@
+@@ -172,6 +_,17 @@
          return ChestMenu.threeRows(p_59082_, p_59083_, this);
      }
  
-+    private net.neoforged.neoforge.common.util.LazyOptional<net.neoforged.neoforge.items.IItemHandlerModifiable> chestHandler;
 +    @Override
 +    public void setBlockState(BlockState p_155251_) {
++        var oldState = getBlockState();
 +        super.setBlockState(p_155251_);
-+        if (this.chestHandler != null) {
-+            net.neoforged.neoforge.common.util.LazyOptional<?> oldHandler = this.chestHandler;
-+            this.chestHandler = null;
-+            oldHandler.invalidate();
-+        }
-+    }
-+
-+    @Override
-+    public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(net.neoforged.neoforge.common.capabilities.Capability<T> cap, Direction side) {
-+         if (!this.remove && cap == net.neoforged.neoforge.common.capabilities.Capabilities.ITEM_HANDLER) {
-+             if (this.chestHandler == null)
-+                 this.chestHandler = net.neoforged.neoforge.common.util.LazyOptional.of(this::createHandler);
-+             return this.chestHandler.cast();
-+         }
-+         return super.getCapability(cap, side);
-+    }
-+
-+    private net.neoforged.neoforge.items.IItemHandlerModifiable createHandler() {
-+        BlockState state = this.getBlockState();
-+        if (!(state.getBlock() instanceof ChestBlock)) {
-+            return new net.neoforged.neoforge.items.wrapper.InvWrapper(this);
-+        }
-+        Container inv = ChestBlock.getContainer((ChestBlock) state.getBlock(), state, getLevel(), getBlockPos(), true);
-+        return new net.neoforged.neoforge.items.wrapper.InvWrapper(inv == null ? this : inv);
-+    }
-+
-+    @Override
-+    public void invalidateCaps() {
-+        super.invalidateCaps();
-+        if (chestHandler != null) {
-+            chestHandler.invalidate();
-+            chestHandler = null;
++        // Neo: Chest state change might change the chest item handler -> invalidate
++        if ((oldState.getValue(ChestBlock.FACING) != p_155251_.getValue(ChestBlock.FACING))
++                || (oldState.getValue(ChestBlock.TYPE) != p_155251_.getValue(ChestBlock.TYPE))) {
++            this.invalidateCapabilities();
 +        }
 +    }
 +

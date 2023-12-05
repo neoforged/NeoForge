@@ -1,13 +1,5 @@
 --- a/net/minecraft/world/entity/animal/horse/AbstractHorse.java
 +++ b/net/minecraft/world/entity/animal/horse/AbstractHorse.java
-@@ -335,6 +_,7 @@
- 
-         this.inventory.addListener(this);
-         this.updateContainerEquipment();
-+        this.itemHandler = net.neoforged.neoforge.common.util.LazyOptional.of(() -> new net.neoforged.neoforge.items.wrapper.InvWrapper(this.inventory));
-     }
- 
-     protected void updateContainerEquipment() {
 @@ -384,9 +_,9 @@
      protected void playStepSound(BlockPos p_30584_, BlockState p_30585_) {
          if (!p_30585_.liquid()) {
@@ -28,29 +20,15 @@
          if (p_275435_.z > 0.0) {
              float f = Mth.sin(this.getYRot() * (float) (Math.PI / 180.0));
              float f1 = Mth.cos(this.getYRot() * (float) (Math.PI / 180.0));
-@@ -1137,6 +_,25 @@
+@@ -1137,6 +_,11 @@
  
          this.randomizeAttributes(p_30555_.getRandom());
          return super.finalizeSpawn(p_30555_, p_30556_, p_30557_, p_30558_, p_30559_);
 +    }
 +
-+    private net.neoforged.neoforge.common.util.LazyOptional<?> itemHandler = null;
-+
-+    @Override
-+    public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(net.neoforged.neoforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
-+        if (this.isAlive() && capability == net.neoforged.neoforge.common.capabilities.Capabilities.ITEM_HANDLER && itemHandler != null)
-+            return itemHandler.cast();
-+        return super.getCapability(capability, facing);
-+    }
-+
-+    @Override
-+    public void invalidateCaps() {
-+        super.invalidateCaps();
-+        if (itemHandler != null) {
-+            net.neoforged.neoforge.common.util.LazyOptional<?> oldHandler = itemHandler;
-+            itemHandler = null;
-+            oldHandler.invalidate();
-+        }
++    // Neo: Inventory getter
++    public net.minecraft.world.Container getInventory() {
++        return this.inventory;
      }
  
      public boolean hasInventoryChanged(Container p_149512_) {

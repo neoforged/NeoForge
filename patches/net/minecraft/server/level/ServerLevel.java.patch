@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -190,11 +_,12 @@
+@@ -190,7 +_,7 @@
      private final List<CustomSpawner> customSpawners;
      @Nullable
      private EndDragonFight dragonFight;
@@ -9,19 +9,6 @@
      private final StructureManager structureManager;
      private final StructureCheck structureCheck;
      private final boolean tickTime;
-     private final RandomSequences randomSequences;
-+    private net.neoforged.neoforge.common.util.LevelCapabilityData capabilityData;
- 
-     public ServerLevel(
-         MinecraftServer p_214999_,
-@@ -281,6 +_,7 @@
-         this.randomSequences = Objects.requireNonNullElseGet(
-             p_288977_, () -> this.getDataStorage().computeIfAbsent(RandomSequences.factory(i), "random_sequences")
-         );
-+        this.initCapabilities();
-     }
- 
-     @Deprecated
 @@ -325,7 +_,7 @@
          if (this.sleepStatus.areEnoughSleeping(i) && this.sleepStatus.areEnoughDeepSleeping(i, this.players)) {
              if (this.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)) {
@@ -182,24 +169,6 @@
          this.neighborUpdater.updateNeighborsAtExceptFromFacing(p_215052_, p_215053_, p_215054_);
      }
  
-@@ -1589,7 +_,16 @@
-             .forEach(p_184101_ -> p_8618_.setBlockAndUpdate(p_184101_, Blocks.OBSIDIAN.defaultBlockState()));
-     }
- 
--    @Override
-+    protected void initCapabilities() {
-+        this.gatherCapabilities();
-+        capabilityData = this.getDataStorage().computeIfAbsent(
-+                new net.minecraft.world.level.saveddata.SavedData.Factory<>(
-+                        () -> new net.neoforged.neoforge.common.util.LevelCapabilityData(getCapabilities()),
-+                        e -> net.neoforged.neoforge.common.util.LevelCapabilityData.load(e, getCapabilities())
-+                ), net.neoforged.neoforge.common.util.LevelCapabilityData.ID);
-+        capabilityData.setCapabilities(getCapabilities());
-+    }
-+
-     public LevelEntityGetter<Entity> getEntities() {
-         return this.entityManager.getEntityGetter();
-     }
 @@ -1695,8 +_,8 @@
                  ServerLevel.this.navigatingMobs.add(mob);
              }
@@ -211,7 +180,7 @@
                      ServerLevel.this.dragonParts.put(enderdragonpart.getId(), enderdragonpart);
                  }
              }
-@@ -1715,24 +_,32 @@
+@@ -1715,24 +_,61 @@
                  if (ServerLevel.this.isUpdatingNavigations) {
                      String s = "onTrackingStart called during navigation iteration";
                      Util.logAndPauseIfInIde(
@@ -246,5 +215,34 @@
 +    @Override
 +    public java.util.Collection<net.neoforged.neoforge.entity.PartEntity<?>> getPartEntities() {
 +        return this.dragonParts.values();
++    }
++
++    private final net.neoforged.neoforge.capabilities.CapabilityListenerHolder capListenerHolder = new net.neoforged.neoforge.capabilities.CapabilityListenerHolder();
++
++    @Override
++    public void invalidateCapabilities(BlockPos pos) {
++        capListenerHolder.invalidatePos(pos);
++    }
++
++    @Override
++    public void invalidateCapabilities(ChunkPos pos) {
++        capListenerHolder.invalidateChunk(pos);
++    }
++
++    /**
++     * Register a listener for capability invalidation.
++     * @see net.neoforged.neoforge.capabilities.ICapabilityInvalidationListener
++     */
++    public void registerCapabilityListener(BlockPos pos, net.neoforged.neoforge.capabilities.ICapabilityInvalidationListener listener) {
++        capListenerHolder.addListener(pos, listener);
++    }
++
++    /**
++     * Internal method, used to clean capability listeners that are not referenced.
++     * Do not call.
++     */
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void cleanCapabilityListenerReferences() {
++        capListenerHolder.clean();
      }
  }

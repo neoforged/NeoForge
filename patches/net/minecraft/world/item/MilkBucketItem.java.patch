@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/MilkBucketItem.java
 +++ b/net/minecraft/world/item/MilkBucketItem.java
-@@ -22,15 +_,12 @@
+@@ -22,13 +_,10 @@
              CriteriaTriggers.CONSUME_ITEM.trigger(serverplayer, p_42923_);
              serverplayer.awardStat(Stats.ITEM_USED.get(this));
          }
@@ -8,23 +8,10 @@
  
          if (p_42925_ instanceof Player && !((Player)p_42925_).getAbilities().instabuild) {
              p_42923_.shrink(1);
-         }
- 
--        if (!p_42924_.isClientSide) {
--            p_42925_.removeAllEffects();
 -        }
 -
-         return p_42923_.isEmpty() ? new ItemStack(Items.BUCKET) : p_42923_;
-     }
+-        if (!p_42924_.isClientSide) {
+-            p_42925_.removeAllEffects();
+         }
  
-@@ -47,5 +_,10 @@
-     @Override
-     public InteractionResultHolder<ItemStack> use(Level p_42927_, Player p_42928_, InteractionHand p_42929_) {
-         return ItemUtils.startUsingInstantly(p_42927_, p_42928_, p_42929_);
-+    }
-+
-+    @Override
-+    public net.neoforged.neoforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @org.jetbrains.annotations.Nullable net.minecraft.nbt.CompoundTag nbt) {
-+        return new net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper(stack);
-     }
- }
+         return p_42923_.isEmpty() ? new ItemStack(Items.BUCKET) : p_42923_;

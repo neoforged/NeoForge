@@ -1,15 +1,20 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -81,7 +_,7 @@
+@@ -81,7 +_,8 @@
  import net.minecraft.world.level.block.state.pattern.BlockInWorld;
  import org.slf4j.Logger;
  
 -public final class ItemStack {
-+public final class ItemStack extends net.neoforged.neoforge.common.capabilities.CapabilityProvider<ItemStack> implements net.neoforged.neoforge.common.extensions.IItemStackExtension {
++public final class ItemStack extends net.neoforged.neoforge.attachment.AttachmentHolder implements net.neoforged.neoforge.common.extensions.IItemStackExtension {
++    // TODO: add attachment support here
      public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
          p_311716_ -> p_311716_.group(
                      BuiltInRegistries.ITEM.holderByNameCodec().fieldOf("id").forGetter(ItemStack::getItemHolder),
-@@ -104,7 +_,8 @@
+@@ -101,10 +_,12 @@
+                 )
+                 .apply(p_311717_, (p_311722_, p_311723_) -> new ItemStack(p_311722_, 1, p_311723_))
+     );
++    // TODO: add attachment support here
      public static final Codec<ItemStack> ITEM_WITH_COUNT_CODEC = RecordCodecBuilder.create(
          p_311720_ -> p_311720_.group(
                      ITEM_NON_AIR_CODEC.fieldOf("item").forGetter(ItemStack::getItem),
@@ -19,14 +24,6 @@
                  )
                  .apply(p_311720_, ItemStack::new)
      );
-@@ -116,6 +_,7 @@
-                 )
-                 .apply(p_311721_, ItemStack::new)
-     );
-+    private CompoundTag capNBT;
-     private static final Logger LOGGER = LogUtils.getLogger();
-     public static final ItemStack EMPTY = new ItemStack((Void)null);
-     public static final DecimalFormat ATTRIBUTE_MODIFIER_FORMAT = Util.make(
 @@ -162,6 +_,9 @@
      }
  
@@ -37,39 +34,32 @@
          this(p_312081_, p_41605_);
          p_41606_.ifPresent(this::setTag);
      }
-@@ -170,27 +_,35 @@
+@@ -170,10 +_,12 @@
          this(p_220155_.value(), p_220156_);
      }
  
 -    public ItemStack(ItemLike p_41601_, int p_41602_) {
 +    public ItemStack(ItemLike p_41601_, int p_41602_) { this(p_41601_, p_41602_, (CompoundTag) null); }
-+    public ItemStack(ItemLike p_41601_, int p_41602_, @Nullable CompoundTag p_41606_) {
-+        super(ItemStack.class, true);
-+        this.capNBT = p_41606_;
++    public ItemStack(ItemLike p_41601_, int p_41602_, @Nullable CompoundTag attachmentsNbt) {
          this.item = p_41601_.asItem();
          this.count = p_41602_;
 -        if (this.item.canBeDepleted()) {
-+        this.forgeInit();
++        if (attachmentsNbt != null) deserializeAttachments(attachmentsNbt);
 +        if (this.item.isDamageable(this)) {
              this.setDamageValue(this.getDamageValue());
          }
      }
- 
-     private ItemStack(@Nullable Void p_282703_) {
-+        super(ItemStack.class, true);
-         this.item = null;
-     }
- 
-     private ItemStack(CompoundTag p_41608_) {
-+        super(ItemStack.class, true);
-+        this.capNBT = p_41608_.contains("ForgeCaps") ? p_41608_.getCompound("ForgeCaps") : null;
-         this.item = BuiltInRegistries.ITEM.get(new ResourceLocation(p_41608_.getString("id")));
+@@ -187,10 +_,15 @@
          this.count = p_41608_.getByte("Count");
          if (p_41608_.contains("tag", 10)) {
              this.tag = p_41608_.getCompound("tag").copy();
++            if (this.tag.contains(ATTACHMENTS_NBT_KEY, Tag.TAG_COMPOUND)) { // Neo: Read contained attachments
++                deserializeAttachments(this.tag.getCompound(ATTACHMENTS_NBT_KEY));
++                this.tag = net.neoforged.neoforge.attachment.AttachmentInternals.cleanTag(this.tag);
++            }
++            if (this.tag != null)
              this.getItem().verifyTagAfterLoad(this.tag);
          }
-+        this.forgeInit();
  
 -        if (this.getItem().canBeDepleted()) {
 +        if (this.getItem().isDamageable(this)) {
@@ -105,14 +95,17 @@
              if (player != null && interactionresult.shouldAwardStats()) {
                  player.awardStat(Stats.ITEM_USED.get(item));
              }
-@@ -300,11 +_,15 @@
-             p_41740_.put("tag", this.tag.copy());
+@@ -296,15 +_,16 @@
+         ResourceLocation resourcelocation = BuiltInRegistries.ITEM.getKey(this.getItem());
+         p_41740_.putString("id", resourcelocation == null ? "minecraft:air" : resourcelocation.toString());
+         p_41740_.putByte("Count", (byte)this.count);
+-        if (this.tag != null) {
+-            p_41740_.put("tag", this.tag.copy());
++        var tag = net.neoforged.neoforge.attachment.AttachmentInternals.addAttachmentsToTag(this.tag, this, true);
++        if (tag != null) {
++            p_41740_.put("tag", tag);
          }
  
-+        CompoundTag cnbt = this.serializeCaps();
-+        if (cnbt != null && !cnbt.isEmpty()) {
-+            p_41740_.put("ForgeCaps", cnbt);
-+        }
          return p_41740_;
      }
  
@@ -172,24 +165,33 @@
      }
  
      public InteractionResult interactLivingEntity(Player p_41648_, LivingEntity p_41649_, InteractionHand p_41650_) {
-@@ -429,7 +_,7 @@
-         if (this.isEmpty()) {
+@@ -430,6 +_,7 @@
              return EMPTY;
          } else {
--            ItemStack itemstack = new ItemStack(this.getItem(), this.count);
-+            ItemStack itemstack = new ItemStack(this.getItem(), this.count, this.serializeCaps());
+             ItemStack itemstack = new ItemStack(this.getItem(), this.count);
++            net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(this, itemstack);
              itemstack.setPopTime(this.getPopTime());
              if (this.tag != null) {
                  itemstack.tag = this.tag.copy();
-@@ -465,7 +_,7 @@
+@@ -465,8 +_,17 @@
          if (!p_150943_.is(p_150944_.getItem())) {
              return false;
          } else {
 -            return p_150943_.isEmpty() && p_150944_.isEmpty() ? true : Objects.equals(p_150943_.tag, p_150944_.tag);
-+            return p_150943_.isEmpty() && p_150944_.isEmpty() ? true : Objects.equals(p_150943_.tag, p_150944_.tag) && p_150943_.areCapsCompatible(p_150944_);
++            return p_150943_.isEmpty() && p_150944_.isEmpty() ? true : Objects.equals(p_150943_.tag, p_150944_.tag) && p_150943_.areAttachmentsCompatible(p_150944_);
          }
++    }
++
++    /**
++     * Neo: Check if the attachments of this stack and another stack are compatible.
++     * If not, they cannot be stacked.
++     * @see #areAttachmentsCompatible(net.neoforged.neoforge.attachment.AttachmentHolder, net.neoforged.neoforge.attachment.AttachmentHolder)
++     */
++    public boolean areAttachmentsCompatible(ItemStack other) {
++        return areAttachmentsCompatible(this, other);
      }
  
+     public String getDescriptionId() {
 @@ -560,7 +_,7 @@
  
      public void setTag(@Nullable CompoundTag p_41752_) {
@@ -246,7 +248,7 @@
                  .withStyle(p_220170_ -> p_220170_.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(this))));
          }
  
-@@ -1002,12 +_,31 @@
+@@ -1002,6 +_,8 @@
          this.getItem().onUseTick(p_41732_, p_41733_, this, p_41734_);
      }
  
@@ -255,26 +257,3 @@
      public void onDestroyed(ItemEntity p_150925_) {
          this.getItem().onDestroyed(p_150925_);
      }
- 
-     public boolean isEdible() {
-         return this.getItem().isEdible();
-+    }
-+
-+    // FORGE START
-+    public void deserializeNBT(CompoundTag nbt) {
-+        final ItemStack itemStack = ItemStack.of(nbt);
-+        this.setTag(itemStack.getTag());
-+        if (itemStack.capNBT != null) deserializeCaps(itemStack.capNBT);
-+    }
-+
-+    /**
-+     * Set up forge's ItemStack additions.
-+     */
-+    private void forgeInit() {
-+        if (this.item != null) {
-+            this.gatherCapabilities(() -> item.initCapabilities(this, this.capNBT));
-+            if (this.capNBT != null) deserializeCaps(this.capNBT);
-+        }
-     }
- 
-     public SoundEvent getDrinkingSound() {

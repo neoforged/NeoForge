@@ -5,59 +5,26 @@
 
 package net.neoforged.neoforge.items.wrapper;
 
-import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
-public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable, ICapabilityProvider {
-    @ApiStatus.Internal
-    @Nullable
-    public static ICapabilityProvider createDefaultProvider(ItemStack itemStack) {
-        var item = itemStack.getItem();
-        if (item == Items.SHULKER_BOX ||
-                item == Items.BLACK_SHULKER_BOX ||
-                item == Items.BLUE_SHULKER_BOX ||
-                item == Items.BROWN_SHULKER_BOX ||
-                item == Items.CYAN_SHULKER_BOX ||
-                item == Items.GRAY_SHULKER_BOX ||
-                item == Items.GREEN_SHULKER_BOX ||
-                item == Items.LIGHT_BLUE_SHULKER_BOX ||
-                item == Items.LIGHT_GRAY_SHULKER_BOX ||
-                item == Items.LIME_SHULKER_BOX ||
-                item == Items.MAGENTA_SHULKER_BOX ||
-                item == Items.ORANGE_SHULKER_BOX ||
-                item == Items.PINK_SHULKER_BOX ||
-                item == Items.PURPLE_SHULKER_BOX ||
-                item == Items.RED_SHULKER_BOX ||
-                item == Items.WHITE_SHULKER_BOX ||
-                item == Items.YELLOW_SHULKER_BOX)
-            return new ShulkerItemStackInvWrapper(itemStack);
-        return null;
-    }
+public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable {
 
     private final ItemStack stack;
-    private final LazyOptional<IItemHandler> holder = LazyOptional.of(() -> this);
 
     private CompoundTag cachedTag;
     private NonNullList<ItemStack> itemStacksCache;
 
-    private ShulkerItemStackInvWrapper(ItemStack stack) {
+    public ShulkerItemStackInvWrapper(ItemStack stack) {
         this.stack = stack;
     }
 
@@ -193,11 +160,5 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable, ICapa
         CompoundTag rootTag = ContainerHelper.saveAllItems(existing == null ? new CompoundTag() : existing, itemStacks);
         BlockItem.setBlockEntityData(this.stack, BlockEntityType.SHULKER_BOX, rootTag);
         cachedTag = rootTag;
-    }
-
-    @Override
-    @NotNull
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        return Capabilities.ITEM_HANDLER.orEmpty(cap, this.holder);
     }
 }

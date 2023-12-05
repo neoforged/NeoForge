@@ -24,12 +24,12 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.SoundAction;
-import net.neoforged.neoforge.common.capabilities.ICapabilitySerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
-public interface IEntityExtension extends ICapabilitySerializable<CompoundTag> {
+public interface IEntityExtension extends INBTSerializable<CompoundTag> {
     private Entity self() {
         return (Entity) this;
     }

@@ -9,15 +9,3 @@
      }
  
      @Override
-@@ -255,6 +_,11 @@
- 
-     public boolean isClosed() {
-         return this.animationStatus == ShulkerBoxBlockEntity.AnimationStatus.CLOSED;
-+    }
-+
-+    @Override
-+    protected net.neoforged.neoforge.items.IItemHandler createUnSidedHandler() {
-+        return new net.neoforged.neoforge.items.wrapper.SidedInvWrapper(this, Direction.UP);
-     }
- 
-     public static enum AnimationStatus {

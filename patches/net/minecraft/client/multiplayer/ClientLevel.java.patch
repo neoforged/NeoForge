@@ -17,11 +17,10 @@
  
      public void handleBlockChangedAck(int p_233652_) {
          this.blockStatePredictionHandler.endPredictionsUpTo(p_233652_, this);
-@@ -191,6 +_,8 @@
+@@ -191,6 +_,7 @@
          this.serverSimulationDistance = p_205510_;
          this.updateSkyBrightness();
          this.prepareWeather();
-+        this.gatherCapabilities();
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(this));
      }
  

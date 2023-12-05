@@ -5,17 +5,11 @@
 
 package net.neoforged.neoforge.fluids.capability.templates;
 
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * FluidHandlerItemStackSimple is a template capability provider for ItemStacks.
@@ -23,10 +17,8 @@ import org.jetbrains.annotations.Nullable;
  *
  * This implementation only allows item containers to be fully filled or emptied, similar to vanilla buckets.
  */
-public class FluidHandlerItemStackSimple implements IFluidHandlerItem, ICapabilityProvider {
+public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
     public static final String FLUID_NBT_KEY = "Fluid";
-
-    private final LazyOptional<IFluidHandlerItem> holder = LazyOptional.of(() -> this);
 
     @NotNull
     protected ItemStack container;
@@ -164,12 +156,6 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem, ICapabili
      */
     protected void setContainerToEmpty() {
         container.removeTagKey(FLUID_NBT_KEY);
-    }
-
-    @Override
-    @NotNull
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing) {
-        return Capabilities.FLUID_HANDLER_ITEM.orEmpty(capability, holder);
     }
 
     /**

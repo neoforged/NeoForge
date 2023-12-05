@@ -417,7 +417,7 @@
          this.awardStat(Stats.ITEM_USED.get(p_36186_.getItem()));
          p_36185_.playSound(
              null, this.getX(), this.getY(), this.getZ(), SoundEvents.PLAYER_BURP, SoundSource.PLAYERS, 0.5F, p_36185_.random.nextFloat() * 0.1F + 0.9F
-@@ -2108,5 +_,63 @@
+@@ -2108,5 +_,39 @@
          public Component getMessage() {
              return this.message;
          }
@@ -438,30 +438,6 @@
 +     */
 +    public void refreshDisplayName() {
 +        this.displayname = net.neoforged.neoforge.event.EventHooks.getPlayerDisplayName(this, this.getName());
-+    }
-+
-+    private final net.neoforged.neoforge.common.util.LazyOptional<net.neoforged.neoforge.items.IItemHandler>
-+            playerMainHandler = net.neoforged.neoforge.common.util.LazyOptional.of(
-+                    () -> new net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper(inventory));
-+
-+    private final net.neoforged.neoforge.common.util.LazyOptional<net.neoforged.neoforge.items.IItemHandler>
-+            playerEquipmentHandler = net.neoforged.neoforge.common.util.LazyOptional.of(
-+                    () -> new net.neoforged.neoforge.items.wrapper.CombinedInvWrapper(
-+                            new net.neoforged.neoforge.items.wrapper.PlayerArmorInvWrapper(inventory),
-+                            new net.neoforged.neoforge.items.wrapper.PlayerOffhandInvWrapper(inventory)));
-+
-+    private final net.neoforged.neoforge.common.util.LazyOptional<net.neoforged.neoforge.items.IItemHandler>
-+            playerJoinedHandler = net.neoforged.neoforge.common.util.LazyOptional.of(
-+                    () -> new net.neoforged.neoforge.items.wrapper.PlayerInvWrapper(inventory));
-+
-+    @Override
-+    public <T> net.neoforged.neoforge.common.util.LazyOptional<T> getCapability(net.neoforged.neoforge.common.capabilities.Capability<T> capability, @Nullable Direction facing) {
-+        if (this.isAlive() && capability == net.neoforged.neoforge.common.capabilities.Capabilities.ITEM_HANDLER) {
-+            if (facing == null) return playerJoinedHandler.cast();
-+            else if (facing.getAxis().isVertical()) return playerMainHandler.cast();
-+            else if (facing.getAxis().isHorizontal()) return playerEquipmentHandler.cast();
-+        }
-+        return super.getCapability(capability, facing);
 +    }
 +
 +    /**

@@ -7,7 +7,6 @@ package net.neoforged.neoforge.debug.misc;
 
 import java.util.List;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestGenerator;
@@ -27,10 +26,8 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -40,7 +37,6 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(GameTestTest.MODID)
@@ -54,24 +50,28 @@ public class GameTestTest {
             () -> new EnergyBlock(Properties.of().mapColor(MapColor.STONE)));
     @SuppressWarnings("unused")
     private static final DeferredItem<BlockItem> ENERGY_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(ENERGY_BLOCK);
-    private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> ENERGY_BLOCK_ENTITY = BLOCK_ENTITIES.register("energy",
+    private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnergyBlockEntity>> ENERGY_BLOCK_ENTITY = BLOCK_ENTITIES.register("energy",
             () -> BlockEntityType.Builder.of(EnergyBlockEntity::new, ENERGY_BLOCK.get()).build(null));
 
-    public GameTestTest() {
+    public GameTestTest(IEventBus modBus) {
         if (ENABLED) {
-            IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
             modBus.register(this);
 
             BLOCKS.register(modBus);
             ITEMS.register(modBus);
             BLOCK_ENTITIES.register(modBus);
             modBus.addListener(this::addCreative);
+            modBus.addListener(this::registerCaps);
         }
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
             event.accept(ENERGY_BLOCK_ITEM);
+    }
+
+    private void registerCaps(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ENERGY_BLOCK_ENTITY.get(), (be, side) -> be.energyStorage);
     }
 
     @SubscribeEvent
@@ -163,13 +163,16 @@ public class GameTestTest {
         helper.setBlock(energyPos, ENERGY_BLOCK.get());
 
         // Queries the energy capability
-        LazyOptional<IEnergyStorage> energyHolder = helper.getBlockEntity(energyPos).getCapability(Capabilities.ENERGY);
+        IEnergyStorage energyStorage = helper.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, helper.absolutePos(energyPos), null);
+        if (energyStorage == null) {
+            helper.fail("Expected energy storage", energyPos);
+        }
 
         // Adds 2000 FE, but our energy storage can only hold 1000 FE
-        energyHolder.ifPresent(energyStorage -> energyStorage.receiveEnergy(2000, false));
+        energyStorage.receiveEnergy(2000, false);
 
         // Fails test if stored energy is not equal to 1000 FE
-        int energy = energyHolder.map(IEnergyStorage::getEnergyStored).orElse(0);
+        int energy = energyStorage.getEnergyStored();
         int target = 1000;
         if (energy != target) {
             helper.fail("Expected energy=" + target + " but it was energy=" + energy, energyPos);
@@ -192,19 +195,9 @@ public class GameTestTest {
 
     private static class EnergyBlockEntity extends BlockEntity {
         private final EnergyStorage energyStorage = new EnergyStorage(1000);
-        private final LazyOptional<IEnergyStorage> energyHolder = LazyOptional.of(() -> energyStorage);
 
         public EnergyBlockEntity(BlockPos pos, BlockState state) {
             super(ENERGY_BLOCK_ENTITY.get(), pos, state);
-        }
-
-        @NotNull
-        @Override
-        public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing) {
-            if (capability == Capabilities.ENERGY)
-                return energyHolder.cast();
-
-            return super.getCapability(capability, facing);
         }
     }
 }
