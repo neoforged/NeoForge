@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.oldtest.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
@@ -13,6 +14,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
@@ -35,7 +37,7 @@ public class ValidRailShapeTest {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
-    private static final DeferredBlock<Block> RAIL_SLOPE_BLOCK = BLOCKS.register("rail_slope", RailSlopeBlock::new);
+    private static final DeferredBlock<Block> RAIL_SLOPE_BLOCK = BLOCKS.registerBlock("rail_slope", RailSlopeBlock::new, Properties.of());
     private static final DeferredItem<BlockItem> RAIL_SLOPE_ITEM = ITEMS.registerSimpleBlockItem(RAIL_SLOPE_BLOCK);
 
     public ValidRailShapeTest() {
@@ -47,10 +49,11 @@ public class ValidRailShapeTest {
     }
 
     private static class RailSlopeBlock extends BaseRailBlock {
+        public static final MapCodec<RailSlopeBlock> CODEC = simpleCodec(RailSlopeBlock::new);
         private static final EnumProperty<RailShape> ASCENDING_RAIL_SHAPE = EnumProperty.create("shape", RailShape.class, RailShape::isAscending);
 
-        protected RailSlopeBlock() {
-            super(true, Properties.of().noCollission().strength(0.7F).sound(SoundType.METAL));
+        protected RailSlopeBlock(Properties properties) {
+            super(true, properties.noCollission().strength(0.7F).sound(SoundType.METAL));
         }
 
         @Override
@@ -73,6 +76,11 @@ public class ValidRailShapeTest {
             return defaultBlockState()
                     .setValue(ASCENDING_RAIL_SHAPE, shape)
                     .setValue(BaseRailBlock.WATERLOGGED, fluid.getType() == Fluids.WATER);
+        }
+
+        @Override
+        protected MapCodec<RailSlopeBlock> codec() {
+            return CODEC;
         }
 
         @Override

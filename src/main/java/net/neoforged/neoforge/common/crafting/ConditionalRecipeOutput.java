@@ -6,11 +6,14 @@
 package net.neoforged.neoforge.common.crafting;
 
 import net.minecraft.advancements.Advancement;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Recipe;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Wrapper around a {@link RecipeOutput} that adds conditions to all received recipes.
@@ -32,7 +35,7 @@ public class ConditionalRecipeOutput implements RecipeOutput {
     }
 
     @Override
-    public void accept(FinishedRecipe finishedRecipe, ICondition... conditions) {
+    public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
         ICondition[] innerConditions;
         if (conditions.length == 0) {
             innerConditions = this.conditions;
@@ -41,7 +44,6 @@ public class ConditionalRecipeOutput implements RecipeOutput {
         } else {
             innerConditions = ArrayUtils.addAll(this.conditions, conditions);
         }
-
-        inner.accept(finishedRecipe, innerConditions);
+        inner.accept(id, recipe, advancement, innerConditions);
     }
 }

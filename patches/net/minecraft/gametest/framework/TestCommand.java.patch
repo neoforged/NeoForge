@@ -1,11 +1,21 @@
 --- a/net/minecraft/gametest/framework/TestCommand.java
 +++ b/net/minecraft/gametest/framework/TestCommand.java
-@@ -315,7 +_,7 @@
+@@ -341,7 +_,7 @@
  
-    private static void runTest(ServerLevel p_127930_, BlockPos p_127931_, @Nullable MultipleTestTracker p_127932_) {
-       StructureBlockEntity structureblockentity = (StructureBlockEntity)p_127930_.getBlockEntity(p_127931_);
--      String s = structureblockentity.getStructurePath();
-+      String s = structureblockentity.getMetaData().isBlank() ? structureblockentity.getStructureName() : structureblockentity.getMetaData(); // Neo: use the metadata for the structure name
-       TestFunction testfunction = GameTestRegistry.getTestFunction(s);
-       GameTestInfo gametestinfo = new GameTestInfo(testfunction, structureblockentity.getRotation(), p_127930_);
-       if (p_127932_ != null) {
+     private static void runTest(ServerLevel p_127930_, BlockPos p_127931_, @Nullable MultipleTestTracker p_127932_, boolean p_304927_) {
+         StructureBlockEntity structureblockentity = (StructureBlockEntity)p_127930_.getBlockEntity(p_127931_);
+-        String s = structureblockentity.getMetaData();
++        String s = structureblockentity.getMetaData().isBlank() ? structureblockentity.getStructureName() : structureblockentity.getMetaData(); // Neo: use the metadata for the structure name
+         Optional<TestFunction> optional = GameTestRegistry.findTestFunction(s);
+         if (optional.isEmpty()) {
+             say(p_127930_, "Test function for test " + s + " could not be found", ChatFormatting.RED);
+@@ -544,8 +_,8 @@
+     }
+ 
+     private static int importTestStructure(CommandSourceStack p_128016_, String p_128017_) {
+-        Path path = Paths.get(StructureUtils.testStructuresDir, p_128017_ + ".snbt");
+         ResourceLocation resourcelocation = new ResourceLocation(p_128017_);
++        Path path = Paths.get(StructureUtils.testStructuresDir, resourcelocation.getPath() + ".snbt");
+         Path path1 = p_128016_.getLevel().getStructureManager().getPathToGeneratedStructure(resourcelocation, ".nbt");
+ 
+         try {

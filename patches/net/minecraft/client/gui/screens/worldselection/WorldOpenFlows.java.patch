@@ -1,47 +1,56 @@
 --- a/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
 +++ b/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
-@@ -216,13 +_,23 @@
-    }
+@@ -64,7 +_,7 @@
+ import org.slf4j.Logger;
  
-    private void doLoadLevel(Screen p_233146_, String p_233147_, boolean p_233148_, boolean p_233149_) {
-+      // FORGE: Patch in overload to reduce further patching
-+      this.doLoadLevel(p_233146_, p_233147_, p_233148_, p_233149_, false);
-+   }
-+
-+   // FORGE: Patch in confirmExperimentalWarning which confirms the experimental warning when true
-+   private void doLoadLevel(Screen p_233146_, String p_233147_, boolean p_233148_, boolean p_233149_, boolean confirmExperimentalWarning) {
-       LevelStorageSource.LevelStorageAccess levelstoragesource$levelstorageaccess = this.createWorldAccess(p_233147_);
-       if (levelstoragesource$levelstorageaccess != null) {
-          PackRepository packrepository = ServerPacksSource.createPackRepository(levelstoragesource$levelstorageaccess);
+ @OnlyIn(Dist.CLIENT)
+-public class WorldOpenFlows {
++public class WorldOpenFlows { // TODO 1.20.3 PORTING: re-add the autoconfirm code
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final UUID WORLD_PACK_ID = UUID.fromString("640a6a92-b6cb-48a0-b391-831586500359");
+     private final Minecraft minecraft;
+@@ -338,12 +_,21 @@
+     }
  
-          WorldStem worldstem;
-          try {
-+            levelstoragesource$levelstorageaccess.readAdditionalLevelSaveData(); // Read extra (e.g. modded) data from the world before creating it
-             worldstem = this.loadWorldStem(levelstoragesource$levelstorageaccess, p_233148_, packrepository);
+     private void loadLevel(LevelStorageSource.LevelStorageAccess p_307362_, Dynamic<?> p_307494_, boolean p_307298_, boolean p_307581_, Runnable p_307336_) {
++        // NEOFORGE: Patch in overload to reduce further patching
++        loadLevel(p_307362_, p_307494_, p_307298_, p_307581_, p_307336_, false);
++    }
++    private void loadLevel(LevelStorageSource.LevelStorageAccess p_307362_, Dynamic<?> p_307494_, boolean p_307298_, boolean p_307581_, Runnable p_307336_, boolean confirmExperimentalWarning) {
+         this.minecraft.forceSetScreen(new GenericDirtMessageScreen(Component.translatable("selectWorld.resource_load")));
+         PackRepository packrepository = ServerPacksSource.createPackRepository(p_307362_);
+ 
+         WorldStem worldstem;
+         try {
++            p_307362_.readAdditionalLevelSaveData(false); // Read extra (e.g. modded) data from the world before creating it
+             worldstem = this.loadWorldStem(p_307494_, p_307298_, packrepository);
++            // Forge: Skip confirmation if it has been done already for this world
 +            if (confirmExperimentalWarning && worldstem.worldData() instanceof PrimaryLevelData pld) {
-+               pld.withConfirmedWarning(true);
++                pld.withConfirmedWarning(true);
 +            }
-          } catch (Exception exception) {
+         } catch (Exception exception) {
              LOGGER.warn("Failed to load level data or datapacks, can't proceed with server load", (Throwable)exception);
-             if (!p_233148_) {
-@@ -247,7 +_,9 @@
-          WorldData worlddata = worldstem.worldData();
-          boolean flag = worlddata.worldGenOptions().isOldCustomizedWorld();
-          boolean flag1 = worlddata.worldGenSettingsLifecycle() != Lifecycle.stable();
--         if (!p_233149_ || !flag && !flag1) {
-+         // Forge: Skip confirmation if it has been done already for this world
-+         boolean skipConfirmation = worlddata instanceof PrimaryLevelData pld && pld.hasConfirmedExperimentalWarning();
-+         if (skipConfirmation || !p_233149_ || !flag && !flag1) {
-             this.minecraft
-                .getDownloadedPackSource()
-                .loadBundledResourcePack(levelstoragesource$levelstorageaccess)
-@@ -270,7 +_,9 @@
-                   return null;
-                });
-          } else {
+             if (!p_307298_) {
+@@ -371,7 +_,8 @@
+         WorldData worlddata = worldstem.worldData();
+         boolean flag = worlddata.worldGenOptions().isOldCustomizedWorld();
+         boolean flag1 = worlddata.worldGenSettingsLifecycle() != Lifecycle.stable();
+-        if (!p_307581_ || !flag && !flag1) {
++        boolean skipConfirmation = worlddata instanceof PrimaryLevelData pld && pld.hasConfirmedExperimentalWarning();
++        if (skipConfirmation || !p_307581_ || !flag && !flag1) {
+             DownloadedPackSource downloadedpacksource = this.minecraft.getDownloadedPackSource();
+             this.loadBundledResourcePack(downloadedpacksource, p_307362_).thenApply(p_233177_ -> true).exceptionallyComposeAsync(p_233183_ -> {
+                 LOGGER.warn("Failed to load pack: ", p_233183_);
+@@ -390,10 +_,12 @@
+                 return null;
+             });
+         } else {
 +            if (flag) // Forge: For legacy world options, let vanilla handle it.
-             this.askForBackup(p_233146_, p_233147_, flag, () -> this.doLoadLevel(p_233146_, p_233147_, p_233148_, false));
-+            else net.neoforged.neoforge.client.ClientHooks.createWorldConfirmationScreen(() -> this.doLoadLevel(p_233146_, p_233147_, p_233148_, false, true));
+             this.askForBackup(p_307362_, flag, () -> this.loadLevel(p_307362_, p_307494_, p_307298_, false, p_307336_), () -> {
+                 p_307362_.safeClose();
+                 p_307336_.run();
+             });
++            else net.neoforged.neoforge.client.ClientHooks.createWorldConfirmationScreen(() -> this.loadLevel(p_307362_, p_307494_, p_307298_, false, p_307336_, true));
              worldstem.close();
-             safeCloseAccess(levelstoragesource$levelstorageaccess, p_233147_);
-          }
+         }
+     }

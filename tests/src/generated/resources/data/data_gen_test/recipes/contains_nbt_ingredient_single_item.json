@@ -11,6 +11,7 @@
     }
   ],
   "result": {
-    "item": "minecraft:iron_pickaxe"
+    "item": "minecraft:iron_pickaxe",
+    "nbt": "{Damage:0}"
   }
 }

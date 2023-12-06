@@ -1,19 +1,19 @@
 --- a/net/minecraft/client/multiplayer/ClientHandshakePacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientHandshakePacketListenerImpl.java
-@@ -180,7 +_,7 @@
-       if (this.serverData != null && this.serverData.isRealm()) {
-          this.minecraft.setScreen(new DisconnectedRealmsScreen(this.parent, CommonComponents.CONNECT_FAILED, p_104543_));
-       } else {
--         this.minecraft.setScreen(new DisconnectedScreen(this.parent, CommonComponents.CONNECT_FAILED, p_104543_));
-+         this.minecraft.setScreen(net.neoforged.neoforge.network.NetworkHooks.getModMismatchData(connection) != null ? new net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen(this.parent, CommonComponents.CONNECT_FAILED, p_104543_, net.neoforged.neoforge.network.NetworkHooks.getModMismatchData(connection)) : new DisconnectedScreen(this.parent, CommonComponents.CONNECT_FAILED, p_104543_));
-       }
-    }
+@@ -181,7 +_,7 @@
+         if (this.serverData != null && this.serverData.isRealm()) {
+             this.minecraft.setScreen(new DisconnectedRealmsScreen(this.parent, CommonComponents.CONNECT_FAILED, p_104543_));
+         } else {
+-            this.minecraft.setScreen(new DisconnectedScreen(this.parent, CommonComponents.CONNECT_FAILED, p_104543_));
++            this.minecraft.setScreen(net.neoforged.neoforge.network.NetworkHooks.getModMismatchData(connection) != null ? new net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen(this.parent, CommonComponents.CONNECT_FAILED, p_104543_, net.neoforged.neoforge.network.NetworkHooks.getModMismatchData(connection)) : new DisconnectedScreen(this.parent, CommonComponents.CONNECT_FAILED, p_104543_));
+         }
+     }
  
-@@ -203,6 +_,7 @@
+@@ -204,6 +_,7 @@
  
-    @Override
-    public void handleCustomQuery(ClientboundCustomQueryPacket p_104545_) {
-+      if (p_104545_.payload() instanceof net.neoforged.neoforge.network.ICustomQueryPayloadWithBuffer payload && net.neoforged.neoforge.network.NetworkHooks.onCustomQuery(p_104545_, payload, this.connection)) return;
-       this.updateStatus.accept(Component.translatable("connect.negotiating"));
-       this.connection.send(new ServerboundCustomQueryAnswerPacket(p_104545_.transactionId(), null));
-    }
+     @Override
+     public void handleCustomQuery(ClientboundCustomQueryPacket p_104545_) {
++        if (p_104545_.payload() instanceof net.neoforged.neoforge.network.ICustomQueryPayloadWithBuffer payload && net.neoforged.neoforge.network.NetworkHooks.onCustomQuery(p_104545_, payload, this.connection)) return;
+         this.updateStatus.accept(Component.translatable("connect.negotiating"));
+         this.connection.send(new ServerboundCustomQueryAnswerPacket(p_104545_.transactionId(), null));
+     }

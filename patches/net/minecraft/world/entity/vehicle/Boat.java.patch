@@ -4,62 +4,62 @@
  import net.minecraft.world.phys.shapes.VoxelShape;
  import org.joml.Vector3f;
  
--public class Boat extends Entity implements VariantHolder<Boat.Type> {
-+public class Boat extends Entity implements net.neoforged.neoforge.common.extensions.IBoatExtension {
-    private static final EntityDataAccessor<Integer> DATA_ID_HURT = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> DATA_ID_HURTDIR = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Float> DATA_ID_DAMAGE = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.FLOAT);
-@@ -502,7 +_,7 @@
-             for(int i2 = i1; i2 < j1; ++i2) {
-                blockpos$mutableblockpos.set(l1, k1, i2);
-                FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
--               if (fluidstate.is(FluidTags.WATER)) {
-+               if (this.canBoatInFluid(fluidstate)) {
-                   f = Math.max(f, fluidstate.getHeight(this.level(), blockpos$mutableblockpos));
-                }
+-public class Boat extends VehicleEntity implements VariantHolder<Boat.Type> {
++public class Boat extends VehicleEntity implements net.neoforged.neoforge.common.extensions.IBoatExtension {
+     private static final EntityDataAccessor<Integer> DATA_ID_TYPE = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.INT);
+     private static final EntityDataAccessor<Boolean> DATA_ID_PADDLE_LEFT = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.BOOLEAN);
+     private static final EntityDataAccessor<Boolean> DATA_ID_PADDLE_RIGHT = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.BOOLEAN);
+@@ -476,7 +_,7 @@
+                 for(int i2 = i1; i2 < j1; ++i2) {
+                     blockpos$mutableblockpos.set(l1, k1, i2);
+                     FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
+-                    if (fluidstate.is(FluidTags.WATER)) {
++                    if (this.canBoatInFluid(fluidstate)) {
+                         f = Math.max(f, fluidstate.getHeight(this.level(), blockpos$mutableblockpos));
+                     }
  
-@@ -548,7 +_,7 @@
-                            voxelshape,
-                            BooleanOp.AND
-                         )) {
--                        f += blockstate.getBlock().getFriction();
-+                        f += blockstate.getFriction(this.level(), blockpos$mutableblockpos, this);
-                         ++k1;
-                      }
-                   }
-@@ -577,7 +_,7 @@
-             for(int i2 = i1; i2 < j1; ++i2) {
-                blockpos$mutableblockpos.set(k1, l1, i2);
-                FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
--               if (fluidstate.is(FluidTags.WATER)) {
-+               if (this.canBoatInFluid(fluidstate)) {
-                   float f = (float)l1 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos);
-                   this.waterLevel = Math.max((double)f, this.waterLevel);
-                   flag |= aabb.minY < (double)f;
-@@ -607,7 +_,7 @@
-             for(int i2 = i1; i2 < j1; ++i2) {
-                blockpos$mutableblockpos.set(k1, l1, i2);
-                FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
--               if (fluidstate.is(FluidTags.WATER)
-+               if (this.canBoatInFluid(fluidstate)
-                   && d0 < (double)((float)blockpos$mutableblockpos.getY() + fluidstate.getHeight(this.level(), blockpos$mutableblockpos))) {
-                   if (!fluidstate.isSource()) {
-                      return Boat.Status.UNDER_FLOWING_WATER;
-@@ -815,7 +_,7 @@
+@@ -522,7 +_,7 @@
+                                     voxelshape,
+                                     BooleanOp.AND
+                                 )) {
+-                                f += blockstate.getBlock().getFriction();
++                                f += blockstate.getFriction(this.level(), blockpos$mutableblockpos, this);
+                                 ++k1;
+                             }
+                         }
+@@ -551,7 +_,7 @@
+                 for(int i2 = i1; i2 < j1; ++i2) {
+                     blockpos$mutableblockpos.set(k1, l1, i2);
+                     FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
+-                    if (fluidstate.is(FluidTags.WATER)) {
++                    if (this.canBoatInFluid(fluidstate)) {
+                         float f = (float)l1 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos);
+                         this.waterLevel = Math.max((double)f, this.waterLevel);
+                         flag |= aabb.minY < (double)f;
+@@ -581,7 +_,7 @@
+                 for(int i2 = i1; i2 < j1; ++i2) {
+                     blockpos$mutableblockpos.set(k1, l1, i2);
+                     FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
+-                    if (fluidstate.is(FluidTags.WATER)
++                    if (this.canBoatInFluid(fluidstate)
+                         && d0 < (double)((float)blockpos$mutableblockpos.getY() + fluidstate.getHeight(this.level(), blockpos$mutableblockpos))) {
+                         if (!fluidstate.isSource()) {
+                             return Boat.Status.UNDER_FLOWING_WATER;
+@@ -795,7 +_,7 @@
+                 }
+ 
+                 this.resetFallDistance();
+-            } else if (!this.level().getFluidState(this.blockPosition().below()).is(FluidTags.WATER) && p_38307_ < 0.0) {
++            } else if (!this.canBoatInFluid(this.level().getFluidState(this.blockPosition().below())) && p_38307_ < 0.0D) {
+                 this.fallDistance -= (float)p_38307_;
              }
+         }
+@@ -827,7 +_,7 @@
  
-             this.resetFallDistance();
--         } else if (!this.level().getFluidState(this.blockPosition().below()).is(FluidTags.WATER) && p_38307_ < 0.0) {
-+         } else if (!this.canBoatInFluid(this.level().getFluidState(this.blockPosition().below())) && p_38307_ < 0.0D) {
-             this.fallDistance -= (float)p_38307_;
-          }
-       }
-@@ -871,7 +_,7 @@
+     @Override
+     protected boolean canAddPassenger(Entity p_38390_) {
+-        return this.getPassengers().size() < this.getMaxPassengers() && !this.isEyeInFluid(FluidTags.WATER);
++        return this.getPassengers().size() < this.getMaxPassengers() && !this.canBoatInFluid(this.getEyeInFluidType());
+     }
  
-    @Override
-    protected boolean canAddPassenger(Entity p_38390_) {
--      return this.getPassengers().size() < this.getMaxPassengers() && !this.isEyeInFluid(FluidTags.WATER);
-+      return this.getPassengers().size() < this.getMaxPassengers() && !this.canBoatInFluid(this.getEyeInFluidType());
-    }
- 
-    protected int getMaxPassengers() {
+     protected int getMaxPassengers() {

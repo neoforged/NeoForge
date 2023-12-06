@@ -1,18 +1,18 @@
 --- a/net/minecraft/client/multiplayer/ClientChunkCache.java
 +++ b/net/minecraft/client/multiplayer/ClientChunkCache.java
 @@ -63,6 +_,7 @@
-          int i = this.storage.getIndex(p_295783_.x, p_295783_.z);
-          LevelChunk levelchunk = this.storage.getChunk(i);
-          if (isValidChunk(levelchunk, p_295783_.x, p_295783_.z)) {
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Unload(levelchunk));
-             this.storage.replace(i, levelchunk, null);
-          }
-       }
-@@ -119,6 +_,7 @@
-          }
+             int i = this.storage.getIndex(p_295783_.x, p_295783_.z);
+             LevelChunk levelchunk = this.storage.getChunk(i);
+             if (isValidChunk(levelchunk, p_295783_.x, p_295783_.z)) {
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Unload(levelchunk));
+                 this.storage.replace(i, levelchunk, null);
+             }
+         }
+@@ -123,6 +_,7 @@
+             }
  
-          this.level.onChunkLoaded(chunkpos);
-+         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Load(levelchunk, false));
-          return levelchunk;
-       }
-    }
+             this.level.onChunkLoaded(chunkpos);
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Load(levelchunk, false));
+             return levelchunk;
+         }
+     }

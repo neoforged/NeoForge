@@ -30,6 +30,5 @@
     "recipes": [
       "data_gen_test:compound_ingredient_only_vanilla"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

@@ -1,59 +1,59 @@
 --- a/net/minecraft/client/model/HumanoidModel.java
 +++ b/net/minecraft/client/model/HumanoidModel.java
-@@ -302,6 +_,8 @@
-          case TOOT_HORN:
-             this.rightArm.xRot = Mth.clamp(this.head.xRot, -1.2F, 1.2F) - 1.4835298F;
-             this.rightArm.yRot = this.head.yRot - (float) (Math.PI / 6);
-+         default:
-+            this.rightArmPose.applyTransform(this, p_102876_, net.minecraft.world.entity.HumanoidArm.RIGHT);
-       }
-    }
+@@ -306,6 +_,8 @@
+             case TOOT_HORN:
+                 this.rightArm.xRot = Mth.clamp(this.head.xRot, -1.2F, 1.2F) - 1.4835298F;
+                 this.rightArm.yRot = this.head.yRot - (float) (Math.PI / 6);
++            default:
++                this.rightArmPose.applyTransform(this, p_102876_, net.minecraft.world.entity.HumanoidArm.RIGHT);
+         }
+     }
  
-@@ -345,6 +_,8 @@
-          case TOOT_HORN:
-             this.leftArm.xRot = Mth.clamp(this.head.xRot, -1.2F, 1.2F) - 1.4835298F;
-             this.leftArm.yRot = this.head.yRot + (float) (Math.PI / 6);
-+         default:
-+            this.leftArmPose.applyTransform(this, p_102879_, net.minecraft.world.entity.HumanoidArm.LEFT);
-       }
-    }
+@@ -348,6 +_,8 @@
+             case TOOT_HORN:
+                 this.leftArm.xRot = Mth.clamp(this.head.xRot, -1.2F, 1.2F) - 1.4835298F;
+                 this.leftArm.yRot = this.head.yRot + (float) (Math.PI / 6);
++            default:
++                this.leftArmPose.applyTransform(this, p_102879_, net.minecraft.world.entity.HumanoidArm.LEFT);
+         }
+     }
  
-@@ -438,7 +_,7 @@
-    }
+@@ -446,7 +_,7 @@
+     }
  
-    @OnlyIn(Dist.CLIENT)
--   public static enum ArmPose {
-+   public static enum ArmPose implements net.neoforged.neoforge.common.IExtensibleEnum {
-       EMPTY(false),
-       ITEM(false),
-       BLOCK(false),
-@@ -454,10 +_,29 @@
+     @OnlyIn(Dist.CLIENT)
+-    public static enum ArmPose {
++    public static enum ArmPose implements net.neoforged.neoforge.common.IExtensibleEnum {
+         EMPTY(false),
+         ITEM(false),
+         BLOCK(false),
+@@ -462,10 +_,29 @@
  
-       private ArmPose(boolean p_102896_) {
-          this.twoHanded = p_102896_;
-+         this.forgeArmPose = null;
-       }
+         private ArmPose(boolean p_102896_) {
+             this.twoHanded = p_102896_;
++            this.forgeArmPose = null;
+         }
  
-       public boolean isTwoHanded() {
-          return this.twoHanded;
-       }
-+      // FORGE START
-+      @javax.annotation.Nullable
-+      private final net.neoforged.neoforge.client.IArmPoseTransformer forgeArmPose;
+         public boolean isTwoHanded() {
+             return this.twoHanded;
+         }
++        // FORGE START
++        @javax.annotation.Nullable
++        private final net.neoforged.neoforge.client.IArmPoseTransformer forgeArmPose;
 +
-+      private ArmPose(boolean twoHanded, @javax.annotation.Nonnull net.neoforged.neoforge.client.IArmPoseTransformer forgeArmPose) {
-+         this.twoHanded = twoHanded;
-+         com.google.common.base.Preconditions.checkNotNull(forgeArmPose, "Cannot create new ArmPose with null transformer!");
-+         this.forgeArmPose = forgeArmPose;
-+      }
++        private ArmPose(boolean twoHanded, @javax.annotation.Nonnull net.neoforged.neoforge.client.IArmPoseTransformer forgeArmPose) {
++            this.twoHanded = twoHanded;
++            com.google.common.base.Preconditions.checkNotNull(forgeArmPose, "Cannot create new ArmPose with null transformer!");
++            this.forgeArmPose = forgeArmPose;
++        }
 +
-+      public static ArmPose create(String name, boolean twoHanded, @javax.annotation.Nonnull net.neoforged.neoforge.client.IArmPoseTransformer forgeArmPose) {
-+         throw new IllegalStateException("Enum not extended");
-+      }
++        public static ArmPose create(String name, boolean twoHanded, @javax.annotation.Nonnull net.neoforged.neoforge.client.IArmPoseTransformer forgeArmPose) {
++            throw new IllegalStateException("Enum not extended");
++        }
 +
-+      public <T extends LivingEntity> void applyTransform(HumanoidModel<T> model, T entity, net.minecraft.world.entity.HumanoidArm arm) {
-+         if (this.forgeArmPose != null) this.forgeArmPose.applyTransform(model, entity, arm);
-+      }
-+      // FORGE END
-    }
++        public <T extends LivingEntity> void applyTransform(HumanoidModel<T> model, T entity, net.minecraft.world.entity.HumanoidArm arm) {
++            if (this.forgeArmPose != null) this.forgeArmPose.applyTransform(model, entity, arm);
++        }
++        // FORGE END
+     }
  }

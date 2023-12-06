@@ -37,6 +37,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
@@ -206,7 +207,7 @@ public interface IBlockStateExtension {
      * @param target The full target the player is looking at
      * @return A ItemStack to add to the player's inventory, empty itemstack if nothing should be added.
      */
-    default ItemStack getCloneItemStack(HitResult target, BlockGetter level, BlockPos pos, Player player) {
+    default ItemStack getCloneItemStack(HitResult target, LevelReader level, BlockPos pos, Player player) {
         return self().getBlock().getCloneItemStack(self(), target, level, pos, player);
     }
 
@@ -349,7 +350,10 @@ public interface IBlockStateExtension {
     }
 
     /**
-     * Called when a tile entity on a side of this block changes is created or is destroyed.
+     * Called when a block entity on a side of this block changes, is created, or is destroyed.
+     *
+     * <p>This method is not suitable for listening to capability invalidations.
+     * For capability invalidations specifically, use {@link BlockCapabilityCache} instead.
      * 
      * @param level    The level
      * @param pos      Block position in level

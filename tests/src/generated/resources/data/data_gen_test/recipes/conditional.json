@@ -35,6 +35,5 @@
   "result": {
     "count": 64,
     "item": "minecraft:diamond_block"
-  },
-  "show_notification": true
+  }
 }

@@ -8,9 +8,7 @@ package net.neoforged.neoforge.oldtest.item;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -22,8 +20,8 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.fluids.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -42,17 +40,21 @@ public class CustomFluidContainerTest {
 
     public static final DeferredItem<Item> CUSTOM_FLUID_CONTAINER = ITEMS.register("custom_fluid_container", () -> new CustomFluidContainer((new Item.Properties()).stacksTo(1)));
 
-    public CustomFluidContainerTest() {
+    public CustomFluidContainerTest(IEventBus modEventBus) {
         if (ENABLED) {
-            IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
             ITEMS.register(modEventBus);
             modEventBus.addListener(this::addCreative);
+            modEventBus.addListener(this::registerCaps);
         }
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
             event.accept(CUSTOM_FLUID_CONTAINER);
+    }
+
+    private void registerCaps(RegisterCapabilitiesEvent event) {
+        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidHandlerItemStackSimple(stack, FluidType.BUCKET_VOLUME), CUSTOM_FLUID_CONTAINER.get());
     }
 
     /**
@@ -104,11 +106,5 @@ public class CustomFluidContainerTest {
             }
             return super.use(level, player, hand);
         }
-
-        @Override
-        public ICapabilityProvider initCapabilities(@Nonnull ItemStack stack, @Nullable CompoundTag nbt) {
-            return new FluidHandlerItemStackSimple(stack, FluidType.BUCKET_VOLUME);
-        }
-
     }
 }

@@ -6,21 +6,21 @@
  
 -public class MenuType<T extends AbstractContainerMenu> implements FeatureElement {
 +public class MenuType<T extends AbstractContainerMenu> implements FeatureElement, net.neoforged.neoforge.common.extensions.IMenuTypeExtension<T> {
-    public static final MenuType<ChestMenu> GENERIC_9x1 = register("generic_9x1", ChestMenu::oneRow);
-    public static final MenuType<ChestMenu> GENERIC_9x2 = register("generic_9x2", ChestMenu::twoRows);
-    public static final MenuType<ChestMenu> GENERIC_9x3 = register("generic_9x3", ChestMenu::threeRows);
-@@ -51,6 +_,14 @@
+     public static final MenuType<ChestMenu> GENERIC_9x1 = register("generic_9x1", ChestMenu::oneRow);
+     public static final MenuType<ChestMenu> GENERIC_9x2 = register("generic_9x2", ChestMenu::twoRows);
+     public static final MenuType<ChestMenu> GENERIC_9x3 = register("generic_9x3", ChestMenu::threeRows);
+@@ -52,6 +_,14 @@
  
-    public T create(int p_39986_, Inventory p_39987_) {
-       return this.constructor.create(p_39986_, p_39987_);
-+   }
+     public T create(int p_39986_, Inventory p_39987_) {
+         return this.constructor.create(p_39986_, p_39987_);
++    }
 +
-+   @Override
-+   public T create(int windowId, Inventory playerInv, net.minecraft.network.FriendlyByteBuf extraData) {
-+      if (this.constructor instanceof net.neoforged.neoforge.network.IContainerFactory) {
-+         return ((net.neoforged.neoforge.network.IContainerFactory<T>) this.constructor).create(windowId, playerInv, extraData);
-+      }
-+      return create(windowId, playerInv);
-    }
++    @Override
++    public T create(int windowId, Inventory playerInv, net.minecraft.network.FriendlyByteBuf extraData) {
++        if (this.constructor instanceof net.neoforged.neoforge.network.IContainerFactory) {
++            return ((net.neoforged.neoforge.network.IContainerFactory<T>) this.constructor).create(windowId, playerInv, extraData);
++        }
++        return create(windowId, playerInv);
+     }
  
-    @Override
+     @Override

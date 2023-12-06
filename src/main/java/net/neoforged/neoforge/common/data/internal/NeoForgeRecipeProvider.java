@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
-import com.google.gson.JsonObject;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.advancements.Advancement;
@@ -14,10 +13,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.packs.VanillaRecipeProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -28,6 +24,10 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Ingredient.ItemValue;
 import net.minecraft.world.item.crafting.Ingredient.TagValue;
 import net.minecraft.world.item.crafting.Ingredient.Value;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
@@ -93,10 +93,10 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
 
         super.buildRecipes(new RecipeOutput() {
             @Override
-            public void accept(FinishedRecipe p_301033_, ICondition... conditions) {
-                FinishedRecipe modified = enhance(p_301033_);
+            public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
+                Recipe<?> modified = enhance(id, recipe);
                 if (modified != null)
-                    recipeOutput.accept(modified);
+                    recipeOutput.accept(id, modified, null, conditions);
             }
 
             @Override
@@ -107,34 +107,26 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     }
 
     @Nullable
-    private FinishedRecipe enhance(FinishedRecipe vanilla) {
-        if (vanilla instanceof ShapelessRecipeBuilder.Result shapeless)
-            return enhance(shapeless);
-        if (vanilla instanceof ShapedRecipeBuilder.Result shaped)
-            return enhance(shaped);
+    private Recipe<?> enhance(ResourceLocation id, Recipe<?> vanilla) {
+        if (vanilla instanceof ShapelessRecipe shapeless)
+            return enhance(id, shapeless);
+        if (vanilla instanceof ShapedRecipe shaped)
+            return enhance(id, shaped);
         return null;
     }
 
     @Nullable
-    private FinishedRecipe enhance(ShapelessRecipeBuilder.Result vanilla) {
-        List<Ingredient> ingredients = ObfuscationReflectionHelper.getPrivateValue(ShapelessRecipeBuilder.Result.class, vanilla, "ingredients");
-        if (ingredients == null) throw new IllegalStateException(ShapelessRecipeBuilder.Result.class.getName() + " has no field ingredients");
+    private ShapelessRecipe enhance(ResourceLocation id, ShapelessRecipe vanilla) {
+        List<Ingredient> ingredients = vanilla.getIngredients();
         boolean modified = false;
         for (int x = 0; x < ingredients.size(); x++) {
-            Ingredient ing = enhance(vanilla.id(), ingredients.get(x));
+            Ingredient ing = enhance(id, ingredients.get(x));
             if (ing != null) {
                 ingredients.set(x, ing);
                 modified = true;
             }
         }
         return modified ? vanilla : null;
-    }
-
-    @Nullable
-    @Override
-    protected CompletableFuture<?> saveAdvancement(CachedOutput output, FinishedRecipe recipe, JsonObject json) {
-        // NOOP - We don't replace any of the advancement things yet...
-        return null;
     }
 
     @Override
@@ -144,12 +136,14 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     }
 
     @Nullable
-    private FinishedRecipe enhance(ShapedRecipeBuilder.Result vanilla) {
-        Map<Character, Ingredient> ingredients = ObfuscationReflectionHelper.getPrivateValue(ShapedRecipeBuilder.Result.class, vanilla, "key");
-        if (ingredients == null) throw new IllegalStateException(ShapedRecipeBuilder.Result.class.getName() + " has no field key");
+    private ShapedRecipe enhance(ResourceLocation id, ShapedRecipe vanilla) {
+        ShapedRecipePattern pattern = ObfuscationReflectionHelper.getPrivateValue(ShapedRecipe.class, vanilla, "pattern");
+        if (pattern == null) throw new IllegalStateException(ShapedRecipe.class.getName() + " has no field pattern");
+        ShapedRecipePattern.Data data = pattern.data().orElseThrow(() -> new IllegalArgumentException("recipe " + id + " does not have pattern data"));
+        Map<Character, Ingredient> ingredients = data.key();
         boolean modified = false;
         for (Character x : ingredients.keySet()) {
-            Ingredient ing = enhance(vanilla.id(), ingredients.get(x));
+            Ingredient ing = enhance(id, ingredients.get(x));
             if (ing != null) {
                 ingredients.put(x, ing);
                 modified = true;

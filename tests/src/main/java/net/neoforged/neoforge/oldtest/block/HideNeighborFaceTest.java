@@ -45,7 +45,7 @@ public class HideNeighborFaceTest {
 
     private static class GlassSlab extends SlabBlock {
         public GlassSlab() {
-            super(Properties.copy(Blocks.GLASS));
+            super(Properties.ofFullCopy(Blocks.GLASS));
         }
 
         @Override

@@ -1,14 +1,14 @@
 --- a/net/minecraft/world/item/FishingRodItem.java
 +++ b/net/minecraft/world/item/FishingRodItem.java
 @@ -64,4 +_,11 @@
-    public int getEnchantmentValue() {
-       return 1;
-    }
+     public int getEnchantmentValue() {
+         return 1;
+     }
 +
-+    /* ******************** FORGE START ******************** */
++     /* ******************** FORGE START ******************** */
 +
-+    @Override
-+   public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ToolAction toolAction) {
-+      return net.neoforged.neoforge.common.ToolActions.DEFAULT_FISHING_ROD_ACTIONS.contains(toolAction);
-+   }
++     @Override
++    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ToolAction toolAction) {
++        return net.neoforged.neoforge.common.ToolActions.DEFAULT_FISHING_ROD_ACTIONS.contains(toolAction);
++    }
  }

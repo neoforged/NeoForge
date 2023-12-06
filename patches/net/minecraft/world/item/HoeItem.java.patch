@@ -4,33 +4,33 @@
  import net.minecraft.world.level.gameevent.GameEvent;
  
  public class HoeItem extends DiggerItem {
-+   /**
-+    * @deprecated Forge: This map is patched out of vanilla code.
-+    * Listen to {@link net.neoforged.neoforge.event.level.BlockEvent.BlockToolModificationEvent}
-+    * or override {@link net.neoforged.neoforge.common.extensions.IBlockExtension#getToolModifiedState(BlockState, UseOnContext, net.neoforged.neoforge.common.ToolAction, boolean)}.
-+    */
-+   @Deprecated
-    protected static final Map<Block, Pair<Predicate<UseOnContext>, Consumer<UseOnContext>>> TILLABLES = Maps.newHashMap(
-       ImmutableMap.of(
-          Blocks.GRASS_BLOCK,
++    /**
++     * @deprecated Forge: This map is patched out of vanilla code.
++     * Listen to {@link net.neoforged.neoforge.event.level.BlockEvent.BlockToolModificationEvent}
++     * or override {@link net.neoforged.neoforge.common.extensions.IBlockExtension#getToolModifiedState(BlockState, UseOnContext, net.neoforged.neoforge.common.ToolAction, boolean)}.
++     */
++    @Deprecated
+     protected static final Map<Block, Pair<Predicate<UseOnContext>, Consumer<UseOnContext>>> TILLABLES = Maps.newHashMap(
+         ImmutableMap.of(
+             Blocks.GRASS_BLOCK,
 @@ -45,7 +_,8 @@
-    public InteractionResult useOn(UseOnContext p_41341_) {
-       Level level = p_41341_.getLevel();
-       BlockPos blockpos = p_41341_.getClickedPos();
--      Pair<Predicate<UseOnContext>, Consumer<UseOnContext>> pair = TILLABLES.get(level.getBlockState(blockpos).getBlock());
-+      BlockState toolModifiedState = level.getBlockState(blockpos).getToolModifiedState(p_41341_, net.neoforged.neoforge.common.ToolActions.HOE_TILL, false);
-+      Pair<Predicate<UseOnContext>, Consumer<UseOnContext>> pair = toolModifiedState == null ? null : Pair.of(ctx -> true, changeIntoState(toolModifiedState));
-       if (pair == null) {
-          return InteractionResult.PASS;
-       } else {
+     public InteractionResult useOn(UseOnContext p_41341_) {
+         Level level = p_41341_.getLevel();
+         BlockPos blockpos = p_41341_.getClickedPos();
+-        Pair<Predicate<UseOnContext>, Consumer<UseOnContext>> pair = TILLABLES.get(level.getBlockState(blockpos).getBlock());
++        BlockState toolModifiedState = level.getBlockState(blockpos).getToolModifiedState(p_41341_, net.neoforged.neoforge.common.ToolActions.HOE_TILL, false);
++        Pair<Predicate<UseOnContext>, Consumer<UseOnContext>> pair = toolModifiedState == null ? null : Pair.of(ctx -> true, changeIntoState(toolModifiedState));
+         if (pair == null) {
+             return InteractionResult.PASS;
+         } else {
 @@ -85,5 +_,10 @@
  
-    public static boolean onlyIfAirAbove(UseOnContext p_150857_) {
-       return p_150857_.getClickedFace() != Direction.DOWN && p_150857_.getLevel().getBlockState(p_150857_.getClickedPos().above()).isAir();
-+   }
+     public static boolean onlyIfAirAbove(UseOnContext p_150857_) {
+         return p_150857_.getClickedFace() != Direction.DOWN && p_150857_.getLevel().getBlockState(p_150857_.getClickedPos().above()).isAir();
++    }
 +
-+   @Override
-+   public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ToolAction toolAction) {
-+      return net.neoforged.neoforge.common.ToolActions.DEFAULT_HOE_ACTIONS.contains(toolAction);
-    }
++    @Override
++    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ToolAction toolAction) {
++        return net.neoforged.neoforge.common.ToolActions.DEFAULT_HOE_ACTIONS.contains(toolAction);
+     }
  }

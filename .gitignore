@@ -3,6 +3,7 @@
 **/.settings
 **/.classpath
 *.project
+tests/.eclipse
 
 #In case people make their workspace in the repo
 /eclipse/

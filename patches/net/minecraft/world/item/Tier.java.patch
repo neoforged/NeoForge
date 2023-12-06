@@ -2,14 +2,14 @@
 +++ b/net/minecraft/world/item/Tier.java
 @@ -9,9 +_,12 @@
  
-    float getAttackDamageBonus();
+     float getAttackDamageBonus();
  
-+   @Deprecated // FORGE: Use TierSortingRegistry to define which tiers are better than others
-    int getLevel();
++    @Deprecated // FORGE: Use TierSortingRegistry to define which tiers are better than others
+     int getLevel();
  
-    int getEnchantmentValue();
+     int getEnchantmentValue();
  
-    Ingredient getRepairIngredient();
+     Ingredient getRepairIngredient();
 +
-+   @org.jetbrains.annotations.Nullable default net.minecraft.tags.TagKey<net.minecraft.world.level.block.Block> getTag() { return null; }
++    @org.jetbrains.annotations.Nullable default net.minecraft.tags.TagKey<net.minecraft.world.level.block.Block> getTag() { return null; }
  }

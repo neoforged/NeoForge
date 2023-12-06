@@ -1,38 +1,39 @@
 --- a/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
 +++ b/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
-@@ -56,6 +_,8 @@
-          Entity entity = this.getOwner();
-          if (entity instanceof ServerPlayer serverplayer) {
-             if (serverplayer.connection.isAcceptingMessages() && serverplayer.level() == this.level() && !serverplayer.isSleeping()) {
-+               net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderPearl event = net.neoforged.neoforge.event.EventHooks.onEnderPearlLand(serverplayer, this.getX(), this.getY(), this.getZ(), this, 5.0F, p_37504_);
-+               if (!event.isCanceled()) { // Don't indent to lower patch size
-                if (this.random.nextFloat() < 0.05F && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
-                   Endermite endermite = EntityType.ENDERMITE.create(this.level());
-                   if (endermite != null) {
-@@ -70,8 +_,10 @@
-                   entity.teleportTo(this.getX(), this.getY(), this.getZ());
-                }
+@@ -58,6 +_,8 @@
+             Entity entity = this.getOwner();
+             if (entity instanceof ServerPlayer serverplayer) {
+                 if (serverplayer.connection.isAcceptingMessages() && serverplayer.level() == this.level() && !serverplayer.isSleeping()) {
++                    net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderPearl event = net.neoforged.neoforge.event.EventHooks.onEnderPearlLand(serverplayer, this.getX(), this.getY(), this.getZ(), this, 5.0F, p_37504_);
++                    if (!event.isCanceled()) { // Don't indent to lower patch size
+                     if (this.random.nextFloat() < 0.05F && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
+                         Endermite endermite = EntityType.ENDERMITE.create(this.level());
+                         if (endermite != null) {
+@@ -72,9 +_,11 @@
+                         entity.teleportTo(this.getX(), this.getY(), this.getZ());
+                     }
  
-+               entity.teleportTo(event.getTargetX(), event.getTargetY(), event.getTargetZ());
-                entity.resetFallDistance();
--               entity.hurt(this.damageSources().fall(), 5.0F);
-+               entity.hurt(this.damageSources().fall(), event.getAttackDamage());
-+               } //Forge: End
-             }
-          } else if (entity != null) {
-             entity.teleportTo(this.getX(), this.getY(), this.getZ());
-@@ -94,12 +_,12 @@
++                    entity.teleportTo(event.getTargetX(), event.getTargetY(), event.getTargetZ());
+                     entity.resetFallDistance();
+-                    entity.hurt(this.damageSources().fall(), 5.0F);
++                    entity.hurt(this.damageSources().fall(), event.getAttackDamage());
+                     this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.PLAYER_TELEPORT, SoundSource.PLAYERS);
++                    } //Forge: End
+                 }
+             } else if (entity != null) {
+                 entity.teleportTo(this.getX(), this.getY(), this.getZ());
+@@ -97,12 +_,12 @@
  
-    @Nullable
-    @Override
--   public Entity changeDimension(ServerLevel p_37506_) {
-+   public Entity changeDimension(ServerLevel p_37506_, net.neoforged.neoforge.common.util.ITeleporter teleporter) {
-       Entity entity = this.getOwner();
-       if (entity != null && entity.level().dimension() != p_37506_.dimension()) {
-          this.setOwner(null);
-       }
+     @Nullable
+     @Override
+-    public Entity changeDimension(ServerLevel p_37506_) {
++    public Entity changeDimension(ServerLevel p_37506_, net.neoforged.neoforge.common.util.ITeleporter teleporter) {
+         Entity entity = this.getOwner();
+         if (entity != null && entity.level().dimension() != p_37506_.dimension()) {
+             this.setOwner(null);
+         }
  
--      return super.changeDimension(p_37506_);
-+      return super.changeDimension(p_37506_, teleporter);
-    }
+-        return super.changeDimension(p_37506_);
++        return super.changeDimension(p_37506_, teleporter);
+     }
  }

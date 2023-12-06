@@ -1,0 +1,15 @@
+--- a/com/mojang/realmsclient/RealmsAvailability.java
++++ b/com/mojang/realmsclient/RealmsAvailability.java
+@@ -38,6 +_,12 @@
+     private static CompletableFuture<RealmsAvailability.Result> check() {
+         return CompletableFuture.supplyAsync(
+             () -> {
++                if (!net.neoforged.fml.loading.FMLLoader.isProduction() && net.minecraft.client.Minecraft.getInstance().getUser().getAccessToken().equals("0")) {
++                    // Neo: we use '0' in dev, so short-circuit to avoid exception
++                    LOGGER.trace("User access token is '0'. Skipping realms availability check.");
++                    return new RealmsAvailability.Result(Type.AUTHENTICATION_ERROR);
++                }
++
+                 RealmsClient realmsclient = RealmsClient.create();
+     
+                 try {

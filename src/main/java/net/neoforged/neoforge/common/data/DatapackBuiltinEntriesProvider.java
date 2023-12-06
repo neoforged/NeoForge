@@ -5,16 +5,13 @@
 
 package net.neoforged.neoforge.common.data;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.registries.RegistriesDatapackGenerator;
-import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
+import net.minecraft.data.registries.RegistryPatchGenerator;
 
 /**
  * An extension of the {@link RegistriesDatapackGenerator} which properly handles
@@ -22,6 +19,8 @@ import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
  * object.
  */
 public class DatapackBuiltinEntriesProvider extends RegistriesDatapackGenerator {
+
+    private final CompletableFuture<HolderLookup.Provider> fullRegistries;
 
     /**
      * Constructs a new datapack provider which generates all registry objects
@@ -31,8 +30,9 @@ public class DatapackBuiltinEntriesProvider extends RegistriesDatapackGenerator 
      * @param registries a future of a lookup for registries and their objects
      * @param modIds     a set of mod ids to generate the dynamic registry objects of
      */
-    public DatapackBuiltinEntriesProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, Set<String> modIds) {
-        super(output, registries, modIds);
+    public DatapackBuiltinEntriesProvider(PackOutput output, CompletableFuture<RegistrySetBuilder.PatchedRegistries> registries, Set<String> modIds) {
+        super(output, registries.thenApply(RegistrySetBuilder.PatchedRegistries::patches), modIds);
+        this.fullRegistries = registries.thenApply(RegistrySetBuilder.PatchedRegistries::full);
     }
 
     /**
@@ -46,20 +46,13 @@ public class DatapackBuiltinEntriesProvider extends RegistriesDatapackGenerator 
      * @param modIds                 a set of mod ids to generate the dynamic registry objects of
      */
     public DatapackBuiltinEntriesProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, RegistrySetBuilder datapackEntriesBuilder, Set<String> modIds) {
-        this(output, registries.thenApply(r -> constructRegistries(r, datapackEntriesBuilder)), modIds);
+        this(output, RegistryPatchGenerator.createLookup(registries, datapackEntriesBuilder), modIds);
     }
 
     /**
-     * A method used to construct empty bootstraps for all registries this provider
-     * did not touch such that existing dynamic registry objects do not get inlined.
-     *
-     * @param original               a future of a lookup for registries and their objects
-     * @param datapackEntriesBuilder a builder containing the dynamic registry objects added by this provider
-     * @return a new lookup containing the existing and to be generated registries and their objects
+     * Get the registry holder lookup provider that includes elements added from the {@link RegistrySetBuilder}
      */
-    private static HolderLookup.Provider constructRegistries(HolderLookup.Provider original, RegistrySetBuilder datapackEntriesBuilder) {
-        var builderKeys = new HashSet<>(datapackEntriesBuilder.getEntryKeys());
-        DataPackRegistriesHooks.getDataPackRegistriesWithDimensions().filter(data -> !builderKeys.contains(data.key())).forEach(data -> datapackEntriesBuilder.add(data.key(), context -> {}));
-        return datapackEntriesBuilder.buildPatch(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY), original);
+    public CompletableFuture<HolderLookup.Provider> getRegistryProvider() {
+        return fullRegistries;
     }
 }

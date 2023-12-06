@@ -22,10 +22,11 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.common.capabilities.ICapabilitySerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-public interface IBlockEntityExtension extends ICapabilitySerializable<CompoundTag> {
+public interface IBlockEntityExtension extends INBTSerializable<CompoundTag> {
     private BlockEntity self() {
         return (BlockEntity) this;
     }
@@ -104,9 +105,9 @@ public interface IBlockEntityExtension extends ICapabilitySerializable<CompoundT
         Block block = state.getBlock();
         BlockPos pos = self().getBlockPos();
         if (block == Blocks.ENCHANTING_TABLE) {
-            bb = new AABB(pos, pos.offset(1, 1, 1));
+            bb = AABB.encapsulatingFullBlocks(pos, pos.offset(1, 1, 1));
         } else if (block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST) {
-            bb = new AABB(pos.offset(-1, 0, -1), pos.offset(2, 2, 2));
+            bb = AABB.encapsulatingFullBlocks(pos.offset(-1, 0, -1), pos.offset(2, 2, 2));
         } else if (block == Blocks.STRUCTURE_BLOCK) {
             bb = INFINITE_EXTENT_AABB;
         } else if (block != null && block != Blocks.BEACON) {
@@ -123,7 +124,7 @@ public interface IBlockEntityExtension extends ICapabilitySerializable<CompoundT
                 // So, once again in the long line of US having to accommodate BUKKIT breaking things,
                 // here it is, assume that the TE is only 1 cubic block. Problem with this is that it may
                 // cause the TileEntity renderer to error further down the line! But alas, nothing we can do.
-                cbb = new net.minecraft.world.phys.AABB(pos.offset(-1, 0, -1), pos.offset(1, 1, 1));
+                cbb = AABB.encapsulatingFullBlocks(pos.offset(-1, 0, -1), pos.offset(1, 1, 1));
             }
             if (cbb != null) bb = cbb;
         }
@@ -165,5 +166,19 @@ public interface IBlockEntityExtension extends ICapabilitySerializable<CompoundT
      */
     default boolean hasCustomOutlineRendering(Player player) {
         return false;
+    }
+
+    /**
+     * Notify all listeners that the capabilities at the positions of this block entity might have changed.
+     * This includes new capabilities becoming available.
+     * <p>
+     * This is just a convenience method for {@link Level#invalidateCapabilities(BlockPos)}.
+     */
+    @ApiStatus.NonExtendable
+    default void invalidateCapabilities() {
+        BlockEntity be = self();
+        Level level = be.getLevel();
+        if (level != null)
+            level.invalidateCapabilities(be.getBlockPos());
     }
 }

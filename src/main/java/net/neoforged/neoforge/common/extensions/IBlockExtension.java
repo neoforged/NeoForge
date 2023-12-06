@@ -46,6 +46,7 @@ import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelDataManager;
@@ -276,7 +277,7 @@ public interface IBlockExtension {
      * @param target The full target the player is looking at
      * @return A ItemStack to add to the player's inventory, empty itemstack if nothing should be added.
      */
-    default ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+    default ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
         return self().getCloneItemStack(level, pos, state);
     }
 
@@ -429,7 +430,10 @@ public interface IBlockExtension {
     }
 
     /**
-     * Called when a tile entity on a side of this block changes is created or is destroyed.
+     * Called when a block entity on a side of this block changes, is created, or is destroyed.
+     *
+     * <p>This method is not suitable for listening to capability invalidations.
+     * For capability invalidations specifically, use {@link BlockCapabilityCache} instead.
      * 
      * @param level    The level
      * @param pos      Block position in level

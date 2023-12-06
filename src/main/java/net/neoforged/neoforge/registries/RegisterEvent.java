@@ -99,7 +99,9 @@ public class RegisterEvent extends Event implements IModBusEvent {
          *
          * @param name  the name of the object to register as its key with the namespaced inferred from the active mod container
          * @param value the object value
+         * @deprecated Use {@link #register(ResourceLocation, Object) the RL-explicit variant} instead; mod ID inference will be removed in a later update, alongside the move of registration events to the NeoForge main bus
          */
+        @Deprecated(forRemoval = true, since = "1.20.2")
         default void register(String name, T value) {
             register(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), name), value);
         }

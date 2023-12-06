@@ -6,88 +6,83 @@
  
 -public class MobEffectInstance implements Comparable<MobEffectInstance> {
 +public class MobEffectInstance implements Comparable<MobEffectInstance>, net.neoforged.neoforge.common.extensions.IMobEffectInstanceExtension {
-    private static final Logger LOGGER = LogUtils.getLogger();
-    public static final int INFINITE_DURATION = -1;
-    private static final String TAG_ID = "id";
+     private static final Logger LOGGER = LogUtils.getLogger();
+     public static final int INFINITE_DURATION = -1;
+     private static final String TAG_ID = "id";
 @@ -96,6 +_,7 @@
-       this.ambient = p_19549_.ambient;
-       this.visible = p_19549_.visible;
-       this.showIcon = p_19549_.showIcon;
-+      this.curativeItems = p_19549_.curativeItems == null ? null : new java.util.ArrayList<net.minecraft.world.item.ItemStack>(p_19549_.curativeItems);
-    }
+         this.ambient = p_19549_.ambient;
+         this.visible = p_19549_.visible;
+         this.showIcon = p_19549_.showIcon;
++        this.curativeItems = p_19549_.curativeItems == null ? null : new java.util.ArrayList<net.minecraft.world.item.ItemStack>(p_19549_.curativeItems);
+     }
  
-    public boolean update(MobEffectInstance p_19559_) {
+     public boolean update(MobEffectInstance p_19559_) {
 @@ -272,6 +_,7 @@
-    public CompoundTag save(CompoundTag p_19556_) {
-       ResourceLocation resourcelocation = BuiltInRegistries.MOB_EFFECT.getKey(this.effect);
-       p_19556_.putString("id", resourcelocation.toString());
-+      net.neoforged.neoforge.common.CommonHooks.saveMobEffect(p_19556_, "neoforge:id", this.getEffect());
-       this.writeDetailsTo(p_19556_);
-       return p_19556_;
-    }
+     public CompoundTag save(CompoundTag p_19556_) {
+         ResourceLocation resourcelocation = BuiltInRegistries.MOB_EFFECT.getKey(this.effect);
+         p_19556_.putString("id", resourcelocation.toString());
++        net.neoforged.neoforge.common.CommonHooks.saveMobEffect(p_19556_, "neoforge:id", this.getEffect());
+         this.writeDetailsTo(p_19556_);
+         return p_19556_;
+     }
 @@ -287,6 +_,7 @@
-          this.hiddenEffect.save(compoundtag);
-          p_19568_.put("hidden_effect", compoundtag);
-       }
-+      writeCurativeItems(p_19568_);
+             this.hiddenEffect.save(compoundtag);
+             p_19568_.put("hidden_effect", compoundtag);
+         }
++        writeCurativeItems(p_19568_);
  
-       this.factorData
-          .ifPresent(
-@@ -332,22 +_,45 @@
-          optional = Optional.empty();
-       }
+         this.factorData
+             .ifPresent(
+@@ -332,9 +_,9 @@
+             optional = Optional.empty();
+         }
  
--      return new MobEffectInstance(p_19546_, j, Math.max(i, 0), flag, flag1, flag2, mobeffectinstance, optional);
-+      return readCurativeItems(new MobEffectInstance(p_19546_, j, Math.max(0, i), flag, flag1, flag2, mobeffectinstance, optional), p_19547_);
-    }
+-        return new MobEffectInstance(p_19546_, j, Math.max(i, 0), flag, flag1, flag2, mobeffectinstance, optional);
++        return readCurativeItems(new MobEffectInstance(p_19546_, j, Math.max(0, i), flag, flag1, flag2, mobeffectinstance, optional), p_19547_);
+     }
 -
-+   
-    public int compareTo(MobEffectInstance p_19566_) {
-       int i = 32147;
-       return (this.getDuration() <= 32147 || p_19566_.getDuration() <= 32147) && (!this.isAmbient() || !p_19566_.isAmbient())
--         ? ComparisonChain.start()
--            .compareFalseFirst(this.isAmbient(), p_19566_.isAmbient())
--            .compareFalseFirst(this.isInfiniteDuration(), p_19566_.isInfiniteDuration())
--            .compare(this.getDuration(), p_19566_.getDuration())
--            .compare(this.getEffect().getColor(), p_19566_.getEffect().getColor())
--            .result()
--         : ComparisonChain.start()
--            .compare(this.isAmbient(), p_19566_.isAmbient())
--            .compare(this.getEffect().getColor(), p_19566_.getEffect().getColor())
--            .result();
-+                   ? ComparisonChain.start()
-+                           .compareFalseFirst(this.isAmbient(), p_19566_.isAmbient())
-+                           .compareFalseFirst(this.isInfiniteDuration(), p_19566_.isInfiniteDuration())
-+                           .compare(this.getDuration(), p_19566_.getDuration())
-+                           .compare(this.getEffect().getSortOrder(this), p_19566_.getEffect().getSortOrder(this))
-+                           .result()
-+                   : ComparisonChain.start().compareFalseFirst(this.isAmbient(), p_19566_.isAmbient()).compare(this.getEffect().getSortOrder(this), p_19566_.getEffect().getSortOrder(this)).result();
-+   }
++    
+     public int compareTo(MobEffectInstance p_19566_) {
+         int i = 32147;
+         return (this.getDuration() <= 32147 || p_19566_.getDuration() <= 32147) && (!this.isAmbient() || !p_19566_.isAmbient())
+@@ -342,12 +_,38 @@
+                 .compareFalseFirst(this.isAmbient(), p_19566_.isAmbient())
+                 .compareFalseFirst(this.isInfiniteDuration(), p_19566_.isInfiniteDuration())
+                 .compare(this.getDuration(), p_19566_.getDuration())
+-                .compare(this.getEffect().getColor(), p_19566_.getEffect().getColor())
++                .compare(this.getEffect().getSortOrder(this), p_19566_.getEffect().getSortOrder(this))
+                 .result()
+             : ComparisonChain.start()
+                 .compare(this.isAmbient(), p_19566_.isAmbient())
+-                .compare(this.getEffect().getColor(), p_19566_.getEffect().getColor())
++                .compare(this.getEffect().getSortOrder(this), p_19566_.getEffect().getSortOrder(this))
+                 .result();
++    }
 +
-+   //======================= FORGE START ===========================
-+   private java.util.List<net.minecraft.world.item.ItemStack> curativeItems;
++    //======================= FORGE START ===========================
++    private java.util.List<net.minecraft.world.item.ItemStack> curativeItems;
 +
-+   @Override
-+   public java.util.List<net.minecraft.world.item.ItemStack> getCurativeItems() {
-+      if (this.curativeItems == null) //Lazy load this so that we don't create a circular dep on Items.
-+         this.curativeItems = getEffect().getCurativeItems();
-+      return this.curativeItems;
-+   }
-+   @Override
-+   public void setCurativeItems(java.util.List<net.minecraft.world.item.ItemStack> curativeItems) {
-+      this.curativeItems = curativeItems;
-+   }
-+   private static MobEffectInstance readCurativeItems(MobEffectInstance effect, CompoundTag nbt) {
-+      if (nbt.contains("CurativeItems", net.minecraft.nbt.Tag.TAG_LIST)) {
-+         java.util.List<net.minecraft.world.item.ItemStack> items = new java.util.ArrayList<net.minecraft.world.item.ItemStack>();
-+         net.minecraft.nbt.ListTag list = nbt.getList("CurativeItems", net.minecraft.nbt.Tag.TAG_COMPOUND);
-+         for (int i = 0; i < list.size(); i++) {
-+            items.add(net.minecraft.world.item.ItemStack.of(list.getCompound(i)));
-+         }
-+         effect.setCurativeItems(items);
-+      }
++    @Override
++    public java.util.List<net.minecraft.world.item.ItemStack> getCurativeItems() {
++        if (this.curativeItems == null) //Lazy load this so that we don't create a circular dep on Items.
++            this.curativeItems = getEffect().getCurativeItems();
++        return this.curativeItems;
++    }
++    @Override
++    public void setCurativeItems(java.util.List<net.minecraft.world.item.ItemStack> curativeItems) {
++        this.curativeItems = curativeItems;
++    }
++    private static MobEffectInstance readCurativeItems(MobEffectInstance effect, CompoundTag nbt) {
++        if (nbt.contains("CurativeItems", net.minecraft.nbt.Tag.TAG_LIST)) {
++            java.util.List<net.minecraft.world.item.ItemStack> items = new java.util.ArrayList<net.minecraft.world.item.ItemStack>();
++            net.minecraft.nbt.ListTag list = nbt.getList("CurativeItems", net.minecraft.nbt.Tag.TAG_COMPOUND);
++            for (int i = 0; i < list.size(); i++) {
++                items.add(net.minecraft.world.item.ItemStack.of(list.getCompound(i)));
++            }
++            effect.setCurativeItems(items);
++        }
 +
-+      return effect;
-    }
++        return effect;
+     }
  
-    public static class FactorData {
+     public static class FactorData {

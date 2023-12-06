@@ -7,12 +7,10 @@ package net.neoforged.neoforge.items;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.capabilities.AutoRegisterCapability;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 
-@AutoRegisterCapability
 public interface IItemHandler {
     /**
      * Returns the number of slots available

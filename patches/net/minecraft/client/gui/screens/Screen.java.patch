@@ -1,74 +1,74 @@
 --- a/net/minecraft/client/gui/screens/Screen.java
 +++ b/net/minecraft/client/gui/screens/Screen.java
 @@ -185,7 +_,7 @@
-    }
+     }
  
-    public void onClose() {
--      this.minecraft.setScreen(null);
-+      this.minecraft.popGuiLayer();
-    }
+     public void onClose() {
+-        this.minecraft.setScreen(null);
++        this.minecraft.popGuiLayer();
+     }
  
-    protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T p_169406_) {
+     protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T p_169406_) {
 @@ -297,7 +_,10 @@
-       this.width = p_96608_;
-       this.height = p_96609_;
-       if (!this.initialized) {
-+         if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Init.Pre(this, this.children, this::addEventWidget, this::removeWidget)).isCanceled()) {
-          this.init();
-+         }
-+         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Init.Post(this, this.children, this::addEventWidget, this::removeWidget));
-       } else {
-          this.repositionElements();
-       }
+         this.width = p_96608_;
+         this.height = p_96609_;
+         if (!this.initialized) {
++            if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Init.Pre(this, this.children, this::addEventWidget, this::removeWidget)).isCanceled()) {
+             this.init();
++            }
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Init.Post(this, this.children, this::addEventWidget, this::removeWidget));
+         } else {
+             this.repositionElements();
+         }
 @@ -310,7 +_,10 @@
-    protected void rebuildWidgets() {
-       this.clearWidgets();
-       this.clearFocus();
-+      if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Init.Pre(this, this.children, this::addEventWidget, this::removeWidget)).isCanceled()) {
-       this.init();
-+      }
-+      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Init.Post(this, this.children, this::addEventWidget, this::removeWidget));
-    }
+     protected void rebuildWidgets() {
+         this.clearWidgets();
+         this.clearFocus();
++        if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Init.Pre(this, this.children, this::addEventWidget, this::removeWidget)).isCanceled()) {
+         this.init();
++        }
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Init.Post(this, this.children, this::addEventWidget, this::removeWidget));
+     }
  
-    @Override
+     @Override
 @@ -333,6 +_,7 @@
-    public void renderBackground(GuiGraphics p_283688_, int p_296369_, int p_296477_, float p_294317_) {
-       if (this.minecraft.level != null) {
-          this.renderTransparentBackground(p_283688_);
-+         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.BackgroundRendered(this, p_283688_));
-       } else {
-          this.renderDirtBackground(p_283688_);
-       }
+     public void renderBackground(GuiGraphics p_283688_, int p_296369_, int p_296477_, float p_294317_) {
+         if (this.minecraft.level != null) {
+             this.renderTransparentBackground(p_283688_);
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.BackgroundRendered(this, p_283688_));
+         } else {
+             this.renderDirtBackground(p_283688_);
+         }
 @@ -347,6 +_,7 @@
-       int i = 32;
-       p_282281_.blit(BACKGROUND_LOCATION, 0, 0, 0, 0.0F, 0.0F, this.width, this.height, 32, 32);
-       p_282281_.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-+      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.BackgroundRendered(this, p_282281_));
-    }
+         int i = 32;
+         p_282281_.blit(BACKGROUND_LOCATION, 0, 0, 0, 0.0F, 0.0F, this.width, this.height, 32, 32);
+         p_282281_.setColor(1.0F, 1.0F, 1.0F, 1.0F);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.BackgroundRendered(this, p_282281_));
+     }
  
-    public boolean isPauseScreen() {
+     public boolean isPauseScreen() {
 @@ -443,6 +_,10 @@
-    public void onFilesDrop(List<Path> p_96591_) {
-    }
+     public void onFilesDrop(List<Path> p_96591_) {
+     }
  
-+   public Minecraft getMinecraft() {
-+      return this.minecraft;
-+   }
++    public Minecraft getMinecraft() {
++        return this.minecraft;
++    }
 +
-    private void scheduleNarration(long p_169381_, boolean p_169382_) {
-       this.nextNarrationTime = Util.getMillis() + p_169381_;
-       if (p_169382_) {
+     private void scheduleNarration(long p_169381_, boolean p_169382_) {
+         this.nextNarrationTime = Util.getMillis() + p_169381_;
+         if (p_169382_) {
 @@ -612,5 +_,13 @@
-          this.index = p_169425_;
-          this.priority = p_169426_;
-       }
-+   }
+             this.index = p_169425_;
+             this.priority = p_169426_;
+         }
++    }
 +
-+   private void addEventWidget(GuiEventListener b) {
-+      if (b instanceof Renderable r)
-+         this.renderables.add(r);
-+      if (b instanceof NarratableEntry ne)
-+         this.narratables.add(ne);
-+      children.add(b);
-    }
++    private void addEventWidget(GuiEventListener b) {
++        if (b instanceof Renderable r)
++            this.renderables.add(r);
++        if (b instanceof NarratableEntry ne)
++            this.narratables.add(ne);
++        children.add(b);
+     }
  }

@@ -43,8 +43,20 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent {
      *
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
+     * @deprecated Use {@link #registerBelowAll(ResourceLocation, IGuiOverlay) the RL-explicit variant} instead; mod ID inference will be removed in a later update, alongside the move of registration events to the NeoForge main bus
      */
+    @Deprecated(forRemoval = true, since = "1.20.2")
     public void registerBelowAll(@NotNull String id, @NotNull IGuiOverlay overlay) {
+        registerBelowAll(new ResourceLocation(id, ModLoadingContext.get().getActiveNamespace()), overlay);
+    }
+
+    /**
+     * Registers an overlay that renders below all others.
+     *
+     * @param id      A unique resource id for this overlay
+     * @param overlay The overlay
+     */
+    public void registerBelowAll(@NotNull ResourceLocation id, @NotNull IGuiOverlay overlay) {
         register(Ordering.BEFORE, null, id, overlay);
     }
 
@@ -55,8 +67,22 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent {
      *                {@link VanillaGuiOverlay vanilla overlay}. Do not use other mods' overlays.
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
+     * @deprecated Use {@link #registerBelow(ResourceLocation, ResourceLocation, IGuiOverlay) the RL-explicit variant} instead; mod ID inference will be removed in a later update, alongside the move of registration events to the NeoForge main bus
      */
+    @Deprecated(forRemoval = true, since = "1.20.2")
     public void registerBelow(@NotNull ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay) {
+        registerBelow(other, new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), id), overlay);
+    }
+
+    /**
+     * Registers an overlay that renders below another.
+     *
+     * @param other   The id of the overlay to render below. This must be an overlay you have already registered or a
+     *                {@link VanillaGuiOverlay vanilla overlay}. Do not use other mods' overlays.
+     * @param id      A unique resource id for this overlay
+     * @param overlay The overlay
+     */
+    public void registerBelow(@NotNull ResourceLocation other, @NotNull ResourceLocation id, @NotNull IGuiOverlay overlay) {
         register(Ordering.BEFORE, other, id, overlay);
     }
 
@@ -67,8 +93,22 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent {
      *                {@link VanillaGuiOverlay vanilla overlay}. Do not use other mods' overlays.
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
+     * @deprecated Use {@link #registerAbove(ResourceLocation, ResourceLocation, IGuiOverlay) the RL-explicit variant} instead; mod ID inference will be removed in a later update, alongside the move of registration events to the NeoForge main bus
      */
+    @Deprecated(forRemoval = true, since = "1.20.2")
     public void registerAbove(@NotNull ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay) {
+        registerAbove(other, new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), id), overlay);
+    }
+
+    /**
+     * Registers an overlay that renders above another.
+     *
+     * @param other   The id of the overlay to render above. This must be an overlay you have already registered or a
+     *                {@link VanillaGuiOverlay vanilla overlay}. Do not use other mods' overlays.
+     * @param id      A unique resource id for this overlay
+     * @param overlay The overlay
+     */
+    public void registerAbove(@NotNull ResourceLocation other, @NotNull ResourceLocation id, @NotNull IGuiOverlay overlay) {
         register(Ordering.AFTER, other, id, overlay);
     }
 
@@ -77,13 +117,24 @@ public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent {
      *
      * @param id      A unique resource id for this overlay
      * @param overlay The overlay
+     * @deprecated Use {@link #registerAboveAll(ResourceLocation, IGuiOverlay) the RL-explicit variant} instead; mod ID inference will be removed in a later update, alongside the move of registration events to the NeoForge main bus
      */
+    @Deprecated(forRemoval = true, since = "1.20.2")
     public void registerAboveAll(@NotNull String id, @NotNull IGuiOverlay overlay) {
+        registerAboveAll(new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), id), overlay);
+    }
+
+    /**
+     * Registers an overlay that renders above all others.
+     *
+     * @param id      A unique resource id for this overlay
+     * @param overlay The overlay
+     */
+    public void registerAboveAll(@NotNull ResourceLocation id, @NotNull IGuiOverlay overlay) {
         register(Ordering.AFTER, null, id, overlay);
     }
 
-    private void register(@NotNull Ordering ordering, @Nullable ResourceLocation other, @NotNull String id, @NotNull IGuiOverlay overlay) {
-        var key = new ResourceLocation(ModLoadingContext.get().getActiveNamespace(), id);
+    private void register(@NotNull Ordering ordering, @Nullable ResourceLocation other, @NotNull ResourceLocation key, @NotNull IGuiOverlay overlay) {
         Preconditions.checkArgument(!overlays.containsKey(key), "Overlay already registered: " + key);
 
         int insertPosition;
