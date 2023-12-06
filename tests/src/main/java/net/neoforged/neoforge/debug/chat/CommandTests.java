@@ -9,11 +9,9 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.ParsedCommandNode;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -22,7 +20,6 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -127,6 +124,9 @@ public class CommandTests {
                         .thenExecute(stack -> helper.getLevel().getServer().getCommands().performPrefixedCommand(stack, "/enumargumenttest ABC"))
                         .thenIdle(5) // Keep in mind that if a command errors, we have both the "error" failure and the failure with the position of the error
                         .thenExecute(stack -> helper.assertTrue(stack.errors.size() == 2, "Invalid command was successfully executed"))
+                        .thenExecute(stack -> helper.assertTrue(stack.errors.stream().map(Component::getString).toList().equals(List.of(
+                                "Enum constant must be one of [BLD, NV], found ABC",
+                                "...nttest ABC<--[HERE]")), "Errors were wrong"))
 
                         .thenExecute(stack -> helper.getLevel().getServer().getCommands().performPrefixedCommand(stack, "/enumargumenttest NV"))
                         .thenIdle(5)
@@ -142,13 +142,12 @@ public class CommandTests {
                     player,
                     player.position(),
                     player.getRotationVector(),
-                    player.level() instanceof ServerLevel ? (ServerLevel)player.level() : null,
+                    player.level() instanceof ServerLevel ? (ServerLevel) player.level() : null,
                     perm,
                     player.getName().getString(),
                     player.getDisplayName(),
                     player.level().getServer(),
-                    player
-            );
+                    player);
         }
 
         public ErrorCatchingStack(CommandSource p_81302_, Vec3 p_81303_, Vec2 p_81304_, ServerLevel p_81305_, int p_81306_, String p_81307_, Component p_81308_, MinecraftServer p_81309_, @Nullable Entity p_81310_) {
