@@ -1,19 +1,19 @@
 --- a/net/minecraft/world/level/block/SpongeBlock.java
 +++ b/net/minecraft/world/level/block/SpongeBlock.java
-@@ -42,6 +_,7 @@
-    }
+@@ -49,6 +_,7 @@
+     }
  
-    private boolean removeWaterBreadthFirstSearch(Level p_56808_, BlockPos p_56809_) {
-+      BlockState spongeState = p_56808_.getBlockState(p_56809_);
-       return BlockPos.breadthFirstTraversal(
-             p_56809_,
-             6,
-@@ -57,7 +_,7 @@
-                } else {
-                   BlockState blockstate = p_56808_.getBlockState(p_294069_);
-                   FluidState fluidstate = p_56808_.getFluidState(p_294069_);
--                  if (!fluidstate.is(FluidTags.WATER)) {
-+                  if (!spongeState.canBeHydrated(p_56808_, p_56809_, fluidstate, p_294069_)) {
-                      return false;
-                   } else {
-                      Block block = blockstate.getBlock();
+     private boolean removeWaterBreadthFirstSearch(Level p_56808_, BlockPos p_56809_) {
++        BlockState spongeState = p_56808_.getBlockState(p_56809_);
+         return BlockPos.breadthFirstTraversal(
+                 p_56809_,
+                 6,
+@@ -64,7 +_,7 @@
+                     } else {
+                         BlockState blockstate = p_56808_.getBlockState(p_294069_);
+                         FluidState fluidstate = p_56808_.getFluidState(p_294069_);
+-                        if (!fluidstate.is(FluidTags.WATER)) {
++                        if (!spongeState.canBeHydrated(p_56808_, p_56809_, fluidstate, p_294069_)) {
+                             return false;
+                         } else {
+                             Block block = blockstate.getBlock();

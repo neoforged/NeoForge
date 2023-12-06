@@ -30,6 +30,5 @@
     "recipes": [
       "data_gen_test:contains_nbt_ingredient_item_set"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

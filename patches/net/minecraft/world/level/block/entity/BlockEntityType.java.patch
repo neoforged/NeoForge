@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/level/block/entity/BlockEntityType.java
++++ b/net/minecraft/world/level/block/entity/BlockEntityType.java
+@@ -299,6 +_,11 @@
+         return this.validBlocks.contains(p_155263_.getBlock());
+     }
+ 
++    // Neo: Add block getter
++    public Set<Block> getValidBlocks() {
++        return java.util.Collections.unmodifiableSet(this.validBlocks);
++    }
++
+     @Nullable
+     public Holder.Reference<BlockEntityType<?>> builtInRegistryHolder() {
+         return this.builtInRegistryHolder;

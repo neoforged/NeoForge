@@ -11,6 +11,10 @@ import java.util.List;
 import org.apache.commons.lang3.Validate;
 
 public record WithConditions<A>(List<ICondition> conditions, A carrier) {
+    public WithConditions(A carrier, ICondition... conditions) {
+        this(List.of(conditions), carrier);
+    }
+
     public WithConditions(A carrier) {
         this(List.of(), carrier);
     }

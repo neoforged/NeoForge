@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.fluids.capability;
 
-import net.neoforged.neoforge.common.capabilities.AutoRegisterCapability;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * A reference implementation is provided {@link TileFluidHandler}.
  */
-@AutoRegisterCapability
 public interface IFluidHandler {
     enum FluidAction {
         EXECUTE, SIMULATE;

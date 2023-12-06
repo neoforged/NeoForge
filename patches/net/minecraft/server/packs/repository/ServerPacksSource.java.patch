@@ -1,13 +1,13 @@
 --- a/net/minecraft/server/packs/repository/ServerPacksSource.java
 +++ b/net/minecraft/server/packs/repository/ServerPacksSource.java
-@@ -57,7 +_,9 @@
-    }
+@@ -64,7 +_,9 @@
+     }
  
-    public static PackRepository createPackRepository(Path p_251569_, DirectoryValidator p_295336_) {
--      return new PackRepository(new ServerPacksSource(p_295336_), new FolderRepositorySource(p_251569_, PackType.SERVER_DATA, PackSource.WORLD, p_295336_));
-+      final PackRepository packRepository = new PackRepository(new ServerPacksSource(p_295336_), new FolderRepositorySource(p_251569_, PackType.SERVER_DATA, PackSource.WORLD, p_295336_));
-+      net.neoforged.fml.ModLoader.get().postEvent(new net.neoforged.neoforge.event.AddPackFindersEvent(PackType.SERVER_DATA, packRepository::addPackFinder));
-+      return packRepository;
-    }
+     public static PackRepository createPackRepository(Path p_251569_, DirectoryValidator p_295336_) {
+-        return new PackRepository(new ServerPacksSource(p_295336_), new FolderRepositorySource(p_251569_, PackType.SERVER_DATA, PackSource.WORLD, p_295336_));
++        final PackRepository packRepository = new PackRepository(new ServerPacksSource(p_295336_), new FolderRepositorySource(p_251569_, PackType.SERVER_DATA, PackSource.WORLD, p_295336_));
++        net.neoforged.fml.ModLoader.get().postEvent(new net.neoforged.neoforge.event.AddPackFindersEvent(PackType.SERVER_DATA, packRepository::addPackFinder));
++        return packRepository;
+     }
  
-    public static PackRepository createVanillaTrustedRepository() {
+     public static PackRepository createVanillaTrustedRepository() {

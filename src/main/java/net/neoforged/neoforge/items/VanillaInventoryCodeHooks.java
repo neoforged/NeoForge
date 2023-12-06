@@ -5,10 +5,12 @@
 
 package net.neoforged.neoforge.items;
 
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DropperBlock;
@@ -17,7 +19,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.entity.Hopper;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +35,7 @@ public class VanillaInventoryCodeHooks {
      */
     @Nullable
     public static Boolean extractHook(Level level, Hopper dest) {
-        return getItemHandler(level, dest, Direction.UP)
+        return getSourceItemHandler(level, dest)
                 .map(itemHandlerResult -> {
                     IItemHandler handler = itemHandlerResult.getKey();
 
@@ -64,9 +68,8 @@ public class VanillaInventoryCodeHooks {
      * Copied from BlockDropper#dispense and added capability support
      */
     public static boolean dropperInsertHook(Level level, BlockPos pos, DispenserBlockEntity dropper, int slot, @NotNull ItemStack stack) {
-        Direction enumfacing = level.getBlockState(pos).getValue(DropperBlock.FACING);
-        BlockPos blockpos = pos.relative(enumfacing);
-        return getItemHandler(level, (double) blockpos.getX(), (double) blockpos.getY(), (double) blockpos.getZ(), enumfacing.getOpposite())
+        Direction facing = level.getBlockState(pos).getValue(DropperBlock.FACING);
+        return getAttachedItemHandler(level, pos, facing)
                 .map(destinationResult -> {
                     IItemHandler itemHandler = destinationResult.getKey();
                     Object destination = destinationResult.getValue();
@@ -91,7 +94,7 @@ public class VanillaInventoryCodeHooks {
      */
     public static boolean insertHook(HopperBlockEntity hopper) {
         Direction hopperFacing = hopper.getBlockState().getValue(HopperBlock.FACING);
-        return getItemHandler(hopper.getLevel(), hopper, hopperFacing)
+        return getAttachedItemHandler(hopper.getLevel(), hopper.getBlockPos(), hopperFacing)
                 .map(destinationResult -> {
                     IItemHandler itemHandler = destinationResult.getKey();
                     Object destination = destinationResult.getValue();
@@ -165,13 +168,6 @@ public class VanillaInventoryCodeHooks {
         return stack;
     }
 
-    private static Optional<Pair<IItemHandler, Object>> getItemHandler(Level level, Hopper hopper, Direction hopperFacing) {
-        double x = hopper.getLevelX() + (double) hopperFacing.getStepX();
-        double y = hopper.getLevelY() + (double) hopperFacing.getStepY();
-        double z = hopper.getLevelZ() + (double) hopperFacing.getStepZ();
-        return getItemHandler(level, x, y, z, hopperFacing.getOpposite());
-    }
-
     private static boolean isFull(IItemHandler itemHandler) {
         for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
             ItemStack stackInSlot = itemHandler.getStackInSlot(slot);
@@ -192,19 +188,32 @@ public class VanillaInventoryCodeHooks {
         return true;
     }
 
-    public static Optional<Pair<IItemHandler, Object>> getItemHandler(Level worldIn, double x, double y, double z, final Direction side) {
-        int i = Mth.floor(x);
-        int j = Mth.floor(y);
-        int k = Mth.floor(z);
-        BlockPos blockpos = new BlockPos(i, j, k);
-        net.minecraft.world.level.block.state.BlockState state = worldIn.getBlockState(blockpos);
+    private static Optional<Pair<IItemHandler, Object>> getAttachedItemHandler(Level level, BlockPos pos, Direction direction) {
+        return getItemHandlerAt(level, pos.getX() + direction.getStepX() + 0.5, pos.getY() + direction.getStepY() + 0.5, pos.getZ() + direction.getStepZ() + 0.5, direction.getOpposite());
+    }
 
-        if (state.hasBlockEntity()) {
-            BlockEntity blockEntity = worldIn.getBlockEntity(blockpos);
-            if (blockEntity != null) {
-                return blockEntity.getCapability(Capabilities.ITEM_HANDLER, side)
-                        .map(capability -> ImmutablePair.<IItemHandler, Object>of(capability, blockEntity));
-            }
+    private static Optional<Pair<IItemHandler, Object>> getSourceItemHandler(Level level, Hopper hopper) {
+        return getItemHandlerAt(level, hopper.getLevelX(), hopper.getLevelY() + 1.0, hopper.getLevelZ(), Direction.DOWN);
+    }
+
+    private static Optional<Pair<IItemHandler, Object>> getItemHandlerAt(Level worldIn, double x, double y, double z, final Direction side) {
+        BlockPos blockpos = BlockPos.containing(x, y, z);
+        BlockState state = worldIn.getBlockState(blockpos);
+        BlockEntity blockEntity = state.hasBlockEntity() ? worldIn.getBlockEntity(blockpos) : null;
+
+        // Look for block capability first
+        var blockCap = worldIn.getCapability(Capabilities.ItemHandler.BLOCK, blockpos, state, blockEntity, side);
+        if (blockCap != null)
+            return Optional.of(ImmutablePair.of(blockCap, blockEntity));
+
+        // Otherwise fallback to automation entity capability
+        // Note: the isAlive check matches what vanilla does for hoppers in EntitySelector.CONTAINER_ENTITY_SELECTOR
+        List<Entity> list = worldIn.getEntities((Entity) null, new AABB(x - 0.5D, y - 0.5D, z - 0.5D, x + 0.5D, y + 0.5D, z + 0.5D), EntitySelector.ENTITY_STILL_ALIVE);
+        if (!list.isEmpty()) {
+            var entity = list.get(worldIn.random.nextInt(list.size()));
+            var entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
+            if (entityCap != null)
+                return Optional.of(ImmutablePair.of(entityCap, entity));
         }
 
         return Optional.empty();

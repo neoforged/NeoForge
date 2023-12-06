@@ -38,7 +38,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class ScaffoldingTest {
     static final String MODID = "scaffolding_test";
     static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    static final TagKey<Block> SCAFFOLDING = BlockTags.create(new ResourceLocation("forge", "scaffolding"));
+    static final TagKey<Block> SCAFFOLDING = BlockTags.create(new ResourceLocation("neoforge", "scaffolding"));
 
     static final DeferredBlock<Block> SCAFFOLDING_METHOD_TEST = BLOCKS.register("scaffolding_method_test", () -> new ScaffoldingMethodTestBlock(Properties.of().mapColor(MapColor.SAND).noCollission().sound(SoundType.SCAFFOLDING).dynamicShape()));
 

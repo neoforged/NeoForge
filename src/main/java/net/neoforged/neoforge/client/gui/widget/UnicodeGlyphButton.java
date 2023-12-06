@@ -25,34 +25,30 @@ public class UnicodeGlyphButton extends ExtendedButton {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        if (this.visible) {
-            Minecraft mc = Minecraft.getInstance();
-            this.isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
-            guiGraphics.blitSprite(SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        Minecraft mc = Minecraft.getInstance();
+        guiGraphics.blitSprite(SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
 
-            Component buttonText = this.createNarrationMessage();
-            int glyphWidth = (int) (mc.font.width(glyph) * glyphScale);
-            int strWidth = mc.font.width(buttonText);
-            int ellipsisWidth = mc.font.width("...");
-            int totalWidth = strWidth + glyphWidth;
+        Component buttonText = this.createNarrationMessage();
+        int glyphWidth = (int) (mc.font.width(glyph) * glyphScale);
+        int strWidth = mc.font.width(buttonText);
+        int ellipsisWidth = mc.font.width("...");
+        int totalWidth = strWidth + glyphWidth;
 
-            if (totalWidth > width - 6 && totalWidth > ellipsisWidth)
-                buttonText = Component.literal(mc.font.substrByWidth(buttonText, width - 6 - ellipsisWidth).getString().trim() + "...");
+        if (totalWidth > width - 6 && totalWidth > ellipsisWidth)
+            buttonText = Component.literal(mc.font.substrByWidth(buttonText, width - 6 - ellipsisWidth).getString().trim() + "...");
 
-            strWidth = mc.font.width(buttonText);
-            totalWidth = glyphWidth + strWidth;
+        strWidth = mc.font.width(buttonText);
+        totalWidth = glyphWidth + strWidth;
 
-            guiGraphics.pose().pushPose();
-            guiGraphics.pose().scale(glyphScale, glyphScale, 1.0F);
-            guiGraphics.drawCenteredString(mc.font, Component.literal(glyph),
-                    (int) (((this.getX() + (this.width / 2) - (strWidth / 2)) / glyphScale) - (glyphWidth / (2 * glyphScale)) + 2),
-                    (int) (((this.getY() + ((this.height - 8) / glyphScale) / 2) - 1) / glyphScale), getFGColor());
-            guiGraphics.pose().popPose();
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().scale(glyphScale, glyphScale, 1.0F);
+        guiGraphics.drawCenteredString(mc.font, Component.literal(glyph),
+                (int) (((this.getX() + (this.width / 2) - (strWidth / 2)) / glyphScale) - (glyphWidth / (2 * glyphScale)) + 2),
+                (int) (((this.getY() + ((this.height - 8) / glyphScale) / 2) - 1) / glyphScale), getFGColor());
+        guiGraphics.pose().popPose();
 
-            guiGraphics.drawCenteredString(mc.font, buttonText, (int) (this.getX() + (this.width / 2) + (glyphWidth / glyphScale)),
-                    this.getY() + (this.height - 8) / 2, getFGColor());
-
-        }
+        guiGraphics.drawCenteredString(mc.font, buttonText, (int) (this.getX() + (this.width / 2) + (glyphWidth / glyphScale)),
+                this.getY() + (this.height - 8) / 2, getFGColor());
     }
 }

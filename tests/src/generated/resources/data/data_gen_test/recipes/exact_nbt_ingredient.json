@@ -12,6 +12,7 @@
     }
   ],
   "result": {
-    "item": "minecraft:golden_pickaxe"
+    "item": "minecraft:golden_pickaxe",
+    "nbt": "{Damage:0}"
   }
 }

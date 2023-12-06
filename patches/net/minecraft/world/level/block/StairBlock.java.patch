@@ -1,42 +1,51 @@
 --- a/net/minecraft/world/level/block/StairBlock.java
 +++ b/net/minecraft/world/level/block/StairBlock.java
-@@ -81,7 +_,12 @@
-       return voxelshape;
-    }
+@@ -27,7 +_,7 @@
  
-+   @Deprecated // Forge: Use the other constructor that takes a Supplier
-    public StairBlock(BlockState p_56862_, BlockBehaviour.Properties p_56863_) {
-+      this(() -> p_56862_, p_56863_);
-+   }
-+
-+   public StairBlock(java.util.function.Supplier<net.minecraft.world.level.block.state.BlockState> p_56862_, BlockBehaviour.Properties p_56863_) {
-       super(p_56863_);
-       this.registerDefaultState(
-          this.stateDefinition
-@@ -91,8 +_,9 @@
-             .setValue(SHAPE, StairsShape.STRAIGHT)
-             .setValue(WATERLOGGED, Boolean.valueOf(false))
-       );
--      this.base = p_56862_.getBlock();
--      this.baseState = p_56862_;
-+      this.base = Blocks.AIR;
-+      this.baseState = Blocks.AIR.defaultBlockState();
-+      this.stateSupplier = p_56862_;
-    }
+ public class StairBlock extends Block implements SimpleWaterloggedBlock {
+     public static final MapCodec<StairBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_308839_ -> p_308839_.group(BlockState.CODEC.fieldOf("base_state").forGetter(p_304378_ -> p_304378_.baseState), propertiesCodec())
++        p_308839_ -> p_308839_.group(BlockState.CODEC.fieldOf("base_state").forGetter(StairBlock::getModelState), propertiesCodec())
+                 .apply(p_308839_, StairBlock::new)
+     );
+     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+@@ -84,7 +_,12 @@
+         return voxelshape;
+     }
  
-    @Override
-@@ -300,4 +_,14 @@
-    public boolean isPathfindable(BlockState p_56891_, BlockGetter p_56892_, BlockPos p_56893_, PathComputationType p_56894_) {
-       return false;
-    }
++    @Deprecated // Forge: Use the other constructor that takes a Supplier
+     public StairBlock(BlockState p_56862_, BlockBehaviour.Properties p_56863_) {
++        this(() -> p_56862_, p_56863_);
++    }
 +
-+   // Forge Start
-+   private final java.util.function.Supplier<BlockState> stateSupplier;
-+   private Block getModelBlock() {
-+       return getModelState().getBlock();
-+   }
-+   private BlockState getModelState() {
-+       return stateSupplier.get();
-+   }
-+   // Forge end
++    public StairBlock(java.util.function.Supplier<net.minecraft.world.level.block.state.BlockState> p_56862_, BlockBehaviour.Properties p_56863_) {
+         super(p_56863_);
+         this.registerDefaultState(
+             this.stateDefinition
+@@ -94,8 +_,9 @@
+                 .setValue(SHAPE, StairsShape.STRAIGHT)
+                 .setValue(WATERLOGGED, Boolean.valueOf(false))
+         );
+-        this.base = p_56862_.getBlock();
+-        this.baseState = p_56862_;
++        this.base = Blocks.AIR;
++        this.baseState = Blocks.AIR.defaultBlockState();
++        this.stateSupplier = p_56862_;
+     }
+ 
+     @Override
+@@ -243,4 +_,14 @@
+     public boolean isPathfindable(BlockState p_56891_, BlockGetter p_56892_, BlockPos p_56893_, PathComputationType p_56894_) {
+         return false;
+     }
++
++    // Forge Start
++    private final java.util.function.Supplier<BlockState> stateSupplier;
++    private Block getModelBlock() {
++         return getModelState().getBlock();
++    }
++    protected BlockState getModelState() {
++         return stateSupplier.get();
++    }
++    // Forge end
  }

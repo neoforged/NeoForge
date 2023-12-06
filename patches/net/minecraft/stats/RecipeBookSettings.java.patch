@@ -4,29 +4,29 @@
  import net.minecraft.world.inventory.RecipeBookType;
  
  public final class RecipeBookSettings {
--   private static final Map<RecipeBookType, Pair<String, String>> TAG_FIELDS = ImmutableMap.of(
+-    private static final Map<RecipeBookType, Pair<String, String>> TAG_FIELDS = ImmutableMap.of(
 +
-+   //PATCH 1.20.2: Turn this into an event, and make it immutable again........
-+   private static final Map<RecipeBookType, Pair<String, String>> TAG_FIELDS = new java.util.HashMap<>(ImmutableMap.of(
-       RecipeBookType.CRAFTING,
-       Pair.of("isGuiOpen", "isFilteringCraftable"),
-       RecipeBookType.FURNACE,
++    //PATCH 1.20.2: Turn this into an event, and make it immutable again........
++    private static final Map<RecipeBookType, Pair<String, String>> TAG_FIELDS = new java.util.HashMap<>(ImmutableMap.of(
+         RecipeBookType.CRAFTING,
+         Pair.of("isGuiOpen", "isFilteringCraftable"),
+         RecipeBookType.FURNACE,
 @@ -20,7 +_,7 @@
-       Pair.of("isBlastingFurnaceGuiOpen", "isBlastingFurnaceFilteringCraftable"),
-       RecipeBookType.SMOKER,
-       Pair.of("isSmokerGuiOpen", "isSmokerFilteringCraftable")
--   );
-+   ));
-    private final Map<RecipeBookType, RecipeBookSettings.TypeSettings> states;
+         Pair.of("isBlastingFurnaceGuiOpen", "isBlastingFurnaceFilteringCraftable"),
+         RecipeBookType.SMOKER,
+         Pair.of("isSmokerGuiOpen", "isSmokerFilteringCraftable")
+-    );
++    ));
+     private final Map<RecipeBookType, RecipeBookSettings.TypeSettings> states;
  
-    private RecipeBookSettings(Map<RecipeBookType, RecipeBookSettings.TypeSettings> p_12730_) {
+     private RecipeBookSettings(Map<RecipeBookType, RecipeBookSettings.TypeSettings> p_12730_) {
 @@ -159,5 +_,9 @@
-       public String toString() {
-          return "[open=" + this.open + ", filtering=" + this.filtering + "]";
-       }
-+   }
-+   //FORGE -- called automatically on Enum creation - used for serialization
-+   public static void addTagsForType(RecipeBookType type, String openTag, String filteringTag) {
-+      TAG_FIELDS.put(type, Pair.of(openTag, filteringTag));
-    }
+         public String toString() {
+             return "[open=" + this.open + ", filtering=" + this.filtering + "]";
+         }
++    }
++    //FORGE -- called automatically on Enum creation - used for serialization
++    public static void addTagsForType(RecipeBookType type, String openTag, String filteringTag) {
++        TAG_FIELDS.put(type, Pair.of(openTag, filteringTag));
+     }
  }

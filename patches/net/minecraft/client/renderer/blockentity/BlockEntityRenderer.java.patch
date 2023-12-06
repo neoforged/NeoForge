@@ -6,6 +6,6 @@
  @OnlyIn(Dist.CLIENT)
 -public interface BlockEntityRenderer<T extends BlockEntity> {
 +public interface BlockEntityRenderer<T extends BlockEntity> extends net.neoforged.neoforge.client.extensions.IBlockEntityRendererExtension<T> {
-    void render(T p_112307_, float p_112308_, PoseStack p_112309_, MultiBufferSource p_112310_, int p_112311_, int p_112312_);
+     void render(T p_112307_, float p_112308_, PoseStack p_112309_, MultiBufferSource p_112310_, int p_112311_, int p_112312_);
  
-    default boolean shouldRenderOffScreen(T p_112306_) {
+     default boolean shouldRenderOffScreen(T p_112306_) {

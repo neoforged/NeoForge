@@ -12,10 +12,10 @@ import com.mojang.serialization.DataResult;
 import java.util.function.Function;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingRecipeCodecs;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -29,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 public class CraftingHelper {
     @SuppressWarnings("unused")
@@ -73,7 +74,7 @@ public class CraftingHelper {
         return ExtraCodecs
                 .either(
                         BuiltInRegistries.ITEM.byNameCodec(),
-                        CraftingRecipeCodecs.ITEMSTACK_OBJECT_CODEC)
+                        ItemStack.ITEM_WITH_COUNT_CODEC)
                 .xmap(
                         either -> either.map(ItemStack::new, Function.identity()),
                         stack -> {
@@ -81,15 +82,21 @@ public class CraftingHelper {
                                 return Either.right(stack);
                             }
 
-                            // Check if not writing the NBT would still give the correct item.
-                            // Just checking for tag != null is not enough: damageable items get a tag set in the stack constructor,
-                            // but we don't want to write it to the recipe file.
-                            if (ItemStack.matches(stack, new ItemStack(stack.getItem()))) {
-                                return Either.left(stack.getItem());
-                            } else {
-                                return Either.right(stack);
-                            }
+                            var tagForWriting = getTagForWriting(stack);
+                            return tagForWriting == null ? Either.left(stack.getItem()) : Either.right(stack);
                         });
+    }
+
+    @Nullable
+    public static CompoundTag getTagForWriting(ItemStack stack) {
+        // Check if not writing the NBT would still give the correct item.
+        // Just checking for tag != null is not enough: damageable items get a tag set in the stack constructor,
+        // but we don't want to write it to the recipe file.
+        if (ItemStack.matches(stack, new ItemStack(stack.getItem(), stack.getCount()))) {
+            return null;
+        } else {
+            return stack.getTag();
+        }
     }
 
     @ApiStatus.Internal

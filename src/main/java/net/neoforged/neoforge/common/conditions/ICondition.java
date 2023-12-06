@@ -41,6 +41,10 @@ public interface ICondition {
         return Util.getOrThrow(codec.parse(ops, element), JsonParseException::new);
     }
 
+    static <V, T> Optional<T> getWithWithConditionsCodec(Codec<Optional<WithConditions<T>>> codec, DynamicOps<V> ops, V elements) {
+        return Util.getOrThrow(codec.parse(ops, elements).promotePartial((m) -> {}), JsonParseException::new).map(WithConditions::carrier);
+    }
+
     static <V> boolean conditionsMatched(DynamicOps<V> ops, V element) {
         final Codec<Unit> codec = Codec.unit(Unit.INSTANCE);
         return getConditionally(codec, ops, element).isPresent();

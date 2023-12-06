@@ -22,7 +22,7 @@ import net.minecraft.DetectedVersion;
 import net.minecraft.Util;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.advancements.FrameType;
+import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.client.renderer.block.model.BlockModel.GuiLight;
 import net.minecraft.client.renderer.block.model.ItemTransform;
@@ -469,7 +469,7 @@ public class DataGeneratorTest {
                     .addTag(BlockTags.STONE_BRICKS)
                     .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONE)
                     .addOptional(new ResourceLocation("chisel", "marble/raw"))
-                    .addOptionalTag(new ResourceLocation("forge", "storage_blocks/ruby"));
+                    .addOptionalTag(new ResourceLocation("neoforge", "storage_blocks/ruby"));
 
             // Hopefully sorting issues
             tag(BlockTags.create(new ResourceLocation(MODID, "thing/one")))
@@ -916,7 +916,7 @@ public class DataGeneratorTest {
                             Component.translatable(Items.DIRT.getDescriptionId()),
                             Component.translatable("dirt_description"),
                             new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
-                            FrameType.TASK,
+                            AdvancementType.TASK,
                             true,
                             true,
                             false)
@@ -929,7 +929,7 @@ public class DataGeneratorTest {
                             Component.translatable(Items.DIAMOND_BLOCK.getDescriptionId()),
                             Component.literal("You obtained a DiamondBlock"),
                             new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
-                            FrameType.CHALLENGE,
+                            AdvancementType.CHALLENGE,
                             true,
                             true,
                             false)
@@ -941,7 +941,7 @@ public class DataGeneratorTest {
                             Component.translatable("advancements.story.root.title"),
                             Component.literal("Changed Description"),
                             new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
-                            FrameType.TASK,
+                            AdvancementType.TASK,
                             false,
                             false,
                             false)
@@ -953,7 +953,7 @@ public class DataGeneratorTest {
         new TranslationTextComponent(Items.COBBLESTONE.getDescriptionId()),
         new StringTextComponent("You got cobblestone"),
         new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
-        FrameType.TASK,
+        AdvancementType.TASK,
         false,
         false,
         false)
@@ -965,7 +965,7 @@ public class DataGeneratorTest {
                     Component.translatable(Items.COBBLESTONE.getDescriptionId()),
                     Component.literal("You got cobblestone"),
                     new ResourceLocation("textures/gui/advancements/backgrounds/stone.png"),
-                    FrameType.TASK,
+                    AdvancementType.TASK,
                     false,
                     false,
                     false)

@@ -1,21 +1,21 @@
 --- a/net/minecraft/world/entity/animal/horse/SkeletonTrapGoal.java
 +++ b/net/minecraft/world/entity/animal/horse/SkeletonTrapGoal.java
 @@ -28,6 +_,10 @@
-    @Override
-    public void tick() {
-       ServerLevel serverlevel = (ServerLevel)this.horse.level();
-+      // Forge: Trigger the trap in a tick task to avoid crashes when mods add goals to skeleton horses
-+      // (MC-206338/Forge PR #7509)
-+      serverlevel.getServer().tell(new net.minecraft.server.TickTask(serverlevel.getServer().getTickCount(), () -> {
-+      if (!this.horse.isAlive()) return;
-       DifficultyInstance difficultyinstance = serverlevel.getCurrentDifficultyAt(this.horse.blockPosition());
-       this.horse.setTrap(false);
-       this.horse.setTamed(true);
+     @Override
+     public void tick() {
+         ServerLevel serverlevel = (ServerLevel)this.horse.level();
++        // Forge: Trigger the trap in a tick task to avoid crashes when mods add goals to skeleton horses
++        // (MC-206338/Forge PR #7509)
++        serverlevel.getServer().tell(new net.minecraft.server.TickTask(serverlevel.getServer().getTickCount(), () -> {
++        if (!this.horse.isAlive()) return;
+         DifficultyInstance difficultyinstance = serverlevel.getCurrentDifficultyAt(this.horse.blockPosition());
+         this.horse.setTrap(false);
+         this.horse.setTamed(true);
 @@ -55,6 +_,7 @@
+                 }
              }
-          }
-       }
-+      }));
-    }
+         }
++        }));
+     }
  
-    @Nullable
+     @Nullable

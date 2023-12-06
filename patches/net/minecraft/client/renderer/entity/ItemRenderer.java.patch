@@ -1,64 +1,64 @@
 --- a/net/minecraft/client/renderer/entity/ItemRenderer.java
 +++ b/net/minecraft/client/renderer/entity/ItemRenderer.java
 @@ -67,7 +_,7 @@
-    public ItemRenderer(Minecraft p_266926_, TextureManager p_266774_, ModelManager p_266850_, ItemColors p_267016_, BlockEntityWithoutLevelRenderer p_267049_) {
-       this.minecraft = p_266926_;
-       this.textureManager = p_266774_;
--      this.itemModelShaper = new ItemModelShaper(p_266850_);
-+      this.itemModelShaper = new net.neoforged.neoforge.client.model.RegistryAwareItemModelShaper(p_266850_);
-       this.blockEntityRenderer = p_267049_;
+     public ItemRenderer(Minecraft p_266926_, TextureManager p_266774_, ModelManager p_266850_, ItemColors p_267016_, BlockEntityWithoutLevelRenderer p_267049_) {
+         this.minecraft = p_266926_;
+         this.textureManager = p_266774_;
+-        this.itemModelShaper = new ItemModelShaper(p_266850_);
++        this.itemModelShaper = new net.neoforged.neoforge.client.model.RegistryAwareItemModelShaper(p_266850_);
+         this.blockEntityRenderer = p_267049_;
  
-       for(Item item : BuiltInRegistries.ITEM) {
+         for(Item item : BuiltInRegistries.ITEM) {
 @@ -117,7 +_,7 @@
+                 }
              }
-          }
  
--         p_115151_.getTransforms().getTransform(p_270188_).apply(p_115146_, p_115147_);
-+         p_115151_ = net.neoforged.neoforge.client.ClientHooks.handleCameraTransforms(p_115147_, p_115151_, p_270188_, p_115146_);
-          p_115147_.translate(-0.5F, -0.5F, -0.5F);
-          if (!p_115151_.isCustomRenderer() && (!p_115144_.is(Items.TRIDENT) || flag)) {
-             boolean flag1;
+-            p_115151_.getTransforms().getTransform(p_270188_).apply(p_115146_, p_115147_);
++            p_115151_ = net.neoforged.neoforge.client.ClientHooks.handleCameraTransforms(p_115147_, p_115151_, p_270188_, p_115146_);
+             p_115147_.translate(-0.5F, -0.5F, -0.5F);
+             if (!p_115151_.isCustomRenderer() && (!p_115144_.is(Items.TRIDENT) || flag)) {
+                 boolean flag1;
 @@ -127,8 +_,8 @@
-             } else {
-                flag1 = true;
-             }
+                 } else {
+                     flag1 = true;
+                 }
 -
--            RenderType rendertype = ItemBlockRenderTypes.getRenderType(p_115144_, flag1);
-+            for (var model : p_115151_.getRenderPasses(p_115144_, flag1)) {
-+            for (var rendertype : model.getRenderTypes(p_115144_, flag1)) {
-             VertexConsumer vertexconsumer;
-             if (hasAnimatedTexture(p_115144_) && p_115144_.hasFoil()) {
-                p_115147_.pushPose();
+-                RenderType rendertype = ItemBlockRenderTypes.getRenderType(p_115144_, flag1);
++                for (var model : p_115151_.getRenderPasses(p_115144_, flag1)) {
++                for (var rendertype : model.getRenderTypes(p_115144_, flag1)) {
+                 VertexConsumer vertexconsumer;
+                 if (hasAnimatedTexture(p_115144_) && p_115144_.hasFoil()) {
+                     p_115147_.pushPose();
 @@ -152,9 +_,11 @@
-                vertexconsumer = getFoilBuffer(p_115148_, rendertype, true, p_115144_.hasFoil());
+                     vertexconsumer = getFoilBuffer(p_115148_, rendertype, true, p_115144_.hasFoil());
+                 }
+ 
+-                this.renderModelLists(p_115151_, p_115144_, p_115149_, p_115150_, p_115147_, vertexconsumer);
++                this.renderModelLists(model, p_115144_, p_115149_, p_115150_, p_115147_, vertexconsumer);
++                }
++                }
+             } else {
+-                this.blockEntityRenderer.renderByItem(p_115144_, p_270188_, p_115147_, p_115148_, p_115149_, p_115150_);
++                net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(p_115144_).getCustomRenderer().renderByItem(p_115144_, p_270188_, p_115147_, p_115148_, p_115149_, p_115150_);
              }
  
--            this.renderModelLists(p_115151_, p_115144_, p_115149_, p_115150_, p_115147_, vertexconsumer);
-+            this.renderModelLists(model, p_115144_, p_115149_, p_115150_, p_115147_, vertexconsumer);
-+            }
-+            }
-          } else {
--            this.blockEntityRenderer.renderByItem(p_115144_, p_270188_, p_115147_, p_115148_, p_115149_, p_115150_);
-+            net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(p_115144_).getCustomRenderer().renderByItem(p_115144_, p_270188_, p_115147_, p_115148_, p_115149_, p_115150_);
-          }
+             p_115147_.popPose();
+@@ -218,7 +_,7 @@
+             float f = (float)(i >> 16 & 0xFF) / 255.0F;
+             float f1 = (float)(i >> 8 & 0xFF) / 255.0F;
+             float f2 = (float)(i & 0xFF) / 255.0F;
+-            p_115164_.putBulkData(posestack$pose, bakedquad, f, f1, f2, p_115167_, p_115168_);
++            p_115164_.putBulkData(posestack$pose, bakedquad, f, f1, f2, 1.0F, p_115167_, p_115168_, true);
+         }
+     }
  
-          p_115147_.popPose();
-@@ -216,7 +_,7 @@
-          float f = (float)(i >> 16 & 0xFF) / 255.0F;
-          float f1 = (float)(i >> 8 & 0xFF) / 255.0F;
-          float f2 = (float)(i & 0xFF) / 255.0F;
--         p_115164_.putBulkData(posestack$pose, bakedquad, f, f1, f2, p_115167_, p_115168_);
-+         p_115164_.putBulkData(posestack$pose, bakedquad, f, f1, f2, 1.0F, p_115167_, p_115168_, true);
-       }
-    }
- 
-@@ -269,5 +_,9 @@
-    @Override
-    public void onResourceManagerReload(ResourceManager p_115105_) {
-       this.itemModelShaper.rebuildCache();
-+   }
+@@ -271,5 +_,9 @@
+     @Override
+     public void onResourceManagerReload(ResourceManager p_115105_) {
+         this.itemModelShaper.rebuildCache();
++    }
 +
-+   public BlockEntityWithoutLevelRenderer getBlockEntityRenderer() {
-+       return blockEntityRenderer;
-    }
++    public BlockEntityWithoutLevelRenderer getBlockEntityRenderer() {
++         return blockEntityRenderer;
+     }
  }

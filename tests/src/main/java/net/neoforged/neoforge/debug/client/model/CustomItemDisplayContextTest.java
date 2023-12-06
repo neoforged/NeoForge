@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -112,7 +113,7 @@ public class CustomItemDisplayContextTest {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
 
-    public static final DeferredBlock<Block> ITEM_HANGER_BLOCK = BLOCKS.register("item_hanger", () -> new ItemHangerBlock(BlockBehaviour.Properties.of().noCollission().noOcclusion().noLootTable()));
+    public static final DeferredBlock<Block> ITEM_HANGER_BLOCK = BLOCKS.registerBlock("item_hanger", ItemHangerBlock::new, BlockBehaviour.Properties.of().noCollission().noOcclusion().noLootTable());
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemHangerBlockEntity>> ITEM_HANGER_BE = BLOCK_ENTITY_TYPES.register("item_hanger", () -> BlockEntityType.Builder.of(ItemHangerBlockEntity::new, ITEM_HANGER_BLOCK.get()).build(null));
     public static final DeferredItem<Item> ITEM_HANGER_ITEM = ITEMS.register("item_hanger", () -> new ItemHangerItem(ITEM_HANGER_BLOCK.get(), new Item.Properties()));
 
@@ -173,9 +174,16 @@ public class CustomItemDisplayContextTest {
     }
 
     private static class ItemHangerBlock extends HorizontalDirectionalBlock implements EntityBlock {
+        public static final MapCodec<ItemHangerBlock> CODEC = simpleCodec(ItemHangerBlock::new);
+
         public ItemHangerBlock(BlockBehaviour.Properties properties) {
             super(properties);
             registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
+        }
+
+        @Override
+        protected MapCodec<ItemHangerBlock> codec() {
+            return CODEC;
         }
 
         @Override

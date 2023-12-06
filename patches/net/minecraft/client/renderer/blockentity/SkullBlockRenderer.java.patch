@@ -1,26 +1,26 @@
 --- a/net/minecraft/client/renderer/blockentity/SkullBlockRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/SkullBlockRenderer.java
 @@ -55,6 +_,7 @@
-       builder.put(SkullBlock.Types.CREEPER, new SkullModel(p_173662_.bakeLayer(ModelLayers.CREEPER_HEAD)));
-       builder.put(SkullBlock.Types.DRAGON, new DragonHeadModel(p_173662_.bakeLayer(ModelLayers.DRAGON_SKULL)));
-       builder.put(SkullBlock.Types.PIGLIN, new PiglinHeadModel(p_173662_.bakeLayer(ModelLayers.PIGLIN_HEAD)));
-+      net.neoforged.fml.ModLoader.get().postEvent(new net.neoforged.neoforge.client.event.EntityRenderersEvent.CreateSkullModels(builder, p_173662_));
-       return builder.build();
-    }
+         builder.put(SkullBlock.Types.CREEPER, new SkullModel(p_173662_.bakeLayer(ModelLayers.CREEPER_HEAD)));
+         builder.put(SkullBlock.Types.DRAGON, new DragonHeadModel(p_173662_.bakeLayer(ModelLayers.DRAGON_SKULL)));
+         builder.put(SkullBlock.Types.PIGLIN, new PiglinHeadModel(p_173662_.bakeLayer(ModelLayers.PIGLIN_HEAD)));
++        net.neoforged.fml.ModLoader.get().postEvent(new net.neoforged.neoforge.client.event.EntityRenderersEvent.CreateSkullModels(builder, p_173662_));
+         return builder.build();
+     }
  
 @@ -108,5 +_,15 @@
-       } else {
-          return RenderType.entityCutoutNoCullZOffset(resourcelocation);
-       }
-+   }
+         } else {
+             return RenderType.entityCutoutNoCullZOffset(resourcelocation);
+         }
++    }
 +
-+   @Override
-+   public net.minecraft.world.phys.AABB getRenderBoundingBox(SkullBlockEntity blockEntity) {
-+      SkullBlock.Type type = ((AbstractSkullBlock) blockEntity.getBlockState().getBlock()).getType();
-+      if (type == SkullBlock.Types.DRAGON) {
-+         net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
-+         return new net.minecraft.world.phys.AABB(pos.getX() - .5, pos.getY(), pos.getZ() - .5, pos.getX() + 1.5, pos.getY() + 1.5, pos.getZ() + 1.5);
-+      }
-+      return BlockEntityRenderer.super.getRenderBoundingBox(blockEntity);
-    }
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(SkullBlockEntity blockEntity) {
++        SkullBlock.Type type = ((AbstractSkullBlock) blockEntity.getBlockState().getBlock()).getType();
++        if (type == SkullBlock.Types.DRAGON) {
++            net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++            return new net.minecraft.world.phys.AABB(pos.getX() - .5, pos.getY(), pos.getZ() - .5, pos.getX() + 1.5, pos.getY() + 1.5, pos.getZ() + 1.5);
++        }
++        return BlockEntityRenderer.super.getRenderBoundingBox(blockEntity);
+     }
  }

@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.fluids;
 
 import com.google.common.base.Preconditions;
+import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -21,15 +22,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlockContainer;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.SoundActions;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.wrappers.BlockWrapper;
@@ -80,24 +79,24 @@ public class FluidUtil {
         Preconditions.checkNotNull(handler);
 
         ItemStack heldItem = player.getItemInHand(hand);
-        if (!heldItem.isEmpty()) {
-            return player.getCapability(Capabilities.ITEM_HANDLER)
-                    .map(playerInventory -> {
-
-                        FluidActionResult fluidActionResult = tryFillContainerAndStow(heldItem, handler, playerInventory, Integer.MAX_VALUE, player, true);
-                        if (!fluidActionResult.isSuccess()) {
-                            fluidActionResult = tryEmptyContainerAndStow(heldItem, handler, playerInventory, Integer.MAX_VALUE, player, true);
-                        }
-
-                        if (fluidActionResult.isSuccess()) {
-                            player.setItemInHand(hand, fluidActionResult.getResult());
-                            return true;
-                        }
-                        return false;
-                    })
-                    .orElse(false);
+        if (heldItem.isEmpty()) {
+            return false;
         }
-        return false;
+
+        var playerInventory = player.getCapability(Capabilities.ItemHandler.ENTITY);
+        Objects.requireNonNull(playerInventory, "Player item handler is null");
+
+        FluidActionResult fluidActionResult = tryFillContainerAndStow(heldItem, handler, playerInventory, Integer.MAX_VALUE, player, true);
+        if (!fluidActionResult.isSuccess()) {
+            fluidActionResult = tryEmptyContainerAndStow(heldItem, handler, playerInventory, Integer.MAX_VALUE, player, true);
+        }
+
+        if (fluidActionResult.isSuccess()) {
+            player.setItemInHand(hand, fluidActionResult.getResult());
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -375,8 +374,8 @@ public class FluidUtil {
      *
      * Vanilla buckets will be converted to universal buckets if they are enabled.
      */
-    public static LazyOptional<IFluidHandlerItem> getFluidHandler(@NotNull ItemStack itemStack) {
-        return itemStack.getCapability(Capabilities.FLUID_HANDLER_ITEM);
+    public static Optional<IFluidHandlerItem> getFluidHandler(@NotNull ItemStack itemStack) {
+        return Optional.ofNullable(itemStack.getCapability(Capabilities.FluidHandler.ITEM));
     }
 
     /**
@@ -397,15 +396,8 @@ public class FluidUtil {
     /**
      * Helper method to get an IFluidHandler for at a block position.
      */
-    public static LazyOptional<IFluidHandler> getFluidHandler(Level level, BlockPos blockPos, @Nullable Direction side) {
-        BlockState state = level.getBlockState(blockPos);
-        if (state.hasBlockEntity()) {
-            BlockEntity blockEntity = level.getBlockEntity(blockPos);
-            if (blockEntity != null) {
-                return blockEntity.getCapability(Capabilities.FLUID_HANDLER, side);
-            }
-        }
-        return LazyOptional.empty();
+    public static Optional<IFluidHandler> getFluidHandler(Level level, BlockPos blockPos, @Nullable Direction side) {
+        return Optional.ofNullable(level.getCapability(Capabilities.FluidHandler.BLOCK, blockPos, side));
     }
 
     /**
@@ -433,7 +425,7 @@ public class FluidUtil {
         } else if (block instanceof BucketPickup) {
             targetFluidHandler = new BucketPickupHandlerWrapper(playerIn, (BucketPickup) block, level, pos);
         } else {
-            Optional<IFluidHandler> fluidHandler = getFluidHandler(level, pos, side).resolve();
+            Optional<IFluidHandler> fluidHandler = getFluidHandler(level, pos, side);
             if (!fluidHandler.isPresent()) {
                 return FluidActionResult.FAILURE;
             }

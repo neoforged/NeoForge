@@ -1,26 +1,26 @@
 --- a/net/minecraft/server/rcon/thread/RconClient.java
 +++ b/net/minecraft/server/rcon/thread/RconClient.java
 @@ -123,16 +_,17 @@
-    }
+     }
  
-    private void sendCmdResponse(int p_11595_, String p_11596_) throws IOException {
--      int i = p_11596_.length();
+     private void sendCmdResponse(int p_11595_, String p_11596_) throws IOException {
+-        int i = p_11596_.length();
 -
-+      byte[] whole = p_11596_.getBytes(StandardCharsets.UTF_8);
-+      int i = whole.length;
-+      int start = 0;
-       do {
-          int j = 4096 <= i ? 4096 : i;
--         this.send(p_11595_, 0, p_11596_.substring(0, j));
--         p_11596_ = p_11596_.substring(j);
--         i = p_11596_.length();
-+         this.send(p_11595_, 0, new String(java.util.Arrays.copyOfRange(whole, start, j+start), StandardCharsets.UTF_8));
-+         i -= j;
-+         start += j;
-       } while(0 != i);
-    }
++        byte[] whole = p_11596_.getBytes(StandardCharsets.UTF_8);
++        int i = whole.length;
++        int start = 0;
+         do {
+             int j = 4096 <= i ? 4096 : i;
+-            this.send(p_11595_, 0, p_11596_.substring(0, j));
+-            p_11596_ = p_11596_.substring(j);
+-            i = p_11596_.length();
++            this.send(p_11595_, 0, new String(java.util.Arrays.copyOfRange(whole, start, j+start), StandardCharsets.UTF_8));
++            i -= j;
++            start += j;
+         } while(0 != i);
+     }
 -
-+   
-    @Override
-    public void stop() {
-       this.running = false;
++    
+     @Override
+     public void stop() {
+         this.running = false;

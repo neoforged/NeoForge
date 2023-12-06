@@ -7,6 +7,7 @@ package net.neoforged.neoforge.debug.chat;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.ParsedCommandNode;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -27,27 +28,16 @@ public class CommandEventTest {
         List<ParsedCommandNode<CommandSourceStack>> nodes = event.getParseResults().getContext().getNodes();
         CommandSourceStack source = event.getParseResults().getContext().getSource();
 
-        // test: when the /time command is used with no arguments, automatically add default arguments (/time set day)
-        if (nodes.size() == 1 && nodes.get(0).getNode() == dispatcher.getRoot().getChild("time")) {
-            event.setParseResults(dispatcher.parse("time set day", source));
-            return;
+        // test: when the /attribute command is used with no arguments, automatically give effect
+        if (nodes.size() == 1 && nodes.get(0).getNode() == dispatcher.getRoot().getChild("attribute")) {
+            event.setParseResults(dispatcher.parse("effect give @s minecraft:blindness 10 2", source));
         }
 
-        // test: whenever a player uses the /give command, let everyone on the server know
-        if (nodes.size() > 0 && nodes.get(0).getNode() == dispatcher.getRoot().getChild("give")) {
-            String msg = source.getTextName() + " used the give command: " + event.getParseResults().getReader().getString();
-            source.getServer().getPlayerList().getPlayers().forEach(player -> player.sendSystemMessage(Component.literal(msg)));
-            return;
+        // test: when the /effect command is used with no arguments, throw a custom exception
+        if (nodes.size() == 1 && nodes.get(0).getNode() == dispatcher.getRoot().getChild("effect")) {
+            event.setException(new SimpleCommandExceptionType(Component.literal("You tried to use the /effect command with no arguments")).create());
+            event.setCanceled(true);
         }
-
-        // this is annoying so I disabled it
-        // test: when the /kill command is used with no arguments, throw a custom exception
-        // if (nodes.size() == 1 && nodes.get(0).getNode() == dispatcher.getRoot().getChild("kill"))
-        // {
-        //     event.setException(new CommandRuntimeException(new TextComponent("You tried to use the /kill command with no arguments")));
-        //     event.setCanceled(true);
-        //     return;
-        // }
     }
 
 }

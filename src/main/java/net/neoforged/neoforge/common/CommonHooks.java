@@ -54,7 +54,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.contents.LiteralContents;
+import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
@@ -347,7 +347,7 @@ public class CommonHooks {
     }
 
     private static String getRawText(Component message) {
-        return message.getContents() instanceof LiteralContents literalContents ? literalContents.text() : "";
+        return message.getContents() instanceof PlainTextContents plainTextContents ? plainTextContents.text() : "";
     }
 
     @Nullable

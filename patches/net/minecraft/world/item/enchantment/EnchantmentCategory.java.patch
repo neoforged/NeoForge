@@ -6,27 +6,27 @@
  
 -public enum EnchantmentCategory {
 +public enum EnchantmentCategory implements net.neoforged.neoforge.common.IExtensibleEnum {
-    ARMOR {
-       @Override
-       public boolean canEnchant(Item p_44751_) {
+     ARMOR {
+         @Override
+         public boolean canEnchant(Item p_44751_) {
 @@ -115,5 +_,19 @@
-       }
-    };
+         }
+     };
  
--   public abstract boolean canEnchant(Item p_44743_);
-+   private java.util.function.Predicate<Item> delegate;
+-    public abstract boolean canEnchant(Item p_44743_);
++    private java.util.function.Predicate<Item> delegate;
 +
-+   private EnchantmentCategory() {}
++    private EnchantmentCategory() {}
 +
-+   private EnchantmentCategory(java.util.function.Predicate<Item> delegate) {
-+      this.delegate = delegate;
-+   }
++    private EnchantmentCategory(java.util.function.Predicate<Item> delegate) {
++        this.delegate = delegate;
++    }
 +
-+   public static EnchantmentCategory create(String name, java.util.function.Predicate<Item> delegate) {
-+      throw new IllegalStateException("Enum not extended");
-+   }
++    public static EnchantmentCategory create(String name, java.util.function.Predicate<Item> delegate) {
++        throw new IllegalStateException("Enum not extended");
++    }
 +
-+   public boolean canEnchant(Item p_44743_) {
-+      return this.delegate == null ? false : this.delegate.test(p_44743_);
-+   }
++    public boolean canEnchant(Item p_44743_) {
++        return this.delegate == null ? false : this.delegate.test(p_44743_);
++    }
  }

@@ -5,17 +5,17 @@
  
 -public enum PackType {
 +public enum PackType implements net.minecraft.util.StringRepresentable {
-    CLIENT_RESOURCES("assets"),
-    SERVER_DATA("data");
+     CLIENT_RESOURCES("assets"),
+     SERVER_DATA("data");
  
 @@ -12,5 +_,10 @@
  
-    public String getDirectory() {
-       return this.directory;
-+   }
+     public String getDirectory() {
+         return this.directory;
++    }
 +
-+   @Override
-+   public String getSerializedName() {
-+      return name().toLowerCase();
-    }
++    @Override
++    public String getSerializedName() {
++        return name().toLowerCase();
+     }
  }

@@ -1,96 +1,97 @@
 --- a/net/minecraft/world/level/block/LiquidBlock.java
 +++ b/net/minecraft/world/level/block/LiquidBlock.java
-@@ -32,13 +_,15 @@
+@@ -51,7 +_,8 @@
+                 .apply(p_308830_, LiquidBlock::new)
+     );
+     public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL;
+-    protected final FlowingFluid fluid;
++    @Deprecated // Use getFluid
++    private final FlowingFluid fluid;
+     private final List<FluidState> stateCache;
+     public static final VoxelShape STABLE_SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
+     public static final ImmutableList<Direction> POSSIBLE_FLOW_DIRECTIONS = ImmutableList.of(
+@@ -63,6 +_,7 @@
+         return CODEC;
+     }
  
- public class LiquidBlock extends Block implements BucketPickup {
-    public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL;
--   protected final FlowingFluid fluid;
-+   @Deprecated // Use getFluid
-+   private final FlowingFluid fluid;
-    private final List<FluidState> stateCache;
-    public static final VoxelShape STABLE_SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
-    public static final ImmutableList<Direction> POSSIBLE_FLOW_DIRECTIONS = ImmutableList.of(
-       Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST
-    );
++    @Deprecated  // Forge: Use the constructor that takes a supplier
+     public LiquidBlock(FlowingFluid p_54694_, BlockBehaviour.Properties p_54695_) {
+         super(p_54695_);
+         this.fluid = p_54694_;
+@@ -75,6 +_,19 @@
  
-+   @Deprecated  // Forge: Use the constructor that takes a supplier
-    public LiquidBlock(FlowingFluid p_54694_, BlockBehaviour.Properties p_54695_) {
-       super(p_54695_);
-       this.fluid = p_54694_;
-@@ -51,6 +_,19 @@
- 
-       this.stateCache.add(p_54694_.getFlowing(8, true));
-       this.registerDefaultState(this.stateDefinition.any().setValue(LEVEL, Integer.valueOf(0)));
-+      fluidStateCacheInitialized = true;
-+      supplier = () -> p_54694_;
-+   }
+         this.stateCache.add(p_54694_.getFlowing(8, true));
+         this.registerDefaultState(this.stateDefinition.any().setValue(LEVEL, Integer.valueOf(0)));
++        fluidStateCacheInitialized = true;
++        supplier = () -> p_54694_;
++    }
 +
-+   /**
-+    * @param fluid A fluid supplier such as {@link net.neoforged.neoforge.registries.DeferredHolder}
-+    */
-+   public LiquidBlock(java.util.function.Supplier<? extends FlowingFluid> fluid, BlockBehaviour.Properties p_54695_) {
-+      super(p_54695_);
-+      this.fluid = null;
-+      this.stateCache = Lists.newArrayList();
-+      this.registerDefaultState(this.stateDefinition.any().setValue(LEVEL, Integer.valueOf(0)));
-+      this.supplier = fluid;
-    }
++    /**
++     * @param fluid A fluid supplier such as {@link net.neoforged.neoforge.registries.DeferredHolder}
++     */
++    public LiquidBlock(java.util.function.Supplier<? extends FlowingFluid> fluid, BlockBehaviour.Properties p_54695_) {
++        super(p_54695_);
++        this.fluid = null;
++        this.stateCache = Lists.newArrayList();
++        this.registerDefaultState(this.stateDefinition.any().setValue(LEVEL, Integer.valueOf(0)));
++        this.supplier = fluid;
+     }
  
-    @Override
-@@ -85,6 +_,7 @@
-    @Override
-    public FluidState getFluidState(BlockState p_54765_) {
-       int i = p_54765_.getValue(LEVEL);
-+      if (!fluidStateCacheInitialized) initFluidStateCache();
-       return this.stateCache.get(Math.min(i, 8));
-    }
+     @Override
+@@ -109,6 +_,7 @@
+     @Override
+     public FluidState getFluidState(BlockState p_54765_) {
+         int i = p_54765_.getValue(LEVEL);
++        if (!fluidStateCacheInitialized) initFluidStateCache();
+         return this.stateCache.get(Math.min(i, 8));
+     }
  
-@@ -110,7 +_,7 @@
+@@ -134,7 +_,7 @@
  
-    @Override
-    public void onPlace(BlockState p_54754_, Level p_54755_, BlockPos p_54756_, BlockState p_54757_, boolean p_54758_) {
--      if (this.shouldSpreadLiquid(p_54755_, p_54756_, p_54754_)) {
-+      if (!net.neoforged.neoforge.fluids.FluidInteractionRegistry.canInteract(p_54755_, p_54756_)) {
-          p_54755_.scheduleTick(p_54756_, p_54754_.getFluidState().getType(), this.fluid.getTickDelay(p_54755_));
-       }
-    }
-@@ -126,11 +_,12 @@
+     @Override
+     public void onPlace(BlockState p_54754_, Level p_54755_, BlockPos p_54756_, BlockState p_54757_, boolean p_54758_) {
+-        if (this.shouldSpreadLiquid(p_54755_, p_54756_, p_54754_)) {
++        if (!net.neoforged.neoforge.fluids.FluidInteractionRegistry.canInteract(p_54755_, p_54756_)) {
+             p_54755_.scheduleTick(p_54756_, p_54754_.getFluidState().getType(), this.fluid.getTickDelay(p_54755_));
+         }
+     }
+@@ -150,11 +_,12 @@
  
-    @Override
-    public void neighborChanged(BlockState p_54709_, Level p_54710_, BlockPos p_54711_, Block p_54712_, BlockPos p_54713_, boolean p_54714_) {
--      if (this.shouldSpreadLiquid(p_54710_, p_54711_, p_54709_)) {
-+      if (!net.neoforged.neoforge.fluids.FluidInteractionRegistry.canInteract(p_54710_, p_54711_)) {
-          p_54710_.scheduleTick(p_54711_, p_54709_.getFluidState().getType(), this.fluid.getTickDelay(p_54710_));
-       }
-    }
+     @Override
+     public void neighborChanged(BlockState p_54709_, Level p_54710_, BlockPos p_54711_, Block p_54712_, BlockPos p_54713_, boolean p_54714_) {
+-        if (this.shouldSpreadLiquid(p_54710_, p_54711_, p_54709_)) {
++        if (!net.neoforged.neoforge.fluids.FluidInteractionRegistry.canInteract(p_54710_, p_54711_)) {
+             p_54710_.scheduleTick(p_54711_, p_54709_.getFluidState().getType(), this.fluid.getTickDelay(p_54710_));
+         }
+     }
  
-+   @Deprecated // FORGE: Use FluidInteractionRegistry#canInteract instead
-    private boolean shouldSpreadLiquid(Level p_54697_, BlockPos p_54698_, BlockState p_54699_) {
-       if (this.fluid.is(FluidTags.LAVA)) {
-          boolean flag = p_54697_.getBlockState(p_54698_.below()).is(Blocks.SOUL_SOIL);
-@@ -171,6 +_,25 @@
-          return new ItemStack(this.fluid.getBucket());
-       } else {
-          return ItemStack.EMPTY;
-+      }
-+   }
++    @Deprecated // FORGE: Use FluidInteractionRegistry#canInteract instead
+     private boolean shouldSpreadLiquid(Level p_54697_, BlockPos p_54698_, BlockState p_54699_) {
+         if (this.fluid.is(FluidTags.LAVA)) {
+             boolean flag = p_54697_.getBlockState(p_54698_.below()).is(Blocks.SOUL_SOIL);
+@@ -195,6 +_,25 @@
+             return new ItemStack(this.fluid.getBucket());
+         } else {
+             return ItemStack.EMPTY;
++        }
++    }
 +
-+   // Forge start
-+   private final java.util.function.Supplier<? extends net.minecraft.world.level.material.Fluid> supplier;
-+   public FlowingFluid getFluid() {
-+      return (FlowingFluid)supplier.get();
-+   }
++    // Forge start
++    private final java.util.function.Supplier<? extends net.minecraft.world.level.material.Fluid> supplier;
++    public FlowingFluid getFluid() {
++        return (FlowingFluid)supplier.get();
++    }
 +
-+   private boolean fluidStateCacheInitialized = false;
-+   protected synchronized void initFluidStateCache() {
-+      if (fluidStateCacheInitialized == false) {
-+         this.stateCache.add(getFluid().getSource(false));
++    private boolean fluidStateCacheInitialized = false;
++    protected synchronized void initFluidStateCache() {
++        if (fluidStateCacheInitialized == false) {
++            this.stateCache.add(getFluid().getSource(false));
 +
-+         for (int i = 1; i < 8; ++i)
-+            this.stateCache.add(getFluid().getFlowing(8 - i, false));
++            for (int i = 1; i < 8; ++i)
++                this.stateCache.add(getFluid().getFlowing(8 - i, false));
 +
-+         this.stateCache.add(getFluid().getFlowing(8, true));
-+         fluidStateCacheInitialized = true;
-       }
-    }
++            this.stateCache.add(getFluid().getFlowing(8, true));
++            fluidStateCacheInitialized = true;
+         }
+     }
  

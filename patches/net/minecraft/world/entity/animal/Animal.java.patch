@@ -1,20 +1,20 @@
 --- a/net/minecraft/world/entity/animal/Animal.java
 +++ b/net/minecraft/world/entity/animal/Animal.java
-@@ -211,6 +_,17 @@
+@@ -212,6 +_,17 @@
  
-    public void spawnChildFromBreeding(ServerLevel p_27564_, Animal p_27565_) {
-       AgeableMob ageablemob = this.getBreedOffspring(p_27564_, p_27565_);
-+      final net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent event = new net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent(this, p_27565_, ageablemob);
-+      final boolean cancelled = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled();
-+      ageablemob = event.getChild();
-+      if (cancelled) {
-+         //Reset the "inLove" state for the animals
-+         this.setAge(6000);
-+         p_27565_.setAge(6000);
-+         this.resetLove();
-+         p_27565_.resetLove();
-+         return;
-+      }
-       if (ageablemob != null) {
-          ageablemob.setBaby(true);
-          ageablemob.moveTo(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
+     public void spawnChildFromBreeding(ServerLevel p_27564_, Animal p_27565_) {
+         AgeableMob ageablemob = this.getBreedOffspring(p_27564_, p_27565_);
++        final net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent event = new net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent(this, p_27565_, ageablemob);
++        final boolean cancelled = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled();
++        ageablemob = event.getChild();
++        if (cancelled) {
++            //Reset the "inLove" state for the animals
++            this.setAge(6000);
++            p_27565_.setAge(6000);
++            this.resetLove();
++            p_27565_.resetLove();
++            return;
++        }
+         if (ageablemob != null) {
+             ageablemob.setBaby(true);
+             ageablemob.moveTo(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);

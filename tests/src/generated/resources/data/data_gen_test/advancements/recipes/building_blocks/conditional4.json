@@ -39,6 +39,5 @@
     "recipes": [
       "data_gen_test:conditional4"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

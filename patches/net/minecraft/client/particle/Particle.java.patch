@@ -1,19 +1,19 @@
 --- a/net/minecraft/client/particle/Particle.java
 +++ b/net/minecraft/client/particle/Particle.java
 @@ -244,4 +_,16 @@
-    public Optional<ParticleGroup> getParticleGroup() {
-       return Optional.empty();
-    }
+     public Optional<ParticleGroup> getParticleGroup() {
+         return Optional.empty();
+     }
 +
-+    /**
-+     * Forge added method that controls if a particle should be culled to it's bounding box.
-+     * Default behaviour is culling enabled
-+     */
-+    public boolean shouldCull() {
-+        return true;
-+    }
++     /**
++      * Forge added method that controls if a particle should be culled to it's bounding box.
++      * Default behaviour is culling enabled
++      */
++     public boolean shouldCull() {
++         return true;
++     }
 +
-+    public net.minecraft.world.phys.Vec3 getPos() {
-+       return new net.minecraft.world.phys.Vec3(this.x, this.y, this.z);
-+    }
++     public net.minecraft.world.phys.Vec3 getPos() {
++         return new net.minecraft.world.phys.Vec3(this.x, this.y, this.z);
++     }
  }

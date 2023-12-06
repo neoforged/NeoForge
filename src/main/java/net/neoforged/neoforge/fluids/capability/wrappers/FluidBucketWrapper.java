@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.fluids.capability.wrappers;
 
-import net.minecraft.core.Direction;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -13,23 +12,17 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MilkBucketItem;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Wrapper for vanilla and forge buckets.
  * Swaps between empty bucket and filled bucket of the correct type.
  */
-public class FluidBucketWrapper implements IFluidHandlerItem, ICapabilityProvider {
-    private final LazyOptional<IFluidHandlerItem> holder = LazyOptional.of(() -> this);
+public class FluidBucketWrapper implements IFluidHandlerItem {
 
     @NotNull
     protected ItemStack container;
@@ -142,11 +135,5 @@ public class FluidBucketWrapper implements IFluidHandlerItem, ICapabilityProvide
         }
 
         return FluidStack.EMPTY;
-    }
-
-    @Override
-    @NotNull
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing) {
-        return Capabilities.FLUID_HANDLER_ITEM.orEmpty(capability, holder);
     }
 }

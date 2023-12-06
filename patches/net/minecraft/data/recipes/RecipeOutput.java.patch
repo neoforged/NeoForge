@@ -1,15 +1,15 @@
 --- a/net/minecraft/data/recipes/RecipeOutput.java
 +++ b/net/minecraft/data/recipes/RecipeOutput.java
-@@ -2,8 +_,10 @@
- 
- import net.minecraft.advancements.Advancement;
+@@ -6,8 +_,10 @@
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.world.item.crafting.Recipe;
  
 -public interface RecipeOutput {
--   void accept(FinishedRecipe p_301033_);
+-    void accept(ResourceLocation p_312249_, Recipe<?> p_312328_, @Nullable AdvancementHolder p_312176_);
 +public interface RecipeOutput extends net.neoforged.neoforge.common.extensions.IRecipeOutputExtension {
-+   default void accept(FinishedRecipe p_301033_) {
-+      accept(p_301033_, new net.neoforged.neoforge.common.conditions.ICondition[0]);
-+   }
++    default void accept(ResourceLocation p_312249_, Recipe<?> p_312328_, @Nullable AdvancementHolder p_312176_) {
++        accept(p_312249_, p_312328_, p_312176_, new net.neoforged.neoforge.common.conditions.ICondition[0]);
++    }
  
-    Advancement.Builder advancement();
+     Advancement.Builder advancement();
  }
