@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
-@@ -229,6 +_,8 @@
-                 ItemStack itemstack1 = p_150438_.get();
-                 this.remoteSlots.set(p_150436_, itemstack1);
-                 if (this.synchronizer != null) {
-+                    // Forge: Only synchronize a slot change if the itemstack actually changed in a way that is relevant to the client (i.e. share tag changed)
-+                    if (!p_150437_.equals(itemstack, true))
-                     this.synchronizer.sendSlotChange(this, p_150436_, itemstack1);
-                 }
-             }
 @@ -404,6 +_,7 @@
                  ItemStack itemstack10 = this.getCarried();
                  p_150434_.updateTutorialInventoryAction(itemstack10, slot7.getItem(), clickaction);

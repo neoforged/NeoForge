@@ -6,11 +6,9 @@
 package net.neoforged.neoforge.common.extensions;
 
 import java.util.Map;
-import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
@@ -326,34 +324,6 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Get the NBT data to be sent to the client. The Item can control what data is kept in the tag.
-     *
-     * Note that this will sometimes be applied multiple times, the following MUST
-     * be supported:
-     * Item item = stack.getItem();
-     * NBTTagCompound nbtShare1 = item.getNBTShareTag(stack);
-     * stack.setTagCompound(nbtShare1);
-     * NBTTagCompound nbtShare2 = item.getNBTShareTag(stack);
-     * assert nbtShare1.equals(nbtShare2);
-     *
-     * @return The NBT tag
-     */
-    @Nullable
-    default CompoundTag getShareTag() {
-        return self().getItem().getShareTag(self());
-    }
-
-    /**
-     * Override this method to decide what to do with the NBT data received from
-     * getNBTShareTag().
-     *
-     * @param nbt Received NBT, can be null
-     */
-    default void readShareTag(@Nullable CompoundTag nbt) {
-        self().getItem().readShareTag(self(), nbt);
-    }
-
-    /**
      *
      * Should this item, when held, allow sneak-clicks to pass through to the underlying block?
      *
@@ -363,35 +333,6 @@ public interface IItemStackExtension {
      */
     default boolean doesSneakBypassUse(net.minecraft.world.level.LevelReader level, BlockPos pos, Player player) {
         return self().isEmpty() || self().getItem().doesSneakBypassUse(self(), level, pos, player);
-    }
-
-    /**
-     * Modeled after ItemStack.areItemStackTagsEqual
-     * Uses Item.getNBTShareTag for comparison instead of NBT and capabilities.
-     * Only used for comparing itemStacks that were transferred from server to client using Item.getNBTShareTag.
-     */
-    default boolean areShareTagsEqual(ItemStack other) {
-        CompoundTag shareTagA = self().getShareTag();
-        CompoundTag shareTagB = other.getShareTag();
-        if (shareTagA == null)
-            return shareTagB == null;
-        else
-            return shareTagB != null && shareTagA.equals(shareTagB);
-    }
-
-    /**
-     * Determines if the ItemStack is equal to the other item stack, including Item, Count, and NBT.
-     *
-     * @param other     The other stack
-     * @param limitTags True to use shareTag False to use full NBT tag
-     * @return true if equals
-     */
-    default boolean equals(ItemStack other, boolean limitTags) {
-        if (self().isEmpty())
-            return other.isEmpty();
-        else
-            return !other.isEmpty() && self().getCount() == other.getCount() && self().getItem() == other.getItem() &&
-                    (limitTags ? self().areShareTagsEqual(other) : Objects.equals(self().getTag(), other.getTag()));
     }
 
     /**

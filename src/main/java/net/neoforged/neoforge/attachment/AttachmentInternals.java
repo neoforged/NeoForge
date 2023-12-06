@@ -57,7 +57,7 @@ public final class AttachmentInternals {
         } else {
             itemstack = new ItemStack(item, count);
         }
-        itemstack.readShareTag(tag);
+        itemstack.setTag(tag);
         return itemstack;
     }
 
