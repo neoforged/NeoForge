@@ -22,6 +22,6 @@
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(T blockEntity) {
 +        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
-+        return net.minecraft.world.phys.AABB.encapsulatingFullBlocks(pos.offset(-1, 0, -1), pos.offset(2, 2, 2));
++        return net.minecraft.world.phys.AABB.encapsulatingFullBlocks(pos.offset(-1, 0, -1), pos.offset(1, 1, 1));
      }
  }
