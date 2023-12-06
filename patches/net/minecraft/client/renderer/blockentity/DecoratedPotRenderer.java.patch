@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/renderer/blockentity/DecoratedPotRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/DecoratedPotRenderer.java
+@@ -148,4 +_,10 @@
+             p_273495_.render(p_272899_, p_273173_.buffer(p_273582_, RenderType::entitySolid), p_273242_, p_273108_);
+         }
+     }
++
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(DecoratedPotBlockEntity blockEntity) {
++        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++        return new net.minecraft.world.phys.AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.3, pos.getZ() + 1.0);
++    }
+ }
