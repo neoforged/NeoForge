@@ -110,7 +110,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
     }
 
     public Stream<BlockPos> blocksBetween(int x, int y, int z, int length, int height, int width) {
-        final AABB bounds = new AABB(this.absolutePos(new BlockPos(x, y, z)), this.absolutePos(new BlockPos(x + length, y + height, z + width)));
+        final AABB bounds = AABB.encapsulatingFullBlocks(this.absolutePos(new BlockPos(x, y, z)), this.absolutePos(new BlockPos(x + length, y + height, z + width)));
         return BlockPos.MutableBlockPos.betweenClosedStream(bounds);
     }
 

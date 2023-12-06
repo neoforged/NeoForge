@@ -56,7 +56,7 @@ public class TestScreen extends AbstractTestScreen {
 
         final List<Test> tests = groups.stream().flatMap(it -> it.resolveAll().stream()).distinct().toList();
         this.groupableList = new GroupableList(() -> showAsGroup.getValue(), groups, () -> tests.stream()
-                .filter(test -> filterMode.getValue().test(framework, test)), minecraft, width, height, 50, height - 36, 9 + 2 + 2 + 2);
+                .filter(test -> filterMode.getValue().test(framework, test)), minecraft, width, height, 50, 9 + 2 + 2 + 2);
         this.suggestionProvider = s -> {
             if (showAsGroup.getValue()) {
                 updateSearchTextFieldSuggestion(this.searchTextField, s, groups, gr -> gr.title().getString());
@@ -80,14 +80,14 @@ public class TestScreen extends AbstractTestScreen {
 
         addRenderableWidget(Button.builder(Component.literal("Disable"), pButton -> groupableList.getSelected().enable(false)).bounds(searchTextField.getX() - 43, searchTextField.getY(), 40, 20).build(builder -> new Button(builder) {
             @Override
-            public void render(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            public void renderWidget(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
                 this.active = groupableList != null && groupableList.getSelected() != null && groupableList.getSelected().canDisable();
                 super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
             }
         }));
         addRenderableWidget(Button.builder(Component.literal("Enable"), pButton -> groupableList.getSelected().enable(true)).bounds(searchTextField.getX() + searchTextField.getWidth() + 3, searchTextField.getY(), 40, 20).build(builder -> new Button(builder) {
             @Override
-            public void render(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            public void renderWidget(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
                 this.active = groupableList != null && groupableList.getSelected() != null && groupableList.getSelected().canEnable();
                 super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
             }

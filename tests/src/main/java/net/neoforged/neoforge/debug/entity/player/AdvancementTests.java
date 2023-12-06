@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.FrameType;
+import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
@@ -98,7 +98,7 @@ public class AdvancementTests {
                 List.of((registries, saver, existingFileHelper) -> {
                     Advancement.Builder.advancement()
                             .parent(new ResourceLocation("story/root"))
-                            .display(Items.ANVIL, Component.literal("Named!"), Component.literal("Get a named item"), null, FrameType.TASK, true, true, false)
+                            .display(Items.ANVIL, Component.literal("Named!"), Component.literal("Get a named item"), null, AdvancementType.TASK, true, true, false)
                             .addCriterion("has_named_item", InventoryChangeTrigger.TriggerInstance.hasItems(new CustomNamePredicate(1, 2, serializer.get()).toVanilla()))
                             .save(saver, new ResourceLocation(reg.modId(), "named_item"), existingFileHelper);
                 })));

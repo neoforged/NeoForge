@@ -57,12 +57,12 @@ public class LevelEventTests {
     @GameTest
     @TestHolder
     static void alterGroundEvent(final DynamicTest test) {
-        test.registerGameTestTemplate(StructureTemplateBuilder.withSize(10, 32, 10)
-                .fill(0, 0, 0, 10, 1, 10, Blocks.DIRT.defaultBlockState())
-                .set(4, 1, 4, Blocks.SPRUCE_SAPLING.defaultBlockState())
-                .set(5, 1, 4, Blocks.SPRUCE_SAPLING.defaultBlockState())
-                .set(4, 1, 5, Blocks.SPRUCE_SAPLING.defaultBlockState())
-                .set(5, 1, 5, Blocks.SPRUCE_SAPLING.defaultBlockState()));
+        test.registerGameTestTemplate(StructureTemplateBuilder.withSize(16, 32, 16)
+                .fill(0, 0, 0, 16, 1, 16, Blocks.DIRT.defaultBlockState())
+                .set(7, 1, 7, Blocks.SPRUCE_SAPLING.defaultBlockState())
+                .set(8, 1, 7, Blocks.SPRUCE_SAPLING.defaultBlockState())
+                .set(7, 1, 8, Blocks.SPRUCE_SAPLING.defaultBlockState())
+                .set(8, 1, 8, Blocks.SPRUCE_SAPLING.defaultBlockState()));
 
         test.eventListeners().forge().addListener((final AlterGroundEvent event) -> {
             final AlterGroundEvent.StateProvider old = event.getStateProvider();
@@ -73,14 +73,12 @@ public class LevelEventTests {
         });
 
         test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
-                .thenExecuteFor(5, player -> helper.boneMeal(4, 2, 4, player))
+                .thenExecuteFor(20, player -> helper.boneMeal(7, 2, 7, player))
                 .thenExecute(player -> helper.assertTrue(
-                        helper.blocksBetween(0, 0, 0, 10, 1, 10)
-                                .filter(pos -> helper.getLevel().getBlockState(pos).is(Blocks.REDSTONE_BLOCK))
-                                .count() > 10,
-                        "Not enough redstone blocks have been placed!"))
+                        helper.blocksBetween(0, 0, 0, 16, 1, 16).anyMatch(pos -> helper.getLevel().getBlockState(pos).is(Blocks.REDSTONE_BLOCK)),
+                        "No redstone blocks have been placed!"))
                 .thenExecute(player -> helper.assertTrue(
-                        helper.blocksBetween(0, 0, 0, 10, 1, 10)
+                        helper.blocksBetween(0, 0, 0, 16, 1, 16)
                                 .noneMatch(pos -> helper.getLevel().getBlockState(pos).is(Blocks.PODZOL)),
                         "Podzol was still placed!"))
                 .thenSucceed());

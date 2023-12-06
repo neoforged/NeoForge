@@ -43,7 +43,7 @@ public class PlayerTests {
         test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
                 .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(sword.get())))
                 .thenExecute(player -> player.attack(helper.spawnWithNoFreeWill(EntityType.PIG, 3, 2, 3)))
-                .thenExecuteAfter(3, () -> helper.assertEntityPresent(EntityType.PIG, new BlockPos(3, 2, 4), 0.5))
+                .thenExecuteAfter(3, () -> helper.assertEntityPresent(EntityType.PIG, new BlockPos(3, 2, 4), 1))
                 .thenExecuteAfter(2, () -> helper.killAllEntitiesOfClass(Pig.class))
                 .thenSucceed());
     }

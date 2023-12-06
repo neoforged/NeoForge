@@ -50,13 +50,13 @@ public abstract class AbstractTestScreen extends Screen {
     protected final class GroupableList extends ObjectSelectionList<GroupableList.Entry> {
         private final Function<String, List<? extends Entry>> entryGetter;
 
-        public GroupableList(Function<String, List<? extends Entry>> entryGetter, Minecraft pMinecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight) {
-            super(pMinecraft, pWidth, pHeight, pY0, pY1, pItemHeight);
+        public GroupableList(Function<String, List<? extends Entry>> entryGetter, Minecraft pMinecraft, int pWidth, int pHeight, int pY, int pItemHeight) {
+            super(pMinecraft, pWidth, pHeight, pY, pItemHeight);
             this.entryGetter = entryGetter;
         }
 
-        public GroupableList(BooleanSupplier isGrouped, List<Group> groups, Supplier<Stream<Test>> tests, Minecraft pMinecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight) {
-            super(pMinecraft, pWidth, pHeight, pY0, pY1, pItemHeight);
+        public GroupableList(BooleanSupplier isGrouped, List<Group> groups, Supplier<Stream<Test>> tests, Minecraft pMinecraft, int pWidth, int pHeight, int pY, int pItemHeight) {
+            super(pMinecraft, pWidth, pHeight, pY, pItemHeight);
             this.entryGetter = search -> isGrouped.getAsBoolean()
                     ? groups.stream()
                             .filter(it -> it.title().getString().toLowerCase(Locale.ROOT).contains(search))
@@ -88,8 +88,8 @@ public abstract class AbstractTestScreen extends Screen {
         }
 
         @Override
-        public void render(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            super.renderWidget(pPoseStack, pMouseX, pMouseY, pPartialTick);
             renderTooltips(pPoseStack, pMouseX, pMouseY);
         }
 

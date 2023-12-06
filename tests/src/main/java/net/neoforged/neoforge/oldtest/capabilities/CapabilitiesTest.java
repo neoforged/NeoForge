@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.debug.capabilities;
+package net.neoforged.neoforge.oldtest.capabilities;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;

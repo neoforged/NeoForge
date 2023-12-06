@@ -9,17 +9,28 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.ParsedCommandNode;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.CommandEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -28,6 +39,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import org.jetbrains.annotations.Nullable;
 
 @ForEachTest(groups = "chat.command")
 public class CommandTests {
@@ -109,17 +121,46 @@ public class CommandTests {
                             })));
         });
 
-        test.onGameTest(helper -> {
-            final Player player = helper.makeMockPlayer();
-            helper.startSequence()
-                    .thenExecute(() -> helper.assertTrue(
-                            helper.getLevel().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), "/enumargumenttest ABC") == 0,
-                            "Invalid command was successfully executed"))
-                    .thenExecute(() -> helper.assertTrue(
-                            helper.getLevel().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), "/enumargumenttest NV") == 1,
-                            "Valid command was not executed"))
-                    .thenExecuteAfter(3, () -> helper.assertLivingEntityHasMobEffect(player, MobEffects.NIGHT_VISION, 0))
-                    .thenSucceed();
-        });
+        test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
+                .thenSequence((seq, player) -> seq
+                        .thenMap(p -> ErrorCatchingStack.createCommandSourceStack(player.get(), Commands.LEVEL_ADMINS))
+                        .thenExecute(stack -> helper.getLevel().getServer().getCommands().performPrefixedCommand(stack, "/enumargumenttest ABC"))
+                        .thenIdle(5) // Keep in mind that if a command errors, we have both the "error" failure and the failure with the position of the error
+                        .thenExecute(stack -> helper.assertTrue(stack.errors.size() == 2, "Invalid command was successfully executed"))
+
+                        .thenExecute(stack -> helper.getLevel().getServer().getCommands().performPrefixedCommand(stack, "/enumargumenttest NV"))
+                        .thenIdle(5)
+                        .thenExecute(stack -> helper.assertTrue(stack.errors.size() == 2, "Valid command was not executed"))
+                        .thenExecuteAfter(3, () -> helper.assertLivingEntityHasMobEffect(player.get(), MobEffects.NIGHT_VISION, 0))
+                        .thenSucceed()));
+    }
+
+    public final static class ErrorCatchingStack extends CommandSourceStack {
+
+        public static ErrorCatchingStack createCommandSourceStack(Player player, int perm) {
+            return new ErrorCatchingStack(
+                    player,
+                    player.position(),
+                    player.getRotationVector(),
+                    player.level() instanceof ServerLevel ? (ServerLevel)player.level() : null,
+                    perm,
+                    player.getName().getString(),
+                    player.getDisplayName(),
+                    player.level().getServer(),
+                    player
+            );
+        }
+
+        public ErrorCatchingStack(CommandSource p_81302_, Vec3 p_81303_, Vec2 p_81304_, ServerLevel p_81305_, int p_81306_, String p_81307_, Component p_81308_, MinecraftServer p_81309_, @Nullable Entity p_81310_) {
+            super(p_81302_, p_81303_, p_81304_, p_81305_, p_81306_, p_81307_, p_81308_, p_81309_, p_81310_);
+        }
+
+        final List<Component> errors = new ArrayList<>();
+
+        @Override
+        public void sendFailure(Component failure) {
+            errors.add(failure);
+            super.sendFailure(failure);
+        }
     }
 }
