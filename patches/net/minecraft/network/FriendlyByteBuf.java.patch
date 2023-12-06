@@ -9,30 +9,13 @@
      public static final int DEFAULT_NBT_QUOTA = 2097152;
      private final ByteBuf source;
      public static final short MAX_STRING_LENGTH = 32767;
-@@ -564,6 +_,15 @@
-     }
- 
-     public FriendlyByteBuf writeItem(ItemStack p_130056_) {
-+        return writeItemStack(p_130056_, true);
-+    }
-+
-+    /**
-+     * Most ItemStack serialization is Server to Client,and doesn't need to know the FULL tag details.
-+     * One exception is items from the creative menu, which must be sent from Client to Server with their full NBT.
-+     * If you want to send the FULL tag set limitedTag to false
-+     */
-+    public FriendlyByteBuf writeItemStack(ItemStack p_130056_, boolean limitedTag) {
-         if (p_130056_.isEmpty()) {
-             this.writeBoolean(false);
-         } else {
 @@ -572,9 +_,10 @@
              this.writeId(BuiltInRegistries.ITEM, item);
              this.writeByte(p_130056_.getCount());
              CompoundTag compoundtag = null;
 -            if (item.canBeDepleted() || item.shouldOverrideMultiplayerNbt()) {
--                compoundtag = p_130056_.getTag();
 +            if (item.isDamageable(p_130056_) || item.shouldOverrideMultiplayerNbt()) {
-+                compoundtag = limitedTag ? p_130056_.getShareTag() : p_130056_.getTag();
+                 compoundtag = p_130056_.getTag();
              }
 +            compoundtag = net.neoforged.neoforge.attachment.AttachmentInternals.addAttachmentsToTag(compoundtag, p_130056_, false);
  

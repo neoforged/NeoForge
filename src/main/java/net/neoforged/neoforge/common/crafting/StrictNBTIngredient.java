@@ -20,7 +20,7 @@ public class StrictNBTIngredient extends Ingredient {
             ItemStack.CODEC.fieldOf("stack")).xmap(StrictNBTIngredient::new, StrictNBTIngredient::getStack).codec();
 
     protected StrictNBTIngredient(ItemStack stack) {
-        super(Stream.of(new Ingredient.ItemValue(stack, StrictNBTIngredient::compareStacksWithNbt)), NeoForgeMod.STRICT_NBT_INGREDIENT_TYPE);
+        super(Stream.of(new Ingredient.ItemValue(stack, ItemStack::matches)), NeoForgeMod.STRICT_NBT_INGREDIENT_TYPE);
     }
 
     /** Creates a new ingredient matching the given stack and tag */
@@ -34,13 +34,7 @@ public class StrictNBTIngredient extends Ingredient {
 
     @Override
     protected boolean areStacksEqual(ItemStack left, ItemStack right) {
-        return compareStacksWithNbt(left, right);
-    }
-
-    private static boolean compareStacksWithNbt(ItemStack left, ItemStack right) {
-        return left.getItem() == right.getItem()
-                && left.getDamageValue() == right.getDamageValue()
-                && left.areShareTagsEqual(right);
+        return ItemStack.matches(left, right);
     }
 
     @Override
