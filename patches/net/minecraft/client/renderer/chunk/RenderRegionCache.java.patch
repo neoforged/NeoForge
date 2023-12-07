@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/renderer/chunk/RenderRegionCache.java
++++ b/net/minecraft/client/renderer/chunk/RenderRegionCache.java
+@@ -44,7 +_,8 @@
+                 }
+             }
+ 
+-            return new RenderChunkRegion(p_200466_, i, j, arenderchunk);
++            var modelDataManager = p_200466_.getModelDataManager().snapshotChunkRegion(i, j, k, l);
++            return new RenderChunkRegion(p_200466_, i, j, arenderchunk, modelDataManager);
+         }
+     }
+ 
