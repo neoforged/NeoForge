@@ -77,6 +77,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.TickRateManager;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectUtil;
@@ -146,6 +147,7 @@ import net.neoforged.neoforge.event.ItemStackedOnOtherEvent;
 import net.neoforged.neoforge.event.ModMismatchEvent;
 import net.neoforged.neoforge.event.RegisterStructureConversionsEvent;
 import net.neoforged.neoforge.event.ServerChatEvent;
+import net.neoforged.neoforge.event.TickRateManagerEvent;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
@@ -777,6 +779,18 @@ public class CommonHooks {
             ret.freeze();
 
         return ret;
+    }
+
+    public static void onTickRateUpdated(TickRateManager tickRateManager) {
+        NeoForge.EVENT_BUS.post(new TickRateManagerEvent.Updated(tickRateManager));
+    }
+
+    public static void onTickFreeze(TickRateManager tickRateManager) {
+        NeoForge.EVENT_BUS.post(new TickRateManagerEvent.Freeze(tickRateManager));
+    }
+
+    public static void onTickStep(TickRateManager tickRateManager) {
+        NeoForge.EVENT_BUS.post(new TickRateManagerEvent.Step(tickRateManager));
     }
 
     private static class LootTableContext {
