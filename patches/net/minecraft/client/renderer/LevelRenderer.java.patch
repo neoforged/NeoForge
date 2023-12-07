@@ -194,7 +194,7 @@
                  } else if (this.minecraft.options.prioritizeChunkUpdates().get() == PrioritizeChunkUpdates.PLAYER_AFFECTED) {
                      flag = sectionrenderdispatcher$rendersection.isDirtyFromPlayer();
                  }
-@@ -2585,7 +_,23 @@
+@@ -2585,7 +_,33 @@
          this.viewArea.setDirty(p_109502_, p_109503_, p_109504_, p_109505_);
      }
  
@@ -204,6 +204,16 @@
 +
 +    public int getTicks() {
 +        return this.ticks;
++    }
++
++    private final List<SectionRenderDispatcher.RenderSection> visibleSectionsView = java.util.Collections.unmodifiableList(visibleSections);
++    public List<SectionRenderDispatcher.RenderSection> getVisibleSections() {
++        return visibleSectionsView;
++    }
++
++    private final Set<BlockEntity> globalBlockEntitiesView = java.util.Collections.unmodifiableSet(globalBlockEntities);
++    public Set<BlockEntity> getGlobalBlockEntities() {
++        return globalBlockEntitiesView;
 +    }
 +
 +    /**

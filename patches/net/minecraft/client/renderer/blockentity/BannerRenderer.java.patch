@@ -1,0 +1,14 @@
+--- a/net/minecraft/client/renderer/blockentity/BannerRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/BannerRenderer.java
+@@ -139,4 +_,11 @@
+                 );
+         }
+     }
++
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(BannerBlockEntity blockEntity) {
++        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++        boolean standing = blockEntity.getBlockState().getBlock() instanceof BannerBlock;
++        return net.minecraft.world.phys.AABB.encapsulatingFullBlocks(pos, standing ? pos.above() : pos.below());
++    }
+ }
