@@ -20,7 +20,8 @@ public interface IAttachmentHolder {
     /**
      * Returns {@code true} if there is a data attachment of the give type, {@code false} otherwise.
      */
-    default boolean hasData(Supplier<AttachmentType<?>> type) {
+    default <T> boolean hasData(Supplier<AttachmentType<T>> type) {
+        //Note: The unused T generic is necessary so that DeferredHolders can be properly matched as a Supplier
         return hasData(type.get());
     }
 
