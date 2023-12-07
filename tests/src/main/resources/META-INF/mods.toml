@@ -3,7 +3,7 @@ loaderVersion="[1,)"
 license="LGPL v2.1"
 
 [[mods]]
-    modId="eventtests"
+    modId="neotests"
 [[mods]]
     modId="client_command_test"
 [[mods]]
@@ -13,12 +13,8 @@ license="LGPL v2.1"
 [[mods]]
     modId="potentialspawnsevent_test"
 [[mods]]
-    modId="block_grow_feature_test"
-[[mods]]
     modId="biome_modifiers_test"
 
-[[mods]]
-    modId="advancement_event_test"
 [[mods]]
     modId="shader_resources_test"
 [[mods]]
@@ -26,14 +22,8 @@ license="LGPL v2.1"
 [[mods]]
     modId="deferred_work_queue_test"
 [[mods]]
-    modId="custom_game_rule_test"
-[[mods]]
     modId="custom_preset_editor_test"
-[[mods]]
-    modId="level_sensitive_light_block_test"
 
-[[mods]]
-    modId="living_swap_items_event_test"
 [[mods]]
     modId="custom_break_sound_test"
 
@@ -50,23 +40,7 @@ modId="containertypetest"
 [[mods]]
 modId="potion_event_test"
 [[mods]]
-modId="base_block_place_event_test"
-[[mods]]
-modId="farmland_trample_test"
-[[mods]]
-modId="neighbor_notify_event_test"
-[[mods]]
-modId="block_place_event_test"
-[[mods]]
 modId="slipperiness_test"
-[[mods]]
-modId="vanilla_game_event_test"
-[[mods]]
-modId="custom_slime_block_test"
-[[mods]]
-modId="client_chat_event_test"
-[[mods]]
-modId="command_event_test"
 [[mods]]
 modId="entity_selector_test"
 [[mods]]
@@ -78,11 +52,7 @@ modId="milk_fluid_test"
 [[mods]]
 modId="data_gen_test"
 [[mods]]
-modId="piston_event_test"
-[[mods]]
 modId="flower_pot_test"
-[[mods]]
-modId="player_xp_event_test"
 [[mods]]
 modId="new_model_loader_test"
 [[mods]]
@@ -93,8 +63,6 @@ modId="chunkwatchworldtest"
 modId="trsr_transformer_test"
 [[mods]]
 modId="nameplate_render_test"
-[[mods]]
-modId="global_loot_test"
 [[mods]]
 modId="custom_plant_type_test"
 [[mods]]
@@ -117,10 +85,6 @@ modId="ender_mask_test"
 modId="custom_head_test"
 [[mods]]
 modId="raid_enum_test"
-[[mods]]
-modId="player_name_event_test"
-[[mods]]
-modId="tool_interact_test"
 [[mods]]
 modId="custom_elytra_test"
 [[mods]]
@@ -152,10 +116,6 @@ modId="worldgen_registry_desync_test"
 [[mods]]
 modId="add_entity_attribute_test"
 [[mods]]
-modId="enum_argument_test"
-[[mods]]
-modId="entity_teleport_event_test"
-[[mods]]
 modId="fake_player_test"
 [[mods]]
 modId="text_linear_filtering_test"
@@ -170,11 +130,7 @@ modId="custom_sprite_source_test"
 [[mods]]
 modId="dimension_settings_test"
 [[mods]]
-modId="player_attack_knockback_test"
-[[mods]]
 modId="entity_renderer_events_test"
-[[mods]]
-modId="send_datapacks_to_client"
 [[mods]]
 modId="remove_tag_datagen_test"
 [[mods]]
@@ -190,13 +146,7 @@ modId="custom_shield_test"
 [[mods]]
 modId="item_attachment_sync_test"
 [[mods]]
-modId="gui_layer_test"
-[[mods]]
 modId="add_pack_finders_test"
-[[mods]]
-modId="be_onload_test"
-[[mods]]
-modId="forge_spawnegg_test"
 [[mods]]
 modId="custom_tooltip_test"
 [[mods]]
@@ -207,8 +157,6 @@ modId="permissiontest"
 modId="part_entity_test"
 [[mods]]
 modId="capabilities_test"
-[[mods]]
-modId="audio_stream_test"
 [[mods]]
 modId="custom_mob_bucket_test"
 [[mods]]
@@ -238,8 +186,6 @@ modId="fluid_util_test"
 [[mods]]
 modId="login_packet_split_test"
 [[mods]]
-modId="potion_size_event_test"
-[[mods]]
 modId="recipe_book_extension_test"
 [[mods]]
 modId="hide_neighbor_face_test"
@@ -251,8 +197,6 @@ modId="server_world_creation_test"
 modId="valid_railshape_test"
 [[mods]]
 modId="player_negotiation_event_test"
-[[mods]]
-modId="custom_rarity_test"
 [[modsDisabled]]
 modId="data_pack_registries_test"
 [[mods]]
@@ -292,13 +236,7 @@ modId="chunk_event_load_new_chunk_test"
 [[mods]]
 modId="custom_fluid_container_test"
 [[mods]]
-modId="alter_ground_event_test"
-[[mods]]
-modId="keymapping_test"
-[[mods]]
 modId="player_spawn_phantoms_event_test"
-[[mods]]
-modId="custom_predicate_test"
 [[mods]]
 modId="conditional_codec_test"
 [[mods]]

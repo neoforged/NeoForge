@@ -22,3 +22,5 @@ dynamicProjects {
 
 include ':tests'
 project(":tests").projectDir = file("tests")
+
+include ':testframework'

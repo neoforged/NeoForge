@@ -1,0 +1,10 @@
+{
+    "sine_wave": {
+        "sounds": [
+            {
+                "name": "neotests_audio_stream_test:empty",
+                "stream": true
+            }
+        ]
+    }
+}

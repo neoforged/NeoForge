@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'com.diffplug.spotless'
+    id 'net.neoforged.licenser'
+    id 'net.neoforged.gradle.platform'
+}
+
+repositories {
+    maven {
+        name 'Mojang'
+        url 'https://libraries.minecraft.net'
+    }
+    maven {
+        name 'NeoForged'
+        url 'https://maven.neoforged.net/releases'
+    }
+}
+
+dependencies {
+    implementation project(':neoforge')
+
+    compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
+    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+}
+
+license {
+    header = rootProject.file('codeformat/HEADER.txt')
+    include '**/*.java'
+}
+
+spotless {
+    java {
+        endWithNewline()
+        indentWithSpaces()
+        removeUnusedImports()
+        toggleOffOn()
+        eclipse().configFile rootProject.file('codeformat/formatter-config.xml')
+        importOrder()
+    }
+}

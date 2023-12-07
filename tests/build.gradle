@@ -4,6 +4,7 @@ apply plugin: 'com.diffplug.spotless'
 apply plugin: 'net.neoforged.licenser'
 
 def neoforgeProject = project(':neoforge')
+def testframeworkProject = project(':testframework')
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(project.java_version))
 
@@ -29,6 +30,7 @@ sourceSets {
 
 dependencies {
     implementation neoforgeProject
+    implementation testframeworkProject
 
     implementation "org.junit.jupiter:junit-jupiter-api:${project.jupiter_api_version}"
     implementation "org.junit.vintage:junit-vintage-engine:${project.vintage_engine_version}"
@@ -45,10 +47,10 @@ runs {
     server {
         configure neoforgeProject.runTypes.server
     }
-    "GameTest Server" {
+    gameTestServer {
         configure neoforgeProject.runTypes.gameTestServer
     }
-    "GameTest Client" {
+    gameTestClient {
         configure neoforgeProject.runTypes.gameTestClient
     }
     data {
@@ -56,7 +58,6 @@ runs {
 
         programArguments.addAll '--flat', '--all', '--validate',
                 '--mod', 'data_gen_test',
-                '--mod', 'piston_event_test',
                 '--mod', 'global_loot_test',
                 '--mod', 'scaffolding_test',
                 '--mod', 'custom_tag_types_test',
@@ -69,6 +70,8 @@ runs {
                 '--mod', 'structure_modifiers_test',
                 '--mod', 'custom_preset_editor_test',
                 '--mod', 'custom_predicate_test',
+                '--mod', 'neotests',
+                '--existing-mod', 'testframework',
                 '--existing', sourceSets.main.resources.srcDirs[0].absolutePath
 
         final File gameDir = project.file("runs/${name}") as File
@@ -83,6 +86,7 @@ runs {
 runs.configureEach {
     dependsOn(neoforgeProject.runtime.assets, neoforgeProject.runtime.natives)
     modSource neoforgeProject.sourceSets.main
+    modSource testframeworkProject.sourceSets.main
 }
 
 afterEvaluate {
