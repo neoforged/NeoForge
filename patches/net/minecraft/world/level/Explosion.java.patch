@@ -1,21 +1,5 @@
 --- a/net/minecraft/world/level/Explosion.java
 +++ b/net/minecraft/world/level/Explosion.java
-@@ -57,6 +_,7 @@
-     private final SoundEvent explosionSound;
-     private final ObjectArrayList<BlockPos> toBlow = new ObjectArrayList<>();
-     private final Map<Player, Vec3> hitPlayers = Maps.newHashMap();
-+    private final Vec3 position;
- 
-     public static DamageSource getDefaultDamageSource(Level p_312716_, @Nullable Entity p_312608_) {
-         return p_312716_.damageSources().explosion(p_312608_, getIndirectSourceEntityInternal(p_312608_));
-@@ -163,6 +_,7 @@
-         this.smallExplosionParticles = p_312158_;
-         this.largeExplosionParticles = p_311904_;
-         this.explosionSound = p_312640_;
-+        this.position = new Vec3(this.x, this.y, this.z);
-     }
- 
-     private ExplosionDamageCalculator makeDamageCalculator(@Nullable Entity p_46063_) {
 @@ -267,6 +_,7 @@
          int j2 = Mth.floor(this.z - (double)f2 - 1.0);
          int j1 = Mth.floor(this.z + (double)f2 + 1.0);
@@ -24,19 +8,3 @@
          Vec3 vec3 = new Vec3(this.x, this.y, this.z);
  
          for(Entity entity : list) {
-@@ -422,6 +_,15 @@
- 
-     public List<BlockPos> getToBlow() {
-         return this.toBlow;
-+    }
-+
-+    public Vec3 getPosition() {
-+        return this.position;
-+    }
-+
-+    @Nullable
-+    public Entity getExploder() {
-+        return this.source;
-     }
- 
-     public Explosion.BlockInteraction getBlockInteraction() {
