@@ -12,7 +12,7 @@
     public static final LootDataType<LootItemCondition> PREDICATE = new LootDataType<>(LootItemConditions.CODEC, "predicates", createSimpleValidator());
     public static final LootDataType<LootItemFunction> MODIFIER = new LootDataType<>(LootItemFunctions.CODEC, "item_modifiers", createSimpleValidator());
 -   public static final LootDataType<LootTable> TABLE = new LootDataType<>(LootTable.CODEC, "loot_tables", createLootTableValidator());
-+   public static final LootDataType<LootTable> TABLE = new LootDataType<>(LootTable.CODEC, "loot_tables", createLootTableValidator(), LootTable.EMPTY, LootTable::setLootTableId);
++   public static final LootDataType<LootTable> TABLE = new LootDataType<>(LootTable.CODEC, "loot_tables", net.neoforged.neoforge.common.CommonHooks.validateLootTable(), LootTable.EMPTY, LootTable::setLootTableId);
     private final Codec<T> codec;
     private final String directory;
     private final LootDataType.Validator<T> validator;
