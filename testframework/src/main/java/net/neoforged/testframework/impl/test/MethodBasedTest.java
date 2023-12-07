@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.gametest.framework.GameTest;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.gametest.EmptyTemplate;
-import net.neoforged.testframework.impl.HackyReflection;
+import net.neoforged.testframework.impl.ReflectionUtils;
 
 public class MethodBasedTest extends AbstractTest.Dynamic {
     protected MethodHandle handle;
@@ -22,7 +22,7 @@ public class MethodBasedTest extends AbstractTest.Dynamic {
 
         configureFrom(AnnotationHolder.method(method));
 
-        this.handle = HackyReflection.handle(method);
+        this.handle = ReflectionUtils.handle(method);
     }
 
     public MethodBasedTest bindTo(Object target) {

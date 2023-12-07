@@ -7,7 +7,7 @@ package net.neoforged.testframework.gametest;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
-import cpw.mods.modlauncher.api.INameMappingService;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
@@ -28,7 +28,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
-import net.neoforged.testframework.impl.HackyReflection;
+import net.neoforged.testframework.impl.ReflectionUtils;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -36,7 +36,7 @@ public class StructureTemplateBuilder implements TemplateBuilderHelper<Structure
     private static final FieldHandle<StructureTemplate, List<StructureTemplate.Palette>> PALETTES = FieldHandle.getFor(StructureTemplate.class, "palettes");
     private static final FieldHandle<StructureTemplate, List<StructureTemplate.StructureEntityInfo>> ENTITY_INFO_LIST = FieldHandle.getFor(StructureTemplate.class, "entityInfoList");
     private static final FieldHandle<StructureTemplate, Vec3i> SIZE = FieldHandle.getFor(StructureTemplate.class, "size");
-    private static final MethodHandle PALETTE_CONSTRUCTOR = HackyReflection.constructor(StructureTemplate.Palette.class, MethodType.methodType(void.class, List.class));
+    private static final MethodHandle PALETTE_CONSTRUCTOR = ReflectionUtils.constructor(StructureTemplate.Palette.class, MethodType.methodType(void.class, List.class));
 
     private final Vec3i size;
     private final Map<BlockPos, StructureTemplate.StructureBlockInfo> blocks = new LinkedHashMap<>();
@@ -109,10 +109,8 @@ public class StructureTemplateBuilder implements TemplateBuilderHelper<Structure
 
         @SuppressWarnings("unchecked")
         static <I, T> FieldHandle<I, T> getFor(Class<I> clazz, String fieldName) {
-            fieldName = ObfuscationReflectionHelper.remapName(INameMappingService.Domain.FIELD, fieldName);
-            final Field field = HackyReflection.getField(clazz, fieldName);
-            final MethodHandle handle = HackyReflection.fieldHandle(field);
-            final long offset = HackyReflection.UNSAFE.objectFieldOffset(field);
+            final Field field = ReflectionUtils.getField(clazz, fieldName);
+            final MethodHandle handle = ReflectionUtils.fieldHandle(field);
             return new FieldHandle<>() {
                 @Override
                 public T get(I instance) {
@@ -125,7 +123,7 @@ public class StructureTemplateBuilder implements TemplateBuilderHelper<Structure
 
                 @Override
                 public void set(I instance, T value) {
-                    HackyReflection.UNSAFE.putObject(instance, offset, value);
+                    ObfuscationReflectionHelper.setPrivateValue(clazz, instance, value, fieldName);
                 }
             };
         }

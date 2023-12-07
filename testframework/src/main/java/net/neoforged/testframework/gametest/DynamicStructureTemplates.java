@@ -21,7 +21,8 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
-import net.neoforged.testframework.impl.HackyReflection;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.testframework.impl.ReflectionUtils;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -33,17 +34,17 @@ public class DynamicStructureTemplates {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void setup(StructureTemplateManager manager) throws Throwable {
-        final List sources = new ArrayList(HackyReflection.<List>getInstanceField(manager, SOURCES_FIELD));
+        final List sources = new ArrayList(ReflectionUtils.<List>getInstanceField(manager, SOURCES_FIELD));
 
         final Class sourceClazz = Stream.of(StructureTemplateManager.class.getDeclaredClasses())
                 .filter(it -> it.getSimpleName().equals("Source")).findFirst().orElseThrow();
-        final MethodHandle ctor = HackyReflection.constructor(sourceClazz, MethodType.methodType(void.class, Function.class, Supplier.class));
+        final MethodHandle ctor = ReflectionUtils.constructor(sourceClazz, MethodType.methodType(void.class, Function.class, Supplier.class));
 
         final Function<ResourceLocation, Optional<StructureTemplate>> loader = this::load;
         final Supplier<Stream<ResourceLocation>> lister = this::list;
         sources.add(ctor.invokeWithArguments(loader, lister));
 
-        HackyReflection.setInstanceField(manager, SOURCES_FIELD, sources);
+        ObfuscationReflectionHelper.setPrivateValue(StructureTemplateManager.class, manager, sources, SOURCES_FIELD);
 
         LogUtils.getLogger().debug("Injected dynamic template source in manager {}", manager);
     }

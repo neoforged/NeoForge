@@ -41,7 +41,7 @@ public final class GameTestRegistration {
                             data.rotation(), data.maxTicks(), data.setupTicks(),
                             data.required(), data.requiredSuccesses(), data.maxAttempts(),
                             rethrow(helper -> {
-                                HackyReflection.addListener(helper, new GameTestListener() {
+                                ReflectionUtils.addListener(helper, new GameTestListener() {
                                     @Override
                                     public void testStructureLoaded(GameTestInfo info) {
 

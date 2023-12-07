@@ -10,7 +10,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.testframework.impl.HackyReflection;
+import net.neoforged.testframework.impl.ReflectionUtils;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -50,7 +50,7 @@ public interface TestListener {
     @ApiStatus.Internal
     static TestListener instantiate(Class<? extends TestListener> clazz) {
         try {
-            return (TestListener) HackyReflection.constructor(clazz, MethodType.methodType(void.class)).invokeWithArguments(List.of());
+            return (TestListener) ReflectionUtils.constructor(clazz, MethodType.methodType(void.class)).invokeWithArguments(List.of());
         } catch (Throwable e) {
             throw new RuntimeException("BARF!", e);
         }

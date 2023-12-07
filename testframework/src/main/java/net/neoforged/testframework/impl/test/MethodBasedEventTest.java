@@ -14,7 +14,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.testframework.Test;
-import net.neoforged.testframework.impl.HackyReflection;
+import net.neoforged.testframework.impl.ReflectionUtils;
 
 public class MethodBasedEventTest extends AbstractTest.Dynamic {
     protected MethodHandle handle;
@@ -42,7 +42,7 @@ public class MethodBasedEventTest extends AbstractTest.Dynamic {
             receiveCancelled = seAnnotation.receiveCanceled();
         }
 
-        this.handle = HackyReflection.handle(method);
+        this.handle = ReflectionUtils.handle(method);
     }
 
     public MethodBasedEventTest bindTo(Object target) {

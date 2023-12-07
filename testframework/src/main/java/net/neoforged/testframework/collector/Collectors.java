@@ -37,7 +37,7 @@ import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.RegisterStructureTemplate;
 import net.neoforged.testframework.annotation.TestGroup;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
-import net.neoforged.testframework.impl.HackyReflection;
+import net.neoforged.testframework.impl.ReflectionUtils;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
 import net.neoforged.testframework.impl.TestFrameworkInternal;
 import net.neoforged.testframework.impl.test.MethodBasedEventTest;
@@ -108,7 +108,7 @@ public final class Collectors {
         return (container, acceptor) -> findMethodsWithAnnotation(container, d -> true, annotation)
                 .filter(method -> Modifier.isStatic(method.getModifiers()) && method.getParameterTypes().length == 1 && method.getParameterTypes()[0].isAssignableFrom(TestFrameworkImpl.class))
                 .forEach(LamdbaExceptionUtils.rethrowConsumer(method -> {
-                    final MethodHandle handle = HackyReflection.staticHandle(method);
+                    final MethodHandle handle = ReflectionUtils.handle(method);
                     acceptor.accept(Pair.of(stageGetter.apply(method.getAnnotation(annotation)), framework -> {
                         try {
                             handle.invokeWithArguments(framework);
@@ -141,16 +141,20 @@ public final class Collectors {
                 .map(LamdbaExceptionUtils.rethrowFunction(data -> Class.forName(data.clazz().getClassName()).getDeclaredField(data.memberName())))
                 .filter(it -> Modifier.isStatic(it.getModifiers()) && (StructureTemplate.class.isAssignableFrom(it.getType()) || Supplier.class.isAssignableFrom(it.getType())))
                 .forEach(field -> {
-                    final Object obj = HackyReflection.getStaticField(field);
-                    final A annotation = field.getAnnotation(annotationType);
-                    final ResourceLocation id = idGetter.apply(annotation);
-                    if (obj instanceof StructureTemplate template) {
-                        acceptor.accept(Pair.of(id, () -> template));
-                    } else if (obj instanceof Supplier<?> supplier) {
-                        //noinspection unchecked
-                        acceptor.accept(Pair.of(id, (Supplier<StructureTemplate>) supplier));
-                    } else if (obj instanceof StructureTemplateBuilder builder) {
-                        acceptor.accept(Pair.of(id, Suppliers.memoize(builder::build)));
+                    try {
+                        final Object obj = ReflectionUtils.fieldHandle(field).invoke();
+                        final A annotation = field.getAnnotation(annotationType);
+                        final ResourceLocation id = idGetter.apply(annotation);
+                        if (obj instanceof StructureTemplate template) {
+                            acceptor.accept(Pair.of(id, () -> template));
+                        } else if (obj instanceof Supplier<?> supplier) {
+                            //noinspection unchecked
+                            acceptor.accept(Pair.of(id, (Supplier<StructureTemplate>) supplier));
+                        } else if (obj instanceof StructureTemplateBuilder builder) {
+                            acceptor.accept(Pair.of(id, Suppliers.memoize(builder::build)));
+                        }
+                    } catch (Throwable exception) {
+                        throw new RuntimeException(exception);
                     }
                 });
     }
@@ -207,7 +211,7 @@ public final class Collectors {
                 .map(LamdbaExceptionUtils.rethrowFunction(annotationData -> {
                     final Class<?> clazz = Class.forName(annotationData.clazz().getClassName());
                     final String methodName = annotationData.memberName().substring(0, annotationData.memberName().indexOf("("));
-                    return HackyReflection.methodMatching(clazz, it -> it.getName().equals(methodName) && it.getAnnotation(annotation) != null);
+                    return ReflectionUtils.methodMatching(clazz, it -> it.getName().equals(methodName) && it.getAnnotation(annotation) != null);
                 }));
     }
 }

@@ -40,7 +40,7 @@ import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTestData;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.impl.EventListenerGroupImpl;
-import net.neoforged.testframework.impl.HackyReflection;
+import net.neoforged.testframework.impl.ReflectionUtils;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
 import net.neoforged.testframework.impl.TestFrameworkInternal;
 import net.neoforged.testframework.impl.reg.RegistrationHelperImpl;
@@ -303,7 +303,7 @@ public abstract class AbstractTest implements Test {
         protected void onGameTest(GameTestHelper helper) {
             isDuringGameTest = true;
             super.onGameTest(helper);
-            HackyReflection.addListener(helper, new GameTestListener() {
+            ReflectionUtils.addListener(helper, new GameTestListener() {
                 @Override
                 public void testStructureLoaded(GameTestInfo pTestInfo) {}
 
@@ -352,7 +352,7 @@ public abstract class AbstractTest implements Test {
 
                 @Override
                 public AnnotationHolder parent() {
-                    return clazz(HackyReflection.parentOrTopLevel(clazz));
+                    return clazz(ReflectionUtils.parentOrTopLevel(clazz));
                 }
 
                 @Override
