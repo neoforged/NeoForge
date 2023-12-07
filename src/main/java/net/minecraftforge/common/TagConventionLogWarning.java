@@ -423,7 +423,8 @@ public final class TagConventionLogWarning
             createMapEntry(Registries.BIOME, "is_cave", Tags.Biomes.IS_CAVE),
             createMapEntry(Registries.BIOME, "is_peak", Tags.Biomes.IS_MOUNTAIN_PEAK),
             createMapEntry(Registries.BIOME, "is_slope", Tags.Biomes.IS_MOUNTAIN_SLOPE),
-            createMapEntry(Registries.BIOME, "is_mountain", Tags.Biomes.IS_MOUNTAIN)
+            createMapEntry(Registries.BIOME, "is_mountain", Tags.Biomes.IS_MOUNTAIN),
+            createMapEntry(Registries.BIOME, "no_default_monsters", Tags.Biomes.NO_DEFAULT_MONSTERS)
     );
 
     /*package private*/
