@@ -7,6 +7,10 @@ package net.neoforged.testframework.impl;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.serialization.Codec;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ClickEvent;
@@ -17,11 +21,6 @@ import net.neoforged.testframework.Test;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.conf.FrameworkConfiguration;
 import net.neoforged.testframework.group.Group;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * Interface with directly mutating methods for {@link TestFramework TestFrameworks}.

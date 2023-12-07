@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -44,8 +45,6 @@ import net.neoforged.testframework.impl.test.MethodBasedEventTest;
 import net.neoforged.testframework.impl.test.MethodBasedTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.objectweb.asm.Type;
-
-import javax.annotation.Nullable;
 
 public final class FrameworkCollectors {
     private static final Predicate<ModFileScanData.AnnotationData> SIDE_FILTER = data -> {
@@ -117,7 +116,6 @@ public final class FrameworkCollectors {
                 }));
         return set;
     }
-
 
     /**
      * This method collects structure templates based on static fields containing

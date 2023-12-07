@@ -7,7 +7,6 @@ package net.neoforged.testframework.gametest;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
