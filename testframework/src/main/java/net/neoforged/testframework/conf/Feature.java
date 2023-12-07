@@ -38,7 +38,11 @@ public enum Feature {
      * When enabled, this feature will store the tests that existed when a player last logged on, using a {@linkplain net.minecraft.world.level.saveddata.SavedData}. <br>
      * When a player joins, they will get a message in chat containing all newly added tests.
      */
-    TEST_STORE(false);
+    TEST_STORE(false),
+    /**
+     * Register tests with annotations.
+     */
+    MAGIC_ANNOTATIONS(true);
 
     private final boolean enabledByDefault;
 

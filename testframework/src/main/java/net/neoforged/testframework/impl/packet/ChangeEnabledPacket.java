@@ -12,9 +12,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.NetworkEvent;
 import net.neoforged.neoforge.network.simple.SimpleMessage;
 import net.neoforged.testframework.conf.Feature;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
+import net.neoforged.testframework.impl.MutableTestFramework;
 
-public record ChangeEnabledPacket(TestFrameworkInternal framework, String testId, boolean enabled) implements SimpleMessage {
+public record ChangeEnabledPacket(MutableTestFramework framework, String testId, boolean enabled) implements SimpleMessage {
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeUtf(testId);
@@ -37,7 +37,7 @@ public record ChangeEnabledPacket(TestFrameworkInternal framework, String testId
         }
     }
 
-    public static ChangeEnabledPacket decode(TestFrameworkInternal framework, FriendlyByteBuf buf) {
+    public static ChangeEnabledPacket decode(MutableTestFramework framework, FriendlyByteBuf buf) {
         return new ChangeEnabledPacket(framework, buf.readUtf(), buf.readBoolean());
     }
 }

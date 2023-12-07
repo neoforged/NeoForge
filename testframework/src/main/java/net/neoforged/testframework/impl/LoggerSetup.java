@@ -21,7 +21,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 @ApiStatus.Internal
-public record LoggerSetup(TestFrameworkInternal framework) {
+public record LoggerSetup(MutableTestFramework framework) {
 
     /**
      * Set the {@link TestFramework#logger()} to only write to logs/tests/{@code id}.log, and to console.

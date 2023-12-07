@@ -27,19 +27,19 @@ import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
 import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import net.neoforged.testframework.Test;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
+import net.neoforged.testframework.impl.MutableTestFramework;
 
 public final class TestsOverlay implements IGuiOverlay {
     public static final int MAX_DISPLAYED = 5;
     public static final ResourceLocation BG_TEXTURE = new ResourceLocation("testframework", "textures/gui/background.png");
 
-    private final TestFrameworkInternal impl;
+    private final MutableTestFramework impl;
     private final BooleanSupplier enabled;
 
     private final Object2FloatMap<Test> fading = new Object2FloatOpenHashMap<>();
     private final List<Test> lastRenderedTests = new ArrayList<>(MAX_DISPLAYED);
 
-    public TestsOverlay(TestFrameworkInternal impl, BooleanSupplier enabled) {
+    public TestsOverlay(MutableTestFramework impl, BooleanSupplier enabled) {
         this.impl = impl;
         this.enabled = enabled;
         fading.defaultReturnValue(1f);

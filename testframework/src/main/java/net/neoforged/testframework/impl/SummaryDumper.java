@@ -15,7 +15,7 @@ import net.neoforged.testframework.impl.md.Table;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public record SummaryDumper(TestFrameworkInternal framework) {
+public record SummaryDumper(MutableTestFramework framework) {
     public String dumpTable() {
         final Table.Builder builder = Table.builder()
                 .useFirstRowAsHeader(true)

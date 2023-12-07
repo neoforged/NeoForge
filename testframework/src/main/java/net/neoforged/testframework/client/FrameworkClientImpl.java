@@ -19,15 +19,15 @@ import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.testframework.conf.ClientConfiguration;
 import net.neoforged.testframework.impl.FrameworkClient;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
+import net.neoforged.testframework.impl.MutableTestFramework;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class FrameworkClientImpl implements FrameworkClient {
-    private final TestFrameworkInternal impl;
+    private final MutableTestFramework impl;
     private final ClientConfiguration configuration;
 
-    public FrameworkClientImpl(TestFrameworkInternal impl, ClientConfiguration clientConfiguration) {
+    public FrameworkClientImpl(MutableTestFramework impl, ClientConfiguration clientConfiguration) {
         this.impl = impl;
         this.configuration = clientConfiguration;
     }
@@ -65,7 +65,7 @@ public class FrameworkClientImpl implements FrameworkClient {
     public static final class Factory implements FrameworkClient.Factory {
 
         @Override
-        public FrameworkClient create(TestFrameworkInternal impl, ClientConfiguration clientConfiguration) {
+        public FrameworkClient create(MutableTestFramework impl, ClientConfiguration clientConfiguration) {
             return new FrameworkClientImpl(impl, clientConfiguration);
         }
     }

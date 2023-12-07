@@ -30,7 +30,7 @@ import net.neoforged.testframework.group.Groupable;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public record Commands(TestFrameworkInternal framework) {
+public record Commands(MutableTestFramework framework) {
     public void register(LiteralArgumentBuilder<CommandSourceStack> node) {
         final BiFunction<LiteralArgumentBuilder<CommandSourceStack>, Boolean, LiteralArgumentBuilder<CommandSourceStack>> commandEnabling = (stack, enabling) -> stack.requires(it -> it.hasPermission(framework.configuration().commandRequiredPermission()))
                 .then(argument("id", StringArgumentType.greedyString())

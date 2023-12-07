@@ -34,15 +34,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.group.Group;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
+import net.neoforged.testframework.impl.MutableTestFramework;
 import org.lwjgl.glfw.GLFW;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public abstract class AbstractTestScreen extends Screen {
-    protected final TestFrameworkInternal framework;
+    protected final MutableTestFramework framework;
 
-    public AbstractTestScreen(Component title, TestFrameworkInternal framework) {
+    public AbstractTestScreen(Component title, MutableTestFramework framework) {
         super(title);
         this.framework = framework;
     }

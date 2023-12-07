@@ -12,9 +12,9 @@ import net.neoforged.neoforge.network.NetworkEvent;
 import net.neoforged.neoforge.network.simple.SimpleMessage;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.conf.Feature;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
+import net.neoforged.testframework.impl.MutableTestFramework;
 
-public record ChangeStatusPacket(TestFrameworkInternal framework, String testId, Test.Status status) implements SimpleMessage {
+public record ChangeStatusPacket(MutableTestFramework framework, String testId, Test.Status status) implements SimpleMessage {
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeUtf(testId);
@@ -35,7 +35,7 @@ public record ChangeStatusPacket(TestFrameworkInternal framework, String testId,
         }
     }
 
-    public static ChangeStatusPacket decode(TestFrameworkInternal framework, FriendlyByteBuf buf) {
+    public static ChangeStatusPacket decode(MutableTestFramework framework, FriendlyByteBuf buf) {
         return new ChangeStatusPacket(framework, buf.readUtf(), new Test.Status(buf.readEnum(Test.Result.class), buf.readUtf()));
     }
 }

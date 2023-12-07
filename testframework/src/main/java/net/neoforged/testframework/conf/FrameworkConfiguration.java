@@ -5,54 +5,43 @@
 
 package net.neoforged.testframework.conf;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.commands.Commands;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.network.simple.SimpleChannel;
-import net.neoforged.testframework.collector.Collector;
-import net.neoforged.testframework.collector.CollectorType;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
+import net.neoforged.testframework.impl.MutableTestFramework;
 import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.function.Supplier;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public record FrameworkConfiguration(
         ResourceLocation id, Collection<Feature> enabledFeatures, int commandRequiredPermission,
-        SimpleChannel networkingChannel, List<String> enabledTests, @Nullable Supplier<ClientConfiguration> clientConfiguration,
-        Map<CollectorType<?>, Collector<?>> collectors) {
+        SimpleChannel networkingChannel, List<String> enabledTests, @Nullable Supplier<ClientConfiguration> clientConfiguration) {
 
     public static Builder builder(ResourceLocation id) {
         return new Builder(id);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <Z> Collector<Z> collector(CollectorType<Z> type) {
-        return (Collector<Z>) collectors.getOrDefault(type, (c, a) -> {});
     }
 
     public boolean isEnabled(Feature feature) {
         return enabledFeatures.contains(feature);
     }
 
-    public TestFrameworkInternal create() {
+    public MutableTestFramework create() {
         return new TestFrameworkImpl(this);
     }
 
     public static final class Builder {
         private final ResourceLocation id;
         private final Collection<Feature> features = EnumSet.noneOf(Feature.class);
-        private final Map<CollectorType<?>, Collector<?>> collectors = new HashMap<>();
 
         private int commandRequiredPermission = Commands.LEVEL_GAMEMASTERS;
         private @Nullable SimpleChannel networkingChannel;
@@ -98,16 +87,6 @@ public record FrameworkConfiguration(
             return this;
         }
 
-        @SuppressWarnings("unchecked")
-        public <Z> Builder withCollector(CollectorType<Z> type, Collector<Z> collector) {
-            final Collector<Z> initial = (Collector<Z>) collectors.get(type);
-            if (initial != null) {
-                collector = initial.and(collector);
-            }
-            collectors.put(type, collector);
-            return this;
-        }
-
         public FrameworkConfiguration build() {
             final SimpleChannel channel = networkingChannel == null ? NetworkRegistry.ChannelBuilder.named(id)
                     .clientAcceptedVersions(e -> true)
@@ -116,8 +95,7 @@ public record FrameworkConfiguration(
                     .simpleChannel() : networkingChannel;
             return new FrameworkConfiguration(
                     id, features, commandRequiredPermission,
-                    channel, enabledTests, clientConfiguration,
-                    Collections.unmodifiableMap(collectors));
+                    channel, enabledTests, clientConfiguration);
         }
     }
 }

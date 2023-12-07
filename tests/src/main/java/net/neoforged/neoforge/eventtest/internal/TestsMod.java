@@ -17,14 +17,11 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.testframework.annotation.RegisterStructureTemplate;
-import net.neoforged.testframework.annotation.TestHolder;
-import net.neoforged.testframework.collector.CollectorType;
-import net.neoforged.testframework.collector.Collectors;
 import net.neoforged.testframework.conf.ClientConfiguration;
 import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.conf.FrameworkConfiguration;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
+import net.neoforged.testframework.impl.MutableTestFramework;
 import org.lwjgl.glfw.GLFW;
 
 @Mod("neotests")
@@ -44,22 +41,13 @@ public class TestsMod {
             .build();
 
     public TestsMod(IEventBus modBus, ModContainer container) {
-        final TestFrameworkInternal framework = FrameworkConfiguration.builder(new ResourceLocation("neotests:tests"))
+        final MutableTestFramework framework = FrameworkConfiguration.builder(new ResourceLocation("neotests:tests"))
                 .clientConfiguration(() -> ClientConfiguration.builder()
                         .toggleOverlayKey(GLFW.GLFW_KEY_J)
                         .openManagerKey(GLFW.GLFW_KEY_N)
                         .build())
 
                 .enable(Feature.CLIENT_SYNC, Feature.CLIENT_MODIFICATIONS, Feature.TEST_STORE)
-
-                .withCollector(CollectorType.TESTS, Collectors.Tests.forMethodsWithAnnotation(TestHolder.class))
-                .withCollector(CollectorType.TESTS, Collectors.Tests.forClassesWithAnnotation(TestHolder.class))
-                .withCollector(CollectorType.TESTS, Collectors.Tests.eventTestMethodsWithAnnotation(TestHolder.class))
-
-                .withCollector(CollectorType.INIT_LISTENERS, Collectors.defaultOnInitCollector())
-                .withCollector(CollectorType.STRUCTURE_TEMPLATES, Collectors.defaultTemplateCollector())
-                .withCollector(CollectorType.GROUP_DATA, Collectors.defaultGroupCollector())
-
                 .build().create();
 
         framework.init(modBus, container);

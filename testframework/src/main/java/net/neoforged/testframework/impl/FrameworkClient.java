@@ -19,7 +19,7 @@ public interface FrameworkClient {
     void init(IEventBus modBus, ModContainer container);
 
     interface Factory {
-        FrameworkClient create(TestFrameworkInternal impl, ClientConfiguration clientConfiguration);
+        FrameworkClient create(MutableTestFramework impl, ClientConfiguration clientConfiguration);
     }
 
     static Optional<Factory> factory() {

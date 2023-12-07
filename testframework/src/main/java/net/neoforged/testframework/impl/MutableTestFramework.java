@@ -7,10 +7,6 @@ package net.neoforged.testframework.impl;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.serialization.Codec;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ClickEvent;
@@ -21,18 +17,21 @@ import net.neoforged.testframework.Test;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.conf.FrameworkConfiguration;
 import net.neoforged.testframework.group.Group;
-import org.jetbrains.annotations.ApiStatus;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
- * Interface with internal methods for {@link TestFramework TestFrameworks}.
+ * Interface with directly mutating methods for {@link TestFramework TestFrameworks}.
  * 
  * @see FrameworkConfiguration#create()
  * @see TestFrameworkImpl
  */
-@ApiStatus.Internal
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public interface TestFrameworkInternal extends TestFramework {
+public interface MutableTestFramework extends TestFramework {
     Codec<TestFramework> REFERENCE_CODEC = ResourceLocation.CODEC.xmap(
             rl -> TestFrameworkImpl.FRAMEWORKS.stream()
                     .filter(testFramework -> testFramework.id().equals(rl))
@@ -81,10 +80,9 @@ public interface TestFrameworkInternal extends TestFramework {
     }
 
     @Override
-    TestsInternal tests();
+    MutableTests tests();
 
-    @ApiStatus.Internal
-    interface TestsInternal extends Tests {
+    interface MutableTests extends Tests {
         void initialiseDefaultEnabledTests();
 
         Stream<Test> enabled();

@@ -16,7 +16,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.testframework.conf.FrameworkConfiguration;
 import net.neoforged.testframework.gametest.DynamicStructureTemplates;
 import net.neoforged.testframework.group.Group;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
+import net.neoforged.testframework.impl.MutableTestFramework;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ import org.slf4j.Logger;
  * The backend of the testing framework.
  *
  * @see FrameworkConfiguration#create()
- * @see TestFrameworkInternal
+ * @see MutableTestFramework
  */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -68,7 +68,7 @@ public interface TestFramework {
     /**
      * {@return the mod event bus linked to this framework}
      *
-     * @apiNote this is set in {@link TestFrameworkInternal#init(IEventBus, ModContainer)}
+     * @apiNote this is set in {@link MutableTestFramework#init(IEventBus, ModContainer)}
      */
     IEventBus modEventBus();
 

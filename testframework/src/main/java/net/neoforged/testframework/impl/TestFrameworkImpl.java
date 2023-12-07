@@ -11,11 +11,8 @@ import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 import static java.time.temporal.ChronoField.MONTH_OF_YEAR;
 import static java.time.temporal.ChronoField.YEAR;
 
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.datafixers.util.Pair;
 import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,7 +64,7 @@ import net.neoforged.neoforge.network.simple.SimpleChannel;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.TestListener;
 import net.neoforged.testframework.annotation.OnInit;
-import net.neoforged.testframework.collector.CollectorType;
+import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.conf.FrameworkConfiguration;
 import net.neoforged.testframework.gametest.DynamicStructureTemplates;
@@ -84,7 +81,7 @@ import org.slf4j.LoggerFactory;
 @ApiStatus.Internal
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class TestFrameworkImpl implements TestFrameworkInternal {
+public class TestFrameworkImpl implements MutableTestFramework {
     static final Set<TestFrameworkImpl> FRAMEWORKS = Collections.synchronizedSet(new HashSet<>());
 
     //@formatter:off
@@ -244,8 +241,8 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
 
     @Override
     public void init(final IEventBus modBus, final ModContainer container) {
-        final SetMultimap<OnInit.Stage, Consumer<? super TestFrameworkInternal>> byStage = configuration.collector(CollectorType.INIT_LISTENERS).toMultimap(
-                container, Multimaps.newSetMultimap(new HashMap<>(), HashSet::new), Pair::getFirst, Pair::getSecond);
+        final var byStage = FrameworkCollectors
+                .onInitMethodsWithAnnotation(container);
 
         this.modBus = modBus;
         tests.buses = Map.of(Mod.EventBusSubscriber.Bus.FORGE, NeoForge.EVENT_BUS, Mod.EventBusSubscriber.Bus.MOD, modBus);
@@ -256,7 +253,7 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
         logger.info("Found {} tests: {}", collected.size(), String.join(", ", collected.stream().map(Test::id).toList()));
         collected.forEach(tests()::register);
 
-        configuration.collector(CollectorType.GROUP_DATA).collect(container, data -> {
+        FrameworkCollectors.groupsWithAnnotation(container, data -> {
             final Group group = tests().getOrCreateGroup(data.id());
             group.setTitle(data.title());
             group.setEnabledByDefault(data.isEnabledByDefault());
@@ -272,7 +269,7 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
             setupClient(this, modBus, container);
         }
 
-        configuration.collector(CollectorType.STRUCTURE_TEMPLATES).collect(container, pair -> structures.register(pair.getFirst(), pair.getSecond()));
+        FrameworkCollectors.templatesWithAnnotation(container, structures::register);
 
         byStage.get(OnInit.Stage.AFTER_SETUP).forEach(cons -> cons.accept(this));
     }
@@ -289,7 +286,11 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
 
     @Override
     public List<Test> collectTests(final ModContainer container) {
-        return configuration.collector(CollectorType.TESTS).toCollection(container, ArrayList::new);
+        final List<Test> tests = new ArrayList<>();
+        tests.addAll(FrameworkCollectors.Tests.eventTestMethodsWithAnnotation(container, TestHolder.class));
+        tests.addAll(FrameworkCollectors.Tests.forMethodsWithAnnotation(container, TestHolder.class));
+        tests.addAll(FrameworkCollectors.Tests.forClassesWithAnnotation(container, TestHolder.class));
+        return tests;
     }
 
     @Override
@@ -372,7 +373,7 @@ public class TestFrameworkImpl implements TestFrameworkInternal {
 
     @ParametersAreNonnullByDefault
     @MethodsReturnNonnullByDefault
-    public final class TestsImpl implements TestsInternal {
+    public final class TestsImpl implements MutableTests {
         private final Map<String, Test> tests = Collections.synchronizedMap(new LinkedHashMap<>());
         private final Map<String, Group> groups = Collections.synchronizedMap(new LinkedHashMap<>());
         private final Map<String, EventListenerGroupImpl> collectors = new HashMap<>();

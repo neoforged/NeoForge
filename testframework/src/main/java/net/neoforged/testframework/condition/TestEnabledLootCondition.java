@@ -12,13 +12,13 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
+import net.neoforged.testframework.impl.MutableTestFramework;
 import net.neoforged.testframework.impl.TestFrameworkMod;
 
 public record TestEnabledLootCondition(TestFramework framework, String testId) implements LootItemCondition {
 
     public static final Codec<TestEnabledLootCondition> CODEC = RecordCodecBuilder.create(in -> in.group(
-            TestFrameworkInternal.REFERENCE_CODEC.fieldOf("framework").forGetter(TestEnabledLootCondition::framework),
+            MutableTestFramework.REFERENCE_CODEC.fieldOf("framework").forGetter(TestEnabledLootCondition::framework),
             Codec.STRING.fieldOf("test").forGetter(TestEnabledLootCondition::testId)).apply(in, TestEnabledLootCondition::new));
 
     public TestEnabledLootCondition(DynamicTest test) {

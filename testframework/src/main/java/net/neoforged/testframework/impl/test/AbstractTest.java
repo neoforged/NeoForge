@@ -42,7 +42,7 @@ import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.impl.EventListenerGroupImpl;
 import net.neoforged.testframework.impl.ReflectionUtils;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
-import net.neoforged.testframework.impl.TestFrameworkInternal;
+import net.neoforged.testframework.impl.MutableTestFramework;
 import net.neoforged.testframework.impl.reg.RegistrationHelperImpl;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
@@ -197,7 +197,7 @@ public abstract class AbstractTest implements Test {
     }
 
     public final void requestConfirmation(Player player, Component message) {
-        if (framework instanceof TestFrameworkInternal internal) {
+        if (framework instanceof MutableTestFramework internal) {
             player.sendSystemMessage(message.copy().append(" ").append(
                     Component.literal("Yes").withStyle(style -> style.withColor(ChatFormatting.GREEN).withBold(true)
                             .withClickEvent(internal.setStatusCommand(
