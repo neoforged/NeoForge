@@ -118,7 +118,7 @@
 +                        net.neoforged.neoforge.gametest.GameTestHooks.registerGametests();
 +                        java.util.Collection<net.minecraft.gametest.framework.GameTestBatch> testBatches = net.minecraft.gametest.framework.GameTestRunner.groupTestsIntoBatches(net.minecraft.gametest.framework.GameTestRegistry.getAllTestFunctions());
 +                        net.minecraft.core.BlockPos spawnPos = optionset.valueOf(spawnPosOpt);
-+                        dedicatedserver1 = new net.minecraft.gametest.framework.GameTestServer(p_293760_, levelstoragesource$levelstorageaccess, packrepository, worldstem, testBatches, spawnPos);
++                        dedicatedserver1 = net.minecraft.gametest.framework.GameTestServer.create(p_293760_, levelstoragesource$levelstorageaccess, packrepository, testBatches, spawnPos);
 +                    } else {
 +                        dedicatedserver1 = new DedicatedServer(p_293760_, levelstoragesource$levelstorageaccess, packrepository, worldstem, dedicatedserversettings, DataFixers.getDataFixer(), services, LoggerChunkProgressListener::new);
 +                    }
