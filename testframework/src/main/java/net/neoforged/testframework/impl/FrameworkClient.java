@@ -22,8 +22,7 @@ public interface FrameworkClient {
         FrameworkClient create(MutableTestFramework impl, ClientConfiguration clientConfiguration);
     }
 
-    static Optional<Factory> factory() {
+    static Optional<Factory> factory() { // optional so that the JVM is less angry with client-only classes because erasure
         return Optional.of(new FrameworkClientImpl.Factory());
-//        return ServiceLoader.load(Factory.class).findFirst();
     }
 }
