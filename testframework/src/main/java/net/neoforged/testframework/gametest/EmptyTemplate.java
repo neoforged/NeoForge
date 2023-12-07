@@ -36,12 +36,6 @@ public @interface EmptyTemplate {
             if (split.length == 1) {
                 final var asInt = Integer.parseInt(split[0]);
                 return new Size(asInt, asInt, asInt);
-            } else if (split.length == 2) {
-                final var v1 = Integer.parseInt(split[0]);
-                if (v1 != Integer.parseInt(split[1])) {
-                    throw new IllegalArgumentException("Two dimension sizes must have equal width and length!");
-                }
-                return new Size(v1, v1, v1);
             } else if (split.length == 3) {
                 return new Size(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
             }

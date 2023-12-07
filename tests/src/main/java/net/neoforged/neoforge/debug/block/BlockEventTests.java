@@ -89,7 +89,7 @@ public class BlockEventTests {
     }
 
     @GameTest
-    @EmptyTemplate(floor = true, value = "3x3")
+    @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the neighbor notify event is fired")
     public static void neighborNotifyEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final BlockEvent.NeighborNotifyEvent event) -> {
