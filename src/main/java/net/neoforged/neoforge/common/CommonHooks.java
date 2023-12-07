@@ -737,7 +737,8 @@ public class CommonHooks {
 
     public static LootDataType.Validator<LootTable> validateLootTable() {
         return (context, lootDataId, lootTable) -> {
-            lootTable = loadLootTable(lootTable.getLootTableId(), lootTable, !lootDataId.location().getNamespace().equals("minecraft"));
+            ResourceLocation name = lootTable.getLootTableId();
+            lootTable = loadLootTable(name, lootTable, name == null);
             lootTable.validate(context.setParams(lootTable.getParamSet()).enterElement("{" + lootDataId.type().directory() + ":" + lootDataId.location() + "}", lootDataId));
         };
     }
