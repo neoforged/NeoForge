@@ -9,10 +9,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.Lifecycle;
@@ -63,8 +60,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagEntry;
@@ -123,6 +118,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.WorldData;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootDataType;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -180,7 +176,6 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
-import org.apache.commons.lang3.function.TriFunction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -739,36 +734,28 @@ public class CommonHooks {
         return ctx;
     }
 
-    public static TriFunction<ResourceLocation, JsonElement, ResourceManager, Optional<LootTable>> getLootTableDeserializer(Gson gson, String directory) {
-        return (location, data, resourceManager) -> {
-            try {
-                Resource resource = resourceManager.getResource(location.withPath(directory + "/" + location.getPath() + ".json")).orElse(null);
-                boolean custom = resource == null || !resource.isBuiltin();
-                return Optional.ofNullable(loadLootTable(gson, location, data, custom));
-            } catch (Exception exception) {
-                LOGGER.error("Couldn't parse element {}:{}", directory, location, exception);
-                return Optional.empty();
-            }
+    public static LootDataType.Validator<LootTable> validateLootTable() {
+        return (context, lootDataId, lootTable) -> {
+            ResourceLocation name = lootTable.getLootTableId();
+            lootTable = loadLootTable(name, lootTable, name == null);
+            lootTable.validate(context.setParams(lootTable.getParamSet()).enterElement("{" + lootDataId.type().directory() + ":" + lootDataId.location() + "}", lootDataId));
         };
     }
 
-    public static LootTable loadLootTable(Gson gson, ResourceLocation name, JsonElement data, boolean custom) {
-        Deque<LootTableContext> que = lootContext.get();
+    public static LootTable loadLootTable(ResourceLocation name, LootTable ret, boolean custom) {
+        /*Deque<LootTableContext> que = lootContext.get();
         if (que == null) {
             que = Queues.newArrayDeque();
             lootContext.set(que);
         }
-
-        LootTable ret;
+        
         try {
             que.push(new LootTableContext(name, custom));
-            ret = gson.fromJson(data, LootTable.class);
-            ret.setLootTableId(name);
         } catch (JsonParseException e) {
             throw e;
         } finally {
             que.pop();
-        }
+        }*/
 
         if (!custom)
             ret = EventHooks.loadLootTable(name, ret);
