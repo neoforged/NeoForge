@@ -222,11 +222,11 @@ public class DataGeneratorTest {
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.GOLD_BLOCK)
                     .pattern("#")
                     .pattern("#")
-                    .define('#', CompoundIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.LOGS), NBTIngredient.of(Util.make(() -> {
+                    .define('#', CompoundIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.LOGS), NBTIngredient.of(true, Util.make(() -> {
                         ItemStack stack = new ItemStack(Items.STONE_PICKAXE);
                         stack.setDamageValue(3);
                         return stack;
-                    }), true)))
+                    }))))
                     .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
                     .save(consumer, new ResourceLocation("data_gen_test", "compound_ingredient_custom_types"));
         }

@@ -84,14 +84,7 @@ public class NBTIngredient extends Ingredient {
     /**
      * Creates a new ingredient matching the given item, containing the given NBT
      */
-    public static NBTIngredient of(ItemLike item, CompoundTag nbt, boolean strict) {
-        return new NBTIngredient(Set.of(item.asItem()), nbt, strict);
-    }
-
-    /**
-     * Creates a new ingredient matching the given item, containing the given NBT
-     */
-    public static NBTIngredient of(ItemStack stack, boolean strict) {
+    public static NBTIngredient of(boolean strict, ItemStack stack) {
         return new NBTIngredient(Set.of(stack.getItem()), stack.getOrCreateTag(), strict);
     }
 
