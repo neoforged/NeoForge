@@ -10,9 +10,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
-import net.minecraft.advancements.critereon.NbtPredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -27,14 +27,14 @@ public class PartialNBTIngredient extends Ingredient {
             builder -> builder
                     .group(
                             NeoForgeExtraCodecs.singularOrPluralCodec(BuiltInRegistries.ITEM.byNameCodec(), "item").forGetter(PartialNBTIngredient::getContainedItems),
-                            CompoundTag.CODEC.fieldOf("tag").forGetter(PartialNBTIngredient::getTag))
+                            CraftingHelper.TAG_CODEC.fieldOf("tag").forGetter(PartialNBTIngredient::getTag))
                     .apply(builder, PartialNBTIngredient::new));
 
     public static final Codec<PartialNBTIngredient> CODEC_NONEMPTY = RecordCodecBuilder.create(
             builder -> builder
                     .group(
                             NeoForgeExtraCodecs.singularOrPluralCodecNotEmpty(BuiltInRegistries.ITEM.byNameCodec(), "item").forGetter(PartialNBTIngredient::getContainedItems),
-                            CompoundTag.CODEC.fieldOf("tag").forGetter(PartialNBTIngredient::getTag))
+                            CraftingHelper.TAG_CODEC.fieldOf("tag").forGetter(PartialNBTIngredient::getTag))
                     .apply(builder, PartialNBTIngredient::new));
 
     protected PartialNBTIngredient(Set<Item> items, CompoundTag tag) {
@@ -60,8 +60,7 @@ public class PartialNBTIngredient extends Ingredient {
     }
 
     private static boolean compareStacksUsingPredicate(ItemStack left, ItemStack right) {
-        NbtPredicate predicate = new NbtPredicate(left.getOrCreateTag());
-        return left.getItem() == right.getItem() && predicate.matches(right);
+        return left.getItem() == right.getItem() && NbtUtils.compareNbt(left.getTag(), right.getTag(), true);
     }
 
     /** Creates a new ingredient matching any item from the list, containing the given NBT */

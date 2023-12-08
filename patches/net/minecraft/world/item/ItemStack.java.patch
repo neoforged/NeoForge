@@ -20,7 +20,7 @@
                      ITEM_NON_AIR_CODEC.fieldOf("item").forGetter(ItemStack::getItem),
 -                    ExtraCodecs.strictOptionalField(ExtraCodecs.POSITIVE_INT, "count", 1).forGetter(ItemStack::getCount)
 +                    ExtraCodecs.strictOptionalField(ExtraCodecs.POSITIVE_INT, "count", 1).forGetter(ItemStack::getCount),
-+                    ExtraCodecs.strictOptionalField(ExtraCodecs.withAlternative(net.minecraft.nbt.TagParser.AS_CODEC, net.minecraft.nbt.CompoundTag.CODEC), "nbt").forGetter(stack -> java.util.Optional.ofNullable(net.neoforged.neoforge.common.crafting.CraftingHelper.getTagForWriting(stack)))
++                    ExtraCodecs.strictOptionalField(net.neoforged.neoforge.common.crafting.CraftingHelper.TAG_CODEC, "nbt").forGetter(stack -> java.util.Optional.ofNullable(net.neoforged.neoforge.common.crafting.CraftingHelper.getTagForWriting(stack)))
                  )
                  .apply(p_311720_, ItemStack::new)
      );

@@ -179,4 +179,16 @@ public class ExtendedGameTestHelper extends GameTestHelper {
     public void boneMeal(int x, int y, int z, Player player) {
         boneMeal(new BlockPos(x, y, z), player);
     }
+
+    public void assertContainerEmpty(int x, int y, int z) {
+        assertContainerEmpty(new BlockPos(x, y, z));
+    }
+
+    public void assertContainerContains(int x, int y, int z, Item item) {
+        assertContainerContains(new BlockPos(x, y, z), item);
+    }
+
+    public void pulseRedstone(int x, int y, int z, long delay) {
+        pulseRedstone(new BlockPos(x, y, z), delay);
+    }
 }

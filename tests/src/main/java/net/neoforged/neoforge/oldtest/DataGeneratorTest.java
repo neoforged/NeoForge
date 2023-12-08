@@ -38,7 +38,6 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.data.recipes.*;
 import net.minecraft.data.worldgen.BootstapContext;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -193,41 +192,6 @@ public class DataGeneratorTest {
                                     not(tagEmpty(ItemTags.PLANKS))),
                             new ResourceLocation("data_gen_test", "conditional4"));
 
-            // ingredient tests
-            // strict NBT match - should match an unnamed iron pickaxe that lost 3 durability
-            Ingredient nbtIngredient = StrictNBTIngredient.of(Util.make(() -> {
-                ItemStack stack = new ItemStack(Items.IRON_PICKAXE);
-                stack.setDamageValue(3);
-                return stack;
-            }));
-            ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.GOLDEN_PICKAXE)
-                    .requires(nbtIngredient)
-                    .unlockedBy("has_pickaxe", has(Items.IRON_PICKAXE))
-                    .save(consumer, new ResourceLocation("data_gen_test", "exact_nbt_ingredient"));
-
-            // ingredient tests
-            // contains NBT match - should match a stone pickaxe that lost 3 durability, regardless of setting its name
-            ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.IRON_PICKAXE)
-                    .requires(PartialNBTIngredient.of(Items.STONE_PICKAXE, Util.make(() -> {
-                        CompoundTag nbt = new CompoundTag();
-                        nbt.putInt(ItemStack.TAG_DAMAGE, 3);
-                        return nbt;
-                    })))
-                    .unlockedBy("has_pickaxe", has(Items.STONE_PICKAXE))
-                    .save(consumer, new ResourceLocation("data_gen_test", "contains_nbt_ingredient_single_item"));
-
-            // contains NBT match - should match a wood, stone, or iron pickaxe that was named "Diamond Pickaxe", regardless of damage
-            ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.DIAMOND_PICKAXE)
-                    .requires(PartialNBTIngredient.of(Util.make(() -> {
-                        CompoundTag nbt = new CompoundTag();
-                        CompoundTag display = new CompoundTag();
-                        display.putString(ItemStack.TAG_DISPLAY_NAME, "{\"text\":\"Diamond Pickaxe\"}");
-                        nbt.put(ItemStack.TAG_DISPLAY, display);
-                        return nbt;
-                    }), Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.IRON_PICKAXE))
-                    .unlockedBy("has_pickaxe", has(Items.WOODEN_PICKAXE))
-                    .save(consumer, new ResourceLocation("data_gen_test", "contains_nbt_ingredient_item_set"));
-
             // intersection - should match all non-flammable planks
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERRACK)
                     .pattern("###")
@@ -258,7 +222,11 @@ public class DataGeneratorTest {
             ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.GOLD_BLOCK)
                     .pattern("#")
                     .pattern("#")
-                    .define('#', CompoundIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.LOGS), nbtIngredient))
+                    .define('#', CompoundIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.LOGS), StrictNBTIngredient.of(Util.make(() -> {
+                        ItemStack stack = new ItemStack(Items.STONE_PICKAXE);
+                        stack.setDamageValue(3);
+                        return stack;
+                    }))))
                     .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
                     .save(consumer, new ResourceLocation("data_gen_test", "compound_ingredient_custom_types"));
         }

@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "I": {
+      "type": "testframework:test_enabled",
+      "base": {
+        "type": "neoforge:partial_nbt",
+        "item": "minecraft:iron_axe",
+        "tag": "{Damage:2}"
+      },
+      "framework": "neotests:tests",
+      "testId": "partialNBTIngredient"
+    }
+  },
+  "pattern": [
+    "IDE"
+  ],
+  "result": {
+    "item": "minecraft:allium"
+  }
+}

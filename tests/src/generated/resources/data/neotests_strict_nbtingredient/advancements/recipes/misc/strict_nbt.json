@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_pickaxe": {
+    "has_pick": {
       "conditions": {
         "items": [
           {
             "items": [
-              "minecraft:iron_pickaxe"
+              "minecraft:diamond_pickaxe"
             ]
           }
         ]
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "data_gen_test:exact_nbt_ingredient"
+        "recipe": "neotests_strict_nbtingredient:strict_nbt"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -23,12 +23,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_pickaxe"
+      "has_pick"
     ]
   ],
   "rewards": {
     "recipes": [
-      "data_gen_test:exact_nbt_ingredient"
+      "neotests_strict_nbtingredient:strict_nbt"
     ]
   }
 }

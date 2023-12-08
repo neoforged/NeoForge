@@ -7,17 +7,18 @@ package net.neoforged.neoforge.common.crafting;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import java.util.stream.Stream;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
+import java.util.stream.Stream;
+
 /** Ingredient that matches the given stack, performing an exact NBT match. Use {@link PartialNBTIngredient} if you need partial match. */
 public class StrictNBTIngredient extends Ingredient {
     public static final Codec<StrictNBTIngredient> CODEC = NeoForgeExtraCodecs.mapWithAlternative(
-            ((MapCodec.MapCodecCodec<ItemStack>) ItemStack.CODEC).codec(),
-            ItemStack.CODEC.fieldOf("stack")).xmap(StrictNBTIngredient::new, StrictNBTIngredient::getStack).codec();
+            ((MapCodec.MapCodecCodec<ItemStack>) ItemStack.ITEM_WITH_COUNT_CODEC).codec(),
+            ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("stack")).xmap(StrictNBTIngredient::new, StrictNBTIngredient::getStack).codec();
 
     protected StrictNBTIngredient(ItemStack stack) {
         super(Stream.of(new Ingredient.ItemValue(stack, ItemStack::matches)), NeoForgeMod.STRICT_NBT_INGREDIENT_TYPE);
