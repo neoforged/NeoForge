@@ -9,7 +9,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -749,7 +748,7 @@ public class CommonHooks {
             que = Queues.newArrayDeque();
             lootContext.set(que);
         }
-
+        
         try {
             que.push(new LootTableContext(name, custom));
         } catch (JsonParseException e) {
