@@ -43,7 +43,7 @@ public class BlockTests {
                         "Open sound was not broadcast"))
 
                 // Close gate
-                .thenExecute(player -> helper.useBlock(new BlockPos(1, 1, 1)))
+                .thenExecute(player -> helper.pulseRedstone(1, 2, 1, 1))
                 .thenExecute(player -> helper.assertTrue(
                         player.getOutboundPackets(ClientboundSoundPacket.class)
                                 .anyMatch(sound -> sound.getSound().value() == SoundEvents.CHEST_CLOSE),
