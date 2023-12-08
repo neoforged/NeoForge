@@ -292,7 +292,7 @@ public class DeferredRegister<T> {
     /**
      * @return The unmodifiable view of registered entries. Useful for bulk operations on all values.
      */
-    public Collection<DeferredHolder<T, ? extends T>> getEntries() {
+    public Collection<DeferredHolder<T, ?>> getEntries() {
         return entriesView;
     }
 
@@ -340,7 +340,7 @@ public class DeferredRegister<T> {
         this.seenRegisterEvent = true;
         Registry<T> registry = event.getRegistry(this.registryKey);
         this.aliases.forEach(registry::addAlias);
-        for (Entry<DeferredHolder<T, ? extends T>, Supplier<? extends T>> e : entries.entrySet()) {
+        for (Entry<DeferredHolder<T, ?>, Supplier<? extends T>> e : entries.entrySet()) {
             event.register(this.registryKey, e.getKey().getId(), () -> e.getValue().get());
             e.getKey().bind(false);
         }

@@ -84,7 +84,7 @@ public final class EntityCapability<T, C> extends BaseCapability<T, C> {
     }
 
     // INTERNAL
-    private static final CapabilityRegistry<EntityCapability<?, ?>> registry = new CapabilityRegistry<>(EntityCapability::new);
+    private static final CapabilityRegistry<EntityCapability<?, ?>> registry = new CapabilityRegistry(EntityCapability::new);
 
     private EntityCapability(ResourceLocation name, Class<T> typeClass, Class<C> contextClass) {
         super(name, typeClass, contextClass);
