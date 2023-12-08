@@ -106,7 +106,7 @@ public class IngredientTests {
 
                 .thenIdle(5) // Crafter cooldown
 
-                // Axe now has a damage value of 4, but superfluous nbt tags, so the recipe should still not work
+                // Pickaxe now has a damage value of 4, but superfluous nbt tags, so the recipe should still not work
                 .thenExecute(crafter -> crafter.getItem(1).hurt(3, helper.getLevel().random, null))
                 .thenExecute(crafter -> crafter.getItem(1).getOrCreateTag().putFloat("abcd", 12f))
 
