@@ -13,6 +13,7 @@ import java.util.function.Function;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -68,6 +69,8 @@ public class CraftingHelper {
             throw new UnsupportedOperationException("Empty recipe has no type");
         }
     };
+
+    public static final Codec<CompoundTag> TAG_CODEC = ExtraCodecs.withAlternative(TagParser.AS_CODEC, net.minecraft.nbt.CompoundTag.CODEC);
 
     @ApiStatus.Internal
     public static Codec<ItemStack> smeltingResultCodec() {

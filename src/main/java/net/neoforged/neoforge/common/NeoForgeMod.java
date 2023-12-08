@@ -98,8 +98,7 @@ import net.neoforged.neoforge.common.crafting.ConditionalRecipe;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
-import net.neoforged.neoforge.common.crafting.PartialNBTIngredient;
-import net.neoforged.neoforge.common.crafting.StrictNBTIngredient;
+import net.neoforged.neoforge.common.crafting.NBTIngredient;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.internal.NeoForgeBiomeTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeBlockTagsProvider;
@@ -283,8 +282,7 @@ public class NeoForgeMod {
     private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, "neoforge");
 
     public static final DeferredHolder<IngredientType<?>, IngredientType<CompoundIngredient>> COMPOUND_INGREDIENT_TYPE = INGREDIENT_TYPES.register("compound", () -> new IngredientType<>(CompoundIngredient.CODEC, CompoundIngredient.CODEC_NONEMPTY));
-    public static final DeferredHolder<IngredientType<?>, IngredientType<StrictNBTIngredient>> STRICT_NBT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("nbt", () -> new IngredientType<>(StrictNBTIngredient.CODEC));
-    public static final DeferredHolder<IngredientType<?>, IngredientType<PartialNBTIngredient>> PARTIAL_NBT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("partial_nbt", () -> new IngredientType<>(PartialNBTIngredient.CODEC, PartialNBTIngredient.CODEC_NONEMPTY));
+    public static final DeferredHolder<IngredientType<?>, IngredientType<NBTIngredient>> NBT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("nbt", () -> new IngredientType<>(NBTIngredient.CODEC, NBTIngredient.CODEC_NONEMPTY));
     public static final DeferredHolder<IngredientType<?>, IngredientType<DifferenceIngredient>> DIFFERENCE_INGREDIENT_TYPE = INGREDIENT_TYPES.register("difference", () -> new IngredientType<>(DifferenceIngredient.CODEC, DifferenceIngredient.CODEC_NONEMPTY));
     public static final DeferredHolder<IngredientType<?>, IngredientType<IntersectionIngredient>> INTERSECTION_INGREDIENT_TYPE = INGREDIENT_TYPES.register("intersection", () -> new IngredientType<>(IntersectionIngredient.CODEC, IntersectionIngredient.CODEC_NONEMPTY));
 

@@ -11,11 +11,9 @@
       },
       {
         "type": "neoforge:nbt",
-        "Count": 1,
-        "id": "minecraft:iron_pickaxe",
-        "tag": {
-          "Damage": 3
-        }
+        "item": "minecraft:stone_pickaxe",
+        "strict": true,
+        "tag": "{Damage:3}"
       }
     ]
   },

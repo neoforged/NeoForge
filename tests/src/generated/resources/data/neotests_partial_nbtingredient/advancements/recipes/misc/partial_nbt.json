@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_pickaxe": {
+    "has_axe": {
       "conditions": {
         "items": [
           {
             "items": [
-              "minecraft:wooden_pickaxe"
+              "minecraft:iron_axe"
             ]
           }
         ]
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "data_gen_test:contains_nbt_ingredient_item_set"
+        "recipe": "neotests_partial_nbtingredient:partial_nbt"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -23,12 +23,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_pickaxe"
+      "has_axe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "data_gen_test:contains_nbt_ingredient_item_set"
+      "neotests_partial_nbtingredient:partial_nbt"
     ]
   }
 }
