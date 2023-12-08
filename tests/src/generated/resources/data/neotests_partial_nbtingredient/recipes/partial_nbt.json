@@ -11,7 +11,7 @@
     "I": {
       "type": "testframework:test_enabled",
       "base": {
-        "type": "neoforge:partial_nbt",
+        "type": "neoforge:nbt",
         "item": "minecraft:iron_axe",
         "tag": "{Damage:2}"
       },

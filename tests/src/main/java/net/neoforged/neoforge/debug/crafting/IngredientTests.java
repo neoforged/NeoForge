@@ -16,8 +16,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CrafterBlock;
 import net.minecraft.world.level.block.entity.CrafterBlockEntity;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.neoforged.neoforge.common.crafting.PartialNBTIngredient;
-import net.neoforged.neoforge.common.crafting.StrictNBTIngredient;
+import net.neoforged.neoforge.common.crafting.NBTIngredient;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -37,7 +36,7 @@ public class IngredientTests {
                 ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.ALLIUM)
                         .pattern("IDE")
                         .define('I', new TestEnabledIngredient(
-                                PartialNBTIngredient.of(putInt(new CompoundTag(), ItemStack.TAG_DAMAGE, 2), Items.IRON_AXE),
+                                NBTIngredient.of(Items.IRON_AXE, putInt(new CompoundTag(), ItemStack.TAG_DAMAGE, 2), false),
                                 test.framework(), test.id()))
                         .define('D', Items.DIAMOND)
                         .define('E', Items.EMERALD)
@@ -82,7 +81,7 @@ public class IngredientTests {
             protected void buildRecipes(RecipeOutput output) {
                 ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.ACACIA_BOAT)
                         .requires(new TestEnabledIngredient(
-                                StrictNBTIngredient.of(new ItemStack(Items.DIAMOND_PICKAXE, 1, Optional.of(putInt(new CompoundTag(), ItemStack.TAG_DAMAGE, 4)))),
+                                NBTIngredient.of(Items.DIAMOND_PICKAXE, putInt(new CompoundTag(), ItemStack.TAG_DAMAGE, 4), true),
                                 test.framework(), test.id()))
                         .requires(Items.ACACIA_PLANKS)
                         .unlockedBy("has_pick", has(Items.DIAMOND_PICKAXE))

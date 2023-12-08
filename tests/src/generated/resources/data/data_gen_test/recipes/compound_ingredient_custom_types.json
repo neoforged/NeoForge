@@ -12,7 +12,8 @@
       {
         "type": "neoforge:nbt",
         "item": "minecraft:stone_pickaxe",
-        "nbt": "{Damage:3}"
+        "strict": true,
+        "tag": "{Damage:3}"
       }
     ]
   },
