@@ -49,13 +49,13 @@ public class NBTIngredient extends Ingredient {
     protected NBTIngredient(Set<Item> items, CompoundTag tag, boolean strict) {
         super(items.stream().map(item -> {
             ItemStack stack = new ItemStack(item, 1);
-            // copy NBT to prevent the stack from modifying the original, as capabilities or vanilla item durability will modify the tag
+            // copy NBT to prevent the stack from modifying the original, as attachments or vanilla item durability will modify the tag
             stack.setTag(tag.copy());
             return new Ingredient.ItemValue(stack, strict ? ItemStack::matches : NBTIngredient::compareStacksWithNBT);
         }), NeoForgeMod.NBT_INGREDIENT_TYPE);
 
         if (items.isEmpty())
-            throw new IllegalStateException("At least one item needs to be provided for a partial nbt matching ingredient.");
+            throw new IllegalStateException("At least one item needs to be provided for a nbt matching ingredient.");
 
         this.strict = strict;
     }
