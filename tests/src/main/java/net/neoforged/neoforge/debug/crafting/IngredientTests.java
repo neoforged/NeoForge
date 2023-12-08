@@ -1,5 +1,6 @@
 package net.neoforged.neoforge.debug.crafting;
 
+import java.util.Optional;
 import net.minecraft.core.FrontAndTop;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -23,8 +24,6 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.condition.TestEnabledIngredient;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.registration.RegistrationHelper;
-
-import java.util.Optional;
 
 @ForEachTest(groups = "crafting.ingredient")
 public class IngredientTests {

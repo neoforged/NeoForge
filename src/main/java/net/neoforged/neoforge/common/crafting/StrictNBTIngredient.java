@@ -7,12 +7,11 @@ package net.neoforged.neoforge.common.crafting;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import java.util.stream.Stream;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
-
-import java.util.stream.Stream;
 
 /** Ingredient that matches the given stack, performing an exact NBT match. Use {@link PartialNBTIngredient} if you need partial match. */
 public class StrictNBTIngredient extends Ingredient {
