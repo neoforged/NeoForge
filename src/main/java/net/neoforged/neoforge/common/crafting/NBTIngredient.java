@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.crafting;
 
+import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
@@ -53,10 +54,7 @@ public class NBTIngredient extends Ingredient {
             stack.setTag(tag.copy());
             return new Ingredient.ItemValue(stack, strict ? ItemStack::matches : NBTIngredient::compareStacksWithNBT);
         }), NeoForgeMod.NBT_INGREDIENT_TYPE);
-
-        if (items.isEmpty())
-            throw new IllegalStateException("At least one item needs to be provided for a nbt matching ingredient.");
-
+        Preconditions.checkArgument(!items.isEmpty(), "At least one item needs to be provided for a nbt matching ingredient");
         this.strict = strict;
     }
 
