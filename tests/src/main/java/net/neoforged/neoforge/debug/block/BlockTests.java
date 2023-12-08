@@ -33,21 +33,21 @@ public class BlockTests {
                 .withLang("Woodless Fence Gate").withBlockItem();
         reg.provider(BlockStateProvider.class, prov -> prov.fenceGateBlock(gate.get(), new ResourceLocation("block/iron_block")));
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
-                .thenExecute(() -> helper.setBlock(1, 1, 1, gate.get()))
+                .thenExecute(() -> helper.setBlock(1, 1, 1, gate.get().defaultBlockState().setValue(FenceGateBlock.OPEN, true)))
 
-                // Open gate
+                // Close gate as a player
                 .thenExecute(player -> helper.useBlock(new BlockPos(1, 1, 1)))
-                .thenExecute(player -> helper.assertTrue(
-                        player.getOutboundPackets(ClientboundSoundPacket.class)
-                                .anyMatch(sound -> sound.getSound().value() == SoundEvents.BARREL_OPEN),
-                        "Open sound was not broadcast"))
-
-                // Close gate
-                .thenExecute(player -> helper.pulseRedstone(1, 2, 1, 1))
                 .thenExecute(player -> helper.assertTrue(
                         player.getOutboundPackets(ClientboundSoundPacket.class)
                                 .anyMatch(sound -> sound.getSound().value() == SoundEvents.CHEST_CLOSE),
                         "Close sound was not broadcast"))
+
+                // Open gate with redstone
+                .thenExecute(player -> helper.pulseRedstone(1, 2, 1, 1))
+                .thenExecute(player -> helper.assertTrue(
+                        player.getOutboundPackets(ClientboundSoundPacket.class)
+                                .anyMatch(sound -> sound.getSound().value() == SoundEvents.BARREL_OPEN),
+                        "Open sound was not broadcast"))
                 .thenSucceed());
     }
 }
