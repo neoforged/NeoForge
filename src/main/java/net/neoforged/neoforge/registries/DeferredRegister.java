@@ -156,8 +156,8 @@ public class DeferredRegister<T> {
 
     private final ResourceKey<? extends Registry<T>> registryKey;
     private final String namespace;
-    private final Map<DeferredHolder<T, ?>, Supplier<? extends T>> entries = new LinkedHashMap<>();
-    private final Set<DeferredHolder<T, ?>> entriesView = Collections.unmodifiableSet(entries.keySet());
+    private final Map<DeferredHolder<T, ? extends T>, Supplier<? extends T>> entries = new LinkedHashMap<>();
+    private final Set<DeferredHolder<T, ? extends T>> entriesView = Collections.unmodifiableSet(entries.keySet());
     private final Map<ResourceLocation, ResourceLocation> aliases = new HashMap<>();
 
     @Nullable
@@ -292,7 +292,7 @@ public class DeferredRegister<T> {
     /**
      * @return The unmodifiable view of registered entries. Useful for bulk operations on all values.
      */
-    public Collection<DeferredHolder<T, ?>> getEntries() {
+    public Collection<DeferredHolder<T, ? extends T>> getEntries() {
         return entriesView;
     }
 
@@ -340,7 +340,7 @@ public class DeferredRegister<T> {
         this.seenRegisterEvent = true;
         Registry<T> registry = event.getRegistry(this.registryKey);
         this.aliases.forEach(registry::addAlias);
-        for (Entry<DeferredHolder<T, ?>, Supplier<? extends T>> e : entries.entrySet()) {
+        for (Entry<DeferredHolder<T, ? extends T>, Supplier<? extends T>> e : entries.entrySet()) {
             event.register(this.registryKey, e.getKey().getId(), () -> e.getValue().get());
             e.getKey().bind(false);
         }
