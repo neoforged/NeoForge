@@ -16,6 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -743,6 +744,18 @@ public interface IItemExtension {
      * {@return true if the given ItemStack can be put into a grindstone to be repaired and/or stripped of its enchantments}
      */
     default boolean canGrindstoneRepair(ItemStack stack) {
+        return false;
+    }
+
+    /***
+     * Checks whether the given {@link ItemStack} can cure the given {@link MobEffectInstance}.
+     *
+     * @param stack          The {@link ItemStack} being checked
+     * @param effectInstance The {@link MobEffectInstance} being checked
+     * @return true if the {@link ItemStack} cures the effect, false otherwise
+     * @see IMobEffectInstanceExtension#isCuredBy(ItemStack)
+     */
+    default boolean cures(ItemStack stack, MobEffectInstance effectInstance) {
         return false;
     }
 }

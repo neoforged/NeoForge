@@ -679,7 +679,7 @@
 +        Iterator<MobEffectInstance> itr = this.activeEffects.values().iterator();
 +        while (itr.hasNext()) {
 +            MobEffectInstance effect = itr.next();
-+            if (effect.isCurativeItem(curativeItem) && !net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Remove(this, effect)).isCanceled()) {
++            if (effect.isCuredBy(curativeItem) && !net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Remove(this, effect)).isCanceled()) {
 +                this.onEffectRemoved(effect);
 +                itr.remove();
 +                ret = true;

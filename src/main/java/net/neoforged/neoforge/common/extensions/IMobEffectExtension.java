@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
@@ -17,25 +15,23 @@ public interface IMobEffectExtension {
         return (MobEffect) this;
     }
 
-    /**
-     * Get a fresh list of items that can cure this Potion.
-     * All new PotionEffects created from this Potion will call this to initialize the default curative items
-     * 
-     * @see MobEffectInstance#getCurativeItems()
-     * @return A list of items that can cure this Potion
+    /***
+     * Checks whether this {@link MobEffect} can be cured by the given {@link ItemStack}
+     *
+     * @param stack The {@link ItemStack} being checked
+     * @return true if the given {@link ItemStack} cures this effect, false otherwise
+     * @see IMobEffectInstanceExtension#isCuredBy(ItemStack)
      */
-    default List<ItemStack> getCurativeItems() {
-        ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
-        ret.add(new ItemStack(Items.MILK_BUCKET));
-        return ret;
+    default boolean isCuredBy(ItemStack stack) {
+        return stack.is(Items.MILK_BUCKET);
     }
 
     /**
-     * Used for determining {@code PotionEffect} sort order in GUIs.
-     * Defaults to the {@code PotionEffect}'s liquid color.
+     * Used for determining {@link MobEffect} sort order in GUIs.
+     * Defaults to the {@link MobEffect}'s liquid color.
      * 
-     * @param effectInstance the {@code PotionEffect} instance containing the potion
-     * @return a value used to sort {@code PotionEffect}s in GUIs
+     * @param effectInstance The {@link MobEffectInstance} containing this {@link MobEffect}
+     * @return a value used to sort {@link MobEffect}s in GUIs
      */
     default int getSortOrder(MobEffectInstance effectInstance) {
         return self().getColor();

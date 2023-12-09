@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -479,5 +480,16 @@ public interface IItemStackExtension {
     @Nullable
     default <T> T getCapability(ItemCapability<T, Void> capability) {
         return capability.getCapability(self(), null);
+    }
+
+    /***
+     * Checks whether this {@link ItemStack} can cure the given {@link MobEffectInstance}.
+     *
+     * @param effectInstance The effect being checked
+     * @return true if this {@link ItemStack} cures the effect, false otherwise
+     * @see IMobEffectInstanceExtension#isCuredBy(ItemStack)
+     */
+    default boolean cures(MobEffectInstance effectInstance) {
+        return self().getItem().cures(self(), effectInstance);
     }
 }
