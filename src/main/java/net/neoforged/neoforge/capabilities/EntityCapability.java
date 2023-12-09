@@ -84,6 +84,8 @@ public final class EntityCapability<T, C> extends BaseCapability<T, C> {
     }
 
     // INTERNAL
+
+    // Requires explicitly-typed constructor due to ECJ inference failure.
     private static final CapabilityRegistry<EntityCapability<?, ?>> registry = new CapabilityRegistry<EntityCapability<?, ?>>(EntityCapability::new);
 
     private EntityCapability(ResourceLocation name, Class<T> typeClass, Class<C> contextClass) {
