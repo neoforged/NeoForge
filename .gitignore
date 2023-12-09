@@ -20,11 +20,7 @@
 /*/.gradle
 
 # Projects repo, either ignore it, or ignore patches.
-/projects/mcp/
-/projects/clean/
-/projects/forge/
-/projects/fmlonly/
-#/patches/*
+/projects/*
 
 #occupational hazards
 /projects/**/build/

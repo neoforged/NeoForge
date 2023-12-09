@@ -6,6 +6,11 @@ pluginManagement {
             name = 'NeoForged'
             url = 'https://maven.neoforged.net/releases'
         }
+        // Required to solve building issues
+        maven {
+            name = 'MinecraftForge'
+            url = 'https://maven.minecraftforge.net/releases'
+        }
         maven {
             name = 'ParchmentMC'
             url = 'https://maven.parchmentmc.org'
