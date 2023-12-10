@@ -9,7 +9,7 @@
   "fml.menu.mods.openmodsfolder": "Open mods folder",
   "fml.menu.modoptions": "Mod Options...",
   "fml.menu.mods.info.version":"Version: {0}",
-  "fml.menu.mods.info.idstate":"ModID: {0} State:{1,lower}",
+  "fml.menu.mods.info.idstate":"ModID: {0} State: {1,lower}",
   "fml.menu.mods.info.credits":"Credits: {0}",
   "fml.menu.mods.info.authors":"Authors: {0}",
   "fml.menu.mods.info.displayurl":"Homepage: {0}",
