@@ -1,14 +1,5 @@
 --- a/net/minecraft/server/packs/metadata/pack/PackMetadataSection.java
 +++ b/net/minecraft/server/packs/metadata/pack/PackMetadataSection.java
-@@ -9,7 +_,7 @@
- import net.minecraft.server.packs.metadata.MetadataSectionType;
- import net.minecraft.util.InclusiveRange;
- 
--public record PackMetadataSection(Component description, int packFormat, Optional<InclusiveRange<Integer>> supportedFormats) {
-+public record PackMetadataSection(Component description, @Deprecated int packFormat, Optional<InclusiveRange<Integer>> supportedFormats) {
-     public static final Codec<PackMetadataSection> CODEC = RecordCodecBuilder.create(
-         p_304321_ -> p_304321_.group(
-                     ComponentSerialization.CODEC.fieldOf("description").forGetter(PackMetadataSection::description),
 @@ -19,4 +_,8 @@
                  .apply(p_304321_, PackMetadataSection::new)
      );
