@@ -483,12 +483,6 @@ public class ExtendedGui extends Gui {
         RenderSystem.disableBlend();
     }
 
-    protected void renderDemo(GuiGraphics guiGraphics) {
-        if (this.minecraft.isDemo()) {
-            this.renderDemoOverlay(guiGraphics);
-        }
-    }
-
     //Helper macros
     private boolean pre(NamedGuiOverlay overlay, GuiGraphics guiGraphics) {
         return NeoForge.EVENT_BUS.post(new RenderGuiOverlayEvent.Pre(minecraft.getWindow(), guiGraphics, minecraft.getFrameTime(), overlay)).isCanceled();

@@ -138,8 +138,8 @@ public enum VanillaGuiOverlay {
         gui.renderSleepFade(screenWidth, screenHeight, guiGraphics);
     }),
     DEMO_OVERLAY("demo_overlay", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        if (!gui.getDebugOverlay().showDebugScreen()) {
-            gui.renderDemo(guiGraphics);
+        if (gui.getMinecraft().isDemo() && !gui.getDebugOverlay().showDebugScreen()) {
+            gui.renderDemoOverlay(guiGraphics);
         }
     }),
     POTION_ICONS("potion_icons", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
