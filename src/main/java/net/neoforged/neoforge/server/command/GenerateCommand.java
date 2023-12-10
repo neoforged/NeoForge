@@ -11,6 +11,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import java.text.DecimalFormat;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
@@ -20,8 +21,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.neoforged.neoforge.server.command.generation.GenerationBar;
 import net.neoforged.neoforge.server.command.generation.GenerationTask;
-
-import java.text.DecimalFormat;
 
 /**
  * Special thanks to Jasmine and Gegy for allowing us to use their pregenerator mod as a model to use in NeoForge!
@@ -33,14 +32,13 @@ class GenerateCommand {
     private static GenerationBar pregenBar;
 
     static ArgumentBuilder<CommandSourceStack, ?> register() {
-        LiteralArgumentBuilder<CommandSourceStack> builder =
-                Commands.literal("generate").requires(cs -> cs.hasPermission(4)); //permission
+        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("generate").requires(cs -> cs.hasPermission(4)); //permission
 
         builder.then(Commands.argument("pos", BlockPosArgument.blockPos())
-                        .then(Commands.argument("chunkRadius", IntegerArgumentType.integer(1))
-                                .then(Commands.argument("progressBar", BoolArgumentType.bool())
-                                        .executes(ctx -> executeGeneration(ctx.getSource(), BlockPosArgument.getSpawnablePos(ctx, "pos"), getInt(ctx, "chunkRadius"), getBool(ctx, "progressBar"))))
-                                .executes(ctx -> executeGeneration(ctx.getSource(), BlockPosArgument.getSpawnablePos(ctx, "pos"), getInt(ctx, "chunkRadius"), true))));
+                .then(Commands.argument("chunkRadius", IntegerArgumentType.integer(1))
+                        .then(Commands.argument("progressBar", BoolArgumentType.bool())
+                                .executes(ctx -> executeGeneration(ctx.getSource(), BlockPosArgument.getSpawnablePos(ctx, "pos"), getInt(ctx, "chunkRadius"), getBool(ctx, "progressBar"))))
+                        .executes(ctx -> executeGeneration(ctx.getSource(), BlockPosArgument.getSpawnablePos(ctx, "pos"), getInt(ctx, "chunkRadius"), true))));
 
         builder.then(Commands.literal("stop")
                 .executes(ctx -> stopGeneration(ctx.getSource())));

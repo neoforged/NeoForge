@@ -1,10 +1,14 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.server.command.generation;
 
 import com.google.common.collect.AbstractIterator;
-import net.minecraft.world.level.ChunkPos;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import net.minecraft.world.level.ChunkPos;
 
 public class CoarseOnionIterator extends AbstractIterator<ChunkPos> {
     private final int radius;
@@ -46,8 +50,7 @@ public class CoarseOnionIterator extends AbstractIterator<ChunkPos> {
         int z1 = z0 + size - 1;
         return new CellIterator(
                 Math.max(x0, -radius), Math.max(z0, -radius),
-                Math.min(x1, radius), Math.min(z1, radius)
-        );
+                Math.min(x1, radius), Math.min(z1, radius));
     }
 
     private static final class CellIterator implements Iterator<ChunkPos> {

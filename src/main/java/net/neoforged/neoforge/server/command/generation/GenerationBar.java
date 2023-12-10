@@ -1,5 +1,11 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.server.command.generation;
 
+import java.text.DecimalFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -7,8 +13,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.BossEvent;
-
-import java.text.DecimalFormat;
 
 public class GenerationBar implements AutoCloseable {
     private static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("#.00");

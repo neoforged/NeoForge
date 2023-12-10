@@ -1,9 +1,13 @@
-package net.neoforged.neoforge.server.command.generation;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
-import net.minecraft.world.level.ChunkPos;
+package net.neoforged.neoforge.server.command.generation;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import net.minecraft.world.level.ChunkPos;
 
 public class OnionIterator implements Iterator<ChunkPos> {
     private static final byte EAST = 0;
