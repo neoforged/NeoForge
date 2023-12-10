@@ -262,7 +262,7 @@ public class ModListScreen extends Screen {
         y -= 20 + PADDING;
         configButton = Button.builder(Component.translatable("fml.menu.mods.config"), b -> ModListScreen.this.displayModConfig()).bounds(6, y, this.listWidth, 20).build();
         y -= 14 + PADDING;
-        search = new EditBox(getFontRenderer(), PADDING + 1, y, listWidth - 2, 14, Component.translatable("fml.menu.mods.search"));
+        search = new EditBox(getFontRenderer(), PADDING + 1, y, listWidth - 1, 14, Component.translatable("fml.menu.mods.search"));
 
         this.modList = new ModListWidget(this, listWidth, fullButtonHeight, search.getY() - getFontRenderer().lineHeight - PADDING);
         this.modList.setX(6);
