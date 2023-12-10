@@ -6,18 +6,10 @@
 package net.neoforged.neoforge.client.loading;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.*;
-import java.util.function.Consumer;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.repository.*;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
@@ -35,11 +27,8 @@ import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.logging.CrashReportExtender;
-import net.neoforged.neoforge.resource.DelegatingPackResources;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.LanguageHook;
-import net.neoforged.neoforgespi.language.IModInfo;
-import net.neoforged.neoforgespi.locating.IModFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -61,9 +50,9 @@ public class ClientModLoader {
         LanguageHook.loadForgeAndMCLangs();
         createRunnableWithCatch(() -> ModLoader.get().gatherAndInitializeMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), ImmediateWindowHandler::renderTick)).run();
         if (error == null) {
-            ResourcePackLoader.loadResourcePacks(defaultResourcePacks, ClientModLoader::buildPackFinder);
+            ResourcePackLoader.loadResourcePacks(defaultResourcePacks, map -> ResourcePackLoader.buildPackFinder(map, PackType.CLIENT_RESOURCES));
             ModLoader.get().postEvent(new AddPackFindersEvent(PackType.CLIENT_RESOURCES, defaultResourcePacks::addPackFinder));
-            DataPackConfig.DEFAULT.addModPacks(ResourcePackLoader.getPackNames());
+            DataPackConfig.DEFAULT.addModPacks(ResourcePackLoader.getDataPackNames());
             mcResourceManager.registerReloadListener(ClientModLoader::onResourceReload);
             mcResourceManager.registerReloadListener(BrandingControl.resourceManagerReloadListener());
         }
@@ -143,38 +132,4 @@ public class ClientModLoader {
         return loading;
     }
 
-    private static RepositorySource buildPackFinder(Map<IModFile, ? extends PackResources> modResourcePacks) {
-        return packAcceptor -> clientPackFinder(modResourcePacks, packAcceptor);
-    }
-
-    private static void clientPackFinder(Map<IModFile, ? extends PackResources> modResourcePacks, Consumer<Pack> packAcceptor) {
-        var hiddenPacks = new ArrayList<PackResources>();
-        for (Entry<IModFile, ? extends PackResources> e : modResourcePacks.entrySet()) {
-            IModInfo mod = e.getKey().getModInfos().get(0);
-            final String name = "mod:" + mod.getModId();
-            final Pack modPack = Pack.readMetaAndCreate(name, Component.literal(e.getValue().packId()), false, BuiltInPackSource.fixedResources(e.getValue()), PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT);
-            if (modPack == null) {
-                // Vanilla only logs an error, instead of propagating, so handle null and warn that something went wrong
-                ModLoader.get().addWarning(new ModLoadingWarning(mod, ModLoadingStage.ERROR, "fml.modloading.brokenresources", e.getKey()));
-                continue;
-            }
-            LOGGER.debug(Logging.CORE, "Generating PackInfo named {} for mod file {}", name, e.getKey().getFilePath());
-            if (mod.getOwningFile().showAsResourcePack()) {
-                packAcceptor.accept(modPack);
-            } else {
-                hiddenPacks.add(e.getValue());
-            }
-        }
-
-        // Create a resource pack merging all mod resources that should be hidden
-        final Pack modResourcesPack = Pack.readMetaAndCreate("mod_resources", Component.literal("Mod Resources"), true,
-                BuiltInPackSource.fromName(
-                        id -> new DelegatingPackResources(id, false,
-                                new PackMetadataSection(
-                                        Component.translatable("fml.resources.modresources", hiddenPacks.size()),
-                                        SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES)),
-                                hiddenPacks)),
-                PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT);
-        packAcceptor.accept(modResourcesPack);
-    }
 }

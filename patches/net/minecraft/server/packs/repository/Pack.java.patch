@@ -1,21 +1,51 @@
 --- a/net/minecraft/server/packs/repository/Pack.java
 +++ b/net/minecraft/server/packs/repository/Pack.java
-@@ -29,6 +_,7 @@
+@@ -29,6 +_,8 @@
      private final Pack.Position defaultPosition;
      private final boolean required;
      private final boolean fixedPosition;
 +    private final boolean hidden; // Forge: Allow packs to be hidden from the UI entirely
++    private final List<Pack> children; // NeoForge: Allows packs to specify packs which will always be placed beneath them; must be hidden
      private final PackSource packSource;
  
      @Nullable
-@@ -77,6 +_,7 @@
-         this.defaultPosition = p_251298_;
-         this.fixedPosition = p_249753_;
-         this.packSource = p_251608_;
+@@ -69,6 +_,36 @@
+         boolean p_249753_,
+         PackSource p_251608_
+     ) {
++        this(p_252218_, p_248829_, p_249377_, p_251718_, p_250162_, p_251298_, p_249753_, p_251608_, java.util.Collections.emptyList());
++    }
++
++    private Pack(
++        String p_252218_,
++        boolean p_248829_,
++        Pack.ResourcesSupplier p_249377_,
++        Component p_251718_,
++        Pack.Info p_250162_,
++        Pack.Position p_251298_,
++        boolean p_249753_,
++        PackSource p_251608_,
++        List<Pack> children
++    ) {
++        List<Pack> flattenedChildren = new java.util.ArrayList<>();
++        List<Pack> remainingChildren = children;
++        // recursively flatten children
++        while (!remainingChildren.isEmpty()) {
++            List<Pack> oldChildren = remainingChildren;
++            remainingChildren = new java.util.ArrayList<>();
++            for (Pack child : oldChildren) {
++                if (!child.isHidden()) {
++                    throw new IllegalArgumentException("Child pack "+ child.getId() +" must be hidden");
++                }
++                flattenedChildren.add(child.withChildren(java.util.Collections.emptyList()));
++                remainingChildren.addAll(child.getChildren());
++            }
++        }
++        this.children = java.util.Collections.unmodifiableList(flattenedChildren);
 +        this.hidden = p_250162_.isHidden();
-     }
- 
-     @Nullable
+         this.id = p_252218_;
+         this.resources = p_249377_;
+         this.title = p_251718_;
 @@ -96,7 +_,7 @@
                  PackCompatibility packcompatibility = PackCompatibility.forVersion(inclusiverange, p_294759_);
                  OverlayMetadataSection overlaymetadatasection = packresources.getMetadataSection(OverlayMetadataSection.TYPE);
@@ -25,11 +55,38 @@
              }
  
              return pack$info;
-@@ -172,6 +_,8 @@
+@@ -172,6 +_,35 @@
          return this.packSource;
      }
  
 +    public boolean isHidden() { return hidden; }
++
++    public List<Pack> getChildren() { return children; }
++
++    /**
++     * {@return a copy of the pack with the provided children in place of any children this pack currently has}
++     */
++    public Pack withChildren(List<Pack> children) {
++        return new Pack(this.id, this.required, this.resources, this.title, this.info, this.defaultPosition, this.fixedPosition, this.packSource, children);
++    }
++
++    /**
++     * {@return a copy of the pack that is hidden}
++     */
++    public Pack hidden() {
++        return new Pack(
++                this.id, this.required, this.resources, this.title,
++                new Info(
++                        this.info.description(),
++                        info.dataFormat(),
++                        info.resourceFormat(),
++                        info.compatibility(),
++                        info.requestedFeatures(),
++                        info.overlays(),
++                        true
++                ),
++                this.defaultPosition, this.fixedPosition, this.packSource, this.children);
++    }
 +
      @Override
      public boolean equals(Object p_10448_) {

@@ -34,6 +34,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.fml.ModContainer;
@@ -379,11 +380,11 @@ public class ModListScreen extends Screen {
         @SuppressWarnings("resource")
         Pair<ResourceLocation, Size2i> logoData = selectedMod.getLogoFile().map(logoFile -> {
             TextureManager tm = this.minecraft.getTextureManager();
-            final PackResources resourcePack = ResourcePackLoader.getPackFor(selectedMod.getModId())
+            final Pack.ResourcesSupplier resourcePack = ResourcePackLoader.getPackFor(selectedMod.getModId())
                     .orElse(ResourcePackLoader.getPackFor("neoforge").orElseThrow(() -> new RuntimeException("Can't find neoforge, WHAT!")));
-            try {
+            try (PackResources packResources = resourcePack.openPrimary("mod:" + selectedMod.getModId())) {
                 NativeImage logo = null;
-                IoSupplier<InputStream> logoResource = resourcePack.getRootResource(logoFile);
+                IoSupplier<InputStream> logoResource = packResources.getRootResource(logoFile);
                 if (logoResource != null)
                     logo = NativeImage.read(logoResource.get());
                 if (logo != null) {
