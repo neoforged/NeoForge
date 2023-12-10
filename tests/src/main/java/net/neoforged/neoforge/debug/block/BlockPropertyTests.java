@@ -13,6 +13,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ThreadedLevelLightEngine;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -46,7 +47,10 @@ public class BlockPropertyTests {
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(new BlockPos(1, 1, 1), lightBlock.get()))
                 .thenExecute(() -> helper.useBlock(new BlockPos(1, 1, 1), helper.makeMockPlayer(), Items.ACACIA_BUTTON.getDefaultInstance()))
-                .thenExecuteAfter(10, () -> helper.assertTrue(helper.getLevel().getLightEngine().getRawBrightness(helper.absolutePos(new BlockPos(1, 2, 1)), 15) == 14, "light level was not as expected"))
+                .thenMap(() -> helper.getLevel().getChunkAt(helper.absolutePos(new BlockPos(1, 2, 1))))
+                .thenMap(chunk -> ((ThreadedLevelLightEngine) helper.getLevel().getLightEngine()).waitForPendingTasks(chunk.getPos().x, chunk.getPos().z))
+                .thenWaitUntil(future -> helper.assertTrue(future.isDone(), "Light engine did not update"))
+                .thenExecute(() -> helper.assertTrue(helper.getLevel().getLightEngine().getRawBrightness(helper.absolutePos(new BlockPos(1, 2, 1)), 15) == 14, "light level was not as expected"))
                 .thenSucceed());
     }
 

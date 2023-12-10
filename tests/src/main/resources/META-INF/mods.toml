@@ -144,8 +144,6 @@ modId="permissions_changed_event_test"
 [[mods]]
 modId="custom_shield_test"
 [[mods]]
-modId="item_attachment_sync_test"
-[[mods]]
 modId="add_pack_finders_test"
 [[mods]]
 modId="custom_tooltip_test"
@@ -239,7 +237,5 @@ modId="custom_fluid_container_test"
 modId="player_spawn_phantoms_event_test"
 [[mods]]
 modId="conditional_codec_test"
-[[mods]]
-modId="use_item_on_block_event_test"
 
 # ADD ABOVE THIS LINE

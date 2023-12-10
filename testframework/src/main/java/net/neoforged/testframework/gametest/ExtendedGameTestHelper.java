@@ -34,6 +34,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -178,6 +179,11 @@ public class ExtendedGameTestHelper extends GameTestHelper {
 
     public void boneMeal(int x, int y, int z, Player player) {
         boneMeal(new BlockPos(x, y, z), player);
+    }
+
+    public void boneMealUntilGrown(int x, int y, int z, Player player) {
+        boneMeal(x, y, z, player);
+        assertBlockState(new BlockPos(x, y, z), state -> !(state.getBlock() instanceof BonemealableBlock), () -> "Crop didn't grow");
     }
 
     public void assertContainerEmpty(int x, int y, int z) {
