@@ -92,7 +92,16 @@ public class GenerationTask {
                 return;
             }
 
-            int enqueueCount = BATCH_SIZE - this.queuedCount.get();
+            int queuedCount = this.queuedCount.get();
+            int completedCount = this.okCount.get() + this.errorCount.get();
+            if (completedCount == this.totalCount && queuedCount == 0) {
+                this.listener.complete(this.errorCount.get());
+                this.stopped = true;
+                return;
+            }
+
+            int remainingCount = this.totalCount - (completedCount + queuedCount);
+            int enqueueCount = Math.min(BATCH_SIZE - queuedCount, remainingCount);
             if (enqueueCount <= 0) {
                 return;
             }

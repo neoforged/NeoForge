@@ -11,7 +11,6 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import java.text.DecimalFormat;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
@@ -28,7 +27,7 @@ import net.neoforged.neoforge.server.command.generation.GenerationTask;
  */
 class GenerateCommand {
     private static GenerationTask activeTask;
-    private static GenerationBar pregenBar;
+    private static GenerationBar generationBar;
 
     static ArgumentBuilder<CommandSourceStack, ?> register() {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("generate").requires(cs -> cs.hasPermission(4)); //permission
@@ -71,10 +70,10 @@ class GenerateCommand {
         int diameter = chunkRadius * 2 + 1;
 
         if (progressBar) {
-            pregenBar = new GenerationBar();
+            generationBar = new GenerationBar();
 
             if (source.getEntity() instanceof ServerPlayer) {
-                pregenBar.addPlayer(source.getPlayer());
+                generationBar.addPlayer(source.getPlayer());
             }
         }
 
@@ -96,8 +95,8 @@ class GenerateCommand {
             double percent = (double) count / total * 100.0;
             source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.stopped", count, total, percent), true);
 
-            pregenBar.close();
-            pregenBar = null;
+            generationBar.close();
+            generationBar = null;
             activeTask = null;
         } else {
             source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.not_running"), false);
@@ -133,8 +132,8 @@ class GenerateCommand {
         return new GenerationTask.Listener() {
             @Override
             public void update(int ok, int error, int total) {
-                if (pregenBar != null) {
-                    pregenBar.update(ok, error, total);
+                if (generationBar != null) {
+                    generationBar.update(ok, error, total);
                 }
             }
 
@@ -146,9 +145,9 @@ class GenerateCommand {
                     source.sendFailure(Component.translatable("commands.neoforge.gen.error"));
                 }
 
-                if (pregenBar != null) {
-                    pregenBar.close();
-                    pregenBar = null;
+                if (generationBar != null) {
+                    generationBar.close();
+                    generationBar = null;
                 }
                 activeTask = null;
             }
