@@ -532,7 +532,7 @@ public class NeoForgeMod {
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
         gen.addProvider(true, new PackMetadataGenerator(packOutput)
                 .add(PackMetadataSection.TYPE, new PackMetadataSection(
-                        Component.translatable("pack.forge.description"),
+                        Component.translatable("pack.neoforge.description"),
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
                         Optional.empty(),
                         Optional.of(new PackMetadataSection.NeoForgeData(Optional.of(Arrays.stream(PackType.values()).collect(Collectors.toMap(Function.identity(), DetectedVersion.BUILT_IN::getPackVersion))))))));
