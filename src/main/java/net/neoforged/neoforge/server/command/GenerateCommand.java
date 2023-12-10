@@ -27,7 +27,6 @@ import net.neoforged.neoforge.server.command.generation.GenerationTask;
  * Original code: <a href="https://github.com/jaskarth/fabric-chunkpregenerator">https://github.com/jaskarth/fabric-chunkpregenerator</a>
  */
 class GenerateCommand {
-    private static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("#.00");
     private static GenerationTask activeTask;
     private static GenerationBar pregenBar;
 
