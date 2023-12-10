@@ -5,10 +5,12 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import java.util.Set;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.effect.MobEffects;
+import net.neoforged.neoforge.common.EffectCure;
+import net.neoforged.neoforge.common.EffectCures;
 
 public interface IMobEffectExtension {
     private MobEffect self() {
@@ -16,14 +18,13 @@ public interface IMobEffectExtension {
     }
 
     /***
-     * Checks whether this {@link MobEffect} can be cured by the given {@link ItemStack}
-     *
-     * @param stack The {@link ItemStack} being checked
-     * @return true if the given {@link ItemStack} cures this effect, false otherwise
-     * @see IMobEffectInstanceExtension#isCuredBy(ItemStack)
+     * Fill the given set with the {@link EffectCure}s this effect should be curable with by default
      */
-    default boolean isCuredBy(ItemStack stack) {
-        return stack.is(Items.MILK_BUCKET);
+    default void fillEffectCures(Set<EffectCure> cures) {
+        cures.addAll(EffectCures.STANDARD_CURES);
+        if (self() == MobEffects.POISON) {
+            cures.add(EffectCures.HONEY);
+        }
     }
 
     /**

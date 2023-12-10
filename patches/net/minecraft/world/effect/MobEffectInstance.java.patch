@@ -1,14 +1,22 @@
 --- a/net/minecraft/world/effect/MobEffectInstance.java
 +++ b/net/minecraft/world/effect/MobEffectInstance.java
-@@ -19,7 +_,7 @@
- import net.minecraft.world.entity.LivingEntity;
- import org.slf4j.Logger;
+@@ -78,6 +_,7 @@
+         this.showIcon = p_216892_;
+         this.hiddenEffect = p_216893_;
+         this.factorData = p_216894_;
++        this.effect.fillEffectCures(this.cures);
+     }
  
--public class MobEffectInstance implements Comparable<MobEffectInstance> {
-+public class MobEffectInstance implements Comparable<MobEffectInstance>, net.neoforged.neoforge.common.extensions.IMobEffectInstanceExtension {
-     private static final Logger LOGGER = LogUtils.getLogger();
-     public static final int INFINITE_DURATION = -1;
-     private static final String TAG_ID = "id";
+     public MobEffectInstance(MobEffectInstance p_19543_) {
+@@ -96,6 +_,8 @@
+         this.ambient = p_19549_.ambient;
+         this.visible = p_19549_.visible;
+         this.showIcon = p_19549_.showIcon;
++        this.cures.clear();
++        this.cures.addAll(p_19549_.cures);
+     }
+ 
+     public boolean update(MobEffectInstance p_19559_) {
 @@ -272,6 +_,7 @@
      public CompoundTag save(CompoundTag p_19556_) {
          ResourceLocation resourcelocation = BuiltInRegistries.MOB_EFFECT.getKey(this.effect);
@@ -17,7 +25,25 @@
          this.writeDetailsTo(p_19556_);
          return p_19556_;
      }
-@@ -342,11 +_,11 @@
+@@ -295,6 +_,8 @@
+                         .resultOrPartial(LOGGER::error)
+                         .ifPresent(p_216906_ -> p_19568_.put("factor_calculation_data", p_216906_))
+             );
++
++        writeCures(p_19568_);
+     }
+ 
+     @Nullable
+@@ -332,7 +_,7 @@
+             optional = Optional.empty();
+         }
+ 
+-        return new MobEffectInstance(p_19546_, j, Math.max(i, 0), flag, flag1, flag2, mobeffectinstance, optional);
++        return new MobEffectInstance(p_19546_, j, Math.max(i, 0), flag, flag1, flag2, mobeffectinstance, optional).readCures(p_19547_);
+     }
+ 
+     public int compareTo(MobEffectInstance p_19566_) {
+@@ -342,13 +_,48 @@
                  .compareFalseFirst(this.isAmbient(), p_19566_.isAmbient())
                  .compareFalseFirst(this.isInfiniteDuration(), p_19566_.isInfiniteDuration())
                  .compare(this.getDuration(), p_19566_.getDuration())
@@ -30,4 +56,41 @@
 +                .compare(this.getEffect().getSortOrder(this), p_19566_.getEffect().getSortOrder(p_19566_))
                  .result();
      }
++
++    //======================== NEOFORGE START =======================
++
++    private final java.util.Set<net.neoforged.neoforge.common.EffectCure> cures = com.google.common.collect.Sets.newIdentityHashSet();
++
++    /**
++     * Get the set of cures
++     * @return the {@link net.neoforged.neoforge.common.EffectCure}s which can cure the {@link MobEffect} held by this {@link MobEffectInstance}
++     */
++    public java.util.Set<net.neoforged.neoforge.common.EffectCure> getCures() {
++        return cures;
++    }
++
++    private MobEffectInstance readCures(CompoundTag tag) {
++        cures.clear(); // Overwrite cures with ones stored in NBT, if any
++        if (tag.contains("neoforge:cures", Tag.TAG_LIST)) {
++            net.minecraft.nbt.ListTag list = tag.getList("neoforge:cures", Tag.TAG_STRING);
++            for (int i = 0; i < list.size(); i++) {
++                cures.add(net.neoforged.neoforge.common.EffectCure.get(list.getString(i)));
++            }
++        }
++        return this;
++    }
++
++    private void writeCures(CompoundTag tag) {
++        if (!cures.isEmpty()) {
++            net.minecraft.nbt.ListTag list = new net.minecraft.nbt.ListTag();
++            for (net.neoforged.neoforge.common.EffectCure cure : cures) {
++                list.add(net.minecraft.nbt.StringTag.valueOf(cure.name()));
++            }
++            tag.put("neoforge:cures", list);
++        }
++    }
++
++    //========================= NEOFORGE END ========================
  
+     public static class FactorData {
+         public static final Codec<MobEffectInstance.FactorData> CODEC = RecordCodecBuilder.create(

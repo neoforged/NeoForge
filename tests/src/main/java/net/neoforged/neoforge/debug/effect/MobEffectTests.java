@@ -1,11 +1,23 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.effect;
 
+import java.util.Set;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.world.effect.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Pig;
-import net.minecraft.world.item.*;
+import net.neoforged.neoforge.common.EffectCure;
+import net.neoforged.neoforge.common.EffectCures;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -19,33 +31,59 @@ public class MobEffectTests {
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests whether items and effects can properly specify what they cure and what they are cured by respectively")
-    static void cureEffect(final DynamicTest test, final RegistrationHelper reg) {
-        final var nvCureItem = reg.items().register("nv_cure_item", () -> new Item(new Item.Properties()) {
-            @Override
-            public boolean cures(ItemStack stack, MobEffectInstance effectInstance) {
-                return effectInstance.getEffect() == MobEffects.NIGHT_VISION;
-            }
-        }).withLang("Nightvision Cure");
+    static void effectCures(final DynamicTest test, final RegistrationHelper reg) {
+        final var testCure = EffectCure.get("test_cure");
+        final var testCureTwo = EffectCure.get("test_cure_two");
+
         final var testEffect = reg.registrar(Registries.MOB_EFFECT).register("test_effect", () -> new MobEffect(
                 MobEffectCategory.HARMFUL, 0xFF0000) {
             @Override
-            public boolean isCuredBy(ItemStack stack) {
-                return stack.is(Items.GOLDEN_CARROT);
+            public void fillEffectCures(Set<EffectCure> cures) {
+                super.fillEffectCures(cures);
+                cures.remove(EffectCures.MILK);
+                cures.add(testCureTwo);
+            }
+        });
+
+        test.eventListeners().forge().addListener((MobEffectEvent.Added event) -> {
+            if (event.getEffectInstance().getEffect() == MobEffects.NIGHT_VISION) {
+                event.getEffectInstance().getCures().add(testCure);
             }
         });
 
         test.onGameTest(helper -> {
             Pig pig = helper.spawnWithNoFreeWill(EntityType.PIG, 1, 1, 1);
 
+            pig.addEffect(new MobEffectInstance(MobEffects.CONFUSION));
+            helper.assertEntityProperty(pig, e -> e.hasEffect(MobEffects.CONFUSION), "'confusion was applied'");
+            pig.removeEffectsCuredBy(testCure);
+            helper.assertEntityProperty(pig, e -> e.hasEffect(MobEffects.CONFUSION), "'confusion not removed by test cure'");
+            pig.removeEffectsCuredBy(EffectCures.MILK);
+            helper.assertEntityProperty(pig, e -> !e.hasEffect(MobEffects.CONFUSION), "'confusion removed by milk'");
+
             pig.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION));
-            helper.assertEntityProperty(pig, e -> e.hasEffect(MobEffects.NIGHT_VISION), "'has nightvision'");
-            pig.curePotionEffects(new ItemStack(nvCureItem.get()));
-            helper.assertEntityProperty(pig, e -> !e.hasEffect(MobEffects.NIGHT_VISION), "'has no nightvision'");
+            helper.assertEntityProperty(pig, e -> e.hasEffect(MobEffects.NIGHT_VISION), "'nightvision was applied'");
+            pig.removeEffectsCuredBy(testCure);
+            helper.assertEntityProperty(pig, e -> !e.hasEffect(MobEffects.NIGHT_VISION), "'nightvision removed by test cure'");
 
             pig.addEffect(new MobEffectInstance(testEffect.get()));
-            helper.assertEntityProperty(pig, e -> e.hasEffect(testEffect.get()), "'has test effect'");
-            pig.curePotionEffects(new ItemStack(Items.GOLDEN_CARROT));
-            helper.assertEntityProperty(pig, e -> !e.hasEffect(testEffect.get()), "'has no test effect'");
+            helper.assertEntityProperty(pig, e -> e.hasEffect(testEffect.get()), "'test effect was applied'");
+            pig.removeEffectsCuredBy(EffectCures.MILK);
+            helper.assertEntityProperty(pig, e -> e.hasEffect(testEffect.get()), "'test effect not removed by milk'");
+            pig.removeEffectsCuredBy(testCureTwo);
+            helper.assertEntityProperty(pig, e -> !e.hasEffect(testEffect.get()), "'test effect removed by test cure'");
+
+            MobEffectInstance srcInst = new MobEffectInstance(MobEffects.CONFUSION);
+            MobEffectInstance destInst = MobEffectInstance.load(srcInst.save(new CompoundTag()));
+            helper.assertTrue(srcInst.getCures().equals(destInst.getCures()), "'MobEffectInstance serialization roundtrip (standard cures)'");
+
+            srcInst.getCures().add(testCure);
+            destInst = MobEffectInstance.load(srcInst.save(new CompoundTag()));
+            helper.assertTrue(srcInst.getCures().equals(destInst.getCures()), "'MobEffectInstance serialization roundtrip (custom additional cure)'");
+
+            srcInst.getCures().clear();
+            destInst = MobEffectInstance.load(srcInst.save(new CompoundTag()));
+            helper.assertTrue(srcInst.getCures().equals(destInst.getCures()), "'MobEffectInstance serialization roundtrip (no cures)'");
 
             helper.succeed();
         });
