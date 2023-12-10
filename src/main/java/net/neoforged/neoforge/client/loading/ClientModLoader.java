@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 import net.minecraft.SharedConstants;
@@ -22,6 +23,7 @@ import net.minecraft.server.packs.repository.*;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.InclusiveRange;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.DataPackConfig;
 import net.neoforged.api.distmarker.Dist;
@@ -172,7 +174,8 @@ public class ClientModLoader {
                         id -> new DelegatingPackResources(id, false,
                                 new PackMetadataSection(
                                         Component.translatable("fml.resources.modresources", hiddenPacks.size()),
-                                        SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES)),
+                                        SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES),
+                                        Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE))),
                                 hiddenPacks)),
                 PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT);
         packAcceptor.accept(modResourcesPack);
