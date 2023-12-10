@@ -124,8 +124,6 @@ modId="ranged_mobs_use_modded_weapons_test"
 [[mods]]
 modId="fishing_bobber_event_test"
 [[mods]]
-modId="custom_respawn_test"
-[[mods]]
 modId="custom_sprite_source_test"
 [[mods]]
 modId="dimension_settings_test"
@@ -153,8 +151,6 @@ modId="full_pots_accessor_demo"
 modId="permissiontest"
 [[mods]]
 modId="part_entity_test"
-[[mods]]
-modId="capabilities_test"
 [[mods]]
 modId="custom_mob_bucket_test"
 [[mods]]

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.ChatFormatting;
@@ -74,7 +75,7 @@ public abstract class AbstractTest implements Test {
             enabledByDefault = marker.enabledByDefault();
             visuals = new Visuals(
                     Component.literal(marker.title().isBlank() ? TestFrameworkImpl.capitaliseWords(id(), "_") : marker.title()),
-                    Stream.of(marker.description()).<Component>map(Component::literal).toList());
+                    Stream.of(marker.description()).<Component>map(Component::literal).collect(Collectors.toCollection(ArrayList::new)));
             groups.addAll(List.of(marker.groups()));
         }
 
