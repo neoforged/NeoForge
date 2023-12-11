@@ -37,7 +37,7 @@ public class TestsMod {
 
     @RegisterStructureTemplate(TEMPLATE_3x3_FLOOR)
     public static final StructureTemplate TEMPLATE3x3_FLOOR = StructureTemplateBuilder.withSize(3, 4, 3)
-            .fill(0, 0, 0, 3, 1, 3, Blocks.IRON_BLOCK.defaultBlockState())
+            .fill(0, 0, 0, 2, 0, 2, Blocks.IRON_BLOCK.defaultBlockState())
             .build();
 
     public TestsMod(IEventBus modBus, ModContainer container) {

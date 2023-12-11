@@ -23,6 +23,7 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -46,21 +47,25 @@ public class StructureTemplateBuilder implements TemplateBuilderHelper<Structure
     }
 
     public static StructureTemplateBuilder withSize(int length, int height, int width) {
-        return new StructureTemplateBuilder(new Vec3i(length, height, width)).fill(0, 0, 0, length, height, width, Blocks.AIR.defaultBlockState());
+        return new StructureTemplateBuilder(new Vec3i(length, height, width)).fill(0, 0, 0, length - 1, height - 1, width - 1, Blocks.AIR.defaultBlockState());
     }
 
     public static StructureTemplate empty(int length, int height, int width) {
         return withSize(length, height, width).build();
     }
 
-    public StructureTemplateBuilder fill(int x, int y, int z, int length, int height, int width, BlockState state) {
-        return fill(x, y, z, length, height, width, state, null);
+    public StructureTemplateBuilder fill(int x, int y, int z, int toX, int toY, int toZ, Block block) {
+        return fill(x, y, z, toX, toY, toZ, block.defaultBlockState());
     }
 
-    public StructureTemplateBuilder fill(int x, int y, int z, int length, int height, int width, BlockState state, @Nullable CompoundTag nbt) {
-        for (int x1 = x; x1 < length; x1++) {
-            for (int y1 = y; y1 < height; y1++) {
-                for (int z1 = z; z1 < width; z1++) {
+    public StructureTemplateBuilder fill(int x, int y, int z, int toX, int toY, int toZ, BlockState state) {
+        return fill(x, y, z, toX, toY, toZ, state, null);
+    }
+
+    public StructureTemplateBuilder fill(int x, int y, int z, int toX, int toY, int toZ, BlockState state, @Nullable CompoundTag nbt) {
+        for (int x1 = x; x1 <= toX; x1++) {
+            for (int y1 = y; y1 <= toY; y1++) {
+                for (int z1 = z; z1 <= toZ; z1++) {
                     set(x1, y1, z1, state, nbt);
                 }
             }

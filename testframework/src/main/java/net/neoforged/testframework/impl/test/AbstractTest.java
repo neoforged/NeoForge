@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.ChatFormatting;
@@ -74,7 +75,7 @@ public abstract class AbstractTest implements Test {
             enabledByDefault = marker.enabledByDefault();
             visuals = new Visuals(
                     Component.literal(marker.title().isBlank() ? TestFrameworkImpl.capitaliseWords(id(), "_") : marker.title()),
-                    Stream.of(marker.description()).<Component>map(Component::literal).toList());
+                    Stream.of(marker.description()).<Component>map(Component::literal).collect(Collectors.toCollection(ArrayList::new)));
             groups.addAll(List.of(marker.groups()));
         }
 
@@ -97,7 +98,7 @@ public abstract class AbstractTest implements Test {
                 templateFromPattern = new ResourceLocation(framework.id().getNamespace(), "empty_" + size + "_floor");
                 if (!framework.dynamicStructures().contains(templateFromPattern)) {
                     framework.dynamicStructures().register(templateFromPattern, StructureTemplateBuilder.withSize(size.length(), size.height() + 1, size.width())
-                            .fill(0, 0, 0, size.length(), 1, size.width(), Blocks.IRON_BLOCK.defaultBlockState())
+                            .fill(0, 0, 0, size.length() - 1, 0, size.width() - 1, Blocks.IRON_BLOCK.defaultBlockState())
                             .build());
                 }
             } else {

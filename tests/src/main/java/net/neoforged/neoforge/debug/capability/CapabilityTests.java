@@ -3,22 +3,26 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.oldtest.capabilities;
+package net.neoforged.neoforge.debug.capability;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.neoforged.testframework.annotation.ForEachTest;
+import net.neoforged.testframework.annotation.TestHolder;
+import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import org.apache.commons.lang3.mutable.MutableInt;
 
-@PrefixGameTestTemplate(false)
-public class VanillaItemHandlerTests {
-    @GameTest(templateNamespace = CapabilitiesTest.MODID, template = "empty3x3x3")
-    public static void testComposterInvalidation(GameTestHelper helper) {
+@ForEachTest(groups = "capability")
+public class CapabilityTests {
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if composter invalidation works")
+    static void composterInvalidationTest(final ExtendedGameTestHelper helper) {
         var composterPos = new BlockPos(1, 1, 1);
 
         MutableInt invalidationCount = new MutableInt();
