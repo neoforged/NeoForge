@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.fluids.capability.wrappers;
 
 import com.google.common.math.IntMath;
-import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -117,7 +116,6 @@ public class CauldronWrapper implements IFluidHandler {
             return FluidStack.EMPTY;
         }
     }
-
 
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
