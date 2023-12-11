@@ -32,11 +32,12 @@ class GenerateCommand {
     static ArgumentBuilder<CommandSourceStack, ?> register() {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("generate").requires(cs -> cs.hasPermission(4)); //permission
 
-        builder.then(Commands.argument("pos", BlockPosArgument.blockPos())
-                .then(Commands.argument("chunkRadius", IntegerArgumentType.integer(1))
-                        .then(Commands.argument("progressBar", BoolArgumentType.bool())
-                                .executes(ctx -> executeGeneration(ctx.getSource(), BlockPosArgument.getSpawnablePos(ctx, "pos"), getInt(ctx, "chunkRadius"), getBool(ctx, "progressBar"))))
-                        .executes(ctx -> executeGeneration(ctx.getSource(), BlockPosArgument.getSpawnablePos(ctx, "pos"), getInt(ctx, "chunkRadius"), true))));
+        builder.then(Commands.literal("start")
+                .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                        .then(Commands.argument("chunkRadius", IntegerArgumentType.integer(1))
+                                .then(Commands.argument("progressBar", BoolArgumentType.bool())
+                                        .executes(ctx -> executeGeneration(ctx.getSource(), BlockPosArgument.getSpawnablePos(ctx, "pos"), getInt(ctx, "chunkRadius"), getBool(ctx, "progressBar"))))
+                                .executes(ctx -> executeGeneration(ctx.getSource(), BlockPosArgument.getSpawnablePos(ctx, "pos"), getInt(ctx, "chunkRadius"), true)))));
 
         builder.then(Commands.literal("stop")
                 .executes(ctx -> stopGeneration(ctx.getSource())));
