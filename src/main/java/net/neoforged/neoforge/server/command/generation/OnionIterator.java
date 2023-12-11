@@ -9,6 +9,10 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import net.minecraft.world.level.ChunkPos;
 
+/**
+ * Special thanks to Jasmine and Gegy for allowing us to use their pregenerator mod as a model to use in NeoForge!
+ * Original code: <a href="https://github.com/jaskarth/fabric-chunkpregenerator">https://github.com/jaskarth/fabric-chunkpregenerator</a>
+ */
 public class OnionIterator implements Iterator<ChunkPos> {
     private static final byte EAST = 0;
     private static final byte SOUTH = 1;

@@ -22,6 +22,10 @@ import net.minecraft.world.level.chunk.ChunkStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Special thanks to Jasmine and Gegy for allowing us to use their pregenerator mod as a model to use in NeoForge!
+ * Original code: <a href="https://github.com/jaskarth/fabric-chunkpregenerator">https://github.com/jaskarth/fabric-chunkpregenerator</a>
+ */
 public class GenerationTask {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int BATCH_SIZE = 32;

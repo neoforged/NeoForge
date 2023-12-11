@@ -10,6 +10,10 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import net.minecraft.world.level.ChunkPos;
 
+/**
+ * Special thanks to Jasmine and Gegy for allowing us to use their pregenerator mod as a model to use in NeoForge!
+ * Original code: <a href="https://github.com/jaskarth/fabric-chunkpregenerator">https://github.com/jaskarth/fabric-chunkpregenerator</a>
+ */
 public class CoarseOnionIterator extends AbstractIterator<ChunkPos> {
     private final int radius;
     private final int cellSize;

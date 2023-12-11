@@ -14,6 +14,10 @@ import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.BossEvent;
 
+/**
+ * Special thanks to Jasmine and Gegy for allowing us to use their pregenerator mod as a model to use in NeoForge!
+ * Original code: <a href="https://github.com/jaskarth/fabric-chunkpregenerator">https://github.com/jaskarth/fabric-chunkpregenerator</a>
+ */
 public class GenerationBar implements AutoCloseable {
     private static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("#.00");
 
