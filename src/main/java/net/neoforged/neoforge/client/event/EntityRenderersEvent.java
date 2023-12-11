@@ -33,9 +33,9 @@ import net.minecraft.world.level.block.SkullBlock.Type;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.ClientHooks;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -44,8 +44,7 @@ import org.jetbrains.annotations.Nullable;
  * Fired for on different events/actions relating to {@linkplain EntityRenderer entity renderers}.
  * See the various subclasses for listening to different events.
  *
- * <p>These events are fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
- * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+ * <p>These events are fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
  * @see EntityRenderersEvent.RegisterLayerDefinitions
  * @see EntityRenderersEvent.RegisterRenderers
@@ -60,8 +59,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
-     * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+     * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class RegisterLayerDefinitions extends EntityRenderersEvent {
         @ApiStatus.Internal
@@ -88,8 +86,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
-     * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+     * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class RegisterRenderers extends EntityRenderersEvent {
         @ApiStatus.Internal
@@ -122,7 +119,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+     * <p>This event is fired on the mod-specific event bus,
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class AddLayers extends EntityRenderersEvent {
@@ -196,7 +193,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
-     * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
+     * <p>This event is fired on the mod-specific event bus,
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class CreateSkullModels extends EntityRenderersEvent {

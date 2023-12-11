@@ -21,7 +21,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
@@ -42,8 +41,7 @@ public class ScaffoldingTest {
 
     static final DeferredBlock<Block> SCAFFOLDING_METHOD_TEST = BLOCKS.register("scaffolding_method_test", () -> new ScaffoldingMethodTestBlock(Properties.of().mapColor(MapColor.SAND).noCollission().sound(SoundType.SCAFFOLDING).dynamicShape()));
 
-    public ScaffoldingTest() {
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public ScaffoldingTest(IEventBus modBus) {
         BLOCKS.register(modBus);
         modBus.addListener(this::gatherData);
     }
