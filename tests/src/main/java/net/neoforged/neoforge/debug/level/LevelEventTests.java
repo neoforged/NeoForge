@@ -58,7 +58,7 @@ public class LevelEventTests {
     @TestHolder
     static void alterGroundEvent(final DynamicTest test) {
         test.registerGameTestTemplate(StructureTemplateBuilder.withSize(16, 32, 16)
-                .fill(0, 0, 0, 16, 1, 16, Blocks.DIRT.defaultBlockState())
+                .fill(0, 0, 0, 15, 0, 15, Blocks.DIRT.defaultBlockState())
                 .set(7, 1, 7, Blocks.SPRUCE_SAPLING.defaultBlockState())
                 .set(8, 1, 7, Blocks.SPRUCE_SAPLING.defaultBlockState())
                 .set(7, 1, 8, Blocks.SPRUCE_SAPLING.defaultBlockState())

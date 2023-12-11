@@ -98,7 +98,7 @@ public abstract class AbstractTest implements Test {
                 templateFromPattern = new ResourceLocation(framework.id().getNamespace(), "empty_" + size + "_floor");
                 if (!framework.dynamicStructures().contains(templateFromPattern)) {
                     framework.dynamicStructures().register(templateFromPattern, StructureTemplateBuilder.withSize(size.length(), size.height() + 1, size.width())
-                            .fill(0, 0, 0, size.length(), 1, size.width(), Blocks.IRON_BLOCK.defaultBlockState())
+                            .fill(0, 0, 0, size.length() - 1, 0, size.width() - 1, Blocks.IRON_BLOCK.defaultBlockState())
                             .build());
                 }
             } else {
