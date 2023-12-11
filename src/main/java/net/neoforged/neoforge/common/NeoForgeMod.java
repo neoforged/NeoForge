@@ -503,7 +503,7 @@ public class NeoForgeMod {
 
         UsernameCache.load();
         TierSortingRegistry.init();
-        if (dist == Dist.CLIENT) ClientCommandHandler.init();
+        if (dist.isClient()) ClientCommandHandler.init();
         DualStackUtils.initialise();
 
         modEventBus.addListener(CapabilityHooks::registerVanillaProviders);

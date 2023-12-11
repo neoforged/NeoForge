@@ -18,7 +18,6 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -59,7 +58,7 @@ public class RenderableTest {
 
     public RenderableTest(IEventBus modEventBus) {
         if (ENABLED) {
-            if (FMLEnvironment.dist == Dist.CLIENT) {
+            if (FMLEnvironment.dist.isClient()) {
                 Client.init(modEventBus);
             }
         }

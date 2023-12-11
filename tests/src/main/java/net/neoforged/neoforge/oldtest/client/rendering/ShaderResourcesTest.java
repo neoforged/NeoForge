@@ -10,9 +10,7 @@ import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.DistExecutor;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
@@ -29,7 +27,7 @@ public class ShaderResourcesTest {
         if (ENABLE) {
             LOGGER = LogUtils.getLogger();
 
-            if (FMLEnvironment.dist == Dist.CLIENT) {
+            if (FMLEnvironment.dist.isClient()) {
                 ClientInit.init(modEventBus);
             }
         }

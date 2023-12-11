@@ -28,7 +28,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.tags.TagKey;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -77,7 +76,7 @@ public class DataPackRegistriesTest {
         modBus.addListener(this::onGatherData);
         forgeBus.addListener(this::onServerStarting);
 
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+        if (FMLEnvironment.dist.isClient()) {
             ClientEvents.subscribeClientEvents();
         }
     }

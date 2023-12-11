@@ -31,7 +31,6 @@ import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.toposort.TopologicalSort;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -219,7 +218,7 @@ public class TierSortingRegistry {
     static void init() {
         SYNC_CHANNEL.registerMessage(0, SyncPacket.class, SyncPacket::encode, TierSortingRegistry::receive, TierSortingRegistry::handle, Optional.of(PlayNetworkDirection.PLAY_TO_CLIENT));
         NeoForge.EVENT_BUS.addListener(TierSortingRegistry::playerLoggedIn);
-        if (FMLEnvironment.dist == Dist.CLIENT) ClientEvents.init();
+        if (FMLEnvironment.dist.isClient()) ClientEvents.init();
     }
 
     /*package private*/
