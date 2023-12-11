@@ -36,7 +36,6 @@ import net.neoforged.fml.DistExecutor;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -147,12 +146,10 @@ public class FluidTypeTest {
     private static final DeferredBlock<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.register("test_fluid_block", () -> new LiquidBlock(TEST_FLUID, BlockBehaviour.Properties.of().noCollission().strength(100.0F).noLootTable()));
     private static final DeferredItem<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> new BucketItem(TEST_FLUID, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
 
-    public FluidTypeTest() {
+    public FluidTypeTest(IEventBus modEventBus) {
         if (ENABLE) {
             logger = LogManager.getLogger();
             NeoForgeMod.enableMilkFluid();
-
-            var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
             FLUID_TYPES.register(modEventBus);
             FLUIDS.register(modEventBus);

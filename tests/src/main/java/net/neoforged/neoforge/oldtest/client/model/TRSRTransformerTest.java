@@ -25,7 +25,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.DistExecutor;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.model.IDynamicBakedModel;
 import net.neoforged.neoforge.client.model.QuadTransformers;
@@ -49,12 +48,11 @@ public class TRSRTransformerTest {
     @SuppressWarnings("unused")
     private static final DeferredItem<Item> TEST_ITEM = ITEMS.register("test", () -> new BlockItem(TEST_BLOCK.get(), new Item.Properties()));
 
-    public TRSRTransformerTest() {
-        final IEventBus mod = FMLJavaModLoadingContext.get().getModEventBus();
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> mod.addListener(this::onModelBake));
-        BLOCKS.register(mod);
-        ITEMS.register(mod);
-        mod.addListener(this::addCreative);
+    public TRSRTransformerTest(IEventBus modEventBus) {
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> modEventBus.addListener(this::onModelBake));
+        BLOCKS.register(modEventBus);
+        ITEMS.register(modEventBus);
+        modEventBus.addListener(this::addCreative);
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
