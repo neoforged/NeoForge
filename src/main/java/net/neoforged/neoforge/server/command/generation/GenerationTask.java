@@ -8,6 +8,8 @@ package net.neoforged.neoforge.server.command.generation;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
+
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.server.MinecraftServer;
@@ -49,6 +51,8 @@ public class GenerationTask {
 
     private volatile Listener listener;
     private volatile boolean stopped;
+
+    public static final TicketType<ChunkPos> NEOFORGE_FORCED = TicketType.create("neoforge_forced", Comparator.comparingLong(ChunkPos::toLong));
 
     public GenerationTask(ServerLevel serverLevel, int x, int z, int radius) {
         this.server = serverLevel.getServer();
@@ -185,12 +189,12 @@ public class GenerationTask {
 
     private void acquireChunk(long chunk) {
         ChunkPos pos = new ChunkPos(chunk);
-        this.chunkSource.addRegionTicket(TicketType.FORCED, pos, 0, pos);
+        this.chunkSource.addRegionTicket(NEOFORGE_FORCED, pos, 0, pos);
     }
 
     private void releaseChunk(long chunk) {
         ChunkPos pos = new ChunkPos(chunk);
-        this.chunkSource.addRegionTicket(TicketType.FORCED, pos, 0, pos);
+        this.chunkSource.addRegionTicket(NEOFORGE_FORCED, pos, 0, pos);
     }
 
     public interface Listener {
