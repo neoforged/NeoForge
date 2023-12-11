@@ -110,7 +110,7 @@ public class CauldronWrapper implements IFluidHandler {
         }
 
         BlockState state = level.getBlockState(pos);
-        if (getContent(state).fluid == resource.getFluid() && null == resource.getTag()) {
+        if (getContent(state).fluid == resource.getFluid() && !resource.hasTag()) {
             return drain(state, resource.getAmount(), action);
         } else {
             return FluidStack.EMPTY;
