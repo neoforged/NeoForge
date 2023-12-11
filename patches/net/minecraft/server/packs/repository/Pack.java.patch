@@ -9,7 +9,7 @@
      private final PackSource packSource;
  
      @Nullable
-@@ -69,6 +_,36 @@
+@@ -69,6 +_,33 @@
          boolean p_249753_,
          PackSource p_251608_
      ) {
@@ -34,10 +34,7 @@
 +            List<Pack> oldChildren = remainingChildren;
 +            remainingChildren = new java.util.ArrayList<>();
 +            for (Pack child : oldChildren) {
-+                if (!child.isHidden()) {
-+                    throw new IllegalArgumentException("Child pack "+ child.getId() +" must be hidden");
-+                }
-+                flattenedChildren.add(child.withChildren(java.util.Collections.emptyList()));
++                flattenedChildren.add(child.withChildren(java.util.Collections.emptyList()).hidden());
 +                remainingChildren.addAll(child.getChildren());
 +            }
 +        }
