@@ -24,7 +24,7 @@ public class CauldronWrapper implements IFluidHandler {
 
     public CauldronWrapper(Level level, BlockPos pos) {
         this.level = level;
-        this.pos = pos.immutable();
+        this.pos = pos;
     }
 
     @Override
@@ -95,9 +95,10 @@ public class CauldronWrapper implements IFluidHandler {
         int amountIncrements = insertContent.totalAmount / d;
         int levelIncrements = insertContent.maxLevel / d;
 
-        int insertedIncrements = Math.min(resource.getAmount() / amountIncrements, (insertContent.maxLevel - currentContent.currentLevel(state)) / levelIncrements);
+        int currentLevel = currentContent.currentLevel(state);
+        int insertedIncrements = Math.min(resource.getAmount() / amountIncrements, (insertContent.maxLevel - currentLevel) / levelIncrements);
         if (insertedIncrements > 0) {
-            updateLevel(insertContent, currentContent.currentLevel(state) + insertedIncrements * levelIncrements, action);
+            updateLevel(insertContent, currentLevel + insertedIncrements * levelIncrements, action);
         }
 
         return insertedIncrements * amountIncrements;
@@ -105,13 +106,18 @@ public class CauldronWrapper implements IFluidHandler {
 
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
-        FluidStack current = getFluidInTank(0);
-        if (current.isFluidEqual(resource) && Objects.equals(current.getTag(), resource.getTag())) {
-            return drain(resource.getAmount(), action);
+        if (resource.isEmpty()) {
+            return FluidStack.EMPTY;
+        }
+
+        BlockState state = level.getBlockState(pos);
+        if (getContent(state).fluid == resource.getFluid() && null == resource.getTag()) {
+            return drain(state, resource.getAmount(), action);
         } else {
             return FluidStack.EMPTY;
         }
     }
+
 
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
@@ -119,7 +125,10 @@ public class CauldronWrapper implements IFluidHandler {
             return FluidStack.EMPTY;
         }
 
-        BlockState state = level.getBlockState(pos);
+        return drain(level.getBlockState(pos), maxDrain, action);
+    }
+
+    private FluidStack drain(BlockState state, int maxDrain, FluidAction action) {
         CauldronFluidContent content = getContent(state);
 
         // We can only extract increments based on the GCD between the number of levels and the total amount.
@@ -127,15 +136,18 @@ public class CauldronWrapper implements IFluidHandler {
         int amountIncrements = content.totalAmount / d;
         int levelIncrements = content.maxLevel / d;
 
-        int extractedIncrements = Math.min(maxDrain / amountIncrements, content.currentLevel(state) / levelIncrements);
+        int currentLevel = content.currentLevel(state);
+        int extractedIncrements = Math.min(maxDrain / amountIncrements, currentLevel / levelIncrements);
         if (extractedIncrements > 0) {
-            int newLevel = content.currentLevel(state) - extractedIncrements * levelIncrements;
+            int newLevel = currentLevel - extractedIncrements * levelIncrements;
             if (newLevel == 0) {
                 // Fully extract -> back to empty cauldron
-                level.setBlockAndUpdate(pos, Blocks.CAULDRON.defaultBlockState());
+                if (action.execute()) {
+                    level.setBlockAndUpdate(pos, Blocks.CAULDRON.defaultBlockState());
+                }
             } else {
                 // Otherwise just decrease levels
-                updateLevel(content, content.currentLevel(state) - extractedIncrements * levelIncrements, action);
+                updateLevel(content, newLevel, action);
             }
         }
 

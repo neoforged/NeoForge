@@ -108,9 +108,9 @@ public final class CauldronFluidContent {
     public static void init() {
         var registerEvent = new RegisterCauldronFluidContentEvent();
         // Vanilla registrations
-        registerEvent.register(Blocks.CAULDRON, Fluids.EMPTY, 1000, null);
-        registerEvent.register(Blocks.WATER_CAULDRON, Fluids.WATER, 1000, LayeredCauldronBlock.LEVEL);
-        registerEvent.register(Blocks.LAVA_CAULDRON, Fluids.LAVA, 1000, null);
+        registerEvent.register(Blocks.CAULDRON, Fluids.EMPTY, FluidType.BUCKET_VOLUME, null);
+        registerEvent.register(Blocks.WATER_CAULDRON, Fluids.WATER, FluidType.BUCKET_VOLUME, LayeredCauldronBlock.LEVEL);
+        registerEvent.register(Blocks.LAVA_CAULDRON, Fluids.LAVA, FluidType.BUCKET_VOLUME, null);
         // Modded registrations
         ModLoader.get().postEvent(registerEvent);
     }
