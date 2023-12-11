@@ -242,6 +242,14 @@
          }
  
          if (this.fpsPieResults != null) {
+@@ -1269,6 +_,7 @@
+             }
+ 
+             this.pause = flag1;
++            net.neoforged.neoforge.client.ClientHooks.onClientPauseUpdate(this.pause);
+         }
+ 
+         long l = Util.getNanos();
 @@ -1361,10 +_,12 @@
          this.window.setGuiScale((double)i);
          if (this.screen != null) {
