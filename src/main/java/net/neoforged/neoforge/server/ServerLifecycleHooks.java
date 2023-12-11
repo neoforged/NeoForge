@@ -39,6 +39,7 @@ import net.neoforged.fml.ModLoadingStage;
 import net.neoforged.fml.ModLoadingWarning;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import net.neoforged.neoforge.common.world.BiomeModifier;
