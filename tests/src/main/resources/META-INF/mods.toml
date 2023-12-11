@@ -156,8 +156,6 @@ modId="permissiontest"
 [[mods]]
 modId="part_entity_test"
 [[mods]]
-modId="capabilities_test"
-[[mods]]
 modId="custom_mob_bucket_test"
 [[mods]]
 modId="custom_armor_model_test"
