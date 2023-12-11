@@ -383,7 +383,7 @@ public class ModListScreen extends Screen {
                     .orElse(ResourcePackLoader.getPackFor("neoforge").orElseThrow(() -> new RuntimeException("Can't find neoforge, WHAT!")));
             try {
                 NativeImage logo = null;
-                IoSupplier<InputStream> logoResource = resourcePack.getRootResource(logoFile);
+                IoSupplier<InputStream> logoResource = resourcePack.getRootResource(logoFile.split("[/\\\\]"));
                 if (logoResource != null)
                     logo = NativeImage.read(logoResource.get());
                 if (logo != null) {

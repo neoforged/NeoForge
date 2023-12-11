@@ -160,7 +160,7 @@ runs.configureEach { it ->
     gameDir.mkdirs();
 
     it.workingDirectory.set gameDir
-    it.programArguments.addAll '--gameDir', "\"${gameDir.absolutePath}\""
+    it.programArguments.addAll '--gameDir', gameDir.absolutePath
 }
 
 launcherProfile {

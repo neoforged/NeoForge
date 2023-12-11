@@ -78,7 +78,7 @@ runs {
         gameDir.mkdirs();
 
         workingDirectory.set gameDir
-        programArguments.addAll '--gameDir', "\"${gameDir.absolutePath}\""
+        programArguments.addAll '--gameDir', gameDir.absolutePath
     }
 }
 

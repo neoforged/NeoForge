@@ -5,21 +5,35 @@
 
 package net.neoforged.neoforge.debug.block;
 
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.registration.RegistrationHelper;
+import org.jetbrains.annotations.Nullable;
 
 @ForEachTest(groups = BlockTests.GROUP)
 public class BlockTests {
@@ -48,6 +62,38 @@ public class BlockTests {
                         player.getOutboundPackets(ClientboundSoundPacket.class)
                                 .anyMatch(sound -> sound.getSound().value() == SoundEvents.BARREL_OPEN),
                         "Open sound was not broadcast"))
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if the Neo-added getRespawnPosition method correctly changes the position")
+    static void customRespawnTest(final DynamicTest test, final RegistrationHelper reg) {
+        final var respawn = reg.blocks().register("respawn", () -> new Block(BlockBehaviour.Properties.of()) {
+            @Override
+            public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult blockHitResult) {
+                if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.setRespawnPosition(world.dimension(), pos, 0, false, true);
+                }
+                return InteractionResult.sidedSuccess(world.isClientSide);
+            }
+
+            @Override
+            public Optional<Vec3> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation, @Nullable LivingEntity entity) {
+                // have the player respawn a block north to the location of the anchor
+                return Optional.of(pos.getCenter().add(0, 1, 1));
+            }
+        }).withBlockItem().withLang("Respawn").withDefaultWhiteModel();
+
+        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
+                .thenExecute(() -> helper.setBlock(1, 2, 1, respawn.get()))
+                .thenExecute(() -> helper.setBlock(1, 2, 2, Blocks.IRON_BLOCK))
+
+                .thenExecute(player -> helper.useBlock(new BlockPos(1, 2, 1), player))
+                .thenExecute(player -> player.getServer().getPlayerList().respawn(player, false))
+                .thenExecute(() -> helper.assertEntityPresent(
+                        EntityType.PLAYER,
+                        1, 3, 2))
                 .thenSucceed());
     }
 }

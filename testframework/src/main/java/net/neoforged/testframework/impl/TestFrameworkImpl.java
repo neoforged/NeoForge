@@ -289,6 +289,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
         final List<Test> tests = new ArrayList<>();
         tests.addAll(FrameworkCollectors.Tests.eventTestMethodsWithAnnotation(container, TestHolder.class));
         tests.addAll(FrameworkCollectors.Tests.forMethodsWithAnnotation(container, TestHolder.class));
+        tests.addAll(FrameworkCollectors.Tests.forGameTestMethodsWithAnnotation(container, TestHolder.class));
         tests.addAll(FrameworkCollectors.Tests.forClassesWithAnnotation(container, TestHolder.class));
         return tests;
     }
