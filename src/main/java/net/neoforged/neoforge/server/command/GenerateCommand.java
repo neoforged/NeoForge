@@ -34,7 +34,7 @@ class GenerateCommand {
 
         builder.then(Commands.literal("start")
                 .then(Commands.argument("pos", BlockPosArgument.blockPos())
-                        .then(Commands.argument("chunkRadius", IntegerArgumentType.integer(1))
+                        .then(Commands.argument("chunkRadius", IntegerArgumentType.integer(1, 1000000))
                                 .then(Commands.argument("progressBar", BoolArgumentType.bool())
                                         .executes(ctx -> executeGeneration(ctx.getSource(), BlockPosArgument.getSpawnablePos(ctx, "pos"), getInt(ctx, "chunkRadius"), getBool(ctx, "progressBar"))))
                                 .executes(ctx -> executeGeneration(ctx.getSource(), BlockPosArgument.getSpawnablePos(ctx, "pos"), getInt(ctx, "chunkRadius"), true)))));
