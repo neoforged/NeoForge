@@ -181,6 +181,9 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         boneMeal(new BlockPos(x, y, z), player);
     }
 
+    /**
+     * To be used alongside {@link net.minecraft.gametest.framework.GameTestSequence#thenWaitUntil(Runnable)}
+     */
     public void boneMealUntilGrown(int x, int y, int z, Player player) {
         boneMeal(x, y, z, player);
         assertBlockState(new BlockPos(x, y, z), state -> !(state.getBlock() instanceof BonemealableBlock), () -> "Crop didn't grow");
