@@ -142,11 +142,7 @@
   "commands.neoforge.gen.stopped": "Generation stopped! {0} out of {1} chunks generated. ({2}%)",
   "commands.neoforge.gen.status": "Generation status! {0} out of {1} chunks generated. ({2}%)",
   "commands.neoforge.gen.not_running": "No pregeneration currently running. Run `/neoforge generate help` to see commands for starting generation.",
-  "commands.neoforge.gen.help_line_1": "§2/neoforge generate start <x> <y> <z> <chunkRadius> [progressBar] - Generates a square centered on the given position that is chunkRadius * 2 on each side.",
-  "commands.neoforge.gen.help_line_2": "§2/neoforge generate stop - Stops the current generation and displays progress that it had completed.",
-  "commands.neoforge.gen.help_line_3": "§2/neoforge generate status - Displays the progress completed for the currently running generation.",
-  "commands.neoforge.gen.help_line_4": "§2/neoforge generate help - Displays this message.",
-  "commands.neoforge.gen.help_line_5": "General tips: If running from a server console, you can run generate in different dimensions by using /execute in <dimension> neoforge generate...",
+  "commands.neoforge.gen.help_line": "§2/neoforge generate start <x> <y> <z> <chunkRadius> [progressBar] §r§f- Generates a square centered on the given position that is chunkRadius * 2 on each side.\n§2/neoforge generate stop §r§f- Stops the current generation and displays progress that it had completed.\n§2/neoforge generate status §r- Displays the progress completed for the currently running generation.\n§2/neoforge generate help §r- Displays this message.\nGeneral tips: If running from a server console, you can run generate in different dimensions by using /execute in <dimension> neoforge generate...",
 
   "commands.config.getwithtype": "Config for %s of type %s found at %s",
   "commands.config.noconfig": "Config for %s of type %s not found",

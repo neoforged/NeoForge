@@ -34,7 +34,7 @@ class GenerateCommand {
 
         builder.then(Commands.literal("start")
                 .then(Commands.argument("pos", BlockPosArgument.blockPos())
-                        .then(Commands.argument("chunkRadius", IntegerArgumentType.integer(1, 20000))
+                        .then(Commands.argument("chunkRadius", IntegerArgumentType.integer(1, 1250)) // 20000 block radius limit
                                 .then(Commands.argument("progressBar", BoolArgumentType.bool())
                                         .executes(ctx -> executeGeneration(ctx.getSource(), BlockPosArgument.getSpawnablePos(ctx, "pos"), getInt(ctx, "chunkRadius"), getBool(ctx, "progressBar"))))
                                 .executes(ctx -> executeGeneration(ctx.getSource(), BlockPosArgument.getSpawnablePos(ctx, "pos"), getInt(ctx, "chunkRadius"), true)))));
@@ -121,11 +121,7 @@ class GenerateCommand {
     }
 
     private static int getGenerationHelp(CommandSourceStack source) {
-        source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.help_line_1"), false);
-        source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.help_line_2"), false);
-        source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.help_line_3"), false);
-        source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.help_line_4"), false);
-        source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.help_line_5"), false);
+        source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.help_line"), false);
         return Command.SINGLE_SUCCESS;
     }
 
