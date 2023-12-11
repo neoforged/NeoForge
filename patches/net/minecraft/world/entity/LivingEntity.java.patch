@@ -677,7 +677,7 @@
 +    /* ==== FORGE START ==== */
 +    /***
 +     * Removes all potion effects that have the given {@link net.neoforged.neoforge.common.EffectCure} in their set of cures
-+     * @param cure The EffectCure being used
++     * @param cure the EffectCure being used
 +     */
 +    public boolean removeEffectsCuredBy(net.neoforged.neoforge.common.EffectCure cure) {
 +        if (this.level().isClientSide)

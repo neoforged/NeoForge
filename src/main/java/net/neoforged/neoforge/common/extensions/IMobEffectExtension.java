@@ -20,7 +20,7 @@ public interface IMobEffectExtension {
     /***
      * Fill the given set with the {@link EffectCure}s this effect should be curable with by default
      */
-    default void fillEffectCures(Set<EffectCure> cures) {
+    default void fillEffectCures(Set<EffectCure> cures, MobEffectInstance effectInstance) {
         cures.addAll(EffectCures.STANDARD_CURES);
         if (self() == MobEffects.POISON) {
             cures.add(EffectCures.HONEY);
@@ -31,7 +31,7 @@ public interface IMobEffectExtension {
      * Used for determining {@link MobEffect} sort order in GUIs.
      * Defaults to the {@link MobEffect}'s liquid color.
      * 
-     * @param effectInstance The {@link MobEffectInstance} containing this {@link MobEffect}
+     * @param effectInstance the {@link MobEffectInstance} containing this {@link MobEffect}
      * @return a value used to sort {@link MobEffect}s in GUIs
      */
     default int getSortOrder(MobEffectInstance effectInstance) {

@@ -64,7 +64,7 @@ public abstract class MobEffectEvent extends LivingEvent {
         }
 
         /**
-         * @return the {@link EffectCure} the effect is being cured by. Null if the effect is not removed due to being cured
+         * {@return the {@link EffectCure} the effect is being cured by. Null if the effect is not removed due to being cured}
          */
         @Nullable
         public EffectCure getCure() {

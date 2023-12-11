@@ -4,7 +4,7 @@
          this.showIcon = p_216892_;
          this.hiddenEffect = p_216893_;
          this.factorData = p_216894_;
-+        this.effect.fillEffectCures(this.cures);
++        this.effect.fillEffectCures(this.cures, this);
      }
  
      public MobEffectInstance(MobEffectInstance p_19543_) {
@@ -43,7 +43,7 @@
      }
  
      public int compareTo(MobEffectInstance p_19566_) {
-@@ -342,13 +_,48 @@
+@@ -342,13 +_,47 @@
                  .compareFalseFirst(this.isAmbient(), p_19566_.isAmbient())
                  .compareFalseFirst(this.isInfiniteDuration(), p_19566_.isInfiniteDuration())
                  .compare(this.getDuration(), p_19566_.getDuration())
@@ -62,8 +62,7 @@
 +    private final java.util.Set<net.neoforged.neoforge.common.EffectCure> cures = com.google.common.collect.Sets.newIdentityHashSet();
 +
 +    /**
-+     * Get the set of cures
-+     * @return the {@link net.neoforged.neoforge.common.EffectCure}s which can cure the {@link MobEffect} held by this {@link MobEffectInstance}
++     * {@return the {@link net.neoforged.neoforge.common.EffectCure}s which can cure the {@link MobEffect} held by this {@link MobEffectInstance}}
 +     */
 +    public java.util.Set<net.neoforged.neoforge.common.EffectCure> getCures() {
 +        return cures;

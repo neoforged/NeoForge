@@ -38,8 +38,8 @@ public class MobEffectTests {
         final var testEffect = reg.registrar(Registries.MOB_EFFECT).register("test_effect", () -> new MobEffect(
                 MobEffectCategory.HARMFUL, 0xFF0000) {
             @Override
-            public void fillEffectCures(Set<EffectCure> cures) {
-                super.fillEffectCures(cures);
+            public void fillEffectCures(Set<EffectCure> cures, MobEffectInstance effectInstance) {
+                super.fillEffectCures(cures, effectInstance);
                 cures.remove(EffectCures.MILK);
                 cures.add(testCureTwo);
             }
@@ -55,23 +55,23 @@ public class MobEffectTests {
             Pig pig = helper.spawnWithNoFreeWill(EntityType.PIG, 1, 1, 1);
 
             pig.addEffect(new MobEffectInstance(MobEffects.CONFUSION));
-            helper.assertEntityProperty(pig, e -> e.hasEffect(MobEffects.CONFUSION), "'confusion was applied'");
+            helper.assertMobEffectPresent(pig, MobEffects.CONFUSION, "'confusion was applied'");
             pig.removeEffectsCuredBy(testCure);
-            helper.assertEntityProperty(pig, e -> e.hasEffect(MobEffects.CONFUSION), "'confusion not removed by test cure'");
+            helper.assertMobEffectPresent(pig, MobEffects.CONFUSION, "'confusion not removed by test cure'");
             pig.removeEffectsCuredBy(EffectCures.MILK);
-            helper.assertEntityProperty(pig, e -> !e.hasEffect(MobEffects.CONFUSION), "'confusion removed by milk'");
+            helper.assertMobEffectAbsent(pig, MobEffects.CONFUSION, "'confusion removed by milk'");
 
             pig.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION));
-            helper.assertEntityProperty(pig, e -> e.hasEffect(MobEffects.NIGHT_VISION), "'nightvision was applied'");
+            helper.assertMobEffectPresent(pig, MobEffects.NIGHT_VISION, "'nightvision was applied'");
             pig.removeEffectsCuredBy(testCure);
-            helper.assertEntityProperty(pig, e -> !e.hasEffect(MobEffects.NIGHT_VISION), "'nightvision removed by test cure'");
+            helper.assertMobEffectAbsent(pig, MobEffects.NIGHT_VISION, "'nightvision removed by test cure'");
 
             pig.addEffect(new MobEffectInstance(testEffect.get()));
-            helper.assertEntityProperty(pig, e -> e.hasEffect(testEffect.get()), "'test effect was applied'");
+            helper.assertMobEffectPresent(pig, testEffect.get(), "'test effect was applied'");
             pig.removeEffectsCuredBy(EffectCures.MILK);
-            helper.assertEntityProperty(pig, e -> e.hasEffect(testEffect.get()), "'test effect not removed by milk'");
+            helper.assertMobEffectPresent(pig, testEffect.get(), "'test effect not removed by milk'");
             pig.removeEffectsCuredBy(testCureTwo);
-            helper.assertEntityProperty(pig, e -> !e.hasEffect(testEffect.get()), "'test effect removed by test cure'");
+            helper.assertMobEffectAbsent(pig, testEffect.get(), "'test effect removed by test cure'");
 
             MobEffectInstance srcInst = new MobEffectInstance(MobEffects.CONFUSION);
             MobEffectInstance destInst = MobEffectInstance.load(srcInst.save(new CompoundTag()));
