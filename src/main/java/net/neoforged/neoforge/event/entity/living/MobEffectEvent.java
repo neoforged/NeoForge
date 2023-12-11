@@ -12,6 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.NeoForge;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +25,7 @@ public abstract class MobEffectEvent extends LivingEvent {
     @Nullable
     protected final MobEffectInstance effectInstance;
 
-    public MobEffectEvent(LivingEntity living, MobEffectInstance effectInstance) {
+    protected MobEffectEvent(LivingEntity living, MobEffectInstance effectInstance) {
         super(living);
         this.effectInstance = effectInstance;
     }
@@ -44,12 +45,14 @@ public abstract class MobEffectEvent extends LivingEvent {
         @Nullable
         private final EffectCure cure;
 
+        @ApiStatus.Internal
         public Remove(LivingEntity living, MobEffect effect, @Nullable EffectCure cure) {
             super(living, living.getEffect(effect));
             this.effect = effect;
             this.cure = cure;
         }
 
+        @ApiStatus.Internal
         public Remove(LivingEntity living, MobEffectInstance effectInstance, @Nullable EffectCure cure) {
             super(living, effectInstance);
             this.effect = effectInstance.getEffect();
@@ -92,6 +95,7 @@ public abstract class MobEffectEvent extends LivingEvent {
      */
     @HasResult
     public static class Applicable extends MobEffectEvent {
+        @ApiStatus.Internal
         public Applicable(LivingEntity living, @NotNull MobEffectInstance effectInstance) {
             super(living, effectInstance);
         }
@@ -113,6 +117,7 @@ public abstract class MobEffectEvent extends LivingEvent {
         private final MobEffectInstance oldEffectInstance;
         private final Entity source;
 
+        @ApiStatus.Internal
         public Added(LivingEntity living, MobEffectInstance oldEffectInstance, MobEffectInstance newEffectInstance, Entity source) {
             super(living, newEffectInstance);
             this.oldEffectInstance = oldEffectInstance;
@@ -151,6 +156,7 @@ public abstract class MobEffectEvent extends LivingEvent {
      * This event does not have a result.
      */
     public static class Expired extends MobEffectEvent implements ICancellableEvent {
+        @ApiStatus.Internal
         public Expired(LivingEntity living, MobEffectInstance effectInstance) {
             super(living, effectInstance);
         }

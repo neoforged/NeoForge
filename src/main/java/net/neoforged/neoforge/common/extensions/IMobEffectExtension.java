@@ -21,7 +21,7 @@ public interface IMobEffectExtension {
      * Fill the given set with the {@link EffectCure}s this effect should be curable with by default
      */
     default void fillEffectCures(Set<EffectCure> cures, MobEffectInstance effectInstance) {
-        cures.addAll(EffectCures.STANDARD_CURES);
+        cures.addAll(EffectCures.DEFAULT_CURES);
         if (self() == MobEffects.POISON) {
             cures.add(EffectCures.HONEY);
         }

@@ -21,5 +21,5 @@ public class EffectCures {
      */
     public static final EffectCure PROTECTED_BY_TOTEM = EffectCure.get("protected_by_totem");
 
-    public static final Set<EffectCure> STANDARD_CURES = Set.of(MILK, PROTECTED_BY_TOTEM);
+    public static final Set<EffectCure> DEFAULT_CURES = Set.of(MILK, PROTECTED_BY_TOTEM);
 }

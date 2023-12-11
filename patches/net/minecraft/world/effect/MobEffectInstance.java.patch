@@ -43,7 +43,7 @@
      }
  
      public int compareTo(MobEffectInstance p_19566_) {
-@@ -342,13 +_,47 @@
+@@ -342,12 +_,42 @@
                  .compareFalseFirst(this.isAmbient(), p_19566_.isAmbient())
                  .compareFalseFirst(this.isInfiniteDuration(), p_19566_.isInfiniteDuration())
                  .compare(this.getDuration(), p_19566_.getDuration())
@@ -55,9 +55,7 @@
 -                .compare(this.getEffect().getColor(), p_19566_.getEffect().getColor())
 +                .compare(this.getEffect().getSortOrder(this), p_19566_.getEffect().getSortOrder(p_19566_))
                  .result();
-     }
-+
-+    //======================== NEOFORGE START =======================
++    }
 +
 +    private final java.util.Set<net.neoforged.neoforge.common.EffectCure> cures = com.google.common.collect.Sets.newIdentityHashSet();
 +
@@ -87,9 +85,6 @@
 +            }
 +            tag.put("neoforge:cures", list);
 +        }
-+    }
-+
-+    //========================= NEOFORGE END ========================
+     }
  
      public static class FactorData {
-         public static final Codec<MobEffectInstance.FactorData> CODEC = RecordCodecBuilder.create(
