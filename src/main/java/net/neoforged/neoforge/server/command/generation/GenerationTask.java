@@ -52,7 +52,7 @@ public class GenerationTask {
     private volatile Listener listener;
     private volatile boolean stopped;
 
-    public static final TicketType<ChunkPos> NEOFORGE_FORCED = TicketType.create("neoforge_forced", Comparator.comparingLong(ChunkPos::toLong));
+    public static final TicketType<ChunkPos> NEOFORGE_GENERATE_FORCED = TicketType.create("neoforge_generate_forced", Comparator.comparingLong(ChunkPos::toLong));
 
     public GenerationTask(ServerLevel serverLevel, int x, int z, int radius) {
         this.server = serverLevel.getServer();
@@ -171,10 +171,11 @@ public class GenerationTask {
         LongList chunks = new LongArrayList(count);
 
         Iterator<ChunkPos> iterator = this.iterator;
-        for (int i = 0; i < count && iterator.hasNext(); i++) {
+        for (int i = 0; i < count && iterator.hasNext();) {
             ChunkPos chunk = iterator.next();
             if (Math.abs(chunk.x) <= this.radius && Math.abs(chunk.z) <= this.radius) {
                 chunks.add(ChunkPos.asLong(chunk.x + this.x, chunk.z + this.z));
+                i++;
             }
         }
 
@@ -183,12 +184,12 @@ public class GenerationTask {
 
     private void acquireChunk(long chunk) {
         ChunkPos pos = new ChunkPos(chunk);
-        this.chunkSource.addRegionTicket(NEOFORGE_FORCED, pos, 0, pos);
+        this.chunkSource.addRegionTicket(NEOFORGE_GENERATE_FORCED, pos, 0, pos);
     }
 
     private void releaseChunk(long chunk) {
         ChunkPos pos = new ChunkPos(chunk);
-        this.chunkSource.addRegionTicket(NEOFORGE_FORCED, pos, 0, pos);
+        this.chunkSource.addRegionTicket(NEOFORGE_GENERATE_FORCED, pos, 0, pos);
     }
 
     public interface Listener {
