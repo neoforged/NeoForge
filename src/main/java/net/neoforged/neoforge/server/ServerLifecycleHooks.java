@@ -40,6 +40,7 @@ import net.neoforged.fml.ModLoadingWarning;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import net.neoforged.neoforge.common.world.BiomeModifier;
@@ -89,7 +90,7 @@ public class ServerLifecycleHooks {
         currentServer = server;
         // on the dedi server we need to force the stuff to setup properly
         LogicalSidedProvider.setServer(() -> server);
-        ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.SERVER, getServerConfigPath(server));
+        ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.SERVER, FMLPaths.CONFIGDIR.get(), getServerConfigPath(server));
         runModifiers(server);
         NeoForge.EVENT_BUS.post(new ServerAboutToStartEvent(server));
     }
@@ -130,7 +131,7 @@ public class ServerLifecycleHooks {
             latch.countDown();
             exitLatch = null;
         }
-        ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SERVER, getServerConfigPath(server));
+        ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SERVER);
     }
 
     public static MinecraftServer getCurrentServer() {
