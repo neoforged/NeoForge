@@ -8,7 +8,6 @@ package net.neoforged.neoforge.server.command.generation;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
-
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
