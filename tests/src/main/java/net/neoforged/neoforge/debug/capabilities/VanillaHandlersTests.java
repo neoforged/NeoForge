@@ -123,6 +123,7 @@ public class VanillaHandlersTests {
         helper.assertTrue(wrapper.drain(new FluidStack(Fluids.WATER, 1000), EXECUTE).equals(new FluidStack(Fluids.WATER, 1000)), "Expected drain of 1000 water");
 
         helper.assertBlockPresent(Blocks.CAULDRON, cauldronPos);
+        helper.assertTrue(wrapper.getFluidInTank(0).isEmpty(), "Expected empty handler");
 
         // Try lava cauldron
         helper.setBlock(cauldronPos, Blocks.LAVA_CAULDRON);
