@@ -90,7 +90,7 @@ class GenerateCommand {
         if (activeTask != null) {
             activeTask.stop();
 
-            int count = activeTask.getOkCount() + activeTask.getErrorCount();
+            int count = activeTask.getOkCount() + activeTask.getErrorCount() + activeTask.getSkippedCount();
             int total = activeTask.getTotalCount();
 
             double percent = (double) count / total * 100.0;
@@ -108,7 +108,7 @@ class GenerateCommand {
 
     private static int getGenerationStatus(CommandSourceStack source) {
         if (activeTask != null) {
-            int count = activeTask.getOkCount() + activeTask.getErrorCount();
+            int count = activeTask.getOkCount() + activeTask.getErrorCount() + activeTask.getSkippedCount();
             int total = activeTask.getTotalCount();
 
             double percent = (double) count / total * 100.0;
@@ -128,9 +128,9 @@ class GenerateCommand {
     private static GenerationTask.Listener createPregenListener(CommandSourceStack source) {
         return new GenerationTask.Listener() {
             @Override
-            public void update(int ok, int error, int total) {
+            public void update(int ok, int error, int skipped, int total) {
                 if (generationBar != null) {
-                    generationBar.update(ok, error, total);
+                    generationBar.update(ok, error, skipped, total);
                 }
             }
 

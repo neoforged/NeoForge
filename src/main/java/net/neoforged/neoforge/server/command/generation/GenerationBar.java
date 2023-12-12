@@ -30,8 +30,8 @@ public class GenerationBar implements AutoCloseable {
         this.bar.setDarkenScreen(false);
     }
 
-    public void update(int ok, int error, int total) {
-        int count = ok + error;
+    public void update(int ok, int error, int skipped, int total) {
+        int count = ok + error + skipped;
 
         float percent = (float) count / total;
 
