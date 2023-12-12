@@ -96,38 +96,7 @@ public class GenerationTask {
 
         this.listener = listener;
 
-        this.server.submit(this::skipInitialGeneratedChunksAndStartGenAfterwards);
-    }
-
-    private void skipInitialGeneratedChunksAndStartGenAfterwards() {
-        CompletableFuture.runAsync(() -> {
-            Iterator<ChunkPos> iterator = this.iterator;
-            while (iterator.hasNext()) {
-                ChunkPos chunkPosInLocalSpace = iterator.next();
-                if (Math.abs(chunkPosInLocalSpace.x) <= this.radius && Math.abs(chunkPosInLocalSpace.z) <= this.radius) {
-                    if (isChunkFullyGenerated(chunkPosInLocalSpace)) {
-                        this.skippedCount.incrementAndGet();
-                        this.listener.update(this.okCount.get(), this.errorCount.get(), this.skippedCount.get(), this.totalCount);
-                        continue;
-                    }
-
-                    this.tryEnqueueTasks();
-                    break;
-                }
-            }
-        });
-    }
-
-    private boolean isChunkFullyGenerated(ChunkPos chunkPosInLocalSpace) {
-        ChunkPos chunkPosInWorldSpace = new ChunkPos(chunkPosInLocalSpace.x + this.x, chunkPosInLocalSpace.z + this.z);
-        CollectFields collectFields = new CollectFields(new FieldSelector(StringTag.TYPE, "Status"));
-        this.chunkSource.chunkMap.chunkScanner().scanChunk(chunkPosInWorldSpace, collectFields).join();
-
-        if (collectFields.getResult() instanceof CompoundTag compoundTag) {
-            return compoundTag.getString("Status").equals("minecraft:full");
-        }
-
-        return false;
+        this.server.submit(() -> CompletableFuture.runAsync(this::tryEnqueueTasks));
     }
 
     public void stop() {
@@ -238,6 +207,18 @@ public class GenerationTask {
     private void releaseChunk(long chunk) {
         ChunkPos pos = new ChunkPos(chunk);
         this.chunkSource.addRegionTicket(NEOFORGE_GENERATE_FORCED, pos, 0, pos);
+    }
+
+    private boolean isChunkFullyGenerated(ChunkPos chunkPosInLocalSpace) {
+        ChunkPos chunkPosInWorldSpace = new ChunkPos(chunkPosInLocalSpace.x + this.x, chunkPosInLocalSpace.z + this.z);
+        CollectFields collectFields = new CollectFields(new FieldSelector(StringTag.TYPE, "Status"));
+        this.chunkSource.chunkMap.chunkScanner().scanChunk(chunkPosInWorldSpace, collectFields).join();
+
+        if (collectFields.getResult() instanceof CompoundTag compoundTag) {
+            return compoundTag.getString("Status").equals("minecraft:full");
+        }
+
+        return false;
     }
 
     public interface Listener {
