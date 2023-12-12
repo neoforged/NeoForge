@@ -10,10 +10,9 @@ import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.DistExecutor;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import org.slf4j.Logger;
 
@@ -24,18 +23,18 @@ public class ShaderResourcesTest {
     public static final String MODID = "shader_resources_test";
     private static final boolean ENABLE = false;
 
-    public ShaderResourcesTest() {
+    public ShaderResourcesTest(IEventBus modEventBus) {
         if (ENABLE) {
             LOGGER = LogUtils.getLogger();
 
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ClientInit::new);
+            if (FMLEnvironment.dist.isClient()) {
+                ClientInit.init(modEventBus);
+            }
         }
     }
 
-    private class ClientInit {
-        public ClientInit() {
-            final var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
+    private static class ClientInit {
+        public static void init(IEventBus modEventBus) {
             modEventBus.addListener(ClientInit::registerShaders);
         }
 

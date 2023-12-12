@@ -11,7 +11,6 @@ import net.minecraft.world.item.*;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -32,9 +31,8 @@ public class RangedMobsUseModdedWeaponsTest {
     private static final DeferredItem<Item> MODDED_BOW = ITEMS.register("modded_bow", () -> new BowItem(new Item.Properties().defaultDurability(384)));
     private static final DeferredItem<Item> MODDED_CROSSBOW = ITEMS.register("modded_crossbow", () -> new CrossbowItem(new Item.Properties().defaultDurability(326)));
 
-    public RangedMobsUseModdedWeaponsTest() {
+    public RangedMobsUseModdedWeaponsTest(IEventBus modEventBus) {
         if (ENABLE) {
-            IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
             ITEMS.register(modEventBus);
             modEventBus.addListener(this::onClientSetup);
             modEventBus.addListener(this::addCreative);

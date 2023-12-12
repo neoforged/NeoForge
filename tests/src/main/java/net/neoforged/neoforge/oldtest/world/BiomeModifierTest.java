@@ -34,7 +34,6 @@ import net.minecraft.world.level.levelgen.placement.CountOnEveryLayerPlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers.AddFeaturesBiomeModifier;
@@ -115,11 +114,9 @@ public class BiomeModifierTest {
                         context.lookup(Registries.ENTITY_TYPE).getOrThrow(EntityTypeTags.SKELETONS)));
             });
 
-    public BiomeModifierTest() {
+    public BiomeModifierTest(IEventBus modBus) {
         if (!ENABLED)
             return;
-
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         // Serializer types can be registered via deferred register.
         BIOME_MODIFIER_SERIALIZERS.register(modBus);

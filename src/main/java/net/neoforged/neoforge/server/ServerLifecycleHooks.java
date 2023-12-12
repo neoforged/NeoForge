@@ -33,14 +33,13 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraft.world.level.storage.LevelResource;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.DistExecutor;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingStage;
 import net.neoforged.fml.ModLoadingWarning;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import net.neoforged.neoforge.common.world.BiomeModifier;
@@ -96,12 +95,12 @@ public class ServerLifecycleHooks {
     }
 
     public static void handleServerStarting(final MinecraftServer server) {
-        DistExecutor.runWhenOn(Dist.DEDICATED_SERVER, () -> () -> {
+        if (FMLEnvironment.dist.isDedicatedServer()) {
             LanguageHook.loadLanguagesOnServer(server);
             // GameTestServer requires the gametests to be registered earlier, so it is done in main and should not be done twice.
             if (!(server instanceof GameTestServer))
                 GameTestHooks.registerGametests();
-        });
+        }
         PermissionAPI.initializePermissionAPI();
         NeoForge.EVENT_BUS.post(new ServerStartingEvent(server));
     }

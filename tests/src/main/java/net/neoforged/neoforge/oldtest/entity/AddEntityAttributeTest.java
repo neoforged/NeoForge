@@ -8,9 +8,9 @@ package net.neoforged.neoforge.oldtest.entity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -21,10 +21,10 @@ public class AddEntityAttributeTest {
     private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(BuiltInRegistries.ATTRIBUTE, "add_entity_attribute_test");
     public static final DeferredHolder<Attribute, Attribute> TEST_ATTR = ATTRIBUTES.register("test_attr", () -> new RangedAttribute("neoforge.test_attr", 1.0D, 0.0D, 1024.0D).setSyncable(true));
 
-    public AddEntityAttributeTest() {
+    public AddEntityAttributeTest(IEventBus modEventBus) {
         if (ENABLE) {
-            ATTRIBUTES.register(FMLJavaModLoadingContext.get().getModEventBus());
-            FMLJavaModLoadingContext.get().getModEventBus().register(this);
+            ATTRIBUTES.register(modEventBus);
+            modEventBus.register(this);
         }
     }
 

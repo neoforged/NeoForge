@@ -20,8 +20,7 @@ import org.jetbrains.annotations.Nullable;
  * Fired for each registry when it is ready to have modded objects registered.
  * This event is fired for all builtin registries from vanilla (see {@link BuiltInRegistries}) and mods.
  *
- * <p>This event is fired on the {@linkplain net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
- * on both {@linkplain net.neoforged.fml.LogicalSide logical sides}.</p>
+ * <p>This event is fired on the mod-specific event bus, on both {@linkplain net.neoforged.fml.LogicalSide logical sides}.</p>
  *
  * @see #register(ResourceKey, ResourceLocation, Supplier)
  * @see #register(ResourceKey, Consumer)

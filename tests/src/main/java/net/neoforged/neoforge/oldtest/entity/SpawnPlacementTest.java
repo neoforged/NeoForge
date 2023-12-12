@@ -11,8 +11,8 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.biome.Biomes;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
 import org.slf4j.Logger;
 
@@ -21,9 +21,9 @@ public class SpawnPlacementTest {
     public static final boolean ENABLED = false;
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public SpawnPlacementTest() {
+    public SpawnPlacementTest(IEventBus modEventBus) {
         if (ENABLED) {
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onSpawnPlacementRegister);
+            modEventBus.addListener(this::onSpawnPlacementRegister);
         }
     }
 
