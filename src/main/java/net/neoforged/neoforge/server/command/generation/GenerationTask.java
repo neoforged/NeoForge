@@ -40,6 +40,7 @@ public class GenerationTask {
     private final Iterator<ChunkPos> iterator;
     private final int x;
     private final int z;
+    private final int radius;
 
     private final int totalCount;
 
@@ -61,6 +62,7 @@ public class GenerationTask {
         this.iterator = new CoarseOnionIterator(radius, COARSE_CELL_SIZE);
         this.x = x;
         this.z = z;
+        this.radius = radius;
 
         int diameter = radius * 2 + 1;
         this.totalCount = diameter * diameter;
@@ -100,16 +102,7 @@ public class GenerationTask {
                 return;
             }
 
-            int queuedCount = this.queuedCount.get();
-            int completedCount = this.okCount.get() + this.errorCount.get();
-            if (completedCount == this.totalCount && queuedCount == 0) {
-                this.listener.complete(this.errorCount.get());
-                this.stopped = true;
-                return;
-            }
-
-            int remainingCount = this.totalCount - (completedCount + queuedCount);
-            int enqueueCount = Math.min(BATCH_SIZE - queuedCount, remainingCount);
+            int enqueueCount = BATCH_SIZE - this.queuedCount.get();
             if (enqueueCount <= 0) {
                 return;
             }
@@ -181,7 +174,9 @@ public class GenerationTask {
         Iterator<ChunkPos> iterator = this.iterator;
         for (int i = 0; i < count && iterator.hasNext(); i++) {
             ChunkPos chunk = iterator.next();
-            chunks.add(ChunkPos.asLong(chunk.x + this.x, chunk.z + this.z));
+            if (Math.abs(chunk.x) <= this.radius && Math.abs(chunk.z) <= this.radius) {
+                chunks.add(ChunkPos.asLong(chunk.x + this.x, chunk.z + this.z));
+            }
         }
 
         return chunks;
