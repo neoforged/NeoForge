@@ -5,7 +5,7 @@
      private final boolean required;
      private final boolean fixedPosition;
 +    private final boolean hidden; // Forge: Allow packs to be hidden from the UI entirely
-+    private final List<Pack> children; // NeoForge: Allows packs to specify packs which will always be placed beneath them; must be hidden
++    private final List<Pack> children; // Neo: Allows packs to specify packs which will always be placed beneath them; must be hidden
      private final PackSource packSource;
  
      @Nullable
