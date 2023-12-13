@@ -16,6 +16,7 @@ jobs:
       java: 17
       pre_gradle_tasks: setup
       gradle_tasks: publish
+      version_labels: -beta, -stable
 
     # We only publish the main repository. This way we avoid publishing Kits
     if: ${{ github.repository == 'neoforged/NeoForge' }}
