@@ -8,7 +8,7 @@ import net.neoforged.neoforge.network.configuration.ICustomConfigurationTask;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class OnGameConfiguration extends Event {
+public class OnGameConfiguration extends Event implements IModBusEvent {
 
     private final ServerConfigurationPacketListener listener;
     

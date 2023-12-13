@@ -13,10 +13,11 @@
  import net.minecraft.network.protocol.common.custom.BrandPayload;
  import net.minecraft.network.protocol.configuration.ClientboundRegistryDataPacket;
  import net.minecraft.network.protocol.configuration.ClientboundUpdateEnabledFeaturesPacket;
-@@ -31,6 +_,11 @@
+@@ -31,6 +_,12 @@
  import net.minecraft.server.players.PlayerList;
  import net.minecraft.tags.TagNetworkSerialization;
  import net.minecraft.world.flag.FeatureFlags;
++import net.neoforged.fml.ModList;
 +import net.neoforged.fml.ModLoader;
 +import net.neoforged.neoforge.common.NeoForge;
 +import net.neoforged.neoforge.network.event.OnGameConfiguration;
@@ -53,7 +54,7 @@
 -
 +        
 +        this.configurationTasks.add(new net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseStarted(this));
-+        this.configurationTasks.addAll(NeoForge.EVENT_BUS.post(new OnGameConfiguration(this)).getConfigurationTasks());
++        this.configurationTasks.addAll(ModLoader.get().postEventWithReturn(new OnGameConfiguration(this)).getConfigurationTasks());
 +        this.configurationTasks.add(new net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseCompleted(this));
 +    }
 +    
