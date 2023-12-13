@@ -6,7 +6,7 @@
      Optional<ServerStatus.Favicon> favicon,
 -    boolean enforcesSecureChat
 +    boolean enforcesSecureChat,
-+    Optional<net.neoforged.neoforge.network.ServerStatusPing> neoForgeData
++    boolean isModded
  ) {
      public static final Codec<ServerStatus> CODEC = RecordCodecBuilder.create(
          p_304170_ -> p_304170_.group(
@@ -16,7 +16,7 @@
                      ServerStatus.Favicon.CODEC.optionalFieldOf("favicon").forGetter(ServerStatus::favicon),
 -                    Codec.BOOL.optionalFieldOf("enforcesSecureChat", Boolean.valueOf(false)).forGetter(ServerStatus::enforcesSecureChat)
 +                    Codec.BOOL.optionalFieldOf("enforcesSecureChat", Boolean.valueOf(false)).forGetter(ServerStatus::enforcesSecureChat),
-+                    net.neoforged.neoforge.network.ServerStatusPing.CODEC.optionalFieldOf("neoForgeData").forGetter(ServerStatus::neoForgeData)
++                    Codec.BOOL.optionalFieldOf("isModded", Boolean.valueOf(false)).forGetter(ServerStatus::isModded)
                  )
                  .apply(p_304170_, ServerStatus::new)
      );

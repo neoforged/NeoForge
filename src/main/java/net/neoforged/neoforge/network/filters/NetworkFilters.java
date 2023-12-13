@@ -7,12 +7,16 @@ package net.neoforged.neoforge.network.filters;
 
 import com.google.common.collect.ImmutableMap;
 import io.netty.channel.ChannelPipeline;
+
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import net.minecraft.network.Connection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public class NetworkFilters {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -22,6 +26,8 @@ public class NetworkFilters {
             "neoforge:forge_fixes", NeoForgeConnectionNetworkFilter::new);
 
     public static void injectIfNecessary(Connection manager) {
+        cleanIfNecessary(manager);
+        
         ChannelPipeline pipeline = manager.channel().pipeline();
         if (pipeline.get("packet_handler") == null)
             return; // Realistically this can only ever be null if the connection was prematurely closed due to an error. We return early here to reduce further log spam.
@@ -33,6 +39,21 @@ public class NetworkFilters {
                 LOGGER.debug("Injected {} into {}", filter, manager);
             }
         });
+    }
+    
+    public static void cleanIfNecessary(Connection manager) {
+        ChannelPipeline pipeline = manager.channel().pipeline();
+        if (pipeline.get("packet_handler") == null)
+            return; // Realistically this can only ever be null if the connection was prematurely closed due to an error. We return early here to reduce further log spam.
+        
+        final List<VanillaPacketFilter> toRemove = pipeline.names()
+                                                           .stream()
+                                                           .map(name -> pipeline.get(name))
+                                                           .filter(VanillaPacketFilter.class::isInstance)
+                                                           .map(VanillaPacketFilter.class::cast)
+                                                           .toList();
+        
+        toRemove.forEach(pipeline::remove);
     }
 
     private NetworkFilters() {}

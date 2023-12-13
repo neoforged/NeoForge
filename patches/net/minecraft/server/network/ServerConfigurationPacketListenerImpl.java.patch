@@ -1,0 +1,131 @@
+--- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
+@@ -12,11 +_,7 @@
+ import net.minecraft.network.TickablePacketListener;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.protocol.PacketUtils;
+-import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+-import net.minecraft.network.protocol.common.ClientboundDisconnectPacket;
+-import net.minecraft.network.protocol.common.ClientboundUpdateTagsPacket;
+-import net.minecraft.network.protocol.common.ServerboundClientInformationPacket;
+-import net.minecraft.network.protocol.common.ServerboundResourcePackPacket;
++import net.minecraft.network.protocol.common.*;
+ import net.minecraft.network.protocol.common.custom.BrandPayload;
+ import net.minecraft.network.protocol.configuration.ClientboundRegistryDataPacket;
+ import net.minecraft.network.protocol.configuration.ClientboundUpdateEnabledFeaturesPacket;
+@@ -31,6 +_,11 @@
+ import net.minecraft.server.players.PlayerList;
+ import net.minecraft.tags.TagNetworkSerialization;
+ import net.minecraft.world.flag.FeatureFlags;
++import net.neoforged.fml.ModLoader;
++import net.neoforged.neoforge.common.NeoForge;
++import net.neoforged.neoforge.network.event.OnGameConfiguration;
++import net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload;
++import net.neoforged.neoforge.network.registration.NetworkRegistry;
+ import org.slf4j.Logger;
+ 
+ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketListenerImpl implements TickablePacketListener, ServerConfigurationPacketListener {
+@@ -41,6 +_,8 @@
+     @Nullable
+     private ConfigurationTask currentTask;
+     private ClientInformation clientInformation;
++    private boolean isModdedConnection = false;
++    private boolean isHandlingModdedConfigurationPhase = false;
+ 
+     public ServerConfigurationPacketListenerImpl(MinecraftServer p_294645_, Connection p_295787_, CommonListenerCookie p_302003_) {
+         super(p_294645_, p_295787_, p_302003_);
+@@ -65,6 +_,10 @@
+     }
+ 
+     public void startConfiguration() {
++        this.send(new ModdedNetworkQueryPayload());
++        this.send(new ClientboundPingPacket(0));
++    }
++    private void runConfiguration() {
+         this.send(new ClientboundCustomPayloadPacket(new BrandPayload(this.server.getServerModName())));
+         LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = this.server.registries();
+         this.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(this.server.getWorldData().enabledFeatures())));
+@@ -86,8 +_,44 @@
+ 
+     private void addOptionalTasks() {
+         this.server.getServerResourcePack().ifPresent(p_296496_ -> this.configurationTasks.add(new ServerResourcePackConfigurationTask(p_296496_)));
+-    }
+-
++        
++        this.configurationTasks.add(new net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseStarted(this));
++        this.configurationTasks.addAll(NeoForge.EVENT_BUS.post(new OnGameConfiguration(this)).getConfigurationTasks());
++        this.configurationTasks.add(new net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseCompleted(this));
++    }
++    
++    @Override
++    public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) {
++        if (p_294276_.payload() instanceof ModdedNetworkQueryPayload moddedEnvironmentPayload) {
++            this.isModdedConnection = true;
++            NetworkRegistry.getInstance()
++                    .onModdedConnectionDetectedAtServer(
++                            this,
++                            moddedEnvironmentPayload.configuration(),
++                            moddedEnvironmentPayload.play()
++                    );
++            return;
++        }
++        
++        if (!isHandlingModdedConfigurationPhase) {
++            super.handleCustomPayload(p_294276_);
++            return;
++        }
++        
++        NetworkRegistry.getInstance().onModdedPacketAtServer(this, p_294276_);
++    }
++    @Override
++    public void handlePong(ServerboundPongPacket p_295142_) {
++        super.handlePong(p_295142_);
++        if (p_295142_.getId() == 0) {
++            if (!this.isModdedConnection && !net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaConnectionDetectedAtServer(this)) {
++                return;
++            }
++            
++            this.runConfiguration();
++        }
++    }
++    
+     @Override
+     public void handleClientInformation(ServerboundClientInformationPacket p_302032_) {
+         this.clientInformation = p_302032_.information();
+@@ -121,7 +_,7 @@
+             }
+ 
+             ServerPlayer serverplayer = playerlist.getPlayerForLogin(this.gameProfile, this.clientInformation);
+-            playerlist.placeNewPlayer(this.connection, serverplayer, this.createCookie(this.clientInformation));
++            playerlist.placeNewPlayer(this.connection, serverplayer, this.createCookie(this.clientInformation, this.isModdedConnection));
+             this.connection.resumeInboundAfterProtocolChange();
+         } catch (Exception exception) {
+             LOGGER.error("Couldn't place player in world", (Throwable)exception);
+@@ -146,8 +_,9 @@
+             }
+         }
+     }
+-
+-    private void finishCurrentTask(ConfigurationTask.Type p_294853_) {
++    
++    @Override
++    public void finishCurrentTask(ConfigurationTask.Type p_294853_) {
+         ConfigurationTask.Type configurationtask$type = this.currentTask != null ? this.currentTask.type() : null;
+         if (!p_294853_.equals(configurationtask$type)) {
+             throw new IllegalStateException("Unexpected request for task finish, current task: " + configurationtask$type + ", requested: " + p_294853_);
+@@ -155,5 +_,15 @@
+             this.currentTask = null;
+             this.startNextTask();
+         }
++    }
++    
++    public void onModdedConfigurationPhaseStarted() {
++        isHandlingModdedConfigurationPhase = true;
++        finishCurrentTask(net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseStarted.TYPE);
++    }
++    
++    public void onModdedConfigurationPhaseEnded() {
++        isHandlingModdedConfigurationPhase = false;
++        finishCurrentTask(net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseCompleted.TYPE);
+     }
+ }

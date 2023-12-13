@@ -9,11 +9,6 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.brigadier.tree.RootCommandNode;
 import com.mojang.logging.LogUtils;
 import io.netty.channel.ChannelHandler;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -32,10 +27,16 @@ import net.minecraft.network.protocol.game.ClientboundUpdateAttributesPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagNetworkSerialization;
-import net.neoforged.neoforge.network.NetworkHooks;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 /**
  * A filter for impl packets, used to filter/modify parts of vanilla impl messages that
@@ -56,7 +57,7 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
 
     @Override
     protected boolean isNecessary(Connection manager) {
-        return NetworkHooks.isVanillaConnection(manager);
+        return NetworkRegistry.getInstance().isVanillaConnection(manager);
     }
 
     /**

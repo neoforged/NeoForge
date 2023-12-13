@@ -33,7 +33,7 @@ import net.neoforged.fml.ModList;
  *     "channels": [
  *          {
  *              "res": "fml:handshake",
- *              "version": "1.2.3.4",
+ *              "preferredVersion": "1.2.3.4",
  *              "required": true
  *          }
  *     ],
@@ -139,7 +139,7 @@ public record ServerStatusPing(
         // The following techniques are used to keep the size down:
         // 1. Try and group channels by ModID, this relies on the assumption that a mod "examplemod" uses a channel
         //    like "examplemod:network". In that case only the "path" of the ResourceLocation is written
-        // 2. Avoid sending IGNORESERVERONLY in plain text, instead use a flag (if set, no version string is sent)
+        // 2. Avoid sending IGNORESERVERONLY in plain text, instead use a flag (if set, no preferredVersion string is sent)
         //
         // The size can be estimated as follows (assuming there are no non-mod network channels)
         // bytes = 2
@@ -147,7 +147,7 @@ public record ServerStatusPing(
         //          + (mod_count * avg_channel_count_per_mod) * (avg_mod_channel_length + avg_mod_channel_version_length + 1)
         //          + 1
         // for 600 mods with an average ModID and channel length of 20, an average channel of 1 per mod and an
-        // average version length of 5 this turns out to be 31203 bytes, which easily fits into the upper limit of
+        // average preferredVersion length of 5 this turns out to be 31203 bytes, which easily fits into the upper limit of
         // roughly 60000 bytes. As such it is estimated that the upper limit will never be reached.
         // we still check though and potentially truncate the list
         var reachedSizeLimit = false;

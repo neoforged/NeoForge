@@ -1,0 +1,13 @@
+--- a/net/minecraft/server/network/ConfigurationTask.java
++++ b/net/minecraft/server/network/ConfigurationTask.java
+@@ -9,6 +_,10 @@
+     ConfigurationTask.Type type();
+ 
+     public static record Type(String id) {
++        public Type(net.minecraft.resources.ResourceLocation location) {
++            this(location.toString());
++        }
++        
+         @Override
+         public String toString() {
+             return this.id;

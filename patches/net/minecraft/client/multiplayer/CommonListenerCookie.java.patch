@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/multiplayer/CommonListenerCookie.java
++++ b/net/minecraft/client/multiplayer/CommonListenerCookie.java
+@@ -15,8 +_,13 @@
+     WorldSessionTelemetryManager telemetryManager,
+     RegistryAccess.Frozen receivedRegistries,
+     FeatureFlagSet enabledFeatures,
++    boolean isModdedConnection,
+     @Nullable String serverBrand,
+     @Nullable ServerData serverData,
+     @Nullable Screen postDisconnectScreen
+ ) {
++    
++    public CommonListenerCookie(GameProfile localGameProfile, WorldSessionTelemetryManager telemetryManager, RegistryAccess.Frozen receivedRegistries, FeatureFlagSet enabledFeatures, @Nullable String serverBrand, @Nullable ServerData serverData, @Nullable Screen postDisconnectScreen) {
++        this(localGameProfile, telemetryManager, receivedRegistries, enabledFeatures, false, serverBrand, serverData, postDisconnectScreen);
++    }
+ }

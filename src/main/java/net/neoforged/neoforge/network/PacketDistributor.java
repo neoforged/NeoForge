@@ -5,13 +5,9 @@
 
 package net.neoforged.neoforge.network;
 
-import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerChunkCache;
@@ -19,15 +15,15 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+
+import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Means to distribute packets in various ways
- *
- * @see SimpleChannel#send(PacketTarget, Object)
- *
- * @param <T>
  */
 public class PacketDistributor<T> {
     /**
@@ -35,55 +31,49 @@ public class PacketDistributor<T> {
      * <br/>
      * {@link #with(Supplier)} Player
      */
-    public static final PacketDistributor<ServerPlayer> PLAYER = new PacketDistributor<>(PacketDistributor::playerConsumer, PlayNetworkDirection.PLAY_TO_CLIENT);
+    public static final PacketDistributor<ServerPlayer> PLAYER = new PacketDistributor<>(PacketDistributor::playerConsumer, PacketFlow.CLIENTBOUND);
     /**
      * Send to everyone in the dimension specified in the Supplier
      * <br/>
      * {@link #with(Supplier)} DimensionType
      */
-    public static final PacketDistributor<ResourceKey<Level>> DIMENSION = new PacketDistributor<>(PacketDistributor::playerListDimConsumer, PlayNetworkDirection.PLAY_TO_CLIENT);
+    public static final PacketDistributor<ResourceKey<Level>> DIMENSION = new PacketDistributor<>(PacketDistributor::playerListDimConsumer, PacketFlow.CLIENTBOUND);
     /**
      * Send to everyone near the {@link TargetPoint} specified in the Supplier
      * <br/>
      * {@link #with(Supplier)} TargetPoint
      */
-    public static final PacketDistributor<TargetPoint> NEAR = new PacketDistributor<>(PacketDistributor::playerListPointConsumer, PlayNetworkDirection.PLAY_TO_CLIENT);
+    public static final PacketDistributor<TargetPoint> NEAR = new PacketDistributor<>(PacketDistributor::playerListPointConsumer, PacketFlow.CLIENTBOUND);
     /**
      * Send to everyone
      * <br/>
      * {@link #noArg()}
      */
-    public static final PacketDistributor<Void> ALL = new PacketDistributor<>(PacketDistributor::playerListAll, PlayNetworkDirection.PLAY_TO_CLIENT);
+    public static final PacketDistributor<Void> ALL = new PacketDistributor<>(PacketDistributor::playerListAll, PacketFlow.CLIENTBOUND);
     /**
      * Send to the server (CLIENT to SERVER)
      * <br/>
      * {@link #noArg()}
      */
-    public static final PacketDistributor<Void> SERVER = new PacketDistributor<>(PacketDistributor::clientToServer, PlayNetworkDirection.PLAY_TO_SERVER);
+    public static final PacketDistributor<Void> SERVER = new PacketDistributor<>(PacketDistributor::clientToServer, PacketFlow.SERVERBOUND);
     /**
      * Send to all tracking the Entity in the Supplier
      * <br/>
      * {@link #with(Supplier)} Entity
      */
-    public static final PacketDistributor<Entity> TRACKING_ENTITY = new PacketDistributor<>(PacketDistributor::trackingEntity, PlayNetworkDirection.PLAY_TO_CLIENT);
+    public static final PacketDistributor<Entity> TRACKING_ENTITY = new PacketDistributor<>(PacketDistributor::trackingEntity, PacketFlow.CLIENTBOUND);
     /**
      * Send to all tracking the Entity and Player in the Supplier
      * <br/>
      * {@link #with(Supplier)} Entity
      */
-    public static final PacketDistributor<Entity> TRACKING_ENTITY_AND_SELF = new PacketDistributor<>(PacketDistributor::trackingEntityAndSelf, PlayNetworkDirection.PLAY_TO_CLIENT);
+    public static final PacketDistributor<Entity> TRACKING_ENTITY_AND_SELF = new PacketDistributor<>(PacketDistributor::trackingEntityAndSelf, PacketFlow.CLIENTBOUND);
     /**
      * Send to all tracking the Chunk in the Supplier
      * <br/>
      * {@link #with(Supplier)} Chunk
      */
-    public static final PacketDistributor<LevelChunk> TRACKING_CHUNK = new PacketDistributor<>(PacketDistributor::trackingChunk, PlayNetworkDirection.PLAY_TO_CLIENT);
-    /**
-     * Send to the supplied list of NetworkManager instances in the Supplier
-     * <br/>
-     * {@link #with(Supplier)} List of NetworkManager
-     */
-    public static final PacketDistributor<List<Connection>> NMLIST = new PacketDistributor<>(PacketDistributor::networkManagerList, PlayNetworkDirection.PLAY_TO_CLIENT);
+    public static final PacketDistributor<LevelChunk> TRACKING_CHUNK = new PacketDistributor<>(PacketDistributor::trackingChunk, PacketFlow.CLIENTBOUND);
 
     public static final class TargetPoint {
 
@@ -151,34 +141,32 @@ public class PacketDistributor<T> {
     /**
      * A Distributor curried with a specific value instance, for actual dispatch
      *
-     * @see SimpleChannel#send(PacketTarget, Object)
-     *
      */
     public static class PacketTarget {
-        private final Consumer<Packet<?>> packetConsumer;
+        private final Consumer<CustomPacketPayload> packetConsumer;
         private final PacketDistributor<?> distributor;
 
-        PacketTarget(final Consumer<Packet<?>> packetConsumer, final PacketDistributor<?> distributor) {
+        PacketTarget(final Consumer<CustomPacketPayload> packetConsumer, final PacketDistributor<?> distributor) {
             this.packetConsumer = packetConsumer;
             this.distributor = distributor;
         }
 
-        public void send(Packet<?> packet) {
+        public void send(CustomPacketPayload packet) {
             packetConsumer.accept(packet);
         }
 
-        public PlayNetworkDirection getDirection() {
-            return distributor.direction;
+        public PacketFlow getFlow() {
+            return distributor.flow;
         }
 
     }
 
-    private final BiFunction<PacketDistributor<T>, Supplier<T>, Consumer<Packet<?>>> functor;
-    private final PlayNetworkDirection direction;
+    private final BiFunction<PacketDistributor<T>, Supplier<T>, Consumer<CustomPacketPayload>> functor;
+    private final PacketFlow flow;
 
-    public PacketDistributor(BiFunction<PacketDistributor<T>, Supplier<T>, Consumer<Packet<?>>> functor, PlayNetworkDirection direction) {
+    public PacketDistributor(BiFunction<PacketDistributor<T>, Supplier<T>, Consumer<CustomPacketPayload>> functor, PacketFlow flow) {
         this.functor = functor;
-        this.direction = direction;
+        this.flow = flow;
     }
 
     /**
@@ -202,52 +190,48 @@ public class PacketDistributor<T> {
         return new PacketTarget(functor.apply(this, () -> null), this);
     }
 
-    private Consumer<Packet<?>> playerConsumer(final Supplier<ServerPlayer> entityPlayerMPSupplier) {
-        return p -> entityPlayerMPSupplier.get().connection.connection.send(p);
+    private Consumer<CustomPacketPayload> playerConsumer(final Supplier<ServerPlayer> entityPlayerMPSupplier) {
+        return p -> entityPlayerMPSupplier.get().connection.send(p);
     }
 
-    private Consumer<Packet<?>> playerListDimConsumer(final Supplier<ResourceKey<Level>> dimensionTypeSupplier) {
+    private Consumer<CustomPacketPayload> playerListDimConsumer(final Supplier<ResourceKey<Level>> dimensionTypeSupplier) {
         return p -> getServer().getPlayerList().broadcastAll(p, dimensionTypeSupplier.get());
     }
 
-    private Consumer<Packet<?>> playerListAll(final Supplier<Void> voidSupplier) {
+    private Consumer<CustomPacketPayload> playerListAll(final Supplier<Void> voidSupplier) {
         return p -> getServer().getPlayerList().broadcastAll(p);
     }
 
-    private Consumer<Packet<?>> clientToServer(final Supplier<Void> voidSupplier) {
-        return p -> Minecraft.getInstance().getConnection().send(p);
+    private Consumer<CustomPacketPayload> clientToServer(final Supplier<Void> voidSupplier) {
+        return p -> Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(p);
     }
 
-    private Consumer<Packet<?>> playerListPointConsumer(final Supplier<TargetPoint> targetPointSupplier) {
+    private Consumer<CustomPacketPayload> playerListPointConsumer(final Supplier<TargetPoint> targetPointSupplier) {
         return p -> {
             final TargetPoint tp = targetPointSupplier.get();
             getServer().getPlayerList().broadcast(tp.excluded, tp.x, tp.y, tp.z, tp.r2, tp.dim, p);
         };
     }
 
-    private Consumer<Packet<?>> trackingEntity(final Supplier<Entity> entitySupplier) {
+    private Consumer<CustomPacketPayload> trackingEntity(final Supplier<Entity> entitySupplier) {
         return p -> {
             final Entity entity = entitySupplier.get();
             ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).broadcast(entity, p);
         };
     }
 
-    private Consumer<Packet<?>> trackingEntityAndSelf(final Supplier<Entity> entitySupplier) {
+    private Consumer<CustomPacketPayload> trackingEntityAndSelf(final Supplier<Entity> entitySupplier) {
         return p -> {
             final Entity entity = entitySupplier.get();
             ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).broadcastAndSend(entity, p);
         };
     }
 
-    private Consumer<Packet<?>> trackingChunk(final Supplier<LevelChunk> chunkPosSupplier) {
+    private Consumer<CustomPacketPayload> trackingChunk(final Supplier<LevelChunk> chunkPosSupplier) {
         return p -> {
             final LevelChunk chunk = chunkPosSupplier.get();
             ((ServerChunkCache) chunk.getLevel().getChunkSource()).chunkMap.getPlayers(chunk.getPos(), false).forEach(e -> e.connection.send(p));
         };
-    }
-
-    private Consumer<Packet<?>> networkManagerList(final Supplier<List<Connection>> nmListSupplier) {
-        return p -> nmListSupplier.get().forEach(nm -> nm.send(p));
     }
 
     private MinecraftServer getServer() {

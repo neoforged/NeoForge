@@ -1,29 +1,103 @@
 --- a/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
-@@ -45,11 +_,15 @@
+@@ -3,29 +_,39 @@
+ import com.mojang.authlib.GameProfile;
+ import com.mojang.logging.LogUtils;
+ import net.minecraft.client.Minecraft;
++import net.minecraft.client.gui.screens.Screen;
+ import net.minecraft.core.RegistryAccess;
+ import net.minecraft.network.Connection;
+ import net.minecraft.network.TickablePacketListener;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.protocol.PacketUtils;
++import net.minecraft.network.protocol.common.custom.BrandPayload;
+ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+ import net.minecraft.network.protocol.configuration.ClientConfigurationPacketListener;
+ import net.minecraft.network.protocol.configuration.ClientboundFinishConfigurationPacket;
+ import net.minecraft.network.protocol.configuration.ClientboundRegistryDataPacket;
+ import net.minecraft.network.protocol.configuration.ClientboundUpdateEnabledFeaturesPacket;
+ import net.minecraft.network.protocol.configuration.ServerboundFinishConfigurationPacket;
++import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.world.flag.FeatureFlagSet;
+ import net.minecraft.world.flag.FeatureFlags;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
++import net.neoforged.neoforge.network.registration.NetworkRegistry;
+ import org.slf4j.Logger;
+ 
++import java.util.HashMap;
++import java.util.Map;
++
+ @OnlyIn(Dist.CLIENT)
+ public class ClientConfigurationPacketListenerImpl extends ClientCommonPacketListenerImpl implements TickablePacketListener, ClientConfigurationPacketListener {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private final GameProfile localGameProfile;
+     private RegistryAccess.Frozen receivedRegistries;
+     private FeatureFlagSet enabledFeatures;
++    private boolean isModdedConnection = false;
++    private boolean isVanillaConnection = true;
++    private Map<ResourceLocation, Component> failureReasons = new HashMap<>();
+ 
+     public ClientConfigurationPacketListenerImpl(Minecraft p_295262_, Connection p_296339_, CommonListenerCookie p_294706_) {
+         super(p_295262_, p_296339_, p_294706_);
+@@ -45,11 +_,34 @@
      }
  
      @Override
 -    protected void handleCustomPayload(CustomPacketPayload p_295411_) {
 -        this.handleUnknownCustomPayload(p_295411_);
 +    protected void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295411_) {
++        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload) {
++            this.isModdedConnection = true;
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onNetworkQuery(this);
++            return;
++        }
++        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkPayload moddedNetworkPayload) {
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedNetworkConnectionEstablished(this, moddedNetworkPayload.configuration(), moddedNetworkPayload.play());
++            return;
++        }
++        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkSetupFailedPayload setupFailedPayload) {
++            failureReasons = setupFailedPayload.failureReasons();
++        }
++        if (!this.isModdedConnection && p_295411_ instanceof BrandPayload) {
++            this.isVanillaConnection = true;
++            if (!net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaNetworkConnectionEstablished(this)) {
++                return;
++            }
++        }
++        if (this.isModdedConnection) {
++            NetworkRegistry.getInstance().onModdedPacketAtClient(this, p_295727_);
++            return;
++        }
++        
 +        this.handleUnknownCustomPayload(p_295727_, p_295411_);
      }
  
 -    private void handleUnknownCustomPayload(CustomPacketPayload p_296412_) {
 +    private void handleUnknownCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_296412_) {
-+        if (p_296412_ instanceof net.neoforged.neoforge.network.custom.payload.SimplePayload simplePayload && net.neoforged.neoforge.network.NetworkHooks.onCustomPayload(p_295727_, simplePayload, connection)) {
-+            return;
-+        }
-+        
          LOGGER.warn("Unknown custom packet payload: {}", p_296412_.id());
      }
  
-@@ -93,6 +_,7 @@
-             );
-         this.connection.resumeInboundAfterProtocolChange();
-         this.connection.send(new ServerboundFinishConfigurationPacket());
-+        net.neoforged.neoforge.network.NetworkHooks.handleClientLoginSuccess(this.connection);
+@@ -85,6 +_,7 @@
+                         this.telemetryManager,
+                         this.receivedRegistries,
+                         this.enabledFeatures,
++                        this.isModdedConnection,
+                         this.serverBrand,
+                         this.serverData,
+                         this.postDisconnectScreen
+@@ -104,5 +_,14 @@
+     public void onDisconnect(Component p_314649_) {
+         super.onDisconnect(p_314649_);
+         this.minecraft.clearDownloadedResourcePacks();
++    }
++    
++    @Override
++    protected Screen createDisconnectScreen(Component p_296470_) {
++        final Screen superScreen = super.createDisconnectScreen(p_296470_);
++        if (failureReasons.isEmpty())
++            return superScreen;
++        
++        return new net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen(superScreen, p_296470_, failureReasons);
      }
- 
-     @Override
+ }

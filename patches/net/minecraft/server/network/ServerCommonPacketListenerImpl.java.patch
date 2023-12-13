@@ -1,14 +1,91 @@
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -68,6 +_,11 @@
+@@ -12,16 +_,12 @@
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.protocol.Packet;
+ import net.minecraft.network.protocol.PacketUtils;
+-import net.minecraft.network.protocol.common.ClientboundDisconnectPacket;
+-import net.minecraft.network.protocol.common.ClientboundKeepAlivePacket;
+-import net.minecraft.network.protocol.common.ServerCommonPacketListener;
+-import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+-import net.minecraft.network.protocol.common.ServerboundKeepAlivePacket;
+-import net.minecraft.network.protocol.common.ServerboundPongPacket;
+-import net.minecraft.network.protocol.common.ServerboundResourcePackPacket;
++import net.minecraft.network.protocol.common.*;
++import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.server.level.ClientInformation;
+ import net.minecraft.util.VisibleForDebug;
++import net.minecraft.util.thread.ReentrantBlockableEventLoop;
+ import org.slf4j.Logger;
  
-     @Override
-     public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) {
-+        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.custom.payload.SimplePayload simplePayload && net.neoforged.neoforge.network.NetworkHooks.onCustomPayload(p_294276_, simplePayload, connection)) {
+ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPacketListener {
+@@ -108,8 +_,17 @@
+     public void send(Packet<?> p_294278_) {
+         this.send(p_294278_, null);
+     }
++    
++    @Override
++    public void send(CustomPacketPayload packetPayload) {
++        this.send(new ClientboundCustomPayloadPacket(packetPayload));
++    }
+ 
+     public void send(Packet<?> p_295099_, @Nullable PacketSendListener p_296321_) {
++        if (!net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().canSendPacket(p_295099_, this)) {
 +            return;
 +        }
 +        
-+        LOGGER.warn("Unknown custom packet payload: {}", p_294276_.payload().id());
-     }
+         boolean flag = !this.suspendFlushingOnServerThread || !this.server.isSameThread();
  
-     @Override
+         try {
+@@ -121,6 +_,11 @@
+             throw new ReportedException(crashreport);
+         }
+     }
++    
++    @Override
++    public void send(CustomPacketPayload packetPayload, @Nullable PacketSendListener listener) {
++        this.send(new ClientboundCustomPayloadPacket(packetPayload), listener);
++    }
+ 
+     public void disconnect(Component p_294116_) {
+         this.connection.send(new ClientboundDisconnectPacket(p_294116_), PacketSendListener.thenRun(() -> this.connection.disconnect(p_294116_)));
+@@ -142,8 +_,36 @@
+     public int latency() {
+         return this.latency;
+     }
+-
++    
++    /**
++     * Creates a new cookie for this connection.
++     *
++     * @param p_301973_ The client information.
++     * @return The cookie.
++     * @deprecated Use {@link #createCookie(ClientInformation, boolean)} instead, keeping the connection type information available.
++     */
++    @Deprecated
+     protected CommonListenerCookie createCookie(ClientInformation p_301973_) {
+-        return new CommonListenerCookie(this.playerProfile(), this.latency, p_301973_);
++        return new CommonListenerCookie(this.playerProfile(), this.latency, p_301973_, false);
++    }
++    
++    /**
++     * Creates a new cookie for this connection.
++     *
++     * @param p_301973_ The client information.
++     * @param isModdedConnection Whether the connection is modded.
++     * @return The cookie.
++     */
++    protected CommonListenerCookie createCookie(ClientInformation p_301973_, boolean isModdedConnection) {
++        return new CommonListenerCookie(this.playerProfile(), this.latency, p_301973_, isModdedConnection);
++    }
++    
++    @Override
++    public Connection getConnection() {
++        return connection;
++    }
++    @Override
++    public ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
++        return server;
+     }
+ }

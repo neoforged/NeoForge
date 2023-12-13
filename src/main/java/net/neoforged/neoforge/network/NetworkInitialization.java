@@ -5,35 +5,48 @@
 
 package net.neoforged.neoforge.network;
 
-import java.util.Arrays;
-import java.util.List;
-import net.neoforged.neoforge.network.event.EventNetworkChannel;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
-import net.neoforged.neoforge.registries.RegistryManager;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.network.event.RegisterPacketHandlerEvent;
+import net.neoforged.neoforge.network.handlers.ClientPayloadHandler;
+import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
+import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
+import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletePayload;
+import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
+import net.neoforged.neoforge.network.registration.registrar.IPayloadRegistrar;
+import org.jetbrains.annotations.ApiStatus;
 
-class NetworkInitialization {
-
-    public static SimpleChannel getHandshakeChannel() {
-        SimpleChannel handshakeChannel = NetworkRegistry.ChannelBuilder.named(NetworkConstants.FML_HANDSHAKE_RESOURCE).clientAcceptedVersions(a -> true).serverAcceptedVersions(a -> true).networkProtocolVersion(() -> NetworkConstants.NETVERSION).simpleChannel();
-
-        handshakeChannel.simpleLoginMessageBuilder(HandshakeMessages.C2SAcknowledge.class, 99, LoginNetworkDirection.LOGIN_TO_SERVER).decoder(HandshakeMessages.C2SAcknowledge::decode).consumerNetworkThread(HandshakeHandler.indexFirst(HandshakeHandler::handleClientAck)).add();
-
-        handshakeChannel.simpleLoginMessageBuilder(HandshakeMessages.S2CModData.class, 5, LoginNetworkDirection.LOGIN_TO_CLIENT).decoder(HandshakeMessages.S2CModData::decode).markAsLoginPacket().noResponse().consumerNetworkThread(HandshakeHandler.consumerFor(HandshakeHandler::handleModData)).add();
-
-        handshakeChannel.simpleLoginMessageBuilder(HandshakeMessages.S2CModList.class, 1, LoginNetworkDirection.LOGIN_TO_CLIENT).decoder(HandshakeMessages.S2CModList::decode).markAsLoginPacket().consumerNetworkThread(HandshakeHandler.consumerFor(HandshakeHandler::handleServerModListOnClient)).add();
-
-        handshakeChannel.simpleLoginMessageBuilder(HandshakeMessages.C2SModListReply.class, 2, LoginNetworkDirection.LOGIN_TO_SERVER).decoder(HandshakeMessages.C2SModListReply::decode).consumerNetworkThread(HandshakeHandler.indexFirst(HandshakeHandler::handleClientModListOnServer)).add();
-
-        handshakeChannel.simpleLoginMessageBuilder(HandshakeMessages.S2CRegistry.class, 3, LoginNetworkDirection.LOGIN_TO_CLIENT).decoder(HandshakeMessages.S2CRegistry::decode).buildLoginPacketList(RegistryManager::generateRegistryPackets). //TODO: Make this non-static, and store a cache on the client.
-                consumerNetworkThread(HandshakeHandler.consumerFor(HandshakeHandler::handleRegistryMessage)).add();
-
-        handshakeChannel.simpleLoginMessageBuilder(HandshakeMessages.S2CConfigData.class, 4, LoginNetworkDirection.LOGIN_TO_CLIENT).decoder(HandshakeMessages.S2CConfigData::decode).buildLoginPacketList(ConfigSync.INSTANCE::syncConfigs).consumerNetworkThread(HandshakeHandler.consumerFor(HandshakeHandler::handleConfigSync)).add();
-
-        handshakeChannel.simpleLoginMessageBuilder(HandshakeMessages.S2CChannelMismatchData.class, 6, LoginNetworkDirection.LOGIN_TO_CLIENT).decoder(HandshakeMessages.S2CChannelMismatchData::decode).consumerNetworkThread(HandshakeHandler.consumerFor(HandshakeHandler::handleModMismatchData)).add();
-
-        return handshakeChannel;
+@Mod.EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@ApiStatus.Internal
+public class NetworkInitialization {
+    
+    @SubscribeEvent
+    public static void register(final RegisterPacketHandlerEvent event) {
+        final IPayloadRegistrar registrar = event.registrar(NeoForgeVersion.MOD_ID)
+                                                    .versioned(NeoForgeVersion.getSpec())
+                                                    .optional();
+        registrar
+                .configuration(
+                        FrozenRegistrySyncStartPayload.ID,
+                        FrozenRegistrySyncStartPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle)
+                )
+                .configuration(
+                        FrozenRegistryPayload.ID,
+                        FrozenRegistryPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle)
+                )
+                .configuration(
+                        FrozenRegistrySyncCompletePayload.ID,
+                        FrozenRegistrySyncCompletePayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle)
+                                            .server(ServerPayloadHandler.getInstance()::handle)
+                );
     }
-
+    
+    
+/*
     public static SimpleChannel getPlayChannel() {
         SimpleChannel playChannel = NetworkRegistry.ChannelBuilder.named(NetworkConstants.FML_PLAY_RESOURCE).clientAcceptedVersions(a -> true).serverAcceptedVersions(a -> true).networkProtocolVersion(() -> NetworkConstants.NETVERSION).simpleChannel();
 
@@ -42,13 +55,5 @@ class NetworkInitialization {
         playChannel.messageBuilder(PlayMessages.OpenContainer.class, 1).decoder(PlayMessages.OpenContainer::decode).encoder(PlayMessages.OpenContainer::encode).consumerMainThread(PlayMessages.OpenContainer::handle).add();
 
         return playChannel;
-    }
-
-    public static List<EventNetworkChannel> buildMCRegistrationChannels() {
-        final EventNetworkChannel mcRegChannel = NetworkRegistry.ChannelBuilder.named(NetworkConstants.MC_REGISTER_RESOURCE).clientAcceptedVersions(a -> true).serverAcceptedVersions(a -> true).networkProtocolVersion(() -> NetworkConstants.NETVERSION).eventNetworkChannel();
-        mcRegChannel.addListener(MCRegisterPacketHandler.INSTANCE::registerListener);
-        final EventNetworkChannel mcUnregChannel = NetworkRegistry.ChannelBuilder.named(NetworkConstants.MC_UNREGISTER_RESOURCE).clientAcceptedVersions(a -> true).serverAcceptedVersions(a -> true).networkProtocolVersion(() -> NetworkConstants.NETVERSION).eventNetworkChannel();
-        mcUnregChannel.addListener(MCRegisterPacketHandler.INSTANCE::unregisterListener);
-        return Arrays.asList(mcRegChannel, mcUnregChannel);
-    }
+    }*/
 }

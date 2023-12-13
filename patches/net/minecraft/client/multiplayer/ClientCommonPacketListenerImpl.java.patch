@@ -1,5 +1,13 @@
 --- a/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
+@@ -53,6 +_,7 @@
+ import net.minecraft.resources.ResourceKey;
+ import net.minecraft.tags.TagKey;
+ import net.minecraft.tags.TagNetworkSerialization;
++import net.minecraft.util.thread.ReentrantBlockableEventLoop;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ import org.slf4j.Logger;
 @@ -101,12 +_,12 @@
                  this.serverBrand = brandpayload.brand();
                  this.telemetryManager.onServerBrandReceived(brandpayload.brand());
@@ -15,3 +23,30 @@
  
      protected abstract RegistryAccess.Frozen registryAccess();
  
+@@ -189,6 +_,10 @@
+     }
+ 
+     public void send(Packet<?> p_295097_) {
++        if (!net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().canSendPacket(p_295097_, this)) {
++            return;
++        }
++        
+         this.connection.send(p_295097_);
+     }
+ 
+@@ -315,5 +_,15 @@
+         @OnlyIn(Dist.CLIENT)
+         static record PendingRequest(UUID id, URL url, String hash) {
+         }
++    }
++    
++    @Override
++    public Connection getConnection() {
++        return connection;
++    }
++    
++    @Override
++    public ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
++        return minecraft;
+     }
+ }

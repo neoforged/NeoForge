@@ -50,7 +50,7 @@
   "fml.modmismatchscreen.missingmods.client": "Your client is missing the following mods, install these mods to join this server:",
   "fml.modmismatchscreen.missingmods.server": "The server is missing the following mods, remove these mods from your client to join this server:",
   "fml.modmismatchscreen.mismatchedmods": "The following mod versions do not match, install the same version of these mods that the server has to join this server:",
-  "fml.modmismatchscreen.table.modname": "Mod name",
+  "fml.modmismatchscreen.table.channelname": "Channel name",
   "fml.modmismatchscreen.table.youneed": "You need",
   "fml.modmismatchscreen.table.youhave": "You have",
   "fml.modmismatchscreen.table.serverhas": "Server has",

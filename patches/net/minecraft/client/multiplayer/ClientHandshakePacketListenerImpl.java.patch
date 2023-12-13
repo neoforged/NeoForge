@@ -1,5 +1,13 @@
 --- a/net/minecraft/client/multiplayer/ClientHandshakePacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientHandshakePacketListenerImpl.java
+@@ -166,6 +_,7 @@
+                         this.minecraft.getTelemetryManager().createWorldSessionManager(this.newWorld, this.worldLoadDuration, this.minigameName),
+                         ClientRegistryLayer.createRegistryAccess().compositeAccess(),
+                         FeatureFlags.DEFAULT_FLAGS,
++                        false,
+                         null,
+                         this.serverData,
+                         this.parent
 @@ -181,7 +_,7 @@
          if (this.serverData != null && this.serverData.isRealm()) {
              this.minecraft.setScreen(new DisconnectedRealmsScreen(this.parent, CommonComponents.CONNECT_FAILED, p_104543_));

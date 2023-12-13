@@ -7,38 +7,36 @@ package net.neoforged.neoforge.network.filters;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
-import net.minecraft.network.CompressionDecoder;
-import net.minecraft.network.Connection;
-import net.minecraft.network.ConnectionProtocol;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.PacketListener;
+import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.network.*;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.ConnectionData;
-import net.neoforged.neoforge.network.NetworkEvent;
-import net.neoforged.neoforge.network.NetworkHooks;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.PlayNetworkDirection;
-import net.neoforged.neoforge.network.custom.payload.SimplePayload;
-import net.neoforged.neoforge.network.event.EventNetworkChannel;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.network.event.RegisterPacketHandlerEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.payload.SplitPacketPayload;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A custom payload channel that allows sending vanilla server-to-client packets, even if they would normally
  * be too large for the vanilla protocol. This is achieved by splitting them into multiple custom payload packets.
  */
+@Mod.EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class VanillaPacketSplitter {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final ResourceLocation CHANNEL = new ResourceLocation("neoforge", "split");
-    private static final String VERSION = "1.1";
+    private static final int VERSION = 2;
 
     private static final int PROTOCOL_MAX = CompressionDecoder.MAXIMUM_UNCOMPRESSED_LENGTH;
 
@@ -49,69 +47,71 @@ public class VanillaPacketSplitter {
     private static final byte STATE_FIRST = 1;
     private static final byte STATE_LAST = 2;
 
-    public static void register() {
-        Predicate<String> versionCheck = NetworkRegistry.acceptMissingOr(VERSION);
-        EventNetworkChannel channel = NetworkRegistry.newEventChannel(CHANNEL, () -> VERSION, versionCheck, versionCheck);
-        channel.addListener(VanillaPacketSplitter::onClientPacket);
+    @SubscribeEvent
+    public static void register(final RegisterPacketHandlerEvent event) {
+        event.registrar(NeoForgeVersion.MOD_ID)
+                .versioned(NeoForgeVersion.getSpec())
+                .optional()
+                .common(
+                        SplitPacketPayload.ID,
+                        SplitPacketPayload::new,
+                        VanillaPacketSplitter::receivedPacket
+                );
     }
-
+    
     /**
      * Append the given packet to the given list. If the packet needs to be split, multiple packets will be appened.
      * Otherwise only the packet itself.
      */
     public static void appendPackets(ConnectionProtocol protocol, PacketFlow direction, Packet<?> packet, List<? super Packet<?>> out) {
-        if (heuristicIsDefinitelySmallEnough(packet)) {
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        packet.write(buf);
+        if (buf.readableBytes() <= PROTOCOL_MAX) {
+            buf.release();
             out.add(packet);
         } else {
-            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-            packet.write(buf);
-            if (buf.readableBytes() <= PROTOCOL_MAX) {
+            int parts = (int) Math.ceil(((double) buf.readableBytes()) / PART_SIZE);
+            if (parts == 1) {
                 buf.release();
                 out.add(packet);
             } else {
-                int parts = (int) Math.ceil(((double) buf.readableBytes()) / PART_SIZE);
-                if (parts == 1) {
-                    buf.release();
-                    out.add(packet);
-                } else {
-                    for (int part = 0; part < parts; part++) {
-                        ByteBuf partPrefix;
-                        if (part == 0) {
-                            partPrefix = Unpooled.buffer(5);
-                            partPrefix.writeByte(STATE_FIRST);
-                            new FriendlyByteBuf(partPrefix).writeVarInt(protocol.codec(direction).packetId(packet));
-                        } else {
-                            partPrefix = Unpooled.buffer(1);
-                            partPrefix.writeByte(part == parts - 1 ? STATE_LAST : 0);
-                        }
-                        int partSize = Math.min(PART_SIZE, buf.readableBytes());
-                        ByteBuf partBuf = Unpooled.wrappedBuffer(
-                                partPrefix,
-                                buf.retainedSlice(buf.readerIndex(), partSize));
-                        buf.skipBytes(partSize);
-                        out.add(new ClientboundCustomPayloadPacket(SimplePayload.outbound(new FriendlyByteBuf(partBuf), protocol.codec(direction).packetId(packet), CHANNEL)));
+                for (int part = 0; part < parts; part++) {
+                    ByteBuf partPrefix;
+                    if (part == 0) {
+                        partPrefix = Unpooled.buffer(5);
+                        partPrefix.writeByte(STATE_FIRST);
+                        new FriendlyByteBuf(partPrefix).writeVarInt(protocol.codec(direction).packetId(packet));
+                    } else {
+                        partPrefix = Unpooled.buffer(1);
+                        partPrefix.writeByte(part == parts - 1 ? STATE_LAST : 0);
                     }
-                    // we retained all the slices, so we do not need this one anymore
-                    buf.release();
+                    
+                    int partSize = Math.min(PART_SIZE, buf.readableBytes());
+                    final byte[] prefix = partPrefix.array();
+                    final byte[] payloadSlice = buf.slice(buf.readerIndex(), partSize).array();
+                    
+                    byte[] payload = new byte[prefix.length + payloadSlice.length];
+                    System.arraycopy(prefix, 0, payload, 0, prefix.length);
+                    System.arraycopy(payloadSlice, 0, payload, prefix.length, payloadSlice.length);
+                    
+                    out.add(new ClientboundCustomPayloadPacket(new SplitPacketPayload(payload)));
+                    
+                    partPrefix.release();
                 }
+                // We cloned all the data into arrays, no need to retain the buffer anymore
+                buf.release();
             }
         }
     }
 
-    private static boolean heuristicIsDefinitelySmallEnough(Packet<?> packet) {
-        return false;
-    }
-
     private static final List<FriendlyByteBuf> receivedBuffers = new ArrayList<>();
 
-    private static void onClientPacket(NetworkEvent.ServerCustomPayloadEvent event) {
-        NetworkEvent.Context ctx = event.getSource();
-        PacketFlow direction = ctx.getDirection() == PlayNetworkDirection.PLAY_TO_CLIENT ? PacketFlow.CLIENTBOUND : PacketFlow.SERVERBOUND;
-        ConnectionProtocol protocol = ConnectionProtocol.PLAY;
-
-        ctx.setPacketHandled(true);
-
-        FriendlyByteBuf buf = event.getPayload();
+    private static void receivedPacket(IPayloadContext context, SplitPacketPayload payload) {
+        final ConnectionProtocol protocol = context.protocol();
+        final PacketFlow flow = context.flow();
+        final ChannelHandlerContext channelHandlerContext = context.channelHandlerContext();
+        
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(payload.payload()));
 
         byte state = buf.readByte();
         if (state == STATE_FIRST) {
@@ -125,20 +125,17 @@ public class VanillaPacketSplitter {
         if (state == STATE_LAST) {
             FriendlyByteBuf full = new FriendlyByteBuf(Unpooled.wrappedBuffer(receivedBuffers.toArray(new FriendlyByteBuf[0])));
             int packetId = full.readVarInt();
-            Packet<?> packet = protocol.codec(direction).createPacket(packetId, full);
+            Packet<?> packet = protocol.codec(flow).createPacket(packetId, full, channelHandlerContext);
             if (packet == null) {
                 LOGGER.error("Received invalid packet ID {} in neoforge:split", packetId);
             } else {
                 receivedBuffers.clear();
                 full.release();
-                ctx.enqueueWork(() -> genericsFtw(packet, event.getSource().getNetworkManager().getPacketListener()));
+                
+                context.workHandler()
+                               .submitAsync(() -> context.packetHandler().handle(packet));
             }
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T extends PacketListener> void genericsFtw(Packet<T> pkt, Object listener) {
-        pkt.handle((T) listener);
     }
 
     public enum RemoteCompatibility {
@@ -147,12 +144,7 @@ public class VanillaPacketSplitter {
     }
 
     public static RemoteCompatibility getRemoteCompatibility(Connection manager) {
-        ConnectionData connectionData = NetworkHooks.getConnectionData(manager);
-        if (connectionData != null && connectionData.getChannels().containsKey(CHANNEL)) {
-            return RemoteCompatibility.PRESENT;
-        } else {
-            return RemoteCompatibility.ABSENT;
-        }
+        return NetworkRegistry.getInstance().isVanillaConnection(manager) ? RemoteCompatibility.ABSENT : RemoteCompatibility.PRESENT;
     }
 
     public static boolean isRemoteCompatible(Connection manager) {
