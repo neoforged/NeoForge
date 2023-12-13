@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.server;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -40,6 +41,7 @@ import net.neoforged.fml.ModLoadingWarning;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import net.neoforged.neoforge.common.world.BiomeModifier;
@@ -82,6 +84,18 @@ public class ServerLifecycleHooks {
                 throw new RuntimeException(e);
             }
         }
+        final Path explanation = serverConfig.resolve("readme.txt");
+        if (!Files.exists(explanation)) {
+            try {
+                Files.writeString(explanation, """
+                        Any server configs put in this folder will override the corresponding server config from <instance path>/config/<config path>.
+                        If the config being transferred is in a subfolder of the base config folder make sure to include that folder here in the path to the file you are overwriting.
+                        For example if you are overwriting a config with the path <instance path>/config/ExampleMod/config-server.toml, you would need to put it in serverconfig/ExampleMod/config-server.toml
+                        """, StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return serverConfig;
     }
 
@@ -89,7 +103,7 @@ public class ServerLifecycleHooks {
         currentServer = server;
         // on the dedi server we need to force the stuff to setup properly
         LogicalSidedProvider.setServer(() -> server);
-        ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.SERVER, getServerConfigPath(server));
+        ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.SERVER, FMLPaths.CONFIGDIR.get(), getServerConfigPath(server));
         runModifiers(server);
         NeoForge.EVENT_BUS.post(new ServerAboutToStartEvent(server));
     }
@@ -130,7 +144,7 @@ public class ServerLifecycleHooks {
             latch.countDown();
             exitLatch = null;
         }
-        ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SERVER, getServerConfigPath(server));
+        ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SERVER);
     }
 
     public static MinecraftServer getCurrentServer() {
