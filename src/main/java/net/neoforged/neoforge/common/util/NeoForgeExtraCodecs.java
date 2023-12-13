@@ -13,10 +13,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Decoder;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.Encoder;
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.MapCodec.MapCodecCodec;
-import com.mojang.serialization.codecs.KeyDispatchCodec;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -80,39 +77,6 @@ public class NeoForgeExtraCodecs {
 
     public static <T> Codec<Set<T>> setOf(final Codec<T> codec) {
         return Codec.list(codec).xmap(ImmutableSet::copyOf, ImmutableList::copyOf);
-    }
-
-    /**
-     * Version of {@link Codec#dispatch(Function, Function)} that always writes the dispatched codec inline,
-     * i.e. at the same nesting level as the {@code "type": ...}.
-     * <p>
-     * Note: the codec produced by {@code .dispatch()} inlines the dispatched codec ONLY if it is a {@link MapCodecCodec}.
-     * This function always inlines.
-     */
-    public static <K, V> Codec<V> dispatchUnsafe(final Codec<K> keyCodec, final Function<? super V, ? extends K> type, final Function<? super K, ? extends Codec<? extends V>> codec) {
-        return dispatchUnsafe(keyCodec, "type", type, codec);
-    }
-
-    /**
-     * Version of {@link Codec#dispatch(String, Function, Function)} that always writes the dispatched codec inline,
-     * i.e. at the same nesting level as the {@code "type": ...}.
-     * <p>
-     * Note: the codec produced by {@code .dispatch()} inlines the dispatched codec ONLY if it is a {@link MapCodecCodec}.
-     * This function always inlines.
-     */
-    public static <K, V> Codec<V> dispatchUnsafe(final Codec<K> keyCodec, final String typeKey, final Function<? super V, ? extends K> type, final Function<? super K, ? extends Codec<? extends V>> codec) {
-        return partialDispatchUnsafe(keyCodec, typeKey, type.andThen(DataResult::success), codec.andThen(DataResult::success));
-    }
-
-    /**
-     * Version of {@link Codec#partialDispatch(String, Function, Function)} that always writes the dispatched codec inline,
-     * i.e. at the same nesting level as the {@code "type": ...}.
-     * <p>
-     * Note: the codec produced by {@code .dispatch()} inlines the dispatched codec ONLY if it is a {@link MapCodecCodec}.
-     * This function always inlines.
-     */
-    public static <K, V> Codec<V> partialDispatchUnsafe(final Codec<K> keyCodec, final String typeKey, final Function<? super V, ? extends DataResult<? extends K>> type, final Function<? super K, ? extends DataResult<? extends Codec<? extends V>>> codec) {
-        return KeyDispatchCodec.unsafe(typeKey, keyCodec, type, codec, v -> type.apply(v).<Encoder<? extends V>>flatMap(k -> codec.apply(k).map(Function.identity())).map(e -> ((Encoder<V>) e))).codec();
     }
 
     /**
