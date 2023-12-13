@@ -28,10 +28,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.tags.TagKey;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.util.thread.EffectiveSide;
 import net.neoforged.neoforge.common.NeoForge;
@@ -64,11 +62,10 @@ public class DataPackRegistriesTest {
     //TODO: Fix datapack generation for it.
     private final DeferredHolder<Unsyncable, Unsyncable> datagenTestObject = null;
 
-    public DataPackRegistriesTest() {
+    public DataPackRegistriesTest(IEventBus modBus) {
         if (!ENABLED)
             return;
 
-        final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         final IEventBus forgeBus = NeoForge.EVENT_BUS;
 
         modBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
@@ -79,7 +76,7 @@ public class DataPackRegistriesTest {
         modBus.addListener(this::onGatherData);
         forgeBus.addListener(this::onServerStarting);
 
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+        if (FMLEnvironment.dist.isClient()) {
             ClientEvents.subscribeClientEvents();
         }
     }

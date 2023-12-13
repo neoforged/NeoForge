@@ -6,14 +6,18 @@
 package net.neoforged.testframework.gametest;
 
 import com.mojang.authlib.GameProfile;
+import io.netty.channel.embedded.EmbeddedChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerLevel;
@@ -73,5 +77,10 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
         connection.disconnect(Component.literal("Test finished"));
         this.listeners.forEach(NeoForge.EVENT_BUS::unregister);
         this.listeners.clear();
+    }
+
+    public <T extends Packet<? extends ClientCommonPacketListener>> Stream<T> getOutboundPackets(Class<T> type) {
+        return ((EmbeddedChannel) connection.connection.channel()).outboundMessages().stream()
+                .filter(type::isInstance).map(type::cast);
     }
 }

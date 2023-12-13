@@ -75,7 +75,9 @@ public final class ItemCapability<T, C> extends BaseCapability<T, C> {
     }
 
     // INTERNAL
-    private static final CapabilityRegistry<ItemCapability<?, ?>> registry = new CapabilityRegistry<>(ItemCapability::new);
+
+    // Requires explicitly-typed constructor due to ECJ inference failure.
+    private static final CapabilityRegistry<ItemCapability<?, ?>> registry = new CapabilityRegistry<ItemCapability<?, ?>>(ItemCapability::new);
 
     private ItemCapability(ResourceLocation name, Class<T> typeClass, Class<C> contextClass) {
         super(name, typeClass, contextClass);

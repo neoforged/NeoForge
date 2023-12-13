@@ -24,9 +24,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -75,9 +75,9 @@ public class ContainerTypeTest {
         }
     }
 
-    public ContainerTypeTest() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerContainers);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+    public ContainerTypeTest(IEventBus modEventBus) {
+        modEventBus.addListener(this::registerContainers);
+        modEventBus.addListener(this::setup);
         NeoForge.EVENT_BUS.addListener(this::onRightClick);
     }
 

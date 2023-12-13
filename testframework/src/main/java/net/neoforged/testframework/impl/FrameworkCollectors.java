@@ -40,8 +40,10 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.RegisterStructureTemplate;
 import net.neoforged.testframework.annotation.TestGroup;
+import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.impl.test.MethodBasedEventTest;
+import net.neoforged.testframework.impl.test.MethodBasedGameTestTest;
 import net.neoforged.testframework.impl.test.MethodBasedTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.objectweb.asm.Type;
@@ -80,6 +82,19 @@ public final class FrameworkCollectors {
                         return false;
                     })
                     .<Test>map(MethodBasedTest::new).toList();
+        }
+
+        public static List<Test> forGameTestMethodsWithAnnotation(ModContainer container, Class<? extends Annotation> annotation) {
+            return findMethodsWithAnnotation(container, SIDE_FILTER, annotation)
+                    .filter(method -> method.getParameterTypes().length == 1 && method.getParameterTypes()[0].isAssignableFrom(ExtendedGameTestHelper.class))
+                    .filter(method -> {
+                        if (Modifier.isStatic(method.getModifiers())) {
+                            return true;
+                        }
+                        LogUtils.getLogger().warn("Attempted to register method-based gametest test on non-static method: " + method);
+                        return false;
+                    })
+                    .<Test>map(MethodBasedGameTestTest::new).toList();
         }
 
         public static List<Test> eventTestMethodsWithAnnotation(ModContainer container, Class<? extends Annotation> annotation) {

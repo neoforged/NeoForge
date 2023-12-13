@@ -1,7 +1,7 @@
 {
   "pack": {
     "description": {
-      "translate": "pack.forge.description"
+      "translate": "pack.neoforge.description"
     },
     "neoforge": {
       "versions": {
@@ -9,6 +9,6 @@
         "server_data": 26
       }
     },
-    "pack_format": 22
+    "pack_format": 26
   }
 }

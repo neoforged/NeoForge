@@ -9,10 +9,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.bus.api.Event.Result;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import org.apache.logging.log4j.LogManager;
@@ -23,8 +23,8 @@ import org.apache.logging.log4j.Logger;
 public class PotionEventTest {
     private static Logger LOGGER = LogManager.getLogger(PotionEventTest.class);
 
-    public PotionEventTest() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onSetup);
+    public PotionEventTest(IEventBus modEventBus) {
+        modEventBus.addListener(this::onSetup);
     }
 
     private void onSetup(FMLCommonSetupEvent event) {
