@@ -73,7 +73,6 @@ public class ConditionalOps<T> extends RegistryOps<T> {
      * Creates a conditional codec.
      *
      * <p>The conditional codec is generally not suitable for use as a dispatch target because it is never a {@link MapCodec.MapCodecCodec}.
-     * If you need to dispatch on a conditional codec, consider using {@link NeoForgeExtraCodecs#dispatchUnsafe}.
      */
     public static <T> Codec<Optional<T>> createConditionalCodec(final Codec<T> ownerCodec, String conditionalsKey) {
         return createConditionalCodecWithConditions(ownerCodec, conditionalsKey).xmap(r -> r.map(WithConditions::carrier), r -> r.map(i -> new WithConditions<>(List.of(), i)));
@@ -116,7 +115,6 @@ public class ConditionalOps<T> extends RegistryOps<T> {
      * Creates a conditional codec.
      *
      * <p>The conditional codec is generally not suitable for use as a dispatch target because it is never a {@link MapCodec.MapCodecCodec}.
-     * If you need to dispatch on a conditional codec, consider using {@link NeoForgeExtraCodecs#dispatchUnsafe}.
      */
     public static <T> Codec<Optional<WithConditions<T>>> createConditionalCodecWithConditions(final Codec<T> ownerCodec, String conditionalsKey) {
         return Codec.of(
