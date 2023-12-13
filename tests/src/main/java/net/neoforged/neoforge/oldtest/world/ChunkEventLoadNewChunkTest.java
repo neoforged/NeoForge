@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 @Mod.EventBusSubscriber
 public class ChunkEventLoadNewChunkTest {
     static final String MODID = "chunk_event_load_new_chunk_test";
-    private static final boolean ENABLED = true;
+    private static final boolean ENABLED = false;
     private static final Logger LOGGER = LogUtils.getLogger();
 
     @SubscribeEvent

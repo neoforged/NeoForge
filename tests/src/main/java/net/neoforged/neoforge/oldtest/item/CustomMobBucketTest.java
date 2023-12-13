@@ -13,7 +13,6 @@ import net.minecraft.world.item.MobBucketItem;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -31,9 +30,8 @@ public class CustomMobBucketTest {
             () -> SoundEvents.BUCKET_EMPTY_FISH,
             (new Item.Properties()).stacksTo(1)));
 
-    public CustomMobBucketTest() {
+    public CustomMobBucketTest(IEventBus modEventBus) {
         if (ENABLED) {
-            IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
             ITEMS.register(modEventBus);
             modEventBus.addListener(this::addCreative);
         }

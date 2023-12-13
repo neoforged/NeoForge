@@ -38,7 +38,6 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.toposort.TopologicalSort;
@@ -219,7 +218,7 @@ public final class CreativeModeTabRegistry {
 
         recalculateItemCreativeModeTabs();
 
-        if (FMLEnvironment.dist == Dist.CLIENT && !FMLLoader.getLaunchHandler().isData())
+        if (FMLEnvironment.dist.isClient() && !FMLLoader.getLaunchHandler().isData())
             CreativeModeTabSearchRegistry.createSearchTrees();
     }
 

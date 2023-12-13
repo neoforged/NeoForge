@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.util.DeferredSoundType;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -41,8 +40,7 @@ public class CustomSoundTypeTest {
 
     private static final DeferredItem<BlockItem> TEST_STEP_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_STEP_BLOCK);
 
-    public CustomSoundTypeTest() {
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public CustomSoundTypeTest(IEventBus modEventBus) {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         SOUND_EVENTS.register(modEventBus);

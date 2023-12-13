@@ -8,11 +8,10 @@ package net.neoforged.neoforge.common.world.chunk;
 import java.util.function.Consumer;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 
 /**
  * Fired in order to register chunk {@link TicketController ticket controllers}.
- * This event is fired on the {@link FMLJavaModLoadingContext#getModEventBus() mod-specific event bus}.
+ * This event is fired on the mod-specific event bus.
  */
 public class RegisterTicketControllersEvent extends Event implements IModBusEvent {
     private final Consumer<TicketController> registrar;

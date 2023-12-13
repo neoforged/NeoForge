@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "neotests_custom_respawn_test:block/respawn"
+    }
+  }
+}
