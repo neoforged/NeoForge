@@ -47,7 +47,7 @@
      }
  
      public boolean triggerEvent(int p_58889_, int p_58890_) {
-@@ -185,6 +_,19 @@
+@@ -185,6 +_,20 @@
  
      public BlockEntityType<?> getType() {
          return this.type;
@@ -61,7 +61,8 @@
 +    }
 +
 +    @Override
-+    public final <T> @Nullable T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
++    @Nullable
++    public final <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
 +        setChanged();
 +        return super.setData(type, data);
      }

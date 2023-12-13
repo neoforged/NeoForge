@@ -111,13 +111,14 @@
      }
  
      protected static BlockHitResult getPlayerPOVHitResult(Level p_41436_, Player p_41437_, ClipContext.Fluid p_41438_) {
-@@ -313,11 +_,13 @@
+@@ -313,11 +_,14 @@
          float f5 = Mth.sin(-f * (float) (Math.PI / 180.0));
          float f6 = f3 * f4;
          float f7 = f2 * f4;
 -        double d0 = 5.0;
 -        Vec3 vec31 = vec3.add((double)f6 * 5.0, (double)f5 * 5.0, (double)f7 * 5.0);
 +        double d0 = p_41437_.getBlockReach();
++        if (!p_41437_.isCreative() && d0 != 0) d0 += 0.5D; // The vanilla constant here was 5.0, but the default survival block reach is 4.5. Creative default is already 5.0.
 +        Vec3 vec31 = vec3.add((double)f6 * d0, (double)f5 * d0, (double)f7 * d0);
          return p_41436_.clip(new ClipContext(vec3, vec31, ClipContext.Block.OUTLINE, p_41438_, p_41437_));
      }
