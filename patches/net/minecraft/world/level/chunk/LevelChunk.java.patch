@@ -95,7 +95,7 @@
          this.blockEntities.values().forEach(p_187988_ -> {
              Level level = this.level;
              if (level instanceof ServerLevel serverlevel) {
-@@ -646,6 +_,26 @@
+@@ -646,6 +_,27 @@
          return new LevelChunk.BoundTickingBlockEntity<>(p_156376_, p_156377_);
      }
  
@@ -113,7 +113,8 @@
 +    }
 +
 +    @Override
-+    public <T> @Nullable T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
++    @Nullable
++    public <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
 +        setUnsaved(true);
 +        return attachmentHolder.setData(type, data);
 +    }

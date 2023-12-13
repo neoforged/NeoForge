@@ -126,7 +126,9 @@ public final class BlockCapability<T, C> extends BaseCapability<T, C> {
     }
 
     // INTERNAL
-    private static final CapabilityRegistry<BlockCapability<?, ?>> registry = new CapabilityRegistry<>(BlockCapability::new);
+
+    // Requires explicitly-typed constructor due to ECJ inference failure.
+    private static final CapabilityRegistry<BlockCapability<?, ?>> registry = new CapabilityRegistry<BlockCapability<?, ?>>(BlockCapability::new);
 
     private BlockCapability(ResourceLocation name, Class<T> typeClass, Class<C> contextClass) {
         super(name, typeClass, contextClass);

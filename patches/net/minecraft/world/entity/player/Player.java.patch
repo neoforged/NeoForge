@@ -243,11 +243,10 @@
                      }
  
                      float f4 = 0.0F;
-@@ -1193,11 +_,13 @@
+@@ -1193,11 +_,12 @@
  
                              for(LivingEntity livingentity : this.level()
                                  .getEntitiesOfClass(LivingEntity.class, p_36347_.getBoundingBox().inflate(1.0, 0.25, 1.0))) {
-+                                //PATCH 1.20.2: Entity reach distance was redone, this needs to be verified.
 +                                double entityReachSq = Mth.square(this.getEntityReach()); // Use entity reach instead of constant 9.0. Vanilla uses bottom center-to-center checks here, so don't update this to use canReach, since it uses closest-corner checks.
                                  if (livingentity != this
                                      && livingentity != p_36347_
