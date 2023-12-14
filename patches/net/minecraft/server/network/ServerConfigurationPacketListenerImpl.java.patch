@@ -114,7 +114,7 @@
          ConfigurationTask.Type configurationtask$type = this.currentTask != null ? this.currentTask.type() : null;
          if (!p_294853_.equals(configurationtask$type)) {
              throw new IllegalStateException("Unexpected request for task finish, current task: " + configurationtask$type + ", requested: " + p_294853_);
-@@ -155,5 +_,15 @@
+@@ -155,5 +_,20 @@
              this.currentTask = null;
              this.startNextTask();
          }
@@ -128,5 +128,10 @@
 +    public void onModdedConfigurationPhaseEnded() {
 +        isHandlingModdedConfigurationPhase = false;
 +        finishCurrentTask(net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseCompleted.TYPE);
++    }
++    
++    @Override
++    public boolean isVanillaConnection() {
++        return NetworkRegistry.getInstance().isVanillaConnection(getConnection());
      }
  }
