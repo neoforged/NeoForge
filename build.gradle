@@ -77,7 +77,6 @@ spotless {
             }
         }
         bumpThisNumberIfACustomStepChanges(1)
-
     }
     format 'patches', {
         target rootProject.fileTree("patches")
