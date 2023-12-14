@@ -9,7 +9,7 @@ import java.util.Set;
 
 public record ModdedNetworkPayload(Set<ModdedNetworkComponent> configuration, Set<ModdedNetworkComponent> play) implements CustomPacketPayload {
     
-    public static final ResourceLocation ID = new ResourceLocation("neoforged", "network");
+    public static final ResourceLocation ID = new ResourceLocation("minecraft", "network");
     public static final FriendlyByteBuf.Reader<? extends CustomPacketPayload> READER = ModdedNetworkPayload::new;
     
     public ModdedNetworkPayload(FriendlyByteBuf buf) {
