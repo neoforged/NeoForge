@@ -14,7 +14,6 @@ import net.minecraft.server.packs.repository.*;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.InclusiveRange;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.DataPackConfig;
 import net.neoforged.api.distmarker.Dist;
