@@ -80,8 +80,7 @@ public class ResourcePackLoader {
                 continue;
             }
             LOGGER.debug(Logging.CORE, "Generating PackInfo named {} for mod file {}", name, e.getKey().getFilePath());
-            // TODO: re-enable datapack-specific option with SPI/FML changes
-            if ((packType == PackType.CLIENT_RESOURCES && mod.getOwningFile().showAsResourcePack())) {// || (packType == PackType.SERVER_DATA && mod.getOwningFile().showAsDataPack())) {
+            if ((packType == PackType.CLIENT_RESOURCES && mod.getOwningFile().showAsResourcePack()) || (packType == PackType.SERVER_DATA && mod.getOwningFile().showAsDataPack())) {
                 packAcceptor.accept(modPack);
             } else {
                 hiddenPacks.add(modPack.hidden());
@@ -113,10 +112,10 @@ public class ResourcePackLoader {
     }
 
     public static List<String> getDataPackNames() {
-        List<String> ids = new ArrayList<>(ModList.get().getModFiles().stream().filter(mf -> {
-            // TODO: re-enable datapack-specific option with SPI/FML changes
-            return false; // mf.showAsDataPack()
-        }).map(IModFileInfo::getFile).map(mf -> "mod:" + mf.getModInfos().get(0).getModId()).filter(n -> !n.equals("mod:minecraft")).collect(Collectors.toList()));
+        List<String> ids = new ArrayList<>(ModList.get().getModFiles().stream().filter(IModFileInfo::showAsDataPack)
+                .map(IModFileInfo::getFile)
+                .map(mf -> "mod:" + mf.getModInfos().get(0).getModId()).filter(n -> !n.equals("mod:minecraft"))
+                .toList());
         ids.add(MOD_DATA_ID);
         return ids;
     }
