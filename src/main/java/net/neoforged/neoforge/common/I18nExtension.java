@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.loading.StringUtils;
@@ -50,6 +51,8 @@ public class I18nExtension {
         customFactories.put("featurebound", (name, formatString, locale) -> new CustomReadOnlyFormat(MavenVersionStringHelper::parseFeatureBoundValue));
         // {0,i18n,fml.message} -> pass object to i18n string 'fml.message'
         customFactories.put("i18n", (name, formatString, locale) -> new CustomReadOnlyFormat((stringBuffer, o) -> stringBuffer.append(I18nExtension.parseMessage(formatString, o))));
+        // {0,i18ntranslate} -> attempt to use the argument as a translation key
+        customFactories.put("i18ntranslate", (name, formatString, locale) -> new CustomReadOnlyFormat((stringBuffer, o) -> stringBuffer.append(I18nExtension.parseMessage((String) o))));
         // {0,ornull,fml.absent} -> append String value of o, or i18n string 'fml.absent' (message format transforms nulls into the string literal "null")
         customFactories.put("ornull", ((name, formatString, locale) -> new CustomReadOnlyFormat((stringBuffer, o) -> stringBuffer.append(Objects.equals(String.valueOf(o), "null") ? I18nExtension.parseMessage(formatString) : String.valueOf(o)))));
     }
@@ -72,8 +75,12 @@ public class I18nExtension {
         }
     }
 
-    public static String getPattern(final String patternName) {
-        return i18n == null ? patternName : i18n.getOrDefault(patternName, patternName);
+    public static String getPattern(final String patternName, final Supplier<String> fallback) {
+        if (i18n == null) {
+            return fallback.get();
+        }
+        final var translated = i18n.get(patternName);
+        return translated == null ? fallback.get() : translated;
     }
 
     public static void loadLanguageData(final Map<String, String> properties) {
@@ -82,7 +89,10 @@ public class I18nExtension {
     }
 
     public static String parseMessage(final String i18nMessage, Object... args) {
-        final String pattern = getPattern(i18nMessage);
+        return parseMessageWithFallback(i18nMessage, () -> i18nMessage, args);
+    }
+    public static String parseMessageWithFallback(final String i18nMessage, final Supplier<String> fallback, Object... args) {
+        final String pattern = getPattern(i18nMessage, fallback);
         try {
             return parseFormat(pattern, args);
         } catch (IllegalArgumentException e) {
