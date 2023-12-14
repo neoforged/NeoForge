@@ -87,9 +87,7 @@ public class ResourcePackLoader {
             }
         }
 
-        final Pack modMarkerPack = makePack(packType, hiddenPacks);
-
-        packAcceptor.accept(modMarkerPack);
+        packAcceptor.accept(makePack(packType, hiddenPacks));
     }
 
     private static Pack makePack(PackType packType, ArrayList<Pack> hiddenPacks) {
