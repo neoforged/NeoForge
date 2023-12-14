@@ -1,0 +1,26 @@
+--- a/net/minecraft/world/TickRateManager.java
++++ b/net/minecraft/world/TickRateManager.java
+@@ -15,6 +_,7 @@
+     public void setTickRate(float p_308963_) {
+         this.tickrate = Math.max(p_308963_, 1.0F);
+         this.nanosecondsPerTick = (long)((double)TimeUtil.NANOSECONDS_PER_SECOND / (double)this.tickrate);
++        net.neoforged.neoforge.common.CommonHooks.onTickRateUpdated(this);
+     }
+ 
+     public float tickrate() {
+@@ -39,6 +_,7 @@
+ 
+     public void setFrozenTicksToRun(int p_309193_) {
+         this.frozenTicksToRun = p_309193_;
++        net.neoforged.neoforge.common.CommonHooks.onTickStep(this);
+     }
+ 
+     public int frozenTicksToRun() {
+@@ -47,6 +_,7 @@
+ 
+     public void setFrozen(boolean p_308905_) {
+         this.isFrozen = p_308905_;
++        net.neoforged.neoforge.common.CommonHooks.onTickFreeze(this);
+     }
+ 
+     public boolean isFrozen() {

@@ -1,0 +1,20 @@
+--- a/net/minecraft/server/ServerTickRateManager.java
++++ b/net/minecraft/server/ServerTickRateManager.java
+@@ -41,7 +_,7 @@
+         if (!this.isFrozen()) {
+             return false;
+         } else {
+-            this.frozenTicksToRun = p_308975_;
++            this.setFrozenTicksToRun(p_308975_);
+             this.updateStepTicks();
+             return true;
+         }
+@@ -49,7 +_,7 @@
+ 
+     public boolean stopStepping() {
+         if (this.frozenTicksToRun > 0) {
+-            this.frozenTicksToRun = 0;
++            this.setFrozenTicksToRun(0);
+             this.updateStepTicks();
+             return true;
+         } else {
