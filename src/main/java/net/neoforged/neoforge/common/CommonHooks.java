@@ -1033,15 +1033,15 @@ public class CommonHooks {
         return generatedLoot;
     }
 
-    public static List<String> getModPacks() {
-        List<String> modpacks = ResourcePackLoader.getPackNames();
+    public static List<String> getModDataPacks() {
+        List<String> modpacks = ResourcePackLoader.getDataPackNames();
         if (modpacks.isEmpty())
             throw new IllegalStateException("Attempted to retrieve mod packs before they were loaded in!");
         return modpacks;
     }
 
-    public static List<String> getModPacksWithVanilla() {
-        List<String> modpacks = getModPacks();
+    public static List<String> getModDataPacksWithVanilla() {
+        List<String> modpacks = getModDataPacks();
         modpacks.add("vanilla");
         return modpacks;
     }

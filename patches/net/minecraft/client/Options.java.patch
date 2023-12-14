@@ -12,6 +12,15 @@
                          && !Minecraft.getInstance().getSoundManager().getAvailableSoundDevices().contains(p_232011_)
                      ? Optional.empty()
                      : Optional.of(p_232011_),
+@@ -787,7 +_,7 @@
+         this.incompatibleResourcePacks.clear();
+ 
+         for(Pack pack : p_275268_.getSelectedPacks()) {
+-            if (!pack.isFixedPosition()) {
++            if (!pack.isFixedPosition() && !pack.isHidden()) {
+                 this.resourcePacks.add(pack.getId());
+                 if (!pack.getCompatibility().isCompatible()) {
+                     this.incompatibleResourcePacks.add(pack.getId());
 @@ -1058,6 +_,7 @@
      }
  
