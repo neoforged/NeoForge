@@ -10,12 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -27,17 +23,7 @@ import net.minecraft.network.protocol.handshake.ClientIntent;
 import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
 import net.minecraft.network.protocol.login.ClientboundLoginDisconnectPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.repository.BuiltInPackSource;
-import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.server.packs.repository.PackSource;
-import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraft.world.level.storage.LevelResource;
-import net.neoforged.fml.Logging;
-import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.ModLoadingStage;
-import net.neoforged.fml.ModLoadingWarning;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -60,13 +46,10 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistries.Keys;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
-import net.neoforged.neoforgespi.language.IModInfo;
-import net.neoforged.neoforgespi.locating.IModFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import org.jetbrains.annotations.ApiStatus;
 
 public class ServerLifecycleHooks {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -197,27 +180,6 @@ public class ServerLifecycleHooks {
 
     public static void handleExit(int retVal) {
         System.exit(retVal);
-    }
-
-    @ApiStatus.Internal
-    public static RepositorySource buildPackFinder(Map<IModFile, ? extends PackResources> modResourcePacks) {
-        return packAcceptor -> serverPackFinder(modResourcePacks, packAcceptor);
-    }
-
-    private static void serverPackFinder(Map<IModFile, ? extends PackResources> modResourcePacks, Consumer<Pack> packAcceptor) {
-        for (Entry<IModFile, ? extends PackResources> e : modResourcePacks.entrySet()) {
-            IModInfo mod = e.getKey().getModInfos().get(0);
-            if (Objects.equals(mod.getModId(), "minecraft")) continue; // skip the minecraft "mod"
-            final String name = "mod:" + mod.getModId();
-            final Pack modPack = Pack.readMetaAndCreate(name, Component.literal(e.getValue().packId()), false, BuiltInPackSource.fixedResources(e.getValue()), PackType.SERVER_DATA, Pack.Position.BOTTOM, PackSource.DEFAULT);
-            if (modPack == null) {
-                // Vanilla only logs an error, instead of propagating, so handle null and warn that something went wrong
-                ModLoader.get().addWarning(new ModLoadingWarning(mod, ModLoadingStage.ERROR, "fml.modloading.brokenresources", e.getKey()));
-                continue;
-            }
-            LOGGER.debug(Logging.CORE, "Generating PackInfo named {} for mod file {}", name, e.getKey().getFilePath());
-            packAcceptor.accept(modPack);
-        }
     }
 
     private static void runModifiers(final MinecraftServer server) {
