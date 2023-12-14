@@ -87,23 +87,19 @@ public class ResourcePackLoader {
             }
         }
 
-        final Pack modMarkerPack = packType == PackType.CLIENT_RESOURCES ? makeClientPack(hiddenPacks) : makeServerPack(hiddenPacks);
+        final Pack modMarkerPack = makePack(packType, hiddenPacks);
 
         packAcceptor.accept(modMarkerPack);
     }
 
-    private static Pack makeServerPack(ArrayList<Pack> hiddenPacks) {
-        return Pack.readMetaAndCreate(MOD_DATA_ID, Component.literal("Mod Data"), true,
-                new EmptyPackResources.EmptyResourcesSupplier(new PackMetadataSection(Component.translatable("fml.resources.moddata", hiddenPacks.size()),
-                        SharedConstants.getCurrentVersion().getPackVersion(PackType.SERVER_DATA)), false),
-                PackType.SERVER_DATA, Pack.Position.BOTTOM, PackSource.DEFAULT).withChildren(hiddenPacks);
-    }
-
-    public static Pack makeClientPack(ArrayList<Pack> hiddenPacks) {
-        return Pack.readMetaAndCreate(MOD_RESOURCES_ID, Component.literal("Mod Resources"), true,
-                new EmptyPackResources.EmptyResourcesSupplier(new PackMetadataSection(Component.translatable("fml.resources.modresources", hiddenPacks.size()),
-                        SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES)), false),
-                PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.DEFAULT).withChildren(hiddenPacks);
+    private static Pack makePack(PackType packType, ArrayList<Pack> hiddenPacks) {
+        final String id = packType == PackType.CLIENT_RESOURCES ? MOD_RESOURCES_ID : MOD_DATA_ID;
+        final String name = packType == PackType.CLIENT_RESOURCES ? "Mod Resources" : "Mod Data";
+        final String descriptionKey = packType == PackType.CLIENT_RESOURCES ? "fml.resources.modresources" : "fml.resources.moddata";
+        return Pack.readMetaAndCreate(id, Component.literal(name), true,
+                new EmptyPackResources.EmptyResourcesSupplier(new PackMetadataSection(Component.translatable(descriptionKey, hiddenPacks.size()),
+                        SharedConstants.getCurrentVersion().getPackVersion(packType)), false),
+                packType, Pack.Position.BOTTOM, PackSource.DEFAULT).withChildren(hiddenPacks);
     }
 
     @NotNull
