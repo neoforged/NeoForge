@@ -4,7 +4,7 @@
      private final Pack.Position defaultPosition;
      private final boolean required;
      private final boolean fixedPosition;
-+    private final boolean hidden; // NeoForge: Allow packs to be hidden from the UI entirely
++    private final boolean hidden; // Neo: Allow packs to be hidden from the UI entirely
 +    private final List<Pack> children; // Neo: Allows packs to specify packs which will always be placed beneath them; must be hidden
      private final PackSource packSource;
  

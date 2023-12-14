@@ -34,14 +34,10 @@ public class EmptyPackResources extends AbstractPackResources {
     }
 
     @Override
-    public void close() {
-
-    }
+    public void close() {}
 
     @Override
-    public void listResources(PackType type, String resourceNamespace, String paths, ResourceOutput resourceOutput) {
-
-    }
+    public void listResources(PackType type, String resourceNamespace, String paths, ResourceOutput resourceOutput) {}
 
     @Override
     public Set<String> getNamespaces(PackType type) {
