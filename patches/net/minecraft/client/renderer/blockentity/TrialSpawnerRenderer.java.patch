@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/renderer/blockentity/TrialSpawnerRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/TrialSpawnerRenderer.java
+@@ -32,4 +_,10 @@
+             }
+         }
+     }
++
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(TrialSpawnerBlockEntity blockEntity) {
++        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++        return new net.minecraft.world.phys.AABB(pos.getX() - 1.0, pos.getY() - 1.0, pos.getZ() - 1.0, pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0);
++    }
+ }
