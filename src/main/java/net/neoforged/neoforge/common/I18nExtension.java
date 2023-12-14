@@ -91,6 +91,7 @@ public class I18nExtension {
     public static String parseMessage(final String i18nMessage, Object... args) {
         return parseMessageWithFallback(i18nMessage, () -> i18nMessage, args);
     }
+
     public static String parseMessageWithFallback(final String i18nMessage, final Supplier<String> fallback, Object... args) {
         final String pattern = getPattern(i18nMessage, fallback);
         try {
