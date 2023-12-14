@@ -6,7 +6,12 @@
 package net.neoforged.neoforge.server.permission.events;
 
 import com.google.common.base.Preconditions;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.server.permission.handler.DefaultPermissionHandler;
