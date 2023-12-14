@@ -52,7 +52,7 @@
              }
  
              return pack$info;
-@@ -172,6 +_,35 @@
+@@ -172,6 +_,33 @@
          return this.packSource;
      }
  
@@ -75,8 +75,6 @@
 +                this.id, this.required, this.resources, this.title,
 +                new Info(
 +                        this.info.description(),
-+                        info.dataFormat(),
-+                        info.resourceFormat(),
 +                        info.compatibility(),
 +                        info.requestedFeatures(),
 +                        info.overlays(),
