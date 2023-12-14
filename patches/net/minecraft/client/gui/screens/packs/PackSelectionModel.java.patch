@@ -1,23 +1,11 @@
 --- a/net/minecraft/client/gui/screens/packs/PackSelectionModel.java
 +++ b/net/minecraft/client/gui/screens/packs/PackSelectionModel.java
-@@ -106,6 +_,8 @@
-         boolean canMoveUp();
- 
-         boolean canMoveDown();
-+
-+        default boolean notHidden() { return true; }
-     }
- 
-     @OnlyIn(Dist.CLIENT)
-@@ -205,6 +_,11 @@
-         @Override
-         public void moveDown() {
-             this.move(1);
-+        }
-+
-+        @Override
-+        public boolean notHidden() {
-+             return !pack.isHidden();
-         }
-     }
- 
+@@ -31,7 +_,7 @@
+         this.onListChanged = p_99909_;
+         this.iconGetter = p_99910_;
+         this.repository = p_99911_;
+-        this.selected = Lists.newArrayList(p_99911_.getSelectedPacks());
++        this.selected = Lists.newArrayList(p_99911_.getSelectedPacks().stream().filter(p -> !p.isHidden()).toList());
+         Collections.reverse(this.selected);
+         this.unselected = Lists.newArrayList(p_99911_.getAvailablePacks());
+         this.unselected.removeAll(this.selected);
