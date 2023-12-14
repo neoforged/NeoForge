@@ -106,8 +106,7 @@ public class DataGeneratorTest {
 
         gen.addProvider(true, new PackMetadataGenerator(packOutput)
                 .add(OverlayMetadataSection.TYPE, new OverlayMetadataSection(List.of(
-                        new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "pack_overlays_test")
-                )))
+                        new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "pack_overlays_test"))))
                 .add(PackMetadataSection.TYPE, new PackMetadataSection(
                         Component.literal("NeoForge tests resource pack"),
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
