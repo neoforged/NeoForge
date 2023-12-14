@@ -38,7 +38,7 @@
 +                remainingChildren.addAll(child.getChildren());
 +            }
 +        }
-+        this.children = java.util.Collections.unmodifiableList(flattenedChildren);
++        this.children = List.copyOf(flattenedChildren);
 +        this.hidden = p_250162_.isHidden();
          this.id = p_252218_;
          this.resources = p_249377_;
