@@ -4,7 +4,7 @@
      private final Pack.Position defaultPosition;
      private final boolean required;
      private final boolean fixedPosition;
-+    private final boolean hidden; // Forge: Allow packs to be hidden from the UI entirely
++    private final boolean hidden; // NeoForge: Allow packs to be hidden from the UI entirely
 +    private final List<Pack> children; // Neo: Allows packs to specify packs which will always be placed beneath them; must be hidden
      private final PackSource packSource;
  
@@ -48,7 +48,7 @@
                  OverlayMetadataSection overlaymetadatasection = packresources.getMetadataSection(OverlayMetadataSection.TYPE);
                  List<String> list = overlaymetadatasection != null ? overlaymetadatasection.overlaysForVersion(p_294759_) : List.of();
 -                pack$info = new Pack.Info(packmetadatasection.description(), packcompatibility, featureflagset, list);
-+                pack$info = new Pack.Info(packmetadatasection.description(), packmetadatasection.packFormat(PackType.SERVER_DATA), packmetadatasection.packFormat(PackType.CLIENT_RESOURCES), packcompatibility, featureflagset, list, packresources.isHidden());
++                pack$info = new Pack.Info(packmetadatasection.description(), packcompatibility, featureflagset, list, packresources.isHidden());
              }
  
              return pack$info;
@@ -88,15 +88,12 @@
      @Override
      public boolean equals(Object p_10448_) {
          if (this == p_10448_) {
-@@ -189,7 +_,10 @@
+@@ -189,7 +_,7 @@
          return this.id.hashCode();
      }
  
 -    public static record Info(Component description, PackCompatibility compatibility, FeatureFlagSet requestedFeatures, List<String> overlays) {
-+    public static record Info(Component description, int dataFormat, int resourceFormat, PackCompatibility compatibility, FeatureFlagSet requestedFeatures, List<String> overlays, boolean isHidden) {
-+        public int getFormat(PackType type) {
-+            return type == PackType.SERVER_DATA ? this.dataFormat : this.resourceFormat;
-+        }
++    public static record Info(Component description, PackCompatibility compatibility, FeatureFlagSet requestedFeatures, List<String> overlays, boolean isHidden) {
      }
  
      public static enum Position {
