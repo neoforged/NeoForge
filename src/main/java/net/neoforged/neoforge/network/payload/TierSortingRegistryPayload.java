@@ -5,18 +5,17 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
-import org.jetbrains.annotations.NotNull;
 
-public record FrozenRegistrySyncStartPayload(List<ResourceLocation> toAccess) implements CustomPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "frozen_registry_sync_start");
+public record TierSortingRegistryPayload(List<ResourceLocation> tiers) implements CustomPacketPayload {
+    public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "tier_sorting");
 
-    public FrozenRegistrySyncStartPayload(FriendlyByteBuf buf) {
+    public TierSortingRegistryPayload(FriendlyByteBuf buf) {
         this(buf.readList(FriendlyByteBuf::readResourceLocation));
     }
 
     @Override
     public void write(FriendlyByteBuf buf) {
-        buf.writeCollection(toAccess, FriendlyByteBuf::writeResourceLocation);
+        buf.writeCollection(tiers(), FriendlyByteBuf::writeResourceLocation);
     }
 
     @Override

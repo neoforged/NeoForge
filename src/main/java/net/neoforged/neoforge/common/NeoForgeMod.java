@@ -516,7 +516,6 @@ public class NeoForgeMod {
 
     public void preInit(FMLCommonSetupEvent evt) {
         VersionChecker.startVersionCheck();
-        VanillaPacketSplitter.register();
     }
 
     public void loadComplete(FMLLoadCompleteEvent event) {}

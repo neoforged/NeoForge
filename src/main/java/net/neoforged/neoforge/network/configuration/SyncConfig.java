@@ -1,25 +1,24 @@
 package net.neoforged.neoforge.network.configuration;
 
-import net.minecraft.network.protocol.common.ServerCommonPacketListener;
+import java.util.function.Consumer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.ConfigSync;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Consumer;
 
 public record SyncConfig(ServerConfigurationPacketListener listener) implements ICustomConfigurationTask {
-    
-    public static Type TYPE = new Type("neoforge:sync_config");
-    
-    @Override
-    public @NotNull Type type() {
-        return TYPE;
-    }
-    
+    private static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "sync_config");
+    public static Type TYPE = new Type(ID);
+
     @Override
     public void run(Consumer<CustomPacketPayload> sender) {
         ConfigSync.INSTANCE.syncConfigs().forEach(sender);
-        listener.finishCurrentTask(type());
+        listener().finishCurrentTask(type());
+    }
+
+    @Override
+    public Type type() {
+        return TYPE;
     }
 }

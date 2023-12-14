@@ -5,31 +5,21 @@
 
 package net.neoforged.neoforge.common;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import com.google.common.graph.ElementOrder;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.io.*;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -46,12 +36,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.toposort.TopologicalSort;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.network.NetworkEvent;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.PlayNetworkDirection;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.network.configuration.SyncTierSortingRegistry;
+import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
+import net.neoforged.neoforge.network.payload.TierSortingRegistryPayload;
+import net.neoforged.neoforge.network.payload.TierSortingRegistrySyncCompletePayload;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -215,26 +204,15 @@ public class TierSortingRegistry {
     private static final List<Tier> sortedTiers = new ArrayList<>();
     private static final List<Tier> sortedTiersUnmodifiable = Collections.unmodifiableList(sortedTiers);
 
-    private static final ResourceLocation CHANNEL_NAME = new ResourceLocation("neoforge:tier_sorting");
-    private static final String PROTOCOL_VERSION = "1.0";
-    private static final SimpleChannel SYNC_CHANNEL = NetworkRegistry.newSimpleChannel(
-            CHANNEL_NAME, () -> "1.0",
-            versionFromServer -> PROTOCOL_VERSION.equals(versionFromServer) || (allowVanilla() && NetworkRegistry.ACCEPTVANILLA.equals(versionFromServer)),
-            versionFromClient -> PROTOCOL_VERSION.equals(versionFromClient) || (allowVanilla() && NetworkRegistry.ACCEPTVANILLA.equals(versionFromClient)));
-
     static boolean allowVanilla() {
         return !hasCustomTiers;
     }
 
-    /*package private*/
-    static void init() {
-        SYNC_CHANNEL.registerMessage(0, SyncPacket.class, SyncPacket::encode, TierSortingRegistry::receive, TierSortingRegistry::handle, Optional.of(PlayNetworkDirection.PLAY_TO_CLIENT));
-        NeoForge.EVENT_BUS.addListener(TierSortingRegistry::playerLoggedIn);
+    /*package private*/ static void init() {
         if (FMLEnvironment.dist.isClient()) ClientEvents.init();
     }
 
-    /*package private*/
-    static PreparableReloadListener getReloadListener() {
+    /*package private*/ static PreparableReloadListener getReloadListener() {
         return new SimplePreparableReloadListener<JsonObject>() {
             final Gson gson = (new GsonBuilder()).create();
 
@@ -256,7 +234,7 @@ public class TierSortingRegistry {
             @Override
             protected void apply(@NotNull JsonObject data, @NotNull ResourceManager resourceManager, ProfilerFiller p) {
                 try {
-                    if (data.size() > 0) {
+                    if (!data.isEmpty()) {
                         JsonArray order = GsonHelper.getAsJsonArray(data, "order");
                         List<Tier> customOrder = new ArrayList<>();
                         for (JsonElement entry : order) {
@@ -267,7 +245,7 @@ public class TierSortingRegistry {
                         }
 
                         List<Tier> missingTiers = tiers.values().stream().filter(tier -> !customOrder.contains(tier)).toList();
-                        if (missingTiers.size() > 0)
+                        if (!missingTiers.isEmpty())
                             throw new IllegalStateException("Tiers missing from the ordered list: " + missingTiers.stream().map(tier -> Objects.toString(TierSortingRegistry.getName(tier))).collect(Collectors.joining(", ")));
 
                         setTierOrder(customOrder);
@@ -302,7 +280,6 @@ public class TierSortingRegistry {
         runInServerThreadIfPossible(hasServer -> {
             sortedTiers.clear();
             sortedTiers.addAll(tierList);
-            if (hasServer) syncToAll();
         });
     }
 
@@ -312,43 +289,21 @@ public class TierSortingRegistry {
         else runnable.accept(false);
     }
 
-    private static void syncToAll() {
-        for (ServerPlayer serverPlayer : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
-            syncToPlayer(serverPlayer);
+    public static void handleSync(ConfigurationPayloadContext context, TierSortingRegistryPayload payload) {
+        setTierOrder(payload.tiers().stream().map(TierSortingRegistry::byName).toList());
+        context.handler().send(new TierSortingRegistrySyncCompletePayload());
+    }
+
+    public static void sync(ServerConfigurationPacketListener listener, Consumer<CustomPacketPayload> sender) {
+        if (listener.isVanillaConnection()) {
+            if (allowVanilla()) {
+                listener.finishCurrentTask(SyncTierSortingRegistry.TYPE);
+            } else {
+                listener.disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
+            }
+            return;
         }
-    }
-
-    private static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            syncToPlayer(serverPlayer);
-        }
-    }
-
-    private static void syncToPlayer(ServerPlayer serverPlayer) {
-        if (SYNC_CHANNEL.isRemotePresent(serverPlayer.connection.connection) && !serverPlayer.connection.connection.isMemoryConnection()) {
-            SYNC_CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new SyncPacket(sortedTiers.stream().map(TierSortingRegistry::getName).toList()));
-        }
-    }
-
-    private static SyncPacket receive(FriendlyByteBuf buffer) {
-        int count = buffer.readVarInt();
-        List<ResourceLocation> list = new ArrayList<>();
-        for (int i = 0; i < count; i++)
-            list.add(buffer.readResourceLocation());
-        return new SyncPacket(list);
-    }
-
-    private static void handle(SyncPacket packet, NetworkEvent.Context context) {
-        setTierOrder(packet.tiers.stream().map(TierSortingRegistry::byName).toList());
-        context.setPacketHandled(true);
-    }
-
-    private record SyncPacket(List<ResourceLocation> tiers) {
-        private void encode(FriendlyByteBuf buffer) {
-            buffer.writeVarInt(tiers.size());
-            for (ResourceLocation loc : tiers)
-                buffer.writeResourceLocation(loc);
-        }
+        sender.accept(new TierSortingRegistryPayload(TierSortingRegistry.getSortedTiers().stream().map(TierSortingRegistry::getName).toList()));
     }
 
     private static class ClientEvents {
@@ -357,7 +312,7 @@ public class TierSortingRegistry {
         }
 
         private static void clientLogInToServer(ClientPlayerNetworkEvent.LoggingIn event) {
-            if (event.getConnection() == null || !event.getConnection().isMemoryConnection())
+            if (!event.getConnection().isMemoryConnection())
                 recalculateItemTiers();
         }
     }

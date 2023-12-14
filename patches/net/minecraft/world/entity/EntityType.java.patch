@@ -7,7 +7,7 @@
 +    private final java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier;
-+    private final java.util.function.BiFunction<net.neoforged.neoforge.network.PlayMessages.SpawnEntity, Level, T> customClientFactory;
++    private final java.util.function.BiFunction<net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload, Level, T> customClientFactory;
 +
      private static <T extends Entity> EntityType<T> register(String p_20635_, EntityType.Builder<T> p_20636_) {
          return Registry.register(BuiltInRegistries.ENTITY_TYPE, p_20635_, p_20636_.build(p_20635_));
@@ -33,7 +33,7 @@
 +        final java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier,
 +        final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
 +        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier,
-+        final java.util.function.BiFunction<net.neoforged.neoforge.network.PlayMessages.SpawnEntity, Level, T> customClientFactory
++        final java.util.function.BiFunction<net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload, Level, T> customClientFactory
 +    ) {
          this.factory = p_273268_;
          this.category = p_272918_;
@@ -80,7 +80,7 @@
          return this.builtInRegistryHolder;
      }
  
-+    public T customClientSpawn(net.neoforged.neoforge.network.PlayMessages.SpawnEntity packet, Level world) {
++    public T customClientSpawn(net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload packet, Level world) {
 +         if (customClientFactory == null) return this.create(world);
 +         return customClientFactory.apply(packet, world);
 +    }
@@ -96,7 +96,7 @@
 +        private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultVelocitySupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier = EntityType::defaultTrackingRangeSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier = EntityType::defaultUpdateIntervalSupplier;
-+        private java.util.function.BiFunction<net.neoforged.neoforge.network.PlayMessages.SpawnEntity, Level, T> customClientFactory;
++        private java.util.function.BiFunction<net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload, Level, T> customClientFactory;
 +
          private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
              this.factory = p_20696_;
@@ -124,7 +124,7 @@
 +         * By default, entities are spawned clientside via {@link EntityType#create(Level)}}.
 +         * If you need finer control over the spawning process, use this to get read access to the spawn packet.
 +         */
-+        public EntityType.Builder<T> setCustomClientFactory(java.util.function.BiFunction<net.neoforged.neoforge.network.PlayMessages.SpawnEntity, Level, T> customClientFactory) {
++        public EntityType.Builder<T> setCustomClientFactory(java.util.function.BiFunction<net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload, Level, T> customClientFactory) {
 +             this.customClientFactory = customClientFactory;
 +             return this;
 +        }

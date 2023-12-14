@@ -10,26 +10,28 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public record AdvancedAddEntityPayload(int typeId,
-                                       int entityId,
-                                       UUID uuid,
-                                       double posX,
-                                       double posY,
-                                       double posZ,
-                                       byte pitch,
-                                       byte yaw,
-                                       byte headYaw,
-                                       int velX,
-                                       int velY,
-                                       int velZ,
-                                       byte[] customPayload) implements CustomPacketPayload {
-    
-    public static final ResourceLocation ID = new ResourceLocation("neoforge", "advanced_add_entity");
-    
+public record AdvancedAddEntityPayload(
+        int typeId,
+        int entityId,
+        UUID uuid,
+        double posX,
+        double posY,
+        double posZ,
+        byte pitch,
+        byte yaw,
+        byte headYaw,
+        int velX,
+        int velY,
+        int velZ,
+        byte[] customPayload
+) implements CustomPacketPayload {
+    public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_add_entity");
+
     public AdvancedAddEntityPayload(FriendlyByteBuf buf) {
         this(
                 buf.readVarInt(),
@@ -47,7 +49,7 @@ public record AdvancedAddEntityPayload(int typeId,
                 buf.readByteArray()
         );
     }
-    
+
     public AdvancedAddEntityPayload(Entity e) {
         this(
                 BuiltInRegistries.ENTITY_TYPE.getId(e.getType()),
@@ -65,21 +67,21 @@ public record AdvancedAddEntityPayload(int typeId,
                 writeCustomData(e)
         );
     }
-    
+
     private static byte[] writeCustomData(final Entity entity) {
         final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
 
         if (entity instanceof IEntityAdditionalSpawnData additionalSpawnData) {
             additionalSpawnData.writeSpawnData(buf);
         }
-        
+
         final byte[] payload = buf.array();
         buf.release();
         return payload;
     }
-    
+
     @Override
-    public void write(@NotNull FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeVarInt(typeId);
         buffer.writeVarInt(entityId);
         buffer.writeUUID(uuid);
@@ -94,9 +96,9 @@ public record AdvancedAddEntityPayload(int typeId,
         buffer.writeVarInt(velZ);
         buffer.writeBytes(customPayload);
     }
-    
+
     @Override
-    public @NotNull ResourceLocation id() {
+    public ResourceLocation id() {
         return ID;
     }
 }

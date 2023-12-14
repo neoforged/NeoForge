@@ -6,7 +6,10 @@
 package net.neoforged.neoforge.network;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -143,16 +146,24 @@ public class PacketDistributor<T> {
      *
      */
     public static class PacketTarget {
-        private final Consumer<CustomPacketPayload> packetConsumer;
+        private final Consumer<Packet<?>> packetConsumer;
         private final PacketDistributor<?> distributor;
 
-        PacketTarget(final Consumer<CustomPacketPayload> packetConsumer, final PacketDistributor<?> distributor) {
+        PacketTarget(final Consumer<Packet<?>> packetConsumer, final PacketDistributor<?> distributor) {
             this.packetConsumer = packetConsumer;
             this.distributor = distributor;
         }
 
-        public void send(CustomPacketPayload packet) {
+        public void send(Packet<?> packet) {
             packetConsumer.accept(packet);
+        }
+
+        public void send(CustomPacketPayload payload) {
+            if (getFlow().isClientbound()) {
+                this.send(new ClientboundCustomPayloadPacket(payload));
+            } else {
+                this.send(new ServerboundCustomPayloadPacket(payload));
+            }
         }
 
         public PacketFlow getFlow() {
@@ -161,10 +172,10 @@ public class PacketDistributor<T> {
 
     }
 
-    private final BiFunction<PacketDistributor<T>, Supplier<T>, Consumer<CustomPacketPayload>> functor;
+    private final BiFunction<PacketDistributor<T>, Supplier<T>, Consumer<Packet<?>>> functor;
     private final PacketFlow flow;
 
-    public PacketDistributor(BiFunction<PacketDistributor<T>, Supplier<T>, Consumer<CustomPacketPayload>> functor, PacketFlow flow) {
+    public PacketDistributor(BiFunction<PacketDistributor<T>, Supplier<T>, Consumer<Packet<?>>> functor, PacketFlow flow) {
         this.functor = functor;
         this.flow = flow;
     }
@@ -190,44 +201,44 @@ public class PacketDistributor<T> {
         return new PacketTarget(functor.apply(this, () -> null), this);
     }
 
-    private Consumer<CustomPacketPayload> playerConsumer(final Supplier<ServerPlayer> entityPlayerMPSupplier) {
+    private Consumer<Packet<?>> playerConsumer(final Supplier<ServerPlayer> entityPlayerMPSupplier) {
         return p -> entityPlayerMPSupplier.get().connection.send(p);
     }
 
-    private Consumer<CustomPacketPayload> playerListDimConsumer(final Supplier<ResourceKey<Level>> dimensionTypeSupplier) {
+    private Consumer<Packet<?>> playerListDimConsumer(final Supplier<ResourceKey<Level>> dimensionTypeSupplier) {
         return p -> getServer().getPlayerList().broadcastAll(p, dimensionTypeSupplier.get());
     }
 
-    private Consumer<CustomPacketPayload> playerListAll(final Supplier<Void> voidSupplier) {
+    private Consumer<Packet<?>> playerListAll(final Supplier<Void> voidSupplier) {
         return p -> getServer().getPlayerList().broadcastAll(p);
     }
 
-    private Consumer<CustomPacketPayload> clientToServer(final Supplier<Void> voidSupplier) {
+    private Consumer<Packet<?>> clientToServer(final Supplier<Void> voidSupplier) {
         return p -> Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(p);
     }
 
-    private Consumer<CustomPacketPayload> playerListPointConsumer(final Supplier<TargetPoint> targetPointSupplier) {
+    private Consumer<Packet<?>> playerListPointConsumer(final Supplier<TargetPoint> targetPointSupplier) {
         return p -> {
             final TargetPoint tp = targetPointSupplier.get();
             getServer().getPlayerList().broadcast(tp.excluded, tp.x, tp.y, tp.z, tp.r2, tp.dim, p);
         };
     }
 
-    private Consumer<CustomPacketPayload> trackingEntity(final Supplier<Entity> entitySupplier) {
+    private Consumer<Packet<?>> trackingEntity(final Supplier<Entity> entitySupplier) {
         return p -> {
             final Entity entity = entitySupplier.get();
             ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).broadcast(entity, p);
         };
     }
 
-    private Consumer<CustomPacketPayload> trackingEntityAndSelf(final Supplier<Entity> entitySupplier) {
+    private Consumer<Packet<?>> trackingEntityAndSelf(final Supplier<Entity> entitySupplier) {
         return p -> {
             final Entity entity = entitySupplier.get();
             ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).broadcastAndSend(entity, p);
         };
     }
 
-    private Consumer<CustomPacketPayload> trackingChunk(final Supplier<LevelChunk> chunkPosSupplier) {
+    private Consumer<Packet<?>> trackingChunk(final Supplier<LevelChunk> chunkPosSupplier) {
         return p -> {
             final LevelChunk chunk = chunkPosSupplier.get();
             ((ServerChunkCache) chunk.getLevel().getChunkSource()).chunkMap.getPlayers(chunk.getPos(), false).forEach(e -> e.connection.send(p));

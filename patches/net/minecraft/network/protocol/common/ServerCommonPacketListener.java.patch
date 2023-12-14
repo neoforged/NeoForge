@@ -5,7 +5,7 @@
  import net.minecraft.network.protocol.game.ServerPacketListener;
  
 -public interface ServerCommonPacketListener extends ServerPacketListener {
-+public interface ServerCommonPacketListener extends ServerPacketListener, net.neoforged.neoforge.common.extensions.IClientboundPacketSenderExtension {
++public interface ServerCommonPacketListener extends ServerPacketListener, net.neoforged.neoforge.common.extensions.IServerCommonPacketListenerExtension {
      void handleKeepAlive(ServerboundKeepAlivePacket p_296457_);
  
      void handlePong(ServerboundPongPacket p_294309_);

@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 
 public record ModdedNetworkQueryComponent(ResourceLocation id, Optional<String> version, Optional<PacketFlow> flow, boolean optional) {
-    
+
     public ModdedNetworkQueryComponent(FriendlyByteBuf buf) {
         this(
                 buf.readResourceLocation(),
@@ -17,7 +17,7 @@ public record ModdedNetworkQueryComponent(ResourceLocation id, Optional<String> 
                 buf.readBoolean()
         );
     }
-    
+
     public void write(FriendlyByteBuf buf) {
         buf.writeResourceLocation(id);
         buf.writeOptional(version, FriendlyByteBuf::writeUtf);

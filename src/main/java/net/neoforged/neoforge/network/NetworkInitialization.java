@@ -12,8 +12,10 @@ import net.neoforged.neoforge.network.event.RegisterPacketHandlerEvent;
 import net.neoforged.neoforge.network.handlers.ClientPayloadHandler;
 import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
-import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletePayload;
+import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
+import net.neoforged.neoforge.network.payload.TierSortingRegistryPayload;
+import net.neoforged.neoforge.network.payload.TierSortingRegistrySyncCompletePayload;
 import net.neoforged.neoforge.network.registration.registrar.IPayloadRegistrar;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -38,14 +40,23 @@ public class NetworkInitialization {
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle)
                 )
                 .configuration(
-                        FrozenRegistrySyncCompletePayload.ID,
-                        FrozenRegistrySyncCompletePayload::new,
+                        FrozenRegistrySyncCompletedPayload.ID,
+                        FrozenRegistrySyncCompletedPayload::new,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle)
                                             .server(ServerPayloadHandler.getInstance()::handle)
+                )
+                .configuration(
+                        TierSortingRegistryPayload.ID,
+                        TierSortingRegistryPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle)
+                )
+                .configuration(
+                        TierSortingRegistrySyncCompletePayload.ID,
+                        TierSortingRegistrySyncCompletePayload::new,
+                        handlers -> handlers.server(ServerPayloadHandler.getInstance()::handle)
                 );
     }
-    
-    
+
 /*
     public static SimpleChannel getPlayChannel() {
         SimpleChannel playChannel = NetworkRegistry.ChannelBuilder.named(NetworkConstants.FML_PLAY_RESOURCE).clientAcceptedVersions(a -> true).serverAcceptedVersions(a -> true).networkProtocolVersion(() -> NetworkConstants.NETVERSION).simpleChannel();

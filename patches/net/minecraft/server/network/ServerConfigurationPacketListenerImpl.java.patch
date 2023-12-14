@@ -13,19 +13,6 @@
  import net.minecraft.network.protocol.common.custom.BrandPayload;
  import net.minecraft.network.protocol.configuration.ClientboundRegistryDataPacket;
  import net.minecraft.network.protocol.configuration.ClientboundUpdateEnabledFeaturesPacket;
-@@ -31,6 +_,12 @@
- import net.minecraft.server.players.PlayerList;
- import net.minecraft.tags.TagNetworkSerialization;
- import net.minecraft.world.flag.FeatureFlags;
-+import net.neoforged.fml.ModList;
-+import net.neoforged.fml.ModLoader;
-+import net.neoforged.neoforge.common.NeoForge;
-+import net.neoforged.neoforge.network.event.OnGameConfiguration;
-+import net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload;
-+import net.neoforged.neoforge.network.registration.NetworkRegistry;
- import org.slf4j.Logger;
- 
- public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketListenerImpl implements TickablePacketListener, ServerConfigurationPacketListener {
 @@ -41,6 +_,8 @@
      @Nullable
      private ConfigurationTask currentTask;
@@ -35,18 +22,19 @@
  
      public ServerConfigurationPacketListenerImpl(MinecraftServer p_294645_, Connection p_295787_, CommonListenerCookie p_302003_) {
          super(p_294645_, p_295787_, p_302003_);
-@@ -65,6 +_,10 @@
+@@ -65,6 +_,11 @@
      }
  
      public void startConfiguration() {
-+        this.send(new ModdedNetworkQueryPayload());
++        this.send(new net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload());
 +        this.send(new ClientboundPingPacket(0));
 +    }
++
 +    private void runConfiguration() {
          this.send(new ClientboundCustomPayloadPacket(new BrandPayload(this.server.getServerModName())));
          LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = this.server.registries();
          this.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(this.server.getWorldData().enabledFeatures())));
-@@ -86,8 +_,44 @@
+@@ -86,8 +_,45 @@
  
      private void addOptionalTasks() {
          this.server.getServerResourcePack().ifPresent(p_296496_ -> this.configurationTasks.add(new ServerResourcePackConfigurationTask(p_296496_)));
@@ -54,15 +42,15 @@
 -
 +        
 +        this.configurationTasks.add(new net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseStarted(this));
-+        this.configurationTasks.addAll(ModLoader.get().postEventWithReturn(new OnGameConfiguration(this)).getConfigurationTasks());
++        this.configurationTasks.addAll(net.neoforged.fml.ModLoader.get().postEventWithReturn(new net.neoforged.neoforge.network.event.OnGameConfigurationEvent(this)).getConfigurationTasks());
 +        this.configurationTasks.add(new net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseCompleted(this));
 +    }
 +    
 +    @Override
 +    public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) {
-+        if (p_294276_.payload() instanceof ModdedNetworkQueryPayload moddedEnvironmentPayload) {
++        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload moddedEnvironmentPayload) {
 +            this.isModdedConnection = true;
-+            NetworkRegistry.getInstance()
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance()
 +                    .onModdedConnectionDetectedAtServer(
 +                            this,
 +                            moddedEnvironmentPayload.configuration(),
@@ -75,9 +63,10 @@
 +            super.handleCustomPayload(p_294276_);
 +            return;
 +        }
-+        
-+        NetworkRegistry.getInstance().onModdedPacketAtServer(this, p_294276_);
++
++        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtServer(this, p_294276_);
 +    }
++
 +    @Override
 +    public void handlePong(ServerboundPongPacket p_295142_) {
 +        super.handlePong(p_295142_);
@@ -132,6 +121,6 @@
 +    
 +    @Override
 +    public boolean isVanillaConnection() {
-+        return NetworkRegistry.getInstance().isVanillaConnection(getConnection());
++        return net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().isVanillaConnection(getConnection());
      }
  }

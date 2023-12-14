@@ -3,22 +3,22 @@ package net.neoforged.neoforge.network.payload;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.registries.ForgeRegistry;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.registries.RegistrySnapshot;
 
-public record FrozenRegistryPayload(ResourceLocation registryName, ForgeRegistry.Snapshot snapshot) implements CustomPacketPayload {
-    
-    public static final ResourceLocation ID = new ResourceLocation("neoforge:frozen_registry");
-    
+public record FrozenRegistryPayload(ResourceLocation registryName, RegistrySnapshot snapshot) implements CustomPacketPayload {
+    public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "frozen_registry");
+
     public FrozenRegistryPayload(FriendlyByteBuf buf) {
-        this(buf.readResourceLocation(), ForgeRegistry.Snapshot.read(buf));
+        this(buf.readResourceLocation(), RegistrySnapshot.read(buf));
     }
-    
+
     @Override
     public void write(FriendlyByteBuf buf) {
-        buf.writeResourceLocation(registryName);
-        snapshot.write(buf);
+        buf.writeResourceLocation(registryName());
+        buf.writeBytes(snapshot().getPacketData());
     }
-    
+
     @Override
     public ResourceLocation id() {
         return ID;

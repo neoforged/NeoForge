@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 
 public record ModdedNetworkQueryPayload(Set<ModdedNetworkQueryComponent> configuration, Set<ModdedNetworkQueryComponent> play) implements CustomPacketPayload {
-    
     public static final ResourceLocation ID = new ResourceLocation("register");
     public static final FriendlyByteBuf.Reader<? extends CustomPacketPayload> READER = ModdedNetworkQueryPayload::new;
     

@@ -1,6 +1,7 @@
 package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.network.protocol.PacketFlow;
+import net.neoforged.fml.LogicalSide;
 
 public interface IPacketFlowExtension {
 
@@ -15,4 +16,8 @@ public interface IPacketFlowExtension {
     default boolean isServerbound() {
         return self() == PacketFlow.SERVERBOUND;
     }
+
+    default LogicalSide getReceptionSide() {
+        return self() == PacketFlow.SERVERBOUND ? LogicalSide.SERVER : LogicalSide.CLIENT;
+    };
 }

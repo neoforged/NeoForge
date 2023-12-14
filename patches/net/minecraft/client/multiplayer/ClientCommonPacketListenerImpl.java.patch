@@ -23,7 +23,7 @@
  
      protected abstract RegistryAccess.Frozen registryAccess();
  
-@@ -189,6 +_,10 @@
+@@ -189,9 +_,17 @@
      }
  
      public void send(Packet<?> p_295097_) {
@@ -34,6 +34,13 @@
          this.connection.send(p_295097_);
      }
  
++    public void send(CustomPacketPayload payload) {
++        this.send(new net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket(payload));
++    }
++
+     @Override
+     public void onDisconnect(Component p_295485_) {
+         this.telemetryManager.onDisconnect();
 @@ -315,5 +_,15 @@
          @OnlyIn(Dist.CLIENT)
          static record PendingRequest(UUID id, URL url, String hash) {
