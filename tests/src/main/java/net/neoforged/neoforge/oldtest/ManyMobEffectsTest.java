@@ -23,7 +23,6 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.block.SuspiciousEffectHolder;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -76,9 +75,8 @@ public class ManyMobEffectsTest {
         LAST_EFFECT = effect;
     }
 
-    public ManyMobEffectsTest() {
+    public ManyMobEffectsTest(IEventBus modBus) {
         if (!ENABLED) return;
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         MOB_EFFECTS.register(modBus);
         NeoForge.EVENT_BUS.addListener(ManyMobEffectsTest::mobInteract);
         modBus.addListener((final RegisterEvent event) -> event.register(Registries.CREATIVE_MODE_TAB, helper -> helper.register(new ResourceLocation(MODID, "many_mob_effects_test"), CreativeModeTab.builder().withSearchBar()

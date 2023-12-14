@@ -10,10 +10,10 @@ import net.minecraft.client.gui.screens.worldselection.PresetEditor;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.levelgen.presets.WorldPreset;
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
@@ -23,8 +23,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  *
- * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
- * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+ * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class RegisterPresetEditorsEvent extends Event implements IModBusEvent {
     private static final Logger LOGGER = LogManager.getLogger();

@@ -17,22 +17,26 @@
          } catch (IOException ioexception) {
              list1.forEach(p_172729_ -> p_172729_.getFirst().close());
              throw new RuntimeException("could not reload shaders", ioexception);
-@@ -834,12 +_,19 @@
+@@ -834,12 +_,25 @@
                  this.minecraft.getProfiler().push("pick");
                  this.minecraft.crosshairPickEntity = null;
                  double d0 = (double)this.minecraft.gameMode.getPickRange();
--                this.minecraft.hitResult = entity.pick(d0, p_109088_, false);
 +                double entityReach = this.minecraft.player.getEntityReach(); // Note - MC-76493 - We must validate players cannot click-through objects.
-+                this.minecraft.hitResult = entity.pick(Math.max(d0, entityReach), p_109088_, false); // Run pick() with the max of the two, so we can prevent click-through.
++                d0 = Math.max(d0, entityReach); // Calculate hit results with the max of both reach distances, and compare against the individual ones later. This prevents click-through.
+                 this.minecraft.hitResult = entity.pick(d0, p_109088_, false);
                  Vec3 vec3 = entity.getEyePosition(p_109088_);
--                boolean flag = this.minecraft.gameMode.hasFarPickRange();
-+                boolean flag = false && this.minecraft.gameMode.hasFarPickRange();
++                if (false) { // These flags are unused with attributes.
+                 boolean flag = this.minecraft.gameMode.hasFarPickRange();
                  d0 = flag ? 6.0 : d0;
                  boolean flag1 = !flag;
 -                double d1 = this.minecraft.hitResult != null ? this.minecraft.hitResult.getLocation().distanceToSqr(vec3) : d0 * d0;
-+                double d1 = this.minecraft.hitResult != null  && this.minecraft.hitResult.getType() != HitResult.Type.MISS ? this.minecraft.hitResult.getLocation().distanceToSqr(vec3) : d0 * d0;
++                }
++                // If we picked a block, we need to ignore entities past that block. Added != MISS check to not truncate on failed picks.
++                // Also fixes MC-250858
++                // Note: If vanilla ever actually fixes MC-250858 and adds this != MISS check, IPlayerExtension#getEntityReach needs to be updated from +2 to +3.
++                double d1 = this.minecraft.hitResult != null && this.minecraft.hitResult.getType() != HitResult.Type.MISS ? this.minecraft.hitResult.getLocation().distanceToSqr(vec3) : d0 * d0;
 +                double blockReach = this.minecraft.player.getBlockReach();
-+                // Discard the result as a miss if it is outside the block reach.
++                // Discard the block pick result as a miss if it is outside the block reach.
 +                if (d1 > blockReach * blockReach) {
 +                    Vec3 pos = this.minecraft.hitResult.getLocation();
 +                    this.minecraft.hitResult = BlockHitResult.miss(pos, Direction.getNearest(vec3.x, vec3.y, vec3.z), BlockPos.containing(pos));

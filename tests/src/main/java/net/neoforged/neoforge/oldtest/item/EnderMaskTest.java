@@ -10,7 +10,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -27,8 +26,7 @@ public class EnderMaskTest {
         }
     });
 
-    public EnderMaskTest() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public EnderMaskTest(IEventBus modEventBus) {
         ITEMS.register(modEventBus);
         modEventBus.addListener(this::addCreative);
     }

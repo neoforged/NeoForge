@@ -21,7 +21,6 @@ import net.minecraft.world.level.levelgen.feature.configurations.TreeConfigurati
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -67,9 +66,8 @@ public class OnTreeGrowBlockTest {
     public static final DeferredItem<BlockItem> TEST_GRASS_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_GRASS_BLOCK);
     public static final DeferredItem<BlockItem> TEST_DIRT_ITEM = ITEMS.registerSimpleBlockItem(TEST_DIRT);
 
-    public OnTreeGrowBlockTest() {
+    public OnTreeGrowBlockTest(IEventBus modBus) {
         if (ENABLED) {
-            IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
             BLOCKS.register(modBus);
             ITEMS.register(modBus);
         }

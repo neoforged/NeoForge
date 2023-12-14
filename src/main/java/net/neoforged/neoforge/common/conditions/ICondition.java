@@ -22,15 +22,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Unit;
-import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public interface ICondition {
-    // Use dispatchUnsafe to always write the condition value inline.
-    Codec<ICondition> CODEC = NeoForgeExtraCodecs.dispatchUnsafe(
-            NeoForgeRegistries.CONDITION_SERIALIZERS.byNameCodec(),
-            ICondition::codec,
-            Function.identity());
+    Codec<ICondition> CODEC = NeoForgeRegistries.CONDITION_SERIALIZERS.byNameCodec()
+            .dispatch(ICondition::codec, Function.identity());
     Codec<List<ICondition>> LIST_CODEC = CODEC.listOf();
 
     static <V, T> Optional<T> getConditionally(Codec<T> codec, DynamicOps<V> ops, V element) {

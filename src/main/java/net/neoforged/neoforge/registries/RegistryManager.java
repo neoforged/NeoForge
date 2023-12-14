@@ -75,7 +75,7 @@ public class RegistryManager {
     }
 
     static void takeFrozenSnapshot() {
-        frozenSnapshot = takeSnapshot(SnapshotType.FULL);
+        frozenSnapshot = takeSnapshot(SnapshotType.SYNC_TO_CLIENT);
     }
 
     public static void revertToVanilla() {

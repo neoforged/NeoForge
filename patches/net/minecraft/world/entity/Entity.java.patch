@@ -532,7 +532,7 @@
      public void setMaxUpStep(float p_275672_) {
          this.maxUpStep = p_275672_;
      }
-@@ -3419,6 +_,118 @@
+@@ -3419,6 +_,119 @@
      public boolean mayInteract(Level p_146843_, BlockPos p_146844_) {
          return true;
      }
@@ -631,7 +631,8 @@
 +    }
 +
 +    @Override
-+    public final <T> @Nullable T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
++    @Nullable
++    public final <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
 +        // Entities are always saved, no setChanged() call is necessary.
 +        return super.setData(type, data);
 +    }

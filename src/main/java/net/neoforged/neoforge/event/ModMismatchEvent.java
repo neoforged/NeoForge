@@ -12,12 +12,12 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.jetbrains.annotations.ApiStatus;
@@ -34,8 +34,7 @@ import org.jetbrains.annotations.Nullable;
  * </p>
  *
  * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
- * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
- * on both {@linkplain LogicalSide logical sides}.</p>
+ * <p>This event is fired on the mod-specific event bus, on both {@linkplain LogicalSide logical sides}.</p>
  */
 public class ModMismatchEvent extends Event implements IModBusEvent {
     /**
