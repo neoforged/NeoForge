@@ -13,7 +13,7 @@
          boolean p_249753_,
          PackSource p_251608_
      ) {
-+        this(p_252218_, p_248829_, p_249377_, p_251718_, p_250162_, p_251298_, p_249753_, p_251608_, java.util.Collections.emptyList());
++        this(p_252218_, p_248829_, p_249377_, p_251718_, p_250162_, p_251298_, p_249753_, p_251608_, List.of());
 +    }
 +
 +    private Pack(
@@ -34,7 +34,7 @@
 +            List<Pack> oldChildren = remainingChildren;
 +            remainingChildren = new java.util.ArrayList<>();
 +            for (Pack child : oldChildren) {
-+                flattenedChildren.add(child.withChildren(java.util.Collections.emptyList()).hidden());
++                flattenedChildren.add(child.withChildren(List.of()).hidden());
 +                remainingChildren.addAll(child.getChildren());
 +            }
 +        }
