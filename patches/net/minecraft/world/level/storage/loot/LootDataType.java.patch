@@ -58,3 +58,18 @@
      }
  
      public static Stream<LootDataType<?>> values() {
+@@ -55,9 +_,12 @@
+     }
+ 
+     private static LootDataType.Validator<LootTable> createLootTableValidator() {
+-        return (p_279333_, p_279227_, p_279406_) -> p_279406_.validate(
+-                p_279333_.setParams(p_279406_.getParamSet()).enterElement("{" + p_279227_.type().directory + ":" + p_279227_.location() + "}", p_279227_)
++        return (p_279333_, p_279227_, p_279406_) -> {
++            p_279406_ = net.neoforged.neoforge.event.EventHooks.loadLootTable(p_279406_.getLootTableId(), p_279406_);
++            p_279406_.validate(
++                    p_279333_.setParams(p_279406_.getParamSet()).enterElement("{" + p_279227_.type().directory + ":" + p_279227_.location() + "}", p_279227_)
+             );
++        };
+     }
+ 
+     @FunctionalInterface

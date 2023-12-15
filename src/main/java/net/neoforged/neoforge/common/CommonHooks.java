@@ -9,12 +9,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.net.URI;
@@ -23,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -31,6 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,14 +60,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.util.datafix.fixes.StructuresBecomeConfiguredFix;
 import net.minecraft.world.Container;
@@ -132,13 +126,14 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.WorldData;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
@@ -189,7 +184,6 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
-import org.apache.commons.lang3.function.TriFunction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -737,82 +731,25 @@ public class CommonHooks {
         return newGameType;
     }
 
-    private static final ThreadLocal<Deque<LootTableContext>> lootContext = new ThreadLocal<>();
+    @ApiStatus.Internal
+    public static Codec<List<LootPool>> lootPoolsCodec(BiConsumer<LootPool, String> nameSetter) {
+        var decoder = ConditionalOps.createConditionalCodec(LootPool.CODEC).listOf()
+                .map(pools -> {
+                    if (pools.size() == 1) {
+                        if (pools.get(0).isPresent()) {
+                            nameSetter.accept(pools.get(0).get(), "main");
+                        }
+                    } else {
+                        for (int i = 0; i < pools.size(); ++i) {
+                            if (pools.get(i).isPresent()) {
+                                nameSetter.accept(pools.get(i).get(), "pool" + i);
+                            }
+                        }
+                    }
 
-    private static LootTableContext getLootTableContext() {
-        LootTableContext ctx = lootContext.get().peek();
-
-        if (ctx == null)
-            throw new JsonParseException("Invalid call stack, could not grab json context!"); // Should I throw this? Do we care about custom deserializers outside the manager?
-
-        return ctx;
-    }
-
-    public static TriFunction<ResourceLocation, JsonElement, ResourceManager, Optional<LootTable>> getLootTableDeserializer(Gson gson, String directory) {
-        return (location, data, resourceManager) -> {
-            try {
-                Resource resource = resourceManager.getResource(location.withPath(directory + "/" + location.getPath() + ".json")).orElse(null);
-                boolean custom = resource == null || !resource.isBuiltin();
-                return Optional.ofNullable(loadLootTable(gson, location, data, custom));
-            } catch (Exception exception) {
-                LOGGER.error("Couldn't parse element {}:{}", directory, location, exception);
-                return Optional.empty();
-            }
-        };
-    }
-
-    public static LootTable loadLootTable(Gson gson, ResourceLocation name, JsonElement data, boolean custom) {
-        Deque<LootTableContext> que = lootContext.get();
-        if (que == null) {
-            que = Queues.newArrayDeque();
-            lootContext.set(que);
-        }
-
-        LootTable ret;
-        try {
-            que.push(new LootTableContext(name, custom));
-            ret = gson.fromJson(data, LootTable.class);
-            ret.setLootTableId(name);
-        } catch (JsonParseException e) {
-            throw e;
-        } finally {
-            que.pop();
-        }
-
-        if (!custom)
-            ret = EventHooks.loadLootTable(name, ret);
-
-        if (ret != null)
-            ret.freeze();
-
-        return ret;
-    }
-
-    private static class LootTableContext {
-        public final ResourceLocation name;
-        public final boolean vanilla;
-        public final boolean custom;
-        public int poolCount = 0;
-
-        private LootTableContext(ResourceLocation name, boolean custom) {
-            this.name = name;
-            this.custom = custom;
-            this.vanilla = "minecraft".equals(this.name.getNamespace());
-        }
-    }
-
-    public static String readPoolName(JsonObject json) {
-        LootTableContext ctx = getLootTableContext();
-
-        if (json.has("name"))
-            return GsonHelper.getAsString(json, "name");
-
-        if (ctx.custom)
-            return "custom#" + json.hashCode(); // We don't care about custom ones modders shouldn't be editing them!
-
-        ctx.poolCount++;
-
-        return ctx.poolCount == 1 ? "main" : "pool" + (ctx.poolCount - 1);
+                    return pools.stream().filter(Optional::isPresent).map(Optional::get).toList();
+                });
+        return Codec.of(LootPool.CODEC.listOf(), decoder);
     }
 
     /**
