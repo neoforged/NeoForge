@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'net.neoforged.gradle.platform'
+}
+
+version = project(':neoforge').version
+group = 'net.neoforged.neoforge'
+
+repositories {
+    maven {
+        name 'Mojang'
+        url 'https://libraries.minecraft.net'
+    }
+    maven {
+        name 'NeoForged'
+        url 'https://maven.neoforged.net/releases'
+    }
+}
+
+dependencies {
+    compileOnly project(':neoforge')
+    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+}
+
+jar {
+    manifest.attributes([
+            'Automatic-Module-Name': 'neoforgejunitutils',
+            'FMLModType'           : 'GAMELIBRARY'
+    ])
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifactId = 'neoforge-junit-utils'
+        }
+    }
+}

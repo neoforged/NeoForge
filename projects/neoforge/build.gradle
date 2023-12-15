@@ -1,3 +1,5 @@
+import org.gradle.api.plugins.jvm.JvmTestSuite
+
 plugins {
     id 'java-library'
     id 'maven-publish'
@@ -32,6 +34,32 @@ sourceSets {
     }
 }
 
+testing {
+    suites {
+        register('junit', JvmTestSuite)
+    }
+}
+
+sourceSets {
+    junit {
+        compileClasspath += main.compileClasspath
+    }
+}
+
+configurations {
+    junit {
+        transitive = true
+        canBeConsumed = true
+        canBeResolved = true
+    }
+    moduleOnly {
+//        extendsFrom junitCompileOnly
+    }
+    runtimeClasspath {
+        exclude module: 'junit'
+    }
+}
+
 dependencies {
     pluginLayerLibrary "net.neoforged.fancymodloader:core:${project.fancy_mod_loader_version}"
     pluginLayerLibrary "net.neoforged.fancymodloader:language-java:${project.fancy_mod_loader_version}"
@@ -52,6 +80,10 @@ dependencies {
     moduleOnly "org.ow2.asm:asm-analysis:${project.asm_version}"
     moduleOnly "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
     moduleOnly "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
+    userdevTestImplementation "net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}"
+    junitImplementation "net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}"
+    testCompileOnly "net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}"
+    junitCompileOnly("net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}")
 
     installer ("net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}") {
         exclude group: 'org.slf4j'
@@ -92,12 +124,42 @@ dependencies {
     userdevCompileOnly jarJar("io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}"), {
         jarJar.ranged(it, "[${project.mixin_extras_version},)")
     }
+
+    junitImplementation(junit('org.junit.jupiter:junit-jupiter-api:5.10.1'))
+    junitImplementation(junit('org.junit.jupiter:junit-jupiter-engine:5.10.1'))
+    junitImplementation(junit('org.junit.platform:junit-platform-launcher:1.9.3'))
+
+    junitCompileOnly sourceSets.main.output
+}
+
+test {
+    useJUnitPlatform {
+        systemProperty('bsl.debug', 'true')
+//        jvmArgs('@args.txt')
+//        environment([
+//                'MOD_CLASSES': 'minecraft%%P:\\NeoForged\\NeoForge\\projects\\neoforge\\build\\resources\\main;minecraft%%P:\\NeoForged\\NeoForge\\projects\\neoforge\\build\\classes\\java\\main;minecraft%%P:\\NeoForged\\NeoForge\\projects\\neoforge\\build\\resources\\test;minecraft%%P:\\NeoForged\\NeoForge\\projects\\neoforge\\build\\classes\\java\\test',
+//                'NEOFORGE_SPEC': '20.4.29-beta-breaks-clause'
+//        ])
+//        workingDir(file('runstest'))
+//
+//        jvmArgumentProviders.add(new CommandLineArgumentProvider() {
+//            @Override
+//            Iterable<String> asArguments() {
+//                return [
+//                        "--module-path",
+//                        (project.configurations.moduleOnly.resolve() + project.configurations.junit.resolve())
+//                                .join(File.pathSeparator)
+//                ]
+//            }
+//        })
+    }
 }
 
 runTypes {
     client {
         singleInstance false
         client true
+        junit false
 
         arguments.addAll '--fml.neoForgeVersion', project.version
         arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
@@ -107,6 +169,7 @@ runTypes {
 
     server {
         server true
+        junit false
 
         arguments.addAll '--fml.neoForgeVersion', project.version
         arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
@@ -127,9 +190,18 @@ runTypes {
     }
 
     data {
+        junit false
         dataGenerator true
 
         // Don't set modid here so we can reuse this runType for test datagen
+        arguments.addAll '--fml.neoForgeVersion', project.version
+        arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
+        arguments.addAll '--fml.mcVersion', project.minecraft_version
+        arguments.addAll '--fml.neoFormVersion', project.neoform_version
+    }
+
+    junit {
+        junit true
         arguments.addAll '--fml.neoForgeVersion', project.version
         arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
         arguments.addAll '--fml.mcVersion', project.minecraft_version
@@ -142,12 +214,18 @@ runs {
     server { }
     gameTestServer { }
     gameTestClient { }
+    junit {
+        dependencies {
+            runtime configuration(project.configurations.junit)
+        }
+    }
     "Data" {
         configure project.runTypes.data
 
         programArguments.addAll '--mod', 'neoforge'
 
         modSources.add project.sourceSets.main
+        modSources.add project.sourceSets.test
 
         idea {
             primarySourceSet project.sourceSets.main
