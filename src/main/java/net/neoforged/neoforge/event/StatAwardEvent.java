@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.event;
 
 import net.minecraft.stats.Stat;
@@ -5,7 +10,8 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.ApiStatus;
 
-/**Fired when a {@link Player} is awarded a {@link Stat}.  This event is fired in {@link Player#awardStat(Stat, int)}
+/**
+ * Fired when a {@link Player} is awarded a {@link Stat}. This event is fired in {@link Player#awardStat(Stat, int)}
  * <p>
  * This event is NOT cancelable.
  * <p>
@@ -24,22 +30,22 @@ public class StatAwardEvent extends PlayerEvent {
         this.value = value;
     }
 
-    /**@return the {@link Stat} being awarded*/
+    /** @return the {@link Stat} being awarded */
     public Stat<?> getStat() {
         return stat;
     }
 
-    /**allows replacement of the {@link Stat} to be awarded*/
+    /** allows replacement of the {@link Stat} to be awarded */
     public void setStat(Stat<?> stat) {
         this.stat = stat;
     }
 
-    /**@return the current value to be awarded to the {@link Stat}*/
+    /** @return the current value to be awarded to the {@link Stat} */
     public int getValue() {
         return value;
     }
 
-    /**replaces the value to be awarded*/
+    /** replaces the value to be awarded */
     public void setValue(int value) {
         this.value = value;
     }
