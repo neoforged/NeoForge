@@ -34,6 +34,7 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stat;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.Container;
@@ -838,6 +839,12 @@ public class EventHooks {
         if (NeoForge.EVENT_BUS.post(event).isCanceled())
             return WeightedRandomList.create();
         return WeightedRandomList.create(event.getSpawnerDataList());
+    }
+
+    public static StatAwardEvent onStatAward(Player player, Stat<?> stat, int value) {
+        StatAwardEvent event = new StatAwardEvent(player, stat, value);
+        NeoForge.EVENT_BUS.post(event);
+        return event;
     }
 
     @ApiStatus.Internal
