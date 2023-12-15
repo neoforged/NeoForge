@@ -1,16 +1,21 @@
 --- a/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
 +++ b/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
-@@ -4,25 +_,29 @@
+@@ -3,26 +_,33 @@
+ import net.minecraft.network.ConnectionProtocol;
  import net.minecraft.network.FriendlyByteBuf;
  import net.minecraft.network.protocol.Packet;
- 
+-
 -public record ClientIntentionPacket(int protocolVersion, String hostName, int port, ClientIntent intention) implements Packet<ServerHandshakePacketListener> {
++import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
++
++import java.util.Objects;
++
 +public record ClientIntentionPacket(int protocolVersion, String hostName, int port, ClientIntent intention, String fmlVersion) implements Packet<ServerHandshakePacketListener> {
      private static final int MAX_HOST_LENGTH = 255;
  
 +    public ClientIntentionPacket {
 +        if (fmlVersion == null) {
-+            fmlVersion = net.neoforged.neoforge.network.NetworkHooks.getFMLVersion(hostName);
++            fmlVersion = getFMLVersion(hostName);
 +            hostName = hostName.split("\0")[0];
 +        }
 +    }
@@ -21,7 +26,7 @@
 -        this.hostName = hostName;
 -        this.port = port;
 -        this.intention = intention;
-+        this(protocolVersion, hostName, port, intention, net.neoforged.neoforge.network.NetworkConstants.NETVERSION);
++        this(protocolVersion, hostName, port, intention, NeoForgeVersion.getSpec());
      }
  
      public ClientIntentionPacket(FriendlyByteBuf p_179801_) {
@@ -37,7 +42,7 @@
          p_134737_.writeShort(this.port);
          p_134737_.writeVarInt(this.intention.id());
      }
-@@ -34,5 +_,9 @@
+@@ -34,5 +_,13 @@
      @Override
      public ConnectionProtocol nextProtocol() {
          return this.intention.protocol();
@@ -45,5 +50,9 @@
 +
 +    public String getFMLVersion() {
 +        return this.fmlVersion;
++    }
++    
++    private static String getFMLVersion(final String ip) {
++        return ip.contains("\0") ? Objects.equals(ip.split("\0")[1], NeoForgeVersion.getSpec()) ? NeoForgeVersion.getSpec() : ip.split("\0")[1] : "NONE";
      }
  }

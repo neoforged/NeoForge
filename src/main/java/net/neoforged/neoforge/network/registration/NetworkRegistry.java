@@ -24,6 +24,7 @@ import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;
+import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
@@ -103,7 +104,7 @@ public class NetworkRegistry {
         
         setup = true;
         
-        final RegisterPacketHandlerEvent event = NeoForge.EVENT_BUS.post(new RegisterPacketHandlerEvent());
+        final RegisterPacketHandlerEvent event = ModLoader.get().postEventWithReturn(new RegisterPacketHandlerEvent());
         knownConfigurationRegistrations.clear();
         knownPlayRegistrations.clear();
         
@@ -585,16 +586,25 @@ public class NetworkRegistry {
             return true;
         }
         
+        if (customPayloadPacket.payload() instanceof ModdedNetworkQueryPayload) {
+            return true;
+        }
+        
+        if (customPayloadPacket.payload() instanceof ModdedNetworkSetupFailedPayload) {
+            return true;
+        }
+        
+        if (customPayloadPacket.payload() instanceof ModdedNetworkPayload) {
+            return true;
+        }
+        
+        //Vanilla payloads.
+        if (ClientboundCustomPayloadPacket.KNOWN_TYPES.containsKey(customPayloadPacket.payload().id())) {
+            return true;
+        }
+        
         final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         if (payloadSetup == null) {
-            if (customPayloadPacket.payload() instanceof ModdedNetworkQueryPayload) {
-                return true;
-            }
-            
-            if (customPayloadPacket.payload() instanceof ModdedNetworkSetupFailedPayload) {
-                return true;
-            }
-            
             LOGGER.warn("Somebody tried to send: {} to a client that has not negotiated with the server. Not sending packet.", customPayloadPacket.payload().id());
             return false;
         }
@@ -650,12 +660,18 @@ public class NetworkRegistry {
             return true;
         }
         
+        if (customPayloadPacket.payload() instanceof ModdedNetworkQueryPayload) {
+            return true;
+        }
+        
+        //Vanilla payloads.
+        if (ServerboundCustomPayloadPacket.KNOWN_TYPES.containsKey(customPayloadPacket.payload().id())) {
+            return true;
+        }
+        
+        
         final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         if (payloadSetup == null) {
-            if (customPayloadPacket.payload() instanceof ModdedNetworkQueryPayload) {
-                return true;
-            }
-            
             LOGGER.warn("Somebody tried to send: {} to a server that has not negotiated with the client. Not sending packet.", customPayloadPacket.payload().id());
             return false;
         }

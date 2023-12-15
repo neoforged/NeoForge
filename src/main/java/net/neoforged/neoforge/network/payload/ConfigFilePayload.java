@@ -15,7 +15,7 @@ public record ConfigFilePayload(byte[] contents, String fileName) implements Cus
 
     @Override
     public void write(FriendlyByteBuf buf) {
-        buf.writeBytes(contents);
+        buf.writeByteArray(contents);
         buf.writeUtf(fileName);
     }
 

@@ -462,7 +462,7 @@ public class NeoForgeMod {
             return uuid.toString();
         });
 
-        LOGGER.debug(NEOFORGEMOD, "Loading Network data for FML net version: {}", NetworkConstants.init());
+        LOGGER.debug(NEOFORGEMOD, "Loading Network data for FML net version: {}", NeoForgeVersion.getSpec());
         CrashReportCallables.registerCrashCallable("FML", NeoForgeVersion::getSpec);
         CrashReportCallables.registerCrashCallable("NeoForge", () -> NeoForgeVersion.getGroup() + ":" + NeoForgeVersion.getVersion());
 

@@ -3,6 +3,7 @@ package net.neoforged.neoforge.network.event;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
+import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.network.registration.registrar.ConfigurationRegistration;
 import net.neoforged.neoforge.network.registration.registrar.IPayloadRegistrar;
 import net.neoforged.neoforge.network.registration.registrar.ModdedPacketRegistrar;
@@ -12,7 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RegisterPacketHandlerEvent extends Event {
+public class RegisterPacketHandlerEvent extends Event implements IModBusEvent {
     
     private final Map<String, ModdedPacketRegistrar> registrarsByNamespace = Collections.synchronizedMap(new HashMap<>());
     

@@ -10,7 +10,13 @@
  import net.minecraft.network.FriendlyByteBuf;
  import net.minecraft.network.protocol.Packet;
  import net.minecraft.network.protocol.common.custom.BrandPayload;
-@@ -16,16 +_,55 @@
+@@ -11,21 +_,60 @@
+ 
+ public record ServerboundCustomPayloadPacket(CustomPacketPayload payload) implements Packet<ServerCommonPacketListener> {
+     private static final int MAX_PAYLOAD_SIZE = 32767;
+-    private static final Map<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>> KNOWN_TYPES = ImmutableMap.<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>>builder(
++    public static final Map<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>> KNOWN_TYPES = ImmutableMap.<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>>builder(
+             
          )
          .put(BrandPayload.ID, BrandPayload::new)
          .build();

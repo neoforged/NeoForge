@@ -8,11 +8,3 @@
                  private boolean success;
                  private boolean receivedPing;
                  private long pingStart;
-@@ -99,6 +_,7 @@
-                                 p_105461_.run();
-                             }
-                         });
-+                        net.neoforged.neoforge.client.ClientHooks.processForgeListPingData(serverstatus, p_105460_);
-                         this.pingStart = Util.getMillis();
-                         connection.send(new ServerboundPingRequestPacket(this.pingStart));
-                         this.success = true;

@@ -10,6 +10,15 @@
  import net.minecraft.network.FriendlyByteBuf;
  import net.minecraft.network.protocol.Packet;
  import net.minecraft.network.protocol.common.custom.BeeDebugPayload;
+@@ -29,7 +_,7 @@
+ 
+ public record ClientboundCustomPayloadPacket(CustomPacketPayload payload) implements Packet<ClientCommonPacketListener> {
+     private static final int MAX_PAYLOAD_SIZE = 1048576;
+-    private static final Map<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>> KNOWN_TYPES = ImmutableMap.<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>>builder(
++    public static final Map<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>> KNOWN_TYPES = ImmutableMap.<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>>builder(
+             
+         )
+         .put(BrandPayload.ID, BrandPayload::new)
 @@ -52,16 +_,53 @@
          .put(VillageSectionsDebugPayload.ID, VillageSectionsDebugPayload::new)
          .put(WorldGenAttemptDebugPayload.ID, WorldGenAttemptDebugPayload::new)

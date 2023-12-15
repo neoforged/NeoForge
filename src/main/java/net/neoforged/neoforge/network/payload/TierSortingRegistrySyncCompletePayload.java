@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
 public record TierSortingRegistrySyncCompletePayload() implements CustomPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID);
+    public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "tier_sorting_registry_sync_complete");
 
     public TierSortingRegistrySyncCompletePayload(FriendlyByteBuf buf) {
         this();
