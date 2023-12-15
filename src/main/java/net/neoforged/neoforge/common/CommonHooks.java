@@ -740,11 +740,9 @@ public class CommonHooks {
                             nameSetter.accept(pools.get(0).get(), "main");
                         }
                     } else {
-                        int index = 0;
-                        for (var pool : pools) {
-                            if (pool.isPresent()) {
-                                nameSetter.accept(pool.get(), "pool" + index);
-                                index++;
+                        for (int i = 0; i < pools.size(); ++i) {
+                            if (pools.get(i).isPresent()) {
+                                nameSetter.accept(pools.get(i).get(), "pool" + i);
                             }
                         }
                     }
