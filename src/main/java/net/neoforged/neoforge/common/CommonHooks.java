@@ -127,7 +127,6 @@ import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.WorldData;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -148,7 +147,6 @@ import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.GrindstoneEvent;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.ItemStackedOnOtherEvent;
-import net.neoforged.neoforge.event.LootTableLoadEvent;
 import net.neoforged.neoforge.event.ModMismatchEvent;
 import net.neoforged.neoforge.event.RegisterStructureConversionsEvent;
 import net.neoforged.neoforge.event.ServerChatEvent;
@@ -754,13 +752,6 @@ public class CommonHooks {
                     return pools.stream().filter(Optional::isPresent).map(Optional::get).toList();
                 });
         return Codec.of(LootPool.CODEC.listOf(), decoder);
-    }
-
-    public static LootTable loadLootTable(ResourceLocation name, LootTable table) {
-        LootTableLoadEvent event = new LootTableLoadEvent(name, table);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled())
-            return LootTable.EMPTY;
-        return event.getTable();
     }
 
     /**
