@@ -188,15 +188,15 @@
      public static WorldDataConfiguration configurePackRepository(
          PackRepository p_248681_, DataPackConfig p_248920_, boolean p_249869_, FeatureFlagSet p_251243_
      ) {
-+        net.neoforged.neoforge.resource.ResourcePackLoader.loadResourcePacks(p_248681_, net.neoforged.neoforge.server.ServerLifecycleHooks::buildPackFinder);
++        net.neoforged.neoforge.resource.ResourcePackLoader.loadResourcePacks(p_248681_, map -> net.neoforged.neoforge.resource.ResourcePackLoader.buildPackFinder(map, PackType.SERVER_DATA));
          p_248681_.reload();
-+        DataPackConfig.DEFAULT.addModPacks(net.neoforged.neoforge.common.CommonHooks.getModPacks());
-+        p_248920_.addModPacks(net.neoforged.neoforge.common.CommonHooks.getModPacks());
++        DataPackConfig.DEFAULT.addModPacks(net.neoforged.neoforge.common.CommonHooks.getModDataPacks());
++        p_248920_.addModPacks(net.neoforged.neoforge.common.CommonHooks.getModDataPacks());
          if (p_249869_) {
 -            p_248681_.setSelected(Collections.singleton("vanilla"));
 -            return WorldDataConfiguration.DEFAULT;
-+            p_248681_.setSelected(net.neoforged.neoforge.common.CommonHooks.getModPacksWithVanilla());
-+            return new WorldDataConfiguration(new DataPackConfig(net.neoforged.neoforge.common.CommonHooks.getModPacksWithVanilla(), ImmutableList.of()), FeatureFlags.DEFAULT_FLAGS);
++            p_248681_.setSelected(net.neoforged.neoforge.common.CommonHooks.getModDataPacksWithVanilla());
++            return new WorldDataConfiguration(new DataPackConfig(net.neoforged.neoforge.common.CommonHooks.getModDataPacksWithVanilla(), ImmutableList.of()), FeatureFlags.DEFAULT_FLAGS);
          } else {
              Set<String> set = Sets.newLinkedHashSet();
  
