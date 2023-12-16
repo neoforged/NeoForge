@@ -142,7 +142,7 @@
          } else {
              this.setSwimming(
 -                this.isSprinting() && this.isUnderWater() && !this.isPassenger() && this.level().getFluidState(this.blockPosition).is(FluidTags.WATER)
-+                this.isSprinting() && (this.isUnderWater() || this.canStartSwimming()) && !this.isPassenger() && this.level().getFluidState(this.blockPosition).getFluidType().canSwim(this)
++                this.isSprinting() && (this.isUnderWater() || this.canStartSwimming()) && !this.isPassenger()
              );
          }
      }
