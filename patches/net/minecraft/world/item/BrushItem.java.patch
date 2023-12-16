@@ -1,11 +1,9 @@
 --- a/net/minecraft/world/item/BrushItem.java
 +++ b/net/minecraft/world/item/BrushItem.java
-@@ -148,4 +_,11 @@
+@@ -148,4 +_,9 @@
              };
          }
      }
-+
-+    /* ******************** NEOFORGE START ******************** */
 +
 +    @Override
 +    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ToolAction toolAction) {
