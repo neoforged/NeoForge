@@ -16,7 +16,7 @@
 -            p_281805_.drawString(KeyBindsList.this.minecraft.font, this.name, k, p_282357_ + p_281932_ / 2 - 9 / 2, 16777215, false);
 +            int textMaxWidth = p_281805_.guiWidth() / 2;
 +            int k = p_281373_ + 90 - Math.min(KeyBindsList.this.maxNameWidth, textMaxWidth - 40);
-+            net.minecraft.client.gui.components.AbstractWidget.renderScrollingString(p_281805_, KeyBindsList.this.minecraft.font, this.name, k, k, p_282357_ + p_281932_ / 2 - 9 / 2, textMaxWidth, p_282357_ + p_281932_ / 2 - 9 / 2 + 16, 16777215); // NEOFORGE: Makes descriptions start scrolling if too long
++            net.minecraft.client.gui.components.AbstractWidget.renderScrollingString(p_281805_, KeyBindsList.this.minecraft.font, this.name, k, k, p_282357_ + p_281932_ / 2 - 9 / 2, textMaxWidth, p_282357_ + p_281932_ / 2 - 9 / 2 + 16, 16777215); // Neo: Makes descriptions start scrolling if too long
              this.resetButton.setX(p_281373_ + 190);
              this.resetButton.setY(p_282357_);
              this.resetButton.render(p_281805_, p_282224_, p_282053_, p_281432_);
