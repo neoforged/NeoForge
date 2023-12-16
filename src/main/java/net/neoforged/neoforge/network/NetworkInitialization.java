@@ -60,6 +60,11 @@ public class NetworkInitialization {
                         AdvancedAddEntityPayload.ID,
                         AdvancedAddEntityPayload::new,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle)
+                )
+                .play(
+                        AdvancedOpenScreenPayload.ID,
+                        AdvancedOpenScreenPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle)
                 );
     }
 

@@ -7,13 +7,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.TierSortingRegistry;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
@@ -22,6 +26,7 @@ import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
+import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
@@ -77,9 +82,8 @@ public class ClientPayloadHandler {
     }
 
     public void handle(PlayPayloadContext context, AdvancedAddEntityPayload msg) {
-        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.byId(msg.typeId());
         Optional<Level> world = LogicalSidedProvider.CLIENTWORLD.get(context.flow().getReceptionSide());
-        Entity e = world.map(w -> type.customClientSpawn(msg, w)).orElse(null);
+        Entity e = world.map(w -> msg.typeId().customClientSpawn(msg, w)).orElse(null);
         if (e == null) {
             return;
         }
@@ -99,8 +103,29 @@ public class ClientPayloadHandler {
         e.lerpMotion(msg.velX() / 8000.0, msg.velY() / 8000.0, msg.velZ() / 8000.0);
         if (e instanceof IEntityAdditionalSpawnData entityAdditionalSpawnData) {
             final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(msg.customPayload()));
-            entityAdditionalSpawnData.readSpawnData(buf);
+            try {
+                entityAdditionalSpawnData.readSpawnData(buf);
+            } finally {
+                buf.release();
+            }
+        }
+    }
+
+    public void handle(PlayPayloadContext context, AdvancedOpenScreenPayload msg) {
+        final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(msg.additionalData()));
+        try {
+            createMenuScreen(msg.name(), msg.menuType(), msg.windowId(), buf);
+        } finally {
             buf.release();
         }
+    }
+
+    private static <T extends AbstractContainerMenu> void createMenuScreen(Component name, MenuType<T> menuType, int windowId, FriendlyByteBuf buf) {
+        Minecraft mc = Minecraft.getInstance();
+        MenuScreens.getScreenFactory(menuType, mc, windowId, name).ifPresent(f -> {
+            Screen s = f.create(menuType.create(windowId, mc.player.getInventory(), buf), mc.player.getInventory(), name);
+            mc.player.containerMenu = ((MenuAccess<?>) s).getMenu();
+            mc.setScreen(s);
+        });
     }
 }

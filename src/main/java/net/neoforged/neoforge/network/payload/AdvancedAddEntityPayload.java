@@ -7,16 +7,14 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.entity.IEntityAdditionalSpawnData;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
 public record AdvancedAddEntityPayload(
-        int typeId,
+        EntityType<?> typeId,
         int entityId,
         UUID uuid,
         double posX,
@@ -34,7 +32,7 @@ public record AdvancedAddEntityPayload(
 
     public AdvancedAddEntityPayload(FriendlyByteBuf buf) {
         this(
-                buf.readVarInt(),
+                buf.readById(BuiltInRegistries.ENTITY_TYPE),
                 buf.readVarInt(),
                 buf.readUUID(),
                 buf.readDouble(),
@@ -52,7 +50,7 @@ public record AdvancedAddEntityPayload(
 
     public AdvancedAddEntityPayload(Entity e) {
         this(
-                BuiltInRegistries.ENTITY_TYPE.getId(e.getType()),
+                e.getType(),
                 e.getId(),
                 e.getUUID(),
                 e.getX(),
@@ -70,31 +68,32 @@ public record AdvancedAddEntityPayload(
 
     private static byte[] writeCustomData(final Entity entity) {
         final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        try {
+            if (entity instanceof IEntityAdditionalSpawnData additionalSpawnData) {
+                additionalSpawnData.writeSpawnData(buf);
+            }
 
-        if (entity instanceof IEntityAdditionalSpawnData additionalSpawnData) {
-            additionalSpawnData.writeSpawnData(buf);
+            return buf.array();
+        } finally {
+            buf.release();
         }
-
-        final byte[] payload = buf.array();
-        buf.release();
-        return payload;
     }
 
     @Override
     public void write(FriendlyByteBuf buffer) {
-        buffer.writeVarInt(typeId);
-        buffer.writeVarInt(entityId);
-        buffer.writeUUID(uuid);
-        buffer.writeDouble(posX);
-        buffer.writeDouble(posY);
-        buffer.writeDouble(posZ);
-        buffer.writeByte(pitch);
-        buffer.writeByte(yaw);
-        buffer.writeByte(headYaw);
-        buffer.writeVarInt(velX);
-        buffer.writeVarInt(velY);
-        buffer.writeVarInt(velZ);
-        buffer.writeByteArray(customPayload);
+        buffer.writeId(BuiltInRegistries.ENTITY_TYPE, typeId());
+        buffer.writeVarInt(entityId());
+        buffer.writeUUID(uuid());
+        buffer.writeDouble(posX());
+        buffer.writeDouble(posY());
+        buffer.writeDouble(posZ());
+        buffer.writeByte(pitch());
+        buffer.writeByte(yaw());
+        buffer.writeByte(headYaw());
+        buffer.writeVarInt(velX());
+        buffer.writeVarInt(velY());
+        buffer.writeVarInt(velZ());
+        buffer.writeByteArray(customPayload());
     }
 
     @Override
