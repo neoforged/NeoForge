@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/NonNullList.java
 +++ b/net/minecraft/core/NonNullList.java
-@@ -9,6 +_,27 @@
+@@ -9,6 +_,28 @@
  import org.apache.commons.lang3.Validate;
  
  public class NonNullList<E> extends AbstractList<E> {
@@ -20,6 +20,7 @@
 +     * @param entries the collection to make a copy of
 +     * @param <E> the type of the elements in the list
 +     * @return a new immutable NonNullList
++     * @throws NullPointerException if entries is null, or if it contains any nulls
 +     */
 +    public static <E> NonNullList<E> copyOf(java.util.Collection<? extends E> entries) {
 +        return new NonNullList<>(List.copyOf(entries), null);
