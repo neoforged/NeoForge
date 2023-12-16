@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.ObjIntConsumer;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.crafting.Recipe;
@@ -104,19 +103,6 @@ public class NeoForgeExtraCodecs {
         return codec.xmap(
                 list -> list.stream().filter(Optional::isPresent).map(Optional::get).toList(),
                 list -> list.stream().map(Optional::of).toList());
-    }
-
-    /**
-     * Creates a decoder invoking a callback for each element and the corresponding index in a list.
-     */
-    public static <A> Decoder<List<A>> listDecoderWithIndexedPeek(final Decoder<List<A>> decoder, ObjIntConsumer<A> consumer) {
-        return decoder.map(
-                list -> {
-                    for (int i = 0; i < list.size(); i++) {
-                        consumer.accept(list.get(i), i);
-                    }
-                    return list;
-                });
     }
 
     /**

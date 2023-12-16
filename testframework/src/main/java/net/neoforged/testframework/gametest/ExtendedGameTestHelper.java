@@ -25,8 +25,10 @@ import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -199,5 +201,13 @@ public class ExtendedGameTestHelper extends GameTestHelper {
 
     public void pulseRedstone(int x, int y, int z, long delay) {
         pulseRedstone(new BlockPos(x, y, z), delay);
+    }
+
+    public <E extends LivingEntity> void assertMobEffectPresent(E entity, MobEffect effect, String testName) {
+        assertEntityProperty(entity, e -> e.hasEffect(effect), testName);
+    }
+
+    public <E extends LivingEntity> void assertMobEffectAbsent(E entity, MobEffect effect, String testName) {
+        assertEntityProperty(entity, e -> !e.hasEffect(effect), testName);
     }
 }

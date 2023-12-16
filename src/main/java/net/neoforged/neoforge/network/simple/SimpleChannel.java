@@ -7,8 +7,13 @@ package net.neoforged.neoforge.network.simple;
 
 import io.netty.buffer.Unpooled;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.function.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.IntSupplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
@@ -18,7 +23,13 @@ import net.neoforged.neoforge.network.NetworkEvent;
 import net.neoforged.neoforge.network.NetworkInstance;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.PlayNetworkDirection;
-import net.neoforged.neoforge.network.simple.MessageFunctions.*;
+import net.neoforged.neoforge.network.simple.MessageFunctions.LoginIndexGetter;
+import net.neoforged.neoforge.network.simple.MessageFunctions.LoginIndexSetter;
+import net.neoforged.neoforge.network.simple.MessageFunctions.LoginPacket;
+import net.neoforged.neoforge.network.simple.MessageFunctions.LoginPacketGenerator;
+import net.neoforged.neoforge.network.simple.MessageFunctions.MessageConsumer;
+import net.neoforged.neoforge.network.simple.MessageFunctions.MessageDecoder;
+import net.neoforged.neoforge.network.simple.MessageFunctions.MessageEncoder;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class SimpleChannel {

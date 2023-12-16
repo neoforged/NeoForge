@@ -10,7 +10,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.NeoForge;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +25,7 @@ public abstract class MobEffectEvent extends LivingEvent {
     @Nullable
     protected final MobEffectInstance effectInstance;
 
-    public MobEffectEvent(LivingEntity living, MobEffectInstance effectInstance) {
+    protected MobEffectEvent(LivingEntity living, MobEffectInstance effectInstance) {
         super(living);
         this.effectInstance = effectInstance;
     }
@@ -40,22 +42,36 @@ public abstract class MobEffectEvent extends LivingEvent {
      */
     public static class Remove extends MobEffectEvent implements ICancellableEvent {
         private final MobEffect effect;
+        @Nullable
+        private final EffectCure cure;
 
-        public Remove(LivingEntity living, MobEffect effect) {
+        @ApiStatus.Internal
+        public Remove(LivingEntity living, MobEffect effect, @Nullable EffectCure cure) {
             super(living, living.getEffect(effect));
             this.effect = effect;
+            this.cure = cure;
         }
 
-        public Remove(LivingEntity living, MobEffectInstance effectInstance) {
+        @ApiStatus.Internal
+        public Remove(LivingEntity living, MobEffectInstance effectInstance, @Nullable EffectCure cure) {
             super(living, effectInstance);
             this.effect = effectInstance.getEffect();
+            this.cure = cure;
         }
 
         /**
-         * @return the {@link MobEffectEvent} which is being removed from the entity
+         * @return the {@link MobEffect} which is being removed from the entity
          */
         public MobEffect getEffect() {
             return this.effect;
+        }
+
+        /**
+         * {@return the {@link EffectCure} the effect is being cured by. Null if the effect is not removed due to being cured}
+         */
+        @Nullable
+        public EffectCure getCure() {
+            return cure;
         }
 
         /**
@@ -79,6 +95,7 @@ public abstract class MobEffectEvent extends LivingEvent {
      */
     @HasResult
     public static class Applicable extends MobEffectEvent {
+        @ApiStatus.Internal
         public Applicable(LivingEntity living, @NotNull MobEffectInstance effectInstance) {
             super(living, effectInstance);
         }
@@ -100,6 +117,7 @@ public abstract class MobEffectEvent extends LivingEvent {
         private final MobEffectInstance oldEffectInstance;
         private final Entity source;
 
+        @ApiStatus.Internal
         public Added(LivingEntity living, MobEffectInstance oldEffectInstance, MobEffectInstance newEffectInstance, Entity source) {
             super(living, newEffectInstance);
             this.oldEffectInstance = oldEffectInstance;
@@ -138,6 +156,7 @@ public abstract class MobEffectEvent extends LivingEvent {
      * This event does not have a result.
      */
     public static class Expired extends MobEffectEvent implements ICancellableEvent {
+        @ApiStatus.Internal
         public Expired(LivingEntity living, MobEffectInstance effectInstance) {
             super(living, effectInstance);
         }
