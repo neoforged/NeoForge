@@ -7,19 +7,20 @@ package net.neoforged.neoforge.event;
 
 import net.minecraft.stats.Stat;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Fired when a {@link Player} is awarded a {@link Stat}. This event is fired in {@link Player#awardStat(Stat, int)}
  * <p>
- * This event is NOT cancelable.
+ * This event is {@link ICancellableEvent cancelable}.
  * <p>
  * This event does not have a result.
  * <p>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
-public class StatAwardEvent extends PlayerEvent {
+public class StatAwardEvent extends PlayerEvent implements ICancellableEvent {
     private Stat<?> stat;
     private int value;
 
