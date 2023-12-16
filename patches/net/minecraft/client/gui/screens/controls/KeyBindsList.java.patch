@@ -1,42 +1,5 @@
 --- a/net/minecraft/client/gui/screens/controls/KeyBindsList.java
 +++ b/net/minecraft/client/gui/screens/controls/KeyBindsList.java
-@@ -30,6 +_,8 @@
-     final KeyBindsScreen keyBindsScreen;
-     int maxNameWidth;
- 
-+    final static int NAME_SPLIT_LENGTH = 185;
-+
-     public KeyBindsList(KeyBindsScreen p_193861_, Minecraft p_193862_) {
-         super(p_193862_, p_193861_.width + 45, p_193861_.height - 52, 20, 20);
-         this.keyBindsScreen = p_193861_;
-@@ -47,7 +_,8 @@
-             Component component = Component.translatable(keymapping.getName());
-             int i = p_193862_.font.width(component);
-             if (i > this.maxNameWidth) {
--                this.maxNameWidth = i;
-+                // Neo: max width for the keybind descriptions to make all readable
-+                this.maxNameWidth = Math.min(i, NAME_SPLIT_LENGTH);
-             }
- 
-             this.addEntry(new KeyBindsList.KeyEntry(keymapping, component));
-@@ -65,7 +_,7 @@
- 
-     @Override
-     protected int getScrollbarPosition() {
--        return super.getScrollbarPosition() + 15;
-+        return super.getScrollbarPosition() + 15 + 20;
-     }
- 
-     @Override
-@@ -157,7 +_,7 @@
-                     KeyBindsList.this.keyBindsScreen.selectedKey = p_193916_;
-                     KeyBindsList.this.resetMappingAndUpdateButtons();
-                 })
--                .bounds(0, 0, 75, 20)
-+                .bounds(0, 0, 75 + 20, 20) //Forge: Add a space  (the + 20) so the formatting works better.
-                 .createNarration(
-                     p_253311_ -> p_193916_.isUnbound()
-                             ? Component.translatable("narrator.controls.unbound", p_193917_)
 @@ -165,6 +_,7 @@
                  )
                  .build();
@@ -45,29 +8,24 @@
                  KeyBindsList.this.minecraft.options.setKey(p_193916_, p_193916_.getDefaultKey());
                  KeyBindsList.this.resetMappingAndUpdateButtons();
              }).bounds(0, 0, 50, 20).createNarration(p_253313_ -> Component.translatable("narrator.controls.reset", p_193917_)).build();
-@@ -185,8 +_,14 @@
+@@ -184,8 +_,9 @@
+             boolean p_282605_,
              float p_281432_
          ) {
-             int k = p_281373_ + 90 - KeyBindsList.this.maxNameWidth;
+-            int k = p_281373_ + 90 - KeyBindsList.this.maxNameWidth;
 -            p_281805_.drawString(KeyBindsList.this.minecraft.font, this.name, k, p_282357_ + p_281932_ / 2 - 9 / 2, 16777215, false);
--            this.resetButton.setX(p_281373_ + 190);
-+            // Neo: Trim strings that are too long, and show a tooltip if the mouse is over the trimmed string
-+            List<net.minecraft.network.chat.FormattedText> lines = KeyBindsList.this.minecraft.font.getSplitter().splitLines(this.name, NAME_SPLIT_LENGTH, net.minecraft.network.chat.Style.EMPTY);
-+            Component nameComponent = lines.size() > 1 ? Component.literal(lines.get(0).getString() + "...") : this.name;
-+            if(lines.size() > 1 && this.isMouseOver(p_282224_ + 95, p_282053_) && p_282224_ < p_281373_ - 90 + KeyBindsList.this.maxNameWidth) {
-+                KeyBindsList.this.keyBindsScreen.setTooltipForNextRenderPass(net.minecraft.locale.Language.getInstance().getVisualOrder(lines));
-+            }
-+            p_281805_.drawString(KeyBindsList.this.minecraft.font, nameComponent, k, p_282357_ + p_281932_ / 2 - 9 / 2, 16777215, false);
-+            this.resetButton.setX(p_281373_ + 190 + 20);
++            int textMaxWidth = p_281805_.guiWidth() / 2;
++            int k = p_281373_ + 90 - Math.min(KeyBindsList.this.maxNameWidth, textMaxWidth - 40);
++            net.minecraft.client.gui.components.AbstractWidget.renderScrollingString(p_281805_, KeyBindsList.this.minecraft.font, this.name, k, k, p_282357_ + p_281932_ / 2 - 9 / 2, textMaxWidth, p_282357_ + p_281932_ / 2 - 9 / 2 + 16, 16777215); // Neo: Makes descriptions start scrolling if too long
+             this.resetButton.setX(p_281373_ + 190);
              this.resetButton.setY(p_282357_);
              this.resetButton.render(p_281805_, p_282224_, p_282053_, p_281432_);
-             this.changeButton.setX(p_281373_ + 105);
 @@ -218,7 +_,7 @@
              MutableComponent mutablecomponent = Component.empty();
              if (!this.key.isUnbound()) {
                  for(KeyMapping keymapping : KeyBindsList.this.minecraft.options.keyMappings) {
 -                    if (keymapping != this.key && this.key.same(keymapping)) {
-+                    if ((keymapping != this.key && this.key.same(keymapping)) || keymapping.hasKeyModifierConflict(this.key)) { // FORGE: gracefully handle conflicts like SHIFT vs SHIFT+G
++                    if ((keymapping != this.key && this.key.same(keymapping)) || keymapping.hasKeyModifierConflict(this.key)) { // Neo: gracefully handle conflicts like SHIFT vs SHIFT+G
                          if (this.hasCollision) {
                              mutablecomponent.append(", ");
                          }
