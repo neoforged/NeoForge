@@ -30,7 +30,7 @@ public class StatAwardEvent extends PlayerEvent {
         this.value = value;
     }
 
-    /** @return the {@link Stat} being awarded */
+    /** {@return the {@link Stat} being awarded} */
     public Stat<?> getStat() {
         return stat;
     }
