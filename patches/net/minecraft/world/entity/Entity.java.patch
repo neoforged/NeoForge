@@ -510,7 +510,7 @@
  
 +    /**
 +     * Gets the value of the legacy {@link #maxUpStep} field. Only used by players when the modified value causes issues.
-+     * @deprecated Use {@link IEntityExtension#getStepHeight()} to get the real step height value.
++     * @deprecated Use {@link net.neoforged.neoforge.common.extensions.IEntityExtension#getStepHeight()} to get the real step height value.
 +     */
 +    @Deprecated
      public float maxUpStep() {
