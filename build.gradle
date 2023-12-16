@@ -24,7 +24,7 @@ import org.objectweb.asm.Opcodes
 plugins {
     id 'org.cadixdev.licenser' version '0.6.1'
     id 'com.github.ben-manes.versions' version '0.46.0'
-    id 'net.minecraftforge.gradleutils' version '[2.0.13,)'
+    id 'net.neoforged.gradleutils' version '3.0.0-alpha.8'
     id 'eclipse'
     id 'de.undercouch.download' version '5.4.0'
     id 'net.neoforged.gradle.patcher' version '[6.0.12,6.2)' apply false
@@ -33,6 +33,13 @@ plugins {
 }
 
 Util.init() //Init all our extension methods!
+
+gradleutils.version {
+    branches {
+        suffixBranch = true
+        suffixExemptedBranch '1.20.1'
+    }
+}
 
 ext {
     JAR_SIGNER = null
@@ -81,7 +88,7 @@ ext {
     COMMONS_IO_VERSION = '2.11.0'
 
     GIT_INFO = gradleutils.gitInfo
-    VERSION = gradleutils.getFilteredMCTagOffsetBranchVersion(true, '[0-9]', MC_VERSION)
+    VERSION = gradleutils.version.toString()
     FORGE_VERSION = VERSION.substring(MC_VERSION.length() + 1)
 
     BINPATCH_TOOL = 'net.minecraftforge:binarypatcher:1.1.1:fatjar'
@@ -91,8 +98,10 @@ ext {
     MIN_TAG_FOR_CHANGELOG = '41.0'
 }
 
+logger.lifecycle('NeoForge version: {}', VERSION)
+
 changelog {
-    fromTag MIN_TAG_FOR_CHANGELOG
+    from MIN_TAG_FOR_CHANGELOG
 }
 
 def extraTxts = [
@@ -139,6 +148,8 @@ subprojects {
 
     group = 'net.neoforged'
     version = VERSION
+
+    rootProject.gradleutils.setupSigning(project: project, signAllPublications: true)
 
     ext {
         isNonStable = { String version ->
@@ -206,7 +217,7 @@ subprojects {
             }
         }
         repositories {
-            maven gradleutils.getPublishingForgeMaven()
+            maven gradleutils.publishingMaven
         }
     }
 
