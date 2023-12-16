@@ -736,12 +736,12 @@ public class CommonHooks {
         var decoder = ConditionalOps.createConditionalCodec(LootPool.CODEC).listOf()
                 .map(pools -> {
                     if (pools.size() == 1) {
-                        if (pools.get(0).isPresent()) {
+                        if (pools.get(0).isPresent() && pools.get(0).get().getName() == null) {
                             nameSetter.accept(pools.get(0).get(), "main");
                         }
                     } else {
                         for (int i = 0; i < pools.size(); ++i) {
-                            if (pools.get(i).isPresent()) {
+                            if (pools.get(i).isPresent() && pools.get(i).get().getName() == null) {
                                 nameSetter.accept(pools.get(i).get(), "pool" + i);
                             }
                         }
