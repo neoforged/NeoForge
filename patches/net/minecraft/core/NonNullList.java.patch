@@ -1,0 +1,25 @@
+--- a/net/minecraft/core/NonNullList.java
++++ b/net/minecraft/core/NonNullList.java
+@@ -9,6 +_,22 @@
+ import org.apache.commons.lang3.Validate;
+ 
+ public class NonNullList<E> extends AbstractList<E> {
++
++    /**
++     * Neo: utility method to construct a Codec for a NonNullList
++     * @param entryCodec The codec to use for the elements
++     * @param <E> The element type
++     * @return A codec that encodes as a list, and decodes into NonNullList
++     */
++    public static <E> com.mojang.serialization.Codec<NonNullList<E>> codecOf(com.mojang.serialization.Codec<E> entryCodec) {
++        return entryCodec.listOf().xmap(NonNullList::copyOf, java.util.function.Function.identity());
++    }
++
++    // Neo: utility method to construct an immutable NonNullList from a given collection
++    public static <E> NonNullList<E> copyOf(java.util.Collection<? extends E> entries) {
++        return new NonNullList<>(List.copyOf(entries), null);
++    }
++
+     private final List<E> list;
+     @Nullable
+     private final E defaultValue;
