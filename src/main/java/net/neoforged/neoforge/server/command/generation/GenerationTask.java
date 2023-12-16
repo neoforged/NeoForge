@@ -182,7 +182,7 @@ public class GenerationTask {
         LongList chunks = new LongArrayList(count);
 
         Iterator<ChunkPos> iterator = this.iterator;
-        for (int i = 0; i < count && iterator.hasNext();) {
+        while (iterator.hasNext()) {
             ChunkPos chunkPosInLocalSpace = iterator.next();
             if (Math.abs(chunkPosInLocalSpace.x) <= this.radius && Math.abs(chunkPosInLocalSpace.z) <= this.radius) {
                 if (isChunkFullyGenerated(chunkPosInLocalSpace)) {
@@ -192,7 +192,6 @@ public class GenerationTask {
                 }
 
                 chunks.add(ChunkPos.asLong(chunkPosInLocalSpace.x + this.x, chunkPosInLocalSpace.z + this.z));
-                i++;
             }
         }
 

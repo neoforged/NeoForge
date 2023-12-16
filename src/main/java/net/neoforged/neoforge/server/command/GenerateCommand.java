@@ -61,7 +61,7 @@ class GenerateCommand {
 
     private static int executeGeneration(CommandSourceStack source, BlockPos pos, int chunkRadius, boolean progressBar) {
         if (activeTask != null) {
-            source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.already_running"), true);
+            source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.already_running"), true);
             return Command.SINGLE_SUCCESS;
         }
 
@@ -78,7 +78,7 @@ class GenerateCommand {
             }
         }
 
-        source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.started",
+        source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.started",
                 activeTask.getTotalCount(), diameter, diameter, diameter * 16, diameter * 16), true);
 
         activeTask.run(createPregenListener(source));
@@ -94,13 +94,13 @@ class GenerateCommand {
             int total = activeTask.getTotalCount();
 
             double percent = (double) count / total * 100.0;
-            source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.stopped", count, total, percent), true);
+            source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.stopped", count, total, percent), true);
 
             generationBar.close();
             generationBar = null;
             activeTask = null;
         } else {
-            source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.not_running"), false);
+            source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.not_running"), false);
         }
 
         return Command.SINGLE_SUCCESS;
@@ -112,16 +112,16 @@ class GenerateCommand {
             int total = activeTask.getTotalCount();
 
             double percent = (double) count / total * 100.0;
-            source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.status", count, total, percent), true);
+            source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.status", count, total, percent), true);
         } else {
-            source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.not_running"), false);
+            source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.not_running"), false);
         }
 
         return Command.SINGLE_SUCCESS;
     }
 
     private static int getGenerationHelp(CommandSourceStack source) {
-        source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.help_line"), false);
+        source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.help_line"), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -136,10 +136,10 @@ class GenerateCommand {
 
             @Override
             public void complete(int error) {
-                source.sendSuccess(() -> Component.translatable("commands.neoforge.gen.success"), true);
+                source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.success"), true);
 
                 if (error > 0) {
-                    source.sendFailure(Component.translatable("commands.neoforge.gen.error"));
+                    source.sendFailure(Component.translatable("commands.neoforge.chunkgen.error"));
                 }
 
                 if (generationBar != null) {
