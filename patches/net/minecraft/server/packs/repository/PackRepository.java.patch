@@ -9,6 +9,30 @@
      }
  
      public void reload() {
+@@ -71,11 +_,12 @@
+     }
+ 
+     private List<Pack> rebuildSelected(Collection<String> p_10518_) {
+-        List<Pack> list = this.getAvailablePacks(p_10518_).collect(Collectors.toList());
++        List<Pack> list = this.getAvailablePacks(p_10518_).flatMap(p -> Stream.concat(Stream.of(p), p.getChildren().stream())).collect(Collectors.toList());
+ 
+         for(Pack pack : this.available.values()) {
+             if (pack.isRequired() && !list.contains(pack)) {
+-                pack.getDefaultPosition().insert(list, pack, Functions.identity(), false);
++                int i = pack.getDefaultPosition().insert(list, pack, Functions.identity(), false);
++                list.addAll(i + 1, pack.getChildren());
+             }
+         }
+ 
+@@ -95,7 +_,7 @@
+     }
+ 
+     public Collection<String> getSelectedIds() {
+-        return this.selected.stream().map(Pack::getId).collect(ImmutableSet.toImmutableSet());
++        return this.selected.stream().filter(p -> !p.isHidden()).map(Pack::getId).collect(ImmutableSet.toImmutableSet());
+     }
+ 
+     public FeatureFlagSet getRequestedFeatureFlags() {
 @@ -109,6 +_,10 @@
      @Nullable
      public Pack getPack(String p_10508_) {

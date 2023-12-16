@@ -9,7 +9,7 @@
   "fml.menu.mods.openmodsfolder": "Open mods folder",
   "fml.menu.modoptions": "Mod Options...",
   "fml.menu.mods.info.version":"Version: {0}",
-  "fml.menu.mods.info.idstate":"ModID: {0} State:{1,lower}",
+  "fml.menu.mods.info.idstate":"ModID: {0} State: {1,lower}",
   "fml.menu.mods.info.credits":"Credits: {0}",
   "fml.menu.mods.info.authors":"Authors: {0}",
   "fml.menu.mods.info.displayurl":"Homepage: {0}",
@@ -81,6 +81,7 @@
   "fml.modloading.brokenresources": "File {2} failed to load a valid ResourcePackInfo",
   "fml.modloading.missinglicense": "Missing License Information in file {3}",
   "fml.resources.modresources": "Resources for {0} mod files",
+  "fml.resources.moddata": "Data for {0} mod files",
 
   "fml.messages.artifactversion.ornotinstalled":"{0,ornull,fml.messages.artifactversion.notinstalled}",
   "fml.messages.artifactversion":"{0,ornull,fml.messages.artifactversion.none}",
@@ -218,5 +219,5 @@
 
   "neoforge.chatType.system": "{0}",
 
-  "pack.neoforge.description": "NeoForge resource pack"
+  "pack.neoforge.description": "NeoForge data/resource pack"
 }

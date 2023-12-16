@@ -5,7 +5,7 @@
          BlockPos blockpos = p_53472_.below();
          BlockState blockstate = p_53471_.getBlockState(blockpos);
 -        if (!this.canBurn(blockstate) && !blockstate.isFaceSturdy(p_53471_, blockpos, Direction.UP)) {
-+        if (!this.canCatchFire(p_53471_, p_53472_, Direction.UP) && !blockstate.isFaceSturdy(p_53471_, blockpos, Direction.UP)) {
++        if (!this.canCatchFire(p_53471_, blockpos, Direction.UP) && !blockstate.isFaceSturdy(p_53471_, blockpos, Direction.UP)) {
              BlockState blockstate1 = this.defaultBlockState();
  
              for(Direction direction : Direction.values()) {

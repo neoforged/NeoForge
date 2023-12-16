@@ -19,7 +19,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
@@ -45,6 +44,7 @@ import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.InclusiveRange;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -166,8 +166,8 @@ public class NeoForgeMod {
     private static final DeferredRegister<Codec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, "neoforge");
     private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.HOLDER_SET_TYPES, "neoforge");
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static final DeferredHolder<ArgumentTypeInfo<?, ?>, EnumArgument.Info<?>> ENUM_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("enum", () -> ArgumentTypeInfos.registerByClass(EnumArgument.class, new EnumArgument.Info()));
+    @SuppressWarnings({ "unchecked", "rawtypes" }) // Uses Holder instead of DeferredHolder as the type due to weirdness between ECJ and javac.
+    private static final Holder<ArgumentTypeInfo<?, ?>> ENUM_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("enum", () -> ArgumentTypeInfos.registerByClass(EnumArgument.class, new EnumArgument.Info()));
     private static final DeferredHolder<ArgumentTypeInfo<?, ?>, SingletonArgumentInfo<ModIdArgument>> MODID_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("modid", () -> ArgumentTypeInfos.registerByClass(ModIdArgument.class,
             SingletonArgumentInfo.contextFree(ModIdArgument::modIdArgument)));
 
@@ -184,7 +184,7 @@ public class NeoForgeMod {
     public static final Holder<Attribute> BLOCK_REACH = ATTRIBUTES.register("block_reach", () -> new RangedAttribute("neoforge.block_reach", 4.5D, 0.0D, 1024.0D).setSyncable(true));
 
     /**
-     * Attack Range represents the distance at which a player may attack an entity. The default is 3 blocks. Players in creative mode have an additional 3 blocks of entity reach.
+     * Attack Range represents the distance at which a player may attack an entity. The default is 3 blocks. Players in creative mode have an additional 2 blocks of entity reach.
      * The default of 3.0 is technically considered a bug by Mojang - see MC-172289 and MC-92484. However, updating this value would allow for longer-range attacks on vanilla servers, which makes some people mad.
      * 
      * @see IPlayerExtension#getEntityReach()
@@ -503,7 +503,7 @@ public class NeoForgeMod {
 
         UsernameCache.load();
         TierSortingRegistry.init();
-        if (dist == Dist.CLIENT) ClientCommandHandler.init();
+        if (dist.isClient()) ClientCommandHandler.init();
         DualStackUtils.initialise();
 
         modEventBus.addListener(CapabilityHooks::registerVanillaProviders);
@@ -532,10 +532,9 @@ public class NeoForgeMod {
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
         gen.addProvider(true, new PackMetadataGenerator(packOutput)
                 .add(PackMetadataSection.TYPE, new PackMetadataSection(
-                        Component.translatable("pack.forge.description"),
-                        DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
-                        Optional.empty(),
-                        Optional.of(new PackMetadataSection.NeoForgeData(Optional.of(Arrays.stream(PackType.values()).collect(Collectors.toMap(Function.identity(), DetectedVersion.BUILT_IN::getPackVersion))))))));
+                        Component.translatable("pack.neoforge.description"),
+                        DetectedVersion.BUILT_IN.getPackVersion(PackType.SERVER_DATA),
+                        Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
         NeoForgeBlockTagsProvider blockTags = new NeoForgeBlockTagsProvider(packOutput, lookupProvider, existingFileHelper);
         gen.addProvider(event.includeServer(), blockTags);
         gen.addProvider(event.includeServer(), new NeoForgeItemTagsProvider(packOutput, lookupProvider, blockTags.contentsGetter(), existingFileHelper));

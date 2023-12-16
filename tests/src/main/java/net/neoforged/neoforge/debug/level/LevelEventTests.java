@@ -49,7 +49,7 @@ public class LevelEventTests {
         test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
                 .thenExecute(() -> helper.setBlock(4, 1, 4, Blocks.DIRT))
                 .thenExecute(() -> helper.setBlock(4, 2, 4, Blocks.SPRUCE_SAPLING))
-                .thenExecuteFor(10, player -> helper.boneMeal(4, 2, 4, player))
+                .thenWaitUntil(player -> helper.boneMealUntilGrown(4, 2, 4, player))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.BIRCH_LOG, 4, 2, 4))
                 .thenSucceed());
     }
@@ -58,7 +58,7 @@ public class LevelEventTests {
     @TestHolder
     static void alterGroundEvent(final DynamicTest test) {
         test.registerGameTestTemplate(StructureTemplateBuilder.withSize(16, 32, 16)
-                .fill(0, 0, 0, 16, 1, 16, Blocks.DIRT.defaultBlockState())
+                .fill(0, 0, 0, 15, 0, 15, Blocks.DIRT.defaultBlockState())
                 .set(7, 1, 7, Blocks.SPRUCE_SAPLING.defaultBlockState())
                 .set(8, 1, 7, Blocks.SPRUCE_SAPLING.defaultBlockState())
                 .set(7, 1, 8, Blocks.SPRUCE_SAPLING.defaultBlockState())
@@ -73,7 +73,7 @@ public class LevelEventTests {
         });
 
         test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
-                .thenExecuteFor(20, player -> helper.boneMeal(7, 2, 7, player))
+                .thenWaitUntil(player -> helper.boneMealUntilGrown(7, 2, 7, player))
                 .thenExecute(player -> helper.assertTrue(
                         helper.blocksBetween(0, 0, 0, 16, 1, 16).anyMatch(pos -> helper.getLevel().getBlockState(pos).is(Blocks.REDSTONE_BLOCK)),
                         "No redstone blocks have been placed!"))

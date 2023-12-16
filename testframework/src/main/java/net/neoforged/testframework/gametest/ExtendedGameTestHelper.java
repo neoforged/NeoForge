@@ -25,8 +25,10 @@ import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -34,6 +36,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -180,6 +183,14 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         boneMeal(new BlockPos(x, y, z), player);
     }
 
+    /**
+     * To be used alongside {@link net.minecraft.gametest.framework.GameTestSequence#thenWaitUntil(Runnable)}
+     */
+    public void boneMealUntilGrown(int x, int y, int z, Player player) {
+        boneMeal(x, y, z, player);
+        assertBlockState(new BlockPos(x, y, z), state -> !(state.getBlock() instanceof BonemealableBlock), () -> "Crop didn't grow");
+    }
+
     public void assertContainerEmpty(int x, int y, int z) {
         assertContainerEmpty(new BlockPos(x, y, z));
     }
@@ -190,5 +201,13 @@ public class ExtendedGameTestHelper extends GameTestHelper {
 
     public void pulseRedstone(int x, int y, int z, long delay) {
         pulseRedstone(new BlockPos(x, y, z), delay);
+    }
+
+    public <E extends LivingEntity> void assertMobEffectPresent(E entity, MobEffect effect, String testName) {
+        assertEntityProperty(entity, e -> e.hasEffect(effect), testName);
+    }
+
+    public <E extends LivingEntity> void assertMobEffectAbsent(E entity, MobEffect effect, String testName) {
+        assertEntityProperty(entity, e -> !e.hasEffect(effect), testName);
     }
 }

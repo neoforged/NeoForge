@@ -109,3 +109,16 @@
                  p_9866_.dispatch(
                      new ServerboundInteractPacket.Handler() {
                          private void performInteraction(InteractionHand p_143679_, ServerGamePacketListenerImpl.EntityInteraction p_143680_) {
+@@ -1502,7 +_,11 @@
+     
+                         @Override
+                         public void onInteraction(InteractionHand p_143682_, Vec3 p_143683_) {
+-                            this.performInteraction(p_143682_, (p_143686_, p_143687_, p_143688_) -> p_143687_.interactAt(p_143686_, p_143683_, p_143688_));
++                            this.performInteraction(p_143682_, (p_143686_, p_143687_, p_143688_) -> {
++                                InteractionResult onInteractEntityAtResult = net.neoforged.neoforge.common.CommonHooks.onInteractEntityAt(player, entity, p_143683_, p_143682_);
++                                if (onInteractEntityAtResult != null) return onInteractEntityAtResult;
++                                return p_143687_.interactAt(p_143686_, p_143683_, p_143688_);
++                            });
+                         }
+     
+                         @Override

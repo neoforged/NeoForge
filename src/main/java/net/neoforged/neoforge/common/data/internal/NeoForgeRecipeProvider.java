@@ -5,7 +5,12 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;

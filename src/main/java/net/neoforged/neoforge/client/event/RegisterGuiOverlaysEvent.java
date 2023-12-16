@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import net.neoforged.neoforge.client.gui.overlay.VanillaGuiOverlay;
 import org.jetbrains.annotations.ApiStatus;
@@ -25,8 +25,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  *
- * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
- * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+ * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class RegisterGuiOverlaysEvent extends Event implements IModBusEvent {
     private final Map<ResourceLocation, IGuiOverlay> overlays;

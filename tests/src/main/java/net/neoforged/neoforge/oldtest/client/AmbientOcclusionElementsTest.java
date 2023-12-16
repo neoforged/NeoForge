@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -38,11 +37,10 @@ public class AmbientOcclusionElementsTest {
     public static final DeferredItem<BlockItem> NO_AO_BLOCK_SHADE_ITEM = ITEMS.registerSimpleBlockItem(NO_AO_BLOCK_SHADE);
     public static final DeferredItem<BlockItem> NO_AO_BLOCK_NO_SHADE_ITEM = ITEMS.registerSimpleBlockItem(NO_AO_BLOCK_NO_SHADE);
 
-    public AmbientOcclusionElementsTest() {
+    public AmbientOcclusionElementsTest(IEventBus modEventBus) {
         if (!ENABLED)
             return;
 
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         modEventBus.addListener(this::addCreative);

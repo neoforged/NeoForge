@@ -13,15 +13,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Decoder;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.Encoder;
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.MapCodec.MapCodecCodec;
-import com.mojang.serialization.codecs.KeyDispatchCodec;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.ObjIntConsumer;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.crafting.Recipe;
@@ -83,39 +79,6 @@ public class NeoForgeExtraCodecs {
     }
 
     /**
-     * Version of {@link Codec#dispatch(Function, Function)} that always writes the dispatched codec inline,
-     * i.e. at the same nesting level as the {@code "type": ...}.
-     * <p>
-     * Note: the codec produced by {@code .dispatch()} inlines the dispatched codec ONLY if it is a {@link MapCodecCodec}.
-     * This function always inlines.
-     */
-    public static <K, V> Codec<V> dispatchUnsafe(final Codec<K> keyCodec, final Function<? super V, ? extends K> type, final Function<? super K, ? extends Codec<? extends V>> codec) {
-        return dispatchUnsafe(keyCodec, "type", type, codec);
-    }
-
-    /**
-     * Version of {@link Codec#dispatch(String, Function, Function)} that always writes the dispatched codec inline,
-     * i.e. at the same nesting level as the {@code "type": ...}.
-     * <p>
-     * Note: the codec produced by {@code .dispatch()} inlines the dispatched codec ONLY if it is a {@link MapCodecCodec}.
-     * This function always inlines.
-     */
-    public static <K, V> Codec<V> dispatchUnsafe(final Codec<K> keyCodec, final String typeKey, final Function<? super V, ? extends K> type, final Function<? super K, ? extends Codec<? extends V>> codec) {
-        return partialDispatchUnsafe(keyCodec, typeKey, type.andThen(DataResult::success), codec.andThen(DataResult::success));
-    }
-
-    /**
-     * Version of {@link Codec#partialDispatch(String, Function, Function)} that always writes the dispatched codec inline,
-     * i.e. at the same nesting level as the {@code "type": ...}.
-     * <p>
-     * Note: the codec produced by {@code .dispatch()} inlines the dispatched codec ONLY if it is a {@link MapCodecCodec}.
-     * This function always inlines.
-     */
-    public static <K, V> Codec<V> partialDispatchUnsafe(final Codec<K> keyCodec, final String typeKey, final Function<? super V, ? extends DataResult<? extends K>> type, final Function<? super K, ? extends DataResult<? extends Codec<? extends V>>> codec) {
-        return KeyDispatchCodec.unsafe(typeKey, keyCodec, type, codec, v -> type.apply(v).<Encoder<? extends V>>flatMap(k -> codec.apply(k).map(Function.identity())).map(e -> ((Encoder<V>) e))).codec();
-    }
-
-    /**
      * Creates a codec from a decoder.
      * The returned codec can only decode, and will throw on any attempt to encode.
      */
@@ -140,19 +103,6 @@ public class NeoForgeExtraCodecs {
         return codec.xmap(
                 list -> list.stream().filter(Optional::isPresent).map(Optional::get).toList(),
                 list -> list.stream().map(Optional::of).toList());
-    }
-
-    /**
-     * Creates a decoder invoking a callback for each element and the corresponding index in a list.
-     */
-    public static <A> Decoder<List<A>> listDecoderWithIndexedPeek(final Decoder<List<A>> decoder, ObjIntConsumer<A> consumer) {
-        return decoder.map(
-                list -> {
-                    for (int i = 0; i < list.size(); i++) {
-                        consumer.accept(list.get(i), i);
-                    }
-                    return list;
-                });
     }
 
     /**

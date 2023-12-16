@@ -15,7 +15,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -33,8 +32,7 @@ public class CustomColorResolverTest {
 
     private static final DeferredBlock<Block> BLOCK = BLOCKS.register("test_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
 
-    public CustomColorResolverTest() {
-        final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public CustomColorResolverTest(IEventBus modBus) {
         ITEMS.register(modBus);
         BLOCKS.register(modBus);
 

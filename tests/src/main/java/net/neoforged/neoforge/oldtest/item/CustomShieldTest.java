@@ -8,10 +8,13 @@ package net.neoforged.neoforge.oldtest.item;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -25,8 +28,7 @@ public class CustomShieldTest {
     private static final DeferredItem<CustomShieldItem> CUSTOM_SHIELD_ITEM = ITEMS.register("custom_shield",
             () -> new CustomShieldItem((new Item.Properties()).durability(336)));
 
-    public CustomShieldTest() {
-        var modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public CustomShieldTest(IEventBus modBus) {
         ITEMS.register(modBus);
         modBus.addListener(this::addCreative);
     }

@@ -21,7 +21,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -36,9 +35,7 @@ public class HideNeighborFaceTest {
     private static final DeferredBlock<Block> GLASS_SLAB = BLOCKS.register("glass_slab", GlassSlab::new);
     private static final DeferredItem<BlockItem> GLASS_SLAB_ITEM = ITEMS.registerSimpleBlockItem(GLASS_SLAB);
 
-    public HideNeighborFaceTest() {
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-
+    public HideNeighborFaceTest(IEventBus bus) {
         BLOCKS.register(bus);
         ITEMS.register(bus);
     }

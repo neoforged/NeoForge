@@ -14,9 +14,9 @@ import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -24,8 +24,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
  *
- * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
- * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+ * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class RegisterRecipeBookCategoriesEvent extends Event implements IModBusEvent {
     private final Map<RecipeBookCategories, ImmutableList<RecipeBookCategories>> aggregateCategories;
