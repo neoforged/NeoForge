@@ -65,8 +65,16 @@
   "fml.modloading.uncaughterror":"An uncaught parallel processing error has occurred.\n\u00a77{2,exc,msg}",
   "fml.modloading.errorduringevent":"{0,modinfo,name} ({0,modinfo,id}) encountered an error during the {1,lower} event phase\n\u00a77{2,exc,msg}",
   "fml.modloading.failedtoloadforge": "Failed to load NeoForge",
+
   "fml.modloading.missingdependency": "Mod \u00a7e{4}\u00a7r requires \u00a76{3}\u00a7r \u00a7o{5,vr}\u00a7r\n\u00a77Currently, \u00a76{3}\u00a7r\u00a77 is \u00a7o{6,i18n,fml.messages.artifactversion.ornotinstalled}",
   "fml.modloading.missingdependency.optional": "Mod \u00a7e{4}\u00a7r only supports \u00a73{3}\u00a7r \u00a7o{5,vr}\u00a7r\n\u00a77Currently, \u00a73{3}\u00a7r\u00a77 is \u00a7o{6}",
+  "fml.modloading.incompatiblemod": "Mod \u00a7e{4}\u00a7r is §cincompatible§r with \u00a73{3}\u00a7r \u00a7o{5,vr}\u00a7r\n\u00a77Currently, \u00a73{3}\u00a7r\u00a77 is \u00a7o{6}§r\n§7The reason is:§r §o{7,i18ntranslate}§r",
+  "fml.modloading.discouragedmod": "Mod \u00a7e{3}\u00a7r §ddiscourages§r the use of \u00a73{2}\u00a7r \u00a7o{4,vr}\u00a7r\n\u00a77Currently, \u00a73{2}\u00a7r\u00a77 is \u00a7o{5}§r\n§7The reason is:§r §o{6,i18ntranslate}§r",
+  "fml.modloading.discouragedmod.proceed": "Proceed at your own risk",
+
+  "fml.modloading.incompatiblemod.noreason": "§eNo reason provided§r",
+  "fml.modloading.discouragedmod.noreason": "§eNo reason provided§r",
+
   "fml.dependencyloading.conflictingdependencies": "Some mods have requested conflicting versions of: \u00a76{3}\u00a7r. Requested by: \u00a7e{4}\u00a7r.",
   "fml.dependencyloading.mismatchedcontaineddependencies": "Some mods have agreed upon an acceptable version range for : \u00a76{3}\u00a7r, but no jar was provided which matched the range. Requested by: \u00a7e{4}\u00a7r.",
   "fml.modloading.cycle": "Detected a mod dependency cycle: {0}",
