@@ -11,7 +11,12 @@ import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
@@ -22,15 +27,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Unit;
-import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public interface ICondition {
-    // Use dispatchUnsafe to always write the condition value inline.
-    Codec<ICondition> CODEC = NeoForgeExtraCodecs.dispatchUnsafe(
-            NeoForgeRegistries.CONDITION_SERIALIZERS.byNameCodec(),
-            ICondition::codec,
-            Function.identity());
+    Codec<ICondition> CODEC = NeoForgeRegistries.CONDITION_SERIALIZERS.byNameCodec()
+            .dispatch(ICondition::codec, Function.identity());
     Codec<List<ICondition>> LIST_CODEC = CODEC.listOf();
 
     static <V, T> Optional<T> getConditionally(Codec<T> codec, DynamicOps<V> ops, V element) {

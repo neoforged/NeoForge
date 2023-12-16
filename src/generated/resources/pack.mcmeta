@@ -3,12 +3,10 @@
     "description": {
       "translate": "pack.neoforge.description"
     },
-    "neoforge": {
-      "versions": {
-        "client_resources": 22,
-        "server_data": 26
-      }
-    },
-    "pack_format": 26
+    "pack_format": 26,
+    "supported_formats": [
+      0,
+      2147483647
+    ]
   }
 }

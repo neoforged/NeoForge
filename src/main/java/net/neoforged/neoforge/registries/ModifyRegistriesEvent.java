@@ -12,7 +12,6 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.callback.RegistryCallback;
 
 /**
@@ -25,8 +24,7 @@ import net.neoforged.neoforge.registries.callback.RegistryCallback;
  * <p>This event cannot be used to modify datapack registries.
  *
  * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
- * <p>This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
- * on both {@linkplain LogicalSide logical sides}.</p>
+ * <p>This event is fired on the mod-specific event bus, on both {@linkplain LogicalSide logical sides}.</p>
  *
  * @see NewRegistryEvent
  */

@@ -1,17 +1,11 @@
 --- a/net/minecraft/world/item/MilkBucketItem.java
 +++ b/net/minecraft/world/item/MilkBucketItem.java
-@@ -22,13 +_,10 @@
-             CriteriaTriggers.CONSUME_ITEM.trigger(serverplayer, p_42923_);
-             serverplayer.awardStat(Stats.ITEM_USED.get(this));
+@@ -28,7 +_,7 @@
          }
-+        if (!p_42924_.isClientSide) p_42925_.curePotionEffects(p_42923_); // FORGE - move up so stack.shrink does not turn stack into air
  
-         if (p_42925_ instanceof Player && !((Player)p_42925_).getAbilities().instabuild) {
-             p_42923_.shrink(1);
--        }
--
--        if (!p_42924_.isClientSide) {
+         if (!p_42924_.isClientSide) {
 -            p_42925_.removeAllEffects();
++            p_42925_.removeEffectsCuredBy(net.neoforged.neoforge.common.EffectCures.MILK);
          }
  
          return p_42923_.isEmpty() ? new ItemStack(Items.BUCKET) : p_42923_;

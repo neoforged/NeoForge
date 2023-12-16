@@ -298,7 +298,7 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      * @return {@code true} if the entity can start swimming, {@code false} otherwise
      */
     default boolean canStartSwimming() {
-        return !this.getEyeInFluidType().isAir() && this.canSwimInFluidType(this.getEyeInFluidType());
+        return !this.getEyeInFluidType().isAir() && this.canSwimInFluidType(this.getEyeInFluidType()) && this.canSwimInFluidType(this.self().level().getFluidState(this.self().blockPosition()).getFluidType());
     }
 
     /**

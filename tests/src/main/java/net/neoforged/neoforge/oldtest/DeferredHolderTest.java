@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,10 +27,9 @@ public class DeferredHolderTest {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public DeferredHolderTest() {
+    public DeferredHolderTest(IEventBus modBus) {
         if (!ENABLED) return;
 
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(this::commonSetup);
     }
 

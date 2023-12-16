@@ -30,7 +30,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -51,10 +50,9 @@ public class GravityAttributeTest {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final DeferredItem<Item> TEST_ITEM = ITEMS.register("gravity_stick", () -> new ItemGravityStick(new Properties().rarity(Rarity.RARE)));
 
-    public GravityAttributeTest() {
+    public GravityAttributeTest(IEventBus modEventBus) {
         if (ENABLE) {
             NeoForge.EVENT_BUS.register(this);
-            IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
             modEventBus.register(this);
             ITEMS.register(modEventBus);
             modEventBus.addListener(this::addCreative);

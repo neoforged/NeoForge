@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.world.chunk.RegisterTicketControllersEvent;
 import net.neoforged.neoforge.common.world.chunk.TicketController;
 import net.neoforged.neoforge.common.world.chunk.TicketSet;
@@ -59,8 +58,7 @@ public class ForgeChunkManagerTest {
         }
     });
 
-    public ForgeChunkManagerTest() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public ForgeChunkManagerTest(IEventBus modEventBus) {
         modEventBus.addListener(this::registerControllers);
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
