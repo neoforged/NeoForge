@@ -7,6 +7,10 @@ on:
       - opened
       - ready_for_review
       - reopened
+  push:
+    branches:
+      - 'feature/**'
+  workflow_dispatch:
 
 jobs:
   build:

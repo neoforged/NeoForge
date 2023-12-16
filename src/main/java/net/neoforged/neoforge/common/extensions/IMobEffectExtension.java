@@ -5,37 +5,34 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.effect.MobEffects;
+import net.neoforged.neoforge.common.EffectCure;
+import net.neoforged.neoforge.common.EffectCures;
 
 public interface IMobEffectExtension {
     private MobEffect self() {
         return (MobEffect) this;
     }
 
-    /**
-     * Get a fresh list of items that can cure this Potion.
-     * All new PotionEffects created from this Potion will call this to initialize the default curative items
-     * 
-     * @see MobEffectInstance#getCurativeItems()
-     * @return A list of items that can cure this Potion
+    /***
+     * Fill the given set with the {@link EffectCure}s this effect should be curable with by default
      */
-    default List<ItemStack> getCurativeItems() {
-        ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
-        ret.add(new ItemStack(Items.MILK_BUCKET));
-        return ret;
+    default void fillEffectCures(Set<EffectCure> cures, MobEffectInstance effectInstance) {
+        cures.addAll(EffectCures.DEFAULT_CURES);
+        if (self() == MobEffects.POISON) {
+            cures.add(EffectCures.HONEY);
+        }
     }
 
     /**
-     * Used for determining {@code PotionEffect} sort order in GUIs.
-     * Defaults to the {@code PotionEffect}'s liquid color.
+     * Used for determining {@link MobEffect} sort order in GUIs.
+     * Defaults to the {@link MobEffect}'s liquid color.
      * 
-     * @param effectInstance the {@code PotionEffect} instance containing the potion
-     * @return a value used to sort {@code PotionEffect}s in GUIs
+     * @param effectInstance the {@link MobEffectInstance} containing this {@link MobEffect}
+     * @return a value used to sort {@link MobEffect}s in GUIs
      */
     default int getSortOrder(MobEffectInstance effectInstance) {
         return self().getColor();

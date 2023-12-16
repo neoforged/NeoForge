@@ -36,6 +36,7 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stat;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.Container;
@@ -43,6 +44,8 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
@@ -86,6 +89,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event.Result;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
@@ -106,6 +110,7 @@ import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.living.LivingPackSizeEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.AllowDespawn;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
@@ -842,6 +847,12 @@ public class EventHooks {
         return WeightedRandomList.create(event.getSpawnerDataList());
     }
 
+    public static StatAwardEvent onStatAward(Player player, Stat<?> stat, int value) {
+        StatAwardEvent event = new StatAwardEvent(player, stat, value);
+        NeoForge.EVENT_BUS.post(event);
+        return event;
+    }
+
     @ApiStatus.Internal
     public static void onAdvancementEarnedEvent(Player player, AdvancementHolder earned) {
         NeoForge.EVENT_BUS.post(new AdvancementEarnEvent(player, earned));
@@ -850,5 +861,13 @@ public class EventHooks {
     @ApiStatus.Internal
     public static void onAdvancementProgressedEvent(Player player, AdvancementHolder progressed, AdvancementProgress advancementProgress, String criterion, ProgressType progressType) {
         NeoForge.EVENT_BUS.post(new AdvancementProgressEvent(player, progressed, advancementProgress, criterion, progressType));
+    }
+
+    public static boolean onEffectRemoved(LivingEntity entity, MobEffect effect, @Nullable EffectCure cure) {
+        return NeoForge.EVENT_BUS.post(new MobEffectEvent.Remove(entity, effect, cure)).isCanceled();
+    }
+
+    public static boolean onEffectRemoved(LivingEntity entity, MobEffectInstance effectInstance, @Nullable EffectCure cure) {
+        return NeoForge.EVENT_BUS.post(new MobEffectEvent.Remove(entity, effectInstance, cure)).isCanceled();
     }
 }
