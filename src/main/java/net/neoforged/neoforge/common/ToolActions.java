@@ -95,7 +95,7 @@ public class ToolActions {
 
     /**
      * A tool action corresponding to the 'block' action of shields.
-     * Have item return this tool action to have damage blocking be active when item is currently being "used".
+     * Items should expose this tool action in order to enable damage blocking when the item is being "used".
      */
     public static final ToolAction SHIELD_BLOCK = ToolAction.get("shield_block");
 
