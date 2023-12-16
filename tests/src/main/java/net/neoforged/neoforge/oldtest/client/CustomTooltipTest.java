@@ -28,12 +28,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.DistExecutor;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
@@ -51,9 +48,8 @@ public class CustomTooltipTest {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ID);
     static final DeferredItem<Item> CUSTOM_ITEM = ITEMS.register("test_item", () -> new CustomItemWithTooltip(new Item.Properties()));
 
-    public CustomTooltipTest() {
+    public CustomTooltipTest(IEventBus modEventBus) {
         if (ENABLED) {
-            IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
             if (FMLEnvironment.dist.isClient()) {
                 NeoForge.EVENT_BUS.register(ClientEventHandler.class);
                 modEventBus.register(ClientModBusEventHandler.class);
@@ -100,8 +96,8 @@ public class CustomTooltipTest {
 
         @Override
         public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-            if (level.isClientSide) {
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> TooltipTestScreen::show);
+            if (level.isClientSide && FMLEnvironment.dist.isClient()) {
+                TooltipTestScreen.show();
             }
             return InteractionResultHolder.success(player.getItemInHand(hand));
         }

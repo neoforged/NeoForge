@@ -25,11 +25,6 @@ public class MethodBasedTest extends AbstractTest.Dynamic {
         this.handle = ReflectionUtils.handle(method);
     }
 
-    public MethodBasedTest bindTo(Object target) {
-        handle = handle.bindTo(target);
-        return this;
-    }
-
     @Override
     public void init(@Nonnull TestFramework framework) {
         super.init(framework);

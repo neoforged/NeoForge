@@ -78,7 +78,7 @@ runs {
         gameDir.mkdirs();
 
         workingDirectory.set gameDir
-        programArguments.addAll '--gameDir', "\"${gameDir.absolutePath}\""
+        programArguments.addAll '--gameDir', gameDir.absolutePath
     }
 }
 
@@ -113,5 +113,14 @@ spotless {
         toggleOffOn()
         eclipse().configFile rootProject.file('codeformat/formatter-config.xml')
         importOrder()
+
+        // courtesy of diffplug/spotless#240
+        // https://github.com/diffplug/spotless/issues/240#issuecomment-385206606
+        custom 'noWildcardImports', { String fileContents ->
+            if (fileContents.contains('*;\n')) {
+                throw new GradleException('No wildcard imports are allowed!')
+            }
+        }
+        bumpThisNumberIfACustomStepChanges(1)
     }
 }

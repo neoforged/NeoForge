@@ -1,19 +1,19 @@
 --- a/net/minecraft/world/effect/MobEffectInstance.java
 +++ b/net/minecraft/world/effect/MobEffectInstance.java
-@@ -19,7 +_,7 @@
- import net.minecraft.world.entity.LivingEntity;
- import org.slf4j.Logger;
+@@ -78,6 +_,7 @@
+         this.showIcon = p_216892_;
+         this.hiddenEffect = p_216893_;
+         this.factorData = p_216894_;
++        this.effect.fillEffectCures(this.cures, this);
+     }
  
--public class MobEffectInstance implements Comparable<MobEffectInstance> {
-+public class MobEffectInstance implements Comparable<MobEffectInstance>, net.neoforged.neoforge.common.extensions.IMobEffectInstanceExtension {
-     private static final Logger LOGGER = LogUtils.getLogger();
-     public static final int INFINITE_DURATION = -1;
-     private static final String TAG_ID = "id";
-@@ -96,6 +_,7 @@
+     public MobEffectInstance(MobEffectInstance p_19543_) {
+@@ -96,6 +_,8 @@
          this.ambient = p_19549_.ambient;
          this.visible = p_19549_.visible;
          this.showIcon = p_19549_.showIcon;
-+        this.curativeItems = p_19549_.curativeItems == null ? null : new java.util.ArrayList<net.minecraft.world.item.ItemStack>(p_19549_.curativeItems);
++        this.cures.clear();
++        this.cures.addAll(p_19549_.cures);
      }
  
      public boolean update(MobEffectInstance p_19559_) {
@@ -25,64 +25,66 @@
          this.writeDetailsTo(p_19556_);
          return p_19556_;
      }
-@@ -287,6 +_,7 @@
-             this.hiddenEffect.save(compoundtag);
-             p_19568_.put("hidden_effect", compoundtag);
-         }
-+        writeCurativeItems(p_19568_);
+@@ -295,6 +_,8 @@
+                         .resultOrPartial(LOGGER::error)
+                         .ifPresent(p_216906_ -> p_19568_.put("factor_calculation_data", p_216906_))
+             );
++
++        writeCures(p_19568_);
+     }
  
-         this.factorData
-             .ifPresent(
-@@ -332,9 +_,9 @@
+     @Nullable
+@@ -332,7 +_,7 @@
              optional = Optional.empty();
          }
  
 -        return new MobEffectInstance(p_19546_, j, Math.max(i, 0), flag, flag1, flag2, mobeffectinstance, optional);
-+        return readCurativeItems(new MobEffectInstance(p_19546_, j, Math.max(0, i), flag, flag1, flag2, mobeffectinstance, optional), p_19547_);
++        return new MobEffectInstance(p_19546_, j, Math.max(i, 0), flag, flag1, flag2, mobeffectinstance, optional).readCures(p_19547_);
      }
--
-+    
+ 
      public int compareTo(MobEffectInstance p_19566_) {
-         int i = 32147;
-         return (this.getDuration() <= 32147 || p_19566_.getDuration() <= 32147) && (!this.isAmbient() || !p_19566_.isAmbient())
-@@ -342,12 +_,38 @@
+@@ -342,12 +_,42 @@
                  .compareFalseFirst(this.isAmbient(), p_19566_.isAmbient())
                  .compareFalseFirst(this.isInfiniteDuration(), p_19566_.isInfiniteDuration())
                  .compare(this.getDuration(), p_19566_.getDuration())
 -                .compare(this.getEffect().getColor(), p_19566_.getEffect().getColor())
-+                .compare(this.getEffect().getSortOrder(this), p_19566_.getEffect().getSortOrder(this))
++                .compare(this.getEffect().getSortOrder(this), p_19566_.getEffect().getSortOrder(p_19566_))
                  .result()
              : ComparisonChain.start()
                  .compare(this.isAmbient(), p_19566_.isAmbient())
 -                .compare(this.getEffect().getColor(), p_19566_.getEffect().getColor())
-+                .compare(this.getEffect().getSortOrder(this), p_19566_.getEffect().getSortOrder(this))
++                .compare(this.getEffect().getSortOrder(this), p_19566_.getEffect().getSortOrder(p_19566_))
                  .result();
 +    }
 +
-+    //======================= FORGE START ===========================
-+    private java.util.List<net.minecraft.world.item.ItemStack> curativeItems;
++    private final java.util.Set<net.neoforged.neoforge.common.EffectCure> cures = com.google.common.collect.Sets.newIdentityHashSet();
 +
-+    @Override
-+    public java.util.List<net.minecraft.world.item.ItemStack> getCurativeItems() {
-+        if (this.curativeItems == null) //Lazy load this so that we don't create a circular dep on Items.
-+            this.curativeItems = getEffect().getCurativeItems();
-+        return this.curativeItems;
++    /**
++     * {@return the {@link net.neoforged.neoforge.common.EffectCure}s which can cure the {@link MobEffect} held by this {@link MobEffectInstance}}
++     */
++    public java.util.Set<net.neoforged.neoforge.common.EffectCure> getCures() {
++        return cures;
 +    }
-+    @Override
-+    public void setCurativeItems(java.util.List<net.minecraft.world.item.ItemStack> curativeItems) {
-+        this.curativeItems = curativeItems;
-+    }
-+    private static MobEffectInstance readCurativeItems(MobEffectInstance effect, CompoundTag nbt) {
-+        if (nbt.contains("CurativeItems", net.minecraft.nbt.Tag.TAG_LIST)) {
-+            java.util.List<net.minecraft.world.item.ItemStack> items = new java.util.ArrayList<net.minecraft.world.item.ItemStack>();
-+            net.minecraft.nbt.ListTag list = nbt.getList("CurativeItems", net.minecraft.nbt.Tag.TAG_COMPOUND);
++
++    private MobEffectInstance readCures(CompoundTag tag) {
++        cures.clear(); // Overwrite cures with ones stored in NBT, if any
++        if (tag.contains("neoforge:cures", Tag.TAG_LIST)) {
++            net.minecraft.nbt.ListTag list = tag.getList("neoforge:cures", Tag.TAG_STRING);
 +            for (int i = 0; i < list.size(); i++) {
-+                items.add(net.minecraft.world.item.ItemStack.of(list.getCompound(i)));
++                cures.add(net.neoforged.neoforge.common.EffectCure.get(list.getString(i)));
 +            }
-+            effect.setCurativeItems(items);
 +        }
++        return this;
++    }
 +
-+        return effect;
++    private void writeCures(CompoundTag tag) {
++        if (!cures.isEmpty()) {
++            net.minecraft.nbt.ListTag list = new net.minecraft.nbt.ListTag();
++            for (net.neoforged.neoforge.common.EffectCure cure : cures) {
++                list.add(net.minecraft.nbt.StringTag.valueOf(cure.name()));
++            }
++            tag.put("neoforge:cures", list);
++        }
      }
  
      public static class FactorData {

@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/renderer/blockentity/TheEndGatewayRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/TheEndGatewayRenderer.java
+@@ -51,4 +_,9 @@
+     public int getViewDistance() {
+         return 256;
+     }
++
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(TheEndGatewayBlockEntity blockEntity) {
++        return blockEntity.isSpawning() || blockEntity.isCoolingDown() ? INFINITE_EXTENT_AABB : super.getRenderBoundingBox(blockEntity);
++    }
+ }

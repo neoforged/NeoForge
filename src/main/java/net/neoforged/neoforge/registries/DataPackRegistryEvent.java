@@ -13,9 +13,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.RegistryDataLoader;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,9 +30,7 @@ public abstract class DataPackRegistryEvent extends Event implements IModBusEven
      * Data JSONs will be loaded from {@code data/<datapack_namespace>/modid/registryname/}, where {@code modid} is the namespace of the registry key.
      * <p>
      * This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
-     * <p>
-     * This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
-     * on both {@linkplain LogicalSide logical sides}.
+     * <p>This event is fired on the mod-specific event bus, on both {@linkplain LogicalSide logical sides}.
      */
     public static final class NewRegistry extends DataPackRegistryEvent {
         private final List<DataPackRegistryData<?>> registryDataList = new ArrayList<>();

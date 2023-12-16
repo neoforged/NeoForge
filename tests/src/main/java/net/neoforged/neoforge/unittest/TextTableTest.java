@@ -6,7 +6,9 @@
 package net.neoforged.neoforge.unittest;
 
 import static net.neoforged.neoforge.common.util.TextTable.column;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.google.common.collect.Lists;
 import net.neoforged.neoforge.common.util.TextTable;

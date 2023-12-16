@@ -20,13 +20,13 @@ public interface IPlayerExtension {
     }
 
     /**
-     * The entity reach is increased by 3 for creative players, unless it is currently zero, which disables attacks and entity interactions.
+     * The entity reach is increased by 2 for creative players, unless it is currently zero, which disables attacks and entity interactions.
      * 
      * @return The entity reach of this player.
      */
     default double getEntityReach() {
         double range = self().getAttributeValue(NeoForgeMod.ENTITY_REACH.value());
-        return range == 0 ? 0 : range + (self().isCreative() ? 3 : 0);
+        return range == 0 ? 0 : range + (self().isCreative() ? 2 : 0);
     }
 
     /**

@@ -156,8 +156,8 @@ public class DeferredRegister<T> {
 
     private final ResourceKey<? extends Registry<T>> registryKey;
     private final String namespace;
-    private final Map<DeferredHolder<T, ?>, Supplier<? extends T>> entries = new LinkedHashMap<>();
-    private final Set<DeferredHolder<T, ?>> entriesView = Collections.unmodifiableSet(entries.keySet());
+    private final Map<DeferredHolder<T, ? extends T>, Supplier<? extends T>> entries = new LinkedHashMap<>();
+    private final Set<DeferredHolder<T, ? extends T>> entriesView = Collections.unmodifiableSet(entries.keySet());
     private final Map<ResourceLocation, ResourceLocation> aliases = new HashMap<>();
 
     @Nullable

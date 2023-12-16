@@ -11,3 +11,14 @@
          RenderType rendertype = ItemBlockRenderTypes.getMovingBlockRenderType(p_112460_);
          VertexConsumer vertexconsumer = p_112462_.getBuffer(rendertype);
          this.blockRenderer
+@@ -86,5 +_,10 @@
+     @Override
+     public int getViewDistance() {
+         return 68;
++    }
++
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(PistonMovingBlockEntity blockEntity) {
++        return INFINITE_EXTENT_AABB;
+     }
+ }
