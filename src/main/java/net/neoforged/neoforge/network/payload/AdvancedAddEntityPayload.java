@@ -94,7 +94,7 @@ public record AdvancedAddEntityPayload(
         buffer.writeVarInt(velX);
         buffer.writeVarInt(velY);
         buffer.writeVarInt(velZ);
-        buffer.writeBytes(customPayload);
+        buffer.writeByteArray(customPayload);
     }
 
     @Override

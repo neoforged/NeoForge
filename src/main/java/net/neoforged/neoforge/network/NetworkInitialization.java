@@ -55,6 +55,11 @@ public class NetworkInitialization {
                         ConfigFilePayload.ID,
                         ConfigFilePayload::new,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle)
+                )
+                .play(
+                        AdvancedAddEntityPayload.ID,
+                        AdvancedAddEntityPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle)
                 );
     }
 
