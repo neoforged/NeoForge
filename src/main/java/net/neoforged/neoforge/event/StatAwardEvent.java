@@ -45,7 +45,7 @@ public class StatAwardEvent extends PlayerEvent {
         return value;
     }
 
-    /** replaces the value to be awarded */
+    /** Replaces the value to be awarded. */
     public void setValue(int value) {
         this.value = value;
     }
