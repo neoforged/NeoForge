@@ -35,7 +35,7 @@ public class StatAwardEvent extends PlayerEvent {
         return stat;
     }
 
-    /** allows replacement of the {@link Stat} to be awarded */
+    /** Replaces the {@link Stat} to be awarded */
     public void setStat(Stat<?> stat) {
         this.stat = stat;
     }
