@@ -1,0 +1,30 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - '1.*'
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  release:
+    uses: neoforged/actions/.github/workflows/gradle-publish.yml@main
+    with:
+      java: 17
+      pre_gradle_tasks: setup
+      gradle_tasks: publish
+      # Unlike on 1.20.2+, 1.20.1 still uses the 'old' versioning scheme
+      # version_labels: -beta, -stable
+
+    # We only publish the main repository. This way we avoid publishing Kits
+    if: ${{ github.repository == 'neoforged/NeoForge' }}
+    secrets:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      MAVEN_USER: ${{ secrets.MAVEN_USER }}
+      MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+      GPG_SUBKEY: ${{ secrets.GPG_SUBKEY }}
+      GPG_SUBKEY_ID: ${{ secrets.GPG_SUBKEY_ID }}
+      GPG_SUBKEY_PASSWORD: ${{ secrets.GPG_SUBKEY_PASSWORD }}
