@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.resource;
 
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.IOException;
@@ -21,11 +23,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.server.packs.FeatureFlagsMetadataSection;
 import net.minecraft.server.packs.OverlayMetadataSection;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackCompatibility;
@@ -106,6 +110,13 @@ public class ResourcePackLoader {
         packAcceptor.accept(makePack(packType, hiddenPacks));
     }
 
+    public static final MetadataSectionType<PackMetadataSection> OPTIONAL_FORMAT = MetadataSectionType.fromCodec("pack", RecordCodecBuilder.create(
+            in -> in.group(
+                    ComponentSerialization.CODEC.fieldOf("description").forGetter(PackMetadataSection::description),
+                    Codec.INT.optionalFieldOf("pack_format", -1).forGetter(PackMetadataSection::packFormat),
+                    InclusiveRange.codec(Codec.INT).optionalFieldOf("supported_formats").forGetter(PackMetadataSection::supportedFormats))
+                    .apply(in, PackMetadataSection::new)));
+
     public static Pack readWithOptionalMeta(
             String id,
             Component title,
@@ -135,8 +146,13 @@ public class ResourcePackLoader {
                 return new Pack.Info(title, PackCompatibility.COMPATIBLE, flags, overlays, primaryResources.isHidden());
             }
 
-            final InclusiveRange<Integer> range = Pack.getDeclaredPackVersions(id, metadata);
-            return new Pack.Info(metadata.description(), PackCompatibility.forVersion(range, currentVersion), flags, overlays, primaryResources.isHidden());
+            final PackCompatibility compatibility;
+            if (metadata.packFormat() == -1 && metadata.supportedFormats().isEmpty()) {
+                compatibility = PackCompatibility.COMPATIBLE;
+            } else {
+                compatibility = PackCompatibility.forVersion(Pack.getDeclaredPackVersions(id, metadata), currentVersion);
+            }
+            return new Pack.Info(metadata.description(), compatibility, flags, overlays, primaryResources.isHidden());
         }
     }
 
