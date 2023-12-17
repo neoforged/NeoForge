@@ -132,7 +132,7 @@ public class ResourcePackLoader {
     private static Pack.Info readInfo(PackType type, Pack.ResourcesSupplier resources, String id, Component title) throws IOException {
         final int currentVersion = SharedConstants.getCurrentVersion().getPackVersion(type);
         try (final PackResources primaryResources = resources.openPrimary(id)) {
-            final PackMetadataSection metadata = primaryResources.getMetadataSection(PackMetadataSection.TYPE);
+            final PackMetadataSection metadata = primaryResources.getMetadataSection(OPTIONAL_FORMAT);
 
             final FeatureFlagSet flags = Optional.ofNullable(primaryResources.getMetadataSection(FeatureFlagsMetadataSection.TYPE))
                     .map(FeatureFlagsMetadataSection::flags)
