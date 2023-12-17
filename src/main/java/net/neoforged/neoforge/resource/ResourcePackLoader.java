@@ -112,7 +112,7 @@ public class ResourcePackLoader {
 
     public static final MetadataSectionType<PackMetadataSection> OPTIONAL_FORMAT = MetadataSectionType.fromCodec("pack", RecordCodecBuilder.create(
             in -> in.group(
-                    ComponentSerialization.CODEC.fieldOf("description").forGetter(PackMetadataSection::description),
+                    ComponentSerialization.CODEC.optionalFieldOf("description", Component.empty()).forGetter(PackMetadataSection::description),
                     Codec.INT.optionalFieldOf("pack_format", -1).forGetter(PackMetadataSection::packFormat),
                     InclusiveRange.codec(Codec.INT).optionalFieldOf("supported_formats").forGetter(PackMetadataSection::supportedFormats))
                     .apply(in, PackMetadataSection::new)));
