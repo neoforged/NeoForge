@@ -5,29 +5,39 @@
 
 package net.neoforged.testframework.impl.packet;
 
-import java.util.Objects;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.NetworkEvent;
-import net.neoforged.neoforge.network.simple.SimpleMessage;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.impl.MutableTestFramework;
+import org.jetbrains.annotations.NotNull;
 
-public record ChangeStatusPacket(MutableTestFramework framework, String testId, Test.Status status) implements SimpleMessage {
+import java.util.Objects;
+
+public record ChangeStatusPacket(MutableTestFramework framework, String testId, Test.Status status) implements CustomPacketPayload {
+
+    public static final ResourceLocation ID = new ResourceLocation("neoforge", "tf_change_status");
+    
     @Override
-    public void encode(FriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeUtf(testId);
         buf.writeEnum(status.result());
         buf.writeUtf(status.message());
     }
-
+    
     @Override
-    public void handleMainThread(NetworkEvent.Context context) {
-        switch (context.getDirection().getReceptionSide()) {
+    public @NotNull ResourceLocation id() {
+        return ID;
+    }
+    
+    public void handle(PlayPayloadContext context) {
+        switch (context.flow().getReceptionSide()) {
             case CLIENT -> framework.tests().setStatus(testId, status);
             case SERVER -> {
-                final ServerPlayer player = Objects.requireNonNull(context.getSender());
+                final Player player = context.sender().orElseThrow();
                 if (framework.configuration().isEnabled(Feature.CLIENT_MODIFICATIONS) && Objects.requireNonNull(player.getServer()).getPlayerList().isOp(player.getGameProfile())) {
                     framework.tests().byId(testId).ifPresent(test -> framework.changeStatus(test, status, player));
                 }

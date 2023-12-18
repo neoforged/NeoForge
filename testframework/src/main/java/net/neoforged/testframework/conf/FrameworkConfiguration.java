@@ -5,26 +5,27 @@
 
 package net.neoforged.testframework.conf;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.commands.Commands;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
+import net.neoforged.neoforge.network.registration.registrar.ModdedPacketRegistrar;
+import net.neoforged.testframework.impl.MutableTestFramework;
+import net.neoforged.testframework.impl.TestFrameworkImpl;
+import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Supplier;
-import javax.annotation.ParametersAreNonnullByDefault;
-import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.commands.Commands;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
-import net.neoforged.testframework.impl.MutableTestFramework;
-import net.neoforged.testframework.impl.TestFrameworkImpl;
-import org.jetbrains.annotations.Nullable;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public record FrameworkConfiguration(
         ResourceLocation id, Collection<Feature> enabledFeatures, int commandRequiredPermission,
-        SimpleChannel networkingChannel, List<String> enabledTests, @Nullable Supplier<ClientConfiguration> clientConfiguration) {
+        List<String> enabledTests, @Nullable Supplier<ClientConfiguration> clientConfiguration) {
 
     public static Builder builder(ResourceLocation id) {
         return new Builder(id);
@@ -43,7 +44,6 @@ public record FrameworkConfiguration(
         private final Collection<Feature> features = EnumSet.noneOf(Feature.class);
 
         private int commandRequiredPermission = Commands.LEVEL_GAMEMASTERS;
-        private @Nullable SimpleChannel networkingChannel;
         private final List<String> enabledTests = new ArrayList<>();
 
         private @Nullable Supplier<ClientConfiguration> clientConfiguration;
@@ -76,25 +76,15 @@ public record FrameworkConfiguration(
             return this;
         }
 
-        public Builder networkingChannel(SimpleChannel channel) {
-            this.networkingChannel = channel;
-            return this;
-        }
-
         public Builder clientConfiguration(Supplier<ClientConfiguration> clientConfiguration) {
             this.clientConfiguration = clientConfiguration;
             return this;
         }
 
         public FrameworkConfiguration build() {
-            final SimpleChannel channel = networkingChannel == null ? NetworkRegistry.ChannelBuilder.named(id)
-                    .clientAcceptedVersions(e -> true)
-                    .serverAcceptedVersions(e -> true)
-                    .networkProtocolVersion(() -> "yes")
-                    .simpleChannel() : networkingChannel;
             return new FrameworkConfiguration(
                     id, features, commandRequiredPermission,
-                    channel, enabledTests, clientConfiguration);
+                    enabledTests, clientConfiguration);
         }
     }
 }

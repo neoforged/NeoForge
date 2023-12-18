@@ -60,7 +60,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.TestListener;
 import net.neoforged.testframework.annotation.OnInit;
@@ -111,8 +110,6 @@ public class TestFrameworkImpl implements MutableTestFramework {
     private final ResourceLocation id;
     private final TestsImpl tests = new TestsImpl();
 
-    private final SimpleChannel channel;
-
     private @Nullable MinecraftServer server;
     private final DynamicStructureTemplates structures;
     private final SummaryDumper summaryDumper;
@@ -124,7 +121,6 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
         this.configuration = configuration;
         this.id = configuration.id();
-        this.channel = configuration.networkingChannel();
         this.structures = new DynamicStructureTemplates();
         this.summaryDumper = new SummaryDumper(this);
 
@@ -262,7 +258,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
             }
         });
 
-        modBus.addListener(new TFPackets(channel, this)::onCommonSetup);
+        modBus.addListener(new TFPackets(this)::onNetworkSetup);
         modBus.addListener((final RegisterGameTestsEvent event) -> event.register(GameTestRegistration.REGISTER_METHOD));
 
         if (FMLLoader.getDist().isClient()) {
@@ -329,8 +325,8 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
         final ChangeStatusPacket packet = new ChangeStatusPacket(this, test.id(), newStatus);
         sendPacketIfOn(
-                () -> channel.send(PacketDistributor.ALL.noArg(), packet),
-                () -> channel.sendToServer(packet),
+                () -> PacketDistributor.ALL.noArg().send(packet),
+                () -> PacketDistributor.SERVER.noArg().send(packet),
                 null);
     }
 
@@ -356,8 +352,8 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
         final ChangeEnabledPacket packet = new ChangeEnabledPacket(TestFrameworkImpl.this, test.id(), enabled);
         sendPacketIfOn(
-                () -> channel.send(PacketDistributor.ALL.noArg(), packet),
-                () -> channel.sendToServer(packet),
+                () -> PacketDistributor.ALL.noArg().send(packet),
+                () -> PacketDistributor.SERVER.noArg().send(packet),
                 null);
     }
 

@@ -23,6 +23,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
+import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.config.ConfigTracker;
@@ -46,6 +47,7 @@ import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -332,7 +334,8 @@ public class NetworkRegistry {
                             new ServerPacketHandler(playPacketListener),
                             new EventLoopSynchronizedWorkHandler(playPacketListener.getMainThreadEventLoop()),
                             PacketFlow.SERVERBOUND,
-                            listener.getConnection().channel().pipeline().lastContext()
+                            listener.getConnection().channel().pipeline().lastContext(),
+                            listener instanceof ServerPlayerConnection connection ? Optional.of(connection.getPlayer()) : Optional.empty()
                     ),
                     packet.payload()
             );
@@ -430,7 +433,8 @@ public class NetworkRegistry {
                             new ClientPacketHandler(playPacketListener),
                             new EventLoopSynchronizedWorkHandler(playPacketListener.getMainThreadEventLoop()),
                             PacketFlow.CLIENTBOUND,
-                            listener.getConnection().channel().pipeline().lastContext()
+                            listener.getConnection().channel().pipeline().lastContext(),
+                            Optional.empty()
                     ),
                     packet.payload()
             );
@@ -561,6 +565,8 @@ public class NetworkRegistry {
             sender.disconnect(Component.translatable("neoforge.network.negotiation.failure.vanilla.client.not_supported", NeoForgeVersion.getVersion()));
             return false;
         }
+        
+        NetworkFilters.injectIfNecessary(sender.getConnection());
         
         return true;
     }
@@ -804,6 +810,8 @@ public class NetworkRegistry {
         
         //We are on the client, connected to a vanilla server, We have to load the default configs.
         ConfigTracker.INSTANCE.loadDefaultServerConfigs();
+        
+        NetworkFilters.injectIfNecessary(sender.getConnection());
         
         return true;
     }

@@ -78,6 +78,20 @@
          LOGGER.warn("Unknown custom packet payload: {}", p_296412_.id());
      }
  
+@@ -69,6 +_,13 @@
+     @Override
+     public void handleEnabledFeatures(ClientboundUpdateEnabledFeaturesPacket p_294410_) {
+         this.enabledFeatures = FeatureFlags.REGISTRY.fromNames(p_294410_.features());
++        //Fallback detection layer for vanilla servers
++        if (!this.isModdedConnection) {
++            this.isVanillaConnection = true;
++            if (!net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaNetworkConnectionEstablished(this)) {
++                return;
++            }
++        }
+     }
+ 
+     @Override
 @@ -85,6 +_,7 @@
                          this.telemetryManager,
                          this.receivedRegistries,
