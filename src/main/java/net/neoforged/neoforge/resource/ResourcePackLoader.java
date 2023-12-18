@@ -89,22 +89,33 @@ public class ResourcePackLoader {
 
             try {
                 final boolean isRequired = (packType == PackType.CLIENT_RESOURCES && mod.getOwningFile().showAsResourcePack()) || (packType == PackType.SERVER_DATA && mod.getOwningFile().showAsDataPack());
-                final Pack modPack = isRequired ? Pack.readMetaAndCreate(
-                        name,
-                        Component.literal(packName.isEmpty() ? "[unnamed]" : packName),
-                        false,
-                        e.getValue(),
-                        packType,
-                        Pack.Position.BOTTOM,
-                        PackSource.DEFAULT)
-                        : readWithOptionalMeta(
-                                name,
-                                Component.literal(packName.isEmpty() ? "[unnamed]" : packName),
-                                false,
-                                e.getValue(),
-                                packType,
-                                Pack.Position.BOTTOM,
-                                PackSource.DEFAULT);
+                final Pack modPack;
+                // Packs displayed separately must be valid
+                if (isRequired) {
+                    modPack = Pack.readMetaAndCreate(
+                            name,
+                            Component.literal(packName.isEmpty() ? "[unnamed]" : packName),
+                            false,
+                            e.getValue(),
+                            packType,
+                            Pack.Position.BOTTOM,
+                            PackSource.DEFAULT);
+
+                    if (modPack == null) {
+                        ModLoader.get().addWarning(new ModLoadingWarning(mod, ModLoadingStage.ERROR, "fml.modloading.brokenresources", e.getKey()));
+                        continue;
+                    }
+                } else {
+                    modPack = readWithOptionalMeta(
+                            name,
+                            Component.literal(packName.isEmpty() ? "[unnamed]" : packName),
+                            false,
+                            e.getValue(),
+                            packType,
+                            Pack.Position.BOTTOM,
+                            PackSource.DEFAULT);
+                }
+
                 if (isRequired) {
                     packAcceptor.accept(modPack);
                 } else {
