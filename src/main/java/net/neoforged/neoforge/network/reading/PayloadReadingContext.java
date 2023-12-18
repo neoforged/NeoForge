@@ -5,12 +5,9 @@
 
 package net.neoforged.neoforge.network.reading;
 
-import net.minecraft.resources.ResourceLocation;
-
 import java.util.OptionalInt;
+import net.minecraft.resources.ResourceLocation;
 
 public record PayloadReadingContext(
         ResourceLocation id,
-        OptionalInt version
-) {
-}
+        OptionalInt version) {}

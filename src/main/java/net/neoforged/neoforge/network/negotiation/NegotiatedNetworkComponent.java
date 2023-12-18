@@ -5,13 +5,9 @@
 
 package net.neoforged.neoforge.network.negotiation;
 
-import net.minecraft.resources.ResourceLocation;
-
 import java.util.Optional;
-import java.util.OptionalInt;
+import net.minecraft.resources.ResourceLocation;
 
 public record NegotiatedNetworkComponent(
         ResourceLocation id,
-        Optional<String> version
-) {
-}
+        Optional<String> version) {}

@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.network.payload;
 
 import io.netty.buffer.Unpooled;
+import java.util.UUID;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -15,8 +16,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.entity.IEntityAdditionalSpawnData;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
-
-import java.util.UUID;
 
 public record AdvancedAddEntityPayload(
         EntityType<?> typeId,
@@ -31,8 +30,8 @@ public record AdvancedAddEntityPayload(
         int velX,
         int velY,
         int velZ,
-        byte[] customPayload
-) implements CustomPacketPayload {
+        byte[] customPayload) implements CustomPacketPayload {
+
     public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_add_entity");
 
     public AdvancedAddEntityPayload(FriendlyByteBuf buf) {
@@ -49,8 +48,7 @@ public record AdvancedAddEntityPayload(
                 buf.readVarInt(),
                 buf.readVarInt(),
                 buf.readVarInt(),
-                buf.readByteArray()
-        );
+                buf.readByteArray());
     }
 
     public AdvancedAddEntityPayload(Entity e) {
@@ -67,8 +65,7 @@ public record AdvancedAddEntityPayload(
                 (int) (Mth.clamp(e.getDeltaMovement().x, -3.9D, 3.9D) * 8000.0D),
                 (int) (Mth.clamp(e.getDeltaMovement().y, -3.9D, 3.9D) * 8000.0D),
                 (int) (Mth.clamp(e.getDeltaMovement().z, -3.9D, 3.9D) * 8000.0D),
-                writeCustomData(e)
-        );
+                writeCustomData(e));
     }
 
     private static byte[] writeCustomData(final Entity entity) {

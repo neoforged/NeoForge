@@ -11,7 +11,7 @@ import net.minecraft.network.protocol.PacketFlow;
  * A registrar that is bound to a specific {@link PacketFlow}.
  */
 public interface IFlowBasedPayloadRegistrar extends IPayloadRegistrar {
-    
+
     /**
      * Forces all payloads registered with this registrar to be only capable of flowing in a given packet flow.
      *

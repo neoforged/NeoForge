@@ -19,8 +19,7 @@ public class ServerPayloadHandler {
         return INSTANCE;
     }
 
-    private ServerPayloadHandler() {
-    }
+    private ServerPayloadHandler() {}
 
     public void handle(ConfigurationPayloadContext context, FrozenRegistrySyncCompletedPayload payload) {
         context.taskCompletedHandler().onTaskCompleted(SyncRegistries.TYPE);

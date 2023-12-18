@@ -5,21 +5,18 @@
 
 package net.neoforged.testframework.conf;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.commands.Commands;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.registration.NetworkRegistry;
-import net.neoforged.neoforge.network.registration.registrar.ModdedPacketRegistrar;
-import net.neoforged.testframework.impl.MutableTestFramework;
-import net.neoforged.testframework.impl.TestFrameworkImpl;
-import org.jetbrains.annotations.Nullable;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Supplier;
+import javax.annotation.ParametersAreNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.commands.Commands;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.testframework.impl.MutableTestFramework;
+import net.neoforged.testframework.impl.TestFrameworkImpl;
+import org.jetbrains.annotations.Nullable;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault

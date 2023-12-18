@@ -6,12 +6,10 @@
 package net.neoforged.neoforge.network.handling;
 
 import io.netty.channel.ChannelHandlerContext;
+import java.util.Optional;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.world.entity.player.Player;
-
-import java.util.Optional;
-import java.util.OptionalInt;
 
 public record PlayPayloadContext(
         IReplyHandler handler,
@@ -19,8 +17,7 @@ public record PlayPayloadContext(
         ISynchronizedWorkHandler workHandler,
         PacketFlow flow,
         ChannelHandlerContext channelHandlerContext,
-        Optional<Player> sender
-) implements IPayloadContext {
+        Optional<Player> sender) implements IPayloadContext {
     @Override
     public ConnectionProtocol protocol() {
         return ConnectionProtocol.PLAY;

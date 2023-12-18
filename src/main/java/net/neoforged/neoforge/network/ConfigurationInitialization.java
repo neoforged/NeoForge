@@ -14,12 +14,12 @@ import net.neoforged.neoforge.network.event.OnGameConfigurationEvent;
 
 @Mod.EventBusSubscriber(modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ConfigurationInitialization {
-    
+
     @SubscribeEvent
     public static void configureModdedClient(OnGameConfigurationEvent event) {
         if (event.getListener().isVanillaConnection())
             return;
-        
+
         event.register(new SyncRegistries());
         event.register(new SyncConfig(event.getListener()));
         event.register(new SyncTierSortingRegistry(event.getListener()));

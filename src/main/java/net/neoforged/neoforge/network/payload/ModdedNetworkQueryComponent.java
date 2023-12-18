@@ -5,12 +5,10 @@
 
 package net.neoforged.neoforge.network.payload;
 
+import java.util.Optional;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.Optional;
-import java.util.OptionalInt;
 
 public record ModdedNetworkQueryComponent(ResourceLocation id, Optional<String> version, Optional<PacketFlow> flow, boolean optional) {
 
@@ -19,8 +17,7 @@ public record ModdedNetworkQueryComponent(ResourceLocation id, Optional<String> 
                 buf.readResourceLocation(),
                 buf.readOptional(FriendlyByteBuf::readUtf),
                 buf.readOptional(buffer -> buffer.readEnum(PacketFlow.class)),
-                buf.readBoolean()
-        );
+                buf.readBoolean());
     }
 
     public void write(FriendlyByteBuf buf) {

@@ -14,7 +14,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  */
 @FunctionalInterface
 public interface IConfigurationPayloadHandler<T extends CustomPacketPayload> {
-    
+
     /**
      * Invoked to handle the given payload in the given context.
      *
@@ -22,7 +22,7 @@ public interface IConfigurationPayloadHandler<T extends CustomPacketPayload> {
      * @param payload The payload.
      */
     void handle(ConfigurationPayloadContext context, T payload);
-    
+
     /**
      * Creates a handler that does nothing.
      *

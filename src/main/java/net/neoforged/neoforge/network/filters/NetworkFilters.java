@@ -7,7 +7,6 @@ package net.neoforged.neoforge.network.filters;
 
 import com.google.common.collect.ImmutableMap;
 import io.netty.channel.ChannelPipeline;
-
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -27,7 +26,7 @@ public class NetworkFilters {
 
     public static void injectIfNecessary(Connection manager) {
         cleanIfNecessary(manager);
-        
+
         ChannelPipeline pipeline = manager.channel().pipeline();
         if (pipeline.get("packet_handler") == null)
             return; // Realistically this can only ever be null if the connection was prematurely closed due to an error. We return early here to reduce further log spam.
@@ -40,19 +39,19 @@ public class NetworkFilters {
             }
         });
     }
-    
+
     public static void cleanIfNecessary(Connection manager) {
         ChannelPipeline pipeline = manager.channel().pipeline();
         if (pipeline.get("packet_handler") == null)
             return; // Realistically this can only ever be null if the connection was prematurely closed due to an error. We return early here to reduce further log spam.
-        
+
         final List<VanillaPacketFilter> toRemove = pipeline.names()
-                                                           .stream()
-                                                           .map(name -> pipeline.get(name))
-                                                           .filter(VanillaPacketFilter.class::isInstance)
-                                                           .map(VanillaPacketFilter.class::cast)
-                                                           .toList();
-        
+                .stream()
+                .map(name -> pipeline.get(name))
+                .filter(VanillaPacketFilter.class::isInstance)
+                .map(VanillaPacketFilter.class::cast)
+                .toList();
+
         toRemove.forEach(pipeline::remove);
     }
 

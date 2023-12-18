@@ -20,6 +20,4 @@ public record ModdedConfigurationPayloadRegistration<T extends CustomPacketPaylo
         ResourceLocation id,
         Class<T> type,
         IConfigurationPayloadHandler<T> handler,
-        FriendlyByteBuf.Reader<T> reader
-) {
-}
+        FriendlyByteBuf.Reader<T> reader) {}

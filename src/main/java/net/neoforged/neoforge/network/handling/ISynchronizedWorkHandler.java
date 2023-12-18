@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  * Defines a handler which can accept work that needs to be run synchronously, on the main thread of the game.
  */
 public interface ISynchronizedWorkHandler {
-    
+
     /**
      * Submits the given work to be run synchronously on the main thread of the game.
      *
@@ -20,7 +20,7 @@ public interface ISynchronizedWorkHandler {
      * @return A future which will complete when the task has been run.
      */
     CompletableFuture<Void> submitAsync(Runnable task);
-    
+
     /**
      * Submits the given work to be run synchronously on the main thread of the game.
      *

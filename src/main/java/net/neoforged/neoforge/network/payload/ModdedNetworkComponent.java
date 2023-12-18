@@ -5,11 +5,9 @@
 
 package net.neoforged.neoforge.network.payload;
 
+import java.util.Optional;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.Optional;
-import java.util.OptionalInt;
 
 public record ModdedNetworkComponent(ResourceLocation id, Optional<String> version) {
 

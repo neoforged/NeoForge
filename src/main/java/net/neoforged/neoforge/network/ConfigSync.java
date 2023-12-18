@@ -5,18 +5,17 @@
 
 package net.neoforged.neoforge.network;
 
-import net.minecraft.client.Minecraft;
-import net.neoforged.fml.config.ConfigTracker;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.network.payload.ConfigFilePayload;
-import org.jetbrains.annotations.ApiStatus;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import net.minecraft.client.Minecraft;
+import net.neoforged.fml.config.ConfigTracker;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.network.payload.ConfigFilePayload;
+import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public class ConfigSync {
@@ -35,10 +34,10 @@ public class ConfigSync {
                 throw new RuntimeException(e);
             }
         }));
-        
+
         return configData.entrySet().stream()
-                       .map(e -> new ConfigFilePayload(e.getValue(), e.getKey()))
-                       .toList();
+                .map(e -> new ConfigFilePayload(e.getValue(), e.getKey()))
+                .toList();
     }
 
     public void receiveSyncedConfig(final byte[] contents, final String fileName) {

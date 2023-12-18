@@ -5,13 +5,9 @@
 
 package net.neoforged.neoforge.network.registration;
 
-import net.minecraft.resources.ResourceLocation;
-
 import java.util.Optional;
-import java.util.OptionalInt;
+import net.minecraft.resources.ResourceLocation;
 
 public record NetworkChannel(
         ResourceLocation id,
-        Optional<String> chosenVersion
-) {
-}
+        Optional<String> chosenVersion) {}

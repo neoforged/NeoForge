@@ -5,13 +5,12 @@
 
 package net.neoforged.neoforge.network.event;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.network.configuration.ICustomConfigurationTask;
-
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class OnGameConfigurationEvent extends Event implements IModBusEvent {
 

@@ -14,10 +14,10 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record TFPackets(MutableTestFramework framework) {
-    
+
     @SubscribeEvent
     public void onNetworkSetup(final RegisterPacketHandlerEvent event) {
-        
+
         final IPayloadRegistrar registrar = event.registrar(NeoForgeVersion.MOD_ID);
 
         registrar.play(ChangeStatusPacket.ID, buf -> ChangeStatusPacket.decode(framework, buf), (context, payload) -> context.workHandler().submitAsync(() -> {

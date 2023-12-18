@@ -13,14 +13,14 @@ import net.minecraft.network.protocol.Packet;
  * Allows for the handling of full packets from custom payloads
  */
 public interface IPacketHandler {
-    
+
     /**
      * Invoked to handle the given packet.
      *
-     * @param packet  The packet.
+     * @param packet The packet.
      */
     void handle(Packet<?> packet);
-    
+
     /**
      * Trigger a disconnect from the network.
      *

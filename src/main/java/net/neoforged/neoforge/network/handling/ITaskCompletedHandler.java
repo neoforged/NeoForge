@@ -12,7 +12,7 @@ import net.minecraft.server.network.ConfigurationTask;
  */
 @FunctionalInterface
 public interface ITaskCompletedHandler {
-    
+
     /**
      * Called when a task is completed.
      *

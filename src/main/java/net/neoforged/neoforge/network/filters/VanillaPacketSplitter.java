@@ -8,6 +8,8 @@ package net.neoforged.neoforge.network.filters;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.network.*;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
@@ -22,9 +24,6 @@ import net.neoforged.neoforge.network.payload.SplitPacketPayload;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A custom payload channel that allows sending vanilla server-to-client packets, even if they would normally
@@ -55,10 +54,9 @@ public class VanillaPacketSplitter {
                 .common(
                         SplitPacketPayload.ID,
                         SplitPacketPayload::new,
-                        VanillaPacketSplitter::receivedPacket
-                );
+                        VanillaPacketSplitter::receivedPacket);
     }
-    
+
     /**
      * Append the given packet to the given list. If the packet needs to be split, multiple packets will be appened.
      * Otherwise only the packet itself.
@@ -85,17 +83,17 @@ public class VanillaPacketSplitter {
                         partPrefix = Unpooled.buffer(1);
                         partPrefix.writeByte(part == parts - 1 ? STATE_LAST : 0);
                     }
-                    
+
                     int partSize = Math.min(PART_SIZE, buf.readableBytes());
                     final byte[] prefix = partPrefix.array();
                     final byte[] payloadSlice = buf.slice(buf.readerIndex(), partSize).array();
-                    
+
                     byte[] payload = new byte[prefix.length + payloadSlice.length];
                     System.arraycopy(prefix, 0, payload, 0, prefix.length);
                     System.arraycopy(payloadSlice, 0, payload, prefix.length, payloadSlice.length);
-                    
+
                     out.add(new ClientboundCustomPayloadPacket(new SplitPacketPayload(payload)));
-                    
+
                     partPrefix.release();
                 }
                 // We cloned all the data into arrays, no need to retain the buffer anymore
@@ -110,7 +108,7 @@ public class VanillaPacketSplitter {
         final ConnectionProtocol protocol = context.protocol();
         final PacketFlow flow = context.flow();
         final ChannelHandlerContext channelHandlerContext = context.channelHandlerContext();
-        
+
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(payload.payload()));
 
         byte state = buf.readByte();
@@ -131,9 +129,9 @@ public class VanillaPacketSplitter {
             } else {
                 receivedBuffers.clear();
                 full.release();
-                
+
                 context.workHandler()
-                               .submitAsync(() -> context.packetHandler().handle(packet));
+                        .submitAsync(() -> context.packetHandler().handle(packet));
             }
         }
     }

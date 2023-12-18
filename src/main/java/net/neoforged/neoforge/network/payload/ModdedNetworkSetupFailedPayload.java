@@ -5,12 +5,11 @@
 
 package net.neoforged.neoforge.network.payload;
 
+import java.util.Map;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.Map;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
 public record ModdedNetworkSetupFailedPayload(Map<ResourceLocation, Component> failureReasons) implements CustomPacketPayload {

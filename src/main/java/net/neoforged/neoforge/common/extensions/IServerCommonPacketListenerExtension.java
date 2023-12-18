@@ -5,13 +5,12 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import javax.annotation.Nullable;
 import net.minecraft.network.Connection;
 import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;
-
-import javax.annotation.Nullable;
 
 public interface IServerCommonPacketListenerExtension {
 

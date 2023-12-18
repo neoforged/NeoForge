@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.internal;
 
+import java.util.List;
 import net.neoforged.fml.IModLoadingState;
 import net.neoforged.fml.IModStateProvider;
 import net.neoforged.fml.ModLoadingPhase;
@@ -12,8 +13,6 @@ import net.neoforged.fml.ModLoadingState;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.registries.GameData;
 import net.neoforged.neoforge.registries.RegistryManager;
-
-import java.util.List;
 
 public class NeoForgeStatesProvider implements IModStateProvider {
     final ModLoadingState CREATE_REGISTRIES = ModLoadingState.withInline("CREATE_REGISTRIES", "CONSTRUCT", ModLoadingPhase.GATHER, ml -> RegistryManager.postNewRegistryEvent());

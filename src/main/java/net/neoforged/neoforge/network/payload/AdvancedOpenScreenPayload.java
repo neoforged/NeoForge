@@ -19,8 +19,8 @@ public record AdvancedOpenScreenPayload(
         int windowId,
         MenuType<?> menuType,
         Component name,
-        byte[] additionalData
-) implements CustomPacketPayload {
+        byte[] additionalData) implements CustomPacketPayload {
+
     public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_open_screen");
 
     public AdvancedOpenScreenPayload(int windowId, MenuType<?> menuType, Component name, Consumer<FriendlyByteBuf> dataWriter) {
@@ -40,6 +40,7 @@ public record AdvancedOpenScreenPayload(
     public AdvancedOpenScreenPayload(FriendlyByteBuf buffer) {
         this(buffer.readVarInt(), buffer.readById(BuiltInRegistries.MENU), buffer.readComponentTrusted(), buffer.readByteArray());
     }
+
     @Override
     public void write(FriendlyByteBuf buffer) {
         buffer.writeVarInt(windowId());

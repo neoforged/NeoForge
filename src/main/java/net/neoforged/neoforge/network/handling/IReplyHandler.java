@@ -12,7 +12,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  */
 @FunctionalInterface
 public interface IReplyHandler {
-    
+
     /**
      * Sends the given payload back to the sender.
      *

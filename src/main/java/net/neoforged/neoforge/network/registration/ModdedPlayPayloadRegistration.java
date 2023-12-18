@@ -20,6 +20,4 @@ public record ModdedPlayPayloadRegistration<T extends CustomPacketPayload>(
         ResourceLocation id,
         Class<T> type,
         IPlayPayloadHandler<T> handler,
-        FriendlyByteBuf.Reader<T> reader
-) {
-}
+        FriendlyByteBuf.Reader<T> reader) {}
