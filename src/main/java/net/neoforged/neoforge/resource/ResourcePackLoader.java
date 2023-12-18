@@ -88,15 +88,24 @@ public class ResourcePackLoader {
             final String packName = mod.getOwningFile().getFile().getFileName();
 
             try {
-                final Pack modPack = readWithOptionalMeta(
+                final boolean isRequired = (packType == PackType.CLIENT_RESOURCES && mod.getOwningFile().showAsResourcePack()) || (packType == PackType.SERVER_DATA && mod.getOwningFile().showAsDataPack());
+                final Pack modPack = isRequired ? Pack.readMetaAndCreate(
                         name,
                         Component.literal(packName.isEmpty() ? "[unnamed]" : packName),
                         false,
                         e.getValue(),
                         packType,
                         Pack.Position.BOTTOM,
-                        PackSource.DEFAULT);
-                if ((packType == PackType.CLIENT_RESOURCES && mod.getOwningFile().showAsResourcePack()) || (packType == PackType.SERVER_DATA && mod.getOwningFile().showAsDataPack())) {
+                        PackSource.DEFAULT)
+                        : readWithOptionalMeta(
+                                name,
+                                Component.literal(packName.isEmpty() ? "[unnamed]" : packName),
+                                false,
+                                e.getValue(),
+                                packType,
+                                Pack.Position.BOTTOM,
+                                PackSource.DEFAULT);
+                if (isRequired) {
                     packAcceptor.accept(modPack);
                 } else {
                     hiddenPacks.add(modPack.hidden());
