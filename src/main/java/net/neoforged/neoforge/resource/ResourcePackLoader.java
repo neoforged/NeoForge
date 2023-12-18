@@ -36,6 +36,7 @@ import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.RepositorySource;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.InclusiveRange;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.neoforged.fml.ModList;
@@ -132,9 +133,9 @@ public class ResourcePackLoader {
 
     public static final MetadataSectionType<PackMetadataSection> OPTIONAL_FORMAT = MetadataSectionType.fromCodec("pack", RecordCodecBuilder.create(
             in -> in.group(
-                    ComponentSerialization.CODEC.optionalFieldOf("description", Component.empty()).forGetter(PackMetadataSection::description),
-                    Codec.INT.optionalFieldOf("pack_format", -1).forGetter(PackMetadataSection::packFormat),
-                    InclusiveRange.codec(Codec.INT).optionalFieldOf("supported_formats").forGetter(PackMetadataSection::supportedFormats))
+                    ExtraCodecs.strictOptionalField(ComponentSerialization.CODEC, "description", Component.empty()).forGetter(PackMetadataSection::description),
+                    ExtraCodecs.strictOptionalField(Codec.INT, "pack_format", -1).forGetter(PackMetadataSection::packFormat),
+                    ExtraCodecs.strictOptionalField(InclusiveRange.codec(Codec.INT), "supported_formats").forGetter(PackMetadataSection::supportedFormats))
                     .apply(in, PackMetadataSection::new)));
 
     public static Pack readWithOptionalMeta(
