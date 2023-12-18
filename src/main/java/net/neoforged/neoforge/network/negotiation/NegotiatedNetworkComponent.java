@@ -12,7 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * Represents a network component that has been negotiated between the client and server.
  *
- * @param id The id of the component
+ * @param id      The id of the component
  * @param version The version of the component, if any
  */
 @ApiStatus.Internal

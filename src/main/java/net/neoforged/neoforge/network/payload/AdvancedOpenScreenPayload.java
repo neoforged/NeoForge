@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.network.payload;
 
 import io.netty.buffer.Unpooled;
-
 import java.util.Objects;
 import java.util.function.Consumer;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -21,9 +20,9 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * A custom payload that allows for opening screens with additional data.
  *
- * @param windowId The window ID to use for the screen.
- * @param menuType The menu type to open.
- * @param name The name of the screen.
+ * @param windowId       The window ID to use for the screen.
+ * @param menuType       The menu type to open.
+ * @param name           The name of the screen.
  * @param additionalData The additional data to pass to the screen.
  */
 @ApiStatus.Internal

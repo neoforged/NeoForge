@@ -10,7 +10,6 @@ import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -113,16 +112,16 @@ public class NetworkRegistry {
             throw new IllegalStateException("The network registry can only be setup once.");
 
         setup = true;
-        
+
         final Map<String, ModdedPacketRegistrar> registrarsByNamespace = Collections.synchronizedMap(new HashMap<>());
         ModLoader.get().postEvent(new RegisterPacketHandlerEvent(namespace -> registrarsByNamespace.computeIfAbsent(namespace, ModdedPacketRegistrar::new)));
-        
+
         final ImmutableMap.Builder<ResourceLocation, ConfigurationRegistration<?>> configurationBuilder = ImmutableMap.builder();
         registrarsByNamespace.values().forEach(registrar -> registrar.getConfigurationRegistrations().forEach(configurationBuilder::put));
-        
+
         final ImmutableMap.Builder<ResourceLocation, PlayRegistration<?>> playBuilder = ImmutableMap.builder();
         registrarsByNamespace.values().forEach(registrar -> registrar.getPlayRegistrations().forEach(playBuilder::put));
-        
+
         knownConfigurationRegistrations.clear();
         knownPlayRegistrations.clear();
 

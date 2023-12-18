@@ -21,18 +21,18 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * Payload that can be sent from the server to the client to add an entity to the world, with custom data.
  *
- * @param typeId The type of the entity to add.
- * @param entityId The id of the entity to add.
- * @param uuid The uuid of the entity to add.
- * @param posX The x position of the entity to add.
- * @param posY The y position of the entity to add.
- * @param posZ The z position of the entity to add.
- * @param pitch The pitch of the entity to add.
- * @param yaw The yaw of the entity to add.
- * @param headYaw The head yaw of the entity to add.
- * @param velX The x velocity of the entity to add.
- * @param velY The y velocity of the entity to add.
- * @param velZ The z velocity of the entity to add.
+ * @param typeId        The type of the entity to add.
+ * @param entityId      The id of the entity to add.
+ * @param uuid          The uuid of the entity to add.
+ * @param posX          The x position of the entity to add.
+ * @param posY          The y position of the entity to add.
+ * @param posZ          The z position of the entity to add.
+ * @param pitch         The pitch of the entity to add.
+ * @param yaw           The yaw of the entity to add.
+ * @param headYaw       The head yaw of the entity to add.
+ * @param velX          The x velocity of the entity to add.
+ * @param velY          The y velocity of the entity to add.
+ * @param velZ          The z velocity of the entity to add.
  * @param customPayload The custom data of the entity to add.
  */
 @ApiStatus.Internal
@@ -50,7 +50,7 @@ public record AdvancedAddEntityPayload(
         int velY,
         int velZ,
         byte[] customPayload) implements CustomPacketPayload {
-    
+
     /**
      * The id of this payload.
      */

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.network.registration;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -10,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  * @param <T> The type of handler.
  */
 public interface IDirectionAwarePayloadHandlerBuilder<P extends CustomPacketPayload, T> {
-    
+
     /**
      * Sets the client side handler.
      *
@@ -18,7 +23,7 @@ public interface IDirectionAwarePayloadHandlerBuilder<P extends CustomPacketPayl
      * @return This builder.
      */
     IDirectionAwarePayloadHandlerBuilder<P, T> client(@NotNull T clientSide);
-    
+
     /**
      * Sets the server side handler.
      *

@@ -16,7 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
  * Packet payload for sending a frozen registry to the client
  *
  * @param registryName The name of the registry
- * @param snapshot The snapshot of the registry
+ * @param snapshot     The snapshot of the registry
  */
 @ApiStatus.Internal
 public record FrozenRegistryPayload(ResourceLocation registryName, RegistrySnapshot snapshot) implements CustomPacketPayload {

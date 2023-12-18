@@ -16,12 +16,12 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * A record that holds the information needed to describe a registered configuration payload, its reader and handler.
  *
- * @param reader The reader for the payload
- * @param handler The handler for the payload
- * @param version The version of the payload
- * @param flow The flow of the payload
+ * @param reader   The reader for the payload
+ * @param handler  The handler for the payload
+ * @param version  The version of the payload
+ * @param flow     The flow of the payload
  * @param optional Whether the payload is optional
- * @param <T> The type of the payload
+ * @param <T>      The type of the payload
  */
 @ApiStatus.Internal
 public record ConfigurationRegistration<T extends CustomPacketPayload>(

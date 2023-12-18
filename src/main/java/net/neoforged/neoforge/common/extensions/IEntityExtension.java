@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.function.BiPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -397,7 +396,7 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
     default boolean hasCustomOutlineRendering(Player player) {
         return false;
     }
-    
+
     /**
      * Sends the spawn packet for this entity to the specified target.
      *
@@ -407,7 +406,7 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
         if (target.flow().isServerbound()) {
             throw new IllegalArgumentException("Cannot send spawn packet to the server");
         }
-        
+
         final AdvancedAddEntityPayload payload = new AdvancedAddEntityPayload(self());
         target.send(payload);
     }

@@ -15,6 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Configuration task that syncs the config files to the client
+ * 
  * @param listener the listener to indicate to that the task is complete
  */
 @ApiStatus.Internal

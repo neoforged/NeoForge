@@ -5,23 +5,22 @@
 
 package net.neoforged.neoforge.network.registration;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import java.util.Set;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Represents a complete negotiated network, which is stored on the client and server.
  *
  * @param configuration The configuration channels.
- * @param play The play channels.
- * @param vanilla Whether this is a vanilla network.
+ * @param play          The play channels.
+ * @param vanilla       Whether this is a vanilla network.
  */
 @ApiStatus.Internal
 public record NetworkPayloadSetup(
         Set<NetworkChannel> configuration,
         Set<NetworkChannel> play,
         boolean vanilla) {
-    
+
     /**
      * {@return An empty modded network.}
      */

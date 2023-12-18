@@ -60,7 +60,7 @@ final class PlayPayloadHandler<T extends CustomPacketPayload> implements IPlayPa
 
         return Optional.empty();
     }
-    
+
     /**
      * A builder for {@link PlayPayloadHandler}.
      *

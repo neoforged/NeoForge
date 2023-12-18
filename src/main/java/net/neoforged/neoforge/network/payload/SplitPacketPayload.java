@@ -14,8 +14,9 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * A payload that is used to split a packet into multiple payloads.
  * <p>
- *     This single payload will contain a slice of the original packet.
+ * This single payload will contain a slice of the original packet.
  * </p>
+ * 
  * @param payload The slice of the original packet.
  */
 @ApiStatus.Internal

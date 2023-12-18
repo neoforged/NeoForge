@@ -16,25 +16,26 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Defines a custom configuration task that should be run when a client connects.
  * <p>
- *     This interface is a wrapper functional interface around {@link ConfigurationTask}.
- *     Allowing for easily sending custom payloads to the client, without having to perform the wrapping
- *     in {@link ClientboundCustomPayloadPacket} yourself.
- *     <br>
- *     It is recommended to use this interface over {@link ConfigurationTask} when you need to send custom payloads.
- *     It's functionality is otherwise identical.
+ * This interface is a wrapper functional interface around {@link ConfigurationTask}.
+ * Allowing for easily sending custom payloads to the client, without having to perform the wrapping
+ * in {@link ClientboundCustomPayloadPacket} yourself.
+ * <br>
+ * It is recommended to use this interface over {@link ConfigurationTask} when you need to send custom payloads.
+ * It's functionality is otherwise identical.
  * </p>
  */
 public interface ICustomConfigurationTask extends ConfigurationTask {
-    
+
     /**
      * Invoked when it is time for this configuration to run.
      *
      * @param sender A consumer that accepts a {@link CustomPacketPayload} to send to the client.
      */
     void run(Consumer<CustomPacketPayload> sender);
-    
+
     /**
      * Invoked when it is time for this configuration to run.
+     * 
      * @param p_294184_ A consumer that accepts a {@link Packet} to send to the client.
      * @implNote Please do not override this method, it is implemented to wrap the {@link CustomPacketPayload} in a {@link ClientboundCustomPayloadPacket}.
      */

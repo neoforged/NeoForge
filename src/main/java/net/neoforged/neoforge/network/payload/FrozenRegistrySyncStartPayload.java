@@ -15,8 +15,9 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * Packet payload sent to the client to start the frozen registry sync.
  * <p>
- *     It indicates to the client which registries it should expect to receive.
+ * It indicates to the client which registries it should expect to receive.
  * </p>
+ * 
  * @param toAccess The registries to access.
  */
 @ApiStatus.Internal

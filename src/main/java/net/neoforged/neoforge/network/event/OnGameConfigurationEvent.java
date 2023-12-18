@@ -27,9 +27,10 @@ public class OnGameConfigurationEvent extends Event implements IModBusEvent {
     public OnGameConfigurationEvent(ServerConfigurationPacketListener listener) {
         this.listener = listener;
     }
-    
+
     /**
      * Register a configuration task to be run on the server.
+     * 
      * @param task The task to run.
      */
     public void register(ICustomConfigurationTask task) {
@@ -38,6 +39,7 @@ public class OnGameConfigurationEvent extends Event implements IModBusEvent {
 
     /**
      * Get the configuration tasks that have been registered.
+     * 
      * @return The configuration tasks.
      */
     @ApiStatus.Internal
@@ -47,6 +49,7 @@ public class OnGameConfigurationEvent extends Event implements IModBusEvent {
 
     /**
      * Get the server configuration packet listener.
+     * 
      * @return The server configuration packet listener.
      */
     public ServerConfigurationPacketListener getListener() {

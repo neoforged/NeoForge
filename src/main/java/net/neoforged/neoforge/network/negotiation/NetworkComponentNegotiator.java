@@ -171,11 +171,11 @@ public class NetworkComponentNegotiator {
         //In other words, no channel has a range, and no channel has a preferred version.
         return Optional.empty();
     }
-    
+
     /**
      * The result of a negotiation.
      *
-     * @param success If negotiation succeeded.
+     * @param success       If negotiation succeeded.
      * @param failureReason The reason for failure if negotiation failed.
      */
     public record ComponentNegotiationResult(boolean success, @Nullable Component failureReason) {}

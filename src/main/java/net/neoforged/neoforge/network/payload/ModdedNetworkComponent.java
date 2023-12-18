@@ -14,7 +14,7 @@ import org.jetbrains.annotations.ApiStatus;
  * Represents a modded network component, indicates what channel and version the client and server
  * agreed upon.
  *
- * @param id The mod id
+ * @param id      The mod id
  * @param version The mod version, if present
  */
 @ApiStatus.Internal

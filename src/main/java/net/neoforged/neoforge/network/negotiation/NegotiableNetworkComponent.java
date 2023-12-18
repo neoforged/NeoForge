@@ -13,9 +13,9 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * Represents the input to the negotiation process for a single network payload type.
  *
- * @param id The id of the payload type.
- * @param version The version of the payload type.
- * @param flow The flow of the payload type.
+ * @param id       The id of the payload type.
+ * @param version  The version of the payload type.
+ * @param flow     The flow of the payload type.
  * @param optional Whether the payload type is optional.
  */
 @ApiStatus.Internal

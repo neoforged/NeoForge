@@ -14,9 +14,9 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * Represents a potential modded network component, used for querying the client for modded network components.
  *
- * @param id The id of the component
- * @param version The version of the component, if present
- * @param flow The flow of the component, if present
+ * @param id       The id of the component
+ * @param version  The version of the component, if present
+ * @param flow     The flow of the component, if present
  * @param optional Whether the component is optional
  */
 @ApiStatus.Internal

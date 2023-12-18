@@ -90,7 +90,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
                         reader, innerHandler, version, innerHandler.flow(), optional));
         return this;
     }
-    
+
     @Override
     public <T extends CustomPacketPayload> IPayloadRegistrar common(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IPayloadHandler<T>>> handler) {
         final PayloadHandlerBuilder<T> builder = new PayloadHandlerBuilder<>();
@@ -99,7 +99,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
         play(id, reader, builder::handlePlay);
         return this;
     }
-    
+
     private void configuration(final ResourceLocation id, ConfigurationRegistration<?> registration) {
         validatePayload(id, configurationPayloads);
 

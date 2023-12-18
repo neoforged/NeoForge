@@ -14,8 +14,9 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * A payload that contains a config file.
  * <p>
- *     This is used to send config files to the client.
+ * This is used to send config files to the client.
  * </p>
+ * 
  * @param contents The contents of the config file.
  * @param fileName The name of the config file.
  */

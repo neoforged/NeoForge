@@ -15,8 +15,9 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * The payload for the tier sorting registry packet.
  * <p>
- *     This payload is used to send the tier order to the client.
+ * This payload is used to send the tier order to the client.
  * </p>
+ * 
  * @param tiers The tiers in order.
  */
 @ApiStatus.Internal

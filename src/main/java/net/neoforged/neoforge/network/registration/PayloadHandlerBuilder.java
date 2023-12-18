@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.network.registration;
 
+import java.util.function.Consumer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -14,8 +15,6 @@ import net.neoforged.neoforge.network.handling.IPlayPayloadHandler;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Consumer;
 
 /**
  * The internal implementation of {@link IDirectionAwarePayloadHandlerBuilder}, for use by {@link IPayloadRegistrar#common(ResourceLocation, FriendlyByteBuf.Reader, Consumer)}
@@ -36,7 +35,7 @@ class PayloadHandlerBuilder<T extends CustomPacketPayload> implements IDirection
         this.serverSide = serverSide;
         return this;
     }
-    
+
     /**
      * Internal callback method used to configure the play builder with the handlers
      *

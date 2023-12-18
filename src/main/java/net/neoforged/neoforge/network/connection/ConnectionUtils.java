@@ -20,7 +20,7 @@ public class ConnectionUtils {
     }
 
     private static AttributeKey<Connection> ATTRIBUTE_CONNECTION = AttributeKey.valueOf("neoforge:connection");
-    
+
     /**
      * Gets the {@link Connection} object from the {@link ChannelHandlerContext} object.
      *
@@ -30,18 +30,18 @@ public class ConnectionUtils {
     public static Connection getConnection(ChannelHandlerContext connection) {
         return connection.attr(ATTRIBUTE_CONNECTION).get();
     }
-    
+
     /**
      * Sets the {@link Connection} object to the {@link ChannelHandlerContext} object.
      *
      * @param connection The {@link ChannelHandlerContext} object.
-     * @param value The {@link Connection} object.
+     * @param value      The {@link Connection} object.
      */
     @ApiStatus.Internal
     public static void setConnection(ChannelHandlerContext connection, Connection value) {
         connection.attr(ATTRIBUTE_CONNECTION).set(value);
     }
-    
+
     /**
      * Removes the {@link Connection} object from the {@link ChannelHandlerContext} object.
      *

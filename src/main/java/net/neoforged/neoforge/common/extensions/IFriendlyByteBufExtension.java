@@ -7,7 +7,6 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.Collection;
 import java.util.function.BiConsumer;
-
 import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.neoforge.fluids.FluidStack;
 
@@ -47,7 +46,7 @@ public interface IFriendlyByteBufExtension {
      * @param set    The set to write
      * @param writer The writer to use for writing each entry
      * @param <T>    The type of the entry
-     * @implNote     This is a convenience method for {@link FriendlyByteBuf#writeCollection(Collection, FriendlyByteBuf.Writer)}, where the callback can be a method on the entry type.
+     * @implNote This is a convenience method for {@link FriendlyByteBuf#writeCollection(Collection, FriendlyByteBuf.Writer)}, where the callback can be a method on the entry type.
      */
     default <T> void writeObjectCollection(Collection<T> set, BiConsumer<T, FriendlyByteBuf> writer) {
         self().writeCollection(set, (buf, t) -> writer.accept(t, buf));

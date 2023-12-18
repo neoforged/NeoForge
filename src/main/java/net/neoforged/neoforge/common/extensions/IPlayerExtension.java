@@ -6,7 +6,8 @@
 package net.neoforged.neoforge.common.extensions;
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.client.gui.screens.MenuScreens;
+import java.util.OptionalInt;
+import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,15 +19,11 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.ConfigScreenHandler;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.network.IContainerFactory;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
-
-import java.util.OptionalInt;
-import java.util.function.Consumer;
 
 public interface IPlayerExtension {
 
@@ -137,31 +134,30 @@ public interface IPlayerExtension {
         if (!(self() instanceof ServerPlayer player)) {
             return OptionalInt.empty();
         }
-        
+
         if (self().level().isClientSide) return OptionalInt.empty();
-        
+
         player.doCloseContainer();
         player.nextContainerCounter();
-        
+
         int openContainerId = player.containerCounter;
         FriendlyByteBuf extraData = new FriendlyByteBuf(Unpooled.buffer());
         extraDataWriter.accept(extraData);
         extraData.readerIndex(0); // reset to beginning in case modders read for whatever reason
-        
 
         AbstractContainerMenu c = menuProvider.createMenu(openContainerId, player.getInventory(), player);
         if (c == null)
             return OptionalInt.empty();
-        
+
         MenuType<?> type = c.getType();
         AdvancedOpenScreenPayload msg = new AdvancedOpenScreenPayload(openContainerId, type, menuProvider.getDisplayName(), extraDataWriter);
-        
+
         player.connection.send(msg);
-        
+
         player.containerMenu = c;
         player.initMenu(player.containerMenu);
         NeoForge.EVENT_BUS.post(new PlayerContainerEvent.Open(player, c));
-        
+
         return OptionalInt.of(openContainerId);
     }
 }

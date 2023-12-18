@@ -15,11 +15,11 @@ import org.jetbrains.annotations.ApiStatus;
  * Registration for a custom packet payload.
  * This type holds the negotiated preferredVersion of the payload to use, and the handler for it.
  *
- * @param id The id of the payload.
- * @param type The type of payload.
+ * @param id      The id of the payload.
+ * @param type    The type of payload.
  * @param handler The handler for the payload.
- * @param reader The reader for the payload.
- * @param <T> The type of payload.
+ * @param reader  The reader for the payload.
+ * @param <T>     The type of payload.
  */
 @ApiStatus.Internal
 public record ModdedConfigurationPayloadRegistration<T extends CustomPacketPayload>(

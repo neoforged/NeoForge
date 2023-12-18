@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Custom configuration task that is run to indicate that the modded configuration phase has started.
+ * 
  * @param listener The listener that is handling the configuration.
  */
 @ApiStatus.Internal

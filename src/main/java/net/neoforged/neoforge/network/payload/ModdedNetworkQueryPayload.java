@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
  * Payload for the modded network query request
  *
  * @param configuration The configuration components
- * @param play The play components
+ * @param play          The play components
  */
 @ApiStatus.Internal
 public record ModdedNetworkQueryPayload(Set<ModdedNetworkQueryComponent> configuration, Set<ModdedNetworkQueryComponent> play) implements CustomPacketPayload {

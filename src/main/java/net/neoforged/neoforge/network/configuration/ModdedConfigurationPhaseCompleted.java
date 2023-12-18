@@ -14,6 +14,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A custom configuration task that is run when the modded configuration phase is completed.
+ * 
  * @param listener The listener that is used to configure the client.
  */
 @ApiStatus.Internal

@@ -15,6 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Syncs the tier sorting registry to the client
+ * 
  * @param listener the listener to indicate the check if it is a vanilla connection
  */
 @ApiStatus.Internal

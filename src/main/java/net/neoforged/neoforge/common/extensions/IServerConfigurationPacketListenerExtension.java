@@ -21,7 +21,7 @@ public interface IServerConfigurationPacketListenerExtension {
      * @implNote This forces the normally private method implementation in {@link ServerConfigurationPacketListenerImpl#finishCurrentTask(ConfigurationTask.Type)} to become public, and adds this to the signature of {@link ServerConfigurationPacketListener}
      */
     void finishCurrentTask(ConfigurationTask.Type task);
-    
+
     /**
      * {@return true if the connection is vanilla, false if it is a forge connection}
      */

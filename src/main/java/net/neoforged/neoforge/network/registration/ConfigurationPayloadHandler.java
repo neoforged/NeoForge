@@ -60,7 +60,7 @@ public final class ConfigurationPayloadHandler<T extends CustomPacketPayload> im
 
         return Optional.empty();
     }
-    
+
     /**
      * Internal builder for a configuration payload handler.
      *

@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
  * A payload that contains the modded network configuration and play components.
  *
  * @param configuration The configuration components.
- * @param play The play components.
+ * @param play          The play components.
  */
 @ApiStatus.Internal
 public record ModdedNetworkPayload(Set<ModdedNetworkComponent> configuration, Set<ModdedNetworkComponent> play) implements CustomPacketPayload {
