@@ -91,31 +91,8 @@
          return this.isReachableBedBlock(p_9117_) || this.isReachableBedBlock(p_9117_.relative(p_9118_.getOpposite()));
      }
  
-@@ -983,6 +_,11 @@
- 
-     @Override
-     public OptionalInt openMenu(@Nullable MenuProvider p_9033_) {
-+        return openMenu(p_9033_, (java.util.function.Consumer<net.minecraft.network.FriendlyByteBuf>) null);
-+    }
-+
-+    @Override
-+    public OptionalInt openMenu(@Nullable MenuProvider p_9033_, @Nullable java.util.function.Consumer<net.minecraft.network.FriendlyByteBuf> extraDataWriter) {
-         if (p_9033_ == null) {
-             return OptionalInt.empty();
-         } else {
-@@ -999,10 +_,16 @@
- 
-                 return OptionalInt.empty();
-             } else {
--                this.connection
--                    .send(new ClientboundOpenScreenPacket(abstractcontainermenu.containerId, abstractcontainermenu.getType(), p_9033_.getDisplayName()));
-+                if (extraDataWriter == null) {
-+                    this.connection
-+                        .send(new ClientboundOpenScreenPacket(abstractcontainermenu.containerId, abstractcontainermenu.getType(), p_9033_.getDisplayName()));
-+                } else {
-+                    this.connection
-+                        .send(new net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload(abstractcontainermenu.containerId, abstractcontainermenu.getType(), p_9033_.getDisplayName(), extraDataWriter));
-+                }
+@@ -1003,6 +_,7 @@
+                     .send(new ClientboundOpenScreenPacket(abstractcontainermenu.containerId, abstractcontainermenu.getType(), p_9033_.getDisplayName()));
                  this.initMenu(abstractcontainermenu);
                  this.containerMenu = abstractcontainermenu;
 +                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.PlayerContainerEvent.Open(this, this.containerMenu));

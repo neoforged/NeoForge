@@ -1,18 +1,5 @@
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-@@ -12,11 +_,7 @@
- import net.minecraft.network.TickablePacketListener;
- import net.minecraft.network.chat.Component;
- import net.minecraft.network.protocol.PacketUtils;
--import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
--import net.minecraft.network.protocol.common.ClientboundDisconnectPacket;
--import net.minecraft.network.protocol.common.ClientboundUpdateTagsPacket;
--import net.minecraft.network.protocol.common.ServerboundClientInformationPacket;
--import net.minecraft.network.protocol.common.ServerboundResourcePackPacket;
-+import net.minecraft.network.protocol.common.*;
- import net.minecraft.network.protocol.common.custom.BrandPayload;
- import net.minecraft.network.protocol.configuration.ClientboundRegistryDataPacket;
- import net.minecraft.network.protocol.configuration.ClientboundUpdateEnabledFeaturesPacket;
 @@ -41,6 +_,8 @@
      @Nullable
      private ConfigurationTask currentTask;
@@ -27,7 +14,7 @@
  
      public void startConfiguration() {
 +        this.send(new net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload());
-+        this.send(new ClientboundPingPacket(0));
++        this.send(new net.minecraft.network.protocol.common.ClientboundPingPacket(0));
 +    }
 +
 +    private void runConfiguration() {
@@ -47,7 +34,7 @@
 +    }
 +    
 +    @Override
-+    public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) {
++    public void handleCustomPayload(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket p_294276_) {
 +        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload moddedEnvironmentPayload) {
 +            this.isModdedConnection = true;
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance()
@@ -68,7 +55,7 @@
 +    }
 +
 +    @Override
-+    public void handlePong(ServerboundPongPacket p_295142_) {
++    public void handlePong(net.minecraft.network.protocol.common.ServerboundPongPacket p_295142_) {
 +        super.handlePong(p_295142_);
 +        if (p_295142_.getId() == 0) {
 +            if (!this.isModdedConnection && !net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaConnectionDetectedAtServer(this)) {

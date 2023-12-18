@@ -1,13 +1,5 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -57,6 +_,7 @@
- import net.minecraft.network.protocol.Packet;
- import net.minecraft.network.protocol.PacketUtils;
- import net.minecraft.network.protocol.common.ServerboundClientInformationPacket;
-+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
- import net.minecraft.network.protocol.game.ClientboundBlockChangedAckPacket;
- import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
- import net.minecraft.network.protocol.game.ClientboundCommandSuggestionsPacket;
 @@ -187,6 +_,12 @@
      ServerPlayerConnection,
      TickablePacketListener {
@@ -162,7 +154,7 @@
 +    }
 +    
 +    @Override
-+    public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) {
++    public void handleCustomPayload(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket p_294276_) {
 +        if (!this.isModdedConnection) {
 +            super.handleCustomPayload(p_294276_);
 +        }

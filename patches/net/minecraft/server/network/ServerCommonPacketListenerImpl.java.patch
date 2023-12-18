@@ -1,33 +1,13 @@
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -12,16 +_,12 @@
- import net.minecraft.network.chat.Component;
- import net.minecraft.network.protocol.Packet;
- import net.minecraft.network.protocol.PacketUtils;
--import net.minecraft.network.protocol.common.ClientboundDisconnectPacket;
--import net.minecraft.network.protocol.common.ClientboundKeepAlivePacket;
--import net.minecraft.network.protocol.common.ServerCommonPacketListener;
--import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
--import net.minecraft.network.protocol.common.ServerboundKeepAlivePacket;
--import net.minecraft.network.protocol.common.ServerboundPongPacket;
--import net.minecraft.network.protocol.common.ServerboundResourcePackPacket;
-+import net.minecraft.network.protocol.common.*;
-+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
- import net.minecraft.server.MinecraftServer;
- import net.minecraft.server.level.ClientInformation;
- import net.minecraft.util.VisibleForDebug;
-+import net.minecraft.util.thread.ReentrantBlockableEventLoop;
- import org.slf4j.Logger;
- 
- public abstract class ServerCommonPacketListenerImpl implements ServerCommonPacketListener {
 @@ -108,8 +_,17 @@
      public void send(Packet<?> p_294278_) {
          this.send(p_294278_, null);
      }
 +    
 +    @Override
-+    public void send(CustomPacketPayload packetPayload) {
-+        this.send(new ClientboundCustomPayloadPacket(packetPayload));
++    public void send(net.minecraft.network.protocol.common.custom.CustomPacketPayload packetPayload) {
++        this.send(new net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket(packetPayload));
 +    }
  
      public void send(Packet<?> p_295099_, @Nullable PacketSendListener p_296321_) {
@@ -44,8 +24,8 @@
      }
 +    
 +    @Override
-+    public void send(CustomPacketPayload packetPayload, @Nullable PacketSendListener listener) {
-+        this.send(new ClientboundCustomPayloadPacket(packetPayload), listener);
++    public void send(net.minecraft.network.protocol.common.custom.CustomPacketPayload packetPayload, @Nullable PacketSendListener listener) {
++        this.send(new net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket(packetPayload), listener);
 +    }
  
      public void disconnect(Component p_294116_) {
@@ -85,7 +65,7 @@
 +        return connection;
 +    }
 +    @Override
-+    public ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
++    public net.minecraft.util.thread.ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
 +        return server;
      }
  }

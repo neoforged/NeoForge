@@ -1,21 +1,5 @@
 --- a/net/minecraft/network/ConnectionProtocol.java
 +++ b/net/minecraft/network/ConnectionProtocol.java
-@@ -3,6 +_,7 @@
- import com.google.common.collect.Lists;
- import com.google.common.collect.Maps;
- import com.mojang.logging.LogUtils;
-+import io.netty.channel.ChannelHandlerContext;
- import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
- import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
- import it.unimi.dsi.fastutil.objects.Object2IntMap;
-@@ -12,6 +_,7 @@
- import java.util.List;
- import java.util.Map;
- import java.util.Set;
-+import java.util.function.BiFunction;
- import java.util.function.Function;
- import javax.annotation.Nullable;
- import net.minecraft.Util;
 @@ -243,7 +_,7 @@
                      .addPacket(ClientboundContainerSetSlotPacket.class, ClientboundContainerSetSlotPacket::new)
                      .addPacket(ClientboundCooldownPacket.class, ClientboundCooldownPacket::new)
@@ -88,7 +72,7 @@
 +         * @param p_294972_ The discriminator
 +         * @param p_296217_ The buffer
 +         * @return The packet
-+         * @deprecated Use {@link #createPacket(int, FriendlyByteBuf, ChannelHandlerContext)} instead, which provides the channel context for creating custom packet payloads.
++         * @deprecated Use {@link #createPacket(int, FriendlyByteBuf, io.netty.channel.ChannelHandlerContext)} instead, which provides the channel context for creating custom packet payloads.
 +         */
          @Nullable
 +        @Deprecated
@@ -105,7 +89,7 @@
 +         * @return The packet
 +         */
 +        @Nullable
-+        public Packet<?> createPacket(int p_294972_, FriendlyByteBuf p_296217_, ChannelHandlerContext p_130535_) {
++        public Packet<?> createPacket(int p_294972_, FriendlyByteBuf p_296217_, io.netty.channel.ChannelHandlerContext p_130535_) {
 +            return this.packetSet.createPacket(p_294972_, p_296217_, p_130535_);
 +        }
  
@@ -120,7 +104,7 @@
 +         */
 +        @Deprecated
          private final List<Function<FriendlyByteBuf, ? extends Packet<? super T>>> idToDeserializer = Lists.newArrayList();
-+        private final List<BiFunction<FriendlyByteBuf, ChannelHandlerContext, ? extends Packet<? super T>>> contextualIdToDeserializer = Lists.newArrayList();
++        private final List<java.util.function.BiFunction<FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, ? extends net.minecraft.network.protocol.Packet<? super T>>> contextualIdToDeserializer = Lists.newArrayList();
          private BundlerInfo bundlerInfo = BundlerInfo.EMPTY;
          private final Set<Class<? extends Packet<T>>> extraClasses = new HashSet<>();
  
@@ -143,7 +127,7 @@
 +            }
 +        }
 +        
-+        public <P extends Packet<? super T>> ConnectionProtocol.PacketSet<T> addContextualPacket(Class<P> p_178331_, BiFunction<FriendlyByteBuf, ChannelHandlerContext, P> readerBuilder) {
++        public <P extends Packet<? super T>> ConnectionProtocol.PacketSet<T> addContextualPacket(Class<P> p_178331_, java.util.function.BiFunction<FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, P> readerBuilder) {
 +            int i = this.contextualIdToDeserializer.size();
 +            int k = this.idToDeserializer.size();
 +            if (i != k) {
@@ -175,7 +159,7 @@
 +         * @param p_178328_ The discriminator
 +         * @param p_178329_ The buffer
 +         * @return The packet, or null if none can be read.
-+         * @deprecated Use {@link #createPacket(int, FriendlyByteBuf, ChannelHandlerContext)} instead, which provides the channel context for creating custom packet payloads.
++         * @deprecated Use {@link #createPacket(int, FriendlyByteBuf, io.netty.channel.ChannelHandlerContext)} instead, which provides the channel context for creating custom packet payloads.
 +         */
 +        @Deprecated
          @Nullable
@@ -193,8 +177,8 @@
 +         * @return The packet, or null if none can be read.
 +         */
 +        @Nullable
-+        public Packet<?> createPacket(int p_178328_, FriendlyByteBuf p_178329_, ChannelHandlerContext p_130535_) {
-+            BiFunction<FriendlyByteBuf, ChannelHandlerContext, ? extends Packet<? super T>> function = this.contextualIdToDeserializer.get(p_178328_);
++        public Packet<?> createPacket(int p_178328_, FriendlyByteBuf p_178329_, io.netty.channel.ChannelHandlerContext p_130535_) {
++            java.util.function.BiFunction<FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, ? extends net.minecraft.network.protocol.Packet<? super T>> function = this.contextualIdToDeserializer.get(p_178328_);
 +            return function != null ? function.apply(p_178329_, p_130535_) : null;
          }
  

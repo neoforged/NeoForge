@@ -1,15 +1,5 @@
 --- a/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
 +++ b/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
-@@ -2,6 +_,9 @@
- 
- import com.google.common.collect.ImmutableMap;
- import java.util.Map;
-+
-+import io.netty.channel.ChannelHandlerContext;
-+import net.minecraft.network.ConnectionProtocol;
- import net.minecraft.network.FriendlyByteBuf;
- import net.minecraft.network.protocol.Packet;
- import net.minecraft.network.protocol.common.custom.BeeDebugPayload;
 @@ -29,7 +_,7 @@
  
  public record ClientboundCustomPayloadPacket(CustomPacketPayload payload) implements Packet<ClientCommonPacketListener> {
@@ -26,7 +16,7 @@
 -
 +    
 +    /**
-+     * @deprecated Use {@link #ClientboundCustomPayloadPacket(FriendlyByteBuf, ChannelHandlerContext, ConnectionProtocol)} instead, this variant can only read vanilla payloads.
++     * @deprecated Use {@link #ClientboundCustomPayloadPacket(FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, net.minecraft.network.ConnectionProtocol)} instead, this variant can only read vanilla payloads.
 +     * @param p_295835_ The buffer to read from
 +     */
 +    @Deprecated()
@@ -42,7 +32,7 @@
 +     * @param context The context of the channel in which this packet is read
 +     * @param protocol The protocol of the connection
 +     */
-+    public ClientboundCustomPayloadPacket(FriendlyByteBuf p_295835_, ChannelHandlerContext context, ConnectionProtocol protocol) {
++    public ClientboundCustomPayloadPacket(FriendlyByteBuf p_295835_, io.netty.channel.ChannelHandlerContext context, net.minecraft.network.ConnectionProtocol protocol) {
 +        this(readPayload(p_295835_.readResourceLocation(), p_295835_, context, protocol));
 +    }
 +    
@@ -55,13 +45,13 @@
 +     * @param protocol The protocol of the connection
 +     * @return The payload
 +     */
-+    private static CustomPacketPayload readPayload(ResourceLocation p_294367_, FriendlyByteBuf p_294321_, ChannelHandlerContext context, ConnectionProtocol protocol) {
++    private static CustomPacketPayload readPayload(ResourceLocation p_294367_, FriendlyByteBuf p_294321_, io.netty.channel.ChannelHandlerContext context, net.minecraft.network.ConnectionProtocol protocol) {
 +        FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().getReader(p_294367_, context, protocol, KNOWN_TYPES);
 +        return (CustomPacketPayload)(reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_));
 +    }
 +    
 +    /**
-+     * @deprecated Use {@link #readPayload(ResourceLocation, FriendlyByteBuf, ChannelHandlerContext, ConnectionProtocol)} instead, this variant can only read vanilla payloads.
++     * @deprecated Use {@link #readPayload(ResourceLocation, FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, net.minecraft.network.ConnectionProtocol)} instead, this variant can only read vanilla payloads.
 +     * @param p_294802_ The id of the payload
 +     * @param p_294886_ The buffer to read from
 +     * @return The payload
