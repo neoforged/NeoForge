@@ -10,7 +10,13 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
-import net.neoforged.neoforge.network.handling.*;
+import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
+import net.neoforged.neoforge.network.handling.IConfigurationPayloadHandler;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
+import net.neoforged.neoforge.network.handling.IPlayPayloadHandler;
+import net.neoforged.neoforge.network.handling.ISynchronizedWorkHandler;
+import net.neoforged.neoforge.network.handling.ITaskCompletedHandler;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 /**
  * Defines a registrar for custom payloads that can be sent over the network.

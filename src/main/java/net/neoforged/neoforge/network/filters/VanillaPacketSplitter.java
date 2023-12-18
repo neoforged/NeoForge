@@ -10,7 +10,10 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.network.*;
+import net.minecraft.network.CompressionDecoder;
+import net.minecraft.network.Connection;
+import net.minecraft.network.ConnectionProtocol;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
@@ -33,9 +36,6 @@ import org.apache.logging.log4j.Logger;
 public class VanillaPacketSplitter {
 
     private static final Logger LOGGER = LogManager.getLogger();
-
-    private static final ResourceLocation CHANNEL = new ResourceLocation("neoforge", "split");
-    private static final int VERSION = 2;
 
     private static final int PROTOCOL_MAX = CompressionDecoder.MAXIMUM_UNCOMPRESSED_LENGTH;
 
