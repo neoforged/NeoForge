@@ -8,7 +8,16 @@ package net.neoforged.neoforge.network.payload;
 import java.util.Optional;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * Represents a modded network component, indicates what channel and version the client and server
+ * agreed upon.
+ *
+ * @param id The mod id
+ * @param version The mod version, if present
+ */
+@ApiStatus.Internal
 public record ModdedNetworkComponent(ResourceLocation id, Optional<String> version) {
 
     public ModdedNetworkComponent(FriendlyByteBuf buf) {

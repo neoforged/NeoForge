@@ -3,16 +3,23 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.network.registration.registrar;
+package net.neoforged.neoforge.network.registration;
 
 import java.util.Optional;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import net.neoforged.neoforge.network.handling.IConfigurationPayloadHandler;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * An internal implementation of {@link IDirectionAwarePayloadHandlerBuilder} for {@link IConfigurationPayloadHandler}.
+ *
+ * @param <T> The payload type.
+ */
+@ApiStatus.Internal
 public final class ConfigurationPayloadHandler<T extends CustomPacketPayload> implements IConfigurationPayloadHandler<T> {
 
     @Nullable
@@ -53,8 +60,13 @@ public final class ConfigurationPayloadHandler<T extends CustomPacketPayload> im
 
         return Optional.empty();
     }
-
-    public static class Builder<T extends CustomPacketPayload> {
+    
+    /**
+     * Internal builder for a configuration payload handler.
+     *
+     * @param <T> The type of payload.
+     */
+    static class Builder<T extends CustomPacketPayload> implements IDirectionAwarePayloadHandlerBuilder<T, IConfigurationPayloadHandler<T>> {
         private @Nullable IConfigurationPayloadHandler<T> clientSide;
         private @Nullable IConfigurationPayloadHandler<T> serverSide;
 

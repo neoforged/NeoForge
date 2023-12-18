@@ -5,10 +5,14 @@
 
 package net.neoforged.neoforge.network.registration;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
+
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,8 +59,6 @@ import net.neoforged.neoforge.network.payload.ModdedNetworkPayload;
 import net.neoforged.neoforge.network.payload.ModdedNetworkQueryComponent;
 import net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload;
 import net.neoforged.neoforge.network.payload.ModdedNetworkSetupFailedPayload;
-import net.neoforged.neoforge.network.registration.registrar.ConfigurationRegistration;
-import net.neoforged.neoforge.network.registration.registrar.PlayRegistration;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
@@ -111,13 +113,21 @@ public class NetworkRegistry {
             throw new IllegalStateException("The network registry can only be setup once.");
 
         setup = true;
-
-        final RegisterPacketHandlerEvent event = ModLoader.get().postEventWithReturn(new RegisterPacketHandlerEvent());
+        
+        final Map<String, ModdedPacketRegistrar> registrarsByNamespace = Collections.synchronizedMap(new HashMap<>());
+        ModLoader.get().postEvent(new RegisterPacketHandlerEvent(namespace -> registrarsByNamespace.computeIfAbsent(namespace, ModdedPacketRegistrar::new)));
+        
+        final ImmutableMap.Builder<ResourceLocation, ConfigurationRegistration<?>> configurationBuilder = ImmutableMap.builder();
+        registrarsByNamespace.values().forEach(registrar -> registrar.getConfigurationRegistrations().forEach(configurationBuilder::put));
+        
+        final ImmutableMap.Builder<ResourceLocation, PlayRegistration<?>> playBuilder = ImmutableMap.builder();
+        registrarsByNamespace.values().forEach(registrar -> registrar.getPlayRegistrations().forEach(playBuilder::put));
+        
         knownConfigurationRegistrations.clear();
         knownPlayRegistrations.clear();
 
-        knownConfigurationRegistrations.putAll(event.getConfigurationRegistrations());
-        knownPlayRegistrations.putAll(event.getPlayRegistrations());
+        knownConfigurationRegistrations.putAll(configurationBuilder.build());
+        knownPlayRegistrations.putAll(playBuilder.build());
     }
 
     /**
@@ -310,7 +320,8 @@ public class NetworkRegistry {
                             configurationPacketListener::finishCurrentTask,
                             new EventLoopSynchronizedWorkHandler(configurationPacketListener.getMainThreadEventLoop()),
                             PacketFlow.SERVERBOUND,
-                            listener.getConnection().channel().pipeline().lastContext()),
+                            listener.getConnection().channel().pipeline().lastContext(),
+                            Optional.empty()),
                     packet.payload());
         } else if (listener instanceof ServerGamePacketListener playPacketListener) {
             //Get the configuration channel for the packet.
@@ -400,12 +411,11 @@ public class NetworkRegistry {
                     new ConfigurationPayloadContext(
                             configurationPacketListener::send,
                             new ClientPacketHandler(configurationPacketListener),
-                            (task) -> {
-                                LOGGER.warn("Tried to finish a task on the client. This should not happen. Ignoring. Task: {}", task);
-                            },
+                            (task) -> LOGGER.warn("Tried to finish a task on the client. This should not happen. Ignoring. Task: {}", task),
                             new EventLoopSynchronizedWorkHandler(configurationPacketListener.getMainThreadEventLoop()),
                             PacketFlow.CLIENTBOUND,
-                            listener.getConnection().channel().pipeline().lastContext()),
+                            listener.getConnection().channel().pipeline().lastContext(),
+                            Optional.empty()),
                     packet.payload());
         } else if (listener instanceof ClientGamePacketListener playPacketListener) {
             //Get the configuration channel for the packet.

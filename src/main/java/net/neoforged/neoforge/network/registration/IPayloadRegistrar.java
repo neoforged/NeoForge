@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.network.registration.registrar;
+package net.neoforged.neoforge.network.registration;
 
 import java.util.function.Consumer;
 import net.minecraft.network.FriendlyByteBuf;
@@ -103,7 +103,7 @@ public interface IPayloadRegistrar {
      * @return The registrar.
      * @implNote This method will capture all internal errors and wrap them in a {@link RegistrationFailedException}.
      */
-    <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<PlayPayloadHandler.Builder<T>> handler);
+    <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IPlayPayloadHandler<T>>> handler);
 
     /**
      * Registers a new payload type for the configuration phase.
@@ -133,7 +133,7 @@ public interface IPayloadRegistrar {
      * @return The registrar.
      * @implNote This method will capture all internal errors and wrap them in a {@link RegistrationFailedException}.
      */
-    <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<ConfigurationPayloadHandler.Builder<T>> handler);
+    <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IConfigurationPayloadHandler<T>>> handler);
 
     /**
      * Registers a new payload type for all supported phases.
@@ -163,12 +163,7 @@ public interface IPayloadRegistrar {
      * @param handler The handler for the payload.
      * @return The registrar.
      */
-    default <T extends CustomPacketPayload> IPayloadRegistrar common(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<PayloadHandlerBuilder<T>> handler) {
-        final PayloadHandlerBuilder<T> builder = new PayloadHandlerBuilder<>();
-        handler.accept(builder);
-
-        return play(id, reader, builder::handle).configuration(id, reader, builder::handle);
-    }
+    <T extends CustomPacketPayload> IPayloadRegistrar common(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IPayloadHandler<T>>> handler);
 
     /**
      * Defines that the payloads registered by this registrar have a specific version associated with them.

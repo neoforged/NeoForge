@@ -6,12 +6,29 @@
 package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.server.network.ConfigurationTask;
+import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 
+/**
+ * Extension class for {@link ServerConfigurationPacketListener}
+ */
 public interface IServerConfigurationPacketListenerExtension {
-    void finishCurrentTask(ConfigurationTask.Type p_294853_);
-
+    /**
+     * Call when a configuration task is finished
+     *
+     * @param task The task that was finished
+     * @implNote This forces the normally private method implementation in {@link ServerConfigurationPacketListenerImpl#finishCurrentTask(ConfigurationTask.Type)} to become public, and adds this to the signature of {@link ServerConfigurationPacketListener}
+     */
+    void finishCurrentTask(ConfigurationTask.Type task);
+    
+    /**
+     * {@return true if the connection is vanilla, false if it is a forge connection}
+     */
     boolean isVanillaConnection();
 
+    /**
+     * {@return the connection that this listener is listening on}
+     */
     Connection getConnection();
 }

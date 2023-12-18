@@ -5,35 +5,33 @@
 
 package net.neoforged.neoforge.network.event;
 
-import com.google.common.collect.ImmutableMap;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.network.registration.registrar.ConfigurationRegistration;
-import net.neoforged.neoforge.network.registration.registrar.IPayloadRegistrar;
-import net.neoforged.neoforge.network.registration.registrar.ModdedPacketRegistrar;
-import net.neoforged.neoforge.network.registration.registrar.PlayRegistration;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
+import org.jetbrains.annotations.ApiStatus;
 
+import java.util.function.Function;
+
+/**
+ * Event fired when the {@link NetworkRegistry} is being set up.
+ * <p>
+ *     This event is used to collect all the payload types and their handlers that should be used on the network.
+ * </p>
+ */
 public class RegisterPacketHandlerEvent extends Event implements IModBusEvent {
 
-    private final Map<String, ModdedPacketRegistrar> registrarsByNamespace = Collections.synchronizedMap(new HashMap<>());
-
+    private final Function<String, IPayloadRegistrar> registrarFactory;
+    
+    @ApiStatus.Internal
+    public RegisterPacketHandlerEvent(Function<String, IPayloadRegistrar> registrarFactory) {
+        this.registrarFactory = registrarFactory;
+    }
+    
+    /**
+     * {@return A {@link IPayloadRegistrar} for the given namespace, creating one if it doesn't exist.}
+     */
     public IPayloadRegistrar registrar(String namespace) {
-        return registrarsByNamespace.computeIfAbsent(namespace, ModdedPacketRegistrar::new);
-    }
-
-    public Map<ResourceLocation, ConfigurationRegistration<?>> getConfigurationRegistrations() {
-        final ImmutableMap.Builder<ResourceLocation, ConfigurationRegistration<?>> builder = ImmutableMap.builder();
-        registrarsByNamespace.values().forEach(registrar -> registrar.getConfigurationRegistrations().forEach(builder::put));
-        return builder.build();
-    }
-
-    public Map<ResourceLocation, PlayRegistration<?>> getPlayRegistrations() {
-        final ImmutableMap.Builder<ResourceLocation, PlayRegistration<?>> builder = ImmutableMap.builder();
-        registrarsByNamespace.values().forEach(registrar -> registrar.getPlayRegistrations().forEach(builder::put));
-        return builder.build();
+        return registrarFactory.apply(namespace);
     }
 }

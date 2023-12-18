@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.network.registration.registrar;
+package net.neoforged.neoforge.network.registration;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -14,10 +14,16 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IConfigurationPayloadHandler;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPlayPayloadHandler;
+import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * The internal implementation of {@link IPayloadRegistrar} for modded packets.
+ */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-public class ModdedPacketRegistrar implements IPayloadRegistrar {
+@ApiStatus.Internal
+class ModdedPacketRegistrar implements IPayloadRegistrar {
 
     private final String modId;
     private final Map<ResourceLocation, ConfigurationRegistration<?>> configurationPayloads;
@@ -64,7 +70,7 @@ public class ModdedPacketRegistrar implements IPayloadRegistrar {
     }
 
     @Override
-    public <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<PlayPayloadHandler.Builder<T>> handler) {
+    public <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IPlayPayloadHandler<T>>> handler) {
         final PlayPayloadHandler.Builder<T> builder = new PlayPayloadHandler.Builder<>();
         handler.accept(builder);
         final PlayPayloadHandler<T> innerHandler = builder.create();
@@ -75,7 +81,7 @@ public class ModdedPacketRegistrar implements IPayloadRegistrar {
     }
 
     @Override
-    public <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<ConfigurationPayloadHandler.Builder<T>> handler) {
+    public <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IConfigurationPayloadHandler<T>>> handler) {
         final ConfigurationPayloadHandler.Builder<T> builder = new ConfigurationPayloadHandler.Builder<>();
         handler.accept(builder);
         final ConfigurationPayloadHandler<T> innerHandler = builder.create();
@@ -84,7 +90,16 @@ public class ModdedPacketRegistrar implements IPayloadRegistrar {
                         reader, innerHandler, version, innerHandler.flow(), optional));
         return this;
     }
-
+    
+    @Override
+    public <T extends CustomPacketPayload> IPayloadRegistrar common(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IPayloadHandler<T>>> handler) {
+        final PayloadHandlerBuilder<T> builder = new PayloadHandlerBuilder<>();
+        handler.accept(builder);
+        configuration(id, reader, builder::handleConfiguration);
+        play(id, reader, builder::handlePlay);
+        return this;
+    }
+    
     private void configuration(final ResourceLocation id, ConfigurationRegistration<?> registration) {
         validatePayload(id, configurationPayloads);
 

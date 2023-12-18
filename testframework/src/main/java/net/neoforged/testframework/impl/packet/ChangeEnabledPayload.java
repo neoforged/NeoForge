@@ -16,7 +16,7 @@ import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.impl.MutableTestFramework;
 import org.jetbrains.annotations.NotNull;
 
-public record ChangeEnabledPacket(MutableTestFramework framework, String testId, boolean enabled) implements CustomPacketPayload {
+public record ChangeEnabledPayload(MutableTestFramework framework, String testId, boolean enabled) implements CustomPacketPayload {
 
     public static final ResourceLocation ID = new ResourceLocation("neoforge", "tf_change_enabled");
 
@@ -35,8 +35,8 @@ public record ChangeEnabledPacket(MutableTestFramework framework, String testId,
         }
     }
 
-    public static ChangeEnabledPacket decode(MutableTestFramework framework, FriendlyByteBuf buf) {
-        return new ChangeEnabledPacket(framework, buf.readUtf(), buf.readBoolean());
+    public static ChangeEnabledPayload decode(MutableTestFramework framework, FriendlyByteBuf buf) {
+        return new ChangeEnabledPayload(framework, buf.readUtf(), buf.readBoolean());
     }
 
     @Override

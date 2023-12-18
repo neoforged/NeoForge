@@ -10,7 +10,9 @@ import net.neoforged.neoforge.network.configuration.SyncTierSortingRegistry;
 import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.TierSortingRegistrySyncCompletePayload;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public class ServerPayloadHandler {
 
     private static final ServerPayloadHandler INSTANCE = new ServerPayloadHandler();

@@ -3,9 +3,10 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.network.registration.registrar;
+package net.neoforged.neoforge.network.registration;
 
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Defines an exception that can be thrown at runtime, if a modder has registered a payload incorrectly.
@@ -36,6 +37,7 @@ public class RegistrationFailedException extends RuntimeException {
      * @param namespace The namespace the payload was being registered in.
      * @param reason    The reason the registration failed.
      */
+    @ApiStatus.Internal
     public RegistrationFailedException(ResourceLocation id, String namespace, Reason reason) {
         super(reason.format(id, namespace));
         this.id = id;
@@ -55,6 +57,7 @@ public class RegistrationFailedException extends RuntimeException {
      * @param namespace The namespace the payload was being registered in.
      * @param throwable The throwable that caused the registration to fail.
      */
+    @ApiStatus.Internal
     public RegistrationFailedException(ResourceLocation id, String namespace, Throwable throwable) {
         super(Reason.UNKNOWN.format(id, namespace), throwable);
         this.id = id;

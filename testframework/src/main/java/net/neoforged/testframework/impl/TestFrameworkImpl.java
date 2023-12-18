@@ -68,9 +68,9 @@ import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.conf.FrameworkConfiguration;
 import net.neoforged.testframework.gametest.DynamicStructureTemplates;
 import net.neoforged.testframework.group.Group;
-import net.neoforged.testframework.impl.packet.ChangeEnabledPacket;
-import net.neoforged.testframework.impl.packet.ChangeStatusPacket;
-import net.neoforged.testframework.impl.packet.TFPackets;
+import net.neoforged.testframework.impl.packet.ChangeEnabledPayload;
+import net.neoforged.testframework.impl.packet.ChangeStatusPayload;
+import net.neoforged.testframework.impl.packet.TestFrameworkPayloadInitialization;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -258,7 +258,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
             }
         });
 
-        modBus.addListener(new TFPackets(this)::onNetworkSetup);
+        modBus.addListener(new TestFrameworkPayloadInitialization(this)::onNetworkSetup);
         modBus.addListener((final RegisterGameTestsEvent event) -> event.register(GameTestRegistration.REGISTER_METHOD));
 
         if (FMLLoader.getDist().isClient()) {
@@ -323,7 +323,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
         logger.info("Status of test '{}' has had status changed to {}{}.", test.id(), newStatus, changer instanceof Player player ? " by " + player.getGameProfile().getName() : "");
 
-        final ChangeStatusPacket packet = new ChangeStatusPacket(this, test.id(), newStatus);
+        final ChangeStatusPayload packet = new ChangeStatusPayload(this, test.id(), newStatus);
         sendPacketIfOn(
                 () -> PacketDistributor.ALL.noArg().send(packet),
                 () -> PacketDistributor.SERVER.noArg().send(packet),
@@ -350,7 +350,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
         tests.globalListeners.forEach(listenerConsumer);
         test.listeners().forEach(listenerConsumer);
 
-        final ChangeEnabledPacket packet = new ChangeEnabledPacket(TestFrameworkImpl.this, test.id(), enabled);
+        final ChangeEnabledPayload packet = new ChangeEnabledPayload(TestFrameworkImpl.this, test.id(), enabled);
         sendPacketIfOn(
                 () -> PacketDistributor.ALL.noArg().send(packet),
                 () -> PacketDistributor.SERVER.noArg().send(packet),

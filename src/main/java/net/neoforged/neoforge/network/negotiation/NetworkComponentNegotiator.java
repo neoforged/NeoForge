@@ -15,12 +15,14 @@ import java.util.Optional;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.compress.utils.Lists;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 /**
  * Negotiates the network components between the server and client.
  */
+@ApiStatus.Internal
 public class NetworkComponentNegotiator {
 
     /**
@@ -169,6 +171,12 @@ public class NetworkComponentNegotiator {
         //In other words, no channel has a range, and no channel has a preferred version.
         return Optional.empty();
     }
-
+    
+    /**
+     * The result of a negotiation.
+     *
+     * @param success If negotiation succeeded.
+     * @param failureReason The reason for failure if negotiation failed.
+     */
     public record ComponentNegotiationResult(boolean success, @Nullable Component failureReason) {}
 }

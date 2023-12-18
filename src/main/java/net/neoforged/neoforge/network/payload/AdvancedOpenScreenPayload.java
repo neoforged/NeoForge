@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.network.payload;
 
 import io.netty.buffer.Unpooled;
+
+import java.util.Objects;
 import java.util.function.Consumer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,7 +16,17 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * A custom payload that allows for opening screens with additional data.
+ *
+ * @param windowId The window ID to use for the screen.
+ * @param menuType The menu type to open.
+ * @param name The name of the screen.
+ * @param additionalData The additional data to pass to the screen.
+ */
+@ApiStatus.Internal
 public record AdvancedOpenScreenPayload(
         int windowId,
         MenuType<?> menuType,
@@ -38,7 +50,7 @@ public record AdvancedOpenScreenPayload(
     }
 
     public AdvancedOpenScreenPayload(FriendlyByteBuf buffer) {
-        this(buffer.readVarInt(), buffer.readById(BuiltInRegistries.MENU), buffer.readComponentTrusted(), buffer.readByteArray());
+        this(buffer.readVarInt(), Objects.requireNonNull(buffer.readById(BuiltInRegistries.MENU)), buffer.readComponentTrusted(), buffer.readByteArray());
     }
 
     @Override

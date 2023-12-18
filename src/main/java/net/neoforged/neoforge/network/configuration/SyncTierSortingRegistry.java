@@ -11,7 +11,13 @@ import net.minecraft.network.protocol.configuration.ServerConfigurationPacketLis
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.TierSortingRegistry;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * Syncs the tier sorting registry to the client
+ * @param listener the listener to indicate the check if it is a vanilla connection
+ */
+@ApiStatus.Internal
 public record SyncTierSortingRegistry(ServerConfigurationPacketListener listener) implements ICustomConfigurationTask {
     private static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "sync_tier_sorting");
     public static final Type TYPE = new Type(ID);

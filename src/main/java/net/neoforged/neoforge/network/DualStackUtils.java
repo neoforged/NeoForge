@@ -82,7 +82,7 @@ public class DualStackUtils {
         } else {
             if (shouldLogDebug) {
                 final String addr = inetAddress == null ? "null" : "\"" + inetAddress.getHostAddress() + "\"";
-                LOGGER.debug("Unable to determine IP preferredVersion of address: " + addr);
+                LOGGER.debug("Unable to determine IP version of address: " + addr);
             }
 
             if (INITIAL_PREFER_IPv4_STACK.equalsIgnoreCase("false") && INITIAL_PREFER_IPv6_ADDRESSES.equalsIgnoreCase("true")) {

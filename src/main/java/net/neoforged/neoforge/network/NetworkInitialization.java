@@ -19,18 +19,18 @@ import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
 import net.neoforged.neoforge.network.payload.TierSortingRegistryPayload;
 import net.neoforged.neoforge.network.payload.TierSortingRegistrySyncCompletePayload;
-import net.neoforged.neoforge.network.registration.registrar.IPayloadRegistrar;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import org.jetbrains.annotations.ApiStatus;
 
 @Mod.EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @ApiStatus.Internal
 public class NetworkInitialization {
-
+    
     @SubscribeEvent
     public static void register(final RegisterPacketHandlerEvent event) {
         final IPayloadRegistrar registrar = event.registrar(NeoForgeVersion.MOD_ID)
-                .versioned(NeoForgeVersion.getSpec())
-                .optional();
+                                                    .versioned(NeoForgeVersion.getSpec())
+                                                    .optional();
         registrar
                 .configuration(
                         FrozenRegistrySyncStartPayload.ID,
@@ -44,7 +44,7 @@ public class NetworkInitialization {
                         FrozenRegistrySyncCompletedPayload.ID,
                         FrozenRegistrySyncCompletedPayload::new,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle)
-                                .server(ServerPayloadHandler.getInstance()::handle))
+                                            .server(ServerPayloadHandler.getInstance()::handle))
                 .configuration(
                         TierSortingRegistryPayload.ID,
                         TierSortingRegistryPayload::new,
@@ -66,15 +66,4 @@ public class NetworkInitialization {
                         AdvancedOpenScreenPayload::new,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle));
     }
-
-/*
-public static SimpleChannel getPlayChannel() {
-SimpleChannel playChannel = NetworkRegistry.ChannelBuilder.named(NetworkConstants.FML_PLAY_RESOURCE).clientAcceptedVersions(a -> true).serverAcceptedVersions(a -> true).networkProtocolVersion(() -> NetworkConstants.NETVERSION).simpleChannel();
-
-playChannel.messageBuilder(PlayMessages.SpawnEntity.class, 0).decoder(PlayMessages.SpawnEntity::decode).encoder(PlayMessages.SpawnEntity::encode).consumerMainThread(PlayMessages.SpawnEntity::handle).add();
-
-playChannel.messageBuilder(PlayMessages.OpenContainer.class, 1).decoder(PlayMessages.OpenContainer::decode).encoder(PlayMessages.OpenContainer::encode).consumerMainThread(PlayMessages.OpenContainer::handle).add();
-
-return playChannel;
-}*/
 }

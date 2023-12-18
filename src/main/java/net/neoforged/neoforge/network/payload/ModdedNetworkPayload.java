@@ -5,25 +5,34 @@
 
 package net.neoforged.neoforge.network.payload;
 
+import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A payload that contains the modded network configuration and play components.
+ *
+ * @param configuration The configuration components.
+ * @param play The play components.
+ */
+@ApiStatus.Internal
 public record ModdedNetworkPayload(Set<ModdedNetworkComponent> configuration, Set<ModdedNetworkComponent> play) implements CustomPacketPayload {
 
     public static final ResourceLocation ID = new ResourceLocation("network");
     public static final FriendlyByteBuf.Reader<? extends CustomPacketPayload> READER = ModdedNetworkPayload::new;
 
     public ModdedNetworkPayload(FriendlyByteBuf buf) {
-        this(buf.readSet(ModdedNetworkComponent::new), buf.readSet(ModdedNetworkComponent::new));
+        this(buf.readCollection(HashSet::new, ModdedNetworkComponent::new), buf.readCollection(HashSet::new, ModdedNetworkComponent::new));
     }
 
     @Override
     public void write(FriendlyByteBuf p_294947_) {
-        p_294947_.writeObjectSet(configuration(), ModdedNetworkComponent::write);
-        p_294947_.writeObjectSet(play(), ModdedNetworkComponent::write);
+        p_294947_.writeObjectCollection(configuration(), ModdedNetworkComponent::write);
+        p_294947_.writeObjectCollection(play(), ModdedNetworkComponent::write);
     }
 
     @Override

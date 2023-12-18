@@ -9,7 +9,17 @@ import java.util.Optional;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * Represents a potential modded network component, used for querying the client for modded network components.
+ *
+ * @param id The id of the component
+ * @param version The version of the component, if present
+ * @param flow The flow of the component, if present
+ * @param optional Whether the component is optional
+ */
+@ApiStatus.Internal
 public record ModdedNetworkQueryComponent(ResourceLocation id, Optional<String> version, Optional<PacketFlow> flow, boolean optional) {
 
     public ModdedNetworkQueryComponent(FriendlyByteBuf buf) {

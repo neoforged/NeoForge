@@ -3,17 +3,24 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.network.registration.registrar;
+package net.neoforged.neoforge.network.registration;
 
 import java.util.Optional;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPlayPayloadHandler;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class PlayPayloadHandler<T extends CustomPacketPayload> implements IPlayPayloadHandler<T> {
+/**
+ * An internal implementation of {@link IDirectionAwarePayloadHandlerBuilder} for {@link IPlayPayloadHandler}.
+ *
+ * @param <T> The payload type.
+ */
+@ApiStatus.Internal
+final class PlayPayloadHandler<T extends CustomPacketPayload> implements IPlayPayloadHandler<T> {
 
     @Nullable
     private final IPlayPayloadHandler<T> clientSide;
@@ -53,8 +60,13 @@ public final class PlayPayloadHandler<T extends CustomPacketPayload> implements 
 
         return Optional.empty();
     }
-
-    public static class Builder<T extends CustomPacketPayload> {
+    
+    /**
+     * A builder for {@link PlayPayloadHandler}.
+     *
+     * @param <T> The payload type.
+     */
+    static class Builder<T extends CustomPacketPayload> implements IDirectionAwarePayloadHandlerBuilder<T, IPlayPayloadHandler<T>> {
         private @Nullable IPlayPayloadHandler<T> clientSide;
         private @Nullable IPlayPayloadHandler<T> serverSide;
 

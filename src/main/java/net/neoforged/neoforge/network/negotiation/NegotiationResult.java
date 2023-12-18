@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Represents the result of a negotiation of network components.
@@ -17,4 +18,5 @@ import net.minecraft.resources.ResourceLocation;
  * @param success        Whether the negotiation was successful.
  * @param failureReasons The reasons for the failure of the negotiation. Is empty when {@link #success()} is true.
  */
+@ApiStatus.Internal
 public record NegotiationResult(List<NegotiatedNetworkComponent> components, boolean success, Map<ResourceLocation, Component> failureReasons) {}

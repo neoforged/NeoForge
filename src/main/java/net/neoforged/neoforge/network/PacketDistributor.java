@@ -158,14 +158,14 @@ public class PacketDistributor<T> {
         }
 
         public void send(CustomPacketPayload payload) {
-            if (getFlow().isClientbound()) {
+            if (flow().isClientbound()) {
                 this.send(new ClientboundCustomPayloadPacket(payload));
             } else {
                 this.send(new ServerboundCustomPayloadPacket(payload));
             }
         }
 
-        public PacketFlow getFlow() {
+        public PacketFlow flow() {
             return distributor.flow;
         }
 

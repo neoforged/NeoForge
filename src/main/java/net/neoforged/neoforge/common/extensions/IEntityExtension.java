@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.function.BiPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,6 +28,8 @@ import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import org.jetbrains.annotations.Nullable;
 
 public interface IEntityExtension extends INBTSerializable<CompoundTag> {
@@ -393,5 +396,19 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      */
     default boolean hasCustomOutlineRendering(Player player) {
         return false;
+    }
+    
+    /**
+     * Sends the spawn packet for this entity to the specified target.
+     *
+     * @param target The target to send the packet to.
+     */
+    default void sendSpawnPacketTo(PacketDistributor.PacketTarget target) {
+        if (target.flow().isServerbound()) {
+            throw new IllegalArgumentException("Cannot send spawn packet to the server");
+        }
+        
+        final AdvancedAddEntityPayload payload = new AdvancedAddEntityPayload(self());
+        target.send(payload);
     }
 }

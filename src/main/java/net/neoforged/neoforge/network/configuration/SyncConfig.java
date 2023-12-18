@@ -11,7 +11,13 @@ import net.minecraft.network.protocol.configuration.ServerConfigurationPacketLis
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.ConfigSync;
+import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * Configuration task that syncs the config files to the client
+ * @param listener the listener to indicate to that the task is complete
+ */
+@ApiStatus.Internal
 public record SyncConfig(ServerConfigurationPacketListener listener) implements ICustomConfigurationTask {
     private static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "sync_config");
     public static Type TYPE = new Type(ID);

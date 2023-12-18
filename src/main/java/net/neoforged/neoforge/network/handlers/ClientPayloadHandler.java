@@ -39,7 +39,9 @@ import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
 import net.neoforged.neoforge.network.payload.TierSortingRegistryPayload;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.RegistrySnapshot;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public class ClientPayloadHandler {
 
     private static final ClientPayloadHandler INSTANCE = new ClientPayloadHandler();

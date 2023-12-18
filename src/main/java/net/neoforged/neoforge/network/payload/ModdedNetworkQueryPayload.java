@@ -5,12 +5,21 @@
 
 package net.neoforged.neoforge.network.payload;
 
+import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Payload for the modded network query request
+ *
+ * @param configuration The configuration components
+ * @param play The play components
+ */
+@ApiStatus.Internal
 public record ModdedNetworkQueryPayload(Set<ModdedNetworkQueryComponent> configuration, Set<ModdedNetworkQueryComponent> play) implements CustomPacketPayload {
 
     public static final ResourceLocation ID = new ResourceLocation("register");
@@ -21,13 +30,13 @@ public record ModdedNetworkQueryPayload(Set<ModdedNetworkQueryComponent> configu
     }
 
     public ModdedNetworkQueryPayload(FriendlyByteBuf byteBuf) {
-        this(byteBuf.readSet(ModdedNetworkQueryComponent::new), byteBuf.readSet(ModdedNetworkQueryComponent::new));
+        this(byteBuf.readCollection(HashSet::new, ModdedNetworkQueryComponent::new), byteBuf.readCollection(HashSet::new, ModdedNetworkQueryComponent::new));
     }
 
     @Override
     public void write(FriendlyByteBuf p_294947_) {
-        p_294947_.writeObjectSet(configuration(), ModdedNetworkQueryComponent::write);
-        p_294947_.writeObjectSet(play(), ModdedNetworkQueryComponent::write);
+        p_294947_.writeObjectCollection(configuration(), ModdedNetworkQueryComponent::write);
+        p_294947_.writeObjectCollection(play(), ModdedNetworkQueryComponent::write);
     }
 
     @Override
