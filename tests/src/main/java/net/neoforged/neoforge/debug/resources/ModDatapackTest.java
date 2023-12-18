@@ -26,7 +26,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 public class ModDatapackTest {
     public static final String GROUP = "resources";
 
-    @TestHolder(description = "Tests that mod datapacks are loaded properly on initial load and reload", enabledByDefault = true, side = Dist.CLIENT)
+    @TestHolder(description = "Tests that mod datapacks are loaded properly on initial load and reload", enabledByDefault = true)
     static void modDatapack(final DynamicTest test) {
         final ResourceLocation testAdvancement = new ResourceLocation(test.createModId(), "recipes/misc/test_advancement");
 
