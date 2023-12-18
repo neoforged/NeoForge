@@ -15,7 +15,6 @@ import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.testframework.DynamicTest;
