@@ -27,7 +27,6 @@ import net.neoforged.neoforge.client.event.RegisterRecipeBookCategoriesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.network.NetworkHooks;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -61,8 +60,10 @@ public class RecipeBookExtensionTest {
     private void onRightClick(PlayerInteractEvent.RightClickBlock event) {
         if (event.getLevel().isClientSide)
             return;
-        if (event.getLevel().getBlockState(event.getPos()).getBlock() == Blocks.GRASS_BLOCK)
-            NetworkHooks.openScreen((ServerPlayer) event.getEntity(), new SimpleMenuProvider((id, inv, p) -> new RecipeBookTestMenu(id, inv, ContainerLevelAccess.create(event.getLevel(), event.getPos())), Component.literal("Test")));
+        if (event.getLevel().getBlockState(event.getPos()).getBlock() == Blocks.GRASS_BLOCK) {
+            final ServerPlayer player = (ServerPlayer) event.getEntity();
+            player.openMenu(new SimpleMenuProvider((id, inv, p) -> new RecipeBookTestMenu(id, inv, ContainerLevelAccess.create(event.getLevel(), event.getPos())), Component.literal("Test")));
+        }
     }
 
     public static ResourceLocation getId(String name) {

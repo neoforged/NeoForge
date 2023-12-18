@@ -30,7 +30,6 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.network.NetworkHooks;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -82,7 +81,7 @@ public class ContainerTypeTest {
     }
 
     private void registerContainers(final RegisterEvent event) {
-        event.register(Registries.MENU, helper -> helper.register("container", IMenuTypeExtension.create(TestContainer::new)));
+        event.register(Registries.MENU, helper -> helper.register(new ResourceLocation("containertypetest", "container"), IMenuTypeExtension.create(TestContainer::new)));
     }
 
     private void setup(FMLClientSetupEvent event) {
@@ -93,7 +92,9 @@ public class ContainerTypeTest {
         if (!event.getLevel().isClientSide && event.getHand() == InteractionHand.MAIN_HAND) {
             if (event.getLevel().getBlockState(event.getPos()).getBlock() == Blocks.SPONGE) {
                 String text = "Hello World!";
-                NetworkHooks.openScreen((ServerPlayer) event.getEntity(), new MenuProvider() {
+                
+                final ServerPlayer player = (ServerPlayer) event.getEntity();
+                player.openMenu(new MenuProvider() {
                     @Override
                     public AbstractContainerMenu createMenu(int p_createMenu_1_, Inventory p_createMenu_2_, Player p_createMenu_3_) {
                         SimpleContainer inv = new SimpleContainer(9);
