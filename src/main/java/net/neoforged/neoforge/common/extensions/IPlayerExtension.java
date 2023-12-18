@@ -141,10 +141,6 @@ public interface IPlayerExtension {
         player.nextContainerCounter();
 
         int openContainerId = player.containerCounter;
-        FriendlyByteBuf extraData = new FriendlyByteBuf(Unpooled.buffer());
-        extraDataWriter.accept(extraData);
-        extraData.readerIndex(0); // reset to beginning in case modders read for whatever reason
-
         AbstractContainerMenu c = menuProvider.createMenu(openContainerId, player.getInventory(), player);
         if (c == null)
             return OptionalInt.empty();
