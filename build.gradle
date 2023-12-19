@@ -1365,6 +1365,7 @@ project(':forge') {
                 artifact installerJar
                 artifact userdevJar
                 artifact sourcesJar
+                rootProject.changelog.publish(it)
             }
         }
     }
