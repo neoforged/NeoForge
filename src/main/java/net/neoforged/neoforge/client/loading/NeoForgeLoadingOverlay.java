@@ -69,7 +69,7 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
     public void render(final @NotNull GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTick) {
         long millis = Util.getMillis();
         float fadeouttimer = this.fadeOutStart > -1L ? (float) (millis - this.fadeOutStart) / 1000.0F : -1.0F;
-        this.currentProgress = Mth.clamp(this.currentProgress * 0.95F + this.reload.getActualProgress() * 0.050000012F, 0.0F, 1.0F);
+        this.currentProgress = Mth.clamp(this.currentProgress * 0.95F + this.reload.getActualProgress() * 0.05F, 0.0F, 1.0F);
         progressMeter.setAbsolute(Mth.ceil(this.currentProgress * 100));
         var fade = 1.0F - Mth.clamp(fadeouttimer - 1.0F, 0.0F, 1.0F);
         var colour = this.displayWindow.context().colourScheme().background();
