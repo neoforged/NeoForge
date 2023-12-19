@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/BundlerInfo.java
 +++ b/net/minecraft/network/protocol/BundlerInfo.java
-@@ -38,6 +_,23 @@
+@@ -38,6 +_,26 @@
                  }
              }
  
@@ -9,6 +9,9 @@
 +                if (bundlePacket.getClass() == p_265438_) {
 +                    P p = (P)bundlePacket;
 +                    java.util.List<Packet<?>> packets = net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().filterGameBundlePackets(context, p.subPackets());
++                    if (packets.size() == 0) {
++                        return;
++                    }
 +                    if (packets.size() == 1) {
 +                        packetSender.accept(packets.get(0));
 +                        return;
