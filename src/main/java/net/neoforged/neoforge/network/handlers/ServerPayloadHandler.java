@@ -23,11 +23,11 @@ public class ServerPayloadHandler {
 
     private ServerPayloadHandler() {}
 
-    public void handle(ConfigurationPayloadContext context, FrozenRegistrySyncCompletedPayload payload) {
+    public void handle(FrozenRegistrySyncCompletedPayload payload, ConfigurationPayloadContext context) {
         context.taskCompletedHandler().onTaskCompleted(SyncRegistries.TYPE);
     }
 
-    public void handle(ConfigurationPayloadContext context, TierSortingRegistrySyncCompletePayload payload) {
+    public void handle(TierSortingRegistrySyncCompletePayload payload, ConfigurationPayloadContext context) {
         context.taskCompletedHandler().onTaskCompleted(SyncTierSortingRegistry.TYPE);
     }
 }

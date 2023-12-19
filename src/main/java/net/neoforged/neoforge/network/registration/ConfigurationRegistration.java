@@ -32,8 +32,8 @@ public record ConfigurationRegistration<T extends CustomPacketPayload>(
         boolean optional) implements IConfigurationPayloadHandler<CustomPacketPayload>, FriendlyByteBuf.Reader<CustomPacketPayload> {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public void handle(ConfigurationPayloadContext context, CustomPacketPayload payload) {
-        ((IConfigurationPayloadHandler) handler).handle(context, payload);
+    public void handle(CustomPacketPayload payload, ConfigurationPayloadContext context) {
+        ((IConfigurationPayloadHandler) handler).handle(payload, context);
     }
 
     @Override

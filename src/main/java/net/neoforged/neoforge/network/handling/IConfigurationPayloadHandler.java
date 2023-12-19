@@ -18,10 +18,10 @@ public interface IConfigurationPayloadHandler<T extends CustomPacketPayload> {
     /**
      * Invoked to handle the given payload in the given context.
      *
-     * @param context The context.
      * @param payload The payload.
+     * @param context The context.
      */
-    void handle(ConfigurationPayloadContext context, T payload);
+    void handle(T payload, ConfigurationPayloadContext context);
 
     /**
      * Creates a handler that does nothing.
@@ -30,6 +30,6 @@ public interface IConfigurationPayloadHandler<T extends CustomPacketPayload> {
      * @param <Z> The type of payload.
      */
     static <Z extends CustomPacketPayload> IConfigurationPayloadHandler<Z> noop() {
-        return (context, payload) -> {};
+        return (payload, context) -> {};
     }
 }

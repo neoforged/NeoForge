@@ -103,7 +103,7 @@ public class VanillaPacketSplitter {
 
     private static final List<FriendlyByteBuf> receivedBuffers = new ArrayList<>();
 
-    private static void receivedPacket(IPayloadContext context, SplitPacketPayload payload) {
+    private static void receivedPacket(SplitPacketPayload payload, IPayloadContext context) {
         final ConnectionProtocol protocol = context.protocol();
         final PacketFlow flow = context.flow();
         final ChannelHandlerContext channelHandlerContext = context.channelHandlerContext();

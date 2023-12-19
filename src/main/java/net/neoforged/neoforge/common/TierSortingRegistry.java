@@ -301,7 +301,7 @@ public class TierSortingRegistry {
         else runnable.accept(false);
     }
 
-    public static void handleSync(ConfigurationPayloadContext context, TierSortingRegistryPayload payload) {
+    public static void handleSync(TierSortingRegistryPayload payload, ConfigurationPayloadContext context) {
         setTierOrder(payload.tiers().stream().map(TierSortingRegistry::byName).toList());
         context.handler().send(new TierSortingRegistrySyncCompletePayload());
     }

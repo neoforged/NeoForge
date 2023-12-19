@@ -18,10 +18,10 @@ public interface IPlayPayloadHandler<T extends CustomPacketPayload> {
     /**
      * Invoked to handle the given payload in the given context.
      *
-     * @param context The context.
      * @param payload The payload.
+     * @param context The context.
      */
-    void handle(PlayPayloadContext context, T payload);
+    void handle(T payload, PlayPayloadContext context);
 
     /**
      * Creates a handler that does nothing.
@@ -30,6 +30,6 @@ public interface IPlayPayloadHandler<T extends CustomPacketPayload> {
      * @param <Z> The type of payload.
      */
     static <Z extends CustomPacketPayload> IPlayPayloadHandler<Z> noop() {
-        return (context, payload) -> {};
+        return (payload, context) -> {};
     }
 }

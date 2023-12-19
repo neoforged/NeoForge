@@ -33,14 +33,14 @@ public final class ConfigurationPayloadHandler<T extends CustomPacketPayload> im
     }
 
     @Override
-    public void handle(ConfigurationPayloadContext context, T payload) {
+    public void handle(T payload, ConfigurationPayloadContext context) {
         if (context.flow().isClientbound()) {
             if (clientSide != null) {
-                clientSide.handle(context, payload);
+                clientSide.handle(payload, context);
             }
         } else if (context.flow().isServerbound()) {
             if (serverSide != null) {
-                serverSide.handle(context, payload);
+                serverSide.handle(payload, context);
             }
         }
     }

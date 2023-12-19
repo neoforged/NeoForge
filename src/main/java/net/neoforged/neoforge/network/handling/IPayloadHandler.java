@@ -18,8 +18,8 @@ public interface IPayloadHandler<T extends CustomPacketPayload> {
     /**
      * Invoked to handle the given payload in the given context.
      *
-     * @param context The context.
      * @param payload The payload.
+     * @param context The context.
      */
-    void handle(IPayloadContext context, T payload);
+    void handle(T payload, IPayloadContext context);
 }

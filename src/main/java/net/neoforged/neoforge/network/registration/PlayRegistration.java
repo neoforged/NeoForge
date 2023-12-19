@@ -32,8 +32,8 @@ public record PlayRegistration<T extends CustomPacketPayload>(
         boolean optional) implements IPlayPayloadHandler<CustomPacketPayload>, FriendlyByteBuf.Reader<CustomPacketPayload> {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public void handle(PlayPayloadContext context, CustomPacketPayload payload) {
-        ((IPlayPayloadHandler) handler).handle(context, payload);
+    public void handle(CustomPacketPayload payload, PlayPayloadContext context) {
+        ((IPlayPayloadHandler) handler).handle(payload, context);
     }
 
     @Override

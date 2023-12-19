@@ -62,7 +62,7 @@ public class ModMismatchTest implements IConfigurationPayloadHandler<ModMismatch
     }
 
     @Override
-    public void handle(ConfigurationPayloadContext context, ModMismatchPayload payload) {
+    public void handle(ModMismatchPayload payload, ConfigurationPayloadContext context) {
         //Noop
     }
 

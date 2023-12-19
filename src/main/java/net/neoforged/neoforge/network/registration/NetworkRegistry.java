@@ -313,6 +313,7 @@ public class NetworkRegistry {
             }
 
             registration.handle(
+                    packet.payload(),
                     new ConfigurationPayloadContext(
                             configurationPacketListener::send,
                             new ServerPacketHandler(configurationPacketListener),
@@ -320,8 +321,7 @@ public class NetworkRegistry {
                             new EventLoopSynchronizedWorkHandler(configurationPacketListener.getMainThreadEventLoop()),
                             PacketFlow.SERVERBOUND,
                             listener.getConnection().channel().pipeline().lastContext(),
-                            Optional.empty()),
-                    packet.payload());
+                            Optional.empty()));
         } else if (listener instanceof ServerGamePacketListener playPacketListener) {
             //Get the configuration channel for the packet.
             final NetworkChannel channel = payloadSetup.play().stream()
@@ -344,14 +344,14 @@ public class NetworkRegistry {
             }
 
             registration.handle(
+                    packet.payload(),
                     new PlayPayloadContext(
                             playPacketListener::send,
                             new ServerPacketHandler(playPacketListener),
                             new EventLoopSynchronizedWorkHandler(playPacketListener.getMainThreadEventLoop()),
                             PacketFlow.SERVERBOUND,
                             listener.getConnection().channel().pipeline().lastContext(),
-                            listener instanceof ServerPlayerConnection connection ? Optional.of(connection.getPlayer()) : Optional.empty()),
-                    packet.payload());
+                            listener instanceof ServerPlayerConnection connection ? Optional.of(connection.getPlayer()) : Optional.empty()));
         } else {
             LOGGER.error("Received a modded custom payload packet from a client that is not in the configuration or play phase. Disconnecting client.");
             throw new IllegalStateException("A client send a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
@@ -407,6 +407,7 @@ public class NetworkRegistry {
             }
 
             registration.handle(
+                    packet.payload(),
                     new ConfigurationPayloadContext(
                             configurationPacketListener::send,
                             new ClientPacketHandler(configurationPacketListener),
@@ -414,8 +415,7 @@ public class NetworkRegistry {
                             new EventLoopSynchronizedWorkHandler(configurationPacketListener.getMainThreadEventLoop()),
                             PacketFlow.CLIENTBOUND,
                             listener.getConnection().channel().pipeline().lastContext(),
-                            Optional.empty()),
-                    packet.payload());
+                            Optional.empty()));
         } else if (listener instanceof ClientGamePacketListener playPacketListener) {
             //Get the configuration channel for the packet.
             final NetworkChannel channel = payloadSetup.play().stream()
@@ -438,14 +438,14 @@ public class NetworkRegistry {
             }
 
             registration.handle(
+                    packet.payload(),
                     new PlayPayloadContext(
                             playPacketListener::send,
                             new ClientPacketHandler(playPacketListener),
                             new EventLoopSynchronizedWorkHandler(playPacketListener.getMainThreadEventLoop()),
                             PacketFlow.CLIENTBOUND,
                             listener.getConnection().channel().pipeline().lastContext(),
-                            Optional.empty()),
-                    packet.payload());
+                            Optional.empty()));
         } else {
             LOGGER.error("Received a modded custom payload packet from a server that is not in the configuration or play phase. Disconnecting server.");
             throw new IllegalStateException("A server send a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");

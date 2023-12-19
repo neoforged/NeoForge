@@ -55,17 +55,17 @@ public class ClientPayloadHandler {
 
     private ClientPayloadHandler() {}
 
-    public void handle(ConfigurationPayloadContext context, FrozenRegistryPayload payload) {
+    public void handle(FrozenRegistryPayload payload, ConfigurationPayloadContext context) {
         synchronizedRegistries.put(payload.registryName(), payload.snapshot());
         toSynchronize.remove(payload.registryName());
     }
 
-    public void handle(ConfigurationPayloadContext context, FrozenRegistrySyncStartPayload payload) {
+    public void handle(FrozenRegistrySyncStartPayload payload, ConfigurationPayloadContext context) {
         this.toSynchronize.addAll(payload.toAccess());
         this.synchronizedRegistries.clear();
     }
 
-    public void handle(ConfigurationPayloadContext context, FrozenRegistrySyncCompletedPayload payload) {
+    public void handle(FrozenRegistrySyncCompletedPayload payload, ConfigurationPayloadContext context) {
         if (!this.toSynchronize.isEmpty()) {
             context.packetHandler().disconnect(Component.translatable("neoforge.registries.sync.failed", this.toSynchronize.stream().map(Object::toString).collect(Collectors.joining(", "))));
             return;
@@ -80,15 +80,15 @@ public class ClientPayloadHandler {
         context.handler().send(new FrozenRegistrySyncCompletedPayload());
     }
 
-    public void handle(ConfigurationPayloadContext context, ConfigFilePayload payload) {
+    public void handle(ConfigFilePayload payload, ConfigurationPayloadContext context) {
         ConfigSync.INSTANCE.receiveSyncedConfig(payload.contents(), payload.fileName());
     }
 
-    public void handle(ConfigurationPayloadContext context, TierSortingRegistryPayload payload) {
-        TierSortingRegistry.handleSync(context, payload);
+    public void handle(TierSortingRegistryPayload payload, ConfigurationPayloadContext context) {
+        TierSortingRegistry.handleSync(payload, context);
     }
 
-    public void handle(PlayPayloadContext context, AdvancedAddEntityPayload msg) {
+    public void handle(AdvancedAddEntityPayload msg, PlayPayloadContext context) {
         Optional<Level> world = LogicalSidedProvider.CLIENTWORLD.get(context.flow().getReceptionSide());
         Entity e = world.map(w -> msg.typeId().customClientSpawn(msg, w)).orElse(null);
         if (e == null) {
@@ -118,7 +118,7 @@ public class ClientPayloadHandler {
         }
     }
 
-    public void handle(PlayPayloadContext context, AdvancedOpenScreenPayload msg) {
+    public void handle(AdvancedOpenScreenPayload msg, PlayPayloadContext context) {
         final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(msg.additionalData()));
         try {
             createMenuScreen(msg.name(), msg.menuType(), msg.windowId(), buf);

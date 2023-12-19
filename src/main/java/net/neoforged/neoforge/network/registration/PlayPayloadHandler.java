@@ -33,14 +33,14 @@ final class PlayPayloadHandler<T extends CustomPacketPayload> implements IPlayPa
     }
 
     @Override
-    public void handle(PlayPayloadContext context, T payload) {
+    public void handle(T payload, PlayPayloadContext context) {
         if (context.flow().isClientbound()) {
             if (clientSide != null) {
-                clientSide.handle(context, payload);
+                clientSide.handle(payload, context);
             }
         } else if (context.flow().isServerbound()) {
             if (serverSide != null) {
-                serverSide.handle(context, payload);
+                serverSide.handle(payload, context);
             }
         }
     }
