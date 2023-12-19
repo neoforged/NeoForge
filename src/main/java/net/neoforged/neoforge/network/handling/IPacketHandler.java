@@ -7,6 +7,7 @@ package net.neoforged.neoforge.network.handling;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
  * Describes a handler for a packet.
@@ -20,6 +21,13 @@ public interface IPacketHandler {
      * @param packet The packet.
      */
     void handle(Packet<?> packet);
+    
+    /**
+     * Invoked to handle the given custom payload.
+     *
+     * @param payload The payload.
+     */
+    void handle(CustomPacketPayload payload);
 
     /**
      * Trigger a disconnect from the network.

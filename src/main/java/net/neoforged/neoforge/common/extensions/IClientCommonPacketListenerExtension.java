@@ -10,6 +10,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;
 
 /**
@@ -49,4 +50,24 @@ public interface IClientCommonPacketListenerExtension {
      * @return The raw underlying connection event loop.
      */
     ReentrantBlockableEventLoop<?> getMainThreadEventLoop();
+    
+    /**
+     * {@return true if the connection is to a vanilla client}
+     */
+    boolean isVanillaConnection();
+    
+    /**
+     * {@return true if the custom payload type with the given id is usable by this connection}
+     *
+     * @param payloadId The payload id to check
+     */
+    boolean isConnected(final ResourceLocation payloadId);
+    
+    /**
+     * {@return true if the custom payload is usable by this connection}
+     * @param payload The payload to check
+     */
+    default boolean isConnected(final CustomPacketPayload payload) {
+        return isConnected(payload.id());
+    }
 }

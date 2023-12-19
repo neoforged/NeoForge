@@ -30,7 +30,7 @@
  
      public void disconnect(Component p_294116_) {
          this.connection.send(new ClientboundDisconnectPacket(p_294116_), PacketSendListener.thenRun(() -> this.connection.disconnect(p_294116_)));
-@@ -142,8 +_,36 @@
+@@ -142,8 +_,46 @@
      public int latency() {
          return this.latency;
      }
@@ -67,5 +67,15 @@
 +    @Override
 +    public net.minecraft.util.thread.ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
 +        return server;
++    }
++    
++    @Override
++    public boolean isVanillaConnection() {
++        return net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().isVanillaConnection(getConnection());
++    }
++    
++    @Override
++    public boolean isConnected(net.minecraft.resources.ResourceLocation payloadId) {
++        return net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().isConnected(this, payloadId);
      }
  }

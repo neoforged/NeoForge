@@ -33,7 +33,7 @@
      @Override
      public void onDisconnect(Component p_295485_) {
          this.telemetryManager.onDisconnect();
-@@ -315,5 +_,15 @@
+@@ -315,5 +_,25 @@
          @OnlyIn(Dist.CLIENT)
          static record PendingRequest(UUID id, URL url, String hash) {
          }
@@ -47,5 +47,15 @@
 +    @Override
 +    public net.minecraft.util.thread.ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
 +        return minecraft;
++    }
++    
++    @Override
++    public boolean isVanillaConnection() {
++        return net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().isVanillaConnection(getConnection());
++    }
++    
++    @Override
++    public boolean isConnected(net.minecraft.resources.ResourceLocation payloadId) {
++        return net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().isConnected(this, payloadId);
      }
  }

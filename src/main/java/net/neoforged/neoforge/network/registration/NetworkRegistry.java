@@ -10,15 +10,6 @@ import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
@@ -58,8 +49,20 @@ import net.neoforged.neoforge.network.payload.ModdedNetworkPayload;
 import net.neoforged.neoforge.network.payload.ModdedNetworkQueryComponent;
 import net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload;
 import net.neoforged.neoforge.network.payload.ModdedNetworkSetupFailedPayload;
+import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Defines the registry for all modded network packets.
@@ -187,10 +190,7 @@ public class NetworkRegistry {
 
         //Now ask the protocol what kind of payload is being sent and get the channel for it.
         if (protocol.isPlay()) {
-            final NetworkChannel channel = payloadSetup.play().stream()
-                    .filter(entry -> entry.id().equals(id))
-                    .findFirst()
-                    .orElse(null);
+            final NetworkChannel channel = payloadSetup.play().get(id);
 
             //Validate that everything is okey and then return a reader.
             if (channel == null) {
@@ -222,10 +222,7 @@ public class NetworkRegistry {
 
             return registration;
         } else if (protocol.isConfiguration()) {
-            final NetworkChannel channel = payloadSetup.configuration().stream()
-                    .filter(entry -> entry.id().equals(id))
-                    .findFirst()
-                    .orElse(null);
+            final NetworkChannel channel = payloadSetup.configuration().get(id);
 
             //Also validate that everything is key and then return a reader.
             if (channel == null) {
@@ -293,10 +290,7 @@ public class NetworkRegistry {
 
         if (listener instanceof ServerConfigurationPacketListener configurationPacketListener) {
             //Get the configuration channel for the packet.
-            final NetworkChannel channel = payloadSetup.configuration().stream()
-                    .filter(entry -> entry.id().equals(packet.payload().id()))
-                    .findFirst()
-                    .orElse(null);
+            final NetworkChannel channel = payloadSetup.configuration().get(packet.payload().id());;
 
             //Check if the channel should even be processed.
             if (channel == null) {
@@ -324,10 +318,7 @@ public class NetworkRegistry {
                             Optional.empty()));
         } else if (listener instanceof ServerGamePacketListener playPacketListener) {
             //Get the configuration channel for the packet.
-            final NetworkChannel channel = payloadSetup.play().stream()
-                    .filter(entry -> entry.id().equals(packet.payload().id()))
-                    .findFirst()
-                    .orElse(null);
+            final NetworkChannel channel = payloadSetup.play().get(packet.payload().id());;
 
             //Check if the channel should even be processed.
             if (channel == null) {
@@ -387,10 +378,7 @@ public class NetworkRegistry {
 
         if (listener instanceof ClientConfigurationPacketListener configurationPacketListener) {
             //Get the configuration channel for the packet.
-            final NetworkChannel channel = payloadSetup.configuration().stream()
-                    .filter(entry -> entry.id().equals(packet.payload().id()))
-                    .findFirst()
-                    .orElse(null);
+            final NetworkChannel channel = payloadSetup.configuration().get(packet.payload().id());;
 
             //Check if the channel should even be processed.
             if (channel == null) {
@@ -418,10 +406,7 @@ public class NetworkRegistry {
                             Optional.empty()));
         } else if (listener instanceof ClientGamePacketListener playPacketListener) {
             //Get the configuration channel for the packet.
-            final NetworkChannel channel = payloadSetup.play().stream()
-                    .filter(entry -> entry.id().equals(packet.payload().id()))
-                    .findFirst()
-                    .orElse(null);
+            final NetworkChannel channel = payloadSetup.play().get(packet.payload().id());
 
             //Check if the channel should even be processed.
             if (channel == null) {
@@ -524,8 +509,8 @@ public class NetworkRegistry {
         NetworkFilters.injectIfNecessary(sender.getConnection());
 
         sender.send(new ModdedNetworkPayload(
-                setup.configuration().stream().map(channel -> new ModdedNetworkComponent(channel.id(), channel.chosenVersion())).collect(Collectors.toSet()),
-                setup.play().stream().map(channel -> new ModdedNetworkComponent(channel.id(), channel.chosenVersion())).collect(Collectors.toSet())));
+                setup.configuration().values().stream().map(channel -> new ModdedNetworkComponent(channel.id(), channel.chosenVersion())).collect(Collectors.toSet()),
+                setup.play().values().stream().map(channel -> new ModdedNetworkComponent(channel.id(), channel.chosenVersion())).collect(Collectors.toSet())));
     }
 
     /**
@@ -591,58 +576,33 @@ public class NetworkRegistry {
         if (!(packet instanceof ClientboundCustomPayloadPacket customPayloadPacket)) {
             return true;
         }
+        
+        if (shouldSendPacketRaw(packet)) {
+            return true;
+        }
 
+        return isConnected(listener, customPayloadPacket.payload().id());
+    }
+    
+    public boolean shouldSendPacketRaw(Packet<?> packet) {
+        if (!(packet instanceof ClientboundCustomPayloadPacket customPayloadPacket)) {
+            return true;
+        }
+        
         if (customPayloadPacket.payload() instanceof ModdedNetworkQueryPayload) {
             return true;
         }
-
+        
         if (customPayloadPacket.payload() instanceof ModdedNetworkSetupFailedPayload) {
             return true;
         }
-
+        
         if (customPayloadPacket.payload() instanceof ModdedNetworkPayload) {
             return true;
         }
-
+        
         //Vanilla payloads.
-        if (ClientboundCustomPayloadPacket.KNOWN_TYPES.containsKey(customPayloadPacket.payload().id())) {
-            return true;
-        }
-
-        final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
-        if (payloadSetup == null) {
-            LOGGER.warn("Somebody tried to send: {} to a client that has not negotiated with the server. Not sending packet.", customPayloadPacket.payload().id());
-            return false;
-        }
-
-        if (listener instanceof ServerConfigurationPacketListener) {
-            final NetworkChannel channel = payloadSetup.configuration().stream()
-                    .filter(entry -> entry.id().equals(customPayloadPacket.payload().id()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (channel == null) {
-                LOGGER.warn("Somebody tried to send: {} to a client which can not accept it. Not sending packet.", customPayloadPacket.payload().id());
-                return false;
-            }
-
-            return true;
-        } else if (listener instanceof ServerGamePacketListener) {
-            final NetworkChannel channel = payloadSetup.play().stream()
-                    .filter(entry -> entry.id().equals(customPayloadPacket.payload().id()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (channel == null) {
-                LOGGER.trace("Somebody tried to send: {} to a client which can not accept it. Not sending packet.", customPayloadPacket.payload().id());
-                return false;
-            }
-
-            return true;
-        } else {
-            LOGGER.error("Somebody tried to send: {} to a client that is not in the configuration or play phase. Not sending packet.", customPayloadPacket.payload().id());
-            throw new IllegalStateException("Somebody tried to send a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
-        }
+        return ClientboundCustomPayloadPacket.KNOWN_TYPES.containsKey(customPayloadPacket.payload().id());
     }
 
     /**
@@ -675,40 +635,7 @@ public class NetworkRegistry {
             return true;
         }
 
-        final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
-        if (payloadSetup == null) {
-            LOGGER.warn("Somebody tried to send: {} to a server that has not negotiated with the client. Not sending packet.", customPayloadPacket.payload().id());
-            return false;
-        }
-
-        if (listener instanceof ClientConfigurationPacketListener) {
-            final NetworkChannel channel = payloadSetup.configuration().stream()
-                    .filter(entry -> entry.id().equals(customPayloadPacket.payload().id()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (channel == null) {
-                LOGGER.warn("Somebody tried to send: {} to a server which can not accept it. Not sending packet.", customPayloadPacket.payload().id());
-                return false;
-            }
-
-            return true;
-        } else if (listener instanceof ClientGamePacketListener) {
-            final NetworkChannel channel = payloadSetup.play().stream()
-                    .filter(entry -> entry.id().equals(customPayloadPacket.payload().id()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (channel == null) {
-                LOGGER.trace("Somebody tried to send: {} to a server which can not accept it. Not sending packet.", customPayloadPacket.payload().id());
-                return false;
-            }
-
-            return true;
-        } else {
-            LOGGER.error("Somebody tried to send: {} to a server that is not in the configuration or play phase. Not sending packet.", customPayloadPacket.payload().id());
-            throw new IllegalStateException("Somebody tried to send a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
-        }
+        return isConnected(listener, customPayloadPacket.payload().id());
     }
 
     /**
@@ -820,7 +747,123 @@ public class NetworkRegistry {
     public boolean isVanillaConnection(Connection connection) {
         return connection.channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).get() == Boolean.FALSE;
     }
-
+    
+    /**
+     * Indicates whether the server listener has a connection setup that can transmit the given payload id.
+     *
+     * @param listener The listener to check.
+     * @param payloadId The payload id to check.
+     * @return True if the listener has a connection setup that can transmit the given payload id, false otherwise.
+     */
+    public boolean isConnected(ServerCommonPacketListener listener, ResourceLocation payloadId) {
+        final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
+        if (payloadSetup == null) {
+            LOGGER.warn("Somebody tried to send: {} to a client that has not negotiated with the client. Not sending packet.", payloadId);
+            return false;
+        }
+        
+        if (listener instanceof ServerConfigurationPacketListener) {
+            final NetworkChannel channel = payloadSetup.configuration().get(payloadId);
+            
+            if (channel == null) {
+                LOGGER.trace("Somebody tried to send: {} to a client which can not accept it. Not sending packet.", payloadId);
+                return false;
+            }
+            
+            return true;
+        } else if (listener instanceof ServerGamePacketListener) {
+            final NetworkChannel channel = payloadSetup.play().get(payloadId);
+            
+            if (channel == null) {
+                LOGGER.trace("Somebody tried to send: {} to a client which can not accept it. Not sending packet.", payloadId);
+                return false;
+            }
+            
+            return true;
+        } else {
+            LOGGER.error("Somebody tried to send: {} to a client that is not in the configuration or play phase. Not sending packet.", payloadId);
+            throw new IllegalStateException("Somebody tried to send a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
+        }
+    }
+    
+    /**
+     * Indicates whether the client listener has a connection setup that can transmit the given payload id.
+     *
+     * @param listener The listener to check.
+     * @param payloadId The payload id to check.
+     * @return True if the listener has a connection setup that can transmit the given payload id, false otherwise.
+     */
+    public boolean isConnected(ClientCommonPacketListener listener, ResourceLocation payloadId) {
+        final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
+        if (payloadSetup == null) {
+            LOGGER.warn("Somebody tried to send: {} to a server that has not negotiated with the client. Not sending packet.", payloadId);
+            return false;
+        }
+        
+        if (listener instanceof ClientConfigurationPacketListener) {
+            final NetworkChannel channel = payloadSetup.configuration().get(payloadId);
+            
+            if (channel == null) {
+                LOGGER.trace("Somebody tried to send: {} to a server which can not accept it. Not sending packet.", payloadId);
+                return false;
+            }
+            
+            return true;
+        } else if (listener instanceof ClientGamePacketListener) {
+            final NetworkChannel channel = payloadSetup.play().get(payloadId);
+            
+            if (channel == null) {
+                LOGGER.trace("Somebody tried to send: {} to a server which can not accept it. Not sending packet.", payloadId);
+                return false;
+            }
+            
+            return true;
+        } else {
+            LOGGER.error("Somebody tried to send: {} to a server that is not in the configuration or play phase. Not sending packet.", payloadId);
+            throw new IllegalStateException("Somebody tried to send a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
+        }
+    }
+    
+    /**
+     * Filters the given packets for a bundle packet in the game phase of the connection.
+     *
+     * @param context The context of the connection.
+     * @param packets The packets to filter.
+     * @return The filtered packets.
+     * @param <T> The type of the listener.
+     */
+    public <T extends PacketListener> List<Packet<?>> filterGameBundlePackets(ChannelHandlerContext context, Iterable<Packet<T>> packets) {
+        final NetworkPayloadSetup payloadSetup = context.channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
+        if (payloadSetup == null) {
+            LOGGER.trace("Somebody tried to filter bundled packets to a client that has not negotiated with the server. Not filtering.");
+            return Lists.newArrayList(packets.iterator());
+        }
+        
+        final List<Packet<?>> toSend = new ArrayList<>();
+        packets.forEach(packet -> {
+            if (!(packet instanceof ClientboundCustomPayloadPacket customPayloadPacket)) {
+                toSend.add(packet);
+                return;
+            }
+            
+            if (shouldSendPacketRaw(packet)) {
+                toSend.add(packet);
+                return;
+            }
+            
+            final NetworkChannel channel = payloadSetup.play().get(customPayloadPacket.payload().id());
+            
+            if (channel == null) {
+                LOGGER.trace("Somebody tried to send: {} to a client which can not accept it. Not sending packet.", customPayloadPacket.payload().id());
+                return;
+            }
+            
+            toSend.add(packet);
+        });
+        
+        return toSend;
+    }
+    
     /**
      * An {@link ISynchronizedWorkHandler} that can be used to schedule tasks on the main thread of the server or client.
      * This wrapper record is used to line up the APIs of the {@link ReentrantBlockableEventLoop} with the {@link ISynchronizedWorkHandler}.
@@ -854,7 +897,12 @@ public class NetworkRegistry {
         public void handle(Packet<?> packet) {
             resolvePacketGenerics(packet, listener());
         }
-
+        
+        @Override
+        public void handle(CustomPacketPayload payload) {
+            handle(new ServerboundCustomPayloadPacket(payload));
+        }
+        
         @Override
         public void disconnect(Component reason) {
             listener().disconnect(reason);
@@ -876,7 +924,12 @@ public class NetworkRegistry {
         public void handle(Packet<?> packet) {
             resolvePacketGenerics(packet, listener());
         }
-
+        
+        @Override
+        public void handle(CustomPacketPayload payload) {
+            handle(new ClientboundCustomPayloadPacket(payload));
+        }
+        
         @Override
         public void disconnect(Component reason) {
             listener().getConnection().disconnect(reason);
