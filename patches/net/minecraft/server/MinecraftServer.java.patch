@@ -125,7 +125,7 @@
              Optional.ofNullable(this.statusIcon),
 -            this.enforceSecureProfile()
 +            this.enforceSecureProfile(),
-+            true //TODO: Possible build a system which indicates what the status of the modded server is.
++            true //TODO Neo: Possible build a system which indicates what the status of the modded server is.
          );
      }
  

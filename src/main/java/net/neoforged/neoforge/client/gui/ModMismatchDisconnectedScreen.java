@@ -38,7 +38,6 @@ import net.neoforged.neoforge.common.I18nExtension;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class ModMismatchDisconnectedScreen extends Screen {
-    private MultiLineLabel message = MultiLineLabel.EMPTY;
     private final Screen parent;
     private int textHeight;
     private final Path modsDir;
@@ -56,9 +55,6 @@ public class ModMismatchDisconnectedScreen extends Screen {
 
     @Override
     protected void init() {
-        //this.message = MultiLineLabel.create(this.font, this.reason, this.width - 50);
-        this.textHeight = this.message.getLineCount() * 9;
-
         int listLeft = Math.max(8, this.width / 2 - 220);
         int listWidth = Math.min(440, this.width - 16);
         int upperButtonHeight = Math.min((this.height + this.listHeight + this.textHeight) / 2 + 10, this.height - 50);
@@ -82,7 +78,6 @@ public class ModMismatchDisconnectedScreen extends Screen {
         this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
         int textYOffset = 18;
         guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, (this.height - this.listHeight - this.textHeight) / 2 - textYOffset - 9 * 2, 0xAAAAAA);
-        this.message.renderCentered(guiGraphics, this.width / 2, (this.height - this.listHeight - this.textHeight) / 2 - textYOffset);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
@@ -184,14 +179,14 @@ public class ModMismatchDisconnectedScreen extends Screen {
 
             for (Pair<FormattedCharSequence, FormattedCharSequence> line : lineTable) {
                 FormattedCharSequence name = line.getLeft();
-                FormattedCharSequence reaons = line.getRight();
+                FormattedCharSequence reasons = line.getRight();
                 //Since font#draw does not respect the color of the given component, we have to read it out here and then use it as the last parameter
                 int color = Optional.ofNullable(font.getSplitter().componentStyleAtWidth(name, 0)).map(Style::getColor).map(TextColor::getValue).orElse(0xFFFFFF);
                 //Only indent the given name if a version string is present. This makes it easier to distinguish table section headers and mod entries
-                int nameLeft = left + border + (reaons == null ? 0 : nameIndent);
+                int nameLeft = left + border + (reasons == null ? 0 : nameIndent);
                 guiGraphics.drawString(font, name, nameLeft, relativeY + i * 12, color, false);
-                if (reaons != null) {
-                    guiGraphics.drawString(font, reaons, left + border + nameIndent + nameWidth, relativeY + i * 12, color, false);
+                if (reasons != null) {
+                    guiGraphics.drawString(font, reasons, left + border + nameIndent + nameWidth, relativeY + i * 12, color, false);
                 }
 
                 i++;

@@ -61,17 +61,13 @@
      private static ConnectionProtocol.ProtocolBuilder protocol() {
          return new ConnectionProtocol.ProtocolBuilder();
      }
-@@ -523,11 +_,32 @@
+@@ -523,11 +_,28 @@
              this.packetSet.classToId.forEach((p_294840_, p_295455_) -> int2objectmap.put(p_295455_.intValue(), p_294840_));
              return int2objectmap;
          }
 -
 +        
 +        /**
-+         * Creates a new packet from the discriminator and the buffer.
-+         * @param p_294972_ The discriminator
-+         * @param p_296217_ The buffer
-+         * @return The packet
 +         * @deprecated Use {@link #createPacket(int, FriendlyByteBuf, io.netty.channel.ChannelHandlerContext)} instead, which provides the channel context for creating custom packet payloads.
 +         */
          @Nullable
@@ -147,18 +143,13 @@
                  return this;
              }
          }
-@@ -575,11 +_,34 @@
+@@ -575,11 +_,29 @@
          public boolean isKnownPacket(Class<?> p_295070_) {
              return this.classToId.containsKey(p_295070_) || this.extraClasses.contains(p_295070_);
          }
 -
 +        
 +        /**
-+         * Creates a new packet from the given discriminator and buffer.
-+         *
-+         * @param p_178328_ The discriminator
-+         * @param p_178329_ The buffer
-+         * @return The packet, or null if none can be read.
 +         * @deprecated Use {@link #createPacket(int, FriendlyByteBuf, io.netty.channel.ChannelHandlerContext)} instead, which provides the channel context for creating custom packet payloads.
 +         */
 +        @Deprecated
