@@ -18,6 +18,8 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;
 
+import static net.neoforged.neoforge.common.Tags.Blocks.HIDDEN_FROM_RECIPE_VIEWERS;
+
 public final class NeoForgeFluidTagsProvider extends FluidTagsProvider {
     public NeoForgeFluidTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, "neoforge", existingFileHelper);
@@ -36,6 +38,7 @@ public final class NeoForgeFluidTagsProvider extends FluidTagsProvider {
         tag(Fluids.MUSHROOM_STEW);
         tag(Fluids.RABBIT_STEW);
         tag(Fluids.BEETROOT_SOUP);
+        tag(Fluids.HIDDEN_FROM_RECIPE_VIEWERS);
 
         // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22

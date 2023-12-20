@@ -59,6 +59,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider
         add(Tags.Blocks.GLASS_PANES_COLORLESS, "Colorless Glass Panes");
         add(Tags.Blocks.GRAVELS, "Gravels");
         add(Tags.Blocks.HEADS, "Heads");
+        add(Tags.Blocks.HIDDEN_FROM_RECIPE_VIEWERS, "Hidden From Recipe Viewers");
         add(Tags.Blocks.NETHERRACKS, "Netherracks");
         add(Tags.Blocks.NEEDS_WOOD_TOOL, "Needs Wooden Tools");
         add(Tags.Blocks.NEEDS_GOLD_TOOL, "Needs Gold Tools");
@@ -189,6 +190,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider
         add(Tags.Items.GRAVELS, "Gravels");
         add(Tags.Items.GUNPOWDERS, "Gunpowders");
         add(Tags.Items.HEADS, "Heads");
+        add(Tags.Items.HIDDEN_FROM_RECIPE_VIEWERS, "Hidden From Recipe Viewers");
         add(Tags.Items.INGOTS, "Ingots");
         add(Tags.Items.INGOTS_COPPER, "Copper Ingots");
         add(Tags.Items.INGOTS_GOLD, "Gold Ingots");
@@ -296,6 +298,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider
         add(Tags.Fluids.MUSHROOM_STEW, "Mushroom Stew");
         add(Tags.Fluids.RABBIT_STEW, "Rabbit Stew");
         add(Tags.Fluids.BEETROOT_SOUP, "Beetroot Soup");
+        add(Tags.Fluids.HIDDEN_FROM_RECIPE_VIEWERS, "Hidden From Recipe Viewers");
 
         // Entities
         add(Tags.EntityTypes.BOSSES, "Bosses");

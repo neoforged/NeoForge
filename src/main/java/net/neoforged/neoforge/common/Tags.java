@@ -109,6 +109,10 @@ public class Tags
          * Tag that holds all head based blocks such as Skeleton Skull or Player Head.
          */
         public static final TagKey<Block> HEADS = tag("heads");
+        /**
+         * Tag that holds all blocks that recipe viewers should not show to users.
+         */
+        public static final TagKey<Block> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
         public static final TagKey<Block> NETHERRACKS = tag("netherrack");
         public static final TagKey<Block> OBSIDIANS = tag("obsidians");
         /**
@@ -410,6 +414,10 @@ public class Tags
          * for various custom ingredients available that can also be used in data generation.
          */
         public static final TagKey<Item> HEADS = tag("heads");
+        /**
+         * Tag that holds all items that recipe viewers should not show to users.
+         */
+        public static final TagKey<Item> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
         public static final TagKey<Item> INGOTS = tag("ingots");
         public static final TagKey<Item> INGOTS_COPPER = tag("ingots/copper");
         public static final TagKey<Item> INGOTS_GOLD = tag("ingots/gold");
@@ -692,6 +700,10 @@ public class Tags
          * Holds all fluids related to Beetroot Soup. (Standard unit for beetroot soup is 250mb per bowl)
          */
         public static final TagKey<Fluid> BEETROOT_SOUP = tag("beetroot_soup");
+        /**
+         * Tag that holds all items that recipe viewers should not show to users.
+         */
+        public static final TagKey<Fluid> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
 
         private static TagKey<Fluid> tag(String name)
         {
