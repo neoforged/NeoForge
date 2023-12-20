@@ -7,8 +7,11 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.Collection;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -402,12 +405,8 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      *
      * @param target The target to send the packet to.
      */
-    default void sendSpawnPacketTo(PacketDistributor.PacketTarget target) {
-        if (target.flow().isServerbound()) {
-            throw new IllegalArgumentException("Cannot send spawn packet to the server");
-        }
-
+    default void sendSpawnPacketTo(Consumer<CustomPacketPayload> target) {
         final AdvancedAddEntityPayload payload = new AdvancedAddEntityPayload(self());
-        target.send(payload);
+        target.accept(payload);
     }
 }

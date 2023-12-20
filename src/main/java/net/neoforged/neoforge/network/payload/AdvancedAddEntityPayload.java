@@ -91,12 +91,13 @@ public record AdvancedAddEntityPayload(
     }
 
     private static byte[] writeCustomData(final Entity entity) {
+        if (!(entity instanceof IEntityAdditionalSpawnData additionalSpawnData)) {
+            return new byte[0];
+        }
+        
         final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         try {
-            if (entity instanceof IEntityAdditionalSpawnData additionalSpawnData) {
-                additionalSpawnData.writeSpawnData(buf);
-            }
-
+            additionalSpawnData.writeSpawnData(buf);
             return buf.array();
         } finally {
             buf.release();
