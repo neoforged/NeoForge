@@ -1,0 +1,19 @@
+--- a/net/minecraft/util/datafix/schemas/V2832.java
++++ b/net/minecraft/util/datafix/schemas/V2832.java
+@@ -52,6 +_,7 @@
+                         DSL.constType(namespacedString()),
+                         DSL.fields(
+                             "generator",
++                            DSL.or(
+                             DSL.taggedChoiceLazy(
+                                 "type",
+                                 DSL.string(),
+@@ -97,6 +_,8 @@
+                                             )
+                                         )
+                                 )
++                            ),
++                            DSL.remainder()
+                             )
+                         )
+                     )

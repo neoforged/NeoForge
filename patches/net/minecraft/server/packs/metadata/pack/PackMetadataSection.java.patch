@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/packs/metadata/pack/PackMetadataSection.java
++++ b/net/minecraft/server/packs/metadata/pack/PackMetadataSection.java
+@@ -19,4 +_,8 @@
+                 .apply(p_304321_, PackMetadataSection::new)
+     );
+     public static final MetadataSectionType<PackMetadataSection> TYPE = MetadataSectionType.fromCodec("pack", CODEC);
++
++    public PackMetadataSection(Component description, int packVersion) {
++        this(description, packVersion, Optional.empty());
++    }
+ }

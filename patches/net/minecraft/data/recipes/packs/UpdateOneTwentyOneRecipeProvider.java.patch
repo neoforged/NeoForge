@@ -1,0 +1,13 @@
+--- a/net/minecraft/data/recipes/packs/UpdateOneTwentyOneRecipeProvider.java
++++ b/net/minecraft/data/recipes/packs/UpdateOneTwentyOneRecipeProvider.java
+@@ -11,8 +_,8 @@
+ import net.minecraft.world.level.block.Blocks;
+ 
+ public class UpdateOneTwentyOneRecipeProvider extends RecipeProvider {
+-    public UpdateOneTwentyOneRecipeProvider(PackOutput p_307326_) {
+-        super(p_307326_);
++    public UpdateOneTwentyOneRecipeProvider(PackOutput p_307326_, java.util.concurrent.CompletableFuture<net.minecraft.core.HolderLookup.Provider> lookupProvider) {
++        super(p_307326_, lookupProvider);
+     }
+ 
+     @Override

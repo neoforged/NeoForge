@@ -2,7 +2,7 @@
   "sources": [
     {
       "type": "minecraft:single",
-      "resource": "forge:white"
+      "resource": "neoforge:white"
     }
   ]
 }

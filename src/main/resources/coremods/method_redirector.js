@@ -1,4 +1,4 @@
-var ASMAPI = Java.type('net.minecraftforge.coremod.api.ASMAPI');
+var ASMAPI = Java.type('net.neoforged.coremod.api.ASMAPI');
 var Opcodes = Java.type('org.objectweb.asm.Opcodes');
 var Handle = Java.type('org.objectweb.asm.Handle');
 var MethodInsnNode = Java.type('org.objectweb.asm.tree.MethodInsnNode');
@@ -6,7 +6,7 @@ var MethodInsnNode = Java.type('org.objectweb.asm.tree.MethodInsnNode');
 function finalizeSpawnNode(node){
     return new MethodInsnNode(
         Opcodes.INVOKESTATIC, 
-        "net/minecraftforge/event/ForgeEventFactory", 
+        "net/neoforged/neoforge/event/EventHooks",
         "onFinalizeSpawn", 
         "(Lnet/minecraft/world/entity/Mob;Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/world/DifficultyInstance;Lnet/minecraft/world/entity/MobSpawnType;Lnet/minecraft/world/entity/SpawnGroupData;Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/world/entity/SpawnGroupData;", 
         false);
@@ -32,7 +32,7 @@ function search(className, node, replacements) {
 var replacements = [
     {
         'opcode': Opcodes.INVOKEVIRTUAL,
-        'name': ASMAPI.mapMethod('m_6518_'),
+        'name': 'finalizeSpawn',
         'desc': '(Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/world/DifficultyInstance;Lnet/minecraft/world/entity/MobSpawnType;Lnet/minecraft/world/entity/SpawnGroupData;Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/world/entity/SpawnGroupData;',
         'targets': 'coremods/finalize_spawn_targets.json',
         'factory': finalizeSpawnNode
@@ -50,7 +50,7 @@ function initializeCoreMod() {
     }
 
     return {
-        'forge_method_redirector': {
+        'neoforge_method_redirector': {
             'target': {
                 'type': 'CLASS',
                 'names': function(listofclasses) {

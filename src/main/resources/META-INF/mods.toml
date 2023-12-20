@@ -1,14 +1,14 @@
 modLoader="javafml"
-loaderVersion="[24,]"
+loaderVersion="[1,]"
 issueTrackerURL="https://github.com/neoforged/NeoForge/issues"
 logoFile="neoforged_logo.png"
 license="LGPL v2.1"
 
 [[mods]]
-    modId="forge"
-    # We use the global forge version
-    version="${global.forgeVersion}"
-    updateJSONURL="https://maven.neoforged.net/releases/net/neoforged/forge/promotions_slim.json"
+    modId="neoforge"
+    # We use the global NeoForge version
+    version="${global.neoForgeVersion}"
+    #updateJSONURL="https://maven.neoforged.net/releases/net/neoforged/forge/promotions_slim.json"
     displayName="NeoForge"
     credits="Anyone who has contributed on Github and supports our development"
     authors="The NeoForged Team"

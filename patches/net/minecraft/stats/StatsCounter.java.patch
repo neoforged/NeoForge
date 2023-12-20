@@ -1,0 +1,12 @@
+--- a/net/minecraft/stats/StatsCounter.java
++++ b/net/minecraft/stats/StatsCounter.java
+@@ -18,7 +_,8 @@
+     }
+ 
+     public void setValue(Player p_13020_, Stat<?> p_13021_, int p_13022_) {
+-        this.stats.put(p_13021_, p_13022_);
++        net.neoforged.neoforge.event.StatAwardEvent event = net.neoforged.neoforge.event.EventHooks.onStatAward(p_13020_, p_13021_,p_13022_);
++        if (!event.isCanceled()) this.stats.put(event.getStat(), event.getValue());
+     }
+ 
+     public <T> int getValue(StatType<T> p_13018_, T p_13019_) {

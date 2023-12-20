@@ -1,5 +1,0 @@
-{
-  "forge": {
-    "loader": "custom_tas_test:tas_loader"
-  }
-}

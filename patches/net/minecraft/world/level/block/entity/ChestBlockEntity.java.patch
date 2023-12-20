@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/block/entity/ChestBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/ChestBlockEntity.java
+@@ -172,6 +_,17 @@
+         return ChestMenu.threeRows(p_59082_, p_59083_, this);
+     }
+ 
++    @Override
++    public void setBlockState(BlockState p_155251_) {
++        var oldState = getBlockState();
++        super.setBlockState(p_155251_);
++        // Neo: Chest state change might change the chest item handler -> invalidate
++        if ((oldState.getValue(ChestBlock.FACING) != p_155251_.getValue(ChestBlock.FACING))
++                || (oldState.getValue(ChestBlock.TYPE) != p_155251_.getValue(ChestBlock.TYPE))) {
++            this.invalidateCapabilities();
++        }
++    }
++
+     public void recheckOpen() {
+         if (!this.remove) {
+             this.openersCounter.recheckOpeners(this.getLevel(), this.getBlockPos(), this.getBlockState());

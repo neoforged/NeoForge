@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/renderer/blockentity/EnchantTableRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/EnchantTableRenderer.java
+@@ -51,4 +_,10 @@
+         this.bookModel.render(p_112420_, vertexconsumer, p_112422_, p_112423_, 1.0F, 1.0F, 1.0F, 1.0F);
+         p_112420_.popPose();
+     }
++
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(EnchantmentTableBlockEntity blockEntity) {
++        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++        return new net.minecraft.world.phys.AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1., pos.getY() + 1.5, pos.getZ() + 1.);
++    }
+ }

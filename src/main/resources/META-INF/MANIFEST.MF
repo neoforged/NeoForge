@@ -1,1 +1,1 @@
-FML-System-Mods: forge
+FML-System-Mods: neoforge

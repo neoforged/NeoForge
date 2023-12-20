@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:blasting",
+  "ingredient": {
+    "item": "minecraft:diamond_block"
+  },
+  "result": {
+    "item": "minecraft:diamond",
+    "count": 9
+  },
+  "cookingtime": 100
+}

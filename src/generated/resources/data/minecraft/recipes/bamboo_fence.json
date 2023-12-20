@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "group": "wooden_custom_fence",
+  "group": "wooden_fence",
   "key": {
     "#": {
       "tag": "c:rods/wooden"
@@ -17,6 +17,5 @@
   "result": {
     "count": 3,
     "item": "minecraft:bamboo_fence"
-  },
-  "show_notification": true
+  }
 }

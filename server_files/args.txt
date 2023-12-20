@@ -12,7 +12,7 @@
 -DlegacyClassPath=@CLASS_PATH@
 cpw.mods.bootstraplauncher.BootstrapLauncher
 --launchTarget @TASK@
---fml.forgeVersion @FORGE_VERSION@
+--fml.neoForgeVersion @FORGE_VERSION@
 --fml.fmlVersion @FML_VERSION@
 --fml.mcVersion @MC_VERSION@
---fml.mcpVersion @MCP_VERSION@
+--fml.neoFormVersion @MCP_VERSION@

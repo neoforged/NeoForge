@@ -1,0 +1,45 @@
+--- a/net/minecraft/world/item/crafting/ShapedRecipePattern.java
++++ b/net/minecraft/world/item/crafting/ShapedRecipePattern.java
+@@ -19,7 +_,21 @@
+ import net.minecraft.world.inventory.CraftingContainer;
+ 
+ public record ShapedRecipePattern(int width, int height, NonNullList<Ingredient> ingredients, Optional<ShapedRecipePattern.Data> data) {
++    /** @deprecated Neo: use {@link #MAX_WIDTH} and {@link #MAX_HEIGHT} */ @Deprecated
+     private static final int MAX_SIZE = 3;
++    static int MAX_WIDTH = 3;
++    static int MAX_HEIGHT = 3;
++    /**
++     * Expand the max width and height allowed in the deserializer.
++     * This should be called by modders who add custom crafting tables that are larger than the vanilla 3x3.
++     * @param width your max recipe width
++     * @param height your max recipe height
++     */
++    public static void setCraftingSize(int width, int height) {
++        if (MAX_WIDTH < width) MAX_WIDTH = width;
++        if (MAX_HEIGHT < height) MAX_HEIGHT = height;
++    }
++
+     public static final MapCodec<ShapedRecipePattern> MAP_CODEC = ShapedRecipePattern.Data.MAP_CODEC
+         .flatXmap(
+             ShapedRecipePattern::unpack,
+@@ -176,16 +_,16 @@
+ 
+     public static record Data(Map<Character, Ingredient> key, List<String> pattern) {
+         private static final Codec<List<String>> PATTERN_CODEC = Codec.STRING.listOf().comapFlatMap(p_312085_ -> {
+-            if (p_312085_.size() > 3) {
+-                return DataResult.error(() -> "Invalid pattern: too many rows, 3 is maximum");
++            if (p_312085_.size() > MAX_HEIGHT) {
++                return DataResult.error(() -> "Invalid pattern: too many rows, %s is maximum".formatted(MAX_HEIGHT));
+             } else if (p_312085_.isEmpty()) {
+                 return DataResult.error(() -> "Invalid pattern: empty pattern not allowed");
+             } else {
+                 int i = p_312085_.get(0).length();
+ 
+                 for(String s : p_312085_) {
+-                    if (s.length() > 3) {
+-                        return DataResult.error(() -> "Invalid pattern: too many columns, 3 is maximum");
++                    if (s.length() > MAX_WIDTH) {
++                        return DataResult.error(() -> "Invalid pattern: too many columns, %s is maximum".formatted(MAX_WIDTH));
+                     }
+ 
+                     if (i != s.length()) {

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/HoneyBottleItem.java
++++ b/net/minecraft/world/item/HoneyBottleItem.java
+@@ -28,7 +_,7 @@
+         }
+ 
+         if (!p_41349_.isClientSide) {
+-            p_41350_.removeEffect(MobEffects.POISON);
++            p_41350_.removeEffectsCuredBy(net.neoforged.neoforge.common.EffectCures.HONEY);
+         }
+ 
+         if (p_41348_.isEmpty()) {

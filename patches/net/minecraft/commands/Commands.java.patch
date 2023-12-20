@@ -1,0 +1,46 @@
+--- a/net/minecraft/commands/Commands.java
++++ b/net/minecraft/commands/Commands.java
+@@ -213,7 +_,7 @@
+             JfrCommand.register(this.dispatcher);
+         }
+ 
+-        if (SharedConstants.IS_RUNNING_IN_IDE) {
++        if (net.neoforged.neoforge.gametest.GameTestHooks.isGametestEnabled()) {
+             TestCommand.register(this.dispatcher);
+             ResetChunksCommand.register(this.dispatcher);
+             RaidCommand.register(this.dispatcher);
+@@ -247,6 +_,7 @@
+         if (p_230943_.includeIntegrated) {
+             PublishCommand.register(this.dispatcher);
+         }
++        net.neoforged.neoforge.event.EventHooks.onCommandRegister(this.dispatcher, p_230943_, p_230944_);
+ 
+         this.dispatcher.setConsumer(ExecutionCommandSource.resultConsumer());
+     }
+@@ -264,6 +_,16 @@
+ 
+     public void performCommand(ParseResults<CommandSourceStack> p_242844_, String p_242841_) {
+         CommandSourceStack commandsourcestack = p_242844_.getContext().getSource();
++        net.neoforged.neoforge.event.CommandEvent event = new net.neoforged.neoforge.event.CommandEvent(p_242844_);
++        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) {
++            if (event.getException() != null) {
++                commandsourcestack.sendFailure(Component.literal(Util.describeError(event.getException())));
++                LOGGER.error("'/{}' threw an exception", p_242841_, event.getException());
++            }
++            return;
++        }
++        p_242844_ = event.getParseResults();
++
+         commandsourcestack.getServer().getProfiler().push(() -> "/" + p_242841_);
+         ContextChain<CommandSourceStack> contextchain = finishParsing(p_242844_, p_242841_, commandsourcestack);
+ 
+@@ -361,7 +_,8 @@
+         Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> map = Maps.newHashMap();
+         RootCommandNode<SharedSuggestionProvider> rootcommandnode = new RootCommandNode<>();
+         map.put(this.dispatcher.getRoot(), rootcommandnode);
+-        this.fillUsableCommands(this.dispatcher.getRoot(), rootcommandnode, p_82096_.createCommandSourceStack(), map);
++        // FORGE: Use our own command node merging method to handle redirect nodes properly, see issue #7551
++        net.neoforged.neoforge.server.command.CommandHelper.mergeCommandNode(this.dispatcher.getRoot(), rootcommandnode, map, p_82096_.createCommandSourceStack(), ctx -> 0, suggest -> SuggestionProviders.safelySwap((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
+         p_82096_.connection.send(new ClientboundCommandsPacket(rootcommandnode));
+     }
+ 

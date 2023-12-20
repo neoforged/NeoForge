@@ -1,0 +1,9 @@
+dynamicProject {
+    neoform("${project.minecraft_version}-${project.neoform_version}")
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(project.java_version))
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "neoforge:items/bucket_base",
+        "layer1": "neoforge:items/bucket_fluid",
+        "layer2": "neoforge:items/bucket_cover"
+    }
+}

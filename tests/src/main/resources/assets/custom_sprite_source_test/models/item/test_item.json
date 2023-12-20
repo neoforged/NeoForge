@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "custom_sprite_source_test:test_item"
+  }
+}

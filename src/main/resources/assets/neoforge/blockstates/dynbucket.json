@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "inventory": {
+      "model": "neoforge:forgebucket",
+      "textures": {
+        "base": "neoforge:items/bucket_base",
+        "fluid": "neoforge:items/bucket_fluid",
+        "cover": "neoforge:items/bucket_cover"
+      },
+      "transform": "neoforge:default-item",
+      "custom": {
+        "fluid": "water",
+        "flipGas": true,
+        "applyTint": false
+      }
+    }
+  }
+}

@@ -6,7 +6,7 @@
       "conditions": [
         {
           "action": "shears_dig",
-          "condition": "forge:can_tool_perform_action"
+          "condition": "neoforge:can_tool_perform_action"
         }
       ],
       "entries": [

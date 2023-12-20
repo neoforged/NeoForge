@@ -1,0 +1,13 @@
+{
+  "parent": "neoforge:item/default",
+  "loader": "neoforge:obj",
+  "model": "new_model_loader_test:models/item/item_direction.obj",
+  "textures": {
+    "particle": "block/oak_planks"
+  },
+  "display": {
+    "firstperson_righthand": {
+      "scale": [3.0, 3.0, 3.0]
+    }
+  }
+}

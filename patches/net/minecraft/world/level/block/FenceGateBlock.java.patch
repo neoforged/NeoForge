@@ -1,0 +1,69 @@
+--- a/net/minecraft/world/level/block/FenceGateBlock.java
++++ b/net/minecraft/world/level/block/FenceGateBlock.java
+@@ -32,7 +_,9 @@
+ 
+ public class FenceGateBlock extends HorizontalDirectionalBlock {
+     public static final MapCodec<FenceGateBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_308823_ -> p_308823_.group(WoodType.CODEC.fieldOf("wood_type").forGetter(p_304842_ -> p_304842_.type), propertiesCodec())
++        p_308823_ -> p_308823_.group(WoodType.CODEC.optionalFieldOf("wood_type").forGetter(p_304842_ -> java.util.Optional.ofNullable(p_304842_.type)), propertiesCodec(),
++                        net.minecraft.sounds.SoundEvent.DIRECT_CODEC.optionalFieldOf("open_sound").forGetter(fence -> java.util.Optional.of(fence.openSound).filter(s -> fence.type == null || s != fence.type.fenceGateOpen())),
++                        net.minecraft.sounds.SoundEvent.DIRECT_CODEC.optionalFieldOf("close_sound").forGetter(fence -> java.util.Optional.of(fence.closeSound).filter(s -> fence.type == null || s != fence.type.fenceGateClose())))
+                 .apply(p_308823_, FenceGateBlock::new)
+     );
+     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
+@@ -50,6 +_,8 @@
+     protected static final VoxelShape X_OCCLUSION_SHAPE = Shapes.or(Block.box(7.0, 5.0, 0.0, 9.0, 16.0, 2.0), Block.box(7.0, 5.0, 14.0, 9.0, 16.0, 16.0));
+     protected static final VoxelShape Z_OCCLUSION_SHAPE_LOW = Shapes.or(Block.box(0.0, 2.0, 7.0, 2.0, 13.0, 9.0), Block.box(14.0, 2.0, 7.0, 16.0, 13.0, 9.0));
+     protected static final VoxelShape X_OCCLUSION_SHAPE_LOW = Shapes.or(Block.box(7.0, 2.0, 0.0, 9.0, 13.0, 2.0), Block.box(7.0, 2.0, 14.0, 9.0, 13.0, 16.0));
++    public final net.minecraft.sounds.SoundEvent openSound, closeSound;
++    @org.jetbrains.annotations.Nullable
+     private final WoodType type;
+ 
+     @Override
+@@ -58,8 +_,17 @@
+     }
+ 
+     public FenceGateBlock(WoodType p_273340_, BlockBehaviour.Properties p_273352_) {
+-        super(p_273352_.sound(p_273340_.soundType()));
+-        this.type = p_273340_;
++        this(java.util.Optional.of(p_273340_), p_273352_.sound(p_273340_.soundType()), java.util.Optional.of(p_273340_.fenceGateOpen()), java.util.Optional.of(p_273340_.fenceGateClose()));
++    }
++    public FenceGateBlock(BlockBehaviour.Properties p_273352_, net.minecraft.sounds.SoundEvent openSound, net.minecraft.sounds.SoundEvent closeSound) {
++        this(java.util.Optional.empty(), p_273352_, java.util.Optional.of(openSound), java.util.Optional.of(closeSound));
++    }
++    public FenceGateBlock(java.util.Optional<WoodType> p_273340_, BlockBehaviour.Properties p_273352_, java.util.Optional<net.minecraft.sounds.SoundEvent> openSound, java.util.Optional<net.minecraft.sounds.SoundEvent> closeSound) {
++        super(p_273352_);
++        com.google.common.base.Preconditions.checkArgument(p_273340_.isPresent() || (openSound.isPresent() && closeSound.isPresent()), "Fence gates must have sounds set");
++        this.type = p_273340_.orElse(null);
++        this.openSound = openSound.orElseGet(() -> type.fenceGateOpen()); // Type may be null, so we cannot do a method ref
++        this.closeSound = closeSound.orElseGet(() -> type.fenceGateClose());
+         this.registerDefaultState(
+             this.stateDefinition
+                 .any()
+@@ -170,7 +_,7 @@
+         p_53366_.playSound(
+             p_53368_,
+             p_53367_,
+-            flag ? this.type.fenceGateOpen() : this.type.fenceGateClose(),
++            flag ? openSound : closeSound,
+             SoundSource.BLOCKS,
+             1.0F,
+             p_53366_.getRandom().nextFloat() * 0.1F + 0.9F
+@@ -187,7 +_,7 @@
+             p_311813_.playSound(
+                 null,
+                 p_312680_,
+-                flag ? this.type.fenceGateClose() : this.type.fenceGateOpen(),
++                flag ? closeSound : openSound,
+                 SoundSource.BLOCKS,
+                 1.0F,
+                 p_311813_.getRandom().nextFloat() * 0.1F + 0.9F
+@@ -208,7 +_,7 @@
+                     p_53373_.playSound(
+                         null,
+                         p_53374_,
+-                        flag ? this.type.fenceGateOpen() : this.type.fenceGateClose(),
++                        flag ? openSound : closeSound,
+                         SoundSource.BLOCKS,
+                         1.0F,
+                         p_53373_.getRandom().nextFloat() * 0.1F + 0.9F

@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/renderer/blockentity/BrushableBlockRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/BrushableBlockRenderer.java
+@@ -73,4 +_,10 @@
+ 
+         return afloat;
+     }
++
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(BrushableBlockEntity blockEntity) {
++        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++        return new net.minecraft.world.phys.AABB(pos.getX() - .25, pos.getY() - .25, pos.getZ() - .25, pos.getX() + 1.25, pos.getY() + 1.25, pos.getZ() + 1.25);
++    }
+ }

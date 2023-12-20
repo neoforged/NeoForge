@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/renderer/blockentity/SpawnerRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/SpawnerRenderer.java
+@@ -57,4 +_,10 @@
+         p_312703_.render(p_312223_, 0.0, 0.0, 0.0, 0.0F, p_311943_, p_312805_, p_312394_, p_311996_);
+         p_312805_.popPose();
+     }
++
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(SpawnerBlockEntity blockEntity) {
++        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++        return new net.minecraft.world.phys.AABB(pos.getX() - 1.0, pos.getY() - 1.0, pos.getZ() - 1.0, pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0);
++    }
+ }

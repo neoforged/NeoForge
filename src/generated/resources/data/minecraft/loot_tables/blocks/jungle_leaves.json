@@ -15,7 +15,7 @@
                   "terms": [
                     {
                       "action": "shears_dig",
-                      "condition": "forge:can_tool_perform_action"
+                      "condition": "neoforge:can_tool_perform_action"
                     },
                     {
                       "condition": "minecraft:match_tool",
@@ -70,7 +70,7 @@
             "terms": [
               {
                 "action": "shears_dig",
-                "condition": "forge:can_tool_perform_action"
+                "condition": "neoforge:can_tool_perform_action"
               },
               {
                 "condition": "minecraft:match_tool",

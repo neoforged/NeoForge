@@ -1,0 +1,11 @@
+--- a/net/minecraft/advancements/Advancement.java
++++ b/net/minecraft/advancements/Advancement.java
+@@ -113,7 +_,7 @@
+         });
+     }
+ 
+-    public static class Builder {
++    public static class Builder implements net.neoforged.neoforge.common.extensions.IAdvancementBuilderExtension {
+         private Optional<ResourceLocation> parent = Optional.empty();
+         private Optional<DisplayInfo> display = Optional.empty();
+         private AdvancementRewards rewards = AdvancementRewards.EMPTY;
