@@ -1,6 +1,12 @@
 --- a/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
-@@ -101,12 +_,12 @@
+@@ -96,17 +_,17 @@
+     public void handleCustomPayload(ClientboundCustomPayloadPacket p_295727_) {
+         CustomPacketPayload custompacketpayload = p_295727_.payload();
+         if (!(custompacketpayload instanceof DiscardedPayload)) {
+-            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft);
+             if (custompacketpayload instanceof BrandPayload brandpayload) {
++                PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
                  this.serverBrand = brandpayload.brand();
                  this.telemetryManager.onServerBrandReceived(brandpayload.brand());
              } else {

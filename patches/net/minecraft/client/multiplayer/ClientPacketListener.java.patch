@@ -81,17 +81,90 @@
      }
  
      @Override
-@@ -1916,7 +_,7 @@
+@@ -1916,21 +_,25 @@
      }
  
      @Override
 -    public void handleCustomPayload(CustomPacketPayload p_295851_) {
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295851_) {
          if (p_295851_ instanceof PathfindingDebugPayload pathfindingdebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
              this.minecraft
                  .debugRenderer
-@@ -1985,11 +_,18 @@
+                 .pathfindingRenderer
+                 .addPath(pathfindingdebugpayload.entityId(), pathfindingdebugpayload.path(), pathfindingdebugpayload.maxNodeDistance());
+         } else if (p_295851_ instanceof NeighborUpdatesDebugPayload neighborupdatesdebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             ((NeighborsUpdateRenderer)this.minecraft.debugRenderer.neighborsUpdateRenderer)
+                 .addUpdate(neighborupdatesdebugpayload.time(), neighborupdatesdebugpayload.pos());
+         } else if (p_295851_ instanceof StructuresDebugPayload structuresdebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             this.minecraft
+                 .debugRenderer
+                 .structureRenderer
+                 .addBoundingBox(structuresdebugpayload.mainBB(), structuresdebugpayload.pieces(), structuresdebugpayload.dimension());
+         } else if (p_295851_ instanceof WorldGenAttemptDebugPayload worldgenattemptdebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             ((WorldGenAttemptRenderer)this.minecraft.debugRenderer.worldGenAttemptRenderer)
+                 .addPos(
+                     worldgenattemptdebugpayload.pos(),
+@@ -1941,27 +_,36 @@
+                     worldgenattemptdebugpayload.alpha()
+                 );
+         } else if (p_295851_ instanceof PoiTicketCountDebugPayload poiticketcountdebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             this.minecraft.debugRenderer.brainDebugRenderer.setFreeTicketCount(poiticketcountdebugpayload.pos(), poiticketcountdebugpayload.freeTicketCount());
+         } else if (p_295851_ instanceof PoiAddedDebugPayload poiaddeddebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             BrainDebugRenderer.PoiInfo braindebugrenderer$poiinfo = new BrainDebugRenderer.PoiInfo(
+                 poiaddeddebugpayload.pos(), poiaddeddebugpayload.type(), poiaddeddebugpayload.freeTicketCount()
+             );
+             this.minecraft.debugRenderer.brainDebugRenderer.addPoi(braindebugrenderer$poiinfo);
+         } else if (p_295851_ instanceof PoiRemovedDebugPayload poiremoveddebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             this.minecraft.debugRenderer.brainDebugRenderer.removePoi(poiremoveddebugpayload.pos());
+         } else if (p_295851_ instanceof VillageSectionsDebugPayload villagesectionsdebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             VillageSectionsDebugRenderer villagesectionsdebugrenderer = this.minecraft.debugRenderer.villageSectionsDebugRenderer;
+             villagesectionsdebugpayload.villageChunks().forEach(villagesectionsdebugrenderer::setVillageSection);
+             villagesectionsdebugpayload.notVillageChunks().forEach(villagesectionsdebugrenderer::setNotVillageSection);
+         } else if (p_295851_ instanceof GoalDebugPayload goaldebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             this.minecraft.debugRenderer.goalSelectorRenderer.addGoalSelector(goaldebugpayload.entityId(), goaldebugpayload.pos(), goaldebugpayload.goals());
+         } else if (p_295851_ instanceof BrainDebugPayload braindebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             this.minecraft.debugRenderer.brainDebugRenderer.addOrUpdateBrainDump(braindebugpayload.brainDump());
+         } else if (p_295851_ instanceof BeeDebugPayload beedebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             this.minecraft.debugRenderer.beeDebugRenderer.addOrUpdateBeeInfo(beedebugpayload.beeInfo());
+         } else if (p_295851_ instanceof HiveDebugPayload hivedebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             this.minecraft.debugRenderer.beeDebugRenderer.addOrUpdateHiveInfo(hivedebugpayload.hiveInfo(), this.level.getGameTime());
+         } else if (p_295851_ instanceof GameTestAddMarkerDebugPayload gametestaddmarkerdebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             this.minecraft
+                 .debugRenderer
+                 .gameTestDebugRenderer
+@@ -1972,24 +_,36 @@
+                     gametestaddmarkerdebugpayload.durationMs()
+                 );
+         } else if (p_295851_ instanceof GameTestClearMarkersDebugPayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             this.minecraft.debugRenderer.gameTestDebugRenderer.clear();
+         } else if (p_295851_ instanceof RaidsDebugPayload raidsdebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             this.minecraft.debugRenderer.raidDebugRenderer.setRaidCenters(raidsdebugpayload.raidCenters());
+         } else if (p_295851_ instanceof GameEventDebugPayload gameeventdebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             this.minecraft.debugRenderer.gameEventListenerRenderer.trackGameEvent(gameeventdebugpayload.type(), gameeventdebugpayload.pos());
+         } else if (p_295851_ instanceof GameEventListenerDebugPayload gameeventlistenerdebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
+             this.minecraft
+                 .debugRenderer
+                 .gameEventListenerRenderer
+                 .trackListener(gameeventlistenerdebugpayload.listenerPos(), gameeventlistenerdebugpayload.listenerRange());
          } else if (p_295851_ instanceof BreezeDebugPayload breezedebugpayload) {
++            PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
              this.minecraft.debugRenderer.breezeDebugRenderer.add(breezedebugpayload.breezeInfo());
          } else {
 -            this.handleUnknownCustomPayload(p_295851_);
