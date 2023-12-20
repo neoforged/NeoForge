@@ -1,6 +1,15 @@
 --- a/net/minecraft/network/protocol/BundlerInfo.java
 +++ b/net/minecraft/network/protocol/BundlerInfo.java
-@@ -38,6 +_,26 @@
+@@ -23,7 +_,7 @@
+     };
+ 
+     static <T extends PacketListener, P extends BundlePacket<T>> BundlerInfo createForPacket(
+-        final Class<P> p_265438_, final Function<Iterable<Packet<T>>, P> p_265627_, final BundleDelimiterPacket<T> p_265373_
++        final Class<P> p_265438_, final Function<Iterable<Packet<? super T>>, P> p_265627_, final BundleDelimiterPacket<T> p_265373_
+     ) {
+         return new BundlerInfo() {
+             @Override
+@@ -38,11 +_,31 @@
                  }
              }
  
@@ -27,6 +36,12 @@
              @Nullable
              @Override
              public BundlerInfo.Bundler startPacketBundling(Packet<?> p_265097_) {
+                 return p_265097_ == p_265373_ ? new BundlerInfo.Bundler() {
+-                    private final List<Packet<T>> bundlePackets = new ArrayList<>();
++                    private final List<Packet<? super T>> bundlePackets = new ArrayList<>();
+ 
+                     @Nullable
+                     @Override
 @@ -61,7 +_,21 @@
          };
      }

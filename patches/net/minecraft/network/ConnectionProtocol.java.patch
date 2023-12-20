@@ -114,7 +114,7 @@
              int j = this.classToId.put(p_178331_, i);
              if (j != -1) {
                  String s = "Packet " + p_178331_ + " is already registered to ID " + j;
-@@ -552,6 +_,28 @@
+@@ -552,11 +_,33 @@
                  throw new IllegalArgumentException(s);
              } else {
                  this.idToDeserializer.add(p_178332_);
@@ -143,6 +143,12 @@
                  return this;
              }
          }
+ 
+-        public <P extends BundlePacket<T>> ConnectionProtocol.PacketSet<T> withBundlePacket(Class<P> p_265034_, Function<Iterable<Packet<T>>, P> p_265591_) {
++        public <P extends BundlePacket<T>> ConnectionProtocol.PacketSet<T> withBundlePacket(Class<P> p_265034_, Function<Iterable<Packet<? super T>>, P> p_265591_) {
+             if (this.bundlerInfo != BundlerInfo.EMPTY) {
+                 throw new IllegalStateException("Bundle packet already configured");
+             } else {
 @@ -575,11 +_,29 @@
          public boolean isKnownPacket(Class<?> p_295070_) {
              return this.classToId.containsKey(p_295070_) || this.extraClasses.contains(p_295070_);

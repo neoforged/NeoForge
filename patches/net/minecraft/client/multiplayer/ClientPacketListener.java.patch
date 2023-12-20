@@ -111,6 +111,15 @@
          LOGGER.warn("Unknown custom packet payload: {}", p_294389_.id());
      }
  
+@@ -2267,7 +_,7 @@
+     public void handleBundlePacket(ClientboundBundlePacket p_265195_) {
+         PacketUtils.ensureRunningOnSameThread(p_265195_, this, this.minecraft);
+ 
+-        for(Packet<ClientGamePacketListener> packet : p_265195_.subPackets()) {
++        for(Packet<? super ClientGamePacketListener> packet : p_265195_.subPackets()) {
+             packet.handle(this);
+         }
+     }
 @@ -2389,6 +_,8 @@
      }
  
