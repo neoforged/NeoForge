@@ -59,6 +59,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.world.level.BaseSpawner;
@@ -90,6 +91,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.capabilities.CapabilityDispatcher;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.extensions.IForgeItemStack;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.brewing.PlayerBrewedPotionEvent;
 import net.minecraftforge.event.brewing.PotionBrewEvent;
@@ -975,5 +977,35 @@ public class ForgeEventFactory
     public static void onAdvancementProgressedEvent(Player player, Advancement progressed, AdvancementProgress advancementProgress, String criterion, ProgressType progressType)
     {
         MinecraftForge.EVENT_BUS.post(new AdvancementProgressEvent(player, progressed, advancementProgress, criterion, progressType));
+    }
+
+    /**
+     * Fires {@link GetEnchantmentLevelEvent} and for a single enchantment, returning the (possibly event-modified) level.
+     * 
+     * @param level The original level of the enchantment as provided by the Item.
+     * @param stack The stack being queried against.
+     * @param ench  The enchantment being queried for.
+     * @return The new level of the enchantment.
+     */
+    public static int getEnchantmentLevelSpecific(int level, ItemStack stack, Enchantment ench) {
+        Map<Enchantment, Integer> map = new HashMap<>();
+        map.put(ench, level);
+        var event = new GetEnchantmentLevelEvent(stack, map);
+        MinecraftForge.EVENT_BUS.post(event);
+        return event.getEnchantments().get(ench);
+    }
+
+    /**
+     * Fires {@link GetEnchantmentLevelEvent} and for all enchantments, returning the (possibly event-modified) enchantment map.
+     * 
+     * @param enchantments The original enchantment map as provided by the Item.
+     * @param stack        The stack being queried against.
+     * @return The new enchantment map.
+     */
+    public static Map<Enchantment, Integer> getEnchantmentLevel(Map<Enchantment, Integer> enchantments, ItemStack stack) {
+        enchantments = new HashMap<>(enchantments);
+        var event = new GetEnchantmentLevelEvent(stack, enchantments);
+        MinecraftForge.EVENT_BUS.post(event);
+        return enchantments;
     }
 }
