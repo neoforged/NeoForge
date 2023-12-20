@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;

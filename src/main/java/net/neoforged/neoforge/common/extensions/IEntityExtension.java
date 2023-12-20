@@ -7,11 +7,8 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.Collection;
 import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,8 +27,6 @@ import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import org.jetbrains.annotations.Nullable;
 
 public interface IEntityExtension extends INBTSerializable<CompoundTag> {

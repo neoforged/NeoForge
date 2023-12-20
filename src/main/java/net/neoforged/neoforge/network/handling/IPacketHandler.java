@@ -21,7 +21,7 @@ public interface IPacketHandler {
      * @param packet The packet.
      */
     void handle(Packet<?> packet);
-    
+
     /**
      * Invoked to handle the given custom payload.
      *

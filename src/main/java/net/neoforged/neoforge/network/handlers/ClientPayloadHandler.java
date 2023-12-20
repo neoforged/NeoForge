@@ -97,10 +97,9 @@ public class ClientPayloadHandler {
                             buf.release();
                         }
                     }
-                }
-        );
+                });
     }
-    
+
     public void handle(AdvancedOpenScreenPayload msg, PlayPayloadContext context) {
         final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(msg.additionalData()));
         try {

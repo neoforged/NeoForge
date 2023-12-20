@@ -46,7 +46,7 @@ public record AdvancedAddEntityPayload(
         if (!(entity instanceof IEntityWithComplexSpawn additionalSpawnData)) {
             return new byte[0];
         }
-        
+
         final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         try {
             additionalSpawnData.writeSpawnData(buf);

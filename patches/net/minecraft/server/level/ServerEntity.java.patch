@@ -1,15 +1,5 @@
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -38,6 +_,9 @@
- import net.minecraft.world.item.MapItem;
- import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
- import net.minecraft.world.phys.Vec3;
-+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
-+import net.neoforged.neoforge.network.bundle.PacketAndPayloadAcceptor;
-+import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
- import org.slf4j.Logger;
- 
- public class ServerEntity {
 @@ -97,9 +_,9 @@
          Entity $$11 = this.entity;
          if ($$11 instanceof ItemFrame itemframe && this.tickCount % 10 == 0) {
@@ -33,14 +23,14 @@
 -        List<Packet<ClientGamePacketListener>> list = new ArrayList<>();
 -        this.sendPairingData(p_8542_, list::add);
 +        List<Packet<? super ClientGamePacketListener>> list = new ArrayList<>();
-+        this.sendPairingData(p_8542_, new PacketAndPayloadAcceptor<>(list::add));
++        this.sendPairingData(p_8542_, new net.neoforged.neoforge.network.bundle.PacketAndPayloadAcceptor<>(list::add));
          p_8542_.connection.send(new ClientboundBundlePacket(list));
          this.entity.startSeenByPlayer(p_8542_);
 +        net.neoforged.neoforge.event.EventHooks.onStartEntityTracking(this.entity, p_8542_);
      }
  
 -    public void sendPairingData(ServerPlayer p_289562_, Consumer<Packet<ClientGamePacketListener>> p_289563_) {
-+    public void sendPairingData(ServerPlayer p_289562_, PacketAndPayloadAcceptor<ClientGamePacketListener> p_289563_) {
++    public void sendPairingData(ServerPlayer p_289562_, net.neoforged.neoforge.network.bundle.PacketAndPayloadAcceptor<ClientGamePacketListener> p_289563_) {
          if (this.entity.isRemoved()) {
              LOGGER.warn("Fetching packet for removed entity {}", this.entity);
          }
@@ -48,8 +38,8 @@
          Packet<ClientGamePacketListener> packet = this.entity.getAddEntityPacket();
          this.yHeadRotp = Mth.floor(this.entity.getYHeadRot() * 256.0F / 360.0F);
          p_289563_.accept(packet);
-+        if (this.entity instanceof IEntityWithComplexSpawn) {
-+            p_289563_.accept(new AdvancedAddEntityPayload(entity));
++        if (this.entity instanceof net.neoforged.neoforge.entity.IEntityWithComplexSpawn) {
++            p_289563_.accept(new net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload(entity));
 +        }
          if (this.trackedDataValues != null) {
              p_289563_.accept(new ClientboundSetEntityDataPacket(this.entity.getId(), this.trackedDataValues));
