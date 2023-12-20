@@ -17,9 +17,8 @@ public interface ISynchronizedWorkHandler {
      * Submits the given work to be run synchronously on the main thread of the game.
      *
      * @param task The task to run.
-     * @return A future which will complete when the task has been run.
      */
-    CompletableFuture<Void> submitAsync(Runnable task);
+    void submitAsync(Runnable task);
 
     /**
      * Submits the given work to be run synchronously on the main thread of the game.

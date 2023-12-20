@@ -8,10 +8,10 @@ package net.neoforged.neoforge.entity;
 import net.minecraft.network.FriendlyByteBuf;
 
 /**
- * A interface for Entities that need extra information to be communicated
+ * An interface for Entities that need extra information to be communicated
  * between the server and client when they are spawned.
  */
-public interface IEntityAdditionalSpawnData {
+public interface IEntityWithComplexSpawn {
     /**
      * Called by the server when constructing the spawn packet.
      * Data should be added to the provided stream.

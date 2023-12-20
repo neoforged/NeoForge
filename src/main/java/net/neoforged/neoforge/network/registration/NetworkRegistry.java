@@ -877,8 +877,8 @@ public class NetworkRegistry {
          * {@inheritDoc}
          */
         @Override
-        public CompletableFuture<Void> submitAsync(Runnable task) {
-            return eventLoop().submitAsync(task);
+        public void submitAsync(Runnable task) {
+            eventLoop().executeIfPossible(task);
         }
 
         /**

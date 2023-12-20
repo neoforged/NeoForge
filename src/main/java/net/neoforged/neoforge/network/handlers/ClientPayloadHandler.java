@@ -9,24 +9,20 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.netty.buffer.Unpooled;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.TierSortingRegistry;
-import net.neoforged.neoforge.common.util.LogicalSidedProvider;
-import net.neoforged.neoforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
@@ -88,36 +84,23 @@ public class ClientPayloadHandler {
         TierSortingRegistry.handleSync(payload, context);
     }
 
-    public void handle(AdvancedAddEntityPayload msg, PlayPayloadContext context) {
-        Optional<Level> world = LogicalSidedProvider.CLIENTWORLD.get(context.flow().getReceptionSide());
-        Entity e = world.map(w -> msg.typeId().customClientSpawn(msg, w)).orElse(null);
-        if (e == null) {
-            return;
-        }
-
-        /*
-         * Sets the postiion on the client, Mirrors what
-         * Entity#recreateFromPacket and LivingEntity#recreateFromPacket does.
-         */
-        e.syncPacketPositionCodec(msg.posX(), msg.posY(), msg.posZ());
-        e.absMoveTo(msg.posX(), msg.posY(), msg.posZ(), (msg.yaw() * 360) / 256.0F, (msg.pitch() * 360) / 256.0F);
-        e.setYHeadRot((msg.headYaw() * 360) / 256.0F);
-        e.setYBodyRot((msg.headYaw() * 360) / 256.0F);
-
-        e.setId(msg.entityId());
-        e.setUUID(msg.uuid());
-        world.filter(ClientLevel.class::isInstance).ifPresent(w -> ((ClientLevel) w).addEntity(e));
-        e.lerpMotion(msg.velX() / 8000.0, msg.velY() / 8000.0, msg.velZ() / 8000.0);
-        if (e instanceof IEntityAdditionalSpawnData entityAdditionalSpawnData) {
-            final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(msg.customPayload()));
-            try {
-                entityAdditionalSpawnData.readSpawnData(buf);
-            } finally {
-                buf.release();
-            }
-        }
+    public void handle(AdvancedAddEntityPayload advancedAddEntityPayload, PlayPayloadContext context) {
+        context.workHandler().submitAsync(
+                () -> {
+                    assert Minecraft.getInstance().level != null;
+                    Entity entity = Minecraft.getInstance().level.getEntity(advancedAddEntityPayload.entityId());
+                    if (entity instanceof IEntityWithComplexSpawn entityAdditionalSpawnData) {
+                        final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(advancedAddEntityPayload.customPayload()));
+                        try {
+                            entityAdditionalSpawnData.readSpawnData(buf);
+                        } finally {
+                            buf.release();
+                        }
+                    }
+                }
+        );
     }
-
+    
     public void handle(AdvancedOpenScreenPayload msg, PlayPayloadContext context) {
         final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(msg.additionalData()));
         try {

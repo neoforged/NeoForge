@@ -7,20 +7,20 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import java.util.function.Consumer;
 
-public class BundlePacketBuilder<L extends ClientCommonPacketListener> {
+public class PacketAndPayloadAcceptor<L extends ClientCommonPacketListener> {
     
     private final Consumer<Packet<? super L>> consumer;
     
-    public BundlePacketBuilder(Consumer<Packet<? super L>> consumer) {
+    public PacketAndPayloadAcceptor(Consumer<Packet<? super L>> consumer) {
         this.consumer = consumer;
     }
     
-    public BundlePacketBuilder<L> accept(Packet<? super L> packet) {
+    public PacketAndPayloadAcceptor<L> accept(Packet<? super L> packet) {
         consumer.accept(packet);
         return this;
     }
     
-    public BundlePacketBuilder<L> accept(CustomPacketPayload payload) {
+    public PacketAndPayloadAcceptor<L> accept(CustomPacketPayload payload) {
         return accept(new ClientboundCustomPayloadPacket(payload));
     }
 }

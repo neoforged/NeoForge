@@ -399,14 +399,4 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
     default boolean hasCustomOutlineRendering(Player player) {
         return false;
     }
-
-    /**
-     * Sends the spawn packet for this entity to the specified target.
-     *
-     * @param target The target to send the packet to.
-     */
-    default void sendSpawnPacketTo(Consumer<CustomPacketPayload> target) {
-        final AdvancedAddEntityPayload payload = new AdvancedAddEntityPayload(self());
-        target.accept(payload);
-    }
 }
