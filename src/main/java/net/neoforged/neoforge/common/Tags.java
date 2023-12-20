@@ -25,19 +25,8 @@ import net.minecraft.world.level.material.Fluid;
 
 public class Tags
 {
-    public static void init ()
-    {
-        Blocks.init();
-        EntityTypes.init();
-        Items.init();
-        Fluids.init();
-        Biomes.init();
-    }
-
     public static class Blocks
     {
-        private static void init(){}
-
         // `neoforge` tags for functional behavior provided by Neoforge
         /**
          * Controls what blocks Endermen cannot place blocks onto.
@@ -253,8 +242,6 @@ public class Tags
 
     public static class Items
     {
-        private static void init(){}
-
         // `neoforge` tags for functional behavior provided by Neoforge
         /**
          * Controls what items can be consumed for enchanting such as Enchanting Tables.
@@ -308,8 +295,8 @@ public class Tags
          * <p></p>
          * Note: Use custom ingredients in recipes to do tag intersections and/or tag exclusions
          * to make more powerful recipes utilizing multiple tags such as dyed tags for an ingredient.
-         * See {@link net.minecraftforge.common.crafting.AbstractIngredient} children classes for various
-         * custom ingredients available that can also be used in data generation.
+         * See {@link net.neoforged.neoforge.common.crafting.DifferenceIngredient} and {@link net.neoforged.neoforge.common.crafting.CompoundIngredient}
+         * for various custom ingredients available that can also be used in data generation.
          */
         public static final TagKey<Item> DYED = tag("dyed");
         public static final TagKey<Item> DYED_BLACK = tag("dyed/black");
@@ -419,8 +406,8 @@ public class Tags
          * Tag that holds all head based blocks such as Skeleton Skull or Player Head.
          * <p></p>
          * Note: If you don't want Player Head in recipe, use custom ingredients to do tag exclusions to exclude Player Head.
-         * See {@link net.minecraftforge.common.crafting.AbstractIngredient} children classes for various
-         * custom ingredients available that can also be used in data generation.
+         * See {@link net.neoforged.neoforge.common.crafting.DifferenceIngredient} and {@link net.neoforged.neoforge.common.crafting.CompoundIngredient}
+         * for various custom ingredients available that can also be used in data generation.
          */
         public static final TagKey<Item> HEADS = tag("heads");
         public static final TagKey<Item> INGOTS = tag("ingots");
@@ -557,7 +544,7 @@ public class Tags
         // Tools and Armors
         /**
          * A tag containing all existing tools. Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
+         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
          *
          * @see ToolAction
          * @see ToolActions
@@ -565,7 +552,7 @@ public class Tags
         public static final TagKey<Item> TOOLS = tag("tools");
         /**
          * A tag containing all existing shields. Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
+         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
          *
          * @see ToolAction
          * @see ToolActions
@@ -573,7 +560,7 @@ public class Tags
         public static final TagKey<Item> TOOLS_SHIELDS = tag("tools/shields");
         /**
          * A tag containing all existing bows. Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
+         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
          *
          * @see ToolAction
          * @see ToolActions
@@ -581,30 +568,46 @@ public class Tags
         public static final TagKey<Item> TOOLS_BOWS = tag("tools/bows");
         /**
          * A tag containing all existing crossbows. Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
+         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
          *
-         * A tag containing all existing fishing rods. Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
+         * @see net.neoforged.neoforge.common.ToolAction
+         * @see net.neoforged.neoforge.common.ToolActions
+         */
+        public static final TagKey<Item> TOOLS_CROSSBOWS = tag("tools/crossbows");
         /**
-         * A tag containing all existing shears. Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
+         * A tag containing all existing fishing rods. Do not use this tag for determining a tool's behavior.
+         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
+         *
+         * @see net.neoforged.neoforge.common.ToolAction
+         * @see net.neoforged.neoforge.common.ToolActions
+         */
+        public static final TagKey<Item> TOOLS_FISHING_RODS = tag("tools/fishing_rods");
         /**
          * A tag containing all existing spears. Other tools such as throwing knives or boomerangs
          * should not be put into this tag and should be put into their own tool tags.
          * Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
+         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
          *
-         * @see net.minecraftforge.common.ToolAction
-         * @see net.minecraftforge.common.ToolActions
+         * @see ToolAction
+         * @see ToolActions
          */
         public static final TagKey<Item> TOOLS_SPEARS = tag("tools/spears");
         /**
-         * A tag containing all existing brushes. Do not use this tag for determining a tool's behavior.
-         * Please use {@link net.minecraftforge.common.ToolActions} instead for what action a tool can do.
+         * A tag containing all existing shears. Do not use this tag for determining a tool's behavior.
+         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
          *
-         * @see net.minecraftforge.common.ToolAction
-         * @see net.minecraftforge.common.ToolActions
+         * @see ToolAction
+         * @see ToolActions
          */
+        public static final TagKey<Item> TOOLS_SHEARS = tag("tools/shears");
+        /**
+         * A tag containing all existing brushes. Do not use this tag for determining a tool's behavior.
+         * Please use {@link net.neoforged.neoforge.common.ToolActions} instead for what action a tool can do.
+         *
+         * @see ToolAction
+         * @see ToolActions
+         */
+
         public static final TagKey<Item> TOOLS_BRUSHES = tag("tools/brushes");
         /**
          * A tag containing all existing armors.
@@ -644,8 +647,6 @@ public class Tags
      */
     public static class Fluids
     {
-        private static void init() {}
-
         /**
          * Holds all fluids related to water.
          * This tag is done to help out multi-loader mods/datapacks where the vanilla water tag has attached behaviors outside Neo.

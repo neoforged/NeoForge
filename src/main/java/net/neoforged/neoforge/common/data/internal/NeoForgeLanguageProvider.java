@@ -3,22 +3,23 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.common.data;
+package net.neoforged.neoforge.common.data.internal;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.LanguageProvider;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
 
-public final class ForgeLanguageProvider extends LanguageProvider
+public final class NeoForgeLanguageProvider extends LanguageProvider
 {
-    public ForgeLanguageProvider(PackOutput gen)
+    public NeoForgeLanguageProvider(PackOutput gen)
     {
-        super(gen, "neoforge", "en_us");
+        super(gen, "c", "en_us");
     }
 
     @Override

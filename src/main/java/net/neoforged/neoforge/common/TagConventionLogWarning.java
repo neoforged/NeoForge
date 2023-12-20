@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.common;
+package net.neoforged.neoforge.common;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.Registry;
@@ -12,9 +12,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -430,7 +430,7 @@ public final class TagConventionLogWarning
     /*package private*/
     static void init()
     {
-        IEventBus forgeBus = MinecraftForge.EVENT_BUS;
+        IEventBus forgeBus = NeoForge.EVENT_BUS;
 
         setupLegacyTagWarning(forgeBus);
     }
@@ -442,7 +442,7 @@ public final class TagConventionLogWarning
         forgeBus.addListener((ServerStartingEvent serverStartingEvent) ->
         {
             // We have to wait for server start to read the server config.
-            LOG_WARNING_MODES legacyTagWarningMode = ForgeConfig.COMMON.logLegacyTagWarnings.get();
+            LOG_WARNING_MODES legacyTagWarningMode = NeoForgeConfig.COMMON.logLegacyTagWarnings.get();
             if (legacyTagWarningMode != LOG_WARNING_MODES.SILENCED)
             {
                 boolean isConfigSetToDev =

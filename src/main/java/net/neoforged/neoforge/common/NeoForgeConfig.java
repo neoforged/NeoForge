@@ -69,10 +69,10 @@ public class NeoForgeConfig {
      */
     public static class Common {
 
-        public final NeoForgeConfigSpec.EnumValue<TagConventionLogWarning.LOG_WARNING_MODES> logUntranslatedItemTagWarnings;
-        public final NeoForgeConfigSpec.EnumValue<TagConventionLogWarning.LOG_WARNING_MODES> logLegacyTagWarnings;
+        public final ModConfigSpec.EnumValue<TagConventionLogWarning.LOG_WARNING_MODES> logUntranslatedItemTagWarnings;
+        public final ModConfigSpec.EnumValue<TagConventionLogWarning.LOG_WARNING_MODES> logLegacyTagWarnings;
 
-        Common(NeoForgeConfigSpec.Builder builder) {
+        Common(ModConfigSpec.Builder builder) {
             builder.comment("General configuration settings")
                     .push("general");
 

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.common;
+package net.neoforged.neoforge.common;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.resources.language.I18n;
@@ -11,11 +11,11 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,7 +30,7 @@ public final class TagConventionLogWarningClient
     /*package private*/
     static void init()
     {
-        IEventBus forgeBus = MinecraftForge.EVENT_BUS;
+        IEventBus forgeBus = NeoForge.EVENT_BUS;
 
         TagConventionLogWarningClient.setupUntranslatedItemTagWarning(forgeBus);
     }
@@ -42,7 +42,7 @@ public final class TagConventionLogWarningClient
         forgeBus.addListener((ServerStartingEvent serverStartingEvent) ->
         {
             // We have to wait for server start to read the server config.
-            TagConventionLogWarning.LOG_WARNING_MODES untranslatedTagWarningMode = ForgeConfig.COMMON.logUntranslatedItemTagWarnings.get();
+            TagConventionLogWarning.LOG_WARNING_MODES untranslatedTagWarningMode = NeoForgeConfig.COMMON.logUntranslatedItemTagWarnings.get();
             if (FMLEnvironment.dist == Dist.CLIENT && untranslatedTagWarningMode != TagConventionLogWarning.LOG_WARNING_MODES.SILENCED)
             {
                 boolean isConfigSetToDev =

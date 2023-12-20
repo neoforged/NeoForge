@@ -3,18 +3,20 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.common.data;
+package net.neoforged.neoforge.common.data.internal;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.EnchantmentTagsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;
 
-public final class ForgeEnchantmentTagsProvider extends EnchantmentTagsProvider
+public final class NeoForgeEnchantmentTagsProvider extends EnchantmentTagsProvider
 {
-    public ForgeEnchantmentTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper)
+    public NeoForgeEnchantmentTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper)
     {
         super(output, lookupProvider, "neoforge", existingFileHelper);
     }
@@ -46,11 +48,5 @@ public final class ForgeEnchantmentTagsProvider extends EnchantmentTagsProvider
                 .add(Enchantments.FIRE_PROTECTION)
                 .add(Enchantments.RESPIRATION)
                 .add(Enchantments.FALL_PROTECTION);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "Neoforge Enchantment Tags";
     }
 }
