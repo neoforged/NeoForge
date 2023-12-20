@@ -23,10 +23,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 
-public class Tags
-{
-    public static class Blocks
-    {
+public class Tags {
+    public static class Blocks {
         // `neoforge` tags for functional behavior provided by Neoforge
         /**
          * Controls what blocks Endermen cannot place blocks onto.
@@ -215,13 +213,11 @@ public class Tags
         public static final TagKey<Block> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
         public static final TagKey<Block> VILLAGER_JOB_SITES = tag("villager_job_sites");
 
-        private static TagKey<Block> tag(String name)
-        {
+        private static TagKey<Block> tag(String name) {
             return BlockTags.create(new ResourceLocation("c", name));
         }
 
-        private static TagKey<Block> neoforgeTag(String name)
-        {
+        private static TagKey<Block> neoforgeTag(String name) {
             return BlockTags.create(new ResourceLocation("neoforge", name));
         }
     }
@@ -238,14 +234,12 @@ public class Tags
          */
         public static final TagKey<EntityType<?>> CAPTURING_NOT_SUPPORTED = tag("capturing_not_supported");
 
-        private static TagKey<EntityType<?>> tag(String name)
-        {
+        private static TagKey<EntityType<?>> tag(String name) {
             return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("c", name));
         }
     }
 
-    public static class Items
-    {
+    public static class Items {
         // `neoforge` tags for functional behavior provided by Neoforge
         /**
          * Controls what items can be consumed for enchanting such as Enchanting Tables.
@@ -638,13 +632,11 @@ public class Tags
          */
         public static final TagKey<Item> ARMORS_BOOTS = tag("armors/boots");
 
-        private static TagKey<Item> tag(String name)
-        {
+        private static TagKey<Item> tag(String name) {
             return ItemTags.create(new ResourceLocation("c", name));
         }
 
-        private static TagKey<Item> neoforgeTag(String name)
-        {
+        private static TagKey<Item> neoforgeTag(String name) {
             return ItemTags.create(new ResourceLocation("neoforge", name));
         }
     }
@@ -653,8 +645,7 @@ public class Tags
      * Note, fluid tags should not be plural to match the vanilla standard.
      * This is the only tag category exempted from many-different-types plural rule.
      */
-    public static class Fluids
-    {
+    public static class Fluids {
         /**
          * Holds all fluids related to water.
          * This tag is done to help out multi-loader mods/datapacks where the vanilla water tag has attached behaviors outside Neo.
@@ -701,18 +692,16 @@ public class Tags
          */
         public static final TagKey<Fluid> BEETROOT_SOUP = tag("beetroot_soup");
         /**
-         * Tag that holds all items that recipe viewers should not show to users.
+         * Tag that holds all fluids that recipe viewers should not show to users.
          */
         public static final TagKey<Fluid> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
 
-        private static TagKey<Fluid> tag(String name)
-        {
+        private static TagKey<Fluid> tag(String name) {
             return FluidTags.create(new ResourceLocation("c", name));
         }
     }
 
-    public static class Enchantments
-    {
+    public static class Enchantments {
         /**
          * A tag containing enchantments that increase the amount or
          * quality of drops from blocks, such as {@link net.minecraft.world.item.enchantment.Enchantments#BLOCK_FORTUNE}.
@@ -741,8 +730,7 @@ public class Tags
          */
         public static final TagKey<Enchantment> ENTITY_DEFENSE_ENHANCEMENTS = tag("entity_defense_enhancement");
 
-        private static TagKey<Enchantment> tag(String name)
-        {
+        private static TagKey<Enchantment> tag(String name) {
             return TagKey.create(Registries.ENCHANTMENT, new ResourceLocation("c", name));
         }
     }
@@ -810,18 +798,17 @@ public class Tags
          */
         public static final TagKey<Biome> NO_DEFAULT_MONSTERS = tag("no_default_monsters");
 
-        private static TagKey<Biome> tag(String name)
-        {
+        private static TagKey<Biome> tag(String name) {
             return TagKey.create(Registries.BIOME, new ResourceLocation("c", name));
         }
     }
 
     /**
      * Use this to get a TagKey's translation key safely on any side.
+     * 
      * @return the translation key for a TagKey.
      */
-    public static String getTagTranslationKey(TagKey<?> tagKey)
-    {
+    public static String getTagTranslationKey(TagKey<?> tagKey) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("tag.");
 

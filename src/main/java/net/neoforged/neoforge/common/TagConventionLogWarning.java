@@ -6,6 +6,9 @@
 package net.neoforged.neoforge.common;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.AbstractMap;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -18,16 +21,10 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.AbstractMap;
-import java.util.List;
-import java.util.Map;
-
-public final class TagConventionLogWarning
-{
+public final class TagConventionLogWarning {
     private TagConventionLogWarning() {}
 
-    protected enum LOG_WARNING_MODES
-    {
+    protected enum LOG_WARNING_MODES {
         SILENCED,
         DEV_SHORT,
         DEV_VERBOSE,
@@ -156,7 +153,7 @@ public final class TagConventionLogWarning
             createMapEntry(Registries.BLOCK_PREDICATE_TYPE, "immovable", Tags.Blocks.RELOCATION_NOT_SUPPORTED),
 
             createMapEntry(Registries.ENTITY_TYPE, "bosses", Tags.EntityTypes.BOSSES),
-    
+
             createMapEntry(Registries.ITEM, "barrels", Tags.Items.BARRELS),
             createMapEntry(Registries.ITEM, "barrels/wooden", Tags.Items.BARRELS_WOODEN),
             createMapEntry(Registries.ITEM, "bones", Tags.Items.BONES),
@@ -424,79 +421,61 @@ public final class TagConventionLogWarning
             createMapEntry(Registries.BIOME, "is_peak", Tags.Biomes.IS_MOUNTAIN_PEAK),
             createMapEntry(Registries.BIOME, "is_slope", Tags.Biomes.IS_MOUNTAIN_SLOPE),
             createMapEntry(Registries.BIOME, "is_mountain", Tags.Biomes.IS_MOUNTAIN),
-            createMapEntry(Registries.BIOME, "no_default_monsters", Tags.Biomes.NO_DEFAULT_MONSTERS)
-    );
+            createMapEntry(Registries.BIOME, "no_default_monsters", Tags.Biomes.NO_DEFAULT_MONSTERS));
 
     /*package private*/
-    static void init()
-    {
+    static void init() {
         IEventBus forgeBus = NeoForge.EVENT_BUS;
 
         setupLegacyTagWarning(forgeBus);
     }
 
     // Remove in 1.22
-    private static void setupLegacyTagWarning(IEventBus forgeBus)
-    {
+    private static void setupLegacyTagWarning(IEventBus forgeBus) {
         // Log tags that are still using legacy 'forge' namespace
-        forgeBus.addListener((ServerStartingEvent serverStartingEvent) ->
-        {
+        forgeBus.addListener((ServerStartingEvent serverStartingEvent) -> {
             // We have to wait for server start to read the server config.
             LOG_WARNING_MODES legacyTagWarningMode = NeoForgeConfig.COMMON.logLegacyTagWarnings.get();
-            if (legacyTagWarningMode != LOG_WARNING_MODES.SILENCED)
-            {
-                boolean isConfigSetToDev =
-                        legacyTagWarningMode == LOG_WARNING_MODES.DEV_SHORT ||
+            if (legacyTagWarningMode != LOG_WARNING_MODES.SILENCED) {
+                boolean isConfigSetToDev = legacyTagWarningMode == LOG_WARNING_MODES.DEV_SHORT ||
                         legacyTagWarningMode == LOG_WARNING_MODES.DEV_VERBOSE;
 
-                if (!FMLLoader.isProduction() == isConfigSetToDev)
-                {
+                if (!FMLLoader.isProduction() == isConfigSetToDev) {
                     List<TagKey<?>> legacyTags = new ObjectArrayList<>();
                     RegistryAccess.Frozen registryAccess = serverStartingEvent.getServer().registryAccess();
 
                     // We only care about vanilla registries
-                    registryAccess.registries().forEach(registryEntry ->
-                    {
-                        if (registryEntry.key().location().getNamespace().equals("minecraft"))
-                        {
-                            registryEntry.value().getTagNames().forEach(tagKey ->
-                            {
+                    registryAccess.registries().forEach(registryEntry -> {
+                        if (registryEntry.key().location().getNamespace().equals("minecraft")) {
+                            registryEntry.value().getTagNames().forEach(tagKey -> {
                                 // Grab tags under 'forge' namespace
-                                if (LEGACY_FORGE_TAGS.containsKey(tagKey) || tagKey.location().getNamespace().equals("forge"))
-                                {
+                                if (LEGACY_FORGE_TAGS.containsKey(tagKey) || tagKey.location().getNamespace().equals("forge")) {
                                     legacyTags.add(tagKey);
                                 }
                             });
                         }
                     });
 
-                    if (!legacyTags.isEmpty())
-                    {
+                    if (!legacyTags.isEmpty()) {
                         StringBuilder stringBuilder = new StringBuilder();
                         stringBuilder.append("""
-                            \n   Dev warning - Legacy Tags detected. Please migrate your 'forge' namespace tags to 'c' namespace! See net.minecraftforge.common.Tags.java for all tags.
-                               NOTE: Many tags have been moved around or renamed. Some new ones were added so please review the new tags.
-                                And make sure you follow tag conventions for new tags! The convention is `c` with nouns generally being plural and adjectives being singular.
-                               You can disable this message in Neoforge's common config by setting logLegacyTagWarnings to "SILENCED" or see individual tags with "DEV_VERBOSE".
-                            """);
+                                \n   Dev warning - Legacy Tags detected. Please migrate your 'forge' namespace tags to 'c' namespace! See net.minecraftforge.common.Tags.java for all tags.
+                                   NOTE: Many tags have been moved around or renamed. Some new ones were added so please review the new tags.
+                                    And make sure you follow tag conventions for new tags! The convention is `c` with nouns generally being plural and adjectives being singular.
+                                   You can disable this message in Neoforge's common config by setting logLegacyTagWarnings to "SILENCED" or see individual tags with "DEV_VERBOSE".
+                                """);
 
                         // Print out all legacy tags when desired.
-                        boolean isConfigSetToVerbose =
-                                legacyTagWarningMode == LOG_WARNING_MODES.DEV_VERBOSE ||
+                        boolean isConfigSetToVerbose = legacyTagWarningMode == LOG_WARNING_MODES.DEV_VERBOSE ||
                                 legacyTagWarningMode == LOG_WARNING_MODES.PROD_VERBOSE;
 
-                        if (isConfigSetToVerbose)
-                        {
+                        if (isConfigSetToVerbose) {
                             stringBuilder.append("\nLegacy tags:");
-                            for (TagKey<?> tagKey : legacyTags)
-                            {
-                                if (LEGACY_FORGE_TAGS.containsKey(tagKey))
-                                {
+                            for (TagKey<?> tagKey : legacyTags) {
+                                if (LEGACY_FORGE_TAGS.containsKey(tagKey)) {
                                     TagKey<?> replacementTagkey = LEGACY_FORGE_TAGS.get(tagKey);
                                     stringBuilder.append("\n     ").append(tagKey).append("  ->  ").append(replacementTagkey);
-                                }
-                                else
-                                {
+                                } else {
                                     stringBuilder.append("\n     ").append(tagKey).append("  ->  ").append("See similar `c` tags in Neoforge's Tags class");
                                 }
                             }

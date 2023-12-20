@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -12,18 +13,13 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.EnchantmentTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
-import java.util.concurrent.CompletableFuture;
-
-public final class NeoForgeEnchantmentTagsProvider extends EnchantmentTagsProvider
-{
-    public NeoForgeEnchantmentTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper)
-    {
+public final class NeoForgeEnchantmentTagsProvider extends EnchantmentTagsProvider {
+    public NeoForgeEnchantmentTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, "neoforge", existingFileHelper);
     }
 
     @Override
-    public void addTags(HolderLookup.Provider lookupProvider)
-    {
+    public void addTags(HolderLookup.Provider lookupProvider) {
         tag(Tags.Enchantments.INCREASE_BLOCK_DROPS)
                 .add(Enchantments.BLOCK_FORTUNE);
         tag(Tags.Enchantments.INCREASE_ENTITY_DROPS)

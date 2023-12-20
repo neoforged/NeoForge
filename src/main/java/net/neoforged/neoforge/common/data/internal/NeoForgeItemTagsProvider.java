@@ -23,12 +23,8 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
-import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-
 public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
-    
+
     public NeoForgeItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagProvider, ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, blockTagProvider, "neoforge", existingFileHelper);
     }
@@ -126,7 +122,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.GUNPOWDERS).add(Items.GUNPOWDER);
         tag(Tags.Items.HEADS).add(Items.SKELETON_SKULL, Items.WITHER_SKELETON_SKULL, Items.PLAYER_HEAD, Items.ZOMBIE_HEAD, Items.CREEPER_HEAD, Items.PIGLIN_HEAD, Items.DRAGON_HEAD);
         tag(Tags.Items.HIDDEN_FROM_RECIPE_VIEWERS);
-        tag(Tags.Items.INGOTS).addTags( Tags.Items.INGOTS_COPPER, Tags.Items.INGOTS_GOLD, Tags.Items.INGOTS_IRON, Tags.Items.INGOTS_NETHERITE);
+        tag(Tags.Items.INGOTS).addTags(Tags.Items.INGOTS_COPPER, Tags.Items.INGOTS_GOLD, Tags.Items.INGOTS_IRON, Tags.Items.INGOTS_NETHERITE);
         tag(Tags.Items.INGOTS_COPPER).add(Items.COPPER_INGOT);
         tag(Tags.Items.INGOTS_GOLD).add(Items.GOLD_INGOT);
         tag(Tags.Items.INGOTS_IRON).add(Items.IRON_INGOT);
@@ -222,14 +218,13 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.TOOLS_SHEARS).add(Items.SHEARS);
         tag(Tags.Items.TOOLS_SPEARS).add(Items.TRIDENT);
         tag(Tags.Items.TOOLS)
-            .addTags(ItemTags.AXES, ItemTags.HOES, ItemTags.PICKAXES, ItemTags.SHOVELS, ItemTags.SWORDS)
-            .addTags(Tags.Items.TOOLS_BOWS, Tags.Items.TOOLS_BRUSHES, Tags.Items.TOOLS_CROSSBOWS, Tags.Items.TOOLS_FISHING_RODS, Tags.Items.TOOLS_SHEARS, Tags.Items.TOOLS_SHIELDS, Tags.Items.TOOLS_SPEARS);
+                .addTags(ItemTags.AXES, ItemTags.HOES, ItemTags.PICKAXES, ItemTags.SHOVELS, ItemTags.SWORDS)
+                .addTags(Tags.Items.TOOLS_BOWS, Tags.Items.TOOLS_BRUSHES, Tags.Items.TOOLS_CROSSBOWS, Tags.Items.TOOLS_FISHING_RODS, Tags.Items.TOOLS_SHEARS, Tags.Items.TOOLS_SHIELDS, Tags.Items.TOOLS_SPEARS);
         tag(Tags.Items.ARMORS_HELMETS).add(Items.LEATHER_HELMET, Items.CHAINMAIL_HELMET, Items.IRON_HELMET, Items.GOLDEN_HELMET, Items.DIAMOND_HELMET, Items.NETHERITE_HELMET, Items.TURTLE_HELMET);
         tag(Tags.Items.ARMORS_CHESTPLATES).add(Items.LEATHER_CHESTPLATE, Items.CHAINMAIL_CHESTPLATE, Items.IRON_CHESTPLATE, Items.GOLDEN_CHESTPLATE, Items.DIAMOND_CHESTPLATE, Items.NETHERITE_CHESTPLATE);
         tag(Tags.Items.ARMORS_LEGGINGS).add(Items.LEATHER_LEGGINGS, Items.CHAINMAIL_LEGGINGS, Items.IRON_LEGGINGS, Items.GOLDEN_LEGGINGS, Items.DIAMOND_LEGGINGS, Items.NETHERITE_LEGGINGS);
         tag(Tags.Items.ARMORS_BOOTS).add(Items.LEATHER_BOOTS, Items.CHAINMAIL_BOOTS, Items.IRON_BOOTS, Items.GOLDEN_BOOTS, Items.DIAMOND_BOOTS, Items.NETHERITE_BOOTS);
         tag(Tags.Items.ARMORS).addTags(Tags.Items.ARMORS_HELMETS, Tags.Items.ARMORS_CHESTPLATES, Tags.Items.ARMORS_LEGGINGS, Tags.Items.ARMORS_BOOTS);
-
 
         // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
@@ -347,41 +342,35 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tagWithOptionalLegacy(Tags.Items.ARMORS);
     }
 
-    private IntrinsicHolderTagsProvider.IntrinsicTagAppender<Item> tagWithOptionalLegacy(TagKey<Item> tag)
-    {
+    private IntrinsicHolderTagsProvider.IntrinsicTagAppender<Item> tagWithOptionalLegacy(TagKey<Item> tag) {
         IntrinsicHolderTagsProvider.IntrinsicTagAppender<Item> tagAppender = tag(tag);
         tagAppender.addOptionalTag(new ResourceLocation("forge", tag.location().getPath()));
         return tagAppender;
     }
 
-    private void tagColoredWithOptionalLegacy(TagKey<Item> group)
-    {
+    private void tagColoredWithOptionalLegacy(TagKey<Item> group) {
         String prefix = group.location().getPath().toUpperCase(Locale.ENGLISH) + '_';
-        for (DyeColor color  : DyeColor.values())
-        {
+        for (DyeColor color : DyeColor.values()) {
             TagKey<Item> tag = getForgeItemTag(prefix + color.getName());
             tagWithOptionalLegacy(tag);
         }
     }
 
-    private void addColored(TagKey<Item> group, String pattern)
-    {
+    private void addColored(TagKey<Item> group, String pattern) {
         String prefix = group.location().getPath().toUpperCase(Locale.ENGLISH) + '_';
         for (DyeColor color : DyeColor.values()) {
             ResourceLocation key = new ResourceLocation("minecraft", pattern.replace("{color}", color.getName()));
             TagKey<Item> tag = getForgeItemTag(prefix + color.getName());
             Item item = BuiltInRegistries.ITEM.get(key);
-            if (item == null || item  == Items.AIR)
+            if (item == null || item == Items.AIR)
                 throw new IllegalStateException("Unknown vanilla item: " + key);
             tag(tag).add(item);
         }
     }
 
-    private void addColoredTags(Consumer<TagKey<Item>> consumer, TagKey<Item> group)
-    {
+    private void addColoredTags(Consumer<TagKey<Item>> consumer, TagKey<Item> group) {
         String prefix = group.location().getPath().toUpperCase(Locale.ENGLISH) + '_';
-        for (DyeColor color  : DyeColor.values())
-        {
+        for (DyeColor color : DyeColor.values()) {
             TagKey<Item> tag = getForgeItemTag(prefix + color.getName());
             consumer.accept(tag);
         }
@@ -408,8 +397,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return "Neoforge Item Tags";
     }
 }

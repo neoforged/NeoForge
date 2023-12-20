@@ -155,14 +155,12 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
         }
     }
 
-    private TagAppender<Biome> tagWithOptionalLegacy(TagKey<Biome> tag)
-    {
+    private TagAppender<Biome> tagWithOptionalLegacy(TagKey<Biome> tag) {
         return tag(tag).addOptionalTag(new ResourceLocation("forge", tag.location().getPath()));
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return "Neoforge Biome Tags";
     }
 }

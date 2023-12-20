@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.FluidTagsProvider;
@@ -16,18 +17,13 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags.Fluids;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
-import java.util.concurrent.CompletableFuture;
-
-import static net.neoforged.neoforge.common.Tags.Blocks.HIDDEN_FROM_RECIPE_VIEWERS;
-
 public final class NeoForgeFluidTagsProvider extends FluidTagsProvider {
     public NeoForgeFluidTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, "neoforge", existingFileHelper);
     }
 
     @Override
-    public void addTags(HolderLookup.Provider lookupProvider)
-    {
+    public void addTags(HolderLookup.Provider lookupProvider) {
         tag(Fluids.WATER).add(net.minecraft.world.level.material.Fluids.WATER).add(net.minecraft.world.level.material.Fluids.FLOWING_WATER);
         tag(Fluids.LAVA).add(net.minecraft.world.level.material.Fluids.LAVA).add(net.minecraft.world.level.material.Fluids.FLOWING_LAVA);
         tag(Fluids.MILK).addOptional(NeoForgeMod.MILK.getId()).addOptional(NeoForgeMod.FLOWING_MILK.getId());
@@ -52,8 +48,7 @@ public final class NeoForgeFluidTagsProvider extends FluidTagsProvider {
         tagWithOptionalLegacy(Fluids.BEETROOT_SOUP);
     }
 
-    private IntrinsicHolderTagsProvider.IntrinsicTagAppender<Fluid> tagWithOptionalLegacy(TagKey<Fluid> tag)
-    {
+    private IntrinsicHolderTagsProvider.IntrinsicTagAppender<Fluid> tagWithOptionalLegacy(TagKey<Fluid> tag) {
         IntrinsicHolderTagsProvider.IntrinsicTagAppender<Fluid> tagAppender = tag(tag);
         tagAppender.addOptionalTag(new ResourceLocation("forge", tag.location().getPath()));
         return tagAppender;

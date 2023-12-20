@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
+import java.util.Locale;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -13,18 +14,13 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Locale;
-
-public final class NeoForgeLanguageProvider extends LanguageProvider
-{
-    public NeoForgeLanguageProvider(PackOutput gen)
-    {
+public final class NeoForgeLanguageProvider extends LanguageProvider {
+    public NeoForgeLanguageProvider(PackOutput gen) {
         super(gen, "c", "en_us");
     }
 
     @Override
-    protected void addTranslations()
-    {
+    protected void addTranslations() {
         // Blocks
         add(Tags.Blocks.BARRELS, "Barrels");
         add(Tags.Blocks.BARRELS_WOODEN, "Wooden Barrels");
@@ -368,10 +364,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider
         add(Tags.Biomes.NO_DEFAULT_MONSTERS, "No Default Monsters");
     }
 
-    private <T> void addColored(TagKey<T> baseTagKey, String pattern)
-    {
-        for (DyeColor color  : DyeColor.values())
-        {
+    private <T> void addColored(TagKey<T> baseTagKey, String pattern) {
+        for (DyeColor color : DyeColor.values()) {
             TagKey<T> coloredTag = TagKey.create(
                     baseTagKey.registry(),
                     new ResourceLocation(baseTagKey.location().getNamespace(), baseTagKey.location().getPath() + "/" + color.name().toLowerCase(Locale.ROOT)));
@@ -381,8 +375,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return "Forge Translations";
     }
 }

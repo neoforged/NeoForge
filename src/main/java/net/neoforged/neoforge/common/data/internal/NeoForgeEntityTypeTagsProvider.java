@@ -21,8 +21,7 @@ public class NeoForgeEntityTypeTagsProvider extends EntityTypeTagsProvider {
     }
 
     @Override
-    public void addTags(HolderLookup.Provider lookupProvider)
-    {
+    public void addTags(HolderLookup.Provider lookupProvider) {
         tag(Tags.EntityTypes.BOSSES).add(EntityType.ENDER_DRAGON, EntityType.WITHER);
         tag(Tags.EntityTypes.MINECARTS).add(EntityType.MINECART, EntityType.CHEST_MINECART, EntityType.FURNACE_MINECART, EntityType.HOPPER_MINECART, EntityType.SPAWNER_MINECART, EntityType.TNT_MINECART, EntityType.COMMAND_BLOCK_MINECART);
         tag(Tags.EntityTypes.BOATS).add(EntityType.BOAT, EntityType.CHEST_BOAT);

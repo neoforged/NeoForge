@@ -492,11 +492,11 @@ public class DataGeneratorTest {
         @Override
         protected void addTags(HolderLookup.Provider provider) {
             tag(BlockTags.create(new ResourceLocation(MODID, "test")))
-                .add(Blocks.DIAMOND_BLOCK)
-                .addTag(BlockTags.STONE_BRICKS)
-                .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONES)
-                .addOptional(new ResourceLocation("chisel", "marble/raw"))
-                .addOptionalTag(new ResourceLocation("forge", "storage_blocks/ruby"));
+                    .add(Blocks.DIAMOND_BLOCK)
+                    .addTag(BlockTags.STONE_BRICKS)
+                    .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONES)
+                    .addOptional(new ResourceLocation("chisel", "marble/raw"))
+                    .addOptionalTag(new ResourceLocation("forge", "storage_blocks/ruby"));
 
             // Hopefully sorting issues
             tag(BlockTags.create(new ResourceLocation(MODID, "thing/one")))
