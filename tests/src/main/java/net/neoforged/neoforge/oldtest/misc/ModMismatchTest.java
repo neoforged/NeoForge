@@ -14,7 +14,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen;
-import net.neoforged.neoforge.network.event.RegisterPacketHandlerEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import net.neoforged.neoforge.network.handling.IConfigurationPayloadHandler;
 
@@ -45,11 +45,11 @@ public class ModMismatchTest implements IConfigurationPayloadHandler<ModMismatch
 
     public ModMismatchTest(IEventBus modBus) {
         if (ENABLED) {
-            modBus.addListener(RegisterPacketHandlerEvent.class, this::onRegisterPacketHandler);
+            modBus.addListener(RegisterPayloadHandlerEvent.class, this::onRegisterPacketHandler);
         }
     }
 
-    private void onRegisterPacketHandler(RegisterPacketHandlerEvent event) {
+    private void onRegisterPacketHandler(RegisterPayloadHandlerEvent event) {
         if ((FMLEnvironment.dist == Dist.DEDICATED_SERVER && REGISTER_FOR_SERVER) || (FMLEnvironment.dist == Dist.CLIENT && REGISTER_FOR_CLIENT)) {
             event
                     .registrar(MOD_ID)

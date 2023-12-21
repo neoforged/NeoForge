@@ -18,12 +18,12 @@ import org.jetbrains.annotations.ApiStatus;
  * This event is used to collect all the payload types and their handlers that should be used on the network.
  * </p>
  */
-public class RegisterPacketHandlerEvent extends Event implements IModBusEvent {
+public class RegisterPayloadHandlerEvent extends Event implements IModBusEvent {
 
     private final Function<String, IPayloadRegistrar> registrarFactory;
 
     @ApiStatus.Internal
-    public RegisterPacketHandlerEvent(Function<String, IPayloadRegistrar> registrarFactory) {
+    public RegisterPayloadHandlerEvent(Function<String, IPayloadRegistrar> registrarFactory) {
         this.registrarFactory = registrarFactory;
     }
 

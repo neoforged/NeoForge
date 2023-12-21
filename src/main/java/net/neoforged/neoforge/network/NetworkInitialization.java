@@ -8,7 +8,7 @@ package net.neoforged.neoforge.network;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
-import net.neoforged.neoforge.network.event.RegisterPacketHandlerEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.handlers.ClientPayloadHandler;
 import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.ApiStatus;
 public class NetworkInitialization {
 
     @SubscribeEvent
-    public static void register(final RegisterPacketHandlerEvent event) {
+    public static void register(final RegisterPayloadHandlerEvent event) {
         final IPayloadRegistrar registrar = event.registrar(NeoForgeVersion.MOD_ID)
                 .versioned(NeoForgeVersion.getSpec())
                 .optional();
