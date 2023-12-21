@@ -44,13 +44,11 @@
          if (this.entity.isRemoved()) {
              LOGGER.warn("Fetching packet for removed entity {}", this.entity);
          }
-@@ -236,6 +_,9 @@
+@@ -236,6 +_,7 @@
          Packet<ClientGamePacketListener> packet = this.entity.getAddEntityPacket();
          this.yHeadRotp = Mth.floor(this.entity.getYHeadRot() * 256.0F / 360.0F);
          p_289563_.accept(packet);
-+        if (this.entity instanceof IEntityWithComplexSpawn) {
-+            p_289563_.accept(new AdvancedAddEntityPayload(entity));
-+        }
++        this.entity.sendPairingData(p_289562_, p_289563_::accept);
          if (this.trackedDataValues != null) {
              p_289563_.accept(new ClientboundSetEntityDataPacket(this.entity.getId(), this.trackedDataValues));
          }

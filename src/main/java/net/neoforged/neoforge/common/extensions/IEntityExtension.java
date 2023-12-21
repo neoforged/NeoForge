@@ -7,8 +7,13 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.Collection;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,8 +30,11 @@ import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.network.bundle.PacketAndPayloadAcceptor;
+import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import org.jetbrains.annotations.Nullable;
 
 public interface IEntityExtension extends INBTSerializable<CompoundTag> {
@@ -393,5 +401,17 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      */
     default boolean hasCustomOutlineRendering(Player player) {
         return false;
+    }
+    
+    /**
+     * Sends the pairing data to the client.
+     *
+     * @param serverPlayer The player to send the data to.
+     * @param bundleBuilder Callback to add a custom payload to the packet.
+     */
+    default void sendPairingData(ServerPlayer serverPlayer, Consumer<CustomPacketPayload> bundleBuilder) {
+        if (this instanceof IEntityWithComplexSpawn) {
+            bundleBuilder.accept(new AdvancedAddEntityPayload(self()));
+        }
     }
 }
