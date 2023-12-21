@@ -47,7 +47,8 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
     private final ReloadInstance reload;
     private final Consumer<Optional<Throwable>> onFinish;
     private final DisplayWindow displayWindow;
-    private final ProgressMeter progress;
+    private final ProgressMeter progressMeter;
+    private float currentProgress;
     private long fadeOutStart = -1L;
 
     public NeoForgeLoadingOverlay(final Minecraft mc, final ReloadInstance reloader, final Consumer<Optional<Throwable>> errorConsumer, DisplayWindow displayWindow) {
@@ -57,7 +58,7 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         this.onFinish = errorConsumer;
         this.displayWindow = displayWindow;
         displayWindow.addMojangTexture(mc.getTextureManager().getTexture(new ResourceLocation("textures/gui/title/mojangstudios.png")).getId());
-        this.progress = StartupMessageManager.prependProgressBar("Minecraft Progress", 100);
+        this.progressMeter = StartupMessageManager.prependProgressBar("Minecraft Progress", 1000);
     }
 
     public static Supplier<LoadingOverlay> newInstance(Supplier<Minecraft> mc, Supplier<ReloadInstance> ri, Consumer<Optional<Throwable>> handler, DisplayWindow window) {
@@ -68,7 +69,8 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
     public void render(final @NotNull GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTick) {
         long millis = Util.getMillis();
         float fadeouttimer = this.fadeOutStart > -1L ? (float) (millis - this.fadeOutStart) / 1000.0F : -1.0F;
-        progress.setAbsolute(Mth.clamp((int) (this.reload.getActualProgress() * 100f), 0, 100));
+        this.currentProgress = Mth.clamp(this.currentProgress * 0.95F + this.reload.getActualProgress() * 0.05F, 0.0F, 1.0F);
+        progressMeter.setAbsolute(Mth.ceil(this.currentProgress * 1000));
         var fade = 1.0F - Mth.clamp(fadeouttimer - 1.0F, 0.0F, 1.0F);
         var colour = this.displayWindow.context().colourScheme().background();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, fade);
@@ -133,12 +135,12 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1f);
 
         if (fadeouttimer >= 2.0F) {
+            progressMeter.complete();
             this.minecraft.setOverlay(null);
             this.displayWindow.close();
         }
 
         if (this.fadeOutStart == -1L && this.reload.isDone()) {
-            progress.complete();
             this.fadeOutStart = Util.getMillis();
             try {
                 this.reload.checkExceptions();

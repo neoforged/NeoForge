@@ -7,7 +7,14 @@ package net.neoforged.neoforge.common.util;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Spliterator;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.NotNull;
 

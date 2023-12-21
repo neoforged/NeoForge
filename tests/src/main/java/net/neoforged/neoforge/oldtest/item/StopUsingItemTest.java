@@ -21,7 +21,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.Mod.EventBusSubscriber;
 import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -51,8 +50,7 @@ public class StopUsingItemTest {
      */
     private static float fovChange = 1.0f;
 
-    public StopUsingItemTest() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public StopUsingItemTest(IEventBus modEventBus) {
         ITEMS.register(modEventBus);
         modEventBus.addListener(this::addCreative);
         NeoForge.EVENT_BUS.addListener(this::onVanillaEvent);

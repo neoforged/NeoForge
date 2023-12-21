@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.event;
 
+import java.util.Objects;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.bus.api.Event;
@@ -14,7 +15,8 @@ import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * Fired when a {@link LootTable} is loaded from JSON.
- * Loot tables loaded from world save datapacks will not fire this event as they are considered user configuration files.
+ * Can be used to modify the loot table, cancel loading it, or outright replace it.
+ * This event is currently fired for all loot tables coming from vanilla, mods, and user datapacks.
  * This event is fired whenever server resources are loaded or reloaded.
  *
  * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
@@ -41,6 +43,7 @@ public class LootTableLoadEvent extends Event implements ICancellableEvent {
     }
 
     public void setTable(LootTable table) {
+        Objects.requireNonNull(table);
         this.table = table;
     }
 }

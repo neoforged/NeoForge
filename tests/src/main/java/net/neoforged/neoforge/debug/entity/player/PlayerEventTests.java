@@ -13,6 +13,8 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.server.players.ServerOpListEntry;
+import net.minecraft.stats.ServerStatsCounter;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -26,6 +28,8 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.neoforge.event.StatAwardEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
@@ -34,6 +38,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTestPlayer;
+import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = { PlayerTests.GROUP + ".event", "event" })
 public class PlayerEventTests {
@@ -194,5 +199,33 @@ public class PlayerEventTests {
                 .thenExecute(player -> player.getServer().getPlayerList().deop(player.getGameProfile()))
                 .thenExecute(player -> helper.assertTrue(player.getServer().getProfilePermissions(player.getGameProfile()) == Commands.LEVEL_ADMINS, "Player was de-op'd"))
                 .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the StatsAwardEvent properly modifies stats stored per player")
+    static void changeStatAward(final DynamicTest test, final RegistrationHelper reg) {
+        test.eventListeners().forge().addListener(EventPriority.NORMAL, false, StatAwardEvent.class, event -> {
+            //when damage is dealt, instead record this stat as a bell ring
+            if (event.getStat().equals(Stats.CUSTOM.get(Stats.DAMAGE_TAKEN)))
+                event.setStat(Stats.CUSTOM.get(Stats.BELL_RING));
+        });
+        test.eventListeners().forge().addListener(EventPriority.NORMAL, false, StatAwardEvent.class, event -> {
+            //when awarded stats for breeding, multiply the value by 10
+            if (event.getStat().equals(Stats.CUSTOM.get(Stats.ANIMALS_BRED)))
+                event.setValue(event.getValue() * 10);
+        });
+
+        test.onGameTest(helper -> {
+            GameTestPlayer player = helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL);
+            //Award a damage stat, which we are listening for in order to change the stat
+            player.awardStat(Stats.CUSTOM.get(Stats.DAMAGE_TAKEN), 100);
+            //Award an animal breed stat, which we are listining for in order to multiply the value
+            player.awardStat(Stats.CUSTOM.get(Stats.ANIMALS_BRED), 1);
+            ServerStatsCounter stats = player.level().getServer().getPlayerList().getPlayerStats(player);
+            //if our damage stat is changed to bell ring and our animal breed stat is multiplied by ten, the test passes
+            if (stats.getValue(Stats.CUSTOM.get(Stats.BELL_RING)) == 100 && stats.getValue(Stats.CUSTOM.get(Stats.ANIMALS_BRED)) == 10)
+                helper.succeed();
+        });
     }
 }

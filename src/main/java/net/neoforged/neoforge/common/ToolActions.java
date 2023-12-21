@@ -95,13 +95,25 @@ public class ToolActions {
 
     /**
      * A tool action corresponding to the 'block' action of shields.
+     * Items should expose this tool action in order to enable damage blocking when the item is being "used".
      */
     public static final ToolAction SHIELD_BLOCK = ToolAction.get("shield_block");
 
     /**
-     * This action corresponds to right-clicking the fishing rod.
+     * This action corresponds to right-clicking the fishing rod to reel it in after earlier casting.
+     * Needed for modded fishing rods so that the FishingHook entity can properly function.
      */
     public static final ToolAction FISHING_ROD_CAST = ToolAction.get("fishing_rod_cast");
+
+    /**
+     * Exposed by trident-like items to allow querying tool behaviours for items that can be thrown like Tridents.
+     */
+    public static final ToolAction TRIDENT_THROW = ToolAction.get("trident_throw");
+
+    /**
+     * Exposed by brushes to allow querying tool behaviours for items that can brush Suspicious Blocks.
+     */
+    public static final ToolAction BRUSH_BRUSH = ToolAction.get("brush_brush");
 
     // Default actions supported by each tool type
     public static final Set<ToolAction> DEFAULT_AXE_ACTIONS = of(AXE_DIG, AXE_STRIP, AXE_SCRAPE, AXE_WAX_OFF);
@@ -112,6 +124,8 @@ public class ToolActions {
     public static final Set<ToolAction> DEFAULT_SHEARS_ACTIONS = of(SHEARS_DIG, SHEARS_HARVEST, SHEARS_CARVE, SHEARS_DISARM);
     public static final Set<ToolAction> DEFAULT_SHIELD_ACTIONS = of(SHIELD_BLOCK);
     public static final Set<ToolAction> DEFAULT_FISHING_ROD_ACTIONS = of(FISHING_ROD_CAST);
+    public static final Set<ToolAction> DEFAULT_TRIDENT_ACTIONS = of(TRIDENT_THROW);
+    public static final Set<ToolAction> DEFAULT_BRUSH_ACTIONS = of(BRUSH_BRUSH);
 
     private static Set<ToolAction> of(ToolAction... actions) {
         return Stream.of(actions).collect(Collectors.toCollection(Sets::newIdentityHashSet));

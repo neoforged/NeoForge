@@ -1,48 +1,101 @@
 --- a/net/minecraft/server/packs/repository/Pack.java
 +++ b/net/minecraft/server/packs/repository/Pack.java
-@@ -29,6 +_,7 @@
+@@ -29,6 +_,8 @@
      private final Pack.Position defaultPosition;
      private final boolean required;
      private final boolean fixedPosition;
-+    private final boolean hidden; // Forge: Allow packs to be hidden from the UI entirely
++    private final boolean hidden; // Neo: Allow packs to be hidden from the UI entirely
++    private final List<Pack> children; // Neo: Allows packs to specify packs which will always be placed beneath them; must be hidden
      private final PackSource packSource;
  
      @Nullable
-@@ -77,6 +_,7 @@
-         this.defaultPosition = p_251298_;
-         this.fixedPosition = p_249753_;
-         this.packSource = p_251608_;
+@@ -69,6 +_,33 @@
+         boolean p_249753_,
+         PackSource p_251608_
+     ) {
++        this(p_252218_, p_248829_, p_249377_, p_251718_, p_250162_, p_251298_, p_249753_, p_251608_, List.of());
++    }
++
++    private Pack(
++        String p_252218_,
++        boolean p_248829_,
++        Pack.ResourcesSupplier p_249377_,
++        Component p_251718_,
++        Pack.Info p_250162_,
++        Pack.Position p_251298_,
++        boolean p_249753_,
++        PackSource p_251608_,
++        List<Pack> children
++    ) {
++        List<Pack> flattenedChildren = new java.util.ArrayList<>();
++        List<Pack> remainingChildren = children;
++        // recursively flatten children
++        while (!remainingChildren.isEmpty()) {
++            List<Pack> oldChildren = remainingChildren;
++            remainingChildren = new java.util.ArrayList<>();
++            for (Pack child : oldChildren) {
++                flattenedChildren.add(child.withChildren(List.of()).hidden());
++                remainingChildren.addAll(child.getChildren());
++            }
++        }
++        this.children = List.copyOf(flattenedChildren);
 +        this.hidden = p_250162_.isHidden();
-     }
- 
-     @Nullable
+         this.id = p_252218_;
+         this.resources = p_249377_;
+         this.title = p_251718_;
 @@ -96,7 +_,7 @@
                  PackCompatibility packcompatibility = PackCompatibility.forVersion(inclusiverange, p_294759_);
                  OverlayMetadataSection overlaymetadatasection = packresources.getMetadataSection(OverlayMetadataSection.TYPE);
                  List<String> list = overlaymetadatasection != null ? overlaymetadatasection.overlaysForVersion(p_294759_) : List.of();
 -                pack$info = new Pack.Info(packmetadatasection.description(), packcompatibility, featureflagset, list);
-+                pack$info = new Pack.Info(packmetadatasection.description(), packmetadatasection.packFormat(PackType.SERVER_DATA), packmetadatasection.packFormat(PackType.CLIENT_RESOURCES), packcompatibility, featureflagset, list, packresources.isHidden());
++                pack$info = new Pack.Info(packmetadatasection.description(), packcompatibility, featureflagset, list, packresources.isHidden());
              }
  
              return pack$info;
-@@ -172,6 +_,8 @@
+@@ -172,6 +_,37 @@
          return this.packSource;
      }
  
 +    public boolean isHidden() { return hidden; }
 +
++    public List<Pack> getChildren() { return children; }
++
++    public java.util.stream.Stream<Pack> streamSelfAndChildren() {
++        return java.util.stream.Stream.concat(java.util.stream.Stream.of(this), children.stream());
++    }
++
++    /**
++     * {@return a copy of the pack with the provided children in place of any children this pack currently has}
++     */
++    public Pack withChildren(List<Pack> children) {
++        return new Pack(this.id, this.required, this.resources, this.title, this.info, this.defaultPosition, this.fixedPosition, this.packSource, children);
++    }
++
++    /**
++     * {@return a copy of the pack that is hidden}
++     */
++    public Pack hidden() {
++        return new Pack(
++                this.id, this.required, this.resources, this.title,
++                new Info(
++                        this.info.description(),
++                        info.compatibility(),
++                        info.requestedFeatures(),
++                        info.overlays(),
++                        true
++                ),
++                this.defaultPosition, this.fixedPosition, this.packSource, this.children);
++    }
++
      @Override
      public boolean equals(Object p_10448_) {
          if (this == p_10448_) {
-@@ -189,7 +_,10 @@
+@@ -189,7 +_,7 @@
          return this.id.hashCode();
      }
  
 -    public static record Info(Component description, PackCompatibility compatibility, FeatureFlagSet requestedFeatures, List<String> overlays) {
-+    public static record Info(Component description, int dataFormat, int resourceFormat, PackCompatibility compatibility, FeatureFlagSet requestedFeatures, List<String> overlays, boolean isHidden) {
-+        public int getFormat(PackType type) {
-+            return type == PackType.SERVER_DATA ? this.dataFormat : this.resourceFormat;
-+        }
++    public static record Info(Component description, PackCompatibility compatibility, FeatureFlagSet requestedFeatures, List<String> overlays, boolean isHidden) {
      }
  
      public static enum Position {

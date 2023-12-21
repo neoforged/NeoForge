@@ -126,7 +126,9 @@ public final class BlockCapability<T, C> extends BaseCapability<T, C> {
     }
 
     // INTERNAL
-    private static final CapabilityRegistry<BlockCapability<?, ?>> registry = new CapabilityRegistry<>(BlockCapability::new);
+
+    // Requires explicitly-typed constructor due to ECJ inference failure.
+    private static final CapabilityRegistry<BlockCapability<?, ?>> registry = new CapabilityRegistry<BlockCapability<?, ?>>(BlockCapability::new);
 
     private BlockCapability(ResourceLocation name, Class<T> typeClass, Class<C> contextClass) {
         super(name, typeClass, contextClass);
@@ -137,6 +139,9 @@ public final class BlockCapability<T, C> extends BaseCapability<T, C> {
     @ApiStatus.Internal
     @Nullable
     public T getCapability(Level level, BlockPos pos, @Nullable BlockState state, @Nullable BlockEntity blockEntity, C context) {
+        // Convert pos to immutable, it's easy to forget otherwise
+        pos = pos.immutable();
+
         // Get block state and block entity if they were not provided
         if (blockEntity == null) {
             if (state == null)

@@ -5,7 +5,8 @@
 
 package net.neoforged.neoforge.common.crafting;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -117,12 +118,8 @@ public class CraftingHelper {
     // Choose between dispatch codec for custom ingredients and vanilla codec
     private static Codec<Ingredient> makeIngredientCodec0(boolean allowEmpty, Codec<Ingredient> vanillaCodec) {
         // Dispatch codec for custom ingredient types:
-        Codec<Ingredient> dispatchCodec =
-                // Use dispatchUnsafe to always inline the dispatched type parameters into the root ingredient object, next to the "type"
-                NeoForgeExtraCodecs.dispatchUnsafe(
-                        NeoForgeRegistries.INGREDIENT_TYPES.byNameCodec(),
-                        Ingredient::getType,
-                        ingredientType -> ingredientType.codec(allowEmpty));
+        Codec<Ingredient> dispatchCodec = NeoForgeRegistries.INGREDIENT_TYPES.byNameCodec()
+                .dispatch(Ingredient::getType, ingredientType -> ingredientType.codec(allowEmpty));
         // Either codec to combine with the vanilla ingredient codec:
         Codec<Either<Ingredient, Ingredient>> eitherCodec = ExtraCodecs.either(
                 dispatchCodec,

@@ -24,8 +24,7 @@ import net.neoforged.fml.event.IModBusEvent;
  * For registering datapack registries that only load entries through JSON, see {@link DataPackRegistryEvent.NewRegistry}.
  * </p>
  *
- * <p>This event is fired on the {@linkplain net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
- * on both {@linkplain net.neoforged.fml.LogicalSide logical sides}.</p>
+ * <p>This event is fired on the mod-specific event bus, on both {@linkplain net.neoforged.fml.LogicalSide logical sides}.</p>
  *
  * @see ModifyRegistriesEvent
  */
