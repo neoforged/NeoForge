@@ -5,7 +5,7 @@
  import net.minecraft.world.item.Items;
  
 -public class RangedCrossbowAttackGoal<T extends Monster & RangedAttackMob & CrossbowAttackMob> extends Goal {
-+public class RangedCrossbowAttackGoal<T extends net.minecraft.world.entity.Mob & RangedAttackMob & CrossbowAttackMob> extends Goal {
++public class RangedCrossbowAttackGoal<T extends net.minecraft.world.entity.Mob & CrossbowAttackMob> extends Goal {
      public static final UniformInt PATHFINDING_DELAY_RANGE = TimeUtil.rangeOfSeconds(1, 2);
      private final T mob;
      private RangedCrossbowAttackGoal.CrossbowState crossbowState = RangedCrossbowAttackGoal.CrossbowState.UNCHARGED;
@@ -13,7 +13,7 @@
      private int attackDelay;
      private int updatePathDelay;
  
-+    public <M extends Monster> RangedCrossbowAttackGoal(M p_25814_, double p_25815_, float p_25816_) {
++    public <M extends Monster & CrossbowAttackMob> RangedCrossbowAttackGoal(M p_25814_, double p_25815_, float p_25816_) {
 +        this((T) p_25814_, p_25815_, p_25816_);
 +    }
 +
