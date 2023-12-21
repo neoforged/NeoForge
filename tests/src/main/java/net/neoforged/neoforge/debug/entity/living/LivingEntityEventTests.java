@@ -140,9 +140,8 @@ public class LivingEntityEventTests {
     }
 
     @GameTest
-    @EmptyTemplate(floor = true)
-    // TODO - fix, doesn't always succeed
-    // @TestHolder(description = "Tests if the LivingChangeTargetEvent can be successfully cancelled")
+    @EmptyTemplate(floor = true, value = "9x9x9")
+    @TestHolder(description = "Tests if the LivingChangeTargetEvent can be successfully cancelled")
     static void setAttackTargetEvent(final DynamicTest test, final RegistrationHelper reg) {
         final var specialAggro = reg.attachments().registerSimpleAttachment("special_aggro", () -> false);
         test.eventListeners().forge().addListener((final LivingChangeTargetEvent event) -> {
@@ -152,7 +151,7 @@ public class LivingEntityEventTests {
             }
         });
         test.onGameTest(helper -> {
-            final var zombie = helper.spawn(EntityType.ZOMBIE, 1, 2, 1);
+            final var zombie = helper.spawn(EntityType.ZOMBIE, 4, 2, 4);
             helper.knockbackResistant(zombie);
             zombie.setData(specialAggro, true);
 
@@ -166,7 +165,8 @@ public class LivingEntityEventTests {
                     .thenWaitUntil(() -> helper.assertTrue(zombie.getTarget() == null, "Zombie was targeting player"))
 
                     .thenExecute(() -> zombie.setData(specialAggro, false))
-                    .thenExecute(player -> player.attack(zombie))
+                    .thenIdle(10) // Increase the zombie tick count
+                    .thenExecute(zombie::setLastHurtByMob)
                     .thenWaitUntil(player -> helper.assertTrue(zombie.getTarget() != null && zombie.getTarget().is(player), "Zombie wasn't targeting player"))
                     .thenSucceed();
         });
