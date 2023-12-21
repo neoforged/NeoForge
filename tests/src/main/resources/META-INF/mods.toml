@@ -100,8 +100,6 @@ modId="render_local_player_test"
 [[mods]]
 modId="custom_sound_type_test"
 [[mods]]
-modId="item_modifier_test"
-[[mods]]
 modId="custom_signs_test"
 [[mods]]
 modId="worldgen_registry_desync_test"
