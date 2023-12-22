@@ -39,10 +39,10 @@ import org.jetbrains.annotations.Nullable;
  * <p>For repeated queries at a specific position, use {@link BlockCapabilityCache} to improve performance.
  *
  * <h3>Providing a capability for a block entity</h3>
- * <p>To provide objects of type {@code T}, register providers to {@link RegisterCapabilitiesEvent}. For example:
+ * <p>To provide objects of type {@code T}, register providers to {@link RegisterCapabilityProvidersEvent}. For example:
  * 
  * <pre>{@code
- * modBus.addListener(RegisterCapabilitiesEvent.class, event -> {
+ * modBus.addListener(RegisterCapabilityProvidersEvent.class, event -> {
  *     event.registerBlockEntity(
  *         Capabilities.ItemHandler.BLOCK, // capability to register for
  *         MY_BLOCK_ENTITY_TYPE,
@@ -55,10 +55,10 @@ import org.jetbrains.annotations.Nullable;
  *
  * <h3>Providing a capability for a plain block</h3>
  * For blocks without a block entity,
- * we use {@link RegisterCapabilitiesEvent#registerBlock registerBlock} instead:
+ * we use {@link RegisterCapabilityProvidersEvent#registerBlock registerBlock} instead:
  *
  * <pre>{@code
- * modBus.addListener(RegisterCapabilitiesEvent.class, event -> {
+ * modBus.addListener(RegisterCapabilityProvidersEvent.class, event -> {
  *     event.registerBlock(
  *         Capabilities.ItemHandler.BLOCK, // capability to register for
  *         (level, pos, state, be, side) -> <return the IItemHandler>,
