@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.capabilities;
 
-import java.util.List;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.WorldlyContainerHolder;
@@ -24,15 +23,10 @@ import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
 import net.neoforged.neoforge.items.VanillaHopperItemHandler;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
-import net.neoforged.neoforge.items.wrapper.EntityArmorInvWrapper;
-import net.neoforged.neoforge.items.wrapper.EntityHandsInvWrapper;
-import net.neoforged.neoforge.items.wrapper.ForwardingItemHandler;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
-import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
-import net.neoforged.neoforge.items.wrapper.ShulkerItemStackInvWrapper;
-import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
+import net.neoforged.neoforge.items.wrapper.*;
 import org.jetbrains.annotations.ApiStatus;
+
+import java.util.List;
 
 @ApiStatus.Internal
 public class CapabilityHooks {
@@ -44,13 +38,13 @@ public class CapabilityHooks {
             throw new IllegalArgumentException("CapabilityHooks.init() called twice");
         initialized = true;
 
-        var event = new RegisterCapabilitiesEvent();
+        var event = new RegisterCapabilityProvidersEvent();
         ModLoader.get().postEventWrapContainerInModOrder(event);
 
         initFinished = true;
     }
 
-    public static void registerVanillaProviders(RegisterCapabilitiesEvent event) {
+    public static void registerVanillaProviders(RegisterCapabilityProvidersEvent event) {
         // Blocks
         var composterBlock = (WorldlyContainerHolder) Blocks.COMPOSTER;
         event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {

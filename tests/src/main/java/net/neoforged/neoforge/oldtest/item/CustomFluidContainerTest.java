@@ -5,9 +5,6 @@
 
 package net.neoforged.neoforge.oldtest.item;
 
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -21,7 +18,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.capabilities.RegisterCapabilityProvidersEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.fluids.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -30,6 +27,10 @@ import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStackSimple;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Mod(CustomFluidContainerTest.MODID)
 public class CustomFluidContainerTest {
@@ -53,7 +54,7 @@ public class CustomFluidContainerTest {
             event.accept(CUSTOM_FLUID_CONTAINER);
     }
 
-    private void registerCaps(RegisterCapabilitiesEvent event) {
+    private void registerCaps(RegisterCapabilityProvidersEvent event) {
         event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidHandlerItemStackSimple(stack, FluidType.BUCKET_VOLUME), CUSTOM_FLUID_CONTAINER.get());
     }
 
