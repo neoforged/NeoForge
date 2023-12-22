@@ -185,14 +185,14 @@ public class PlayerEventTests {
     @TestHolder(description = "Tests if the PermissionsChangedEvent is fired, by preventing players from being de-op'd")
     static void permissionsChangedEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final PermissionsChangedEvent event) -> {
-            if (event.getOldLevel() == Commands.LEVEL_ADMINS) {
+            if (Objects.equals(event.getEntity().getCustomName(), Component.literal("permschangedevent")) && event.getOldLevel() == Commands.LEVEL_ADMINS) {
                 event.setCanceled(true);
                 test.pass();
             }
         });
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInLevel(GameType.CREATIVE).moveToCorner())
-                .thenExecute(player -> player.setCustomName(Component.literal("perms")))
+                .thenExecute(player -> player.setCustomName(Component.literal("permschangedevent")))
                 // Make sure the player isn't OP by default
                 .thenExecute(player -> player.getServer().getPlayerList().getOps().add(new ServerOpListEntry(
                         player.getGameProfile(), Commands.LEVEL_ADMINS, true)))

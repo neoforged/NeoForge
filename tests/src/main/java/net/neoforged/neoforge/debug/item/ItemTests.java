@@ -193,7 +193,7 @@ public class ItemTests {
         test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.PIG, 1, 3, 1))
                 .thenExecute(pig -> pig.setItemSlot(EquipmentSlot.FEET, snowBoots.get().getDefaultInstance()))
                 .thenExecute(pig -> pig.setHealth(pig.getMaxHealth() / 2 - 1))
-                // Pig shouldn't have fell
+                // Pig shouldn't have fallen
                 .thenExecuteAfter(20, () -> helper.assertEntityPresent(EntityType.PIG, 1, 3, 1))
 
                 // Back to max health so falling time
