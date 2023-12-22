@@ -405,18 +405,10 @@
          try {
              this.updateScreenAndTick(p_91321_);
              if (this.level != null) {
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
                  if (integratedserver != null) {
                      this.profiler.push("waitForServer");
  
-@@ -2176,6 +_,7 @@
- 
-                 this.gui.onDisconnected();
-                 this.isLocalServer = false;
-+            net.neoforged.neoforge.client.ClientHooks.handleClientLevelClosing(this.level);
-             }
- 
-             this.level = null;
 @@ -2324,6 +_,7 @@
  
      private void pickBlock() {

@@ -1,13 +1,16 @@
 --- a/net/minecraft/network/protocol/BundlePacket.java
 +++ b/net/minecraft/network/protocol/BundlePacket.java
-@@ -3,14 +_,18 @@
+@@ -2,15 +_,21 @@
+ 
  import net.minecraft.network.FriendlyByteBuf;
  import net.minecraft.network.PacketListener;
- 
++import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
++import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
++
 +import java.util.stream.Collectors;
 +import java.util.stream.Stream;
 +import java.util.stream.StreamSupport;
-+
+ 
  public abstract class BundlePacket<T extends PacketListener> implements Packet<T> {
 -    private final Iterable<Packet<T>> packets;
 +    private final Iterable<Packet<? super T>> packets;

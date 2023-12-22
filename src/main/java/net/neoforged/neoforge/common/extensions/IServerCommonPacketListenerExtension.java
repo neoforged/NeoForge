@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import net.minecraft.network.Connection;
 import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;
@@ -22,11 +23,26 @@ import net.minecraft.util.thread.ReentrantBlockableEventLoop;
 public interface IServerCommonPacketListenerExtension {
 
     /**
+     * Sends a packet to the client which this listener is attached to.
+     *
+     * @param packet The packet to send
+     */
+    void send(Packet<?> packet);
+
+    /**
      * Sends a custom payload to the client which this listener is attached to.
      *
      * @param packetPayload The payload to send
      */
     void send(CustomPacketPayload packetPayload);
+
+    /**
+     * Sends a packet to the client which this listener is attached to.
+     *
+     * @param packet The packet to send
+     * @param packetSendListener The listener to call when the packet is sent
+     */
+    void send(Packet<?> packet, @Nullable PacketSendListener packetSendListener);
 
     /**
      * Sends a custom payload to the client which this listener is attached to.

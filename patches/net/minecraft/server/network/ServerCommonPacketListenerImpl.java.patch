@@ -1,6 +1,10 @@
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -108,8 +_,17 @@
+@@ -105,11 +_,22 @@
+         this.connection.flushChannel();
+     }
+ 
++    @Override
      public void send(Packet<?> p_294278_) {
          this.send(p_294278_, null);
      }
@@ -10,6 +14,7 @@
 +        this.send(new net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket(packetPayload));
 +    }
  
++    @Override
      public void send(Packet<?> p_295099_, @Nullable PacketSendListener p_296321_) {
 +        if (!net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().canSendPacket(p_295099_, this)) {
 +            return;

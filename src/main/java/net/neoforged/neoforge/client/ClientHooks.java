@@ -675,18 +675,6 @@ public class ClientHooks {
 
     private static final ResourceLocation ICON_SHEET = new ResourceLocation(NeoForgeVersion.MOD_ID, "textures/gui/icons.png");
 
-    private static Connection getClientConnection() {
-        return Minecraft.getInstance().getConnection() != null ? Minecraft.getInstance().getConnection().getConnection() : null;
-    }
-
-    public static void handleClientLevelClosing(ClientLevel level) {
-        Connection client = getClientConnection();
-        // ONLY revert a non-local connection
-        if (client != null && !client.isMemoryConnection()) {
-            RegistryManager.revertToFrozen();
-        }
-    }
-
     public static void firePlayerLogin(MultiPlayerGameMode pc, LocalPlayer player, Connection networkManager) {
         NeoForge.EVENT_BUS.post(new ClientPlayerNetworkEvent.LoggingIn(pc, player, networkManager));
     }

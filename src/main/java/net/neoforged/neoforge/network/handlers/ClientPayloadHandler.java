@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.netty.buffer.Unpooled;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
@@ -46,8 +47,8 @@ public class ClientPayloadHandler {
         return INSTANCE;
     }
 
-    private final Set<ResourceLocation> toSynchronize = Sets.newHashSet();
-    private final Map<ResourceLocation, RegistrySnapshot> synchronizedRegistries = Maps.newHashMap();
+    private final Set<ResourceLocation> toSynchronize = Sets.newConcurrentHashSet();
+    private final Map<ResourceLocation, RegistrySnapshot> synchronizedRegistries = Maps.newConcurrentMap();
 
     private ClientPayloadHandler() {}
 
@@ -67,13 +68,18 @@ public class ClientPayloadHandler {
             return;
         }
 
-        //This method normally returns missing entries, but we just accept what the server send us and ignore the rest.
-        RegistryManager.applySnapshot(synchronizedRegistries, false, false);
+        context.workHandler().submitAsync(() -> {
+            //This method normally returns missing entries, but we just accept what the server send us and ignore the rest.
+            RegistryManager.applySnapshot(synchronizedRegistries, false, false);
 
-        this.toSynchronize.clear();
-        this.synchronizedRegistries.clear();
-
-        context.handler().send(new FrozenRegistrySyncCompletedPayload());
+            this.toSynchronize.clear();
+            this.synchronizedRegistries.clear();
+        }).exceptionally(e -> {
+            context.packetHandler().disconnect(Component.translatable("neoforge.registries.sync.failed", e.getMessage()));
+            return null;
+        }).thenAccept(v -> {
+            context.handler().send(new FrozenRegistrySyncCompletedPayload());
+        });
     }
 
     public void handle(ConfigFilePayload payload, ConfigurationPayloadContext context) {
@@ -87,8 +93,7 @@ public class ClientPayloadHandler {
     public void handle(AdvancedAddEntityPayload advancedAddEntityPayload, PlayPayloadContext context) {
         context.workHandler().submitAsync(
                 () -> {
-                    assert Minecraft.getInstance().level != null;
-                    Entity entity = Minecraft.getInstance().level.getEntity(advancedAddEntityPayload.entityId());
+                    Entity entity = Objects.requireNonNull(Minecraft.getInstance().level).getEntity(advancedAddEntityPayload.entityId());
                     if (entity instanceof IEntityWithComplexSpawn entityAdditionalSpawnData) {
                         final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(advancedAddEntityPayload.customPayload()));
                         try {

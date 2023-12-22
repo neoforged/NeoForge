@@ -21,7 +21,7 @@
  
      protected abstract RegistryAccess.Frozen registryAccess();
  
-@@ -189,9 +_,17 @@
+@@ -189,11 +_,22 @@
      }
  
      public void send(Packet<?> p_295097_) {
@@ -38,7 +38,12 @@
 +
      @Override
      public void onDisconnect(Component p_295485_) {
++        if (!this.connection.isMemoryConnection()) {
++            net.neoforged.neoforge.registries.RegistryManager.revertToFrozen();
++        }
          this.telemetryManager.onDisconnect();
+         this.minecraft.disconnect(this.createDisconnectScreen(p_295485_));
+         LOGGER.warn("Client disconnected with reason: {}", p_295485_.getString());
 @@ -315,5 +_,25 @@
          @OnlyIn(Dist.CLIENT)
          static record PendingRequest(UUID id, URL url, String hash) {
