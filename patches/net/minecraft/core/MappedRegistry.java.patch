@@ -162,12 +162,12 @@
 +
 +    @Override
 +    public int getId(ResourceLocation name) {
-+        return toId.getOrDefault(get(name), -1);
++        return getId(get(name));
 +    }
 +
 +    @Override
 +    public int getId(ResourceKey<T> key) {
-+        return toId.getOrDefault(get(key), -1);
++        return getId(get(key));
 +    }
 +
 +    @Override
