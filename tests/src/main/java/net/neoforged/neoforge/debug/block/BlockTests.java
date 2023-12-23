@@ -7,6 +7,7 @@ package net.neoforged.neoforge.debug.block;
 
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +18,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -32,6 +35,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -95,5 +99,31 @@ public class BlockTests {
                         EntityType.PLAYER,
                         1, 3, 2))
                 .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = {
+            "Dead bushes should be placeable on regular terracotta (colored or not), but not on glazed terracotta",
+            "(neoforged/NeoForge#306)"
+    })
+    static void deadBushTerracottaTest(final ExtendedGameTestHelper helper) {
+        final BlockPos farmlandBlock = new BlockPos(1, 1, 1);
+        helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
+                .thenExecute(() -> helper.setBlock(farmlandBlock, Blocks.TERRACOTTA))
+                .thenExecute(player -> helper.useBlock(farmlandBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.DEAD_BUSH, farmlandBlock.above()))
+
+                .thenExecute(() -> helper.setBlock(farmlandBlock.above(), Blocks.AIR))
+                .thenExecute(() -> helper.setBlock(farmlandBlock, Blocks.WHITE_TERRACOTTA))
+                .thenExecute(player -> helper.useBlock(farmlandBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.DEAD_BUSH, farmlandBlock.above()))
+
+                .thenExecute(() -> helper.setBlock(farmlandBlock.above(), Blocks.AIR))
+                .thenExecute(() -> helper.setBlock(farmlandBlock, Blocks.WHITE_GLAZED_TERRACOTTA))
+                .thenExecute(player -> helper.useBlock(farmlandBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
+                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DEAD_BUSH, farmlandBlock.above()))
+
+                .thenSucceed();
     }
 }
