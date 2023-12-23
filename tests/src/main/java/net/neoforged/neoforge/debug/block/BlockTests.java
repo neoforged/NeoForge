@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.block;
 
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -36,8 +37,6 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 @ForEachTest(groups = BlockTests.GROUP)
 public class BlockTests {
@@ -121,7 +120,6 @@ public class BlockTests {
                 .thenExecute(player -> helper.useBlock(farmlandBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DEAD_BUSH, farmlandBlock.above()))
 
-                .thenSucceed()
-        );
+                .thenSucceed());
     }
 }
