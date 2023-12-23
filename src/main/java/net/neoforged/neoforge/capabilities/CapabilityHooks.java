@@ -44,13 +44,13 @@ public class CapabilityHooks {
             throw new IllegalArgumentException("CapabilityHooks.init() called twice");
         initialized = true;
 
-        var event = new RegisterCapabilitiesEvent();
+        var event = new RegisterCapabilityProvidersEvent();
         ModLoader.get().postEventWrapContainerInModOrder(event);
 
         initFinished = true;
     }
 
-    public static void registerVanillaProviders(RegisterCapabilitiesEvent event) {
+    public static void registerVanillaProviders(RegisterCapabilityProvidersEvent event) {
         // Blocks
         var composterBlock = (WorldlyContainerHolder) Blocks.COMPOSTER;
         event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {

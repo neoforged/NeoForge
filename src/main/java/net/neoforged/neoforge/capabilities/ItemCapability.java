@@ -31,10 +31,10 @@ import org.jetbrains.annotations.Nullable;
  * }</pre>
  *
  * <h3>Providing an item capability</h3>
- * <p>To provide objects of type {@code T}, register providers to {@link RegisterCapabilitiesEvent}. For example:
+ * <p>To provide objects of type {@code T}, register providers to {@link RegisterCapabilityProvidersEvent}. For example:
  * 
  * <pre>{@code
- * modBus.addListener((RegisterCapabilitiesEvent event) -> {
+ * modBus.addListener((RegisterCapabilityProvidersEvent event) -> {
  *     event.registerItem(
  *         Capabilities.ItemHandler.ITEM, // capability to register for
  *         (itemStack, context) -> <return the IItemHandler for the itemStack>,

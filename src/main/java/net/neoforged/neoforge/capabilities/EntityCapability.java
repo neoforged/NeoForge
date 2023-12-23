@@ -32,10 +32,10 @@ import org.jetbrains.annotations.Nullable;
  * }</pre>
  *
  * <h3>Providing an entity capability</h3>
- * <p>To provide objects of type {@code T}, register providers to {@link RegisterCapabilitiesEvent}. For example:
+ * <p>To provide objects of type {@code T}, register providers to {@link RegisterCapabilityProvidersEvent}. For example:
  * 
  * <pre>{@code
- * modBus.addListener((RegisterCapabilitiesEvent event) -> {
+ * modBus.addListener((RegisterCapabilityProvidersEvent event) -> {
  *     event.registerEntity(
  *         Capabilities.ItemHandler.ENTITY, // capability to register for
  *         MY_ENTITY_TYPE,

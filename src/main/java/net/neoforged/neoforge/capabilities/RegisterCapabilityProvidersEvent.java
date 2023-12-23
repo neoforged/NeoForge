@@ -23,8 +23,8 @@ import net.neoforged.fml.event.IModBusEvent;
 /**
  * Fired to register capability providers at an appropriate time.
  */
-public class RegisterCapabilitiesEvent extends Event implements IModBusEvent {
-    RegisterCapabilitiesEvent() {}
+public class RegisterCapabilityProvidersEvent extends Event implements IModBusEvent {
+    RegisterCapabilityProvidersEvent() {}
 
     // BLOCKS
 

@@ -17,7 +17,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.capabilities.RegisterCapabilityProvidersEvent;
 import net.neoforged.neoforge.fluids.capability.wrappers.CauldronWrapper;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -159,7 +159,7 @@ public final class CauldronFluidContent {
     }
 
     @ApiStatus.Internal
-    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+    public static void registerCapabilities(RegisterCapabilityProvidersEvent event) {
         if (BLOCK_TO_CAULDRON.isEmpty()) {
             throw new IllegalStateException("CauldronFluidContent.init() should have been called before the capability event!");
         }

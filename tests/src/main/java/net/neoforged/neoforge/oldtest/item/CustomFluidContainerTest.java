@@ -21,7 +21,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.capabilities.RegisterCapabilityProvidersEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.fluids.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -53,7 +53,7 @@ public class CustomFluidContainerTest {
             event.accept(CUSTOM_FLUID_CONTAINER);
     }
 
-    private void registerCaps(RegisterCapabilitiesEvent event) {
+    private void registerCaps(RegisterCapabilityProvidersEvent event) {
         event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidHandlerItemStackSimple(stack, FluidType.BUCKET_VOLUME), CUSTOM_FLUID_CONTAINER.get());
     }
 

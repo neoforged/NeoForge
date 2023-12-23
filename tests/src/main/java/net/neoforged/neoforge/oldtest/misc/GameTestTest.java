@@ -29,7 +29,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.capabilities.RegisterCapabilityProvidersEvent;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -72,7 +72,7 @@ public class GameTestTest {
             event.accept(ENERGY_BLOCK_ITEM);
     }
 
-    private void registerCaps(RegisterCapabilitiesEvent event) {
+    private void registerCaps(RegisterCapabilityProvidersEvent event) {
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ENERGY_BLOCK_ENTITY.get(), (be, side) -> be.energyStorage);
     }
 
