@@ -109,20 +109,17 @@ public class BlockTests {
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
                 .thenExecute(() -> helper.setBlock(farmlandBlock, Blocks.TERRACOTTA))
                 .thenExecute(player -> helper.useBlock(farmlandBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
-                .thenExecute(() -> helper.assertBlock(farmlandBlock.above(), Blocks.DEAD_BUSH::equals,
-                        "Dead bush was not planted on raw terracotta"))
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.DEAD_BUSH, farmlandBlock.above()))
 
                 .thenExecute(() -> helper.setBlock(farmlandBlock.above(), Blocks.AIR))
                 .thenExecute(() -> helper.setBlock(farmlandBlock, Blocks.WHITE_TERRACOTTA))
                 .thenExecute(player -> helper.useBlock(farmlandBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
-                .thenExecute(() -> helper.assertBlock(farmlandBlock.above(), Blocks.DEAD_BUSH::equals,
-                        "Dead bush was not planted on white stained terracotta"))
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.DEAD_BUSH, farmlandBlock.above()))
 
                 .thenExecute(() -> helper.setBlock(farmlandBlock.above(), Blocks.AIR))
                 .thenExecute(() -> helper.setBlock(farmlandBlock, Blocks.WHITE_GLAZED_TERRACOTTA))
                 .thenExecute(player -> helper.useBlock(farmlandBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
-                .thenExecute(() -> helper.assertBlock(farmlandBlock.above(), Blocks.AIR::equals,
-                        "Dead bush was planted on glazed terracotta"))
+                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DEAD_BUSH, farmlandBlock.above()))
 
                 .thenSucceed()
         );
