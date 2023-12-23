@@ -425,18 +425,15 @@
              boolean flag = this.player.getAbilities().instabuild;
              BlockEntity blockentity = null;
              HitResult.Type hitresult$type = this.hitResult.getType();
-@@ -2336,10 +_,7 @@
+@@ -2336,7 +_,7 @@
                  }
  
                  Block block = blockstate.getBlock();
 -                itemstack = block.getCloneItemStack(this.level, blockpos, blockstate);
--                if (itemstack.isEmpty()) {
--                    return;
--                }
 +                itemstack = blockstate.getCloneItemStack(this.hitResult, this.level, blockpos, this.player);
- 
-                 if (flag && Screen.hasControlDown() && blockstate.hasBlockEntity()) {
-                     blockentity = this.level.getBlockEntity(blockpos);
+                 if (itemstack.isEmpty()) {
+                     return;
+                 }
 @@ -2350,7 +_,7 @@
                  }
  
