@@ -39,7 +39,7 @@ public interface IServerCommonPacketListenerExtension {
     /**
      * Sends a packet to the client which this listener is attached to.
      *
-     * @param packet The packet to send
+     * @param packet             The packet to send
      * @param packetSendListener The listener to call when the packet is sent
      */
     void send(Packet<?> packet, @Nullable PacketSendListener packetSendListener);

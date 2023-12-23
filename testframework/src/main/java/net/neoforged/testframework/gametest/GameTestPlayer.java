@@ -13,7 +13,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
@@ -88,19 +87,19 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     @SuppressWarnings("unchecked")
     private Stream<Packet<? extends ClientCommonPacketListener>> outboundPackets() {
         return ((EmbeddedChannel) connection.connection.channel()).outboundMessages().stream()
-                       .filter(Packet.class::isInstance).map(obj -> (Packet<? extends ClientCommonPacketListener>) obj)
-                       .flatMap((Function<Packet<? extends ClientCommonPacketListener>, Stream<? extends Packet<? extends ClientCommonPacketListener>>>) packet -> {
-                           if (!(packet instanceof ClientboundBundlePacket clientboundBundlePacket)) return Stream.of(packet);
-                           
-                           return StreamSupport.stream(clientboundBundlePacket.subPackets().spliterator(), false)
-                                            .map(obj -> (Packet<? extends ClientCommonPacketListener>) obj);
-                       });
+                .filter(Packet.class::isInstance).map(obj -> (Packet<? extends ClientCommonPacketListener>) obj)
+                .flatMap((Function<Packet<? extends ClientCommonPacketListener>, Stream<? extends Packet<? extends ClientCommonPacketListener>>>) packet -> {
+                    if (!(packet instanceof ClientboundBundlePacket clientboundBundlePacket)) return Stream.of(packet);
+
+                    return StreamSupport.stream(clientboundBundlePacket.subPackets().spliterator(), false)
+                            .map(obj -> (Packet<? extends ClientCommonPacketListener>) obj);
+                });
     }
-    
+
     public <T extends Packet<? extends ClientCommonPacketListener>> Stream<T> getOutboundPackets(Class<T> type) {
         return outboundPackets().filter(type::isInstance).map(type::cast);
     }
-    
+
     public <T extends CustomPacketPayload> Stream<T> getOutboundPayloads(Class<T> type) {
         return getOutboundPackets(ClientboundCustomPayloadPacket.class)
                 .map(ClientboundCustomPayloadPacket::payload)

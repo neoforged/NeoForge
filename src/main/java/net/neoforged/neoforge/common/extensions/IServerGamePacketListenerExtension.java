@@ -1,5 +1,6 @@
 package net.neoforged.neoforge.common.extensions;
 
+import java.util.List;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -7,8 +8,6 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import org.apache.commons.compress.utils.Lists;
-
-import java.util.List;
 
 /**
  * Extension class for {@link ServerGamePacketListener}

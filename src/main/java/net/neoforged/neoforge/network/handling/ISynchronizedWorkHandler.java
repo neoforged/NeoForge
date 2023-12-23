@@ -5,10 +5,6 @@
 
 package net.neoforged.neoforge.network.handling;
 
-import com.mojang.logging.LogUtils;
-import net.minecraft.util.Unit;
-import org.slf4j.Logger;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -21,7 +17,7 @@ public interface ISynchronizedWorkHandler {
     /**
      * Executes a task on the main thread of the game.
      * <p>
-     *     The runnable task is protected against exceptions, and any exceptions thrown will be logged.
+     * The runnable task is protected against exceptions, and any exceptions thrown will be logged.
      * </p>
      *
      * @param task The task to run.
@@ -31,11 +27,12 @@ public interface ISynchronizedWorkHandler {
     /**
      * Submits the given work to be run synchronously on the main thread of the game.
      * <p>
-     *     This method will <bold>not</bold> be guarded against exceptions.
-     *     <br>
-     *     If you need to guard against exceptions, call {@link CompletableFuture#exceptionally(Function)},
-     *     {@link CompletableFuture#exceptionallyAsync(Function)}}, or derivatives on the returned future.
+     * This method will <bold>not</bold> be guarded against exceptions.
+     * <br>
+     * If you need to guard against exceptions, call {@link CompletableFuture#exceptionally(Function)},
+     * {@link CompletableFuture#exceptionallyAsync(Function)}}, or derivatives on the returned future.
      * </p>
+     * 
      * @param task The task to run.
      */
     CompletableFuture<Void> submitAsync(Runnable task);
@@ -43,10 +40,10 @@ public interface ISynchronizedWorkHandler {
     /**
      * Submits the given work to be run synchronously on the main thread of the game.
      * <p>
-     *     This method will <bold>not</bold> be guarded against exceptions.
-     *     <br>
-     *     If you need to guard against exceptions, call {@link CompletableFuture#exceptionally(Function)},
-     *     {@link CompletableFuture#exceptionallyAsync(Function)}}, or derivatives on the returned future.
+     * This method will <bold>not</bold> be guarded against exceptions.
+     * <br>
+     * If you need to guard against exceptions, call {@link CompletableFuture#exceptionally(Function)},
+     * {@link CompletableFuture#exceptionallyAsync(Function)}}, or derivatives on the returned future.
      * </p>
      *
      * @param task The task to run.

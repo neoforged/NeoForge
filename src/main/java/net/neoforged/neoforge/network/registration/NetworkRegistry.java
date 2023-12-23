@@ -10,7 +10,6 @@ import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,7 +20,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
@@ -96,8 +94,7 @@ public class NetworkRegistry {
     private final Map<ResourceLocation, ConfigurationRegistration<?>> knownConfigurationRegistrations = Maps.newHashMap();
     private final Map<ResourceLocation, PlayRegistration<?>> knownPlayRegistrations = Maps.newHashMap();
 
-    private NetworkRegistry() {
-    }
+    private NetworkRegistry() {}
 
     /**
      * Invoked to initially set up the registry.
@@ -881,8 +878,7 @@ public class NetworkRegistry {
                     ex -> {
                         LOGGER.error("Failed to process a synchronized task of the payload: %s".formatted(payload()), ex);
                         return null;
-                    }
-            );
+                    });
         }
 
         /**

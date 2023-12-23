@@ -103,7 +103,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
                 super.tick();
                 serverplayer.resetLastActionTime();
             }
-            
+
             @Override
             public boolean isMemoryConnection() {
                 return true;
