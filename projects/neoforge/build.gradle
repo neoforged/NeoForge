@@ -3,6 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
+rootProject.gradleutils.setupSigning(project: project, signAllPublications: true)
+
 dynamicProject {
     runtime("${project.minecraft_version}-${project.neoform_version}",
             rootProject.layout.projectDirectory.dir('patches'),
