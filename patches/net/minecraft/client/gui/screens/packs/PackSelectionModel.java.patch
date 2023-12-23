@@ -12,3 +12,12 @@
          this.unselected.removeAll(this.selected);
          this.output = p_99912_;
      }
+@@ -59,7 +_,7 @@
+         this.repository.reload();
+         this.selected.retainAll(this.repository.getAvailablePacks());
+         this.unselected.clear();
+-        this.unselected.addAll(this.repository.getAvailablePacks());
++        this.unselected.addAll(this.repository.getAvailablePacks().stream().filter(p -> !p.isHidden()).toList());
+         this.unselected.removeAll(this.selected);
+     }
+ 
