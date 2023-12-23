@@ -1,11 +1,14 @@
 --- a/net/minecraft/client/gui/screens/packs/PackSelectionModel.java
 +++ b/net/minecraft/client/gui/screens/packs/PackSelectionModel.java
-@@ -31,7 +_,7 @@
+@@ -31,9 +_,9 @@
          this.onListChanged = p_99909_;
          this.iconGetter = p_99910_;
          this.repository = p_99911_;
 -        this.selected = Lists.newArrayList(p_99911_.getSelectedPacks());
 +        this.selected = Lists.newArrayList(p_99911_.getSelectedPacks().stream().filter(p -> !p.isHidden()).toList());
          Collections.reverse(this.selected);
-         this.unselected = Lists.newArrayList(p_99911_.getAvailablePacks());
+-        this.unselected = Lists.newArrayList(p_99911_.getAvailablePacks());
++        this.unselected = Lists.newArrayList(p_99911_.getAvailablePacks().stream().filter(p -> !p.isHidden()).toList());
          this.unselected.removeAll(this.selected);
+         this.output = p_99912_;
+     }
