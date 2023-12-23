@@ -35,6 +35,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -103,9 +104,9 @@ public class BlockTests {
     @GameTest
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Dead bushes should be placeable on regular terracotta (colored or not), but not on glazed terracotta")
-    static void deadBushTerracottaTest(final DynamicTest test) {
+    static void deadBushTerracottaTest(final ExtendedGameTestHelper helper) {
         final BlockPos farmlandBlock = new BlockPos(1, 1, 1);
-        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
+        helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
                 .thenExecute(() -> helper.setBlock(farmlandBlock, Blocks.TERRACOTTA))
                 .thenExecute(player -> helper.useBlock(farmlandBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.DEAD_BUSH, farmlandBlock.above()))
@@ -120,6 +121,6 @@ public class BlockTests {
                 .thenExecute(player -> helper.useBlock(farmlandBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DEAD_BUSH, farmlandBlock.above()))
 
-                .thenSucceed());
+                .thenSucceed();
     }
 }
