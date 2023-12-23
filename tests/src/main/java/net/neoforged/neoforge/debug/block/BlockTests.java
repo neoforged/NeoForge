@@ -103,7 +103,10 @@ public class BlockTests {
 
     @GameTest
     @EmptyTemplate(floor = true)
-    @TestHolder(description = "Dead bushes should be placeable on regular terracotta (colored or not), but not on glazed terracotta")
+    @TestHolder(description = {
+            "Dead bushes should be placeable on regular terracotta (colored or not), but not on glazed terracotta",
+            "(neoforged/NeoForge#306)"
+    })
     static void deadBushTerracottaTest(final ExtendedGameTestHelper helper) {
         final BlockPos farmlandBlock = new BlockPos(1, 1, 1);
         helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
