@@ -39,6 +39,14 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
         this.helper = helper;
     }
 
+    @Override
+    public void moveTo(double p_9171_, double p_9172_, double p_9173_) {
+        super.moveTo(p_9171_, p_9172_, p_9173_);
+        this.serverLevel().getChunkSource().move(this); //We need to move the player to the correct chunk
+        this.connection.chunkSender.sendNextChunks(this); //And send the chunks to the player
+        this.connection.chunkSender.onChunkBatchReceivedByClient(64f); //Also mark them as received.
+    }
+
     public GameTestPlayer moveToCorner() {
         moveTo(helper.absoluteVec(new BlockPos(0, helper.testInfo.getStructureName().endsWith("_floor") ? 2 : 1, 0).getCenter()).subtract(0, 0.5, 0));
         return this;

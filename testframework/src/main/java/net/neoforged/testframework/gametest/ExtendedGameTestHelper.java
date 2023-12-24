@@ -118,6 +118,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         this.testInfo.addListener(serverplayer);
         serverplayer.gameMode.changeGameModeForPlayer(gameType);
         serverplayer.connection.chunkSender.sendNextChunks(serverplayer);
+        serverplayer.connection.chunkSender.onChunkBatchReceivedByClient(64f);
         return serverplayer;
     }
 

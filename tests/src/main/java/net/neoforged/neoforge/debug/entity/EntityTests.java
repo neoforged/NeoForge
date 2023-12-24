@@ -37,9 +37,9 @@ public class EntityTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if custom fence gates without wood types work, allowing for the use of the vanilla block for non-wooden gates")
     static void customSpawnLogic(final DynamicTest test, final RegistrationHelper reg) {
-        final var complexSpawn = reg.entityTypes().registerType("complex_spawn", () -> EntityType.Builder.of(CustomComplexSpawnEntity::new, MobCategory.AMBIENT)
+        final var usingForgeAdvancedSpawn = reg.entityTypes().registerType("complex_spawn", () -> EntityType.Builder.of(CustomComplexSpawnEntity::new, MobCategory.AMBIENT)
                 .sized(1, 1)).withLang("Custom complex spawn egg").withRenderer(() -> NoopRenderer::new);
-        final var adaptedSpawn = reg.entityTypes().registerType("adapted_spawn", () -> EntityType.Builder.of(AdaptedSpawnEntity::new, MobCategory.AMBIENT)
+        final var usingCustomPayloadsSpawn = reg.entityTypes().registerType("adapted_spawn", () -> EntityType.Builder.of(AdaptedSpawnEntity::new, MobCategory.AMBIENT)
                 .sized(1, 1)).withLang("Adapted complex spawn egg").withRenderer(() -> NoopRenderer::new);
         final var simpleSpawn = reg.entityTypes().registerType("simple_spawn", () -> EntityType.Builder.of(SimpleEntity::new, MobCategory.AMBIENT)
                 .sized(1, 1)).withLang("Simple spawn egg").withRenderer(() -> NoopRenderer::new);
@@ -49,7 +49,7 @@ public class EntityTests {
 
         test.onGameTest(helper -> {
             helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
-                    .thenExecute(() -> helper.spawn(complexSpawn.get(), new BlockPos(1, 1, 1)))
+                    .thenExecute(() -> helper.spawn(usingForgeAdvancedSpawn.get(), new BlockPos(1, 1, 1)))
 
                     // Check if forge payload was sent
                     .thenExecute(player -> helper.assertTrue(
@@ -58,7 +58,7 @@ public class EntityTests {
                             "Advanced payload for custom spawn was not send"))
                     .thenSucceed();
             helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
-                    .thenExecute(() -> helper.spawn(adaptedSpawn.get(), new BlockPos(1, 1, 1)))
+                    .thenExecute(() -> helper.spawn(usingCustomPayloadsSpawn.get(), new BlockPos(1, 1, 1)))
 
                     // Check if custom payload was sent
                     .thenExecute(player -> helper.assertTrue(
