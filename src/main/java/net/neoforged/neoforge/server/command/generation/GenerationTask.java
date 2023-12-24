@@ -96,7 +96,8 @@ public class GenerationTask {
 
         this.listener = listener;
 
-        this.server.submit(() -> CompletableFuture.runAsync(this::tryEnqueueTasks));
+        // Off thread chunk scanning to skip already generated chunks
+        CompletableFuture.runAsync(this::tryEnqueueTasks);
     }
 
     public void stop() {
@@ -125,6 +126,8 @@ public class GenerationTask {
             }
 
             this.queuedCount.getAndAdd(chunks.size());
+
+            // Keep on server thread as chunk acquiring and releasing (tickets) is not thread safe.
             this.server.submit(() -> this.enqueueChunks(chunks));
         }
     }
