@@ -21,6 +21,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -28,6 +30,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.DispensibleContainerItem;
 import net.minecraft.world.item.Item;
@@ -169,6 +173,32 @@ public class ItemTests {
                         style.isItalic(), "custom rarity did not make component italic"))
                 .thenExecute(style -> helper.assertTrue(
                         style.getColor().getValue() == ChatFormatting.DARK_AQUA.getColor(), "custom rarity did not make component italic"))
+                .thenSucceed());
+    }
+
+    @GameTest
+    @TestHolder(description = "Adds snow boots that allow a player to walk on powdered snow as long as they have less than half health")
+    static void snowBoots(final DynamicTest test, final RegistrationHelper reg) {
+        test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 5, 3)
+                .fill(0, 0, 0, 2, 0, 2, Blocks.IRON_BLOCK)
+                .fill(0, 1, 0, 2, 1, 2, Blocks.POWDER_SNOW));
+
+        final var snowBoots = reg.items().register("snow_boots", () -> new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.BOOTS, (new Item.Properties())) {
+            @Override
+            public boolean canWalkOnPowderedSnow(ItemStack stack, LivingEntity wearer) {
+                return wearer.getHealth() < wearer.getMaxHealth() / 2;
+            }
+        }).withLang("Snow Boots").tab(CreativeModeTabs.TOOLS_AND_UTILITIES);
+
+        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.PIG, 1, 3, 1))
+                .thenExecute(pig -> pig.setItemSlot(EquipmentSlot.FEET, snowBoots.get().getDefaultInstance()))
+                .thenExecute(pig -> pig.setHealth(pig.getMaxHealth() / 2 - 1))
+                // Pig shouldn't have fallen
+                .thenExecuteAfter(20, () -> helper.assertEntityPresent(EntityType.PIG, 1, 3, 1))
+
+                // Back to max health so falling time
+                .thenExecute(pig -> pig.setHealth(pig.getMaxHealth()))
+                .thenWaitUntil(() -> helper.assertEntityPresent(EntityType.PIG, 1, 2, 1))
                 .thenSucceed());
     }
 }
