@@ -1,11 +1,12 @@
 --- a/net/minecraft/network/syncher/EntityDataSerializers.java
 +++ b/net/minecraft/network/syncher/EntityDataSerializers.java
-@@ -157,16 +_,16 @@
+@@ -157,16 +_,17 @@
      );
  
      public static void registerSerializer(EntityDataSerializer<?> p_135051_) {
 -        SERIALIZERS.add(p_135051_);
-+        if (SERIALIZERS.add(p_135051_) >= 256) throw new RuntimeException("Vanilla DataSerializer ID limit exceeded");
++        if (SERIALIZERS.add(p_135051_) >= net.neoforged.neoforge.common.CommonHooks.VANILLA_SERIALIZER_LIMIT)
++            throw new RuntimeException("Vanilla DataSerializer ID limit exceeded");
      }
  
      @Nullable
