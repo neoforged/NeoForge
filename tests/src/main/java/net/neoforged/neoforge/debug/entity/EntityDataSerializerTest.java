@@ -24,7 +24,9 @@ import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.testframework.DynamicTest;
+import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;
+import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.registration.RegistrationHelper;
@@ -33,7 +35,15 @@ import net.neoforged.testframework.registration.RegistrationHelper;
 public class EntityDataSerializerTest {
     public static final String GROUP = "level.entity.data_serializer";
 
-    private static DeferredHolder<EntityDataSerializer<?>, EntityDataSerializer<Byte>> testSerializer;
+    private static final RegistrationHelper REG_HELPER = RegistrationHelper.create("neotests_custom_entity_data_serializer");
+    private static final DeferredHolder<EntityDataSerializer<?>, EntityDataSerializer<Byte>> TEST_SERIALIZER = REG_HELPER
+            .registrar(NeoForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS)
+            .register("test_serializer", () -> EntityDataSerializer.simple((buf, b) -> buf.writeByte(b), FriendlyByteBuf::readByte));
+
+    @OnInit
+    static void register(final TestFramework framework) {
+        REG_HELPER.register(framework.modEventBus());
+    }
 
     @GameTest
     @EmptyTemplate(floor = true)
@@ -42,11 +52,8 @@ public class EntityDataSerializerTest {
         var testEntity = reg.entityTypes().registerType("serializer_test_entity", () -> EntityType.Builder.of(TestEntity::new, MobCategory.CREATURE)
                 .sized(1, 1)).withRenderer(() -> TestEntityRenderer::new);
 
-        var serializerReg = reg.registrar(NeoForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS);
-        testSerializer = serializerReg.register("test_serializer", () -> EntityDataSerializer.simple((buf, b) -> buf.writeByte(b), FriendlyByteBuf::readByte));
-
         test.onGameTest(helper -> {
-            var entity = helper.spawn(testEntity.get(), 1, 1, 1);
+            var entity = helper.spawn(testEntity.get(), 1, 2, 1);
             var items = entity.getEntityData().packDirty();
             if (items == null) {
                 helper.fail("Expected dirty entity data, got none");
@@ -57,7 +64,7 @@ public class EntityDataSerializerTest {
             pkt.write(buf);
             helper.assertTrue(buf.readVarInt() == entity.getId(), "Entity ID didn't match"); // Drop entity ID
             buf.readByte(); // Drop item ID
-            int expectedId = NeoForgeRegistries.ENTITY_DATA_SERIALIZERS.getId(testSerializer.get()) + CommonHooks.VANILLA_SERIALIZER_LIMIT;
+            int expectedId = NeoForgeRegistries.ENTITY_DATA_SERIALIZERS.getId(TEST_SERIALIZER.get()) + CommonHooks.VANILLA_SERIALIZER_LIMIT;
             helper.assertTrue(buf.readVarInt() == expectedId, "Serializer ID didn't match");
             buf.readByte(); // Drop data
             buf.readByte(); // Drop EOF marker
@@ -68,7 +75,7 @@ public class EntityDataSerializerTest {
     }
 
     private static class TestEntity extends Entity {
-        private static final EntityDataAccessor<Byte> DATA_TEST_VALUE = SynchedEntityData.defineId(TestEntity.class, testSerializer.value());
+        private static final EntityDataAccessor<Byte> DATA_TEST_VALUE = SynchedEntityData.defineId(TestEntity.class, TEST_SERIALIZER.value());
 
         public TestEntity(EntityType<? extends Entity> entityType, Level level) {
             super(entityType, level);
