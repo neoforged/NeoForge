@@ -1,8 +1,13 @@
 --- a/net/minecraft/network/syncher/EntityDataSerializers.java
 +++ b/net/minecraft/network/syncher/EntityDataSerializers.java
-@@ -157,16 +_,17 @@
+@@ -156,17 +_,22 @@
+         FriendlyByteBuf::writeQuaternion, FriendlyByteBuf::readQuaternion
      );
  
++    /**
++     * @deprecated NeoForge: Use {@link net.neoforged.neoforge.registries.NeoForgeRegistries#ENTITY_DATA_SERIALIZERS} instead
++     */
++    @Deprecated
      public static void registerSerializer(EntityDataSerializer<?> p_135051_) {
 -        SERIALIZERS.add(p_135051_);
 +        if (SERIALIZERS.add(p_135051_) >= net.neoforged.neoforge.common.CommonHooks.VANILLA_SERIALIZER_LIMIT)
