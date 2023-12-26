@@ -45,3 +45,6 @@ jobs:
         with:
           arguments: build
           cache-read-only: false
+
+      - name: Publish artifacts
+        uses: neoforged/action-pr-publishing/upload@v1
