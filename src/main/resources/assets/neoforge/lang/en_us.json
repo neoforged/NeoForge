@@ -106,7 +106,7 @@
   "fml.messages.version.restriction.bounded.lowerexclusive":"above {0}, and {1} or below",
   "fml.messages.version.restriction.bounded.upperexclusive":"{0} or above, and below {1}",
 
-  "loadwarning.neoforge.prbuild": "This build of NeoForge is coming from a Pull Request and is §c§lUNSUPPORTED§r",
+  "loadwarning.neoforge.prbuild": "This build of NeoForge was created by a community member and is thus §c§lUNSUPPORTED§r",
 
   "commands.neoforge.arguments.enum.invalid": "Enum constant must be one of {0}, found {1}",
   "commands.neoforge.dimensions.list": "Currently registered dimensions by type:",
