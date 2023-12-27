@@ -5,24 +5,30 @@
 
 package net.neoforged.testframework.gametest;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.embedded.EmbeddedChannel;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestAssertPosException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
+import net.minecraft.gametest.framework.GameTestListener;
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffect;
@@ -42,6 +48,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import org.jetbrains.annotations.Nullable;
 
@@ -117,6 +126,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         this.getLevel().getServer().getConnection().getConnections().add(connection);
         this.testInfo.addListener(serverplayer);
         serverplayer.gameMode.changeGameModeForPlayer(gameType);
+        serverplayer.setYRot(180);
         serverplayer.connection.chunkSender.sendNextChunks(serverplayer);
         serverplayer.connection.chunkSender.onChunkBatchReceivedByClient(64f);
         return serverplayer;
@@ -213,11 +223,93 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         pulseRedstone(new BlockPos(x, y, z), delay);
     }
 
+    public void assertPlayerHasItem(Player player, Item item) {
+        assertTrue(player.getInventory().hasAnyOf(Set.of(item)), "Player doesn't have '" + BuiltInRegistries.ITEM.getKey(item) + "' in their inventory!");
+    }
+
+    public void requireDifficulty(final Difficulty difficulty) {
+        final var oldDifficulty = getLevel().getServer().getWorldData().getDifficulty();
+        if (oldDifficulty != difficulty) {
+            getLevel().getServer().setDifficulty(difficulty, true);
+            addEndListener(passed -> getLevel().getServer().setDifficulty(oldDifficulty, true));
+        }
+    }
+
+    public void addEndListener(Consumer<Boolean> listener) {
+        testInfo.addListener(new GameTestListener() {
+            @Override
+            public void testStructureLoaded(GameTestInfo info) {
+
+            }
+
+            @Override
+            public void testPassed(GameTestInfo info) {
+                listener.accept(true);
+            }
+
+            @Override
+            public void testFailed(GameTestInfo info) {
+                listener.accept(false);
+            }
+        });
+    }
+
+    public <T> T catchException(final ThrowingSupplier<T> supplier) {
+        try {
+            return supplier.get();
+        } catch (Throwable throwable) {
+            throw new GameTestAssertException(throwable.getMessage());
+        }
+    }
+
+    public void catchException(final ThrowingRunnable run) {
+        try {
+            run.run();
+        } catch (Throwable throwable) {
+            throw new GameTestAssertException(throwable.getMessage());
+        }
+    }
+
+    public <T extends Entity> T requireEntityAt(EntityType<T> type, int x, int y, int z) {
+        return requireEntityAt(type, new BlockPos(x, y, z));
+    }
+
+    public <T extends Entity> T requireEntityAt(EntityType<T> type, BlockPos pos) {
+        final var inRange = getEntities(type, pos, 2);
+        assertTrue(inRange.size() == 1, "Only one entity must be present at " + pos);
+        return inRange.get(0);
+    }
+
+    @CanIgnoreReturnValue
+    public <T extends Entity> T knockbackResistant(T entity) {
+        addTemporaryListener((final LivingKnockBackEvent event) -> {
+            if (event.getEntity().getUUID().equals(entity.getUUID())) {
+                event.setCanceled(true);
+            }
+        });
+        return entity;
+    }
+
+    public <T extends Event> void addTemporaryListener(Consumer<T> event) {
+        NeoForge.EVENT_BUS.addListener(event);
+        addEndListener(success -> NeoForge.EVENT_BUS.unregister(event));
+    }
+
     public <E extends LivingEntity> void assertMobEffectPresent(E entity, MobEffect effect, String testName) {
         assertEntityProperty(entity, e -> e.hasEffect(effect), testName);
     }
 
     public <E extends LivingEntity> void assertMobEffectAbsent(E entity, MobEffect effect, String testName) {
         assertEntityProperty(entity, e -> !e.hasEffect(effect), testName);
+    }
+
+    @FunctionalInterface
+    public interface ThrowingSupplier<T> {
+        T get() throws Throwable;
+    }
+
+    @FunctionalInterface
+    public interface ThrowingRunnable {
+        void run() throws Throwable;
     }
 }
