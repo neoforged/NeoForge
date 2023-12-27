@@ -117,7 +117,7 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
             this.sectionMax = SectionPos.asLong(sectionMaxX, sectionMaxY, sectionMaxZ);
 
             for (int x = sectionMinX; x <= sectionMaxX; x++) {
-                for (int y = sectionMinY; y < sectionMaxY; y++) {
+                for (int y = sectionMinY; y <= sectionMaxY; y++) {
                     for (int z = sectionMinZ; z <= sectionMaxZ; z++) {
                         long sectionPos = SectionPos.asLong(x, y, z);
                         srcManager.refreshAt(sectionPos);
