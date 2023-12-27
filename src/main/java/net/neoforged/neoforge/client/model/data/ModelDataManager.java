@@ -12,7 +12,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
@@ -36,8 +35,6 @@ import org.jetbrains.annotations.Nullable;
 public abstract sealed class ModelDataManager permits ModelDataManager.Active, ModelDataManager.Snapshot {
     ModelDataManager() {}
 
-    public abstract void requestRefresh(BlockEntity blockEntity);
-
     @Nullable
     public abstract ModelData getAt(BlockPos pos);
 
@@ -46,6 +43,7 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
     public abstract ModelDataManager.Snapshot snapshotSectionRegion(int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ);
 
     public static final class Active extends ModelDataManager {
+        private final Thread owningThread = Thread.currentThread();
         private final Level level;
         private final Long2ObjectMap<Set<BlockPos>> needModelDataRefresh = new Long2ObjectOpenHashMap<>();
         private final Long2ObjectMap<Long2ObjectMap<ModelData>> modelDataCache = new Long2ObjectOpenHashMap<>();
@@ -54,10 +52,9 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
             this.level = level;
         }
 
-        @Override
         public void requestRefresh(BlockEntity blockEntity) {
-            if (!Minecraft.getInstance().isSameThread()) {
-                throw new UnsupportedOperationException("Cannot refresh BlockEntity outside the client thread");
+            if (isOtherThread()) {
+                throw new UnsupportedOperationException("Cannot request ModelData refresh outside the owning thread: " + owningThread);
             }
 
             Preconditions.checkNotNull(blockEntity, "Block entity must not be null");
@@ -84,7 +81,7 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
         }
 
         private void refreshAt(long section) {
-            if (!Minecraft.getInstance().isSameThread()) {
+            if (isOtherThread()) {
                 return;
             }
 
@@ -101,6 +98,10 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
                     }
                 }
             }
+        }
+
+        private boolean isOtherThread() {
+            return Thread.currentThread() != owningThread;
         }
     }
 
@@ -128,11 +129,6 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
 
         private Snapshot() {
             this.sectionMin = this.sectionMax = SectionPos.asLong(0, 0, 0);
-        }
-
-        @Override
-        public void requestRefresh(BlockEntity blockEntity) {
-            throw new UnsupportedOperationException("Cannot request data refresh on snapshot");
         }
 
         @Override

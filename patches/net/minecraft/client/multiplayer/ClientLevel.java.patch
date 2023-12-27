@@ -114,7 +114,7 @@
 +    }
 +
 +    @Override
-+    public net.neoforged.neoforge.client.model.data.ModelDataManager getModelDataManager() {
++    public net.neoforged.neoforge.client.model.data.ModelDataManager.Active getModelDataManager() {
 +        return modelDataManager;
 +    }
 +
