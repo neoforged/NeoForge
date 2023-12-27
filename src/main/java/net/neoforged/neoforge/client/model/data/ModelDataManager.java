@@ -85,7 +85,6 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
 
         private void refreshAt(long section) {
             if (!Minecraft.getInstance().isSameThread()) {
-                Minecraft.getInstance().tell(() -> refreshAt(section));
                 return;
             }
 
