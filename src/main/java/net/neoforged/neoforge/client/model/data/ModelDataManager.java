@@ -113,8 +113,8 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
         private final long sectionMax;
 
         Snapshot(ModelDataManager.Active srcManager, int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ) {
-            this.sectionMin = sectionMinX;
-            this.sectionMax = sectionMaxZ;
+            this.sectionMin = SectionPos.asLong(sectionMinX, sectionMinY, sectionMinZ);
+            this.sectionMax = SectionPos.asLong(sectionMaxX, sectionMaxY, sectionMaxZ);
 
             for (int x = sectionMinX; x <= sectionMaxX; x++) {
                 for (int y = sectionMinY; y < sectionMaxY; y++) {
