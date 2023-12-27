@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -41,7 +42,7 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
 
     public abstract ModelData getAtOrEmpty(BlockPos pos);
 
-    public abstract ModelDataManager.Snapshot snapshotChunkRegion(int chunkMinX, int chunkMinZ, int chunkMaxX, int chunkMaxZ);
+    public abstract ModelDataManager.Snapshot snapshotSectionRegion(int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ);
 
     public static final class Active extends ModelDataManager {
         private final Level level;
@@ -55,16 +56,16 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
         @Override
         public void requestRefresh(BlockEntity blockEntity) {
             Preconditions.checkNotNull(blockEntity, "Block entity must not be null");
-            needModelDataRefresh.computeIfAbsent(ChunkPos.asLong(blockEntity.getBlockPos()), $ -> new HashSet<>())
+            needModelDataRefresh.computeIfAbsent(SectionPos.asLong(blockEntity.getBlockPos()), $ -> new HashSet<>())
                     .add(blockEntity.getBlockPos());
         }
 
         @Override
         public ModelData getAt(BlockPos pos) {
             Preconditions.checkArgument(level.isClientSide, "Cannot request model data for server level");
-            long chunkPos = ChunkPos.asLong(pos);
-            refreshAt(chunkPos);
-            return modelDataCache.getOrDefault(chunkPos, Long2ObjectMaps.emptyMap()).get(pos.asLong());
+            long sectionPos = SectionPos.asLong(pos);
+            refreshAt(sectionPos);
+            return modelDataCache.getOrDefault(sectionPos, Long2ObjectMaps.emptyMap()).get(pos.asLong());
         }
 
         @Override
@@ -73,15 +74,15 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
         }
 
         @Override
-        public ModelDataManager.Snapshot snapshotChunkRegion(int chunkMinX, int chunkMinZ, int chunkMaxX, int chunkMaxZ) {
-            return new ModelDataManager.Snapshot(this, chunkMinX, chunkMinZ, chunkMaxX, chunkMaxZ);
+        public ModelDataManager.Snapshot snapshotSectionRegion(int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ) {
+            return new ModelDataManager.Snapshot(this, sectionMinX, sectionMinY, sectionMinZ, sectionMaxX, sectionMaxY, sectionMaxZ);
         }
 
-        private void refreshAt(long chunk) {
-            Set<BlockPos> needUpdate = needModelDataRefresh.remove(chunk);
+        private void refreshAt(long section) {
+            Set<BlockPos> needUpdate = needModelDataRefresh.remove(section);
 
             if (needUpdate != null) {
-                Long2ObjectMap<ModelData> data = modelDataCache.computeIfAbsent(chunk, $ -> new Long2ObjectOpenHashMap<>());
+                Long2ObjectMap<ModelData> data = modelDataCache.computeIfAbsent(section, $ -> new Long2ObjectOpenHashMap<>());
                 for (BlockPos pos : needUpdate) {
                     BlockEntity toUpdate = level.getBlockEntity(pos);
                     if (toUpdate != null && !toUpdate.isRemoved()) {
@@ -98,28 +99,26 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
         public static final ModelDataManager.Snapshot EMPTY = new ModelDataManager.Snapshot();
 
         private final Long2ObjectMap<ModelData> modelDataCache = new Long2ObjectOpenHashMap<>();
-        private final int chunkMinX;
-        private final int chunkMinZ;
-        private final int chunkMaxX;
-        private final int chunkMaxZ;
+        private final long sectionMin;
+        private final long sectionMax;
 
-        Snapshot(ModelDataManager.Active srcManager, int chunkMinX, int chunkMinZ, int chunkMaxX, int chunkMaxZ) {
-            this.chunkMinX = chunkMinX;
-            this.chunkMinZ = chunkMinZ;
-            this.chunkMaxX = chunkMaxX;
-            this.chunkMaxZ = chunkMaxZ;
+        Snapshot(ModelDataManager.Active srcManager, int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ) {
+            this.sectionMin = sectionMinX;
+            this.sectionMax = sectionMaxZ;
 
-            for (int x = chunkMinX; x <= chunkMaxX; x++) {
-                for (int z = chunkMinZ; z <= chunkMaxZ; z++) {
-                    long chunkPos = ChunkPos.asLong(x, z);
-                    srcManager.refreshAt(chunkPos);
-                    modelDataCache.putAll(srcManager.modelDataCache.getOrDefault(chunkPos, Long2ObjectMaps.emptyMap()));
+            for (int x = sectionMinX; x <= sectionMaxX; x++) {
+                for (int y = sectionMinY; y < sectionMaxY; y++) {
+                    for (int z = sectionMinZ; z <= sectionMaxZ; z++) {
+                        long sectionPos = SectionPos.asLong(x, y, z);
+                        srcManager.refreshAt(sectionPos);
+                        modelDataCache.putAll(srcManager.modelDataCache.getOrDefault(sectionPos, Long2ObjectMaps.emptyMap()));
+                    }
                 }
             }
         }
 
         private Snapshot() {
-            this.chunkMinX = this.chunkMinZ = this.chunkMaxX = this.chunkMaxZ = 0;
+            this.sectionMin = this.sectionMax = SectionPos.asLong(0, 0, 0);
         }
 
         @Override
@@ -138,9 +137,9 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
         }
 
         @Override
-        public ModelDataManager.Snapshot snapshotChunkRegion(int chunkMinX, int chunkMinZ, int chunkMaxX, int chunkMaxZ) {
+        public ModelDataManager.Snapshot snapshotSectionRegion(int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ) {
             Preconditions.checkArgument(
-                    this.chunkMinX == chunkMinX && this.chunkMinZ == chunkMinZ && this.chunkMaxX == chunkMaxX && this.chunkMaxZ == chunkMaxZ,
+                    this.sectionMin == SectionPos.asLong(sectionMinX, sectionMinY, sectionMinZ) && this.sectionMax == SectionPos.asLong(sectionMaxX, sectionMaxY, sectionMaxZ),
                     "Cannot request snapshot for a different range from this snapshot");
             return this;
         }
@@ -155,8 +154,12 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
         var modelDataManager = level.getModelDataManager();
         if (modelDataManager instanceof Active activeManager) {
             ChunkPos chunk = event.getChunk().getPos();
-            activeManager.needModelDataRefresh.remove(chunk.toLong());
-            activeManager.modelDataCache.remove(chunk.toLong());
+            int maxSection = level.getMaxSection();
+            for (int y = level.getMinSection(); y < maxSection; y++) {
+                long section = SectionPos.asLong(chunk.x, y, chunk.z);
+                activeManager.needModelDataRefresh.remove(section);
+                activeManager.modelDataCache.remove(section);
+            }
         }
     }
 }
