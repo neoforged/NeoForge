@@ -163,6 +163,8 @@ public class NeoForgeMod {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker NEOFORGEMOD = MarkerManager.getMarker("NEOFORGE-MOD");
 
+    private static boolean isPRBuild;
+
     private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, "neoforge");
     private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, "neoforge");
     private static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, "neoforge");
@@ -513,6 +515,7 @@ public class NeoForgeMod {
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::cleanCapabilityListenerReferencesOnTick);
 
         if (isPRBuild(container.getModInfo().getVersion().toString())) {
+            isPRBuild = true;
             ModLoader.get().addWarning(new ModLoadingWarning(
                     container.getModInfo(), ModLoadingStage.CONSTRUCT,
                     "loadwarning.neoforge.prbuild"));
@@ -625,11 +628,15 @@ public class NeoForgeMod {
         event.addNodes(USE_SELECTORS_PERMISSION);
     }
 
-    public static boolean isPRBuild(String neoVersion) {
+    private static boolean isPRBuild(String neoVersion) {
         // The -pr- being inside the actual version and a branch name is important.
         // Since we checkout PRs on a branch named `pr-<number>-<headname>`, this assures that
         // the regex will match PR builds published to Packages, but that it will not match local PR branches
         // since those usually have the name `pr|pull/<number>`
         return neoVersion.matches("\\d+\\.\\d+\\.\\d+(-beta)?-pr-\\d+-[\\w-]+");
+    }
+
+    public static boolean isPRBuild() {
+        return isPRBuild;
     }
 }
