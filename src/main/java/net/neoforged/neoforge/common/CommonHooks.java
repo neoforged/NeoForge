@@ -949,11 +949,13 @@ public class CommonHooks {
     @Deprecated(forRemoval = true, since = "1.20.1") // Tags use a codec now This was never used in 1.20
     public static <T> void deserializeTagAdditions(List<TagEntry> list, JsonObject json, List<TagEntry> allList) {}
 
+    public static final int VANILLA_SERIALIZER_LIMIT = 256;
+
     @Nullable
     public static EntityDataSerializer<?> getSerializer(int id, CrudeIncrementalIntIdentityHashBiMap<EntityDataSerializer<?>> vanilla) {
         EntityDataSerializer<?> serializer = vanilla.byId(id);
         if (serializer == null) {
-            return NeoForgeRegistries.ENTITY_DATA_SERIALIZERS.byId(id);
+            return NeoForgeRegistries.ENTITY_DATA_SERIALIZERS.byId(id - VANILLA_SERIALIZER_LIMIT);
         }
         return serializer;
     }
@@ -961,7 +963,10 @@ public class CommonHooks {
     public static int getSerializerId(EntityDataSerializer<?> serializer, CrudeIncrementalIntIdentityHashBiMap<EntityDataSerializer<?>> vanilla) {
         int id = vanilla.getId(serializer);
         if (id < 0) {
-            return NeoForgeRegistries.ENTITY_DATA_SERIALIZERS.getId(serializer);
+            id = NeoForgeRegistries.ENTITY_DATA_SERIALIZERS.getId(serializer);
+            if (id >= 0) {
+                return id + VANILLA_SERIALIZER_LIMIT;
+            }
         }
         return id;
     }

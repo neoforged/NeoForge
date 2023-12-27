@@ -1,11 +1,23 @@
 --- a/net/minecraft/network/syncher/EntityDataSerializers.java
 +++ b/net/minecraft/network/syncher/EntityDataSerializers.java
-@@ -153,16 +_,16 @@
+@@ -152,17 +_,28 @@
+       FriendlyByteBuf::writeQuaternion, FriendlyByteBuf::readQuaternion
     );
  
++   private static final org.slf4j.Logger LOGGER = com.mojang.logging.LogUtils.getLogger();
++   private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
++   /**
++    * @deprecated NeoForge: Use {@link net.neoforged.neoforge.registries.NeoForgeRegistries#ENTITY_DATA_SERIALIZERS} instead
++    */
++   @Deprecated
     public static void registerSerializer(EntityDataSerializer<?> p_135051_) {
 -      SERIALIZERS.add(p_135051_);
-+      if (SERIALIZERS.add(p_135051_) >= 256) throw new RuntimeException("Vanilla DataSerializer ID limit exceeded");
++      if (!STACK_WALKER.getCallerClass().equals(EntityDataSerializers.class)) {
++         LOGGER.error("Modded EntityDataSerializers must be registered to NeoForgeRegistries.ENTITY_DATA_SERIALIZERS instead to prevent ID mismatches between client and server!", new Throwable());
++      }
++
++      if (SERIALIZERS.add(p_135051_) >= net.neoforged.neoforge.common.CommonHooks.VANILLA_SERIALIZER_LIMIT)
++         throw new RuntimeException("Vanilla EntityDataSerializer ID limit exceeded");
     }
  
     @Nullable
