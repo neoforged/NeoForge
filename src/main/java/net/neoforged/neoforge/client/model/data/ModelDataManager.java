@@ -12,6 +12,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
@@ -55,6 +56,10 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
 
         @Override
         public void requestRefresh(BlockEntity blockEntity) {
+            if (!Minecraft.getInstance().isSameThread()) {
+                throw new UnsupportedOperationException("Cannot refresh BlockEntity outside the client thread");
+            }
+
             Preconditions.checkNotNull(blockEntity, "Block entity must not be null");
             needModelDataRefresh.computeIfAbsent(SectionPos.asLong(blockEntity.getBlockPos()), $ -> new HashSet<>())
                     .add(blockEntity.getBlockPos());
@@ -79,6 +84,11 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
         }
 
         private void refreshAt(long section) {
+            if (!Minecraft.getInstance().isSameThread()) {
+                Minecraft.getInstance().tell(() -> refreshAt(section));
+                return;
+            }
+
             Set<BlockPos> needUpdate = needModelDataRefresh.remove(section);
 
             if (needUpdate != null) {
