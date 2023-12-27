@@ -73,7 +73,11 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.CrashReportCallables;
 import net.neoforged.fml.IExtensionPoint;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.ModLoadingStage;
+import net.neoforged.fml.ModLoadingWarning;
 import net.neoforged.fml.StartupMessageManager;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.common.Mod;
@@ -448,7 +452,7 @@ public class NeoForgeMod {
         enableMilkFluid = true;
     }
 
-    public NeoForgeMod(IEventBus modEventBus, Dist dist) {
+    public NeoForgeMod(IEventBus modEventBus, Dist dist, ModContainer container) {
         LOGGER.info(NEOFORGEMOD, "NeoForge mod loading, version {}, for MC {} with MCP {}", NeoForgeVersion.getVersion(), NeoFormVersion.getMCVersion(), NeoFormVersion.getMCPVersion());
         ForgeSnapshotsMod.logStartupWarning();
 
@@ -507,6 +511,12 @@ public class NeoForgeMod {
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::invalidateCapsOnChunkLoad);
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::invalidateCapsOnChunkUnload);
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::cleanCapabilityListenerReferencesOnTick);
+
+        if (isPRBuild(container.getModInfo().getVersion().toString())) {
+            ModLoader.get().addWarning(new ModLoadingWarning(
+                    container.getModInfo(), ModLoadingStage.CONSTRUCT,
+                    "loadwarning.neoforge.prbuild"));
+        }
     }
 
     public void preInit(FMLCommonSetupEvent evt) {
@@ -613,5 +623,13 @@ public class NeoForgeMod {
 
     public void registerPermissionNodes(PermissionGatherEvent.Nodes event) {
         event.addNodes(USE_SELECTORS_PERMISSION);
+    }
+
+    public static boolean isPRBuild(String neoVersion) {
+        // The -pr- being inside the actual version and a branch name is important.
+        // Since we checkout PRs on a branch named `pr-<number>-<headname>`, this assures that
+        // the regex will match PR builds published to Packages, but that it will not match local PR branches
+        // since those usually have the name `pr|pull/<number>`
+        return neoVersion.matches("\\d+\\.\\d+\\.\\d+(-beta)?-pr-\\d+-[\\w-]+");
     }
 }
