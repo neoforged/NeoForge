@@ -75,7 +75,6 @@ import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockElement;
-import net.minecraft.client.renderer.block.model.BlockFaceUV;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -1083,14 +1082,18 @@ public class ClientHooks {
             element.to.y = Mth.clamp(Mth.lerp(expand, element.to.y, 8F), 0F, 16F);
 
             // Edge elements are guaranteed to have exactly one face
-            BlockFaceUV uv = element.faces.values().iterator().next().uv;
+            var faceEntry = element.faces.entrySet().iterator().next();
+            float[] uv = faceEntry.getValue().uv.uvs;
             // Counteract sprite expansion on edge quads to ensure alignment with pixels on the front and back quads
-            float centerU = (uv.uvs[0] + uv.uvs[0] + uv.uvs[2] + uv.uvs[2]) / 4.0F;
-            float centerV = (uv.uvs[1] + uv.uvs[1] + uv.uvs[3] + uv.uvs[3]) / 4.0F;
-            uv.uvs[0] = Mth.clamp(Mth.lerp(expand, uv.uvs[0], centerU), 0F, 16F);
-            uv.uvs[2] = Mth.clamp(Mth.lerp(expand, uv.uvs[2], centerU), 0F, 16F);
-            uv.uvs[1] = Mth.clamp(Mth.lerp(expand, uv.uvs[1], centerV), 0F, 16F);
-            uv.uvs[3] = Mth.clamp(Mth.lerp(expand, uv.uvs[3], centerV), 0F, 16F);
+            if (faceEntry.getKey().getAxis() == Direction.Axis.Y) {
+                float centerU = (uv[0] + uv[0] + uv[2] + uv[2]) / 4.0F;
+                uv[0] = Mth.clamp(Mth.lerp(expand, uv[0], centerU), 0F, 16F);
+                uv[2] = Mth.clamp(Mth.lerp(expand, uv[2], centerU), 0F, 16F);
+            } else {
+                float centerV = (uv[1] + uv[1] + uv[3] + uv[3]) / 4.0F;
+                uv[1] = Mth.clamp(Mth.lerp(expand, uv[1], centerV), 0F, 16F);
+                uv[3] = Mth.clamp(Mth.lerp(expand, uv[3], centerV), 0F, 16F);
+            }
         }
     }
 
