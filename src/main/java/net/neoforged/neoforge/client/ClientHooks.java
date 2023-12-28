@@ -1068,8 +1068,9 @@ public class ClientHooks {
     /**
      * Modify the position and UVs of the edge quads of generated item models to account for sprite expansion of the
      * front and back quad. Fixes <a href="https://bugs.mojang.com/browse/MC-73186">MC-73186</a> on generated item models.
+     * 
      * @param elements The generated elements, may include the front and back face
-     * @param sprite The texture from which the elements were generated
+     * @param sprite   The texture from which the elements were generated
      * @return the original elements list
      */
     public static List<BlockElement> fixItemModelSeams(List<BlockElement> elements, TextureAtlasSprite sprite) {
