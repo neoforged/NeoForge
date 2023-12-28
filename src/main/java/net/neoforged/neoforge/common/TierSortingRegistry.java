@@ -246,7 +246,7 @@ public class TierSortingRegistry {
             @Override
             protected void apply(@NotNull JsonObject data, @NotNull ResourceManager resourceManager, ProfilerFiller p) {
                 try {
-                    if (!data.isEmpty()) {
+                    if (data.size() > 0) {
                         JsonArray order = GsonHelper.getAsJsonArray(data, "order");
                         List<Tier> customOrder = new ArrayList<>();
                         for (JsonElement entry : order) {
@@ -303,7 +303,7 @@ public class TierSortingRegistry {
 
     public static void handleSync(TierSortingRegistryPayload payload, ConfigurationPayloadContext context) {
         setTierOrder(payload.tiers().stream().map(TierSortingRegistry::byName).toList());
-        context.handler().send(new TierSortingRegistrySyncCompletePayload());
+        context.replyHandler().send(new TierSortingRegistrySyncCompletePayload());
     }
 
     public static void sync(ServerConfigurationPacketListener listener, Consumer<CustomPacketPayload> sender) {
