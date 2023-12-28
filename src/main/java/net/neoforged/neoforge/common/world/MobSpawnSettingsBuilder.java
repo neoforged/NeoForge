@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Forge Development LLC and contributors
+ * Copyright (c) NeoForged and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
@@ -48,6 +48,11 @@ public class MobSpawnSettingsBuilder extends MobSpawnSettings.Builder {
     }
 
     public MobSpawnSettingsBuilder disablePlayerSpawn() {
+        return this;
+    }
+
+    public MobSpawnSettingsBuilder removeSpawnCost(EntityType<?> type) {
+        this.mobSpawnCosts.remove(type);
         return this;
     }
 }

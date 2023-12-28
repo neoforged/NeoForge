@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.core.HolderSet;
 import net.minecraft.util.random.WeightedRandomList;
@@ -137,7 +138,7 @@ public class StructureSettingsBuilder {
         }
 
         /**
-         * Gets the type of bounding box for this structures spawn overrides.
+         * Gets the type of bounding box for these structures spawns overrides.
          */
         public StructureSpawnOverride.BoundingBoxType getBoundingBox() {
             return boundingBox;
@@ -169,6 +170,10 @@ public class StructureSettingsBuilder {
          */
         public void removeSpawn(MobSpawnSettings.SpawnerData spawn) {
             this.spawns.remove(spawn);
+        }
+
+        public void removeSpawns(Predicate<MobSpawnSettings.SpawnerData> spawnerDataPredicate) {
+            this.spawns.removeIf(spawnerDataPredicate);
         }
 
         /**

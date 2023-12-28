@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Forge Development LLC and contributors
+ * Copyright (c) NeoForged and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
@@ -7,15 +7,12 @@ package net.neoforged.neoforge.oldtest.world;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.worldgen.features.NetherFeatures;
@@ -46,6 +43,11 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+
 /**
  * <p>This tests the following features and requirements of biome modifier jsons::</p>
  * <ul>
@@ -75,13 +77,11 @@ public class BiomeModifierTest {
     /* Dynamic registry objects */
 
     private static final ResourceKey<PlacedFeature> LARGE_BASALT_COLUMNS = ResourceKey.create(Registries.PLACED_FEATURE, new ResourceLocation(MODID, "large_basalt_columns"));
-
     private static final ResourceKey<BiomeModifier> ADD_BASALT_MODIFIER = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(MODID, "add_basalt"));
     private static final ResourceKey<BiomeModifier> ADD_MAGMA_CUBES_MODIFIER = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(MODID, "add_magma_cubes"));
     private static final ResourceKey<BiomeModifier> MODIFY_BADLANDS_MODIFIER = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(MODID, "modify_badlands"));
     private static final ResourceKey<BiomeModifier> REMOVE_FOREST_TREES_MODIFIER = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(MODID, "remove_forest_trees"));
     private static final ResourceKey<BiomeModifier> REMOVE_FOREST_SKELETONS_MODIFIER = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(MODID, "remove_forest_skeletons"));
-
     private static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
             .add(Registries.PLACED_FEATURE, context -> context.register(LARGE_BASALT_COLUMNS,
                     new PlacedFeature(
@@ -90,7 +90,6 @@ public class BiomeModifierTest {
             .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, context -> {
                 var badlandsTag = context.lookup(Registries.BIOME).getOrThrow(BiomeTags.IS_BADLANDS);
                 var forestTag = context.lookup(Registries.BIOME).getOrThrow(BiomeTags.IS_FOREST);
-
                 context.register(ADD_BASALT_MODIFIER, new AddFeaturesBiomeModifier(
                         badlandsTag,
                         HolderSet.direct(context.lookup(Registries.PLACED_FEATURE).getOrThrow(LARGE_BASALT_COLUMNS)),
@@ -132,6 +131,11 @@ public class BiomeModifierTest {
 
         public BiomeModifiers(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
             super(output, registries, BUILDER, Set.of(MODID));
+        }
+
+        @Override
+        public CompletableFuture<?> run(CachedOutput p_255785_) {
+            return super.run(p_255785_);
         }
 
         @Override
