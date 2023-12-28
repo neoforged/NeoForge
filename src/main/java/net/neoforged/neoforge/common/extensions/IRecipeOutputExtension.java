@@ -5,11 +5,15 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import com.mojang.datafixers.util.Pair;
+import java.util.List;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.crafting.ConditionalRecipeOutput;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,12 +28,16 @@ public interface IRecipeOutputExtension {
     /**
      * Generates a recipe with the given conditions.
      */
-    void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions);
+    void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, List<ICondition> conditions, List<WithConditions<Pair<Recipe<?>, Advancement>>> alternatives);
+
+    default void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
+        accept(id, recipe, advancement, List.of(conditions), List.of());
+    }
 
     /**
      * Builds a wrapper around this recipe output that adds conditions to all received recipes.
      */
-    default RecipeOutput withConditions(ICondition... conditions) {
+    default ConditionalRecipeOutput withConditions(ICondition... conditions) {
         return new ConditionalRecipeOutput(self(), conditions);
     }
 }

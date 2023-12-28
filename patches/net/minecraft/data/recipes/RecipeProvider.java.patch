@@ -1,13 +1,20 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
-@@ -46,6 +_,7 @@
- public abstract class RecipeProvider implements DataProvider {
+@@ -43,11 +_,12 @@
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.Blocks;
+ 
+-public abstract class RecipeProvider implements DataProvider {
++public abstract class RecipeProvider implements DataProvider, net.neoforged.neoforge.common.conditions.IConditionBuilder {
      protected final PackOutput.PathProvider recipePathProvider;
      protected final PackOutput.PathProvider advancementPathProvider;
 +    protected final CompletableFuture<net.minecraft.core.HolderLookup.Provider> lookupProvider;
      private static final Map<BlockFamily.Variant, BiFunction<ItemLike, ItemLike, RecipeBuilder>> SHAPE_BUILDERS = ImmutableMap.<BlockFamily.Variant, BiFunction<ItemLike, ItemLike, RecipeBuilder>>builder(
-             
+-            
++
          )
+         .put(BlockFamily.Variant.BUTTON, (p_176733_, p_176734_) -> buttonBuilder(p_176733_, Ingredient.of(p_176734_)))
+         .put(BlockFamily.Variant.CHISELED, (p_248037_, p_248038_) -> chiseledBuilder(RecipeCategory.BUILDING_BLOCKS, p_248037_, Ingredient.of(p_248038_)))
 @@ -66,27 +_,29 @@
          .put(BlockFamily.Variant.WALL, (p_248024_, p_248025_) -> wallBuilder(RecipeCategory.DECORATIONS, p_248024_, Ingredient.of(p_248025_)))
          .build();
@@ -28,17 +35,17 @@
              new RecipeOutput() {
                  @Override
 -                public void accept(ResourceLocation p_312039_, Recipe<?> p_312254_, @Nullable AdvancementHolder p_311794_) {
-+                public void accept(ResourceLocation p_312039_, Recipe<?> p_312254_, @org.jetbrains.annotations.Nullable AdvancementHolder p_311794_, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
++                public void accept(ResourceLocation p_312039_, Recipe<?> p_312254_, @org.jetbrains.annotations.Nullable AdvancementHolder p_311794_, List<net.neoforged.neoforge.common.conditions.ICondition> conditions, List<net.neoforged.neoforge.common.conditions.WithConditions<com.mojang.datafixers.util.Pair<Recipe<?>, Advancement>>> alternatives) {
                      if (!set.add(p_312039_)) {
                          throw new IllegalStateException("Duplicate recipe " + p_312039_);
                      } else {
 -                        list.add(DataProvider.saveStable(p_254020_, Recipe.CODEC, p_312254_, RecipeProvider.this.recipePathProvider.json(p_312039_)));
-+                        list.add(DataProvider.saveStable(p_254020_, net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.CONDITIONAL_RECIPE_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_312254_, conditions)), RecipeProvider.this.recipePathProvider.json(p_312039_)));
++                        list.add(DataProvider.saveStable(p_254020_, net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.CONDITIONAL_RECIPE_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.ConditionalObject<>(conditions, p_312254_, alternatives.stream().<net.neoforged.neoforge.common.conditions.WithConditions<Recipe<?>>>map(w -> new net.neoforged.neoforge.common.conditions.WithConditions<>(w.conditions(), w.carrier().getFirst())).toList())), RecipeProvider.this.recipePathProvider.json(p_312039_)));
                          if (p_311794_ != null) {
                              list.add(
                                  DataProvider.saveStable(
 -                                    p_254020_, Advancement.CODEC, p_311794_.value(), RecipeProvider.this.advancementPathProvider.json(p_311794_.id())
-+                                    p_254020_, net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.CONDITIONAL_ADVANCEMENT_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_311794_.value(), conditions)), RecipeProvider.this.advancementPathProvider.json(p_311794_.id())
++                                    p_254020_, net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.CONDITIONAL_ADVANCEMENT_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.ConditionalObject<>(conditions, p_311794_.value(), alternatives.stream().filter(w -> w.carrier().getSecond() != null).map(w -> new net.neoforged.neoforge.common.conditions.WithConditions<>(w.conditions(), w.carrier().getSecond())).toList())), RecipeProvider.this.advancementPathProvider.json(p_311794_.id())
                                  )
                              );
                          }

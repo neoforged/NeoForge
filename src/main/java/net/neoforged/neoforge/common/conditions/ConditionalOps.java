@@ -6,14 +6,17 @@
 package net.neoforged.neoforge.common.conditions;
 
 import com.mojang.datafixers.util.Pair;
+import com.mojang.datafixers.util.Unit;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Decoder;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Encoder;
+import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.ExtraCodecs;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
@@ -79,7 +82,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
      * <p>The conditional codec is generally not suitable for use as a dispatch target because it is never a {@link MapCodec.MapCodecCodec}.
      */
     public static <T> Codec<Optional<T>> createConditionalCodec(final Codec<T> ownerCodec, String conditionalsKey) {
-        return createConditionalCodecWithConditions(ownerCodec, conditionalsKey).xmap(r -> r.map(WithConditions::carrier), r -> r.map(i -> new WithConditions<>(List.of(), i)));
+        return createConditionalCodecWithConditions(ownerCodec, conditionalsKey).xmap(r -> r.map(WithConditions::carrier), r -> r.map(i -> new ConditionalObject<>(List.of(), i)));
     }
 
     /**
@@ -122,6 +125,10 @@ public class ConditionalOps<T> extends RegistryOps<T> {
 
         @Override
         public <T> DataResult<T> encode(Optional<WithConditions<A>> input, DynamicOps<T> ops, T prefix) {
+            return encode(input, ops, prefix, true);
+        }
+
+        public <T> DataResult<T> encode(Optional<WithConditions<A>> input, DynamicOps<T> ops, T prefix, boolean supportsAlternatives) {
             if (ops.compressMaps()) {
                 // Compressing ops are not supported at the moment because they require special handling.
                 return DataResult.error(() -> "Cannot use ConditionalCodec with compressing DynamicOps");
@@ -133,8 +140,9 @@ public class ConditionalOps<T> extends RegistryOps<T> {
             }
 
             final WithConditions<A> withConditions = input.get();
+            final List<WithConditions<A>> alternatives = withConditions instanceof ConditionalObject<A> o && supportsAlternatives ? o.alternatives() : List.of();
 
-            if (withConditions.conditions().isEmpty()) {
+            if (withConditions.conditions().isEmpty() && alternatives.isEmpty()) {
                 // If there are no conditions, forward to the inner codec directly.
                 return innerCodec.encode(withConditions.carrier(), ops, prefix);
             }
@@ -142,7 +150,14 @@ public class ConditionalOps<T> extends RegistryOps<T> {
             // By now we know we will produce a map-like object, so let's start building one.
             var recordBuilder = ops.mapBuilder();
             // Add conditions
-            recordBuilder.add(conditionalsPropertyKey, conditionsCodec.encodeStart(ops, withConditions.conditions()));
+            if (supportsAlternatives && !withConditions.conditions().isEmpty()) {
+                recordBuilder.add(conditionalsPropertyKey, conditionsCodec.encodeStart(ops, withConditions.conditions()));
+            }
+            if (!alternatives.isEmpty()) {
+                final var alt = ops.listBuilder();
+                alternatives.forEach(a -> alt.add(this.encode(Optional.of(a), ops, ops.empty(), false)));
+                recordBuilder.add("neoforge:alternatives", alt.build(ops.empty()));
+            }
 
             // Serialize the object
             var encodedInner = innerCodec.encodeStart(ops, withConditions.carrier());
@@ -186,10 +201,14 @@ public class ConditionalOps<T> extends RegistryOps<T> {
             this.innerCodec = innerCodec;
         }
 
-        // Note: I am not too sure of what to return in the second element of the pair.
-        // If this turns out to be a problem, please change it but also document it and write some test cases.
         @Override
         public <T> DataResult<Pair<Optional<WithConditions<A>>, T>> decode(DynamicOps<T> ops, T input) {
+            return this.decode(ops, input, true);
+        }
+
+        // Note: I am not too sure of what to return in the second element of the pair.
+        // If this turns out to be a problem, please change it but also document it and write some test cases.
+        public <T> DataResult<Pair<Optional<WithConditions<A>>, T>> decode(DynamicOps<T> ops, T input, boolean supportsAlternatives) {
             if (ops.compressMaps()) {
                 // Compressing ops are not supported at the moment because they require special handling.
                 return DataResult.error(() -> "Cannot use ConditionalCodec with compressing DynamicOps");
@@ -210,8 +229,26 @@ public class ConditionalOps<T> extends RegistryOps<T> {
                         final ICondition.IContext context = contextCarrier.getFirst();
 
                         final boolean conditionsMatch = conditions.stream().allMatch(c -> c.test(context));
-                        if (!conditionsMatch)
-                            return DataResult.success(Pair.of(Optional.empty(), input));
+                        if (!conditionsMatch) {
+                            final T alternatives = inputMap.get("neoforge:alternatives");
+                            if (alternatives == null || !supportsAlternatives) {
+                                return DataResult.success(Pair.of(Optional.empty(), input));
+                            }
+                            return ops.getList(alternatives).flatMap(cons -> {
+                                final AtomicReference<Pair<Optional<WithConditions<A>>, T>> success = new AtomicReference<>();
+                                final AtomicReference<DataResult<Unit>> error = new AtomicReference<>(DataResult.success(Unit.INSTANCE, Lifecycle.stable()));
+                                cons.accept(alt -> {
+                                    if (success.get() != null) return;
+                                    final var result = this.decode(ops, alt, false);
+                                    error.setPlain(error.getPlain().apply2stable((r, v) -> {
+                                        v.getFirst().ifPresent(present -> success.set(v));
+                                        return r;
+                                    }, result));
+                                });
+                                return error.getPlain().map(unit -> Optional.ofNullable(success.get())
+                                        .orElse(Pair.of(Optional.empty(), input)));
+                            });
+                        }
 
                         DataResult<Pair<A, T>> innerDecodeResult;
 

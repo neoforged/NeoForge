@@ -1,0 +1,75 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:false"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_stick": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:stick"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "neotests_recipe_alternative:betterdiamond"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "neoforge:alternatives": [
+    {
+      "parent": "minecraft:recipes/root",
+      "criteria": {
+        "has_stick": {
+          "conditions": {
+            "items": [
+              {
+                "items": [
+                  "minecraft:stick"
+                ]
+              }
+            ]
+          },
+          "trigger": "minecraft:inventory_changed"
+        },
+        "has_the_recipe": {
+          "conditions": {
+            "recipe": "neotests_recipe_alternative:betterdiamond"
+          },
+          "trigger": "minecraft:recipe_unlocked"
+        }
+      },
+      "requirements": [
+        [
+          "has_the_recipe",
+          "has_stick"
+        ]
+      ],
+      "rewards": {
+        "recipes": [
+          "neotests_recipe_alternative:betterdiamond"
+        ]
+      }
+    }
+  ],
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_stick"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "neotests_recipe_alternative:betterdiamond"
+    ]
+  }
+}

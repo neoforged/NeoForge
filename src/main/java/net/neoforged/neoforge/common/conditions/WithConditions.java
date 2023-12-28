@@ -10,13 +10,29 @@ import java.util.Collection;
 import java.util.List;
 import org.apache.commons.lang3.Validate;
 
-public record WithConditions<A>(List<ICondition> conditions, A carrier) {
+public sealed class WithConditions<A> permits ConditionalObject {
+    private final List<ICondition> conditions;
+    private final A carrier;
+
     public WithConditions(A carrier, ICondition... conditions) {
         this(List.of(conditions), carrier);
     }
 
     public WithConditions(A carrier) {
         this(List.of(), carrier);
+    }
+
+    public WithConditions(List<ICondition> conditions, A carrier) {
+        this.conditions = conditions;
+        this.carrier = carrier;
+    }
+
+    public List<ICondition> conditions() {
+        return this.conditions;
+    }
+
+    public A carrier() {
+        return this.carrier;
     }
 
     public static <A> Builder<A> builder(A carrier) {
