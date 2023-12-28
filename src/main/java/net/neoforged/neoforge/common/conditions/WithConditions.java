@@ -40,8 +40,8 @@ public sealed class WithConditions<A> permits ConditionalObject {
     }
 
     public static class Builder<T> {
-        private final List<ICondition> conditions = new ArrayList<>();
-        private T carrier;
+        protected final List<ICondition> conditions = new ArrayList<>();
+        protected T carrier;
 
         public Builder<T> addCondition(ICondition... condition) {
             this.conditions.addAll(List.of(condition));
@@ -58,10 +58,13 @@ public sealed class WithConditions<A> permits ConditionalObject {
             return this;
         }
 
-        public WithConditions<T> build() {
+        protected void validate() {
             Validate.notNull(this.carrier, "You need to supply a carrier to create a WithConditions");
             Validate.notEmpty(this.conditions, "You need to supply at least one condition to create a WithConditions");
+        }
 
+        public WithConditions<T> build() {
+            validate();
             return new WithConditions<>(this.conditions, this.carrier);
         }
     }

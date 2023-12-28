@@ -20,11 +20,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.common.conditions.ConditionalObject;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
@@ -89,10 +91,10 @@ public abstract class GlobalLootModifierProvider implements DataProvider {
      *
      * @param modifier   the name of the modifier, which will be the file name
      * @param instance   the instance to serialize
-     * @param conditions a list of conditions to add to the GLM file
+     * @param conditions a builder of conditions to add to the GLM file
      */
-    public <T extends IGlobalLootModifier> void add(String modifier, T instance, List<ICondition> conditions) {
-        JsonElement json = IGlobalLootModifier.CONDITIONAL_CODEC.encodeStart(JsonOps.INSTANCE, Optional.of(new WithConditions<>(conditions, instance))).getOrThrow(false, s -> {});
+    public <T extends IGlobalLootModifier> void add(String modifier, T instance, UnaryOperator<ConditionalObject.Builder<T>> conditions) {
+        JsonElement json = IGlobalLootModifier.CONDITIONAL_CODEC.encodeStart(JsonOps.INSTANCE, Optional.of((WithConditions<IGlobalLootModifier>) conditions.apply(ConditionalObject.builder(instance)).build())).getOrThrow(false, s -> {});
         this.toSerialize.put(modifier, json);
     }
 
@@ -104,7 +106,7 @@ public abstract class GlobalLootModifierProvider implements DataProvider {
      * @param conditions a list of conditions to add to the GLM file
      */
     public <T extends IGlobalLootModifier> void add(String modifier, T instance, ICondition... conditions) {
-        add(modifier, instance, Arrays.asList(conditions));
+        add(modifier, instance, builder -> builder.addCondition(Arrays.asList(conditions)));
     }
 
     @Override

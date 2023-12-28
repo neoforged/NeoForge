@@ -26,6 +26,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import net.neoforged.neoforge.common.conditions.ConditionalObject;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.WithConditions;
@@ -51,7 +52,7 @@ public abstract class JsonCodecProvider<T> implements DataProvider {
     protected final String modid;
     protected final String directory;
     protected final Codec<T> codec;
-    protected final Map<ResourceLocation, WithConditions<T>> conditions = Maps.newHashMap();
+    protected final Map<ResourceLocation, ConditionalObject<T>> conditions = Maps.newHashMap();
 
     /**
      * @param output    {@linkplain PackOutput} provided by the {@link DataGenerator}.
@@ -107,18 +108,18 @@ public abstract class JsonCodecProvider<T> implements DataProvider {
     }
 
     public void unconditional(ResourceLocation id, T value) {
-        process(id, new WithConditions<>(List.of(), value));
+        process(id, new ConditionalObject<>(List.of(), value));
     }
 
     public void conditionally(ResourceLocation id, Consumer<WithConditions.Builder<T>> configurator) {
-        final WithConditions.Builder<T> builder = new WithConditions.Builder<>();
+        final ConditionalObject.Builder<T> builder = new ConditionalObject.Builder<>();
         configurator.accept(builder);
 
-        final WithConditions<T> withConditions = builder.build();
+        final ConditionalObject<T> withConditions = builder.build();
         process(id, withConditions);
     }
 
-    private void process(ResourceLocation id, WithConditions<T> withConditions) {
+    private void process(ResourceLocation id, ConditionalObject<T> withConditions) {
         this.existingFileHelper.trackGenerated(id, this.resourceType);
 
         this.conditions.put(id, withConditions);

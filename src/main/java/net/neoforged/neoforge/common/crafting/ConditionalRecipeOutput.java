@@ -26,9 +26,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Wrapper around a {@link RecipeOutput} that adds conditions to all received recipes.
- * Do not use directly, obtain via {@link RecipeOutput#withConditions(ICondition...)}.
+ * Do not construct directly, obtain via {@link RecipeOutput#withConditions(ICondition...)}.
  */
-@ApiStatus.Internal
 public class ConditionalRecipeOutput implements RecipeOutput {
     public static final Criterion<?> DUMMY = CriteriaTriggers.TICK.createCriterion(new PlayerTrigger.TriggerInstance(Optional.empty()));
 
@@ -36,6 +35,7 @@ public class ConditionalRecipeOutput implements RecipeOutput {
     private final ICondition[] conditions;
     private final List<WithConditions<RecipeBuilder>> alternatives = new ArrayList<>();
 
+    @ApiStatus.Internal
     public ConditionalRecipeOutput(RecipeOutput inner, ICondition[] conditions) {
         this.inner = inner;
         this.conditions = conditions;
@@ -53,6 +53,9 @@ public class ConditionalRecipeOutput implements RecipeOutput {
 
     private boolean inheritAdvancements;
 
+    /**
+     * Inherit advancements in alternative recipes.
+     */
     public ConditionalRecipeOutput inheritAdvancements() {
         this.inheritAdvancements = true;
         return this;
@@ -62,6 +65,7 @@ public class ConditionalRecipeOutput implements RecipeOutput {
     public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder superAdvancement, List<ICondition> conditions, List<WithConditions<Pair<Recipe<?>, Advancement>>> alternatives) {
         final var actualAlternatives = Lists.newArrayList(alternatives);
         this.alternatives.forEach(alt -> {
+            // If we're inheriting advancements, this will simply make sure that recipes have a criterion and don't complain
             if (inheritAdvancements) {
                 alt.carrier().unlockedBy("dummy", DUMMY);
             }
