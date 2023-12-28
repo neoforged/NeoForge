@@ -5,11 +5,10 @@
 
 package net.neoforged.neoforge.common.conditions;
 
-import org.apache.commons.lang3.Validate;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.apache.commons.lang3.Validate;
 
 public final class ConditionalObject<A> extends WithConditions<A> {
     private final List<WithConditions<A>> alternatives;
