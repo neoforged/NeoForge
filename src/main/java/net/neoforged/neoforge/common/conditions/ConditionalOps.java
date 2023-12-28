@@ -56,6 +56,10 @@ public class ConditionalOps<T> extends RegistryOps<T> {
      */
     public static final String DEFAULT_CONDITIONS_KEY = "neoforge:conditions";
     /**
+     * Key used for the alternatives inside an object.
+     */
+    public static final String ALTERNATIVES_KEY = "neoforge:alternatives";
+    /**
      * Key used to store the value associated with conditions,
      * when the value is not represented as a map.
      * For example, if we wanted to store the value 2 with some conditions, we could do:
@@ -156,7 +160,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
             if (!alternatives.isEmpty()) {
                 final var alt = ops.listBuilder();
                 alternatives.forEach(a -> alt.add(this.encode(Optional.of(a), ops, ops.empty(), false)));
-                recordBuilder.add("neoforge:alternatives", alt.build(ops.empty()));
+                recordBuilder.add(ALTERNATIVES_KEY, alt.build(ops.empty()));
             }
 
             // Serialize the object
@@ -230,7 +234,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
 
                         final boolean conditionsMatch = conditions.stream().allMatch(c -> c.test(context));
                         if (!conditionsMatch) {
-                            final T alternatives = inputMap.get("neoforge:alternatives");
+                            final T alternatives = inputMap.get(ALTERNATIVES_KEY);
                             if (alternatives == null || !supportsAlternatives) {
                                 return DataResult.success(Pair.of(Optional.empty(), input));
                             }

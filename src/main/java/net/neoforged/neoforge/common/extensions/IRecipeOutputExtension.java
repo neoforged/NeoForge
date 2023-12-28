@@ -30,10 +30,6 @@ public interface IRecipeOutputExtension {
      */
     void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, List<ICondition> conditions, List<WithConditions<Pair<Recipe<?>, Advancement>>> alternatives);
 
-    default void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
-        accept(id, recipe, advancement, List.of(conditions), List.of());
-    }
-
     /**
      * Builds a wrapper around this recipe output that adds conditions to all received recipes.
      */

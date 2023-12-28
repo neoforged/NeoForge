@@ -111,7 +111,7 @@ public abstract class JsonCodecProvider<T> implements DataProvider {
         process(id, new ConditionalObject<>(List.of(), value));
     }
 
-    public void conditionally(ResourceLocation id, Consumer<WithConditions.Builder<T>> configurator) {
+    public void conditionally(ResourceLocation id, Consumer<ConditionalObject.Builder<T>> configurator) {
         final ConditionalObject.Builder<T> builder = new ConditionalObject.Builder<>();
         configurator.accept(builder);
 
