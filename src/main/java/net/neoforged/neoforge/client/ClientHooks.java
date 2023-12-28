@@ -74,10 +74,13 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockElement;
+import net.minecraft.client.renderer.block.model.BlockFaceUV;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.model.BakedModel;
@@ -1061,6 +1064,34 @@ public class ClientHooks {
     public static <T extends BlockEntity> boolean isBlockEntityRendererVisible(BlockEntityRenderDispatcher dispatcher, BlockEntity blockEntity, Frustum frustum) {
         BlockEntityRenderer<T> renderer = (BlockEntityRenderer<T>) dispatcher.getRenderer(blockEntity);
         return renderer != null && frustum.isVisible(renderer.getRenderBoundingBox((T) blockEntity));
+    }
+
+    /**
+     * Modify the position and UVs of the edge quads of generated item models to account for sprite expansion of the
+     * front and back quad. Fixes <a href="https://bugs.mojang.com/browse/MC-73186">MC-73186</a> on generated item models.
+     */
+    @ApiStatus.Internal
+    public static void fixItemModelSeams(List<BlockElement> elements, TextureAtlasSprite sprite) {
+        float expand = -sprite.uvShrinkRatio();
+        for (BlockElement element : elements) {
+            if (element.faces.isEmpty()) continue;
+
+            // Move edge quads to account for sprite expansion of the front and back quads
+            element.from.x = Mth.clamp(Mth.lerp(expand, element.from.x, 8F), 0F, 16F);
+            element.from.y = Mth.clamp(Mth.lerp(expand, element.from.y, 8F), 0F, 16F);
+            element.to.x = Mth.clamp(Mth.lerp(expand, element.to.x, 8F), 0F, 16F);
+            element.to.y = Mth.clamp(Mth.lerp(expand, element.to.y, 8F), 0F, 16F);
+
+            // Edge elements are guaranteed to have exactly one face
+            BlockFaceUV uv = element.faces.values().iterator().next().uv;
+            // Counteract sprite expansion on edge quads to ensure alignment with pixels on the front and back quads
+            float centerU = (uv.uvs[0] + uv.uvs[0] + uv.uvs[2] + uv.uvs[2]) / 4.0F;
+            float centerV = (uv.uvs[1] + uv.uvs[1] + uv.uvs[3] + uv.uvs[3]) / 4.0F;
+            uv.uvs[0] = Mth.clamp(Mth.lerp(expand, uv.uvs[0], centerU), 0F, 16F);
+            uv.uvs[2] = Mth.clamp(Mth.lerp(expand, uv.uvs[2], centerU), 0F, 16F);
+            uv.uvs[1] = Mth.clamp(Mth.lerp(expand, uv.uvs[1], centerV), 0F, 16F);
+            uv.uvs[3] = Mth.clamp(Mth.lerp(expand, uv.uvs[3], centerV), 0F, 16F);
+        }
     }
 
     // Make sure the below method is only ever called once (by forge).

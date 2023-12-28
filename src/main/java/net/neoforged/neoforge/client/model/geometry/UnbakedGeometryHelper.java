@@ -112,10 +112,10 @@ public class UnbakedGeometryHelper {
     }
 
     /**
-     * @see #createUnbakedItemElements(int, SpriteContents, ExtraFaceData)
+     * @see #createUnbakedItemElements(int, TextureAtlasSprite, ExtraFaceData)
      */
-    public static List<BlockElement> createUnbakedItemElements(int layerIndex, SpriteContents spriteContents) {
-        return createUnbakedItemElements(layerIndex, spriteContents, null);
+    public static List<BlockElement> createUnbakedItemElements(int layerIndex, TextureAtlasSprite sprite) {
+        return createUnbakedItemElements(layerIndex, sprite, null);
     }
 
     /**
@@ -124,8 +124,8 @@ public class UnbakedGeometryHelper {
      * <p>
      * The {@link Direction#NORTH} and {@link Direction#SOUTH} faces take up the whole surface.
      */
-    public static List<BlockElement> createUnbakedItemElements(int layerIndex, SpriteContents spriteContents, @Nullable ExtraFaceData faceData) {
-        var elements = ITEM_MODEL_GENERATOR.processFrames(layerIndex, "layer" + layerIndex, spriteContents);
+    public static List<BlockElement> createUnbakedItemElements(int layerIndex, TextureAtlasSprite sprite, @Nullable ExtraFaceData faceData) {
+        var elements = ITEM_MODEL_GENERATOR.processFrames(layerIndex, "layer" + layerIndex, sprite);
         if (faceData != null) {
             elements.forEach(element -> element.setFaceData(faceData));
         }
@@ -133,10 +133,10 @@ public class UnbakedGeometryHelper {
     }
 
     /**
-     * @see #createUnbakedItemMaskElements(int, SpriteContents, ExtraFaceData)
+     * @see #createUnbakedItemMaskElements(int, TextureAtlasSprite, ExtraFaceData)
      */
-    public static List<BlockElement> createUnbakedItemMaskElements(int layerIndex, SpriteContents spriteContents) {
-        return createUnbakedItemMaskElements(layerIndex, spriteContents, null);
+    public static List<BlockElement> createUnbakedItemMaskElements(int layerIndex, TextureAtlasSprite sprite) {
+        return createUnbakedItemMaskElements(layerIndex, sprite, null);
     }
 
     /**
@@ -145,10 +145,11 @@ public class UnbakedGeometryHelper {
      * <p>
      * The {@link Direction#NORTH} and {@link Direction#SOUTH} faces take up only the pixels the texture uses.
      */
-    public static List<BlockElement> createUnbakedItemMaskElements(int layerIndex, SpriteContents spriteContents, @Nullable ExtraFaceData faceData) {
-        var elements = createUnbakedItemElements(layerIndex, spriteContents, faceData);
+    public static List<BlockElement> createUnbakedItemMaskElements(int layerIndex, TextureAtlasSprite sprite, @Nullable ExtraFaceData faceData) {
+        var elements = createUnbakedItemElements(layerIndex, sprite, faceData);
         elements.remove(0); // Remove north and south faces
 
+        SpriteContents spriteContents = sprite.contents();
         int width = spriteContents.width(), height = spriteContents.height();
         var bits = new BitSet(width * height);
 

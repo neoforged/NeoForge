@@ -70,7 +70,7 @@ public class ItemLayerModel implements IUnbakedGeometry<ItemLayerModel> {
         CompositeModel.Baked.Builder builder = CompositeModel.Baked.builder(context, particle, overrides, context.getTransforms());
         for (int i = 0; i < textures.size(); i++) {
             TextureAtlasSprite sprite = spriteGetter.apply(textures.get(i));
-            var unbaked = UnbakedGeometryHelper.createUnbakedItemElements(i, sprite.contents(), this.layerData.get(i));
+            var unbaked = UnbakedGeometryHelper.createUnbakedItemElements(i, sprite, this.layerData.get(i));
             var quads = UnbakedGeometryHelper.bakeElements(unbaked, $ -> sprite, modelState, modelLocation);
             var renderTypeName = renderTypeNames.get(i);
             var renderTypes = renderTypeName != null ? context.getRenderType(renderTypeName) : null;

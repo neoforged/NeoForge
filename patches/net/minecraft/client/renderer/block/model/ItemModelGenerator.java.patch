@@ -1,11 +1,42 @@
 --- a/net/minecraft/client/renderer/block/model/ItemModelGenerator.java
 +++ b/net/minecraft/client/renderer/block/model/ItemModelGenerator.java
-@@ -39,6 +_,8 @@
+@@ -32,17 +_,19 @@
+ 
+             Material material = p_111672_.getMaterial(s);
+             map.put(s, Either.left(material));
+-            SpriteContents spritecontents = p_111671_.apply(material).contents();
++            TextureAtlasSprite spritecontents = p_111671_.apply(material);
+             list.addAll(this.processFrames(i, s, spritecontents));
+         }
+ 
          map.put("particle", p_111672_.hasTexture("particle") ? Either.left(p_111672_.getMaterial("particle")) : map.get("layer0"));
          BlockModel blockmodel = new BlockModel(null, list, map, false, p_111672_.getGuiLight(), p_111672_.getTransforms(), p_111672_.getOverrides());
          blockmodel.name = p_111672_.name;
 +        blockmodel.customData.copyFrom(p_111672_.customData);
 +        blockmodel.customData.setGui3d(false);
          return blockmodel;
+     }
+ 
+-    public List<BlockElement> processFrames(int p_111639_, String p_111640_, SpriteContents p_251768_) {
++    public List<BlockElement> processFrames(int p_111639_, String p_111640_, TextureAtlasSprite p_251768_) {
+         Map<Direction, BlockElementFace> map = Maps.newHashMap();
+         map.put(Direction.SOUTH, new BlockElementFace(null, p_111639_, p_111640_, new BlockFaceUV(new float[]{0.0F, 0.0F, 16.0F, 16.0F}, 0)));
+         map.put(Direction.NORTH, new BlockElementFace(null, p_111639_, p_111640_, new BlockFaceUV(new float[]{16.0F, 0.0F, 0.0F, 16.0F}, 0)));
+@@ -52,7 +_,8 @@
+         return list;
+     }
+ 
+-    private List<BlockElement> createSideElements(SpriteContents p_248810_, String p_111663_, int p_111664_) {
++    private List<BlockElement> createSideElements(TextureAtlasSprite sprite, String p_111663_, int p_111664_) {
++        SpriteContents p_248810_ = sprite.contents();
+         float f = (float)p_248810_.width();
+         float f1 = (float)p_248810_.height();
+         List<BlockElement> list = Lists.newArrayList();
+@@ -139,6 +_,7 @@
+             }
+         }
+ 
++        net.neoforged.neoforge.client.ClientHooks.fixItemModelSeams(list, sprite); // Neo: fix MC-73186 on generated item models
+         return list;
      }
  
