@@ -30,9 +30,9 @@ public record ModdedNetworkPayload(Set<ModdedNetworkComponent> configuration, Se
     }
 
     @Override
-    public void write(FriendlyByteBuf p_294947_) {
-        p_294947_.writeObjectCollection(configuration(), ModdedNetworkComponent::write);
-        p_294947_.writeObjectCollection(play(), ModdedNetworkComponent::write);
+    public void write(FriendlyByteBuf buf) {
+        buf.writeObjectCollection(configuration(), ModdedNetworkComponent::write);
+        buf.writeObjectCollection(play(), ModdedNetworkComponent::write);
     }
 
     @Override

@@ -24,9 +24,9 @@ public interface IConfigurationPayloadHandler<T extends CustomPacketPayload> {
     void handle(T payload, ConfigurationPayloadContext context);
 
     /**
-     * Creates a handler that does nothing.
+     * Creates a replyHandler that does nothing.
      *
-     * @return The handler.
+     * @return The replyHandler.
      * @param <Z> The type of payload.
      */
     static <Z extends CustomPacketPayload> IConfigurationPayloadHandler<Z> noop() {

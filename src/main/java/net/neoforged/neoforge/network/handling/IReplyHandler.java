@@ -14,7 +14,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 public interface IReplyHandler {
 
     /**
-     * Sends the given payload back to the sender.
+     * Sends the given payload back to the player.
      *
      * @param payload The payload to send back.
      */

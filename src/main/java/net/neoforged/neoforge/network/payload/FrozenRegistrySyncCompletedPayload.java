@@ -23,7 +23,7 @@ public record FrozenRegistrySyncCompletedPayload() implements CustomPacketPayloa
     }
 
     @Override
-    public void write(FriendlyByteBuf p_294947_) {}
+    public void write(FriendlyByteBuf buf) {}
 
     @Override
     public ResourceLocation id() {

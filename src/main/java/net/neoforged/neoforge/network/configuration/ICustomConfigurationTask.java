@@ -36,12 +36,12 @@ public interface ICustomConfigurationTask extends ConfigurationTask {
     /**
      * Invoked when it is time for this configuration to run.
      * 
-     * @param p_294184_ A consumer that accepts a {@link Packet} to send to the client.
+     * @param sender A consumer that accepts a {@link Packet} to send to the client.
      * @implNote Please do not override this method, it is implemented to wrap the {@link CustomPacketPayload} in a {@link ClientboundCustomPayloadPacket}.
      */
     @Override
     @ApiStatus.Internal
-    default void start(@NotNull Consumer<Packet<?>> p_294184_) {
-        run((payload) -> p_294184_.accept(new ClientboundCustomPayloadPacket(payload)));
+    default void start(@NotNull Consumer<Packet<?>> sender) {
+        run((payload) -> sender.accept(new ClientboundCustomPayloadPacket(payload)));
     }
 }

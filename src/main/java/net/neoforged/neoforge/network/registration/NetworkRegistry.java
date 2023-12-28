@@ -145,7 +145,7 @@ public class NetworkRegistry {
      * <p>
      * If the connection is properly configured, the method will check if the packet is known to the connection, and if it is not, null is returned.
      * Then the method will check if the packet is known to the registry, and if it is not, null is returned.
-     * If the packet is known to the registry, the method will return a reader that will invoke the registered handler.
+     * If the packet is known to the registry, the method will return a reader that will invoke the registered replyHandler.
      * </p>
      *
      * @param id         The id of the payload.
@@ -262,7 +262,7 @@ public class NetworkRegistry {
      * The method will first validate that a proper modded connection is setup and that a {@link NetworkPayloadSetup} is present on the connection. If that is not the case a warning is logged, and the client is disconnected with a generic error message.
      * </p>
      * <p>
-     * If the connection is setup properly, the method will check if the packet is known to the connection, and if it is not, the client is disconnected. Then checks are executed against the stored known packet handlers to see if the packet is known to the server. Technically, this list is considered fixed, based on the fact that the registration event is only fired once during bootstrap, so in practice this is just a safe-guard against people messing with the registration map. Once that completes the registered handler is invoked.
+     * If the connection is setup properly, the method will check if the packet is known to the connection, and if it is not, the client is disconnected. Then checks are executed against the stored known packet handlers to see if the packet is known to the server. Technically, this list is considered fixed, based on the fact that the registration event is only fired once during bootstrap, so in practice this is just a safe-guard against people messing with the registration map. Once that completes the registered replyHandler is invoked.
      * </p>
      *
      * @param listener The listener which received the packet.
@@ -346,31 +346,34 @@ public class NetworkRegistry {
      * The method will first validate that a proper modded connection is setup and that a {@link NetworkPayloadSetup} is present on the connection. If that is not the case a warning is logged, and the client is disconnected with a generic error message.
      * </p>
      * <p>
-     * If the connection is setup properly, the method will check if the packet is known to the connection, and if it is not, the client is disconnected. Then checks are executed against the stored known packet handlers to see if the packet is known to the client. Technically, this list is considered fixed, based on the fact that the registration event is only fired once during bootstrap, so in practice this is just a safe-guard against people messing with the registration map. Once that completes the registered handler is invoked.
+     * If the connection is setup properly, the method will check if the packet is known to the connection, and if it is not, the client is disconnected. Then checks are executed against the stored known packet handlers to see if the packet is known to the client. Technically, this list is considered fixed, based on the fact that the registration event is only fired once during bootstrap, so in practice this is just a safe-guard against people messing with the registration map. Once that completes the registered replyHandler is invoked.
      * </p>
      *
      * @param listener The listener which received the packet.
      * @param packet   The packet that was received.
      */
-    public void onModdedPacketAtClient(ClientCommonPacketListener listener, ClientboundCustomPayloadPacket packet) {
+    public boolean onModdedPacketAtClient(ClientCommonPacketListener listener, ClientboundCustomPayloadPacket packet) {
+        if (packet.payload().id().getNamespace().equals("minecraft")) {
+            return false;
+        }
+
         final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         //Check if this server was even setup properly.
         if (payloadSetup == null) {
             LOGGER.warn("Received a modded custom payload packet from a server that has not negotiated with the client. Disconnecting server.");
             listener.getConnection().disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
-            return;
+            return false;
         }
 
         if (listener instanceof ClientConfigurationPacketListener configurationPacketListener) {
             //Get the configuration channel for the packet.
             final NetworkChannel channel = payloadSetup.configuration().get(packet.payload().id());
-            ;
 
             //Check if the channel should even be processed.
             if (channel == null) {
                 LOGGER.warn("Received a modded custom payload packet from a server with an unknown or not accepted channel. Disconnecting server.");
                 listener.getConnection().disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
-                return;
+                return false;
             }
 
             //We are in the configuration phase, so lookup packet listeners for that
@@ -389,7 +392,7 @@ public class NetworkRegistry {
                             new EventLoopSynchronizedWorkHandler<>(configurationPacketListener.getMainThreadEventLoop(), packet.payload()),
                             PacketFlow.CLIENTBOUND,
                             listener.getConnection().channel().pipeline().lastContext(),
-                            Optional.empty()));
+                            Optional.ofNullable(configurationPacketListener.getMinecraft().player)));
         } else if (listener instanceof ClientGamePacketListener playPacketListener) {
             //Get the configuration channel for the packet.
             final NetworkChannel channel = payloadSetup.play().get(packet.payload().id());
@@ -398,7 +401,7 @@ public class NetworkRegistry {
             if (channel == null) {
                 LOGGER.warn("Received a modded custom payload packet from a server with an unknown or not accepted channel. Disconnecting server.");
                 listener.getConnection().disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
-                return;
+                return false;
             }
 
             //We are in the play phase, so lookup packet listeners for that
@@ -416,11 +419,12 @@ public class NetworkRegistry {
                             new EventLoopSynchronizedWorkHandler<>(playPacketListener.getMainThreadEventLoop(), packet.payload()),
                             PacketFlow.CLIENTBOUND,
                             listener.getConnection().channel().pipeline().lastContext(),
-                            Optional.empty()));
+                            Optional.ofNullable(playPacketListener.getMinecraft().player)));
         } else {
             LOGGER.error("Received a modded custom payload packet from a server that is not in the configuration or play phase. Disconnecting server.");
             throw new IllegalStateException("A server send a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
         }
+        return true;
     }
 
     /**

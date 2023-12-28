@@ -34,9 +34,9 @@ public record ModdedNetworkQueryPayload(Set<ModdedNetworkQueryComponent> configu
     }
 
     @Override
-    public void write(FriendlyByteBuf p_294947_) {
-        p_294947_.writeObjectCollection(configuration(), ModdedNetworkQueryComponent::write);
-        p_294947_.writeObjectCollection(play(), ModdedNetworkQueryComponent::write);
+    public void write(FriendlyByteBuf buf) {
+        buf.writeObjectCollection(configuration(), ModdedNetworkQueryComponent::write);
+        buf.writeObjectCollection(play(), ModdedNetworkQueryComponent::write);
     }
 
     @Override

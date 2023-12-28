@@ -24,9 +24,9 @@ public interface IPlayPayloadHandler<T extends CustomPacketPayload> {
     void handle(T payload, PlayPayloadContext context);
 
     /**
-     * Creates a handler that does nothing.
+     * Creates a replyHandler that does nothing.
      *
-     * @return The handler.
+     * @return The replyHandler.
      * @param <Z> The type of payload.
      */
     static <Z extends CustomPacketPayload> IPlayPayloadHandler<Z> noop() {

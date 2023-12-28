@@ -28,8 +28,8 @@ public record ModdedNetworkSetupFailedPayload(Map<ResourceLocation, Component> f
     }
 
     @Override
-    public void write(FriendlyByteBuf p_294947_) {
-        p_294947_.writeMap(failureReasons, FriendlyByteBuf::writeResourceLocation, FriendlyByteBuf::writeComponent);
+    public void write(FriendlyByteBuf buf) {
+        buf.writeMap(failureReasons, FriendlyByteBuf::writeResourceLocation, FriendlyByteBuf::writeComponent);
     }
 
     @Override

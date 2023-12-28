@@ -10,12 +10,11 @@
  
      public ClientConfigurationPacketListenerImpl(Minecraft p_295262_, Connection p_296339_, CommonListenerCookie p_294706_) {
          super(p_295262_, p_296339_, p_294706_);
-@@ -45,11 +_,34 @@
+@@ -45,7 +_,30 @@
      }
  
      @Override
 -    protected void handleCustomPayload(CustomPacketPayload p_295411_) {
--        this.handleUnknownCustomPayload(p_295411_);
 +    protected void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295411_) {
 +        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload) {
 +            this.isModdedConnection = true;
@@ -40,24 +39,17 @@
 +            return;
 +        }
 +        
-+        this.handleUnknownCustomPayload(p_295727_, p_295411_);
+         this.handleUnknownCustomPayload(p_295411_);
      }
  
--    private void handleUnknownCustomPayload(CustomPacketPayload p_296412_) {
-+    private void handleUnknownCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_296412_) {
-         LOGGER.warn("Unknown custom packet payload: {}", p_296412_.id());
-     }
- 
-@@ -69,6 +_,13 @@
+@@ -69,6 +_,11 @@
      @Override
      public void handleEnabledFeatures(ClientboundUpdateEnabledFeaturesPacket p_294410_) {
          this.enabledFeatures = FeatureFlags.REGISTRY.fromNames(p_294410_.features());
 +        //Fallback detection layer for vanilla servers
 +        if (!this.isModdedConnection) {
 +            this.isVanillaConnection = true;
-+            if (!net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaNetworkConnectionEstablished(this)) {
-+                return;
-+            }
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaNetworkConnectionEstablished(this);
 +        }
      }
  

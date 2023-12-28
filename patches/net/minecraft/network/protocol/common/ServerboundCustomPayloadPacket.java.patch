@@ -1,12 +1,6 @@
 --- a/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
 +++ b/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
-@@ -11,21 +_,60 @@
- 
- public record ServerboundCustomPayloadPacket(CustomPacketPayload payload) implements Packet<ServerCommonPacketListener> {
-     private static final int MAX_PAYLOAD_SIZE = 32767;
--    private static final Map<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>> KNOWN_TYPES = ImmutableMap.<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>>builder(
-+    public static final Map<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>> KNOWN_TYPES = ImmutableMap.<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>>builder(
-             
+@@ -16,16 +_,55 @@
          )
          .put(BrandPayload.ID, BrandPayload::new)
          .build();

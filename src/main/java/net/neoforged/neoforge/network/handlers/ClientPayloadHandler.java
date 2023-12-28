@@ -18,6 +18,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -70,7 +71,11 @@ public class ClientPayloadHandler {
 
         context.workHandler().submitAsync(() -> {
             //This method normally returns missing entries, but we just accept what the server send us and ignore the rest.
-            RegistryManager.applySnapshot(synchronizedRegistries, false, false);
+            Set<ResourceKey<?>> keysUnknownToClient = RegistryManager.applySnapshot(synchronizedRegistries, false, false);
+            if (!keysUnknownToClient.isEmpty()) {
+                context.packetHandler().disconnect(Component.translatable("neoforge.registries.sync.server-with-unknown-keys", keysUnknownToClient.stream().map(Object::toString).collect(Collectors.joining(", "))));
+                return;
+            }
 
             this.toSynchronize.clear();
             this.synchronizedRegistries.clear();
@@ -78,7 +83,7 @@ public class ClientPayloadHandler {
             context.packetHandler().disconnect(Component.translatable("neoforge.registries.sync.failed", e.getMessage()));
             return null;
         }).thenAccept(v -> {
-            context.handler().send(new FrozenRegistrySyncCompletedPayload());
+            context.replyHandler().send(new FrozenRegistrySyncCompletedPayload());
         });
     }
 
@@ -106,12 +111,18 @@ public class ClientPayloadHandler {
     }
 
     public void handle(AdvancedOpenScreenPayload msg, PlayPayloadContext context) {
-        final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(msg.additionalData()));
-        try {
-            createMenuScreen(msg.name(), msg.menuType(), msg.windowId(), buf);
-        } finally {
-            buf.release();
-        }
+        context.workHandler().submitAsync(() -> {
+            final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(msg.additionalData()));
+            try {
+                createMenuScreen(msg.name(), msg.menuType(), msg.windowId(), buf);
+            } finally {
+                buf.release();
+            }
+        })
+        .exceptionally(e -> {
+            context.packetHandler().disconnect(Component.translatable("neoforge.advanced_open_screen.failed", e.getMessage()));
+            return null;
+        });
     }
 
     private static <T extends AbstractContainerMenu> void createMenuScreen(Component name, MenuType<T> menuType, int windowId, FriendlyByteBuf buf) {

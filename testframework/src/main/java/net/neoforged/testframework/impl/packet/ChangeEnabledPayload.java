@@ -27,7 +27,7 @@ public record ChangeEnabledPayload(MutableTestFramework framework, String testId
                 enablerer.accept(testId);
             }
             case SERVER -> {
-                final Player player = context.sender().orElseThrow();
+                final Player player = context.player().orElseThrow();
                 if (framework.configuration().isEnabled(Feature.CLIENT_MODIFICATIONS) && Objects.requireNonNull(player.getServer()).getPlayerList().isOp(player.getGameProfile())) {
                     framework.tests().byId(testId).ifPresent(test -> framework.setEnabled(test, enabled, player));
                 }

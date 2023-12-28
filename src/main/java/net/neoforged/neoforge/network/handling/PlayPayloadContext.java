@@ -12,23 +12,23 @@ import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.world.entity.player.Player;
 
 /**
- * The context that is passed to a handler for a payload that arrives during the configuration phase of the connection.
+ * The context that is passed to a replyHandler for a payload that arrives during the configuration phase of the connection.
  *
- * @param handler               A reply handler that can be used to send a reply to the sender.
- * @param packetHandler         The packet handler that can be used to immediately process other packets.
- * @param workHandler           A work handler that can be used to schedule work to be done on the main thread.
+ * @param replyHandler               A reply replyHandler that can be used to send a reply to the player.
+ * @param packetHandler         The packet replyHandler that can be used to immediately process other packets.
+ * @param workHandler           A work replyHandler that can be used to schedule work to be done on the main thread.
  * @param flow                  The flow of the packet.
- * @param channelHandlerContext The channel handler context.
- * @param sender                The sender of the payload.
- * @implNote The {@link #sender()} will only be empty if the sender is a player and the receiver is the server.
+ * @param channelHandlerContext The channel replyHandler context.
+ * @param player                The player of the payload.
+ * @implNote The {@link #player()} will only be empty if the player is a player and the receiver is the server.
  */
 public record PlayPayloadContext(
-        IReplyHandler handler,
+        IReplyHandler replyHandler,
         IPacketHandler packetHandler,
         ISynchronizedWorkHandler workHandler,
         PacketFlow flow,
         ChannelHandlerContext channelHandlerContext,
-        Optional<Player> sender) implements IPayloadContext {
+        Optional<Player> player) implements IPayloadContext {
     @Override
     public ConnectionProtocol protocol() {
         return ConnectionProtocol.PLAY;

@@ -9,24 +9,26 @@ import io.netty.channel.ChannelHandlerContext;
 import java.util.Optional;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 /**
- * Defines a phase-less payload context that is passed to a handler for a payload that arrives during the connection.
+ * Defines a phase-less payload context that is passed to a replyHandler for a payload that arrives during the connection.
  */
 public interface IPayloadContext {
     /**
-     * {@return a handler that can be used to reply to the payload.}
+     * {@return a replyHandler that can be used to reply to the payload.}
      */
-    IReplyHandler handler();
+    IReplyHandler replyHandler();
 
     /**
-     * {@return a handler that can be used to have the current listener which received the payload handle another packet immediately.}
+     * {@return a replyHandler that can be used to have the current listener which received the payload handle another packet immediately.}
      */
     IPacketHandler packetHandler();
 
     /**
-     * {@return a handler that can execute tasks on the main thread.}
+     * {@return a replyHandler that can execute tasks on the main thread.}
      */
     ISynchronizedWorkHandler workHandler();
 
@@ -41,14 +43,23 @@ public interface IPayloadContext {
     ConnectionProtocol protocol();
 
     /**
-     * {@return the channel handler context.}
+     * {@return the channel replyHandler context.}
      */
     ChannelHandlerContext channelHandlerContext();
 
     /**
-     * {@return the sender of the payload.}
+     * {@return the player that acts within this context.}
      * 
-     * @implNote This {@link Optional} will be empty if the payload was sent by the server, it will also be empty during the configuration phase.
+     * @implNote This {@link Optional} will be filled with the current client side player if the payload was sent by the server, the server will only populate this field if it is not configuring the client.
      */
-    Optional<Player> sender();
+    Optional<Player> player();
+
+    /**
+     * {@return the level acts within this context.}
+     *
+     * @return This {@link Optional} will be filled with the current client side level if the payload was sent by the server, the server will only populate this field if it is not configuring the client.
+     */
+    default Optional<Level> level() {
+        return player().map(Entity::level);
+    }
 }

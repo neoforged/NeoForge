@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Defines a handler which can accept work that needs to be run synchronously, on the main thread of the game.
+ * Defines a replyHandler which can accept work that needs to be run synchronously, on the main thread of the game.
  */
 public interface ISynchronizedWorkHandler {
 
