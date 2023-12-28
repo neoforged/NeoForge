@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.common.conditions;
 
+import org.apache.commons.lang3.Validate;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -15,6 +17,8 @@ public final class ConditionalObject<A> extends WithConditions<A> {
     public ConditionalObject(List<ICondition> conditions, A carrier, List<WithConditions<A>> alternatives) {
         super(conditions, carrier);
         this.alternatives = alternatives;
+
+        Validate.isTrue(alternatives.stream().noneMatch(ConditionalObject.class::isInstance), "Alternatives cannot have alternatives");
     }
 
     @SafeVarargs
