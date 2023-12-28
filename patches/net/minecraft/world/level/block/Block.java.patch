@@ -150,7 +150,7 @@
 +            return true;
 +
 +        if (net.neoforged.neoforge.common.PlantType.DESERT.equals(type)) {
-+            return state.is(BlockTags.SAND) || this == Blocks.TERRACOTTA || this instanceof GlazedTerracottaBlock;
++            return state.is(BlockTags.SAND) || state.is(BlockTags.TERRACOTTA);
 +        } else if (net.neoforged.neoforge.common.PlantType.NETHER.equals(type)) {
 +            return this == Blocks.SOUL_SAND;
 +        } else if (net.neoforged.neoforge.common.PlantType.CROP.equals(type)) {

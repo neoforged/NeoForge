@@ -104,24 +104,6 @@
          return runnable;
      }
  
-@@ -676,17 +_,6 @@
-             p_300000_.add(p_299781_ -> new AccessibilityOnboardingScreen(this.options, p_299781_));
-         }
- 
--        BanDetails bandetails = this.multiplayerBan();
--        if (bandetails != null) {
--            p_300000_.add(p_299775_ -> BanNoticeScreens.create(p_299777_ -> {
--                    if (p_299777_) {
--                        Util.getPlatform().openUri("https://aka.ms/mcjavamoderation");
--                    }
--
--                    p_299775_.run();
--                }, bandetails));
--        }
--
-         ProfileResult profileresult = this.profileFuture.join();
-         if (profileresult != null) {
-             GameProfile gameprofile = profileresult.profile();
 @@ -716,7 +_,7 @@
      private String createTitle() {
          StringBuilder stringbuilder = new StringBuilder("Minecraft");
@@ -417,18 +399,15 @@
              boolean flag = this.player.getAbilities().instabuild;
              BlockEntity blockentity = null;
              HitResult.Type hitresult$type = this.hitResult.getType();
-@@ -2336,10 +_,7 @@
+@@ -2336,7 +_,7 @@
                  }
  
                  Block block = blockstate.getBlock();
 -                itemstack = block.getCloneItemStack(this.level, blockpos, blockstate);
--                if (itemstack.isEmpty()) {
--                    return;
--                }
 +                itemstack = blockstate.getCloneItemStack(this.hitResult, this.level, blockpos, this.player);
- 
-                 if (flag && Screen.hasControlDown() && blockstate.hasBlockEntity()) {
-                     blockentity = this.level.getBlockEntity(blockpos);
+                 if (itemstack.isEmpty()) {
+                     return;
+                 }
 @@ -2350,7 +_,7 @@
                  }
  

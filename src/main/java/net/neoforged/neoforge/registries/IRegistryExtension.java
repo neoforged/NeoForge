@@ -92,20 +92,20 @@ public interface IRegistryExtension<T> {
     ResourceKey<T> resolve(ResourceKey<T> key);
 
     /**
-     * Gets the integer id linked to the given key.
+     * Gets the integer id linked to the given key. If the key is not present in the registry, the default entry's
+     * integer id is returned if the registry is defaulted or {@code -1} if the registry is not defaulted
      *
      * @param key the resource key to lookup
-     * @return the integer id linked to the given key,
-     *         or {@code -1} if the key is not present in this registry
+     * @return the integer id linked to the given key
      */
     int getId(ResourceKey<T> key);
 
     /**
-     * Gets the integer id linked to the given name.
+     * Gets the integer id linked to the given name. If the name is not present in the registry, the default entry's
+     * integer id is returned if the registry is defaulted or {@code -1} if the registry is not defaulted
      *
      * @param name the resource name to lookup
-     * @return the integer id linked to the given name,
-     *         or {@code -1} if the name is not present in this registry
+     * @return the integer id linked to the given name
      */
     int getId(ResourceLocation name);
 

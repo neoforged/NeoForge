@@ -5,11 +5,14 @@
 
 package net.neoforged.neoforge.debug.entity.player;
 
+import java.util.Objects;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
+import net.minecraft.server.players.ServerOpListEntry;
 import net.minecraft.stats.ServerStatsCounter;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
@@ -26,6 +29,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.event.StatAwardEvent;
+import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
@@ -113,6 +117,88 @@ public class PlayerEventTests {
                     .thenExecute(player -> helper.assertTrue(illusioner.getName().getString().contains("entityInteractEventTest"), "Illager name did not get changed on player interact"))
                     .thenSucceed();
         });
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if the ItemPickupEvent fires")
+    public static void itemPickupEvent(final DynamicTest test) {
+        test.eventListeners().forge().addListener((final PlayerEvent.ItemPickupEvent event) -> {
+            if (event.getStack().is(Items.MELON_SEEDS)) {
+                // If the event is fired and detects pickup of melon seeds, the test will be considered pass
+                // and the player will get pumpkin seeds too
+                event.getEntity().addItem(new ItemStack(Items.PUMPKIN_SEEDS));
+                test.pass();
+            }
+        });
+
+        test.onGameTest(helper -> {
+            // Spawn a player at the centre of the test
+            final GameTestPlayer player = helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL)
+                    .moveToCentre();
+            helper.spawnItem(Items.MELON_SEEDS, 1, 2, 1);
+
+            helper.startSequence()
+                    // Wait until the player picked up the seeds
+                    .thenWaitUntil(() -> helper.assertPlayerHasItem(player, Items.MELON_SEEDS))
+                    // Check for pumpkin seeds in the player's inventory
+                    .thenExecute(() -> helper.assertPlayerHasItem(player, Items.PUMPKIN_SEEDS))
+                    // All assertions were true, so the test is a success!
+                    .thenSucceed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the PlayerChangeGameModeEvent is fired and can modify the outcome")
+    static void playerChangeGameModeEvent(final DynamicTest test) {
+        test.eventListeners().forge().addListener((final PlayerEvent.PlayerChangeGameModeEvent event) -> {
+            // Only affect the players with a custom name to not interfere with other tests
+            if (!Objects.equals(event.getEntity().getCustomName(), Component.literal("gamemode-changes"))) {
+                return;
+            }
+
+            // prevent changing to SURVIVAL
+            if (event.getNewGameMode() == GameType.SURVIVAL) {
+                event.setCanceled(true);
+            } else if (event.getNewGameMode() == GameType.SPECTATOR) {
+                // when changing to SPECTATOR, change to SURVIVAL instead
+                event.setNewGameMode(GameType.SURVIVAL);
+            }
+        });
+
+        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInLevel(GameType.CREATIVE).moveToCorner())
+                .thenExecute(player -> player.setCustomName(Component.literal("gamemode-changes")))
+
+                .thenExecute(player -> player.setGameMode(GameType.SURVIVAL))
+                // Prevent changing to survival
+                .thenExecute(player -> helper.assertTrue(player.gameMode.getGameModeForPlayer() == GameType.CREATIVE, "Event was not cancelled"))
+
+                // Actually change to spectator
+                .thenExecute(player -> player.setGameMode(GameType.SPECTATOR))
+                .thenExecute(player -> helper.assertTrue(player.gameMode.getGameModeForPlayer() == GameType.SURVIVAL, "Event did not modify game mode"))
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the PermissionsChangedEvent is fired, by preventing players from being de-op'd")
+    static void permissionsChangedEvent(final DynamicTest test) {
+        test.eventListeners().forge().addListener((final PermissionsChangedEvent event) -> {
+            if (Objects.equals(event.getEntity().getCustomName(), Component.literal("permschangedevent")) && event.getOldLevel() == Commands.LEVEL_ADMINS) {
+                event.setCanceled(true);
+                test.pass();
+            }
+        });
+
+        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInLevel(GameType.CREATIVE).moveToCorner())
+                .thenExecute(player -> player.setCustomName(Component.literal("permschangedevent")))
+                // Make sure the player isn't OP by default
+                .thenExecute(player -> player.getServer().getPlayerList().getOps().add(new ServerOpListEntry(
+                        player.getGameProfile(), Commands.LEVEL_ADMINS, true)))
+                .thenExecute(player -> player.getServer().getPlayerList().deop(player.getGameProfile()))
+                .thenExecute(player -> helper.assertTrue(player.getServer().getProfilePermissions(player.getGameProfile()) == Commands.LEVEL_ADMINS, "Player was de-op'd"))
+                .thenSucceed());
     }
 
     @GameTest
