@@ -78,6 +78,9 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
 
         @Override
         public ModelDataManager.Snapshot snapshotSectionRegion(int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ) {
+            if (isOtherThread()) {
+                throw new UnsupportedOperationException("Cannot snapshot active manager outside the owning thread: " + owningThread);
+            }
             return new ModelDataManager.Snapshot(this, sectionMinX, sectionMinY, sectionMinZ, sectionMaxX, sectionMaxY, sectionMaxZ);
         }
 
