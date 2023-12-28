@@ -9,6 +9,15 @@
      private final StructureManager structureManager;
      private final StructureCheck structureCheck;
      private final boolean tickTime;
+@@ -281,6 +_,8 @@
+         this.randomSequences = Objects.requireNonNullElseGet(
+             p_288977_, () -> this.getDataStorage().computeIfAbsent(RandomSequences.factory(i), "random_sequences")
+         );
++
++        net.neoforged.neoforge.attachment.LevelAttachmentsSavedData.init(this);
+     }
+ 
+     @Deprecated
 @@ -325,7 +_,7 @@
          if (this.sleepStatus.areEnoughSleeping(i) && this.sleepStatus.areEnoughDeepSleeping(i, this.players)) {
              if (this.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)) {
