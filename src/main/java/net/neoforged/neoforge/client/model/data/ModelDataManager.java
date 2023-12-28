@@ -57,7 +57,8 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
                 throw new UnsupportedOperationException("Cannot request ModelData refresh outside the owning thread: " + owningThread);
             }
 
-            Preconditions.checkNotNull(blockEntity, "Block entity must not be null");
+            Preconditions.checkNotNull(blockEntity, "BlockEntity must not be null");
+            Preconditions.checkState(blockEntity.getLevel() == level, "BlockEntity does not belong to the level owning this manager");
             needModelDataRefresh.computeIfAbsent(SectionPos.asLong(blockEntity.getBlockPos()), $ -> new HashSet<>())
                     .add(blockEntity.getBlockPos());
         }
