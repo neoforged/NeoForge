@@ -33,6 +33,7 @@ import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.model.ElementsModel;
 import net.neoforged.neoforge.client.model.ExtraFaceData;
 import net.neoforged.neoforge.client.model.IModelBuilder;
@@ -125,7 +126,8 @@ public class UnbakedGeometryHelper {
      * The {@link Direction#NORTH} and {@link Direction#SOUTH} faces take up the whole surface.
      */
     public static List<BlockElement> createUnbakedItemElements(int layerIndex, TextureAtlasSprite sprite, @Nullable ExtraFaceData faceData) {
-        var elements = ITEM_MODEL_GENERATOR.processFrames(layerIndex, "layer" + layerIndex, sprite);
+        var elements = ITEM_MODEL_GENERATOR.processFrames(layerIndex, "layer" + layerIndex, sprite.contents());
+        ClientHooks.fixItemModelSeams(elements, sprite);
         if (faceData != null) {
             elements.forEach(element -> element.setFaceData(faceData));
         }

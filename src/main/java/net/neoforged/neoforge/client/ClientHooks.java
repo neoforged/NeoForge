@@ -1068,12 +1068,18 @@ public class ClientHooks {
     /**
      * Modify the position and UVs of the edge quads of generated item models to account for sprite expansion of the
      * front and back quad. Fixes <a href="https://bugs.mojang.com/browse/MC-73186">MC-73186</a> on generated item models.
+     * @param elements The generated elements, may include the front and back face
+     * @param sprite The texture from which the elements were generated
+     * @return the original elements list
      */
-    @ApiStatus.Internal
-    public static void fixItemModelSeams(List<BlockElement> elements, TextureAtlasSprite sprite) {
+    public static List<BlockElement> fixItemModelSeams(List<BlockElement> elements, TextureAtlasSprite sprite) {
         float expand = -sprite.uvShrinkRatio();
         for (BlockElement element : elements) {
-            if (element.faces.isEmpty()) continue;
+            // Edge elements are guaranteed to have exactly one face, anything else is either invalid or the front/back
+            if (element.faces.size() != 1) continue;
+
+            var faceEntry = element.faces.entrySet().iterator().next();
+            if (faceEntry.getKey().getAxis() == Direction.Axis.Z) continue;
 
             // Move edge quads to account for sprite expansion of the front and back quads
             element.from.x = Mth.clamp(Mth.lerp(expand, element.from.x, 8F), 0F, 16F);
@@ -1081,8 +1087,6 @@ public class ClientHooks {
             element.to.x = Mth.clamp(Mth.lerp(expand, element.to.x, 8F), 0F, 16F);
             element.to.y = Mth.clamp(Mth.lerp(expand, element.to.y, 8F), 0F, 16F);
 
-            // Edge elements are guaranteed to have exactly one face
-            var faceEntry = element.faces.entrySet().iterator().next();
             float[] uv = faceEntry.getValue().uv.uvs;
             // Counteract sprite expansion on edge quads to ensure alignment with pixels on the front and back quads
             if (faceEntry.getKey().getAxis() == Direction.Axis.Y) {
@@ -1095,6 +1099,7 @@ public class ClientHooks {
                 uv[3] = Mth.clamp(Mth.lerp(expand, uv[3], centerV), 0F, 16F);
             }
         }
+        return elements;
     }
 
     // Make sure the below method is only ever called once (by forge).
