@@ -74,10 +74,12 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.model.BakedModel;
@@ -1061,6 +1063,44 @@ public class ClientHooks {
     public static <T extends BlockEntity> boolean isBlockEntityRendererVisible(BlockEntityRenderDispatcher dispatcher, BlockEntity blockEntity, Frustum frustum) {
         BlockEntityRenderer<T> renderer = (BlockEntityRenderer<T>) dispatcher.getRenderer(blockEntity);
         return renderer != null && frustum.isVisible(renderer.getRenderBoundingBox((T) blockEntity));
+    }
+
+    /**
+     * Modify the position and UVs of the edge quads of generated item models to account for sprite expansion of the
+     * front and back quad. Fixes <a href="https://bugs.mojang.com/browse/MC-73186">MC-73186</a> on generated item models.
+     * 
+     * @param elements The generated elements, may include the front and back face
+     * @param sprite   The texture from which the elements were generated
+     * @return the original elements list
+     */
+    public static List<BlockElement> fixItemModelSeams(List<BlockElement> elements, TextureAtlasSprite sprite) {
+        float expand = -sprite.uvShrinkRatio();
+        for (BlockElement element : elements) {
+            // Edge elements are guaranteed to have exactly one face, anything else is either invalid or the front/back
+            if (element.faces.size() != 1) continue;
+
+            var faceEntry = element.faces.entrySet().iterator().next();
+            if (faceEntry.getKey().getAxis() == Direction.Axis.Z) continue;
+
+            // Move edge quads to account for sprite expansion of the front and back quads
+            element.from.x = Mth.clamp(Mth.lerp(expand, element.from.x, 8F), 0F, 16F);
+            element.from.y = Mth.clamp(Mth.lerp(expand, element.from.y, 8F), 0F, 16F);
+            element.to.x = Mth.clamp(Mth.lerp(expand, element.to.x, 8F), 0F, 16F);
+            element.to.y = Mth.clamp(Mth.lerp(expand, element.to.y, 8F), 0F, 16F);
+
+            float[] uv = faceEntry.getValue().uv.uvs;
+            // Counteract sprite expansion on edge quads to ensure alignment with pixels on the front and back quads
+            if (faceEntry.getKey().getAxis() == Direction.Axis.Y) {
+                float centerU = (uv[0] + uv[0] + uv[2] + uv[2]) / 4.0F;
+                uv[0] = Mth.clamp(Mth.lerp(expand, uv[0], centerU), 0F, 16F);
+                uv[2] = Mth.clamp(Mth.lerp(expand, uv[2], centerU), 0F, 16F);
+            } else {
+                float centerV = (uv[1] + uv[1] + uv[3] + uv[3]) / 4.0F;
+                uv[1] = Mth.clamp(Mth.lerp(expand, uv[1], centerV), 0F, 16F);
+                uv[3] = Mth.clamp(Mth.lerp(expand, uv[3], centerV), 0F, 16F);
+            }
+        }
+        return elements;
     }
 
     // Make sure the below method is only ever called once (by forge).
