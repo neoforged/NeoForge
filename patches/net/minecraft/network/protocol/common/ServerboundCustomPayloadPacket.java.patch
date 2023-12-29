@@ -44,7 +44,7 @@
 +     * @param p_294367_ The id of the payload
 +     * @param p_294321_ The buffer to read from
 +     * @return The payload
-+     * @deprecated Use {@link #readPayload(ResourceLocation, FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, net.minecraft.network.ConnectionProtocol)} instead, this variant can only read vanilla payloads.
++     * @deprecated Use {@link #readPayload(ResourceLocation, FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, net.minecraft.network.ConnectionProtocol)} instead, as this variant can only read vanilla payloads.
 +     */
 +    @Deprecated
      private static CustomPacketPayload readPayload(ResourceLocation p_294367_, FriendlyByteBuf p_294321_) {
