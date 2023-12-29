@@ -7,7 +7,6 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.Collection;
 import java.util.function.BiConsumer;
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
