@@ -8,10 +8,12 @@ package net.neoforged.neoforge.network.handlers;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.netty.buffer.Unpooled;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
@@ -97,17 +99,17 @@ public class ClientPayloadHandler {
 
     public void handle(AdvancedAddEntityPayload advancedAddEntityPayload, PlayPayloadContext context) {
         context.workHandler().submitAsync(
-                () -> {
-                    Entity entity = Objects.requireNonNull(Minecraft.getInstance().level).getEntity(advancedAddEntityPayload.entityId());
-                    if (entity instanceof IEntityWithComplexSpawn entityAdditionalSpawnData) {
-                        final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(advancedAddEntityPayload.customPayload()));
-                        try {
-                            entityAdditionalSpawnData.readSpawnData(buf);
-                        } finally {
-                            buf.release();
-                        }
-                    }
-                })
+                        () -> {
+                            Entity entity = Objects.requireNonNull(Minecraft.getInstance().level).getEntity(advancedAddEntityPayload.entityId());
+                            if (entity instanceof IEntityWithComplexSpawn entityAdditionalSpawnData) {
+                                final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(advancedAddEntityPayload.customPayload()));
+                                try {
+                                    entityAdditionalSpawnData.readSpawnData(buf);
+                                } finally {
+                                    buf.release();
+                                }
+                            }
+                        })
                 .exceptionally(e -> {
                     context.packetHandler().disconnect(Component.translatable("neoforge.advanced_add_entity.failed", e.getMessage()));
                     return null;
@@ -116,13 +118,13 @@ public class ClientPayloadHandler {
 
     public void handle(AdvancedOpenScreenPayload msg, PlayPayloadContext context) {
         context.workHandler().submitAsync(() -> {
-            final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(msg.additionalData()));
-            try {
-                createMenuScreen(msg.name(), msg.menuType(), msg.windowId(), buf);
-            } finally {
-                buf.release();
-            }
-        })
+                    final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(msg.additionalData()));
+                    try {
+                        createMenuScreen(msg.name(), msg.menuType(), msg.windowId(), buf);
+                    } finally {
+                        buf.release();
+                    }
+                })
                 .exceptionally(e -> {
                     context.packetHandler().disconnect(Component.translatable("neoforge.advanced_open_screen.failed", e.getMessage()));
                     return null;
