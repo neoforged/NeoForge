@@ -33,6 +33,7 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.InclusiveRange;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -49,6 +50,7 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.GenerationStep.Decoration;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
@@ -74,6 +76,7 @@ import net.neoforged.neoforge.common.loot.CanToolPerformAction;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
 import net.neoforged.neoforge.common.world.*;
 import net.neoforged.neoforge.common.world.BiomeModifiers.*;
+import net.neoforged.neoforge.common.world.StructureModifiers.*;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
@@ -258,6 +261,44 @@ public class NeoForgeMod {
      * Noop structure modifier. Can be used in a structure modifier json with "type": "neoforge:none".
      */
     public static final DeferredHolder<Codec<? extends StructureModifier>, Codec<NoneStructureModifier>> NONE_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("none", () -> Codec.unit(NoneStructureModifier.INSTANCE));
+
+    /**
+     * Stock structure modifier for adding mob spawns to structures.
+     */
+    public static final DeferredHolder<Codec<? extends StructureModifier>, Codec<AddSpawnsStructureModifier>> ADD_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("add_spawns", () -> RecordCodecBuilder.create(
+            builder -> builder
+                    .group(
+                            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(AddSpawnsStructureModifier::structures),
+                            // Allow either a list or single spawner, attempting to decode the list format first.
+                            // Uses the better EitherCodec that logs both errors if both formats fail to parse.
+                            new ExtraCodecs.EitherCodec<>(SpawnerData.CODEC.listOf(), SpawnerData.CODEC).xmap(
+                                    either -> either.map(Function.identity(), List::of), // convert list/singleton to list when decoding
+                                    list -> list.size() == 1 ? Either.right(list.get(0)) : Either.left(list) // convert list to singleton/list when encoding
+                            ).fieldOf("spawners").forGetter(AddSpawnsStructureModifier::spawners))
+                    .apply(builder, AddSpawnsStructureModifier::new)));
+
+    /**
+     * Stock biome modifier for removing mob spawns from biomes.
+     */
+    public static final DeferredHolder<Codec<? extends StructureModifier>, Codec<RemoveSpawnsStructureModifier>> REMOVE_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("remove_spawns", () -> RecordCodecBuilder.create(
+            builder -> builder
+                    .group(
+                            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(RemoveSpawnsStructureModifier::structures),
+                            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(RemoveSpawnsStructureModifier::entityTypes))
+                    .apply(builder, RemoveSpawnsStructureModifier::new)));
+
+    /**
+     * Stock biome modifier for removing mob spawns from biomes.
+     */
+    public static final DeferredHolder<Codec<? extends StructureModifier>, Codec<ClearSpawnsStructureModifier>> CLEAR_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("clear_spawns", () -> RecordCodecBuilder.create(
+            builder -> builder
+                    .group(
+                            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(ClearSpawnsStructureModifier::structures),
+                            new ExtraCodecs.EitherCodec<>(MobCategory.CODEC.listOf(), MobCategory.CODEC).xmap(
+                                            either -> either.map(Set::copyOf, Set::of), // convert list/singleton to set when decoding
+                                            set -> set.size() == 1 ? Either.right(set.toArray(MobCategory[]::new)[0]) : Either.left(List.copyOf(set))
+                                    ).optionalFieldOf("categories", EnumSet.allOf(MobCategory.class)).forGetter(ClearSpawnsStructureModifier::categories))
+                    .apply(builder, ClearSpawnsStructureModifier::new)));
 
     /**
      * Stock holder set type that represents any/all values in a registry. Can be used in a holderset object with {@code { "type": "neoforge:any" }}
