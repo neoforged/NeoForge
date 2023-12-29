@@ -17,6 +17,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import static net.neoforged.neoforge.attachment.AttachmentInternals.addAttachmentsToTag;
+import static net.neoforged.neoforge.attachment.AttachmentInternals.reconstructItemStack;
+
 /**
  * Additional helper methods for {@link FriendlyByteBuf}.
  */
@@ -70,7 +73,7 @@ public interface IFriendlyByteBufExtension {
         } else {
             Item item = self().readById(BuiltInRegistries.ITEM);
             int i = self().readVarInt();
-            return net.neoforged.neoforge.attachment.AttachmentInternals.reconstructItemStack(item, i, self().readNbt());
+            return reconstructItemStack(item, i, self().readNbt());
         }
     }
 
@@ -92,7 +95,7 @@ public interface IFriendlyByteBufExtension {
             if (item.isDamageable(stack) || item.shouldOverrideMultiplayerNbt()) {
                 compoundtag = stack.getTag();
             }
-            compoundtag = net.neoforged.neoforge.attachment.AttachmentInternals.addAttachmentsToTag(compoundtag, stack, false);
+            compoundtag = addAttachmentsToTag(compoundtag, stack, false);
 
             self().writeNbt(compoundtag);
         }
