@@ -5,7 +5,7 @@
          .build();
  
 +    /**
-+     * @deprecated Use {@link #ClientboundCustomPayloadPacket(FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, net.minecraft.network.ConnectionProtocol)} instead, this variant can only read vanilla payloads.
++     * @deprecated Use {@link #ClientboundCustomPayloadPacket(FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, net.minecraft.network.ConnectionProtocol)} instead, as this variant can only read vanilla payloads.
 +     * @param p_295835_ The buffer to read from
 +     */
 +    @Deprecated()
