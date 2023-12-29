@@ -22,9 +22,7 @@ public interface IServerGamePacketListenerExtension extends IServerCommonPacketL
     /**
      * {@return the listener this extension is attached to}
      */
-    default ServerGamePacketListener self() {
-        return (ServerGamePacketListener) this;
-    }
+    ServerGamePacketListener self();
 
     /**
      * Sends all given payloads as a bundle to the client.

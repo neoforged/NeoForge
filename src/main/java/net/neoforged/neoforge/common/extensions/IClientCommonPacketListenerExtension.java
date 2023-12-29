@@ -13,6 +13,7 @@ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
 
 /**
  * This interface is used to extend the {@link ClientCommonPacketListener} interface.
@@ -21,6 +22,11 @@ import net.minecraft.util.thread.ReentrantBlockableEventLoop;
  * </p>
  */
 public interface IClientCommonPacketListenerExtension {
+
+    /**
+     * {@return the ClientCommonPacketListener} this extension is attached to
+     */
+    ClientCommonPacketListener self();
 
     /**
      * Sends a packet to the server.
@@ -55,14 +61,18 @@ public interface IClientCommonPacketListenerExtension {
     /**
      * {@return true if the connection is to a vanilla client}
      */
-    boolean isVanillaConnection();
+    default boolean isVanillaConnection() {
+        return NetworkRegistry.getInstance().isVanillaConnection(getConnection());
+    }
 
     /**
      * {@return true if the custom payload type with the given id is usable by this connection}
      *
      * @param payloadId The payload id to check
      */
-    boolean isConnected(final ResourceLocation payloadId);
+    default boolean isConnected(final ResourceLocation payloadId) {
+        return NetworkRegistry.getInstance().isConnected(self(), payloadId);
+    }
 
     /**
      * {@return true if the custom payload is usable by this connection}

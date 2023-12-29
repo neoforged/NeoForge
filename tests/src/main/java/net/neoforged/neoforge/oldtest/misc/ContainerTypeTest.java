@@ -92,9 +92,7 @@ public class ContainerTypeTest {
         if (!event.getLevel().isClientSide && event.getHand() == InteractionHand.MAIN_HAND) {
             if (event.getLevel().getBlockState(event.getPos()).getBlock() == Blocks.SPONGE) {
                 String text = "Hello World!";
-
-                final ServerPlayer player = (ServerPlayer) event.getEntity();
-                player.openMenu(new MenuProvider() {
+                event.getEntity().openMenu(new MenuProvider() {
                     @Override
                     public AbstractContainerMenu createMenu(int p_createMenu_1_, Inventory p_createMenu_2_, Player p_createMenu_3_) {
                         SimpleContainer inv = new SimpleContainer(9);

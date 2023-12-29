@@ -280,7 +280,6 @@ public class NetworkRegistry {
         if (listener instanceof ServerConfigurationPacketListener configurationPacketListener) {
             //Get the configuration channel for the packet.
             final NetworkChannel channel = payloadSetup.configuration().get(packet.payload().id());
-            ;
 
             //Check if the channel should even be processed.
             if (channel == null) {
@@ -309,7 +308,6 @@ public class NetworkRegistry {
         } else if (listener instanceof ServerGamePacketListener playPacketListener) {
             //Get the configuration channel for the packet.
             final NetworkChannel channel = payloadSetup.play().get(packet.payload().id());
-            ;
 
             //Check if the channel should even be processed.
             if (channel == null) {
@@ -463,6 +461,7 @@ public class NetworkRegistry {
             }
 
             sender.disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
+            return;
         }
 
         final NegotiationResult playNegotiationResult = NetworkComponentNegotiator.negotiate(

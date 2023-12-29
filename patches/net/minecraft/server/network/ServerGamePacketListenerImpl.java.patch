@@ -143,11 +143,11 @@
          } else {
              this.connection
 -                .setListener(new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation())));
-+                    .setListener(new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation(), this.isModdedConnection)));
++                .setListener(new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation(), this.isModdedConnection)));
          }
      }
  
-@@ -1779,5 +_,16 @@
+@@ -1779,5 +_,20 @@
      @FunctionalInterface
      interface EntityInteraction {
          InteractionResult run(ServerPlayer p_143695_, Entity p_143696_, InteractionHand p_143697_);
@@ -162,5 +162,9 @@
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtServer(
 +                this, p_294276_
 +        );
++    }
++
++    public ServerGamePacketListener self() {
++        return this;
      }
  }

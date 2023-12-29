@@ -130,7 +130,11 @@ public class VanillaPacketSplitter {
                 full.release();
 
                 context.workHandler()
-                        .submitAsync(() -> context.packetHandler().handle(packet));
+                        .submitAsync(() -> context.packetHandler().handle(packet))
+                        .exceptionally(throwable -> {
+                            LOGGER.error("Error handling packet", throwable);
+                            return null;
+                        });
             }
         }
     }

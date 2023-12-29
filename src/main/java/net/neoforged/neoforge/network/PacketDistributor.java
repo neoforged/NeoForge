@@ -36,19 +36,19 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
  */
 public class PacketDistributor<T> {
     /**
-     * Send to the player specified in the Supplier
+     * Send to the player specified
      * <br/>
      * {@link #with(Object)} Player
      */
     public static final PacketDistributor<ServerPlayer> PLAYER = new PacketDistributor<>(PacketDistributor::playerConsumer, PacketFlow.CLIENTBOUND);
     /**
-     * Send to everyone in the dimension specified in the Supplier
+     * Send to everyone in the dimension specified
      * <br/>
      * {@link #with(Object)} DimensionType
      */
     public static final PacketDistributor<ResourceKey<Level>> DIMENSION = new PacketDistributor<>(PacketDistributor::playerListDimConsumer, PacketFlow.CLIENTBOUND);
     /**
-     * Send to everyone near the {@link TargetPoint} specified in the Supplier
+     * Send to everyone near the {@link TargetPoint} specified
      * <br/>
      * {@link #with(Object)} TargetPoint
      */
@@ -66,19 +66,19 @@ public class PacketDistributor<T> {
      */
     public static final PacketDistributor<Void> SERVER = new PacketDistributor<>(PacketDistributor::clientToServer, PacketFlow.SERVERBOUND);
     /**
-     * Send to all tracking the Entity in the Supplier
+     * Send to all tracking the Entity
      * <br/>
      * {@link #with(Object)} Entity
      */
     public static final PacketDistributor<Entity> TRACKING_ENTITY = new PacketDistributor<>(PacketDistributor::trackingEntity, PacketFlow.CLIENTBOUND);
     /**
-     * Send to all tracking the Entity and Player in the Supplier
+     * Send to all tracking the Entity and Player
      * <br/>
      * {@link #with(Object)} Entity
      */
     public static final PacketDistributor<Entity> TRACKING_ENTITY_AND_SELF = new PacketDistributor<>(PacketDistributor::trackingEntityAndSelf, PacketFlow.CLIENTBOUND);
     /**
-     * Send to all tracking the Chunk in the Supplier
+     * Send to all tracking the Chunk
      * <br/>
      * {@link #with(Object)} Chunk
      */
@@ -221,12 +221,12 @@ public class PacketDistributor<T> {
         return new PacketTarget(functor.apply(this, null), this);
     }
 
-    private Consumer<Packet<?>> playerConsumer(final ServerPlayer entityPlayerMPSupplier) {
-        return p -> entityPlayerMPSupplier.connection.send(p);
+    private Consumer<Packet<?>> playerConsumer(final ServerPlayer entityPlayerMP) {
+        return p -> entityPlayerMP.connection.send(p);
     }
 
-    private Consumer<Packet<?>> playerListDimConsumer(final ResourceKey<Level> dimensionTypeSupplier) {
-        return p -> getServer().getPlayerList().broadcastAll(p, dimensionTypeSupplier);
+    private Consumer<Packet<?>> playerListDimConsumer(final ResourceKey<Level> dimensionType) {
+        return p -> getServer().getPlayerList().broadcastAll(p, dimensionType);
     }
 
     private Consumer<Packet<?>> playerListAll() {
@@ -237,28 +237,28 @@ public class PacketDistributor<T> {
         return p -> Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(p);
     }
 
-    private Consumer<Packet<?>> playerListPointConsumer(final TargetPoint targetPointSupplier) {
+    private Consumer<Packet<?>> playerListPointConsumer(final TargetPoint targetPoint) {
         return p -> {
-            final TargetPoint tp = targetPointSupplier;
+            final TargetPoint tp = targetPoint;
             getServer().getPlayerList().broadcast(tp.excluded, tp.x, tp.y, tp.z, tp.r2, tp.dim, p);
         };
     }
 
-    private Consumer<Packet<?>> trackingEntity(final Entity entitySupplier) {
+    private Consumer<Packet<?>> trackingEntity(final Entity entity) {
         return p -> {
-            ((ServerChunkCache) entitySupplier.getCommandSenderWorld().getChunkSource()).broadcast(entitySupplier, p);
+            ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).broadcast(entity, p);
         };
     }
 
-    private Consumer<Packet<?>> trackingEntityAndSelf(final Entity entitySupplier) {
+    private Consumer<Packet<?>> trackingEntityAndSelf(final Entity entity) {
         return p -> {
-            ((ServerChunkCache) entitySupplier.getCommandSenderWorld().getChunkSource()).broadcastAndSend(entitySupplier, p);
+            ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).broadcastAndSend(entity, p);
         };
     }
 
-    private Consumer<Packet<?>> trackingChunk(final LevelChunk chunkPosSupplier) {
+    private Consumer<Packet<?>> trackingChunk(final LevelChunk chunkPos) {
         return p -> {
-            ((ServerChunkCache) chunkPosSupplier.getLevel().getChunkSource()).chunkMap.getPlayers(chunkPosSupplier.getPos(), false).forEach(e -> e.connection.send(p));
+            ((ServerChunkCache) chunkPos.getLevel().getChunkSource()).chunkMap.getPlayers(chunkPos.getPos(), false).forEach(e -> e.connection.send(p));
         };
     }
 

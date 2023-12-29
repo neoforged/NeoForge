@@ -16,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -58,19 +59,12 @@ public class NetworkComponentNegotiator {
         server = new ArrayList<>(server);
         client = new ArrayList<>(client);
 
-        List<NegotiableNetworkComponent> finalServer = server;
-        final List<NegotiableNetworkComponent> disabledOptionalOnClient = client.stream()
-                .filter(NegotiableNetworkComponent::optional)
-                .filter(c -> finalServer.stream().noneMatch(c2 -> c2.id().equals(c.id())))
-                .toList();
+        final List<NegotiableNetworkComponent> disabledOptionalOnClient = buildDisabledOptionalComponents(client, server);
 
         client.removeAll(disabledOptionalOnClient);
 
         List<NegotiableNetworkComponent> finalClient = client;
-        final List<NegotiableNetworkComponent> disabledOptionalOnServer = server.stream()
-                .filter(NegotiableNetworkComponent::optional)
-                .filter(c -> finalClient.stream().noneMatch(c2 -> c2.id().equals(c.id())))
-                .toList();
+        final List<NegotiableNetworkComponent> disabledOptionalOnServer = buildDisabledOptionalComponents(server, finalClient);
 
         server.removeAll(disabledOptionalOnServer);
 
@@ -98,9 +92,9 @@ public class NetworkComponentNegotiator {
 
         final List<NegotiatedNetworkComponent> result = Lists.newArrayList();
         final Map<ResourceLocation, Component> failureReasons = Maps.newHashMap();
-        for (Table.Cell<ResourceLocation, NegotiableNetworkComponent, NegotiableNetworkComponent> resourceLocationNegotiableNetworkComponentNegotiableNetworkComponentCell : matches.cellSet()) {
-            final NegotiableNetworkComponent serverComponent = resourceLocationNegotiableNetworkComponentNegotiableNetworkComponentCell.getColumnKey();
-            final NegotiableNetworkComponent clientComponent = resourceLocationNegotiableNetworkComponentNegotiableNetworkComponentCell.getValue();
+        for (Table.Cell<ResourceLocation, NegotiableNetworkComponent, NegotiableNetworkComponent> match : matches.cellSet()) {
+            final NegotiableNetworkComponent serverComponent = match.getColumnKey();
+            final NegotiableNetworkComponent clientComponent = match.getValue();
 
             Optional<ComponentNegotiationResult> serverToClientComparison = validateComponent(serverComponent, clientComponent, "client");
             if (serverToClientComparison.isPresent() && !serverToClientComparison.get().success()) {
@@ -118,10 +112,25 @@ public class NetworkComponentNegotiator {
             result.add(new NegotiatedNetworkComponent(serverComponent.id(), serverComponent.version()));
         }
 
-        if (!failureReasons.isEmpty()) {
-            result.clear();
+        if (failureReasons.isEmpty()) {
+            return new NegotiationResult(result, true, failureReasons);
         }
-        return new NegotiationResult(result, failureReasons.isEmpty(), failureReasons);
+        return new NegotiationResult(List.of(), false, failureReasons);
+    }
+
+    /**
+     * Builds a list of disabled optional components.
+     *
+     * @param currentSide The current side to check for disabled optional components.
+     * @param otherSide The other side to check for missing components.
+     * @return The list of disabled optional components.
+     */
+    @NotNull
+    private static List<NegotiableNetworkComponent> buildDisabledOptionalComponents(List<NegotiableNetworkComponent> currentSide, List<NegotiableNetworkComponent> otherSide) {
+        return currentSide.stream()
+                .filter(NegotiableNetworkComponent::optional)
+                .filter(c -> otherSide.stream().noneMatch(c2 -> c2.id().equals(c.id())))
+                .toList();
     }
 
     /**

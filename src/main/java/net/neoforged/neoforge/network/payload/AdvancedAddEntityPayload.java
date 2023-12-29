@@ -10,6 +10,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.neoforge.common.util.FriendlyByteBufUtil;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.ApiStatus;
@@ -47,13 +48,7 @@ public record AdvancedAddEntityPayload(
             return new byte[0];
         }
 
-        final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        try {
-            additionalSpawnData.writeSpawnData(buf);
-            return buf.array();
-        } finally {
-            buf.release();
-        }
+        return FriendlyByteBufUtil.writeCustomData(additionalSpawnData::writeSpawnData);
     }
 
     @Override

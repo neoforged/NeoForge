@@ -46,7 +46,7 @@
          LOGGER.warn("Client disconnected with reason: {}", p_295485_.getString());
      }
  
-@@ -315,5 +_,30 @@
+@@ -315,5 +_,25 @@
          @OnlyIn(Dist.CLIENT)
          static record PendingRequest(UUID id, URL url, String hash) {
          }
@@ -63,13 +63,8 @@
 +    }
 +    
 +    @Override
-+    public boolean isVanillaConnection() {
-+        return net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().isVanillaConnection(getConnection());
-+    }
-+    
-+    @Override
-+    public boolean isConnected(net.minecraft.resources.ResourceLocation payloadId) {
-+        return net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().isConnected(this, payloadId);
++    public ClientCommonPacketListener self() {
++        return this;
 +    }
 +
 +    @Override

@@ -10,9 +10,11 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ServerCommonPacketListener;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
 
 /**
  * Extension class for {@link net.minecraft.network.protocol.common.ServerCommonPacketListener}
@@ -21,6 +23,11 @@ import net.minecraft.util.thread.ReentrantBlockableEventLoop;
  * </p>
  */
 public interface IServerCommonPacketListenerExtension {
+
+    /**
+     * {@return the {@link ServerCommonPacketListener} that the extensions is attached to}
+     */
+    ServerCommonPacketListener self();
 
     /**
      * Sends a packet to the client which this listener is attached to.
@@ -72,14 +79,18 @@ public interface IServerCommonPacketListenerExtension {
     /**
      * {@return true if the connection is to a vanilla client}
      */
-    boolean isVanillaConnection();
+    default boolean isVanillaConnection() {
+        return NetworkRegistry.getInstance().isVanillaConnection(getConnection());
+    }
 
     /**
      * {@return true if the custom payload type with the given id is usable by this connection}
      *
      * @param payloadId The payload id to check
      */
-    boolean isConnected(final ResourceLocation payloadId);
+    default boolean isConnected(final ResourceLocation payloadId) {
+        return NetworkRegistry.getInstance().isConnected(self(), payloadId);
+    }
 
     /**
      * {@return true if the custom payload is usable by this connection}

@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.network.registration;
 
 import java.util.function.Consumer;
+
+import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -71,6 +73,10 @@ import net.neoforged.neoforge.network.handling.PlayPayloadContext;
  * The {@link PlayPayloadContext} and {@link ConfigurationPayloadContext} given to each of these handlers contains a {@link ISynchronizedWorkHandler}
  * which you can use to submit work to be run on the main thread of the game. This is the recommended way to handle any work that needs to be done
  * on the main thread.
+ * <br>
+ * Note the reader passed to any of the registration methods in this interface is invoked only if the payload is actually transferred over a connection which
+ * is not marked as {@link Connection#isMemoryConnection()}. This is important for single-player of lan-opened worlds since there the writer and reader are
+ * not invoked. This is because the payload is not actually transferred over the network, but only passed around in memory.
  * </p>
  */
 public interface IPayloadRegistrar {

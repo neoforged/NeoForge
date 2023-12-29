@@ -107,6 +107,10 @@ public class ClientPayloadHandler {
                             buf.release();
                         }
                     }
+                })
+                .exceptionally(e -> {
+                    context.packetHandler().disconnect(Component.translatable("neoforge.advanced_add_entity.failed", e.getMessage()));
+                    return null;
                 });
     }
 

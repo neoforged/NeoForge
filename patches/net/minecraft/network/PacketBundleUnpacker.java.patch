@@ -5,7 +5,7 @@
              throw new EncoderException("Bundler not configured: " + p_265038_);
          } else {
 -            bundlerinfo$provider.bundlerInfo().unbundlePacket(p_265038_, p_265735_::add);
-+            bundlerinfo$provider.bundlerInfo().unbundlePacket(p_265691_, p_265038_, p_265735_::add);
++            bundlerinfo$provider.bundlerInfo().unbundlePacket(p_265038_, p_265735_::add, p_265691_);
          }
      }
  }

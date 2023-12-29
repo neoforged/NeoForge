@@ -16,7 +16,7 @@
                      ServerStatus.Favicon.CODEC.optionalFieldOf("favicon").forGetter(ServerStatus::favicon),
 -                    Codec.BOOL.optionalFieldOf("enforcesSecureChat", Boolean.valueOf(false)).forGetter(ServerStatus::enforcesSecureChat)
 +                    Codec.BOOL.optionalFieldOf("enforcesSecureChat", Boolean.valueOf(false)).forGetter(ServerStatus::enforcesSecureChat),
-+                    Codec.BOOL.optionalFieldOf("isModded", Boolean.valueOf(false)).forGetter(ServerStatus::isModded)
++                    Codec.BOOL.optionalFieldOf("isModded", Boolean.FALSE).forGetter(ServerStatus::isModded)
                  )
                  .apply(p_304170_, ServerStatus::new)
      );
