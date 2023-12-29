@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
@@ -44,8 +45,9 @@ public class MobSpawnSettingsBuilder extends MobSpawnSettings.Builder {
         return this.mobSpawnCosts.get(type);
     }
 
-    public MobSpawnSettings.MobSpawnCost removeCost(EntityType<?> type) {
-        return this.mobSpawnCosts.remove(type);
+    public MobSpawnSettingsBuilder removeCost(EntityType<?> type) {
+        this.mobSpawnCosts.remove(type);
+        return this;
     }
 
     public float getProbability() {
