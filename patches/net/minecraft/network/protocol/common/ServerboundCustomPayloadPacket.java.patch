@@ -7,7 +7,7 @@
 +    /**
 +     * Creates a new packet with a custom payload from the network.
 +     * @param p_296108_ The buffer to read the packet from.
-+     * @deprecated Use {@link #ServerboundCustomPayloadPacket(FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, net.minecraft.network.ConnectionProtocol)} instead, this variant can only read vanilla payloads.
++     * @deprecated Use {@link #ServerboundCustomPayloadPacket(FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, net.minecraft.network.ConnectionProtocol)} instead, as this variant can only read vanilla payloads.
 +     */
 +    @Deprecated
      public ServerboundCustomPayloadPacket(FriendlyByteBuf p_296108_) {
