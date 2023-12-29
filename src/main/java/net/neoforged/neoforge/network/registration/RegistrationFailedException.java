@@ -105,6 +105,10 @@ public class RegistrationFailedException extends RuntimeException {
          */
         INVALID_NAMESPACE((id, namespace) -> "Try registering payload in namespace " + namespace + " for payload with id " + id + "."),
         /**
+         * The registrar is invalid.
+         */
+        INVALID_REGISTRAR((id, namespace) -> "Invalid registrar. It can not be used to register payloads."),
+        /**
          * Some other unknown reason, an exception was thrown downstream.
          */
         UNKNOWN((id, namespace) -> "General payload registration failure for payload with id " + id + " in namespace " + namespace + ".");

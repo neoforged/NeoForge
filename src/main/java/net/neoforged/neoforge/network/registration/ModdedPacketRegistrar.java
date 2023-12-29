@@ -30,6 +30,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
     private final Map<ResourceLocation, PlayRegistration<?>> playPayloads;
     private Optional<String> version = Optional.empty();
     private boolean optional = false;
+    private boolean valid = true;
 
     public ModdedPacketRegistrar(String modId) {
         this.modId = modId;
@@ -113,6 +114,10 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
     }
 
     private void validatePayload(ResourceLocation id, final Map<ResourceLocation, ?> payloads) {
+        if (!valid) {
+            throw new RegistrationFailedException(id, modId, RegistrationFailedException.Reason.INVALID_REGISTRAR);
+        }
+
         if (payloads.containsKey(id)) {
             throw new RegistrationFailedException(id, modId, RegistrationFailedException.Reason.DUPLICATE_ID);
         }
@@ -134,5 +139,9 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
         final ModdedPacketRegistrar clone = new ModdedPacketRegistrar(this);
         clone.optional = true;
         return clone;
+    }
+
+    public void invalidate() {
+        valid = false;
     }
 }
