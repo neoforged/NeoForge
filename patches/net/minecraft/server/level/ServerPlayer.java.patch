@@ -1,21 +1,5 @@
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -30,7 +_,6 @@
- import net.minecraft.core.registries.BuiltInRegistries;
- import net.minecraft.nbt.CompoundTag;
- import net.minecraft.nbt.NbtOps;
--import net.minecraft.nbt.Tag;
- import net.minecraft.network.PacketSendListener;
- import net.minecraft.network.chat.ChatType;
- import net.minecraft.network.chat.CommonComponents;
-@@ -38,7 +_,6 @@
- import net.minecraft.network.chat.HoverEvent;
- import net.minecraft.network.chat.OutgoingChatMessage;
- import net.minecraft.network.chat.RemoteChatSession;
--import net.minecraft.network.chat.Style;
- import net.minecraft.network.protocol.Packet;
- import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
- import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 @@ -594,6 +_,7 @@
      @Override
      public void die(DamageSource p_9035_) {
