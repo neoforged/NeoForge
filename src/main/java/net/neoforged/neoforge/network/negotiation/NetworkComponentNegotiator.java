@@ -158,21 +158,21 @@ public class NetworkComponentNegotiator {
     public static Optional<ComponentNegotiationResult> validateComponent(NegotiableNetworkComponent left, NegotiableNetworkComponent right, String requestingSide) {
         if (left.flow().isPresent()) {
             if (right.flow().isEmpty()) {
-                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.flow.%s.missing".formatted(requestingSide), left.id())));
+                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.flow.%s.missing".formatted(requestingSide), left.flow().get())));
             } else if (left.flow().get() != right.flow().get()) {
-                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.flow.%s.mismatch".formatted(requestingSide), left.id(), left.flow().get(), right.flow().get())));
+                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.flow.%s.mismatch".formatted(requestingSide), left.flow().get(), right.flow().get())));
             }
         }
 
         //If either side has no version set, fail
         if (left.version().isEmpty() && right.version().isPresent()) {
-            return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.version.%s.required".formatted(requestingSide), left.id(), right.version().get())));
+            return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.version.%s.missing".formatted(requestingSide), right.version().get())));
         }
 
         //Check if both sides have the same version, or none set.
         if (left.version().isPresent() && right.version().isPresent()) {
             if (!left.version().get().equals(right.version().get())) {
-                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.version.mismatch", left.id(), left.version().get(), right.version().get())));
+                return Optional.of(new ComponentNegotiationResult(false, Component.translatable("neoforge.network.negotiation.failure.version.mismatch", left.version().get(), right.version().get())));
             }
         }
 

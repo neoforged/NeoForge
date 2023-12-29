@@ -205,9 +205,9 @@ public class NetworkRegistry {
                     final Connection connection = ConnectionUtils.getConnection(context);
                     final PacketListener listener = connection.getPacketListener();
                     if (listener instanceof ServerGamePacketListener serverListener) {
-                        serverListener.disconnect(Component.translatable("neoforge.network.invalid_flow"));
+                        serverListener.disconnect(Component.translatable("neoforge.network.invalid_flow", flow));
                     } else if (listener instanceof ClientGamePacketListener clientListener) {
-                        clientListener.getConnection().disconnect(Component.translatable("neoforge.network.invalid_flow"));
+                        clientListener.getConnection().disconnect(Component.translatable("neoforge.network.invalid_flow", flow));
                     } else {
                         LOGGER.error("Received a modded custom payload packet {} that is not supposed to be send to the server. Disconnecting client, but the listener is not a game listener. This should not happen.", channel.id());
                         throw new IllegalStateException("A client send a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -237,9 +237,9 @@ public class NetworkRegistry {
                     final Connection connection = ConnectionUtils.getConnection(context);
                     final PacketListener listener = connection.getPacketListener();
                     if (listener instanceof ServerGamePacketListener serverListener) {
-                        serverListener.disconnect(Component.translatable("neoforge.network.invalid_flow"));
+                        serverListener.disconnect(Component.translatable("neoforge.network.invalid_flow", flow));
                     } else if (listener instanceof ClientGamePacketListener clientListener) {
-                        clientListener.getConnection().disconnect(Component.translatable("neoforge.network.invalid_flow"));
+                        clientListener.getConnection().disconnect(Component.translatable("neoforge.network.invalid_flow", flow));
                     } else {
                         LOGGER.error("Received a modded custom payload packet {} that is not supposed to be send to the server. Disconnecting client, but the listener is not a game listener. This should not happen.", channel.id());
                         throw new IllegalStateException("A client send a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -688,7 +688,7 @@ public class NetworkRegistry {
 
         //Negotiation failed. Disconnect the client.
         if (!configurationNegotiationResult.success()) {
-            sender.getConnection().disconnect(Component.translatable("neoforge.network.negotiation.failure.vanilla.server.not_supported", NeoForgeVersion.getVersion()));
+            sender.getConnection().disconnect(Component.translatable("neoforge.network.negotiation.failure.vanilla.client.not_supported", NeoForgeVersion.getVersion()));
             return false;
         }
 
@@ -700,7 +700,7 @@ public class NetworkRegistry {
 
         //Negotiation failed. Disconnect the client.
         if (!playNegotiationResult.success()) {
-            sender.getConnection().disconnect(Component.translatable("neoforge.network.negotiation.failure.server.client.not_supported", NeoForgeVersion.getVersion()));
+            sender.getConnection().disconnect(Component.translatable("neoforge.network.negotiation.failure.vanilla.client.not_supported", NeoForgeVersion.getVersion()));
             return false;
         }
 

@@ -65,7 +65,7 @@ public class ClientPayloadHandler {
 
     public void handle(FrozenRegistrySyncCompletedPayload payload, ConfigurationPayloadContext context) {
         if (!this.toSynchronize.isEmpty()) {
-            context.packetHandler().disconnect(Component.translatable("neoforge.registries.sync.failed", this.toSynchronize.stream().map(Object::toString).collect(Collectors.joining(", "))));
+            context.packetHandler().disconnect(Component.translatable("neoforge.network.registries.sync.missing", this.toSynchronize.stream().map(Object::toString).collect(Collectors.joining(", "))));
             return;
         }
 
@@ -73,14 +73,14 @@ public class ClientPayloadHandler {
             //This method normally returns missing entries, but we just accept what the server send us and ignore the rest.
             Set<ResourceKey<?>> keysUnknownToClient = RegistryManager.applySnapshot(synchronizedRegistries, false, false);
             if (!keysUnknownToClient.isEmpty()) {
-                context.packetHandler().disconnect(Component.translatable("neoforge.registries.sync.server-with-unknown-keys", keysUnknownToClient.stream().map(Object::toString).collect(Collectors.joining(", "))));
+                context.packetHandler().disconnect(Component.translatable("neoforge.network.registries.sync.server-with-unknown-keys", keysUnknownToClient.stream().map(Object::toString).collect(Collectors.joining(", "))));
                 return;
             }
 
             this.toSynchronize.clear();
             this.synchronizedRegistries.clear();
         }).exceptionally(e -> {
-            context.packetHandler().disconnect(Component.translatable("neoforge.registries.sync.failed", e.getMessage()));
+            context.packetHandler().disconnect(Component.translatable("neoforge.network.registries.sync.failed", e.getMessage()));
             return null;
         }).thenAccept(v -> {
             context.replyHandler().send(new FrozenRegistrySyncCompletedPayload());
@@ -109,7 +109,7 @@ public class ClientPayloadHandler {
                     }
                 })
                 .exceptionally(e -> {
-                    context.packetHandler().disconnect(Component.translatable("neoforge.advanced_add_entity.failed", e.getMessage()));
+                    context.packetHandler().disconnect(Component.translatable("neoforge.network.advanced_add_entity.failed", e.getMessage()));
                     return null;
                 });
     }
@@ -123,7 +123,7 @@ public class ClientPayloadHandler {
                 buf.release();
             }
         }).exceptionally(e -> {
-            context.packetHandler().disconnect(Component.translatable("neoforge.advanced_open_screen.failed", e.getMessage()));
+            context.packetHandler().disconnect(Component.translatable("neoforge.network.advanced_open_screen.failed", e.getMessage()));
             return null;
         });
     }

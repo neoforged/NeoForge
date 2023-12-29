@@ -7,6 +7,9 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.Collection;
 import java.util.function.BiConsumer;
+import java.util.function.IntFunction;
+import java.util.function.IntSupplier;
+
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -94,6 +97,39 @@ public interface IFriendlyByteBufExtension {
             self().writeNbt(compoundtag);
         }
 
+        return self();
+    }
+
+    /**
+     * Reads an array of objects from the buffer.
+     *
+     * @param builder A function that creates an array of the given size
+     * @param reader A function that reads an object from the buffer
+     * @return The array of objects
+     * @param <T> The type of the objects
+     */
+    default <T> T[] readArray(IntFunction<T[]> builder, FriendlyByteBuf.Reader<T> reader) {
+        int size = self().readVarInt();
+        T[] array = builder.apply(size);
+        for (int i = 0; i < size; i++) {
+            array[i] = reader.apply(self());
+        }
+        return array;
+    }
+
+    /**
+     * Writes an array of objects to the buffer.
+     *
+     * @param array The array of objects
+     * @param writer A function that writes an object to the buffer
+     * @return The buffer
+     * @param <T> The type of the objects
+     */
+    default <T> FriendlyByteBuf writeArray(T[] array, FriendlyByteBuf.Writer<T> writer) {
+        self().writeVarInt(array.length);
+        for (T t : array) {
+            writer.accept(self(), t);
+        }
         return self();
     }
 }

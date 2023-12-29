@@ -171,7 +171,7 @@
 +         * @param p_178328_ The discriminator
 +         * @param p_178329_ The buffer
 +         * @param p_130535_ The channel context
-+         * @return The packet, or null if none can be read.
++         * @return The packet, or null if no packet could be read.
 +         */
 +        @Nullable
 +        public Packet<?> createPacket(int p_178328_, FriendlyByteBuf p_178329_, io.netty.channel.ChannelHandlerContext p_130535_) {

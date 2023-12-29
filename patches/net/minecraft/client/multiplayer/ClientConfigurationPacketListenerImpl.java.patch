@@ -54,14 +54,17 @@
      }
  
      @Override
-@@ -85,6 +_,7 @@
+@@ -85,9 +_,7 @@
                          this.telemetryManager,
                          this.receivedRegistries,
                          this.enabledFeatures,
-+                        this.isModdedConnection,
-                         this.serverBrand,
-                         this.serverData,
-                         this.postDisconnectScreen
+-                        this.serverBrand,
+-                        this.serverData,
+-                        this.postDisconnectScreen
++                            this.serverBrand, this.serverData, this.postDisconnectScreen, this.isModdedConnection
+                     )
+                 )
+             );
 @@ -104,5 +_,14 @@
      public void onDisconnect(Component p_314649_) {
          super.onDisconnect(p_314649_);
