@@ -20,7 +20,7 @@ import net.minecraft.world.entity.player.Player;
  * @param flow                  The flow of the packet.
  * @param channelHandlerContext The channel replyHandler context.
  * @param player                The player of the payload.
- * @implNote The {@link #player()} will only be empty if the player is a player and the receiver is the server.
+ * @implNote The {@link #player()} will be filled with the current client side player if the payload was sent by the server, the server will only populate this field if it is not configuring the client.
  */
 public record PlayPayloadContext(
         IReplyHandler replyHandler,
