@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.common.world;
 
 import com.mojang.serialization.Codec;
+import java.util.List;
+import java.util.Set;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -19,17 +21,14 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
-import java.util.List;
-import java.util.Set;
-
 public final class StructureModifiers {
-    private StructureModifiers() {
-    } //Utility class
+    private StructureModifiers() {} //Utility class
 
     /**
      * <p>Stock structure modifier that adds a mob spawn override to a structure.
      * If a structure has mob spawn overrides, random mob spawning will use the structure's spawns instead of the local biome's spawns.
      * Has the following json format:</p>
+     * 
      * <pre>
      * {
      *   "type": "forge:add_spawns", // Required
@@ -43,7 +42,9 @@ public final class StructureModifiers {
      *   }
      * }
      * </pre>
+     * 
      * <p>Optionally accepts a list of spawner objects instead of a single spawner:</p>
+     * 
      * <pre>
      * {
      *   "type": "forge:add_spawns", // Required
@@ -68,7 +69,7 @@ public final class StructureModifiers {
      */
 
     public record AddSpawnsStructureModifier(HolderSet<Structure> structures,
-                                             List<SpawnerData> spawners) implements StructureModifier {
+            List<SpawnerData> spawners) implements StructureModifier {
 
         /**
          * Convenience method for using a single spawn data.
@@ -104,6 +105,7 @@ public final class StructureModifiers {
      * see {@link ClearSpawnsStructureModifier} to remove override lists completely.
      * </p>
      * Has the following json format:</p>
+     * 
      * <pre>
      * {
      *   "type": "forge:remove_spawns", // Required
@@ -112,19 +114,15 @@ public final class StructureModifiers {
      * }
      * </pre>
      *
-     * @param structures Biomes to remove mob spawns from.
+     * @param structures  Biomes to remove mob spawns from.
      * @param entityTypes EntityTypes to remove from spawn lists.
      */
-    public record RemoveSpawnsStructureModifier(HolderSet<Structure> structures, HolderSet<EntityType<?>> entityTypes) implements StructureModifier
-    {
+    public record RemoveSpawnsStructureModifier(HolderSet<Structure> structures, HolderSet<EntityType<?>> entityTypes) implements StructureModifier {
         @Override
-        public void modify(Holder<Structure> structure, Phase phase, ModifiableStructureInfo.StructureInfo.Builder builder)
-        {
-            if (phase == Phase.REMOVE && this.structures.contains(structure))
-            {
+        public void modify(Holder<Structure> structure, Phase phase, ModifiableStructureInfo.StructureInfo.Builder builder) {
+            if (phase == Phase.REMOVE && this.structures.contains(structure)) {
                 StructureSettingsBuilder settingsBuilder = builder.getStructureSettings();
-                for (MobCategory category : MobCategory.values())
-                {
+                for (MobCategory category : MobCategory.values()) {
                     var overrides = settingsBuilder.getSpawnOverrides(category);
                     if (overrides == null || overrides.getSpawns().isEmpty())
                         continue;
@@ -138,8 +136,7 @@ public final class StructureModifiers {
         }
 
         @Override
-        public Codec<? extends StructureModifier> codec()
-        {
+        public Codec<? extends StructureModifier> codec() {
             return NeoForgeMod.REMOVE_SPAWNS_STRUCTURE_MODIFIER_TYPE.get();
         }
     }
@@ -150,6 +147,7 @@ public final class StructureModifiers {
      * see {@link ClearSpawnsStructureModifier} to remove override lists completely.
      * </p>
      * Has the following json format:</p>
+     * 
      * <pre>
      * {
      *   "type": "forge:clear_spawns", // Required
@@ -161,24 +159,19 @@ public final class StructureModifiers {
      * @param structures Structures to remove mob spawn overrides from.
      * @param categories Set of mob categories to remove spawn overrides for.
      */
-    public record ClearSpawnsStructureModifier(HolderSet<Structure> structures, Set<MobCategory> categories) implements StructureModifier
-    {
+    public record ClearSpawnsStructureModifier(HolderSet<Structure> structures, Set<MobCategory> categories) implements StructureModifier {
         @Override
-        public void modify(Holder<Structure> structure, Phase phase, ModifiableStructureInfo.StructureInfo.Builder builder)
-        {
-            if (phase == Phase.REMOVE && this.structures.contains(structure))
-            {
+        public void modify(Holder<Structure> structure, Phase phase, ModifiableStructureInfo.StructureInfo.Builder builder) {
+            if (phase == Phase.REMOVE && this.structures.contains(structure)) {
                 StructureSettingsBuilder settingsBuilder = builder.getStructureSettings();
-                for (MobCategory category : this.categories)
-                {
+                for (MobCategory category : this.categories) {
                     settingsBuilder.removeSpawnOverrides(category);
                 }
             }
         }
 
         @Override
-        public Codec<? extends StructureModifier> codec()
-        {
+        public Codec<? extends StructureModifier> codec() {
             return NeoForgeMod.CLEAR_SPAWNS_STRUCTURE_MODIFIER_TYPE.get();
         }
 

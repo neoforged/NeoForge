@@ -9,6 +9,16 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
@@ -16,7 +26,11 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
-import net.minecraft.core.*;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
@@ -40,7 +54,11 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.*;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
@@ -58,7 +76,15 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.*;
+import net.neoforged.fml.CrashReportCallables;
+import net.neoforged.fml.IExtensionPoint;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.ModLoadingStage;
+import net.neoforged.fml.ModLoadingWarning;
+import net.neoforged.fml.StartupMessageManager;
+import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -66,17 +92,40 @@ import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.capabilities.CapabilityHooks;
 import net.neoforged.neoforge.client.ClientCommandHandler;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.common.conditions.*;
-import net.neoforged.neoforge.common.crafting.*;
+import net.neoforged.neoforge.common.conditions.AndCondition;
+import net.neoforged.neoforge.common.conditions.FalseCondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ItemExistsCondition;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
+import net.neoforged.neoforge.common.conditions.NotCondition;
+import net.neoforged.neoforge.common.conditions.OrCondition;
+import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
+import net.neoforged.neoforge.common.conditions.TrueCondition;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
+import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
+import net.neoforged.neoforge.common.crafting.IngredientType;
+import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
+import net.neoforged.neoforge.common.crafting.NBTIngredient;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.common.data.internal.*;
+import net.neoforged.neoforge.common.data.internal.NeoForgeBiomeTagsProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeBlockTagsProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeEntityTypeTagsProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeFluidTagsProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeItemTagsProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeLootTableProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeRecipeProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeSpriteSourceProvider;
+import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvider;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.extensions.IPlayerExtension;
 import net.neoforged.neoforge.common.loot.CanToolPerformAction;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
-import net.neoforged.neoforge.common.world.*;
-import net.neoforged.neoforge.common.world.BiomeModifiers.*;
-import net.neoforged.neoforge.common.world.StructureModifiers.*;
+import net.neoforged.neoforge.common.world.BiomeModifier;
+import net.neoforged.neoforge.common.world.BiomeModifiers;
+import net.neoforged.neoforge.common.world.NoneBiomeModifier;
+import net.neoforged.neoforge.common.world.NoneStructureModifier;
+import net.neoforged.neoforge.common.world.StructureModifier;
+import net.neoforged.neoforge.common.world.StructureModifiers;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
@@ -88,8 +137,17 @@ import net.neoforged.neoforge.internal.versions.neoform.NeoFormVersion;
 import net.neoforged.neoforge.network.DualStackUtils;
 import net.neoforged.neoforge.network.NetworkConstants;
 import net.neoforged.neoforge.network.filters.VanillaPacketSplitter;
-import net.neoforged.neoforge.registries.*;
-import net.neoforged.neoforge.registries.holdersets.*;
+import net.neoforged.neoforge.registries.DataPackRegistryEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistriesSetup;
+import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.registries.holdersets.AndHolderSet;
+import net.neoforged.neoforge.registries.holdersets.AnyHolderSet;
+import net.neoforged.neoforge.registries.holdersets.HolderSetType;
+import net.neoforged.neoforge.registries.holdersets.NotHolderSet;
+import net.neoforged.neoforge.registries.holdersets.OrHolderSet;
 import net.neoforged.neoforge.server.command.EnumArgument;
 import net.neoforged.neoforge.server.command.ModIdArgument;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
@@ -100,12 +158,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
 @Mod(NeoForgeVersion.MOD_ID)
@@ -122,7 +174,7 @@ public class NeoForgeMod {
     private static final DeferredRegister<Codec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, "neoforge");
     private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.HOLDER_SET_TYPES, "neoforge");
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     // Uses Holder instead of DeferredHolder as the type due to weirdness between ECJ and javac.
     private static final Holder<ArgumentTypeInfo<?, ?>> ENUM_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("enum", () -> ArgumentTypeInfos.registerByClass(EnumArgument.class, new EnumArgument.Info()));
     private static final DeferredHolder<ArgumentTypeInfo<?, ?>, SingletonArgumentInfo<ModIdArgument>> MODID_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("modid", () -> ArgumentTypeInfos.registerByClass(ModIdArgument.class,
@@ -165,98 +217,93 @@ public class NeoForgeMod {
     /**
      * Stock biome modifier for adding features to biomes.
      */
-    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<AddFeaturesBiomeModifier>> ADD_FEATURES_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_features", () -> RecordCodecBuilder.create(
+    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<BiomeModifiers.AddFeaturesBiomeModifier>> ADD_FEATURES_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_features", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddFeaturesBiomeModifier::biomes),
-                            PlacedFeature.LIST_CODEC.fieldOf("features").forGetter(AddFeaturesBiomeModifier::features),
-                            Decoration.CODEC.fieldOf("step").forGetter(AddFeaturesBiomeModifier::step))
-                    .apply(builder, AddFeaturesBiomeModifier::new)));
+                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeModifiers.AddFeaturesBiomeModifier::biomes),
+                            PlacedFeature.LIST_CODEC.fieldOf("features").forGetter(BiomeModifiers.AddFeaturesBiomeModifier::features),
+                            Decoration.CODEC.fieldOf("step").forGetter(BiomeModifiers.AddFeaturesBiomeModifier::step))
+                    .apply(builder, BiomeModifiers.AddFeaturesBiomeModifier::new)));
 
     /**
      * Stock biome modifier for removing features from biomes.
      */
-    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<RemoveFeaturesBiomeModifier>> REMOVE_FEATURES_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_features", () -> RecordCodecBuilder.create(
+    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<BiomeModifiers.RemoveFeaturesBiomeModifier>> REMOVE_FEATURES_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_features", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveFeaturesBiomeModifier::biomes),
-                            PlacedFeature.LIST_CODEC.fieldOf("features").forGetter(RemoveFeaturesBiomeModifier::features),
+                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeModifiers.RemoveFeaturesBiomeModifier::biomes),
+                            PlacedFeature.LIST_CODEC.fieldOf("features").forGetter(BiomeModifiers.RemoveFeaturesBiomeModifier::features),
                             new ExtraCodecs.EitherCodec<List<Decoration>, Decoration>(Decoration.CODEC.listOf(), Decoration.CODEC).<Set<Decoration>>xmap(
                                     either -> either.map(Set::copyOf, Set::of), // convert list/singleton to set when decoding
-                                    set -> set.size() == 1 ? Either.right(set.toArray(Decoration[]::new)[0]) : Either.left(List.copyOf(set))).optionalFieldOf("steps", EnumSet.allOf(Decoration.class)).forGetter(RemoveFeaturesBiomeModifier::steps))
-                    .apply(builder, RemoveFeaturesBiomeModifier::new)));
+                                    set -> set.size() == 1 ? Either.right(set.toArray(Decoration[]::new)[0]) : Either.left(List.copyOf(set))).optionalFieldOf("steps", EnumSet.allOf(Decoration.class)).forGetter(BiomeModifiers.RemoveFeaturesBiomeModifier::steps))
+                    .apply(builder, BiomeModifiers.RemoveFeaturesBiomeModifier::new)));
 
     /**
      * Stock biome modifier for adding mob spawns to biomes.
      */
-    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<AddSpawnsBiomeModifier>> ADD_SPAWNS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_spawns", () -> RecordCodecBuilder.create(
+    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<BiomeModifiers.AddSpawnsBiomeModifier>> ADD_SPAWNS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_spawns", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddSpawnsBiomeModifier::biomes),
+                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeModifiers.AddSpawnsBiomeModifier::biomes),
                             // Allow either a list or single spawner, attempting to decode the list format first.
                             // Uses the better EitherCodec that logs both errors if both formats fail to parse.
                             new ExtraCodecs.EitherCodec<>(SpawnerData.CODEC.listOf(), SpawnerData.CODEC).xmap(
                                     either -> either.map(Function.identity(), List::of), // convert list/singleton to list when decoding
                                     list -> list.size() == 1 ? Either.right(list.get(0)) : Either.left(list) // convert list to singleton/list when encoding
-                            ).fieldOf("spawners").forGetter(AddSpawnsBiomeModifier::spawners))
-                    .apply(builder, AddSpawnsBiomeModifier::new)));
+                            ).fieldOf("spawners").forGetter(BiomeModifiers.AddSpawnsBiomeModifier::spawners))
+                    .apply(builder, BiomeModifiers.AddSpawnsBiomeModifier::new)));
 
     /**
      * Stock biome modifier for removing mob spawns from biomes.
      */
-    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<RemoveSpawnsBiomeModifier>> REMOVE_SPAWNS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_spawns", () -> RecordCodecBuilder.create(
+    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<BiomeModifiers.RemoveSpawnsBiomeModifier>> REMOVE_SPAWNS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_spawns", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveSpawnsBiomeModifier::biomes),
-                            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(RemoveSpawnsBiomeModifier::entityTypes))
-                    .apply(builder, RemoveSpawnsBiomeModifier::new)));
+                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeModifiers.RemoveSpawnsBiomeModifier::biomes),
+                            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(BiomeModifiers.RemoveSpawnsBiomeModifier::entityTypes))
+                    .apply(builder, BiomeModifiers.RemoveSpawnsBiomeModifier::new)));
 
     /**
      * Stock biome modifier for adding spawn costs to biomes.
      */
-    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<AddSpawnCostsBiomeModifier>> ADD_SPAWN_COSTS_BIOME_MODIFIER = BIOME_MODIFIER_SERIALIZERS.register("add_spawn_costs", () -> RecordCodecBuilder.create(
+    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<BiomeModifiers.AddSpawnCostsBiomeModifier>> ADD_SPAWN_COSTS_BIOME_MODIFIER = BIOME_MODIFIER_SERIALIZERS.register("add_spawn_costs", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddSpawnCostsBiomeModifier::biomes),
-                            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(AddSpawnCostsBiomeModifier::entityTypes),
-                            MobSpawnSettings.MobSpawnCost.CODEC.fieldOf("spawn_cost").forGetter(AddSpawnCostsBiomeModifier::spawnCost)
-                    ).apply(builder, AddSpawnCostsBiomeModifier::new)));
+                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeModifiers.AddSpawnCostsBiomeModifier::biomes),
+                            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(BiomeModifiers.AddSpawnCostsBiomeModifier::entityTypes),
+                            MobSpawnSettings.MobSpawnCost.CODEC.fieldOf("spawn_cost").forGetter(BiomeModifiers.AddSpawnCostsBiomeModifier::spawnCost))
+                    .apply(builder, BiomeModifiers.AddSpawnCostsBiomeModifier::new)));
 
     /**
      * Stock biome modifier for removing mob spawn costs from biomes.
      */
-    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<RemoveSpawnCostsBiomeModifier>> REMOVE_SPAWN_COSTS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_spawn_costs", () ->
-            RecordCodecBuilder.create(builder -> builder.group(
-                    Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveSpawnCostsBiomeModifier::biomes),
-                    RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(RemoveSpawnCostsBiomeModifier::entityTypes)
-            ).apply(builder, RemoveSpawnCostsBiomeModifier::new))
-    );
+    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<BiomeModifiers.RemoveSpawnCostsBiomeModifier>> REMOVE_SPAWN_COSTS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_spawn_costs", () -> RecordCodecBuilder.create(builder -> builder.group(
+            Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeModifiers.RemoveSpawnCostsBiomeModifier::biomes),
+            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(BiomeModifiers.RemoveSpawnCostsBiomeModifier::entityTypes)).apply(builder, BiomeModifiers.RemoveSpawnCostsBiomeModifier::new)));
 
     /**
      * Stock biome modifier for adding carvers to biomes.
      */
-    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<AddCarversBiomeModifier>> ADD_CARVERS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_carvers", () -> RecordCodecBuilder.create(
+    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<BiomeModifiers.AddCarversBiomeModifier>> ADD_CARVERS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_carvers", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddCarversBiomeModifier::biomes),
-                            ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(AddCarversBiomeModifier::carvers),
-                            GenerationStep.Carving.CODEC.fieldOf("steps").forGetter(AddCarversBiomeModifier::steps)
-                    ).apply(builder, AddCarversBiomeModifier::new)));
-
+                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeModifiers.AddCarversBiomeModifier::biomes),
+                            ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(BiomeModifiers.AddCarversBiomeModifier::carvers),
+                            GenerationStep.Carving.CODEC.fieldOf("steps").forGetter(BiomeModifiers.AddCarversBiomeModifier::steps))
+                    .apply(builder, BiomeModifiers.AddCarversBiomeModifier::new)));
 
     /**
      * Stock biome modifier for removing carvers from biomes.
      */
-    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<RemoveCarversBiomeModifier>> REMOVE_CARVERS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_carvers", () -> RecordCodecBuilder.create(
+    public static final DeferredHolder<Codec<? extends BiomeModifier>, Codec<BiomeModifiers.RemoveCarversBiomeModifier>> REMOVE_CARVERS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_carvers", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveCarversBiomeModifier::biomes),
-                            ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(RemoveCarversBiomeModifier::carvers),
+                            Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeModifiers.RemoveCarversBiomeModifier::biomes),
+                            ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(BiomeModifiers.RemoveCarversBiomeModifier::carvers),
                             new ExtraCodecs.EitherCodec<>(GenerationStep.Carving.CODEC.listOf(), GenerationStep.Carving.CODEC).xmap(
                                     either -> either.map(Set::copyOf, Set::of), // convert list/singleton to set when decoding
-                                    set -> set.size() == 1 ? Either.right(set.toArray(GenerationStep.Carving[]::new)[0]) : Either.left(List.copyOf(set))
-                            ).optionalFieldOf("steps", EnumSet.allOf(GenerationStep.Carving.class)).forGetter(RemoveCarversBiomeModifier::steps)
-                    ).apply(builder, RemoveCarversBiomeModifier::new)));
+                                    set -> set.size() == 1 ? Either.right(set.toArray(GenerationStep.Carving[]::new)[0]) : Either.left(List.copyOf(set))).optionalFieldOf("steps", EnumSet.allOf(GenerationStep.Carving.class)).forGetter(BiomeModifiers.RemoveCarversBiomeModifier::steps))
+                    .apply(builder, BiomeModifiers.RemoveCarversBiomeModifier::new)));
     /**
      * Noop structure modifier. Can be used in a structure modifier json with "type": "neoforge:none".
      */
@@ -265,40 +312,39 @@ public class NeoForgeMod {
     /**
      * Stock structure modifier for adding mob spawns to structures.
      */
-    public static final DeferredHolder<Codec<? extends StructureModifier>, Codec<AddSpawnsStructureModifier>> ADD_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("add_spawns", () -> RecordCodecBuilder.create(
+    public static final DeferredHolder<Codec<? extends StructureModifier>, Codec<StructureModifiers.AddSpawnsStructureModifier>> ADD_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("add_spawns", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(AddSpawnsStructureModifier::structures),
+                            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(StructureModifiers.AddSpawnsStructureModifier::structures),
                             // Allow either a list or single spawner, attempting to decode the list format first.
                             // Uses the better EitherCodec that logs both errors if both formats fail to parse.
                             new ExtraCodecs.EitherCodec<>(SpawnerData.CODEC.listOf(), SpawnerData.CODEC).xmap(
                                     either -> either.map(Function.identity(), List::of), // convert list/singleton to list when decoding
                                     list -> list.size() == 1 ? Either.right(list.get(0)) : Either.left(list) // convert list to singleton/list when encoding
-                            ).fieldOf("spawners").forGetter(AddSpawnsStructureModifier::spawners))
-                    .apply(builder, AddSpawnsStructureModifier::new)));
+                            ).fieldOf("spawners").forGetter(StructureModifiers.AddSpawnsStructureModifier::spawners))
+                    .apply(builder, StructureModifiers.AddSpawnsStructureModifier::new)));
 
     /**
      * Stock biome modifier for removing mob spawns from biomes.
      */
-    public static final DeferredHolder<Codec<? extends StructureModifier>, Codec<RemoveSpawnsStructureModifier>> REMOVE_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("remove_spawns", () -> RecordCodecBuilder.create(
+    public static final DeferredHolder<Codec<? extends StructureModifier>, Codec<StructureModifiers.RemoveSpawnsStructureModifier>> REMOVE_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("remove_spawns", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(RemoveSpawnsStructureModifier::structures),
-                            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(RemoveSpawnsStructureModifier::entityTypes))
-                    .apply(builder, RemoveSpawnsStructureModifier::new)));
+                            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(StructureModifiers.RemoveSpawnsStructureModifier::structures),
+                            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(StructureModifiers.RemoveSpawnsStructureModifier::entityTypes))
+                    .apply(builder, StructureModifiers.RemoveSpawnsStructureModifier::new)));
 
     /**
      * Stock biome modifier for removing mob spawns from biomes.
      */
-    public static final DeferredHolder<Codec<? extends StructureModifier>, Codec<ClearSpawnsStructureModifier>> CLEAR_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("clear_spawns", () -> RecordCodecBuilder.create(
+    public static final DeferredHolder<Codec<? extends StructureModifier>, Codec<StructureModifiers.ClearSpawnsStructureModifier>> CLEAR_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("clear_spawns", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(ClearSpawnsStructureModifier::structures),
+                            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(StructureModifiers.ClearSpawnsStructureModifier::structures),
                             new ExtraCodecs.EitherCodec<>(MobCategory.CODEC.listOf(), MobCategory.CODEC).xmap(
-                                            either -> either.map(Set::copyOf, Set::of), // convert list/singleton to set when decoding
-                                            set -> set.size() == 1 ? Either.right(set.toArray(MobCategory[]::new)[0]) : Either.left(List.copyOf(set))
-                                    ).optionalFieldOf("categories", EnumSet.allOf(MobCategory.class)).forGetter(ClearSpawnsStructureModifier::categories))
-                    .apply(builder, ClearSpawnsStructureModifier::new)));
+                                    either -> either.map(Set::copyOf, Set::of), // convert list/singleton to set when decoding
+                                    set -> set.size() == 1 ? Either.right(set.toArray(MobCategory[]::new)[0]) : Either.left(List.copyOf(set))).optionalFieldOf("categories", EnumSet.allOf(MobCategory.class)).forGetter(StructureModifiers.ClearSpawnsStructureModifier::categories))
+                    .apply(builder, StructureModifiers.ClearSpawnsStructureModifier::new)));
 
     /**
      * Stock holder set type that represents any/all values in a registry. Can be used in a holderset object with {@code { "type": "neoforge:any" }}
@@ -564,8 +610,7 @@ public class NeoForgeMod {
         VanillaPacketSplitter.register();
     }
 
-    public void loadComplete(FMLLoadCompleteEvent event) {
-    }
+    public void loadComplete(FMLLoadCompleteEvent event) {}
 
     public void serverStopping(ServerStoppingEvent evt) {
         WorldWorkerManager.clear();
