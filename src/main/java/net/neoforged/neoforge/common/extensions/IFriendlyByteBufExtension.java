@@ -7,7 +7,12 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.Collection;
 import java.util.function.BiConsumer;
+
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 /**
@@ -50,5 +55,46 @@ public interface IFriendlyByteBufExtension {
      */
     default <T> void writeObjectCollection(Collection<T> set, BiConsumer<T, FriendlyByteBuf> writer) {
         self().writeCollection(set, (buf, t) -> writer.accept(t, buf));
+    }
+
+    /**
+     * Reads an {@link ItemStack} from the current buffer, but allows for a larger count than the vanilla method, using a variable length int instead of a byte.
+     *
+     * @return The read stack
+     */
+    default ItemStack readItemWithLargeCount() {
+        if (!self().readBoolean()) {
+            return ItemStack.EMPTY;
+        } else {
+            Item item = self().readById(BuiltInRegistries.ITEM);
+            int i = self().readVarInt();
+            return net.neoforged.neoforge.attachment.AttachmentInternals.reconstructItemStack(item, i, self().readNbt());
+        }
+    }
+
+    /**
+     * Writes an {@link ItemStack} to the current buffer, but allows for a larger count than the vanilla method, using a variable length int instead of a byte.
+     *
+     * @param stack The stack to write
+     * @return The buffer
+     */
+    default FriendlyByteBuf writeItemWithLargeCount(ItemStack stack) {
+        if (stack.isEmpty()) {
+            self().writeBoolean(false);
+        } else {
+            self().writeBoolean(true);
+            Item item = stack.getItem();
+            self().writeId(BuiltInRegistries.ITEM, item);
+            self().writeVarInt(stack.getCount());
+            CompoundTag compoundtag = new CompoundTag();
+            if (item.isDamageable(stack) || item.shouldOverrideMultiplayerNbt()) {
+                compoundtag = stack.getTag();
+            }
+            compoundtag = net.neoforged.neoforge.attachment.AttachmentInternals.addAttachmentsToTag(compoundtag, stack, false);
+
+            self().writeNbt(compoundtag);
+        }
+
+        return self();
     }
 }
