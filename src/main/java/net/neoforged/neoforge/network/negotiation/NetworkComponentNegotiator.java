@@ -122,7 +122,7 @@ public class NetworkComponentNegotiator {
      * Builds a list of disabled optional components.
      *
      * @param currentSide The current side to check for disabled optional components.
-     * @param otherSide The other side to check for missing components.
+     * @param otherSide   The other side to check for missing components.
      * @return The list of disabled optional components.
      */
     @NotNull

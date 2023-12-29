@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.network.payload;
 
-import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;

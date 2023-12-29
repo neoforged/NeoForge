@@ -1,9 +1,8 @@
 package net.neoforged.neoforge.common.util;
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.network.FriendlyByteBuf;
-
 import java.util.function.Consumer;
+import net.minecraft.network.FriendlyByteBuf;
 
 /**
  * Utility class for working with {@link FriendlyByteBuf}s.

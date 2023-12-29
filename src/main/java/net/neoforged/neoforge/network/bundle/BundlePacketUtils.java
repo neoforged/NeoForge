@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.network.bundle;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.network.PacketListener;

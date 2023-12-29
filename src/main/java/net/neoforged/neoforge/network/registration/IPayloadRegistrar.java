@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.network.registration;
 
 import java.util.function.Consumer;
-
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

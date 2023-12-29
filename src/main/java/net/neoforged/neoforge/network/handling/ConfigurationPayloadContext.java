@@ -14,7 +14,7 @@ import net.minecraft.world.entity.player.Player;
 /**
  * The context that is passed to a replyHandler for a payload that arrives during the configuration phase of the connection.
  *
- * @param replyHandler               A reply replyHandler that can be used to send a reply to the player.
+ * @param replyHandler          A reply replyHandler that can be used to send a reply to the player.
  * @param packetHandler         The packet replyHandler that can be used to immediately process other packets.
  * @param taskCompletedHandler  The task completed replyHandler that can be used to indicate that a configuration task has been completed.
  * @param workHandler           A work replyHandler that can be used to schedule work to be done on the main thread.
