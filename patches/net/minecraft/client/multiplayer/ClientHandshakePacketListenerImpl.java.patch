@@ -1,13 +1,12 @@
 --- a/net/minecraft/client/multiplayer/ClientHandshakePacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientHandshakePacketListenerImpl.java
-@@ -166,9 +_,7 @@
-                         this.minecraft.getTelemetryManager().createWorldSessionManager(this.newWorld, this.worldLoadDuration, this.minigameName),
-                         ClientRegistryLayer.createRegistryAccess().compositeAccess(),
+@@ -168,7 +_,8 @@
                          FeatureFlags.DEFAULT_FLAGS,
--                        null,
--                        this.serverData,
+                         null,
+                         this.serverData,
 -                        this.parent
-+                            null, this.serverData, this.parent, false
++                        this.parent,
++                        false
                      )
                  )
              );

@@ -54,14 +54,13 @@
      }
  
      @Override
-@@ -85,9 +_,7 @@
-                         this.telemetryManager,
-                         this.receivedRegistries,
+@@ -87,7 +_,8 @@
                          this.enabledFeatures,
--                        this.serverBrand,
--                        this.serverData,
+                         this.serverBrand,
+                         this.serverData,
 -                        this.postDisconnectScreen
-+                            this.serverBrand, this.serverData, this.postDisconnectScreen, this.isModdedConnection
++                        this.postDisconnectScreen,
++                        this.isModdedConnection
                      )
                  )
              );
