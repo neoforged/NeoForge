@@ -1,6 +1,16 @@
 --- a/net/minecraft/client/renderer/block/model/ItemModelGenerator.java
 +++ b/net/minecraft/client/renderer/block/model/ItemModelGenerator.java
-@@ -39,6 +_,8 @@
+@@ -32,13 +_,16 @@
+ 
+             Material material = p_111672_.getMaterial(s);
+             map.put(s, Either.left(material));
+-            SpriteContents spritecontents = p_111671_.apply(material).contents();
+-            list.addAll(this.processFrames(i, s, spritecontents));
++            TextureAtlasSprite sprite = p_111671_.apply(material);
++            // Neo: fix MC-73186 on generated item models
++            list.addAll(net.neoforged.neoforge.client.ClientHooks.fixItemModelSeams(this.processFrames(i, s, sprite.contents()), sprite));
+         }
+ 
          map.put("particle", p_111672_.hasTexture("particle") ? Either.left(p_111672_.getMaterial("particle")) : map.get("layer0"));
          BlockModel blockmodel = new BlockModel(null, list, map, false, p_111672_.getGuiLight(), p_111672_.getTransforms(), p_111672_.getOverrides());
          blockmodel.name = p_111672_.name;
