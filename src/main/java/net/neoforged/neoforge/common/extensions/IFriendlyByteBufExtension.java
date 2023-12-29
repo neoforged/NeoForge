@@ -5,20 +5,18 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import static net.neoforged.neoforge.attachment.AttachmentInternals.addAttachmentsToTag;
+import static net.neoforged.neoforge.attachment.AttachmentInternals.reconstructItemStack;
+
 import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.IntFunction;
-import java.util.function.IntSupplier;
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
-
-import static net.neoforged.neoforge.attachment.AttachmentInternals.addAttachmentsToTag;
-import static net.neoforged.neoforge.attachment.AttachmentInternals.reconstructItemStack;
 
 /**
  * Additional helper methods for {@link FriendlyByteBuf}.
@@ -107,7 +105,7 @@ public interface IFriendlyByteBufExtension {
      * Reads an array of objects from the buffer.
      *
      * @param builder A function that creates an array of the given size
-     * @param reader A function that reads an object from the buffer
+     * @param reader  A function that reads an object from the buffer
      * @return The array of objects
      * @param <T> The type of the objects
      */
@@ -123,7 +121,7 @@ public interface IFriendlyByteBufExtension {
     /**
      * Writes an array of objects to the buffer.
      *
-     * @param array The array of objects
+     * @param array  The array of objects
      * @param writer A function that writes an object to the buffer
      * @return The buffer
      * @param <T> The type of the objects
