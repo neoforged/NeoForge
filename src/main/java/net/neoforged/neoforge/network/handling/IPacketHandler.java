@@ -10,7 +10,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
- * Describes a replyHandler for a packet.
+ * Describes a handler for a packet.
  * Allows for the handling of full packets from custom payloads
  */
 public interface IPacketHandler {

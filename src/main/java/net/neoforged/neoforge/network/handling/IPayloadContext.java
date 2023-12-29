@@ -14,21 +14,21 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 /**
- * Defines a phase-less payload context that is passed to a replyHandler for a payload that arrives during the connection.
+ * Defines a phase-less payload context that is passed to a handler for a payload that arrives during the connection.
  */
 public interface IPayloadContext {
     /**
-     * {@return a replyHandler that can be used to reply to the payload.}
+     * {@return a handler that can be used to reply to the payload.}
      */
     IReplyHandler replyHandler();
 
     /**
-     * {@return a replyHandler that can be used to have the current listener which received the payload handle another packet immediately.}
+     * {@return a handler that can be used to have the current listener which received the payload handle another packet immediately.}
      */
     IPacketHandler packetHandler();
 
     /**
-     * {@return a replyHandler that can execute tasks on the main thread.}
+     * {@return a handler that can execute tasks on the main thread.}
      */
     ISynchronizedWorkHandler workHandler();
 
@@ -43,7 +43,7 @@ public interface IPayloadContext {
     ConnectionProtocol protocol();
 
     /**
-     * {@return the channel replyHandler context.}
+     * {@return the channel handler context.}
      */
     ChannelHandlerContext channelHandlerContext();
 

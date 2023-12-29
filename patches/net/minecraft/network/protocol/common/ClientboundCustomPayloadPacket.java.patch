@@ -1,11 +1,9 @@
 --- a/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
 +++ b/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
-@@ -52,16 +_,53 @@
-         .put(VillageSectionsDebugPayload.ID, VillageSectionsDebugPayload::new)
+@@ -53,13 +_,50 @@
          .put(WorldGenAttemptDebugPayload.ID, WorldGenAttemptDebugPayload::new)
          .build();
--
-+    
+ 
 +    /**
 +     * @deprecated Use {@link #ClientboundCustomPayloadPacket(FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, net.minecraft.network.ConnectionProtocol)} instead, this variant can only read vanilla payloads.
 +     * @param p_295835_ The buffer to read from
@@ -14,8 +12,7 @@
      public ClientboundCustomPayloadPacket(FriendlyByteBuf p_295835_) {
          this(readPayload(p_295835_.readResourceLocation(), p_295835_));
      }
--
-+    
+ 
 +    /**
 +     * Reads a custom payload packet from the given buffer.
 +     *
@@ -26,7 +23,7 @@
 +    public ClientboundCustomPayloadPacket(FriendlyByteBuf p_295835_, io.netty.channel.ChannelHandlerContext context, net.minecraft.network.ConnectionProtocol protocol) {
 +        this(readPayload(p_295835_.readResourceLocation(), p_295835_, context, protocol));
 +    }
-+    
++
 +    /**
 +     * Reads the payload from the given buffer.
 +     *
@@ -40,7 +37,7 @@
 +        FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().getReader(p_294367_, context, protocol, KNOWN_TYPES);
 +        return (CustomPacketPayload)(reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_));
 +    }
-+    
++
 +    /**
 +     * @deprecated Use {@link #readPayload(ResourceLocation, FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, net.minecraft.network.ConnectionProtocol)} instead, this variant can only read vanilla payloads.
 +     * @param p_294802_ The id of the payload
@@ -53,8 +50,5 @@
 -        return (CustomPacketPayload)(reader != null ? reader.apply(p_294886_) : readUnknownPayload(p_294802_, p_294886_));
 +        return reader != null ? reader.apply(p_294886_) : readUnknownPayload(p_294802_, p_294886_);
      }
--
-+    
+ 
      private static DiscardedPayload readUnknownPayload(ResourceLocation p_295991_, FriendlyByteBuf p_295803_) {
-         int i = p_295803_.readableBytes();
-         if (i >= 0 && i <= 1048576) {

@@ -32,7 +32,7 @@
 +        this.configurationTasks.addAll(net.neoforged.fml.ModLoader.get().postEventWithReturn(new net.neoforged.neoforge.network.event.OnGameConfigurationEvent(this)).getConfigurationTasks());
 +        this.configurationTasks.add(new net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseCompleted(this));
 +    }
-+    
++
 +    @Override
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket p_294276_) {
 +        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload moddedEnvironmentPayload) {
@@ -78,15 +78,6 @@
              this.connection.resumeInboundAfterProtocolChange();
          } catch (Exception exception) {
              LOGGER.error("Couldn't place player in world", (Throwable)exception);
-@@ -146,7 +_,7 @@
-             }
-         }
-     }
--
-+    
-     public void finishCurrentTask(ConfigurationTask.Type p_294853_) {
-         ConfigurationTask.Type configurationtask$type = this.currentTask != null ? this.currentTask.type() : null;
-         if (!p_294853_.equals(configurationtask$type)) {
 @@ -155,5 +_,15 @@
              this.currentTask = null;
              this.startNextTask();

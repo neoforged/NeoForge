@@ -1,11 +1,9 @@
 --- a/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
 +++ b/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
-@@ -16,16 +_,55 @@
-         )
+@@ -17,13 +_,52 @@
          .put(BrandPayload.ID, BrandPayload::new)
          .build();
--
-+    
+ 
 +    /**
 +     * Creates a new packet with a custom payload from the network.
 +     * @param p_296108_ The buffer to read the packet from.
@@ -15,8 +13,7 @@
      public ServerboundCustomPayloadPacket(FriendlyByteBuf p_296108_) {
          this(readPayload(p_296108_.readResourceLocation(), p_296108_));
      }
--
-+    
+ 
 +    /**
 +     * Creates a new packet with a custom payload from the network.
 +     *
@@ -27,7 +24,7 @@
 +    public ServerboundCustomPayloadPacket(FriendlyByteBuf p_296108_, io.netty.channel.ChannelHandlerContext context, net.minecraft.network.ConnectionProtocol protocol) {
 +        this(readPayload(p_296108_.readResourceLocation(), p_296108_, context, protocol));
 +    }
-+    
++
 +    /**
 +     * Reads the payload from the given buffer.
 +     *
@@ -41,7 +38,7 @@
 +        FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().getReader(p_294367_, context, protocol, KNOWN_TYPES);
 +        return (CustomPacketPayload)(reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_));
 +    }
-+    
++
 +    /**
 +     * Reads the payload from the given buffer.
 +     * @param p_294367_ The id of the payload
@@ -55,8 +52,5 @@
 -        return (CustomPacketPayload)(reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_));
 +        return reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_);
      }
--
-+    
+ 
      private static DiscardedPayload readUnknownPayload(ResourceLocation p_294973_, FriendlyByteBuf p_296037_) {
-         int i = p_296037_.readableBytes();
-         if (i >= 0 && i <= 32767) {

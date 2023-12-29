@@ -35,12 +35,10 @@
  
      public void disconnect(Component p_294116_) {
          this.connection.send(new ClientboundDisconnectPacket(p_294116_), PacketSendListener.thenRun(() -> this.connection.disconnect(p_294116_)));
-@@ -142,8 +_,42 @@
-     public int latency() {
+@@ -143,7 +_,41 @@
          return this.latency;
      }
--
-+    
+ 
 +    /**
 +     * Creates a new cookie for this connection.
 +     *
