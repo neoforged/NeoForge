@@ -21,7 +21,7 @@
  
      protected abstract RegistryAccess.Frozen registryAccess();
  
-@@ -189,13 +_,24 @@
+@@ -189,6 +_,10 @@
      }
  
      public void send(Packet<?> p_295097_) {
@@ -32,11 +32,7 @@
          this.connection.send(p_295097_);
      }
  
-+    public void send(CustomPacketPayload payload) {
-+        this.send(new net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket(payload));
-+    }
-+
-     @Override
+@@ -196,6 +_,9 @@
      public void onDisconnect(Component p_295485_) {
          this.telemetryManager.onDisconnect();
          this.minecraft.disconnect(this.createDisconnectScreen(p_295485_));

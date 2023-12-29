@@ -23,18 +23,6 @@
          boolean flag = !this.suspendFlushingOnServerThread || !this.server.isSameThread();
  
          try {
-@@ -121,6 +_,11 @@
-             throw new ReportedException(crashreport);
-         }
-     }
-+    
-+    @Override
-+    public void send(net.minecraft.network.protocol.common.custom.CustomPacketPayload packetPayload, @Nullable PacketSendListener listener) {
-+        this.send(new net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket(packetPayload), listener);
-+    }
- 
-     public void disconnect(Component p_294116_) {
-         this.connection.send(new ClientboundDisconnectPacket(p_294116_), PacketSendListener.thenRun(() -> this.connection.disconnect(p_294116_)));
 @@ -143,7 +_,41 @@
          return this.latency;
      }

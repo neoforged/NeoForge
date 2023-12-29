@@ -57,7 +57,9 @@ public interface IServerCommonPacketListenerExtension {
      * @param packetPayload The payload to send
      * @param listener      The listener to call when the packet is sent
      */
-    void send(CustomPacketPayload packetPayload, @Nullable PacketSendListener listener);
+    default void send(CustomPacketPayload packetPayload, @Nullable PacketSendListener listener) {
+        this.send(new net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket(packetPayload), listener);
+    }
 
     /**
      * Triggers a disconnection with the given reason.
