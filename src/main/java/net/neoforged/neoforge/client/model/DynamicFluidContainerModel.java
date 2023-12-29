@@ -114,7 +114,7 @@ public class DynamicFluidContainerModel implements IUnbakedGeometry<DynamicFluid
 
         if (baseLocation != null && baseSprite != null) {
             // Base texture
-            var unbaked = UnbakedGeometryHelper.createUnbakedItemElements(0, baseSprite.contents());
+            var unbaked = UnbakedGeometryHelper.createUnbakedItemElements(0, baseSprite);
             var quads = UnbakedGeometryHelper.bakeElements(unbaked, $ -> baseSprite, modelState, modelLocation);
             modelBuilder.addQuads(normalRenderTypes, quads);
         }
@@ -124,7 +124,7 @@ public class DynamicFluidContainerModel implements IUnbakedGeometry<DynamicFluid
             if (templateSprite != null) {
                 // Fluid layer
                 var transformedState = new SimpleModelState(modelState.getRotation().compose(FLUID_TRANSFORM), modelState.isUvLocked());
-                var unbaked = UnbakedGeometryHelper.createUnbakedItemMaskElements(1, templateSprite.contents()); // Use template as mask
+                var unbaked = UnbakedGeometryHelper.createUnbakedItemMaskElements(1, templateSprite); // Use template as mask
                 var quads = UnbakedGeometryHelper.bakeElements(unbaked, $ -> fluidSprite, transformedState, modelLocation); // Bake with fluid texture
 
                 var emissive = applyFluidLuminosity && fluid.getFluidType().getLightLevel() > 0;
@@ -140,7 +140,7 @@ public class DynamicFluidContainerModel implements IUnbakedGeometry<DynamicFluid
             if (sprite != null) {
                 // Cover/overlay
                 var transformedState = new SimpleModelState(modelState.getRotation().compose(COVER_TRANSFORM), modelState.isUvLocked());
-                var unbaked = UnbakedGeometryHelper.createUnbakedItemMaskElements(2, coverSprite.contents()); // Use cover as mask
+                var unbaked = UnbakedGeometryHelper.createUnbakedItemMaskElements(2, coverSprite); // Use cover as mask
                 var quads = UnbakedGeometryHelper.bakeElements(unbaked, $ -> sprite, transformedState, modelLocation); // Bake with selected texture
                 modelBuilder.addQuads(normalRenderTypes, quads);
             }
