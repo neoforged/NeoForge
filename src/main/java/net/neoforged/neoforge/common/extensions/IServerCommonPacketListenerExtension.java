@@ -10,6 +10,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.ServerCommonPacketListener;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -58,7 +59,7 @@ public interface IServerCommonPacketListenerExtension {
      * @param listener      The listener to call when the packet is sent
      */
     default void send(CustomPacketPayload packetPayload, @Nullable PacketSendListener listener) {
-        this.send(new net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket(packetPayload), listener);
+        this.send(new ClientboundCustomPayloadPacket(packetPayload), listener);
     }
 
     /**
