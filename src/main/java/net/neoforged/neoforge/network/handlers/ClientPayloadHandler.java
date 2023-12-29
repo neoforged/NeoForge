@@ -123,10 +123,10 @@ public class ClientPayloadHandler {
                 buf.release();
             }
         })
-        .exceptionally(e -> {
-            context.packetHandler().disconnect(Component.translatable("neoforge.advanced_open_screen.failed", e.getMessage()));
-            return null;
-        });
+                .exceptionally(e -> {
+                    context.packetHandler().disconnect(Component.translatable("neoforge.advanced_open_screen.failed", e.getMessage()));
+                    return null;
+                });
     }
 
     private static <T extends AbstractContainerMenu> void createMenuScreen(Component name, MenuType<T> menuType, int windowId, FriendlyByteBuf buf) {
