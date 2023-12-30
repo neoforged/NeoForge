@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.network.filters;
 
 import com.google.common.collect.ImmutableMap;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
 import java.util.List;
 import java.util.Map;

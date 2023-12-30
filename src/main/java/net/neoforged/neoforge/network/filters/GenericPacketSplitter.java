@@ -5,12 +5,17 @@
 
 package net.neoforged.neoforge.network.filters;
 
+import static net.minecraft.network.Connection.ATTRIBUTE_CLIENTBOUND_PROTOCOL;
+import static net.minecraft.network.Connection.ATTRIBUTE_SERVERBOUND_PROTOCOL;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.network.CompressionDecoder;
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
@@ -30,12 +35,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static net.minecraft.network.Connection.ATTRIBUTE_CLIENTBOUND_PROTOCOL;
-import static net.minecraft.network.Connection.ATTRIBUTE_SERVERBOUND_PROTOCOL;
-
 @Mod.EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @ApiStatus.Internal
 public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> implements DynamicChannelHandler {
@@ -46,8 +45,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
     private static final int MAX_PART_SIZE = determineMaxPayloadSize(
             ConnectionProtocol.CONFIGURATION,
             PacketFlow.SERVERBOUND,
-            MAX_PACKET_SIZE
-    );
+            MAX_PACKET_SIZE);
 
     private static final byte STATE_FIRST = 1;
     private static final byte STATE_LAST = 2;
@@ -56,8 +54,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
 
     public GenericPacketSplitter(Connection connection) {
         this(
-                getProtocolKey(connection.getDirection().getOpposite())
-        );
+                getProtocolKey(connection.getDirection().getOpposite()));
     }
 
     public GenericPacketSplitter(AttributeKey<ConnectionProtocol.CodecData<?>> codecKey) {
@@ -222,7 +219,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
     }
 
     private static AttributeKey<ConnectionProtocol.CodecData<?>> getProtocolKey(PacketFlow p_294385_) {
-        return switch(p_294385_) {
+        return switch (p_294385_) {
             case CLIENTBOUND -> ATTRIBUTE_CLIENTBOUND_PROTOCOL;
             case SERVERBOUND -> ATTRIBUTE_SERVERBOUND_PROTOCOL;
         };
