@@ -26,7 +26,9 @@ public interface IClientCommonPacketListenerExtension {
     /**
      * {@return the ClientCommonPacketListener this extension is attached to}
      */
-    ClientCommonPacketListener self();
+    private ClientCommonPacketListener self() {
+        return (ClientCommonPacketListener) this;
+    }
 
     /**
      * Sends a packet to the server.

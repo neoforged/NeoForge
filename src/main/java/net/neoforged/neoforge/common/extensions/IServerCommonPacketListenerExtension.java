@@ -28,7 +28,9 @@ public interface IServerCommonPacketListenerExtension {
     /**
      * {@return the {@link ServerCommonPacketListener} that the extensions is attached to}
      */
-    ServerCommonPacketListener self();
+    private ServerCommonPacketListener self() {
+        return (ServerCommonPacketListener) this;
+    }
 
     /**
      * Sends a packet to the client which this listener is attached to.

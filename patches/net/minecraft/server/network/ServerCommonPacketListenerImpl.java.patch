@@ -18,7 +18,7 @@
          boolean flag = !this.suspendFlushingOnServerThread || !this.server.isSameThread();
  
          try {
-@@ -143,7 +_,41 @@
+@@ -143,7 +_,36 @@
          return this.latency;
      }
  
@@ -54,10 +54,5 @@
 +    @Override
 +    public net.minecraft.util.thread.ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
 +        return server;
-+    }
-+
-+    @Override
-+    public ServerCommonPacketListener self() {
-+        return this;
      }
  }
