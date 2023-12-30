@@ -12,6 +12,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.common.util.INBTSerializable;
@@ -38,13 +39,16 @@ import org.jetbrains.annotations.Nullable;
  * <li>Serializable item stack attachments are copied when an item stack is copied.</li>
  * <li>Serializable item stack attachments must match for item stack comparison to succeed.</li>
  * </ul>
+ * <h3>{@link Level}-exclusive behavior:</h3>
+ * <ul>
+ * <li>(nothing)</li>
+ * </ul>
  * <h3>{@link LevelChunk}-exclusive behavior:</h3>
  * <ul>
  * <li>Modifications to attachments should be followed by a call to {@link LevelChunk#setUnsaved(boolean)}.</li>
  * </ul>
  */
 // TODO Future work: maybe add copy handlers for stacks and entities, to customize copying behavior (instead of serializing, copying the NBT, deserializing).
-// TODO Future work: maybe add custom comparison handlers for item stacks.
 public final class AttachmentType<T> {
     final Supplier<T> defaultValueSupplier;
     @Nullable
