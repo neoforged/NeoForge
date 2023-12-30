@@ -42,7 +42,7 @@ public interface IServerCommonPacketListenerExtension {
      *
      * @param packetPayload The payload to send
      */
-    default void send(CustomPacketPayload packetPayload)  {
+    default void send(CustomPacketPayload packetPayload) {
         this.send(new ClientboundCustomPayloadPacket(packetPayload));
     }
 
