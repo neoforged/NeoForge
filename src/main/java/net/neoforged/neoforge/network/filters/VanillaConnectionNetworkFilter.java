@@ -55,7 +55,7 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
     }
 
     @Override
-    protected boolean isNecessary(Connection manager) {
+    public boolean isNecessary(Connection manager) {
         return NetworkRegistry.getInstance().isVanillaConnection(manager);
     }
 

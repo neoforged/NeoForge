@@ -24,13 +24,12 @@ public record SplitPacketPayload(byte[] payload) implements CustomPacketPayload 
     public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "split");
 
     public SplitPacketPayload(FriendlyByteBuf buf) {
-        this(buf.readBytes(buf.readVarInt()).array());
+        this(buf.readByteArray());
     }
 
     @Override
     public void write(FriendlyByteBuf buf) {
-        buf.writeVarInt(payload().length);
-        buf.writeBytes(payload());
+        buf.writeByteArray(payload);
     }
 
     @Override
