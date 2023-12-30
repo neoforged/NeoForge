@@ -41,11 +41,10 @@ import net.neoforged.neoforge.network.handling.PlayPayloadContext;
  * <ul>
  * <li>If the id you are trying to register is already in use, meaning you used the same id twice for different packets of the same kind.</li>
  * <li>If you are trying to register a payload to a namespace that is not your own.</li>
+ * <li>If the registrar has become invalid.</li>
  * </ul>
- * In principal this means that the registration will fail if any of these cases occur.
+ * This means that the registration will fail if any of these cases occur.
  * The exception thrown in these cases is a {@link RegistrationFailedException}.
- * Although you are free to capture this exception and handle it, it is not recommended to do so, since it is a sign of a programming error.
- * <br>
  * </p>
  * <p>
  * There are two kinds of payloads:
@@ -63,7 +62,7 @@ import net.neoforged.neoforge.network.handling.PlayPayloadContext;
  * login process. Invoking the {@link ITaskCompletedHandler#onTaskCompleted(ConfigurationTask.Type)} method on the client, will throw an exception.
  * </p>
  * <p>
- * Note: the processing of payloads happens solely on the network thread. You are yourself responsible for ensuring that any data you access
+ * Note: the processing of payloads happens solely on the network thread. You are responsible for ensuring that any data you access
  * in your handlers is either thread safe, or that you queue up your work to be done on the main thread, of the relevant side.
  * This is particularly important for the {@link IPlayPayloadHandler} or {@link IConfigurationPayloadHandler} implementations that you pass to
  * {@link #play(ResourceLocation, FriendlyByteBuf.Reader, IPlayPayloadHandler)} or {@link #configuration(ResourceLocation, FriendlyByteBuf.Reader, IConfigurationPayloadHandler)}
@@ -75,7 +74,7 @@ import net.neoforged.neoforge.network.handling.PlayPayloadContext;
  * <br>
  * Note the reader passed to any of the registration methods in this interface is invoked only if the payload is actually transferred over a connection which
  * is not marked as {@link Connection#isMemoryConnection()}. This is important for single-player of lan-opened worlds since there the writer and reader are
- * not invoked. This is because the payload is not actually transferred over the network, but only passed around in memory.
+ * not invoked. That is because the payload is not actually transferred over the network, but only passed around in memory.
  * </p>
  */
 public interface IPayloadRegistrar {
@@ -175,7 +174,8 @@ public interface IPayloadRegistrar {
      * Clients connecting to a server with these payloads, will only be able to connect if they have the same version.
      *
      * @param version The version to use.
-     * @return The registrar, ready to configure payloads with that version.
+     * @return A new registrar, ready to configure payloads with that version.
+     * @implNote The registrar implementation is immutable, so this method will return a new registrar.
      */
     IPayloadRegistrar versioned(String version);
 
@@ -188,7 +188,8 @@ public interface IPayloadRegistrar {
      * In other words, marking a payload as optional does not exempt it from versioning, if it has that configured.
      * </p>
      * 
-     * @return The registrar, ready to configure payloads as optional.
+     * @return A new registrar, ready to configure payloads as optional.
+     * @implNote The registrar implementation is immutable, so this method will return a new registrar.
      */
     IPayloadRegistrar optional();
 }

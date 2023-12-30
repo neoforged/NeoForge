@@ -22,7 +22,6 @@ import org.jetbrains.annotations.ApiStatus;
  * The internal implementation of {@link IPayloadRegistrar} for modded packets.
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-@ApiStatus.Internal
 class ModdedPacketRegistrar implements IPayloadRegistrar {
 
     private final String modId;
@@ -44,6 +43,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
         this.configurationPayloads = source.configurationPayloads;
         this.version = source.version;
         this.optional = source.optional;
+        this.valid = source.valid;
     }
 
     public Map<ResourceLocation, ConfigurationRegistration<?>> getConfigurationRegistrations() {

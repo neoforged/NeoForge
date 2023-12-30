@@ -180,7 +180,7 @@ public class NetworkRegistry {
         final PacketFlow flow = context.channel().attr(ATTRIBUTE_FLOW).get();
         if (payloadSetup == null || flow == null) {
             //Error: Bail.
-            LOGGER.warn("Received a modded custom payload packet {} that has not negotiated with the server. Not parsing packet.", id);
+            LOGGER.warn("Received a modded custom payload packet {} that has not been negotiated with the server. Not parsing packet.", id);
             return null;
         }
 
@@ -197,12 +197,12 @@ public class NetworkRegistry {
             final PlayRegistration<?> registration = knownPlayRegistrations.get(channel.id());
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet {} with an unknown or not accepted channel. Not parsing packet.", channel.id());
-                throw new IllegalStateException("A client send a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
+                throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
             }
 
             if (registration.flow().isPresent()) {
                 if (registration.flow().get() != flow) {
-                    LOGGER.warn("Received a modded custom payload packet {} that is not supposed to be send to the server. Disconnecting client.", channel.id());
+                    LOGGER.warn("Received a modded custom payload packet {} that is not supposed to be sent to the server. Disconnecting client.", channel.id());
                     final Connection connection = ConnectionUtils.getConnection(context);
                     final PacketListener listener = connection.getPacketListener();
                     if (listener instanceof ServerGamePacketListener serverListener) {
@@ -210,8 +210,8 @@ public class NetworkRegistry {
                     } else if (listener instanceof ClientGamePacketListener clientListener) {
                         clientListener.getConnection().disconnect(Component.translatable("neoforge.network.invalid_flow", flow));
                     } else {
-                        LOGGER.error("Received a modded custom payload packet {} that is not supposed to be send to the server. Disconnecting client, but the listener is not a game listener. This should not happen.", channel.id());
-                        throw new IllegalStateException("A client send a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
+                        LOGGER.error("Received a modded custom payload packet {} that is not supposed to be sent to the server. Disconnecting client, but the listener is not a game listener. This should not happen.", channel.id());
+                        throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
                     }
                 }
             }
@@ -229,12 +229,12 @@ public class NetworkRegistry {
             final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(channel.id());
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet {} with an unknown or not accepted channel. Not parsing packet.", channel.id());
-                throw new IllegalStateException("A client send a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
+                throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
             }
 
             if (registration.flow().isPresent()) {
                 if (registration.flow().get() != flow) {
-                    LOGGER.warn("Received a modded custom payload packet {} that is not supposed to be send to the server. Disconnecting client.", channel.id());
+                    LOGGER.warn("Received a modded custom payload packet {} that is not supposed to be sent to the server. Disconnecting client.", channel.id());
                     final Connection connection = ConnectionUtils.getConnection(context);
                     final PacketListener listener = connection.getPacketListener();
                     if (listener instanceof ServerGamePacketListener serverListener) {
@@ -242,17 +242,17 @@ public class NetworkRegistry {
                     } else if (listener instanceof ClientGamePacketListener clientListener) {
                         clientListener.getConnection().disconnect(Component.translatable("neoforge.network.invalid_flow", flow));
                     } else {
-                        LOGGER.error("Received a modded custom payload packet {} that is not supposed to be send to the server. Disconnecting client, but the listener is not a game listener. This should not happen.", channel.id());
-                        throw new IllegalStateException("A client send a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
+                        LOGGER.error("Received a modded custom payload packet {} that is not supposed to be sent to the server. Disconnecting client, but the listener is not a game listener. This should not happen.", channel.id());
+                        throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
                     }
                 }
             }
 
             return registration;
         } else {
-            //Error case, somebody is trying to send a custom packet during a phase that is not supported.
+            //Error case, somebody is trying to sent a custom packet during a phase that is not supported.
             LOGGER.error("Received a modded custom payload packet from a client that is not in the configuration or play phase. Not parsing packet.");
-            throw new IllegalStateException("A client send a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
+            throw new IllegalStateException("A client sent a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
         }
 
     }
@@ -293,7 +293,7 @@ public class NetworkRegistry {
             final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(channel.id());
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a client with an unknown or not accepted channel. Disconnecting client.");
-                throw new IllegalStateException("A client send a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
+                throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
             }
 
             registration.handle(
@@ -321,7 +321,7 @@ public class NetworkRegistry {
             final PlayRegistration<?> registration = knownPlayRegistrations.get(channel.id());
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a client with an unknown or not accepted channel. Disconnecting client.");
-                throw new IllegalStateException("A client send a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
+                throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
             }
 
             registration.handle(
@@ -335,7 +335,7 @@ public class NetworkRegistry {
                             listener instanceof ServerPlayerConnection connection ? Optional.of(connection.getPlayer()) : Optional.empty()));
         } else {
             LOGGER.error("Received a modded custom payload packet from a client that is not in the configuration or play phase. Disconnecting client.");
-            throw new IllegalStateException("A client send a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
+            throw new IllegalStateException("A client sent a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
         }
     }
 
@@ -379,7 +379,7 @@ public class NetworkRegistry {
             final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(channel.id());
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a server with an unknown or not accepted channel. Disconnecting server.");
-                throw new IllegalStateException("A server send a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
+                throw new IllegalStateException("A server sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
             }
 
             registration.handle(
@@ -407,7 +407,7 @@ public class NetworkRegistry {
             final PlayRegistration<?> registration = knownPlayRegistrations.get(channel.id());
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a server with an unknown or not accepted channel. Disconnecting server.");
-                throw new IllegalStateException("A server send a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
+                throw new IllegalStateException("A server sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
             }
 
             registration.handle(
@@ -421,7 +421,7 @@ public class NetworkRegistry {
                             Optional.ofNullable(playPacketListener.getMinecraft().player)));
         } else {
             LOGGER.error("Received a modded custom payload packet from a server that is not in the configuration or play phase. Disconnecting server.");
-            throw new IllegalStateException("A server send a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
+            throw new IllegalStateException("A server sent a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
         }
         return true;
     }
@@ -741,7 +741,7 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.configuration().get(payloadId);
 
             if (channel == null) {
-                LOGGER.trace("Somebody tried to send: {} to a client which can not accept it. Not sending packet.", payloadId);
+                LOGGER.trace("Somebody tried to send: {} to a client which cannot accept it. Not sending packet.", payloadId);
                 return false;
             }
 
@@ -750,7 +750,7 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.play().get(payloadId);
 
             if (channel == null) {
-                LOGGER.trace("Somebody tried to send: {} to a client which can not accept it. Not sending packet.", payloadId);
+                LOGGER.trace("Somebody tried to send: {} to a client which cannot accept it. Not sending packet.", payloadId);
                 return false;
             }
 
@@ -779,7 +779,7 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.configuration().get(payloadId);
 
             if (channel == null) {
-                LOGGER.trace("Somebody tried to send: {} to a server which can not accept it. Not sending packet.", payloadId);
+                LOGGER.trace("Somebody tried to send: {} to a server which cannot accept it. Not sending packet.", payloadId);
                 return false;
             }
 
@@ -788,7 +788,7 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.play().get(payloadId);
 
             if (channel == null) {
-                LOGGER.trace("Somebody tried to send: {} to a server which can not accept it. Not sending packet.", payloadId);
+                LOGGER.trace("Somebody tried to send: {} to a server which cannot accept it. Not sending packet.", payloadId);
                 return false;
             }
 
@@ -829,7 +829,7 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.play().get(customPayloadPacket.payload().id());
 
             if (channel == null) {
-                LOGGER.trace("Somebody tried to send: {} to a client which can not accept it. Not sending packet.", customPayloadPacket.payload().id());
+                LOGGER.trace("Somebody tried to send: {} to a client which cannot accept it. Not sending packet.", customPayloadPacket.payload().id());
                 return;
             }
 
@@ -924,7 +924,7 @@ public class NetworkRegistry {
             try {
                 packet.handle((T) listener);
             } catch (ClassCastException exception) {
-                throw new IllegalStateException("Somebody tried to handle a packet to a listener that does not support it.", exception);
+                throw new IllegalStateException("Somebody tried to handle a packet in a listener that does not support it.", exception);
             }
         }
     }
@@ -951,7 +951,7 @@ public class NetworkRegistry {
             try {
                 packet.handle((T) listener);
             } catch (ClassCastException exception) {
-                throw new IllegalStateException("Somebody tried to handle a packet to a listener that does not support it.", exception);
+                throw new IllegalStateException("Somebody tried to handle a packet in a listener that does not support it.", exception);
             }
         }
     }

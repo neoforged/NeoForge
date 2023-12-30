@@ -28,9 +28,9 @@ public record SplitPacketPayload(byte[] payload) implements CustomPacketPayload 
     }
 
     @Override
-    public void write(FriendlyByteBuf p_294947_) {
-        p_294947_.writeVarInt(payload().length);
-        p_294947_.writeBytes(payload());
+    public void write(FriendlyByteBuf buf) {
+        buf.writeVarInt(payload().length);
+        buf.writeBytes(payload());
     }
 
     @Override

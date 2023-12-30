@@ -18,7 +18,7 @@ import net.minecraft.world.level.Level;
  */
 public interface IPayloadContext {
     /**
-     * {@return a handler that can be used to reply to the payload.}
+     * {@return a handler that can be used to reply to the payload}
      */
     IReplyHandler replyHandler();
 
@@ -28,36 +28,36 @@ public interface IPayloadContext {
     IPacketHandler packetHandler();
 
     /**
-     * {@return a handler that can execute tasks on the main thread.}
+     * {@return a handler that can execute tasks on the main thread}
      */
     ISynchronizedWorkHandler workHandler();
 
     /**
-     * {@return the flow of the packet.}
+     * {@return the flow of the packet}
      */
     PacketFlow flow();
 
     /**
-     * {@return the protocol of the connection.}
+     * {@return the protocol of the connection}
      */
     ConnectionProtocol protocol();
 
     /**
-     * {@return the channel handler context.}
+     * {@return the channel handler context}
      */
     ChannelHandlerContext channelHandlerContext();
 
     /**
-     * {@return the player that acts within this context.}
+     * {@return the player that acts within this context}
      * 
      * @implNote This {@link Optional} will be filled with the current client side player if the payload was sent by the server, the server will only populate this field if it is not configuring the client.
      */
     Optional<Player> player();
 
     /**
-     * {@return the level acts within this context.}
+     * {@return the level acts within this context}
      *
-     * @return This {@link Optional} will be filled with the current client side level if the payload was sent by the server, the server will only populate this field if it is not configuring the client.
+     * @implNote This {@link Optional} will be filled with the current client side level if the payload was sent by the server, the server will only populate this field if it is not configuring the client.
      */
     default Optional<Level> level() {
         return player().map(Entity::level);

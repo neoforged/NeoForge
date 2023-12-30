@@ -20,7 +20,6 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>
  * Note: this exception is a runtime exception, meaning that it does not need to be caught.
  * It is not recommended that this exception is caught, since it is a sign of a programming error.
- * However, if a modder wishes to do so, they can capture it and handle it appropriately.
  * </p>
  */
 public class RegistrationFailedException extends RuntimeException {

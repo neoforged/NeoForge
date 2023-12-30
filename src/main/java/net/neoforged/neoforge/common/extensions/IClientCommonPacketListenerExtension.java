@@ -24,7 +24,7 @@ import net.neoforged.neoforge.network.registration.NetworkRegistry;
 public interface IClientCommonPacketListenerExtension {
 
     /**
-     * {@return the ClientCommonPacketListener} this extension is attached to
+     * {@return the ClientCommonPacketListener this extension is attached to}
      */
     ClientCommonPacketListener self();
 

@@ -11,12 +11,14 @@ import net.neoforged.neoforge.network.configuration.SyncConfig;
 import net.neoforged.neoforge.network.configuration.SyncRegistries;
 import net.neoforged.neoforge.network.configuration.SyncTierSortingRegistry;
 import net.neoforged.neoforge.network.event.OnGameConfigurationEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 @Mod.EventBusSubscriber(modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
+@ApiStatus.Internal
 public class ConfigurationInitialization {
 
     @SubscribeEvent
-    public static void configureModdedClient(OnGameConfigurationEvent event) {
+    private static void configureModdedClient(OnGameConfigurationEvent event) {
         if (event.getListener().isVanillaConnection())
             return;
 

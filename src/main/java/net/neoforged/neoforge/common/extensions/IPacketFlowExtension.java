@@ -39,5 +39,5 @@ public interface IPacketFlowExtension {
      */
     default LogicalSide getReceptionSide() {
         return isServerbound() ? LogicalSide.SERVER : LogicalSide.CLIENT;
-    };
+    }
 }

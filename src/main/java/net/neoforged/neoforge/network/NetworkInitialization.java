@@ -27,7 +27,7 @@ import org.jetbrains.annotations.ApiStatus;
 public class NetworkInitialization {
 
     @SubscribeEvent
-    public static void register(final RegisterPayloadHandlerEvent event) {
+    private static void register(final RegisterPayloadHandlerEvent event) {
         final IPayloadRegistrar registrar = event.registrar(NeoForgeVersion.MOD_ID)
                 .versioned(NeoForgeVersion.getSpec())
                 .optional();

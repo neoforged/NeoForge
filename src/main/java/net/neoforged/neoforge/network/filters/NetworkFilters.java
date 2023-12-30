@@ -45,6 +45,7 @@ public class NetworkFilters {
         if (pipeline.get("packet_handler") == null)
             return; // Realistically this can only ever be null if the connection was prematurely closed due to an error. We return early here to reduce further log spam.
 
+        //Grab the pipeline filters to remove in a seperate list to avoid a ConcurrentModificationException
         final List<VanillaPacketFilter> toRemove = pipeline.names()
                 .stream()
                 .map(name -> pipeline.get(name))

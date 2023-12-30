@@ -84,8 +84,8 @@ public class EntityTests {
 
     public static final class CustomComplexSpawnEntity extends Entity implements IEntityWithComplexSpawn {
 
-        public CustomComplexSpawnEntity(EntityType<?> p_19870_, Level p_19871_) {
-            super(p_19870_, p_19871_);
+        public CustomComplexSpawnEntity(EntityType<?> type, Level level) {
+            super(type, level);
         }
 
         @Override
@@ -94,12 +94,12 @@ public class EntityTests {
         }
 
         @Override
-        protected void readAdditionalSaveData(@NotNull CompoundTag p_20052_) {
+        protected void readAdditionalSaveData(@NotNull CompoundTag tag) {
 
         }
 
         @Override
-        protected void addAdditionalSaveData(@NotNull CompoundTag p_20139_) {
+        protected void addAdditionalSaveData(@NotNull CompoundTag tag) {
 
         }
 
@@ -116,8 +116,8 @@ public class EntityTests {
 
     public static final class AdaptedSpawnEntity extends Entity {
 
-        public AdaptedSpawnEntity(EntityType<?> p_19870_, Level p_19871_) {
-            super(p_19870_, p_19871_);
+        public AdaptedSpawnEntity(EntityType<?> type, Level level) {
+            super(type, level);
         }
 
         @Override
@@ -126,12 +126,12 @@ public class EntityTests {
         }
 
         @Override
-        protected void readAdditionalSaveData(@NotNull CompoundTag p_20052_) {
+        protected void readAdditionalSaveData(@NotNull CompoundTag tag) {
 
         }
 
         @Override
-        protected void addAdditionalSaveData(@NotNull CompoundTag p_20139_) {
+        protected void addAdditionalSaveData(@NotNull CompoundTag tag) {
 
         }
 
@@ -143,8 +143,8 @@ public class EntityTests {
 
     public static final class SimpleEntity extends Entity {
 
-        public SimpleEntity(EntityType<?> p_19870_, Level p_19871_) {
-            super(p_19870_, p_19871_);
+        public SimpleEntity(EntityType<?> type, Level level) {
+            super(type, level);
         }
 
         @Override
@@ -153,12 +153,12 @@ public class EntityTests {
         }
 
         @Override
-        protected void readAdditionalSaveData(CompoundTag p_20052_) {
+        protected void readAdditionalSaveData(@NotNull CompoundTag tag) {
 
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag p_20139_) {
+        protected void addAdditionalSaveData(@NotNull CompoundTag tag) {
 
         }
     }
@@ -175,7 +175,7 @@ public class EntityTests {
         public void write(@NotNull FriendlyByteBuf buf) {}
 
         @Override
-        public ResourceLocation id() {
+        public @NotNull ResourceLocation id() {
             return ID;
         }
     }

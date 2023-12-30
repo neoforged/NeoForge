@@ -41,6 +41,7 @@ public interface ICustomConfigurationTask extends ConfigurationTask {
      */
     @Override
     @ApiStatus.Internal
+    @ApiStatus.NonExtendable
     default void start(@NotNull Consumer<Packet<?>> sender) {
         run((payload) -> sender.accept(new ClientboundCustomPayloadPacket(payload)));
     }
