@@ -23,7 +23,7 @@ public interface IPayloadContext {
     IReplyHandler replyHandler();
 
     /**
-     * {@return a handler that can be used to have the current listener which received the payload handle another packet immediately.}
+     * {@return a handler that can be used to have the current listener which received the payload handle another packet immediately}
      */
     IPacketHandler packetHandler();
 
