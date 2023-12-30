@@ -58,7 +58,9 @@ public interface IClientCommonPacketListenerExtension {
      *
      * @return The raw underlying connection event loop.
      */
-    ReentrantBlockableEventLoop<?> getMainThreadEventLoop();
+    default ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
+        return getMinecraft();
+    }
 
     /**
      * {@return true if the connection is to a vanilla client}
