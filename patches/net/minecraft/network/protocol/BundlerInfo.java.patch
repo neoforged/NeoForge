@@ -42,7 +42,7 @@
  
                      @Nullable
                      @Override
-@@ -61,7 +_,23 @@
+@@ -61,7 +_,24 @@
          };
      }
  
@@ -53,7 +53,8 @@
      void unbundlePacket(Packet<?> p_265095_, Consumer<Packet<?>> p_265715_);
 +
 +    /**
-+     * Writes a bundle packet to the network connection.
++     * Unwrap and flattens a bundle packet.
++     * Then sends the packets contained in the bundle, bracketing them in delimiter packets if need be.
 +     *
 +     * @param bundlePacket The bundle packet to write.
 +     * @param packetSender The packet sender.
