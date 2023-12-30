@@ -1,27 +1,12 @@
-base_path: "."
-base_url: "https://neoforged.api.crowdin.com"
-
-# For interacting with Crowdin locally (via CLI), set these environment variables to their proper values
-project_id_env: "NEOFORGE_CROWDIN_PROJECT_ID"
-api_token_env: "NEOFORGE_CROWDIN_API_TOKEN"
-
-# Preserve directory structure (required by the use of the 'dest' field below)
-preserve_hierarchy: true
-
-# Prevent Crowdin-created commits from automatically triggering builds
-commit_message: "[ci skip]"
-# Automatically label PRs made by Crowdin
-pull_request_labels: [ "l10n" ]
-
+project_id_env: NEOFORGE_CROWDIN_PROJECT_ID
+api_token_env: NEOFORGE_CROWDIN_API_TOKEN
+base_path: .
+base_url: 'https://neoforged.api.crowdin.com'
+preserve_hierarchy: 1
+commit_message: '[ci skip]'
+pull_request_labels:
+  - l10n
 files:
-    -   source: "/src/main/resources/assets/neoforge/lang/en_us.json"
-        # Unfortunately, Crowdin doesn't have a placeholder which matches Minecraft's expected naming scheme: underscores
-        # with lowercase letters (since resource location are required to be fully lowercase).
-        #
-        # To make up for this unfortunate defect, **in the Crowdin interface**, we specify custom language mappings for
-        # the "%locale_with_underscore%" placeholder, converting the uppercase to lowercase in the original value.
-        #
-        # If you are adding a new language to the Crowdin project,
-        # ** MAKE SURE YOU ADD THE APPROPRIATE CUSTOM LANGUAGE MAPPING FOR THE PLACEHOLDER. **
-        translation: "/src/main/resources/assets/neoforge/lang/%locale_with_underscore%.%file_extension%"
-        dest: "/messages.%file_extension%"
+  - source: /src/main/resources/assets/neoforge/lang/en_us.json
+    translation: /src/main/resources/assets/neoforge/lang/%locale_with_underscore%.%file_extension%
+    dest: /messages.%file_extension%
