@@ -34,6 +34,7 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
 
     /**
      * {@return the {@link ModelData} stored for the given position or {@code null} if none is present}
+     * 
      * @param pos The position to query
      */
     @Nullable
@@ -41,12 +42,14 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
 
     /**
      * {@return the {@link ModelData} stored for the given position or {@link ModelData#EMPTY} if none is present}
+     * 
      * @param pos The position to query
      */
     public abstract ModelData getAtOrEmpty(BlockPos pos);
 
     /**
      * Snapshot the state of this manager for all sections in the volume specified by the given section coordinates.
+     * 
      * @throws IllegalArgumentException if this is a snapshot and the given region doesn't match the snapshot's region
      */
     @ApiStatus.Internal
@@ -130,8 +133,8 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
     }
 
     /**
-     * A snapshot of the state of the active manager at the point in time when a chunk section was prepared for re-rendering.
-     * Holds an immutable copy of the active manager's state.
+     * A snapshot of the active manager's state in the specified sections at the point in time when a chunk section was
+     * prepared for re-rendering. Holds an immutable copy of the applicable subset of the active manager's state.
      */
     @ApiStatus.Internal
     public static final class Snapshot extends ModelDataManager {
