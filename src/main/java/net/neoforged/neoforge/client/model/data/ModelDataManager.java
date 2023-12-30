@@ -140,7 +140,7 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
     public static final class Snapshot extends ModelDataManager {
         public static final ModelDataManager.Snapshot EMPTY = new ModelDataManager.Snapshot();
 
-        private final Long2ObjectMap<ModelData> modelDataCache = new Long2ObjectOpenHashMap<>();
+        private final Long2ObjectMap<ModelData> modelDataCache;
         private final long sectionMin;
         private final long sectionMax;
 
@@ -148,19 +148,22 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
             this.sectionMin = SectionPos.asLong(sectionMinX, sectionMinY, sectionMinZ);
             this.sectionMax = SectionPos.asLong(sectionMaxX, sectionMaxY, sectionMaxZ);
 
+            Long2ObjectMap<ModelData> cache = new Long2ObjectOpenHashMap<>();
             for (int x = sectionMinX; x <= sectionMaxX; x++) {
                 for (int y = sectionMinY; y <= sectionMaxY; y++) {
                     for (int z = sectionMinZ; z <= sectionMaxZ; z++) {
                         long sectionPos = SectionPos.asLong(x, y, z);
                         srcManager.refreshAt(sectionPos);
-                        modelDataCache.putAll(srcManager.modelDataCache.getOrDefault(sectionPos, Long2ObjectMaps.emptyMap()));
+                        cache.putAll(srcManager.modelDataCache.getOrDefault(sectionPos, Long2ObjectMaps.emptyMap()));
                     }
                 }
             }
+            this.modelDataCache = cache.isEmpty() ? Long2ObjectMaps.emptyMap() : cache;
         }
 
         private Snapshot() {
             this.sectionMin = this.sectionMax = SectionPos.asLong(0, 0, 0);
+            this.modelDataCache = Long2ObjectMaps.emptyMap();
         }
 
         @Override
