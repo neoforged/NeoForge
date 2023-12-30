@@ -35,6 +35,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * A generic packet splitter that can be used to split packets that are too large to be sent in one go.
+ */
 @Mod.EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @ApiStatus.Internal
 public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> implements DynamicChannelHandler {
@@ -44,8 +47,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
     private static final int MAX_PACKET_SIZE = CompressionDecoder.MAXIMUM_UNCOMPRESSED_LENGTH;
     private static final int MAX_PART_SIZE = determineMaxPayloadSize(
             ConnectionProtocol.CONFIGURATION,
-            PacketFlow.SERVERBOUND,
-            MAX_PACKET_SIZE);
+            PacketFlow.SERVERBOUND);
 
     private static final byte STATE_FIRST = 1;
     private static final byte STATE_LAST = 2;
@@ -53,8 +55,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
     private final AttributeKey<ConnectionProtocol.CodecData<?>> codecKey;
 
     public GenericPacketSplitter(Connection connection) {
-        this(
-                getProtocolKey(connection.getDirection().getOpposite()));
+        this(getProtocolKey(connection.getDirection().getOpposite()));
     }
 
     public GenericPacketSplitter(AttributeKey<ConnectionProtocol.CodecData<?>> codecKey) {
@@ -195,7 +196,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
         return getRemoteCompatibility(manager) != RemoteCompatibility.ABSENT;
     }
 
-    public static int determineMaxPayloadSize(ConnectionProtocol protocol, PacketFlow flow, int defaultMaxPayloadSize) {
+    public static int determineMaxPayloadSize(ConnectionProtocol protocol, PacketFlow flow) {
         final FriendlyByteBuf temporaryBuf = new FriendlyByteBuf(Unpooled.buffer());
         int packetId = switch (flow) {
             case SERVERBOUND -> protocol.codec(flow).packetId(new ServerboundCustomPayloadPacket(new SplitPacketPayload(new byte[0])));
@@ -218,8 +219,8 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
         return CompressionDecoder.MAXIMUM_UNCOMPRESSED_LENGTH - prefixSize;
     }
 
-    private static AttributeKey<ConnectionProtocol.CodecData<?>> getProtocolKey(PacketFlow p_294385_) {
-        return switch (p_294385_) {
+    private static AttributeKey<ConnectionProtocol.CodecData<?>> getProtocolKey(PacketFlow flow) {
+        return switch (flow) {
             case CLIENTBOUND -> ATTRIBUTE_CLIENTBOUND_PROTOCOL;
             case SERVERBOUND -> ATTRIBUTE_SERVERBOUND_PROTOCOL;
         };
