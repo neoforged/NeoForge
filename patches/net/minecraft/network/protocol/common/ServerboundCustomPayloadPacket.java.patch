@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
 +++ b/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
-@@ -17,13 +_,52 @@
+@@ -17,10 +_,49 @@
          .put(BrandPayload.ID, BrandPayload::new)
          .build();
  
@@ -49,8 +49,4 @@
 +    @Deprecated
      private static CustomPacketPayload readPayload(ResourceLocation p_294367_, FriendlyByteBuf p_294321_) {
          FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = KNOWN_TYPES.get(p_294367_);
--        return (CustomPacketPayload)(reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_));
-+        return reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_);
-     }
- 
-     private static DiscardedPayload readUnknownPayload(ResourceLocation p_294973_, FriendlyByteBuf p_296037_) {
+         return (CustomPacketPayload)(reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_));
