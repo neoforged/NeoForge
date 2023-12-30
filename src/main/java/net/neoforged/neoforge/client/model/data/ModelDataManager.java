@@ -27,21 +27,37 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * A manager for the lifecycle of all the {@link ModelData} instances in a {@link Level}.
- * <p>
- * Users should not be instantiating or using this themselves unless they know what they're doing.
  */
-@ApiStatus.Internal
 @EventBusSubscriber(modid = "neoforge", bus = Bus.FORGE, value = Dist.CLIENT)
 public abstract sealed class ModelDataManager permits ModelDataManager.Active, ModelDataManager.Snapshot {
     ModelDataManager() {}
 
+    /**
+     * {@return the {@link ModelData} stored for the given position or {@code null} if none is present}
+     * @param pos The position to query
+     */
     @Nullable
     public abstract ModelData getAt(BlockPos pos);
 
+    /**
+     * {@return the {@link ModelData} stored for the given position or {@link ModelData#EMPTY} if none is present}
+     * @param pos The position to query
+     */
     public abstract ModelData getAtOrEmpty(BlockPos pos);
 
+    /**
+     * Snapshot the state of this manager for all sections in the volume specified by the given section coordinates.
+     * @throws IllegalArgumentException if this is a snapshot and the given region doesn't match the snapshot's region
+     */
+    @ApiStatus.Internal
     public abstract ModelDataManager.Snapshot snapshotSectionRegion(int sectionMinX, int sectionMinY, int sectionMinZ, int sectionMaxX, int sectionMaxY, int sectionMaxZ);
 
+    /**
+     * The active manager owned by the client's level and operated on the main client thread.
+     * <p>
+     * Users should not be instantiating this themselves unless they know what they're doing.
+     */
+    @ApiStatus.Internal
     public static final class Active extends ModelDataManager {
         private final Thread owningThread = Thread.currentThread();
         private final Level level;
@@ -52,6 +68,10 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
             this.level = level;
         }
 
+        /**
+         * Request a refresh of the stored data for the given {@link BlockEntity}. The given {@code BlockEntity}
+         * must be in the level owning this manager
+         */
         public void requestRefresh(BlockEntity blockEntity) {
             if (isOtherThread()) {
                 throw new UnsupportedOperationException("Cannot request ModelData refresh outside the owning thread: " + owningThread);
@@ -109,6 +129,11 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
         }
     }
 
+    /**
+     * A snapshot of the state of the active manager at the point in time when a chunk section was prepared for re-rendering.
+     * Holds an immutable copy of the active manager's state.
+     */
+    @ApiStatus.Internal
     public static final class Snapshot extends ModelDataManager {
         public static final ModelDataManager.Snapshot EMPTY = new ModelDataManager.Snapshot();
 
