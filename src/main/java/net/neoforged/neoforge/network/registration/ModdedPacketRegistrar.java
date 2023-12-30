@@ -16,7 +16,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IConfigurationPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPlayPayloadHandler;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * The internal implementation of {@link IPayloadRegistrar} for modded packets.

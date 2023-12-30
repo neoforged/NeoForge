@@ -10,6 +10,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Debugging helper class.
+ * 
  * @implNote This class is not intended for use in production builds, however although it is marked as internal, modders should feel free to use it during their debugging sessions.
  */
 @ApiStatus.Internal
@@ -22,8 +23,9 @@ public final class DebuggingHelper {
     /**
      * Utility method to release the mouse.
      * <p>
-     *     Useful for debugging, as it allows you to move the mouse outside of the game window, if your window manager does not release it automatically, using a conditional breakpoint.
+     * Useful for debugging, as it allows you to move the mouse outside of the game window, if your window manager does not release it automatically, using a conditional breakpoint.
      * </p>
+     * 
      * @return {@code true}, always.
      */
     public static boolean releaseMouse() {
