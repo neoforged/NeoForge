@@ -169,7 +169,7 @@
   "neoforge.configgui.clumpingThreshold.tooltip": "Kontrolliert den Grenzwert, an dem Packet51 Packet52 vorgezogen wird, Standardwert und Minimum 64, Maximum 1024.",
   "neoforge.configgui.clumpingThreshold": "Paket-Bündelungs-Grenzwert",
   "neoforge.configgui.treatEmptyTagsAsAir.tooltip": "Vanilla behandelt leere Tags in Handwerksrezepten als Luft und erlaubt es dir, das Rezept ohne einen Gegenstand in diesem Slot zu vervollständigen. Diese Einstellung ändert dies, sodass leere Tags BARRIEREN als Item benötigen, um zu vermeiden, dass man mit Luft Gegenstände herstellt.",
-  "neoforge.configgui.treatEmptyTagsAsAir": "Behandle leere Tags als Luft",
+  "neoforge.configgui.treatEmptyTagsAsAir": "Leere Tags als Luft behandeln",
   "neoforge.configgui.skipEmptyShapelessCheck.tooltip": "Skip checking if an ingredient is empty during shapeless recipe deserialization to prevent complex ingredients from caching tags too early.",
   "neoforge.configgui.skipEmptyShapelessCheck": "Skip checking for empty ingredients in Shapeless Recipe Deserialization",
   "neoforge.configgui.forceSystemNanoTime.tooltip": "Force the use of System.nanoTime instead of glfwGetTime as the main client Time provider.",
