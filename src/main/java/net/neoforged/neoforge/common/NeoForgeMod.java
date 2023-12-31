@@ -29,6 +29,7 @@ import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.particles.ParticleTypes;
@@ -165,7 +166,7 @@ public class NeoForgeMod {
     public static final String VERSION_CHECK_CAT = "version_checking";
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker NEOFORGEMOD = MarkerManager.getMarker("NEOFORGE-MOD");
-
+    private static final Codec<HolderSet<Structure>> STRUCTURE_LIST_CODEC = RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC);
     private static boolean isPRBuild;
 
     private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, "neoforge");
@@ -315,7 +316,7 @@ public class NeoForgeMod {
     public static final DeferredHolder<Codec<? extends StructureModifier>, Codec<StructureModifiers.AddSpawnsStructureModifier>> ADD_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("add_spawns", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(StructureModifiers.AddSpawnsStructureModifier::structures),
+                            STRUCTURE_LIST_CODEC.fieldOf("structures").forGetter(StructureModifiers.AddSpawnsStructureModifier::structures),
                             // Allow either a list or single spawner, attempting to decode the list format first.
                             // Uses the better EitherCodec that logs both errors if both formats fail to parse.
                             new ExtraCodecs.EitherCodec<>(SpawnerData.CODEC.listOf(), SpawnerData.CODEC).xmap(
@@ -330,7 +331,7 @@ public class NeoForgeMod {
     public static final DeferredHolder<Codec<? extends StructureModifier>, Codec<StructureModifiers.RemoveSpawnsStructureModifier>> REMOVE_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("remove_spawns", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(StructureModifiers.RemoveSpawnsStructureModifier::structures),
+                            STRUCTURE_LIST_CODEC.fieldOf("structures").forGetter(StructureModifiers.RemoveSpawnsStructureModifier::structures),
                             RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(StructureModifiers.RemoveSpawnsStructureModifier::entityTypes))
                     .apply(builder, StructureModifiers.RemoveSpawnsStructureModifier::new)));
 
@@ -340,7 +341,7 @@ public class NeoForgeMod {
     public static final DeferredHolder<Codec<? extends StructureModifier>, Codec<StructureModifiers.ClearSpawnsStructureModifier>> CLEAR_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("clear_spawns", () -> RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(StructureModifiers.ClearSpawnsStructureModifier::structures),
+                            STRUCTURE_LIST_CODEC.fieldOf("structures").forGetter(StructureModifiers.ClearSpawnsStructureModifier::structures),
                             new ExtraCodecs.EitherCodec<>(MobCategory.CODEC.listOf(), MobCategory.CODEC).xmap(
                                     either -> either.map(Set::copyOf, Set::of), // convert list/singleton to set when decoding
                                     set -> set.size() == 1 ? Either.right(set.toArray(MobCategory[]::new)[0]) : Either.left(List.copyOf(set))).optionalFieldOf("categories", EnumSet.allOf(MobCategory.class)).forGetter(StructureModifiers.ClearSpawnsStructureModifier::categories))

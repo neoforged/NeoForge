@@ -81,6 +81,7 @@ public class BiomeModifierTest {
     private static final ResourceKey<BiomeModifier> MODIFY_BADLANDS_MODIFIER = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(MODID, "modify_badlands"));
     private static final ResourceKey<BiomeModifier> REMOVE_FOREST_TREES_MODIFIER = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(MODID, "remove_forest_trees"));
     private static final ResourceKey<BiomeModifier> REMOVE_FOREST_SKELETONS_MODIFIER = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(MODID, "remove_forest_skeletons"));
+    private static final ResourceKey<BiomeModifier> INCREASE_ZOMBIE_SPAWNS_MODIFIER = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(MODID, "increase_zombie_spawns"));
 
     private static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
             .add(Registries.PLACED_FEATURE, context -> context.register(LARGE_BASALT_COLUMNS,

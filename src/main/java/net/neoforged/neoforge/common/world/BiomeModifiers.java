@@ -6,12 +6,10 @@
 package net.neoforged.neoforge.common.world;
 
 import com.mojang.serialization.Codec;
-
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -27,8 +25,7 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 public final class BiomeModifiers {
-    private BiomeModifiers() {
-    } // Utility class.
+    private BiomeModifiers() {} // Utility class.
 
     /**
      * <p>Stock biome modifier that adds features to biomes. Has the following json format:</p>
@@ -49,7 +46,7 @@ public final class BiomeModifiers {
      * @param step     Decoration step to run features in.
      */
     public record AddFeaturesBiomeModifier(HolderSet<Biome> biomes, HolderSet<PlacedFeature> features,
-                                           Decoration step) implements BiomeModifier {
+            Decoration step) implements BiomeModifier {
         @Override
         public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
             if (phase == Phase.ADD && this.biomes.contains(biome)) {
@@ -81,7 +78,7 @@ public final class BiomeModifiers {
      * @param steps    {@link Decoration} steps to remove features from.
      */
     public record RemoveFeaturesBiomeModifier(HolderSet<Biome> biomes, HolderSet<PlacedFeature> features,
-                                              Set<Decoration> steps) implements BiomeModifier {
+            Set<Decoration> steps) implements BiomeModifier {
         /**
          * Creates a modifier that removes the given features from all decoration steps in the given biomes.
          *
@@ -193,7 +190,7 @@ public final class BiomeModifiers {
      * @param entityTypes {@linkplain EntityType}s to remove from spawn lists.
      */
     public record RemoveSpawnsBiomeModifier(HolderSet<Biome> biomes,
-                                            HolderSet<EntityType<?>> entityTypes) implements BiomeModifier {
+            HolderSet<EntityType<?>> entityTypes) implements BiomeModifier {
         @Override
         public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
             if (phase == Phase.REMOVE && this.biomes.contains(biome)) {
@@ -231,7 +228,7 @@ public final class BiomeModifiers {
      * @param spawnCost   {@linkplain MobSpawnSettings.MobSpawnCost} to add for those entity types.
      */
     public record AddSpawnCostsBiomeModifier(HolderSet<Biome> biomes, HolderSet<EntityType<?>> entityTypes,
-                                             MobSpawnSettings.MobSpawnCost spawnCost) implements BiomeModifier {
+            MobSpawnSettings.MobSpawnCost spawnCost) implements BiomeModifier {
         @Override
         public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
             if (phase == Phase.ADD) {
@@ -261,7 +258,7 @@ public final class BiomeModifiers {
      * @param entityTypes EntityTypes to remove from spawn lists.
      */
     public record RemoveSpawnCostsBiomeModifier(HolderSet<Biome> biomes,
-                                                HolderSet<EntityType<?>> entityTypes) implements BiomeModifier {
+            HolderSet<EntityType<?>> entityTypes) implements BiomeModifier {
         @Override
         public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
             if (phase == Phase.REMOVE && this.biomes.contains(biome)) {
@@ -293,7 +290,7 @@ public final class BiomeModifiers {
      * @param steps   Carving step to run features in.
      */
     public record AddCarversBiomeModifier(HolderSet<Biome> biomes, HolderSet<ConfiguredWorldCarver<?>> carvers,
-                                          GenerationStep.Carving steps) implements BiomeModifier {
+            GenerationStep.Carving steps) implements BiomeModifier {
 
         @Override
         public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
@@ -326,7 +323,7 @@ public final class BiomeModifiers {
      * @param steps   {@linkplain GenerationStep.Carving} step to run features in.
      */
     public record RemoveCarversBiomeModifier(HolderSet<Biome> biomes, HolderSet<ConfiguredWorldCarver<?>> carvers,
-                                             Set<GenerationStep.Carving> steps) implements BiomeModifier {
+            Set<GenerationStep.Carving> steps) implements BiomeModifier {
 
         public static RemoveCarversBiomeModifier allSteps(HolderSet<Biome> biomes, HolderSet<ConfiguredWorldCarver<?>> features) {
             return new RemoveCarversBiomeModifier(biomes, features, EnumSet.allOf(GenerationStep.Carving.class));

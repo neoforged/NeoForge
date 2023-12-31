@@ -72,7 +72,7 @@ public final class StructureModifiers {
             List<SpawnerData> spawners) implements StructureModifier {
 
         /**
-         * Convenience method for using a single spawn data.
+         * Convenience method for using a single {@linkplain net.minecraft.world.level.SpawnData}.
          *
          * @param structures Structures to add mob spawns to.
          * @param spawner    SpawnerData specifying EntityTYpe, weight, and pack size.
