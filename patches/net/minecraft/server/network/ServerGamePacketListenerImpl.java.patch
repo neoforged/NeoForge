@@ -152,13 +152,13 @@
      interface EntityInteraction {
          InteractionResult run(ServerPlayer p_143695_, Entity p_143696_, InteractionHand p_143697_);
 +    }
-+    
++
 +    @Override
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket p_294276_) {
 +        if (!this.isModdedConnection) {
 +            super.handleCustomPayload(p_294276_);
 +        }
-+        
++
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtServer(
 +                this, p_294276_
 +        );

@@ -21,13 +21,11 @@
          this.send(new ClientboundCustomPayloadPacket(new BrandPayload(this.server.getServerModName())));
          LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = this.server.registries();
          this.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(this.server.getWorldData().enabledFeatures())));
-@@ -86,8 +_,45 @@
+@@ -86,6 +_,43 @@
  
      private void addOptionalTasks() {
          this.server.getServerResourcePack().ifPresent(p_296496_ -> this.configurationTasks.add(new ServerResourcePackConfigurationTask(p_296496_)));
--    }
--
-+        
++
 +        this.configurationTasks.add(new net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseStarted(this));
 +        this.configurationTasks.addAll(net.neoforged.fml.ModLoader.get().postEventWithReturn(new net.neoforged.neoforge.network.event.OnGameConfigurationEvent(this)).getConfigurationTasks());
 +        this.configurationTasks.add(new net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseCompleted(this));
@@ -45,7 +43,7 @@
 +                    );
 +            return;
 +        }
-+        
++
 +        if (!isHandlingModdedConfigurationPhase) {
 +            super.handleCustomPayload(p_294276_);
 +            return;
@@ -61,14 +59,12 @@
 +            if (!this.isModdedConnection && !net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaConnectionDetectedAtServer(this)) {
 +                return;
 +            }
-+            
++
 +            this.runConfiguration();
 +        }
-+    }
-+    
+     }
+ 
      @Override
-     public void handleClientInformation(ServerboundClientInformationPacket p_302032_) {
-         this.clientInformation = p_302032_.information();
 @@ -121,7 +_,7 @@
              }
  
@@ -83,12 +79,12 @@
              this.startNextTask();
          }
 +    }
-+    
++
 +    public void onModdedConfigurationPhaseStarted() {
 +        isHandlingModdedConfigurationPhase = true;
 +        finishCurrentTask(net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseStarted.TYPE);
 +    }
-+    
++
 +    public void onModdedConfigurationPhaseEnded() {
 +        isHandlingModdedConfigurationPhase = false;
 +        finishCurrentTask(net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseCompleted.TYPE);

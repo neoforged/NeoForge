@@ -28,7 +28,7 @@
 +        if (!net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().canSendPacket(p_295097_, this)) {
 +            return;
 +        }
-+        
++
          this.connection.send(p_295097_);
      }
  
@@ -47,7 +47,7 @@
          static record PendingRequest(UUID id, URL url, String hash) {
          }
 +    }
-+    
++
 +    @Override
 +    public Connection getConnection() {
 +        return connection;

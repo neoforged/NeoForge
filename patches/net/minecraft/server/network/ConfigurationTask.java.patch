@@ -7,7 +7,7 @@
 +        public Type(net.minecraft.resources.ResourceLocation location) {
 +            this(location.toString());
 +        }
-+        
++
          @Override
          public String toString() {
              return this.id;
