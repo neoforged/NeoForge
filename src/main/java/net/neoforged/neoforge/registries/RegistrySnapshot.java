@@ -73,19 +73,13 @@ public class RegistrySnapshot {
      */
     public RegistrySnapshot(FriendlyByteBuf buf) {
         this();
-
-        final byte[] payload = buf.readByteArray();
-        final FriendlyByteBuf payloadBuf = new FriendlyByteBuf(Unpooled.wrappedBuffer(payload));
-
-        int len = payloadBuf.readVarInt();
+        int len = buf.readVarInt();
         for (int x = 0; x < len; x++)
-            this.ids.put(payloadBuf.readVarInt(), payloadBuf.readResourceLocation());
+            this.ids.put(buf.readVarInt(), buf.readResourceLocation());
 
-        len = payloadBuf.readVarInt();
+        len = buf.readVarInt();
         for (int x = 0; x < len; x++)
-            this.aliases.put(payloadBuf.readResourceLocation(), payloadBuf.readResourceLocation());
-
-        payloadBuf.release();
+            this.aliases.put(buf.readResourceLocation(), buf.readResourceLocation());
     }
 
     /**
@@ -96,27 +90,24 @@ public class RegistrySnapshot {
     public synchronized void write(FriendlyByteBuf buf) {
         if (this.binary == null) {
             FriendlyByteBuf pkt = new FriendlyByteBuf(Unpooled.buffer());
-
             try {
                 pkt.writeVarInt(this.ids.size());
                 this.ids.forEach((k, v) -> {
                     pkt.writeVarInt(k);
                     pkt.writeResourceLocation(v);
                 });
-
                 pkt.writeVarInt(this.aliases.size());
                 this.aliases.forEach((k, v) -> {
                     pkt.writeResourceLocation(k);
                     pkt.writeResourceLocation(v);
                 });
-
-                this.binary = pkt.array();
+                this.binary = new byte[pkt.readableBytes()];
+                pkt.readBytes(this.binary);
             } finally {
                 pkt.release();
             }
         }
-
-        buf.writeByteArray(this.binary);
+        buf.writeBytes(this.binary);
     }
 
     public Int2ObjectSortedMap<ResourceLocation> getIds() {
