@@ -19,11 +19,11 @@ public class ConfigurationInitialization {
 
     @SubscribeEvent
     private static void configureModdedClient(OnGameConfigurationEvent event) {
-        if (event.getListener().isVanillaConnection())
-            return;
+        if (!event.getListener().isVanillaConnection()) {
+            event.register(new SyncRegistries());
+            event.register(new SyncConfig(event.getListener()));
+        }
 
-        event.register(new SyncRegistries());
-        event.register(new SyncConfig(event.getListener()));
         event.register(new SyncTierSortingRegistry(event.getListener()));
     }
 }
