@@ -15,7 +15,7 @@
   "fml.menu.mods.info.displayurl": "홈페이지: {0}",
   "fml.menu.mods.info.license": "라이센스: {0}",
   "fml.menu.mods.info.securejardisabled": "보안 모드 기능이 비활성화됐습니다, JDK를 업데이트 해주세요",
-  "fml.menu.mods.info.signature": "시그니처: {0}",
+  "fml.menu.mods.info.signature": "서명: {0}",
   "fml.menu.mods.info.signature.unsigned": "서명 없음",
   "fml.menu.mods.info.trust": "신뢰: {0}",
   "fml.menu.mods.info.trust.noauthority": "없음",
