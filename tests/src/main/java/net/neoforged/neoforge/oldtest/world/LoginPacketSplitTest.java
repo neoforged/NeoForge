@@ -6,11 +6,14 @@
 package net.neoforged.neoforge.oldtest.world;
 
 import com.google.common.base.Stopwatch;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.Command;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.Unpooled;
@@ -25,7 +28,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import io.netty.handler.codec.DecoderException;
+import io.netty.handler.codec.EncoderException;
 import net.minecraft.SharedConstants;
+import net.minecraft.Util;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
@@ -50,7 +57,6 @@ import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
-import net.neoforged.neoforge.network.filters.NeoForgeConnectionNetworkFilter;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -63,7 +69,7 @@ import org.slf4j.Logger;
  * registryaccess in the packet would be, and how much {@code %} of the packet limit is represents. <br>
  * Connect to the server from the client, and if you successfully connect and the {@code /big_data} command
  * reports 50000 entries then the packet has been successfully split. <br> <br>
- * To test if the packet is too large simply remove the login packet from the {@link NeoForgeConnectionNetworkFilter}
+ * To test if the packet is too large simply remove the login packet from the {@link net.neoforged.neoforge.network.filters.GenericPacketSplitter}
  * and try connecting again. You should see the connection fail.
  */
 
@@ -71,7 +77,8 @@ import org.slf4j.Logger;
 public class LoginPacketSplitTest {
     public static final Logger LOG = LogUtils.getLogger();
     public static final String MOD_ID = "login_packet_split_test";
-    public static final boolean ENABLED = false;
+    public static final boolean ENABLED = true;
+    private static final Gson GSON = new Gson();
     public static final ResourceKey<Registry<BigData>> BIG_DATA = ResourceKey.createRegistryKey(new ResourceLocation(MOD_ID, "big_data"));
 
     public LoginPacketSplitTest(IEventBus bus) {
@@ -121,7 +128,7 @@ public class LoginPacketSplitTest {
 
         final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         record RegistryData(Registry<BigData> registry) {}
-        buf.writeJsonWithCodec(RecordCodecBuilder.create(in -> in.group(
+        writeJsonWithCodec(buf, RecordCodecBuilder.create(in -> in.group(
                 RegistryCodecs.networkCodec(BIG_DATA, Lifecycle.stable(), BigData.CODEC).fieldOf("registry").forGetter(RegistryData::registry)).apply(in, RegistryData::new)), new RegistryData(dummyRegistry)); // RegistryCodecs.networkCodec returns a list codec, and writeWithNbt doesn't like non-compounds
 
         final int size = buf.writerIndex();
@@ -249,5 +256,12 @@ public class LoginPacketSplitTest {
         public static byte[] fromJson(JsonElement json) {
             return GsonHelper.toStableString(json).getBytes(StandardCharsets.UTF_8);
         }
+    }
+
+    public <T> void writeJsonWithCodec(FriendlyByteBuf buf, Codec<T> codec, T instance) {
+        DataResult<JsonElement> dataresult = codec.encodeStart(JsonOps.INSTANCE, instance);
+        final String s = GSON.toJson(Util.getOrThrow(dataresult, p_261421_ -> new EncoderException("Failed to encode: " + p_261421_ + " " + instance)));
+        buf.writeVarInt(s.length());
+        buf.writeUtf(s, s.length());
     }
 }

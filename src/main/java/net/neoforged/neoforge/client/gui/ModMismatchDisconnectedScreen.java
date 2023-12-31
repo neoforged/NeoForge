@@ -99,7 +99,7 @@ public class ModMismatchDisconnectedScreen extends Screen {
                 rows.add(new Row(Component.translatable("fml.modmismatchscreen.table.channelname"), Component.translatable("fml.modmismatchscreen.table.reason")));
                 int i = 0;
                 for (Map.Entry<ResourceLocation, Component> modData : mismatchedChannelData.entrySet()) {
-                    rows.add(new Row(toModNameComponent(modData.getKey()), modData.getValue().copy()));
+                    rows.add(new Row(toChannelNameComponent(modData.getKey()), modData.getValue().copy()));
                     if (++i >= 10) {
                         //If too many mismatched mod entries are present, append a line referencing how to see the full list and stop rendering any more entries
                         rows.add(new Row(Component.literal(""), Component.translatable("fml.modmismatchscreen.additional", mismatchedChannelData.size() - i).withStyle(ChatFormatting.ITALIC)));
@@ -143,17 +143,14 @@ public class ModMismatchDisconnectedScreen extends Screen {
          * @param id An id that gets displayed in the hover event. Depending on the origin it may only consist of a namespace (the mod id) or a namespace + path (a channel id associated with the mod).
          * @return A component with the mod name as the main text component, and an assigned style which will be used for the whole content row.
          */
-        private MutableComponent toModNameComponent(ResourceLocation id) {
+        private MutableComponent toChannelNameComponent(ResourceLocation id) {
             String modId = id.getNamespace();
-            String modName = ModList.get().getModContainerById(modId)
-                    .map(container -> container.getModInfo().getDisplayName())
-                    .orElse(modId);
 
             String url = ModList.get().getModContainerById(modId)
                     .flatMap(container -> container.getModInfo().getModURL())
                     .map(URL::toString)
                     .orElse("");
-            MutableComponent result = Component.literal(modName).withStyle(ChatFormatting.YELLOW);
+            MutableComponent result = Component.literal(id.toString()).withStyle(ChatFormatting.YELLOW);
             if (!url.isEmpty()) {
                 result = result.withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, Component.translatable("fml.modmismatchscreen.table.visit.mod_page", id.toString()))))
                         .withStyle(s -> s.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url)));

@@ -102,8 +102,9 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
                 Attribute<ConnectionProtocol.CodecData<?>> attribute = ctx.channel().attr(this.codecKey);
                 ConnectionProtocol.CodecData<?> codecdata = attribute.get();
 
+                final byte[] packetData = buf.array();
                 for (int part = 0; part < parts; part++) {
-                    ByteBuf partPrefix;
+                    final ByteBuf partPrefix;
                     if (part == 0) {
                         partPrefix = Unpooled.buffer(5);
                         partPrefix.writeByte(STATE_FIRST);
@@ -114,15 +115,12 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
                         partPrefix.writeByte(part == parts - 1 ? STATE_LAST : 0);
                     }
 
-                    int partSize = Math.min(MAX_PART_SIZE, buf.readableBytes());
-                    final byte[] prefix = partPrefix.array();
-                    final byte[] payloadSlice = buf.slice(buf.readerIndex(), partSize).array();
+                    final int partSize = Math.min(MAX_PART_SIZE, packetData.length - (part * MAX_PART_SIZE));
+                    final byte[] payloadSlice = new byte[partSize];
 
-                    byte[] payload = new byte[prefix.length + payloadSlice.length];
-                    System.arraycopy(prefix, 0, payload, 0, prefix.length);
-                    System.arraycopy(payloadSlice, 0, payload, prefix.length, payloadSlice.length);
+                    System.arraycopy(packetData, part * MAX_PART_SIZE, payloadSlice, 0, partSize);
 
-                    out.add(createPacket(codecdata.flow(), payload));
+                    out.add(createPacket(codecdata.flow(), payloadSlice));
 
                     partPrefix.release();
                 }
@@ -209,6 +207,12 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
 
         //Then write the payload id, as does the custom payload packet, regardless of flow.
         temporaryBuf.writeResourceLocation(SplitPacketPayload.ID);
+
+        //Then write the byte prefix to indicate the state of the packet.
+        temporaryBuf.writeByte(STATE_FIRST);
+
+        //Then write the potential packet id of the split packet
+        temporaryBuf.writeVarInt(Integer.MAX_VALUE);
 
         //Now write a max int value for the maximum length of the byte[]
         temporaryBuf.writeInt(Integer.MAX_VALUE);
