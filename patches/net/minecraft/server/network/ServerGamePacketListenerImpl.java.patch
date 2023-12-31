@@ -13,6 +13,22 @@
      public static final double MAX_INTERACTION_DISTANCE = Mth.square(6.0);
      private static final int NO_BLOCK_UPDATES_TO_ACK = -1;
      private static final int TRACKED_MESSAGE_DISCONNECT_THRESHOLD = 4096;
+@@ -228,6 +_,7 @@
+     private final MessageSignatureCache messageSignatureCache = MessageSignatureCache.createDefault();
+     private final FutureChain chatMessageChain;
+     private boolean waitingForSwitchToConfig;
++    private final boolean isModdedConnection;
+ 
+     public ServerGamePacketListenerImpl(MinecraftServer p_9770_, Connection p_9771_, ServerPlayer p_9772_, CommonListenerCookie p_301978_) {
+         super(p_9770_, p_9771_, p_301978_);
+@@ -238,6 +_,7 @@
+         p_9772_.getTextFilter().join();
+         this.signedMessageDecoder = SignedMessageChain.Decoder.unsigned(p_9772_.getUUID(), p_9770_::enforceSecureProfile);
+         this.chatMessageChain = new FutureChain(p_9770_);
++        this.isModdedConnection = p_301978_.isModdedConnection();
+     }
+ 
+     @Override
 @@ -424,9 +_,11 @@
                  }
  
@@ -122,3 +138,29 @@
                          }
      
                          @Override
+@@ -1745,7 +_,7 @@
+             throw new IllegalStateException("Client acknowledged config, but none was requested");
+         } else {
+             this.connection
+-                .setListener(new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation())));
++                .setListener(new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation(), this.isModdedConnection)));
+         }
+     }
+ 
+@@ -1779,5 +_,16 @@
+     @FunctionalInterface
+     interface EntityInteraction {
+         InteractionResult run(ServerPlayer p_143695_, Entity p_143696_, InteractionHand p_143697_);
++    }
++    
++    @Override
++    public void handleCustomPayload(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket p_294276_) {
++        if (!this.isModdedConnection) {
++            super.handleCustomPayload(p_294276_);
++        }
++        
++        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtServer(
++                this, p_294276_
++        );
+     }
+ }

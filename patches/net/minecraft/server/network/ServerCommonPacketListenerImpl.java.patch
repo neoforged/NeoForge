@@ -1,14 +1,52 @@
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -68,6 +_,11 @@
+@@ -109,7 +_,12 @@
+         this.send(p_294278_, null);
+     }
  
-     @Override
-     public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) {
-+        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.custom.payload.SimplePayload simplePayload && net.neoforged.neoforge.network.NetworkHooks.onCustomPayload(p_294276_, simplePayload, connection)) {
++    @Override
+     public void send(Packet<?> p_295099_, @Nullable PacketSendListener p_296321_) {
++        if (!net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().canSendPacket(p_295099_, this)) {
 +            return;
 +        }
 +        
-+        LOGGER.warn("Unknown custom packet payload: {}", p_294276_.payload().id());
+         boolean flag = !this.suspendFlushingOnServerThread || !this.server.isSameThread();
+ 
+         try {
+@@ -143,7 +_,36 @@
+         return this.latency;
      }
  
-     @Override
++    /**
++     * Creates a new cookie for this connection.
++     *
++     * @param p_301973_ The client information.
++     * @return The cookie.
++     * @deprecated Use {@link #createCookie(ClientInformation, boolean)} instead, keeping the connection type information available.
++     */
++    @Deprecated
+     protected CommonListenerCookie createCookie(ClientInformation p_301973_) {
+         return new CommonListenerCookie(this.playerProfile(), this.latency, p_301973_);
++    }
++    
++    /**
++     * Creates a new cookie for this connection.
++     *
++     * @param p_301973_ The client information.
++     * @param isModdedConnection Whether the connection is modded.
++     * @return The cookie.
++     */
++    protected CommonListenerCookie createCookie(ClientInformation p_301973_, boolean isModdedConnection) {
++        return new CommonListenerCookie(this.playerProfile(), this.latency, p_301973_, isModdedConnection);
++    }
++    
++    @Override
++    public Connection getConnection() {
++        return connection;
++    }
++
++    @Override
++    public net.minecraft.util.thread.ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
++        return server;
+     }
+ }

@@ -1,0 +1,182 @@
+--- a/net/minecraft/network/ConnectionProtocol.java
++++ b/net/minecraft/network/ConnectionProtocol.java
+@@ -243,7 +_,7 @@
+                     .addPacket(ClientboundContainerSetSlotPacket.class, ClientboundContainerSetSlotPacket::new)
+                     .addPacket(ClientboundCooldownPacket.class, ClientboundCooldownPacket::new)
+                     .addPacket(ClientboundCustomChatCompletionsPacket.class, ClientboundCustomChatCompletionsPacket::new)
+-                    .addPacket(ClientboundCustomPayloadPacket.class, ClientboundCustomPayloadPacket::new)
++                    .addContextualPacket(ClientboundCustomPayloadPacket.class, (buf, context) -> new ClientboundCustomPayloadPacket(buf, context, ConnectionProtocol.play()))
+                     .addPacket(ClientboundDamageEventPacket.class, ClientboundDamageEventPacket::new)
+                     .addPacket(ClientboundDeleteChatPacket.class, ClientboundDeleteChatPacket::new)
+                     .addPacket(ClientboundDisconnectPacket.class, ClientboundDisconnectPacket::new)
+@@ -356,7 +_,7 @@
+                     .addPacket(ServerboundContainerClickPacket.class, ServerboundContainerClickPacket::new)
+                     .addPacket(ServerboundContainerClosePacket.class, ServerboundContainerClosePacket::new)
+                     .addPacket(ServerboundContainerSlotStateChangedPacket.class, ServerboundContainerSlotStateChangedPacket::new)
+-                    .addPacket(ServerboundCustomPayloadPacket.class, ServerboundCustomPayloadPacket::new)
++                    .addContextualPacket(ServerboundCustomPayloadPacket.class, (buf, context) -> new ServerboundCustomPayloadPacket(buf, context, ConnectionProtocol.play()))
+                     .addPacket(ServerboundEditBookPacket.class, ServerboundEditBookPacket::new)
+                     .addPacket(ServerboundEntityTagQuery.class, ServerboundEntityTagQuery::new)
+                     .addPacket(ServerboundInteractPacket.class, ServerboundInteractPacket::new)
+@@ -440,7 +_,7 @@
+             .addFlow(
+                 PacketFlow.CLIENTBOUND,
+                 new ConnectionProtocol.PacketSet<net.minecraft.network.protocol.configuration.ClientConfigurationPacketListener>()
+-                    .addPacket(ClientboundCustomPayloadPacket.class, ClientboundCustomPayloadPacket::new)
++                    .addContextualPacket(ClientboundCustomPayloadPacket.class, (buf, context) -> new ClientboundCustomPayloadPacket(buf, context, ConnectionProtocol.configuration()))
+                     .addPacket(ClientboundDisconnectPacket.class, ClientboundDisconnectPacket::new)
+                     .addPacket(ClientboundFinishConfigurationPacket.class, ClientboundFinishConfigurationPacket::new)
+                     .addPacket(ClientboundKeepAlivePacket.class, ClientboundKeepAlivePacket::new)
+@@ -455,7 +_,7 @@
+                 PacketFlow.SERVERBOUND,
+                 new ConnectionProtocol.PacketSet<net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener>()
+                     .addPacket(ServerboundClientInformationPacket.class, ServerboundClientInformationPacket::new)
+-                    .addPacket(ServerboundCustomPayloadPacket.class, ServerboundCustomPayloadPacket::new)
++                    .addContextualPacket(ServerboundCustomPayloadPacket.class, (buf, context) -> new ServerboundCustomPayloadPacket(buf, context, ConnectionProtocol.configuration()))
+                     .addPacket(ServerboundFinishConfigurationPacket.class, ServerboundFinishConfigurationPacket::new)
+                     .addPacket(ServerboundKeepAlivePacket.class, ServerboundKeepAlivePacket::new)
+                     .addPacket(ServerboundPongPacket.class, ServerboundPongPacket::new)
+@@ -466,7 +_,23 @@
+     public static final int NOT_REGISTERED = -1;
+     private final String id;
+     private final Map<PacketFlow, ConnectionProtocol.CodecData<?>> flows;
+-
++    
++    private static ConnectionProtocol play() {
++        return PLAY;
++    }
++    
++    private static ConnectionProtocol configuration() {
++        return CONFIGURATION;
++    }
++    
++    public boolean isPlay() {
++        return this == PLAY;
++    }
++    
++    public boolean isConfiguration() {
++        return this == CONFIGURATION;
++    }
++    
+     private static ConnectionProtocol.ProtocolBuilder protocol() {
+         return new ConnectionProtocol.ProtocolBuilder();
+     }
+@@ -523,11 +_,28 @@
+             this.packetSet.classToId.forEach((p_294840_, p_295455_) -> int2objectmap.put(p_295455_.intValue(), p_294840_));
+             return int2objectmap;
+         }
+-
++        
++        /**
++         * @deprecated Use {@link #createPacket(int, FriendlyByteBuf, io.netty.channel.ChannelHandlerContext)} instead, which provides the channel context for creating custom packet payloads.
++         */
+         @Nullable
++        @Deprecated
+         public Packet<?> createPacket(int p_294972_, FriendlyByteBuf p_296217_) {
+             return this.packetSet.createPacket(p_294972_, p_296217_);
+         }
++        
++        /**
++         * Creates a new packet from the discriminator and the buffer.
++         *
++         * @param p_294972_ The discriminator
++         * @param p_296217_ The buffer
++         * @param p_130535_ The channel context
++         * @return The packet
++         */
++        @Nullable
++        public Packet<?> createPacket(int p_294972_, FriendlyByteBuf p_296217_, io.netty.channel.ChannelHandlerContext p_130535_) {
++            return this.packetSet.createPacket(p_294972_, p_296217_, p_130535_);
++        }
+ 
+         public boolean isValidPacketType(Packet<?> p_294142_) {
+             return this.packetSet.isKnownPacket(p_294142_.getClass());
+@@ -539,12 +_,22 @@
+         final Object2IntMap<Class<? extends Packet<? super T>>> classToId = Util.make(
+             new Object2IntOpenHashMap<>(), p_129613_ -> p_129613_.defaultReturnValue(-1)
+         );
++        /**
++         * @deprecated Use {@link #contextualIdToDeserializer} instead it allows for context to be passed to the deserializer
++         */
++        @Deprecated
+         private final List<Function<FriendlyByteBuf, ? extends Packet<? super T>>> idToDeserializer = Lists.newArrayList();
++        private final List<java.util.function.BiFunction<FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, ? extends net.minecraft.network.protocol.Packet<? super T>>> contextualIdToDeserializer = Lists.newArrayList();
+         private BundlerInfo bundlerInfo = BundlerInfo.EMPTY;
+         private final Set<Class<? extends Packet<T>>> extraClasses = new HashSet<>();
+ 
+         public <P extends Packet<? super T>> ConnectionProtocol.PacketSet<T> addPacket(Class<P> p_178331_, Function<FriendlyByteBuf, P> p_178332_) {
+             int i = this.idToDeserializer.size();
++            int k = this.contextualIdToDeserializer.size();
++            if (i != k) {
++                throw new IllegalStateException("Deserializer lists must be equal in length! Somebody externally modified the registration!");
++            }
++            
+             int j = this.classToId.put(p_178331_, i);
+             if (j != -1) {
+                 String s = "Packet " + p_178331_ + " is already registered to ID " + j;
+@@ -552,11 +_,33 @@
+                 throw new IllegalArgumentException(s);
+             } else {
+                 this.idToDeserializer.add(p_178332_);
++                this.contextualIdToDeserializer.add((p_296217_, p_130535_) -> p_178332_.apply(p_296217_)); //NeoForge: We always want to be able to create a packet from a buffer, even if we don't have a channel context
++                return this;
++            }
++        }
++        
++        public <P extends Packet<? super T>> ConnectionProtocol.PacketSet<T> addContextualPacket(Class<P> p_178331_, java.util.function.BiFunction<FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, P> readerBuilder) {
++            int i = this.contextualIdToDeserializer.size();
++            int k = this.idToDeserializer.size();
++            if (i != k) {
++                throw new IllegalStateException("Deserializer lists must be equal in length! Somebody externally modified the registration!");
++            }
++            
++            int j = this.classToId.put(p_178331_, i);
++            if (j != -1) {
++                String s = "Packet " + p_178331_ + " is already registered to ID " + j;
++                LOGGER.error(LogUtils.FATAL_MARKER, s);
++                throw new IllegalArgumentException(s);
++            } else {
++                this.idToDeserializer.add((buffer -> {
++                    throw new IllegalStateException("Cannot deserialize contextual packet: " + p_178331_.getSimpleName() + " without context");
++                }));
++                this.contextualIdToDeserializer.add(readerBuilder);
+                 return this;
+             }
+         }
+ 
+-        public <P extends BundlePacket<T>> ConnectionProtocol.PacketSet<T> withBundlePacket(Class<P> p_265034_, Function<Iterable<Packet<T>>, P> p_265591_) {
++        public <P extends BundlePacket<T>> ConnectionProtocol.PacketSet<T> withBundlePacket(Class<P> p_265034_, Function<Iterable<Packet<? super T>>, P> p_265591_) {
+             if (this.bundlerInfo != BundlerInfo.EMPTY) {
+                 throw new IllegalStateException("Bundle packet already configured");
+             } else {
+@@ -575,11 +_,29 @@
+         public boolean isKnownPacket(Class<?> p_295070_) {
+             return this.classToId.containsKey(p_295070_) || this.extraClasses.contains(p_295070_);
+         }
+-
++        
++        /**
++         * @deprecated Use {@link #createPacket(int, FriendlyByteBuf, io.netty.channel.ChannelHandlerContext)} instead, which provides the channel context for creating custom packet payloads.
++         */
++        @Deprecated
+         @Nullable
+         public Packet<?> createPacket(int p_178328_, FriendlyByteBuf p_178329_) {
+             Function<FriendlyByteBuf, ? extends Packet<? super T>> function = this.idToDeserializer.get(p_178328_);
+             return function != null ? function.apply(p_178329_) : null;
++        }
++        
++        /**
++         * Creates a new packet from the given discriminator and buffer.
++         *
++         * @param p_178328_ The discriminator
++         * @param p_178329_ The buffer
++         * @param p_130535_ The channel context
++         * @return The packet, or null if no packet could be read.
++         */
++        @Nullable
++        public Packet<?> createPacket(int p_178328_, FriendlyByteBuf p_178329_, io.netty.channel.ChannelHandlerContext p_130535_) {
++            java.util.function.BiFunction<FriendlyByteBuf, io.netty.channel.ChannelHandlerContext, ? extends net.minecraft.network.protocol.Packet<? super T>> function = this.contextualIdToDeserializer.get(p_178328_);
++            return function != null ? function.apply(p_178329_, p_130535_) : null;
+         }
+ 
+         public BundlerInfo bundlerInfo() {

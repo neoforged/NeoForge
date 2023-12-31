@@ -19,7 +19,6 @@ import com.mojang.datafixers.util.Either;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,7 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -52,7 +50,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -60,7 +57,6 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -99,7 +95,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.protocol.status.ServerStatus;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
@@ -133,8 +128,6 @@ import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.IExtensionPoint;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
@@ -173,7 +166,6 @@ import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtension
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.overlay.GuiOverlayManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.common.I18nExtension;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
@@ -181,10 +173,6 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.gametest.GameTestHooks;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
-import net.neoforged.neoforge.network.NetworkConstants;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.ServerStatusPing;
-import net.neoforged.neoforge.registries.RegistryManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -686,114 +674,7 @@ public class ClientHooks {
         layerDefinitions.forEach((k, v) -> builder.put(k, v.get()));
     }
 
-    public static void processForgeListPingData(ServerStatus packet, ServerData target) {
-        packet.neoForgeData().ifPresentOrElse(neoForgeData -> {
-            final Map<String, String> mods = neoForgeData.getRemoteModData();
-            final Map<ResourceLocation, ServerStatusPing.ChannelData> remoteChannels = neoForgeData.getRemoteChannels();
-            final int fmlver = neoForgeData.getFMLNetworkVersion();
-
-            boolean fmlNetMatches = fmlver == NetworkConstants.FMLNETVERSION;
-            boolean channelsMatch = NetworkRegistry.checkListPingCompatibilityForClient(remoteChannels);
-            AtomicBoolean result = new AtomicBoolean(true);
-            final List<String> extraClientMods = new ArrayList<>();
-            ModList.get().forEachModContainer((modid, mc) -> mc.getCustomExtension(IExtensionPoint.DisplayTest.class).ifPresent(ext -> {
-                boolean foundModOnServer = ext.remoteVersionTest().test(mods.get(modid), true);
-                result.compareAndSet(true, foundModOnServer);
-                if (!foundModOnServer) {
-                    extraClientMods.add(modid);
-                }
-            }));
-            boolean modsMatch = result.get();
-
-            final Map<String, String> extraServerMods = mods.entrySet().stream().filter(e -> !Objects.equals(NetworkConstants.IGNORESERVERONLY, e.getValue())).filter(e -> !ModList.get().isLoaded(e.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-            LOGGER.debug(CLIENTHOOKS, "Received FML ping data from server at {}: FMLNETVER={}, mod list is compatible : {}, channel list is compatible: {}, extra server mods: {}", target.ip, fmlver, modsMatch, channelsMatch, extraServerMods);
-
-            String extraReason = null;
-
-            if (!extraServerMods.isEmpty()) {
-                extraReason = "fml.menu.multiplayer.extraservermods";
-                LOGGER.info(CLIENTHOOKS, I18nExtension.parseMessage(extraReason) + ": {}", extraServerMods.entrySet().stream()
-                        .map(e -> e.getKey() + "@" + e.getValue())
-                        .collect(Collectors.joining(", ")));
-            }
-            if (!modsMatch) {
-                extraReason = "fml.menu.multiplayer.modsincompatible";
-                LOGGER.info(CLIENTHOOKS, "Client has mods that are missing on server: {}", extraClientMods);
-            }
-            if (!channelsMatch) {
-                extraReason = "fml.menu.multiplayer.networkincompatible";
-            }
-
-            if (fmlver < NetworkConstants.FMLNETVERSION) {
-                extraReason = "fml.menu.multiplayer.serveroutdated";
-            }
-            if (fmlver > NetworkConstants.FMLNETVERSION) {
-                extraReason = "fml.menu.multiplayer.clientoutdated";
-            }
-            target.neoForgeData = new ExtendedServerListData("FML", extraServerMods.isEmpty() && fmlNetMatches && channelsMatch && modsMatch, mods.size(), extraReason, neoForgeData.isTruncated());
-        }, () -> target.neoForgeData = new ExtendedServerListData("VANILLA", NetworkRegistry.canConnectToVanillaServer(), 0, null));
-    }
-
     private static final ResourceLocation ICON_SHEET = new ResourceLocation(NeoForgeVersion.MOD_ID, "textures/gui/icons.png");
-
-    public static void drawForgePingInfo(JoinMultiplayerScreen gui, ServerData target, GuiGraphics guiGraphics, int x, int y, int width, int relativeMouseX, int relativeMouseY) {
-        int idx;
-        String tooltip;
-        if (target.neoForgeData == null)
-            return;
-        switch (target.neoForgeData.type()) {
-            case "FML":
-                if (target.neoForgeData.isCompatible()) {
-                    idx = 0;
-                    tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.compatible", target.neoForgeData.numberOfMods());
-                } else {
-                    idx = 16;
-                    if (target.neoForgeData.extraReason() != null) {
-                        String extraReason = I18nExtension.parseMessage(target.neoForgeData.extraReason());
-                        tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.incompatible.extra", extraReason);
-                    } else {
-                        tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.incompatible");
-                    }
-                }
-                if (target.neoForgeData.truncated()) {
-                    tooltip += "\n" + I18nExtension.parseMessage("fml.menu.multiplayer.truncated");
-                }
-                break;
-            case "VANILLA":
-                if (target.neoForgeData.isCompatible()) {
-                    idx = 48;
-                    tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.vanilla");
-                } else {
-                    idx = 80;
-                    tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.vanilla.incompatible");
-                }
-                break;
-            default:
-                idx = 64;
-                tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.unknown", target.neoForgeData.type());
-        }
-
-        guiGraphics.blit(ICON_SHEET, x + width - 18, y + 10, 16, 16, 0, idx, 16, 16, 256, 256);
-
-        if (relativeMouseX > width - 15 && relativeMouseX < width && relativeMouseY > 10 && relativeMouseY < 26) {
-            //this is not the most proper way to do it,
-            //but works best here and has the least maintenance overhead
-            gui.setToolTip(Arrays.stream(tooltip.split("\n")).map(Component::literal).collect(Collectors.toList()));
-        }
-    }
-
-    private static Connection getClientConnection() {
-        return Minecraft.getInstance().getConnection() != null ? Minecraft.getInstance().getConnection().getConnection() : null;
-    }
-
-    public static void handleClientLevelClosing(ClientLevel level) {
-        Connection client = getClientConnection();
-        // ONLY revert a non-local connection
-        if (client != null && !client.isMemoryConnection()) {
-            RegistryManager.revertToFrozen();
-        }
-    }
 
     public static void firePlayerLogin(MultiPlayerGameMode pc, LocalPlayer player, Connection networkManager) {
         NeoForge.EVENT_BUS.post(new ClientPlayerNetworkEvent.LoggingIn(pc, player, networkManager));
