@@ -16,8 +16,11 @@ import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.minecraft.network.*;
+import net.minecraft.network.CompressionDecoder;
+import net.minecraft.network.Connection;
+import net.minecraft.network.ConnectionProtocol;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.VarInt;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
