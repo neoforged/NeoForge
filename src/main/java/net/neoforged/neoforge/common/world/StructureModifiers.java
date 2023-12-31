@@ -31,7 +31,7 @@ public final class StructureModifiers {
      * 
      * <pre>
      * {
-     *   "type": "forge:add_spawns", // Required
+     *   "type": "neoforge:add_spawns", // Required
      *   "structures": "#namespace:structure_tag", // Accepts a structure id, [list of structure ids], or #namespace:structure_tag
      *   "spawners":
      *   {
@@ -47,7 +47,7 @@ public final class StructureModifiers {
      * 
      * <pre>
      * {
-     *   "type": "forge:add_spawns", // Required
+     *   "type": "neoforge:add_spawns", // Required
      *   "structure": "#namespace:structure_tag", // Accepts a structure id, [list of structure ids], or #namespace:structure_tag
      *   "spawners":
      *   [
@@ -108,7 +108,7 @@ public final class StructureModifiers {
      * 
      * <pre>
      * {
-     *   "type": "forge:remove_spawns", // Required
+     *   "type": "neoforge:remove_spawns", // Required
      *   "structures": "#namespace:structure_tag", // Accepts a structure id, [list of structure ids], or #namespace:structure_tag
      *   "entity_types": #namespace:entitytype_tag // Accepts an entity type, [list of entity types], or #namespace:entitytype_tag
      * }
@@ -150,7 +150,7 @@ public final class StructureModifiers {
      * 
      * <pre>
      * {
-     *   "type": "forge:clear_spawns", // Required
+     *   "type": "neoforge:clear_spawns", // Required
      *   "structures": "#namespace:structure_tag", // Accepts a structure id, [list of structure ids], or #namespace:structure_tag
      *   "categories": "monster" OR ["monster", "creature"] // Optional, one or more {@link MobCategory}s; defaults to all categories if not specified.
      * }
@@ -174,6 +174,5 @@ public final class StructureModifiers {
         public Codec<? extends StructureModifier> codec() {
             return NeoForgeMod.CLEAR_SPAWNS_STRUCTURE_MODIFIER_TYPE.get();
         }
-
     }
 }
