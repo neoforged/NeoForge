@@ -24,13 +24,13 @@ public record FrozenRegistryPayload(ResourceLocation registryName, RegistrySnaps
     public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "frozen_registry");
 
     public FrozenRegistryPayload(FriendlyByteBuf buf) {
-        this(buf.readResourceLocation(), RegistrySnapshot.read(buf));
+        this(buf.readResourceLocation(), new RegistrySnapshot(buf));
     }
 
     @Override
     public void write(FriendlyByteBuf buf) {
         buf.writeResourceLocation(registryName());
-        buf.writeBytes(snapshot().getPacketData());
+        snapshot().write(buf);
     }
 
     @Override

@@ -31,7 +31,7 @@ public class RegistrySnapshot {
     @Nullable
     private final Registry<?> fullBackup;
     @Nullable
-    private FriendlyByteBuf binary = null;
+    private byte[] binary = null;
 
     /**
      * Creates a blank snapshot to populate.
@@ -43,7 +43,7 @@ public class RegistrySnapshot {
     /**
      * Creates a registry snapshot based on the given registry.
      *
-     * @param registry the registry to snapshot
+     * @param registry the registry to snapshot.
      * @param full     if {@code true}, all entries will be stored in this snapshot.
      *                 These entries are never saved to disk nor sent to the client.
      * @param <T>      the registry type
@@ -66,6 +66,53 @@ public class RegistrySnapshot {
         }
     }
 
+    /**
+     * Creates a registry snapshot from the received buffer.
+     * 
+     * @param buf the buffer containing the data of the received snapshot.
+     */
+    public RegistrySnapshot(FriendlyByteBuf buf) {
+        this();
+        int len = buf.readVarInt();
+        for (int x = 0; x < len; x++)
+            this.ids.put(buf.readVarInt(), buf.readResourceLocation());
+
+        len = buf.readVarInt();
+        for (int x = 0; x < len; x++)
+            this.aliases.put(buf.readResourceLocation(), buf.readResourceLocation());
+    }
+
+    /**
+     * Write the registry snapshot to the given buffer and cache the binary data.
+     * 
+     * @param buf the buffer to write to.
+     */
+    public synchronized void write(FriendlyByteBuf buf) {
+        if (this.binary == null) {
+            FriendlyByteBuf pkt = new FriendlyByteBuf(Unpooled.buffer());
+
+            try {
+                pkt.writeVarInt(this.ids.size());
+                this.ids.forEach((k, v) -> {
+                    pkt.writeVarInt(k);
+                    pkt.writeResourceLocation(v);
+                });
+
+                pkt.writeVarInt(this.aliases.size());
+                this.aliases.forEach((k, v) -> {
+                    pkt.writeResourceLocation(k);
+                    pkt.writeResourceLocation(v);
+                });
+            } finally {
+                pkt.release();
+            }
+
+            this.binary = pkt.array();
+        }
+
+        buf.writeBytes(this.binary);
+    }
+
     public Int2ObjectSortedMap<ResourceLocation> getIds() {
         return this.idsView;
     }
@@ -78,44 +125,5 @@ public class RegistrySnapshot {
     @Nullable
     public <T> Registry<T> getFullBackup() {
         return (Registry<T>) this.fullBackup;
-    }
-
-    public synchronized FriendlyByteBuf getPacketData() {
-        if (this.binary == null) {
-            FriendlyByteBuf pkt = new FriendlyByteBuf(Unpooled.buffer());
-
-            pkt.writeVarInt(this.ids.size());
-            this.ids.forEach((k, v) -> {
-                pkt.writeVarInt(k);
-                pkt.writeResourceLocation(v);
-            });
-
-            pkt.writeVarInt(this.aliases.size());
-            this.aliases.forEach((k, v) -> {
-                pkt.writeResourceLocation(k);
-                pkt.writeResourceLocation(v);
-            });
-
-            this.binary = pkt;
-        }
-
-        return new FriendlyByteBuf(this.binary.slice());
-    }
-
-    public static RegistrySnapshot read(@Nullable FriendlyByteBuf buf) {
-        if (buf == null)
-            return new RegistrySnapshot();
-
-        RegistrySnapshot ret = new RegistrySnapshot();
-
-        int len = buf.readVarInt();
-        for (int x = 0; x < len; x++)
-            ret.ids.put(buf.readVarInt(), buf.readResourceLocation());
-
-        len = buf.readVarInt();
-        for (int x = 0; x < len; x++)
-            ret.aliases.put(buf.readResourceLocation(), buf.readResourceLocation());
-
-        return ret;
     }
 }
