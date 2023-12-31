@@ -1,11 +1,6 @@
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -105,11 +_,17 @@
-         this.connection.flushChannel();
-     }
- 
-+    @Override
-     public void send(Packet<?> p_294278_) {
+@@ -109,7 +_,12 @@
          this.send(p_294278_, null);
      }
  

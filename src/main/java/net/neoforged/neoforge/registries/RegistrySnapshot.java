@@ -73,13 +73,8 @@ public class RegistrySnapshot {
      */
     public RegistrySnapshot(FriendlyByteBuf buf) {
         this();
-        int len = buf.readVarInt();
-        for (int x = 0; x < len; x++)
-            this.ids.put(buf.readVarInt(), buf.readResourceLocation());
-
-        len = buf.readVarInt();
-        for (int x = 0; x < len; x++)
-            this.aliases.put(buf.readResourceLocation(), buf.readResourceLocation());
+        buf.readMap(size -> this.ids, FriendlyByteBuf::readVarInt, FriendlyByteBuf::readResourceLocation);
+        buf.readMap(size -> this.aliases, FriendlyByteBuf::readResourceLocation, FriendlyByteBuf::readResourceLocation);
     }
 
     /**
@@ -91,16 +86,8 @@ public class RegistrySnapshot {
         if (this.binary == null) {
             FriendlyByteBuf pkt = new FriendlyByteBuf(Unpooled.buffer());
             try {
-                pkt.writeVarInt(this.ids.size());
-                this.ids.forEach((k, v) -> {
-                    pkt.writeVarInt(k);
-                    pkt.writeResourceLocation(v);
-                });
-                pkt.writeVarInt(this.aliases.size());
-                this.aliases.forEach((k, v) -> {
-                    pkt.writeResourceLocation(k);
-                    pkt.writeResourceLocation(v);
-                });
+                pkt.writeMap(this.ids, FriendlyByteBuf::writeVarInt, FriendlyByteBuf::writeResourceLocation);
+                pkt.writeMap(this.aliases, FriendlyByteBuf::writeResourceLocation, FriendlyByteBuf::writeResourceLocation);
                 this.binary = new byte[pkt.readableBytes()];
                 pkt.readBytes(this.binary);
             } finally {

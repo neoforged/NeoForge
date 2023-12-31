@@ -16,10 +16,8 @@ import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.network.CompressionDecoder;
-import net.minecraft.network.Connection;
-import net.minecraft.network.ConnectionProtocol;
-import net.minecraft.network.FriendlyByteBuf;
+
+import net.minecraft.network.*;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
@@ -109,7 +107,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
                         partPrefix = Unpooled.buffer(5);
                         partPrefix.writeByte(STATE_FIRST);
 
-                        new FriendlyByteBuf(partPrefix).writeVarInt(codecdata.packetId(packet));
+                        VarInt.write(partPrefix, codecdata.packetId(packet));
                     } else {
                         partPrefix = Unpooled.buffer(1);
                         partPrefix.writeByte(part == parts - 1 ? STATE_LAST : 0);
@@ -149,7 +147,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
 
         int contentSize = payload.payload().length - 1;
         byte[] buffer = new byte[contentSize];
-        System.arraycopy(payload.payload(), 1, buffer, 0, contentSize);
+        System.arraycopy(payload.payload(), 1, buffer, 0, contentSize); // We cut of the initial byte here that indicates the state
         receivedBuffers.add(buffer);
 
         if (state == STATE_LAST) {
