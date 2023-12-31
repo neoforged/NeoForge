@@ -73,13 +73,19 @@ public class RegistrySnapshot {
      */
     public RegistrySnapshot(FriendlyByteBuf buf) {
         this();
-        int len = buf.readVarInt();
-        for (int x = 0; x < len; x++)
-            this.ids.put(buf.readVarInt(), buf.readResourceLocation());
 
-        len = buf.readVarInt();
+        final byte[] payload = buf.readByteArray();
+        final FriendlyByteBuf payloadBuf = new FriendlyByteBuf(Unpooled.wrappedBuffer(payload));
+
+        int len = payloadBuf.readVarInt();
         for (int x = 0; x < len; x++)
-            this.aliases.put(buf.readResourceLocation(), buf.readResourceLocation());
+            this.ids.put(payloadBuf.readVarInt(), payloadBuf.readResourceLocation());
+
+        len = payloadBuf.readVarInt();
+        for (int x = 0; x < len; x++)
+            this.aliases.put(payloadBuf.readResourceLocation(), payloadBuf.readResourceLocation());
+
+        payloadBuf.release();
     }
 
     /**
@@ -103,14 +109,14 @@ public class RegistrySnapshot {
                     pkt.writeResourceLocation(k);
                     pkt.writeResourceLocation(v);
                 });
+
+                this.binary = pkt.array();
             } finally {
                 pkt.release();
             }
-
-            this.binary = pkt.array();
         }
 
-        buf.writeBytes(this.binary);
+        buf.writeByteArray(this.binary);
     }
 
     public Int2ObjectSortedMap<ResourceLocation> getIds() {

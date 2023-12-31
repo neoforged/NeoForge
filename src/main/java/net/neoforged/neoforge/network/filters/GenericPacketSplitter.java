@@ -116,9 +116,11 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
                     }
 
                     final int partSize = Math.min(MAX_PART_SIZE, packetData.length - (part * MAX_PART_SIZE));
-                    final byte[] payloadSlice = new byte[partSize];
+                    final int prefixSize = partPrefix.readableBytes();
+                    final byte[] payloadSlice = new byte[partSize + prefixSize];
 
-                    System.arraycopy(packetData, part * MAX_PART_SIZE, payloadSlice, 0, partSize);
+                    partPrefix.readBytes(payloadSlice, 0, prefixSize);
+                    System.arraycopy(packetData, part * MAX_PART_SIZE, payloadSlice, prefixSize, partSize);
 
                     out.add(createPacket(codecdata.flow(), payloadSlice));
 
@@ -145,7 +147,10 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
             }
         }
 
-        receivedBuffers.add(payload.payload());
+        int contentSize = payload.payload().length - 1;
+        byte[] buffer = new byte[contentSize];
+        System.arraycopy(payload.payload(), 1, buffer, 0, contentSize);
+        receivedBuffers.add(buffer);
 
         if (state == STATE_LAST) {
             final byte[][] buffers = receivedBuffers.toArray(new byte[0][]);
