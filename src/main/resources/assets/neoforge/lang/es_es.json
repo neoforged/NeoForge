@@ -1,7 +1,7 @@
 {
-  "fml.menu.mods": "Mods",
-  "fml.menu.mods.title": "Mods",
-  "fml.menu.mods.normal": "Off",
+  "fml.menu.mods": "Tecla: \"fml.menú.mods\"\n-> fml.menú.mods",
+  "fml.menu.mods.title": "Tecla: \"fml.menú.mods.título\"\n-> fml.menú.mods.título",
+  "fml.menu.mods.normal": "Tecla: \"fml.menú.mods.normal\"\n-> fml.menú.mods.normal",
   "fml.menu.mods.search": "Search",
   "fml.menu.mods.a_to_z": "A-Z",
   "fml.menu.mods.z_to_a": "Z-A",
