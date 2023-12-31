@@ -6,43 +6,52 @@
 package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.SectionPos;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ImposterProtoChunk;
-import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.LightChunk;
 import net.neoforged.neoforge.client.model.data.ModelDataManager;
+import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public interface IBlockGetterExtension {
-    private BlockGetter self() {
-        return (BlockGetter) this;
+    /**
+     * Get the {@link AuxiliaryLightManager} of the chunk containing the given {@link BlockPos}.
+     * <p>
+     * The light manager must be used to hold light values controlled by dynamic data from {@link BlockEntity}s
+     * to ensure access to the light data is thread-safe and the data is available during chunk load from disk
+     * where {@code BlockEntity}s are not yet added to the chunk.
+     *
+     * @param pos The position for whose containing chunk the light manager is requested
+     * @return the light manager or {@code null} if the chunk is not accessible
+     */
+    @Nullable
+    @ApiStatus.NonExtendable
+    default AuxiliaryLightManager getAuxLightManager(BlockPos pos) {
+        return getAuxLightManager(new ChunkPos(pos));
     }
 
     /**
-     * Get the {@link BlockEntity} at the given position if it exists.
+     * Get the {@link AuxiliaryLightManager} of the chunk at the given {@link ChunkPos}.
      * <p>
-     * {@link Level#getBlockEntity(BlockPos)} would create a new {@link BlockEntity} if the
-     * {@link net.minecraft.world.level.block.Block} has one, but it has not been placed in the world yet
-     * (This can happen on world load).
-     * 
-     * @return The BlockEntity at the given position or null if it doesn't exist
+     * The light manager must be used to hold light values controlled by dynamic data from {@link BlockEntity}s
+     * to ensure access to the light data is thread-safe and the data is available during chunk load from disk
+     * where {@code BlockEntity}s are not yet added to the chunk.
+     *
+     * @param pos The position of the chunk from which the light manager is requested
+     * @return the light manager or {@code null} if the chunk is not accessible
      */
     @Nullable
-    default BlockEntity getExistingBlockEntity(BlockPos pos) {
-        if (this instanceof Level level) {
-            if (!level.hasChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()))) {
-                return null;
-            }
-
-            return level.getChunk(pos).getExistingBlockEntity(pos);
-        } else if (this instanceof LevelChunk chunk) {
-            return chunk.getBlockEntities().get(pos);
+    default AuxiliaryLightManager getAuxLightManager(ChunkPos pos) {
+        if (this instanceof LevelAccessor level) {
+            LightChunk chunk = level.getChunkSource().getChunkForLighting(pos.x, pos.z);
+            return chunk != null ? chunk.getAuxLightManager(pos) : null;
         } else if (this instanceof ImposterProtoChunk chunk) {
-            return chunk.getWrapped().getExistingBlockEntity(pos);
+            return chunk.getWrapped().getAuxLightManager(pos);
         }
-        return self().getBlockEntity(pos);
+        return null;
     }
 
     /**
