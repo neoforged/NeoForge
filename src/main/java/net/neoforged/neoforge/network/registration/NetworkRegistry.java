@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.network.registration;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
@@ -59,7 +59,6 @@ import net.neoforged.neoforge.network.payload.ModdedNetworkPayload;
 import net.neoforged.neoforge.network.payload.ModdedNetworkQueryComponent;
 import net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload;
 import net.neoforged.neoforge.network.payload.ModdedNetworkSetupFailedPayload;
-import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
@@ -91,8 +90,8 @@ public class NetworkRegistry {
     }
 
     private boolean setup = false;
-    private final Map<ResourceLocation, ConfigurationRegistration<?>> knownConfigurationRegistrations = Maps.newHashMap();
-    private final Map<ResourceLocation, PlayRegistration<?>> knownPlayRegistrations = Maps.newHashMap();
+    private final Map<ResourceLocation, ConfigurationRegistration<?>> knownConfigurationRegistrations = new HashMap<>();
+    private final Map<ResourceLocation, PlayRegistration<?>> knownPlayRegistrations = new HashMap<>();
 
     private NetworkRegistry() {}
 
