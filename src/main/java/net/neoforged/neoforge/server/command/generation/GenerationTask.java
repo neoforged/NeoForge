@@ -12,6 +12,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.visitors.CollectFields;
@@ -97,7 +99,7 @@ public class GenerationTask {
         this.listener = listener;
 
         // Off thread chunk scanning to skip already generated chunks
-        CompletableFuture.runAsync(this::tryEnqueueTasks);
+        CompletableFuture.runAsync(this::tryEnqueueTasks, Util.backgroundExecutor());
     }
 
     public void stop() {
