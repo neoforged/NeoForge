@@ -6,15 +6,14 @@
 package net.neoforged.neoforge.network.negotiation;
 
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -79,19 +78,19 @@ public class NetworkComponentNegotiator {
         server.removeIf(c -> matches.containsRow(c.id()));
 
         if (!client.isEmpty()) {
-            final Map<ResourceLocation, Component> failureReasons = Maps.newHashMap();
+            final Map<ResourceLocation, Component> failureReasons = new HashMap<>();
             client.forEach(c -> failureReasons.put(c.id(), Component.translatable("neoforge.network.negotiation.failure.missing.client.server")));
             return new NegotiationResult(List.of(), false, failureReasons);
         }
 
         if (!server.isEmpty()) {
-            final Map<ResourceLocation, Component> failureReasons = Maps.newHashMap();
+            final Map<ResourceLocation, Component> failureReasons = new HashMap<>();
             server.forEach(c -> failureReasons.put(c.id(), Component.translatable("neoforge.network.negotiation.failure.missing.server.client")));
             return new NegotiationResult(List.of(), false, failureReasons);
         }
 
-        final List<NegotiatedNetworkComponent> result = Lists.newArrayList();
-        final Map<ResourceLocation, Component> failureReasons = Maps.newHashMap();
+        final List<NegotiatedNetworkComponent> result = new ArrayList<>();
+        final Map<ResourceLocation, Component> failureReasons = new HashMap<>();
         for (Table.Cell<ResourceLocation, NegotiableNetworkComponent, NegotiableNetworkComponent> match : matches.cellSet()) {
             final NegotiableNetworkComponent serverComponent = match.getColumnKey();
             final NegotiableNetworkComponent clientComponent = match.getValue();
