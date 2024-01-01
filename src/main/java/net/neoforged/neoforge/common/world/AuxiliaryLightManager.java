@@ -5,9 +5,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -75,5 +78,18 @@ public final class AuxiliaryLightManager implements INBTSerializable<ListTag> {
             CompoundTag tag = list.getCompound(i);
             lights.put(BlockPos.of(tag.getLong("pos")), (int) tag.getByte("level"));
         }
+    }
+
+    @ApiStatus.Internal
+    public void sendLightDataTo(ServerPlayer player) {
+        if (!lights.isEmpty() && player.connection.isConnected(AuxiliaryLightDataPayload.ID)) {
+            PacketDistributor.PLAYER.with(player)
+                    .send(new AuxiliaryLightDataPayload(owner.getPos(), Map.copyOf(lights)));
+        }
+    }
+
+    @ApiStatus.Internal
+    public void handleLightDataSync(Map<BlockPos, Integer> lights) {
+        this.lights.putAll(lights);
     }
 }

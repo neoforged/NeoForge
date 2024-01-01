@@ -18,6 +18,7 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
+import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
@@ -25,6 +26,7 @@ import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.server.command.ConfigCommand;
 import net.neoforged.neoforge.server.command.NeoForgeCommand;
@@ -124,6 +126,14 @@ public class NeoForgeEventHandler {
     public void builtinMobSpawnBlocker(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof Mob mob && mob.isSpawnCancelled()) {
             event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public void onChunkSent(ChunkWatchEvent.Sent event) {
+        AuxiliaryLightManager lightManager = event.getChunk().getAuxLightManager(event.getPos());
+        if (lightManager != null) {
+            lightManager.sendLightDataTo(event.getPlayer());
         }
     }
 }
