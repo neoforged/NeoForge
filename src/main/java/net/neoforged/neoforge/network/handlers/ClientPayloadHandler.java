@@ -24,12 +24,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.TierSortingRegistry;
+import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
+import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
@@ -134,6 +136,18 @@ public class ClientPayloadHandler {
             Screen s = f.create(menuType.create(windowId, mc.player.getInventory(), buf), mc.player.getInventory(), name);
             mc.player.containerMenu = ((MenuAccess<?>) s).getMenu();
             mc.setScreen(s);
+        });
+    }
+
+    public void handle(AuxiliaryLightDataPayload msg, PlayPayloadContext context) {
+        context.workHandler().execute(() -> {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.level == null) return;
+
+            AuxiliaryLightManager lightManager = mc.level.getAuxLightManager(msg.pos());
+            if (lightManager != null) {
+                lightManager.handleLightDataSync(msg.entries());
+            }
         });
     }
 }
