@@ -18,7 +18,7 @@
          } else {
              this.createNormalMenuOptions(l, 24);
 +            modButton = this.addRenderableWidget(Button.builder(Component.translatable("fml.menu.mods"), button -> this.minecraft.setScreen(new net.neoforged.neoforge.client.gui.ModListScreen(this)))
-+                .pos(this.width / 2 - 100, l + 24 * 2).size(98, 20).build());
++                .pos(this.width / 2 - 100, l + 24 * 2).size(200, 20).build());
          }
 +        modUpdateNotification = net.neoforged.neoforge.client.gui.TitleScreenModUpdateIndicator.init(this, modButton);
  
@@ -29,7 +29,7 @@
          this.addRenderableWidget(
                  Button.builder(Component.translatable("menu.online"), p_210872_ -> this.realmsButtonClicked())
 -                    .bounds(this.width / 2 - 100, p_96764_ + p_96765_ * 2, 200, 20)
-+                    .bounds(this.width / 2 + 2, p_96764_ + p_96765_ * 2, 98, 20)
++                    .bounds(this.width / 2 - 100, p_96764_ + p_96765_ * 3, 200, 20)
                      .tooltip(tooltip)
                      .build()
              )
