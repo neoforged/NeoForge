@@ -102,7 +102,7 @@
          BlockState blockstate = p_203157_.getBlockState(p_203159_);
          return this.getHeight(p_203157_, p_203158_, p_203159_, blockstate, blockstate.getFluidState());
 +    }
-+    
++
 +    private void vertex(VertexConsumer p_110985_, double p_110986_, double p_110987_, double p_110988_, float p_110989_, float p_110990_, float p_110991_, float alpha, float p_110992_, float p_110993_, int p_110994_) {
 +        p_110985_.vertex(p_110986_, p_110987_, p_110988_).color(p_110989_, p_110990_, p_110991_, alpha).uv(p_110992_, p_110993_).uv2(p_110994_).normal(0.0F, 1.0F, 0.0F).endVertex();
      }

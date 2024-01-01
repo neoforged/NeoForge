@@ -32,7 +32,7 @@
 +                    packetSender.accept(bundlePacket);
 +                }
 +            }
-+            
++
              @Nullable
              @Override
              public BundlerInfo.Bundler startPacketBundling(Packet<?> p_265097_) {

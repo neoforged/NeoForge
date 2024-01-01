@@ -197,8 +197,7 @@
 +                              "onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration")
                      );
                  }
--
-+                
+ 
                  ServerLevel.this.navigatingMobs.remove(mob);
              }
  
