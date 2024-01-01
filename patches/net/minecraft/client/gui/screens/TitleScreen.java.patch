@@ -8,7 +8,7 @@
  
      public TitleScreen() {
          this(false);
-@@ -120,11 +_,15 @@
+@@ -120,30 +_,34 @@
          int j = this.width - i - 2;
          int k = 24;
          int l = this.height / 4 + 48;
@@ -24,6 +24,29 @@
  
          SpriteIconButton spriteiconbutton = this.addRenderableWidget(
              CommonButtons.language(
+                 20, p_280830_ -> this.minecraft.setScreen(new LanguageSelectScreen(this, this.minecraft.options, this.minecraft.getLanguageManager())), true
+             )
+         );
+-        spriteiconbutton.setPosition(this.width / 2 - 124, l + 72 + 12);
++        spriteiconbutton.setPosition(this.width / 2 - 124, l + 96 + 12);
+         this.addRenderableWidget(
+             Button.builder(Component.translatable("menu.options"), p_280838_ -> this.minecraft.setScreen(new OptionsScreen(this, this.minecraft.options)))
+-                .bounds(this.width / 2 - 100, l + 72 + 12, 98, 20)
++                .bounds(this.width / 2 - 100, l + 96 + 12, 98, 20)
+                 .build()
+         );
+         this.addRenderableWidget(
+-            Button.builder(Component.translatable("menu.quit"), p_280831_ -> this.minecraft.stop()).bounds(this.width / 2 + 2, l + 72 + 12, 98, 20).build()
++            Button.builder(Component.translatable("menu.quit"), p_280831_ -> this.minecraft.stop()).bounds(this.width / 2 + 2, l + 96 + 12, 98, 20).build()
+         );
+         SpriteIconButton spriteiconbutton1 = this.addRenderableWidget(
+             CommonButtons.accessibility(20, p_280835_ -> this.minecraft.setScreen(new AccessibilityOptionsScreen(this, this.minecraft.options)), true)
+         );
+-        spriteiconbutton1.setPosition(this.width / 2 + 104, l + 72 + 12);
++        spriteiconbutton1.setPosition(this.width / 2 + 104, l + 96 + 12);
+         this.addRenderableWidget(
+             new PlainTextButton(
+                 j, this.height - 10, i, 10, COPYRIGHT_TEXT, p_280834_ -> this.minecraft.setScreen(new CreditsAndAttributionScreen(this)), this.font
 @@ -179,7 +_,7 @@
          }).bounds(this.width / 2 - 100, p_96764_ + p_96765_ * 1, 200, 20).tooltip(tooltip).build()).active = flag;
          this.addRenderableWidget(
