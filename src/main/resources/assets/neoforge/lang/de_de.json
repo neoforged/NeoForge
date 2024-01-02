@@ -142,7 +142,7 @@
   "commands.neoforge.chunkgen.progress_bar_title": "Generiere Chunks...",
   "commands.neoforge.chunkgen.progress_bar_progress": "Generiere {0} Chunks - ",
   "commands.neoforge.chunkgen.progress_bar_errors": "({0} Fehler!)",
-  "commands.neoforge.chunkgen.already_running": "Generierung läuft bereits. Bitte führe zuerst '/neoforge generate stop' aus, und dann kannst du eine neue Generierung starten.",
+  "commands.neoforge.chunkgen.already_running": "Generierung läuft bereits. Bitte führe zuerst '/neoforge generate stop' aus, erst dann kannst du eine neue Generierung starten.",
   "commands.neoforge.chunkgen.started": "Generiere {0} Chunks, in einem Bereich von {1}x{2} Chunks ({3}x{4} Blöcke).",
   "commands.neoforge.chunkgen.success": "Generierung fertig!",
   "commands.neoforge.chunkgen.error": "Generierung hat {0} Fehler erzeugt! Überprüfe die Logdatei für weitere Informationen.",
