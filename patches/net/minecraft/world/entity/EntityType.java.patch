@@ -46,11 +46,10 @@
      }
  
      @Nullable
-@@ -760,7 +_,14 @@
+@@ -760,6 +_,15 @@
                  mob.yHeadRot = mob.getYRot();
                  mob.yBodyRot = mob.getYRot();
                  mob.finalizeSpawn(p_262637_, p_262637_.getCurrentDifficultyAt(mob.blockPosition()), p_262666_, null, p_262687_);
--                mob.playAmbientSound();
 +
 +                if (mob.isSpawnCancelled()) {
 +                    // Neo: Discord mob, spawn was cancelled
@@ -59,9 +58,10 @@
 +                    // fixes llamas for wandering trader spawning if wandering trader was cancelled
 +                    return null;
 +                }
++
+                 mob.playAmbientSound();
              }
  
-             if (p_262629_ != null) {
 @@ -811,6 +_,9 @@
      }
  
