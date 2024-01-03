@@ -6,83 +6,38 @@
 package net.neoforged.neoforge.common.brewing;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import net.minecraft.core.NonNullList;
+import java.util.Optional;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.Container;
+import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.fml.util.thread.EffectiveSide;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.util.LogicalSidedProvider;
+import net.neoforged.neoforge.event.brewing.PotionBrewEvent;
+import org.jetbrains.annotations.Nullable;
 
-public class BrewingRecipeRegistry {
-    private static List<IBrewingRecipe> recipes = new ArrayList<IBrewingRecipe>();
-
-    static {
-        addRecipe(new VanillaBrewingRecipe());
-    }
-
-    /**
-     * Adds a recipe to the registry. Due to the nature of the brewing stand
-     * inputs that stack (a.k.a max stack size > 1) are not allowed.
-     *
-     * @param input
-     *                   The Ingredient that goes in same slots as the water bottles
-     *                   would.
-     * @param ingredient
-     *                   The Ingredient that goes in the same slot as nether wart would.
-     * @param output
-     *                   The ItemStack that will replace the input once the brewing is
-     *                   done.
-     * @return true if the recipe was added.
-     */
-    public static boolean addRecipe(Ingredient input, Ingredient ingredient, ItemStack output) {
-        return addRecipe(new BrewingRecipe(input, ingredient, output));
-    }
-
-    /**
-     * Adds a recipe to the registry. Due to the nature of the brewing stand
-     * inputs that stack (a.k.a max stack size > 1) are not allowed.
-     */
-    public static boolean addRecipe(IBrewingRecipe recipe) {
-        return recipes.add(recipe);
-    }
-
-    /**
-     * Returns the output ItemStack obtained by brewing the passed input and
-     * ingredient.
-     */
-    public static ItemStack getOutput(ItemStack input, ItemStack ingredient) {
-        if (input.isEmpty() || input.getCount() != 1) return ItemStack.EMPTY;
-        if (ingredient.isEmpty()) return ItemStack.EMPTY;
-
-        for (IBrewingRecipe recipe : recipes) {
-            ItemStack output = recipe.getOutput(input, ingredient);
-            if (!output.isEmpty()) {
-                return output;
-            }
-        }
-        return ItemStack.EMPTY;
-    }
-
-    /**
-     * Returns true if the passed input and ingredient have an output
-     */
-    public static boolean hasOutput(ItemStack input, ItemStack ingredient) {
-        return !getOutput(input, ingredient).isEmpty();
-    }
+public final class BrewingRecipeRegistry {
+    private BrewingRecipeRegistry() {}
 
     /**
      * Used by the brewing stand to determine if its contents can be brewed.
      * Extra parameters exist to allow modders to create bigger brewing stands
      * without much hassle
      */
-    public static boolean canBrew(NonNullList<ItemStack> inputs, ItemStack ingredient, int[] inputIndexes) {
-        if (ingredient.isEmpty()) return false;
-
-        for (int i : inputIndexes) {
-            if (hasOutput(inputs.get(i), ingredient)) {
+    public static boolean canBrew(Level level, Container container, int catalystSlot, int[] inputSlots) {
+        for (int inputSlot : inputSlots) {
+            if (level.getRecipeManager().getRecipeFor(NeoForgeMod.BREWING_RECIPE_TYPE.get(), new IBrewingRecipe.IBrewingContainer.Wrapper(container, inputSlot, catalystSlot), level).isPresent()) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -90,27 +45,51 @@ public class BrewingRecipeRegistry {
      * Used by the brewing stand to brew its inventory Extra parameters exist to
      * allow modders to create bigger brewing stands without much hassle
      */
-    public static void brewPotions(NonNullList<ItemStack> inputs, ItemStack ingredient, int[] inputIndexes) {
-        for (int i : inputIndexes) {
-            ItemStack output = getOutput(inputs.get(i), ingredient);
-            if (!output.isEmpty()) {
-                inputs.set(i, output);
-            }
+    public static void brewPotions(Level level, BlockPos pos, Container container, int catalystSlot, int[] inputSlots) {
+        for (int inputSlot : inputSlots) {
+            brew(level, new IBrewingRecipe.IBrewingContainer.Wrapper(container, inputSlot, catalystSlot));
         }
+
+        ItemStack catalyst = container.getItem(catalystSlot);
+        if (catalyst.hasCraftingRemainingItem()) {
+            ItemStack itemstack1 = catalyst.getCraftingRemainingItem();
+            catalyst.shrink(1);
+            if (catalyst.isEmpty()) {
+                catalyst = itemstack1;
+            } else {
+                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), itemstack1);
+            }
+        } else {
+            catalyst.shrink(1);
+        }
+
+        container.setItem(catalystSlot, catalyst);
+        level.levelEvent(LevelEvent.SOUND_BREWING_STAND_BREW, pos, 0);
+    }
+
+    public static void brew(Level level, IBrewingRecipe.IBrewingContainer brewingContainer) {
+        Optional<RecipeHolder<IBrewingRecipe>> recipe = level.getRecipeManager().getRecipeFor(NeoForgeMod.BREWING_RECIPE_TYPE.get(), brewingContainer, level).or(() -> VanillaBrewingRecipe.getFallback(level, brewingContainer));
+        if (recipe.isEmpty()) return;
+        RecipeHolder<IBrewingRecipe> brewingRecipe = recipe.get();
+        if (NeoForge.EVENT_BUS.post(new PotionBrewEvent.Pre(level, brewingContainer, brewingRecipe)).isCanceled()) return;
+        ItemStack result = brewingRecipe.value().assemble(brewingContainer, level.registryAccess());
+        ItemStack modifiedResult = NeoForge.EVENT_BUS.post(new PotionBrewEvent.Post(level, brewingContainer, brewingRecipe, result)).getOutput();
+        brewingContainer.setResult(modifiedResult);
     }
 
     /**
      * Returns true if the passed ItemStack is a valid ingredient for any of the
      * recipes in the registry.
      */
-    public static boolean isValidIngredient(ItemStack stack) {
+    public static boolean isValidIngredient(Container container, ItemStack stack) {
         if (stack.isEmpty()) return false;
 
-        for (IBrewingRecipe recipe : recipes) {
-            if (recipe.isIngredient(stack)) {
+        for (RecipeHolder<IBrewingRecipe> recipe : getAllBrewingRecipes(getRecipeManager(container))) {
+            if (recipe.value().isCatalyst(stack)) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -118,19 +97,36 @@ public class BrewingRecipeRegistry {
      * Returns true if the passed ItemStack is a valid input for any of the
      * recipes in the registry.
      */
-    public static boolean isValidInput(ItemStack stack) {
-        for (IBrewingRecipe recipe : recipes) {
-            if (recipe.isInput(stack)) {
+    public static boolean isValidInput(Container container, ItemStack stack) {
+        if (stack.isEmpty()) return false;
+
+        for (RecipeHolder<IBrewingRecipe> recipe : getAllBrewingRecipes(getRecipeManager(container))) {
+            if (recipe.value().isInput(stack)) {
                 return true;
             }
         }
+
         return false;
     }
 
     /**
      * Returns an unmodifiable list containing all the recipes in the registry
      */
-    public static List<IBrewingRecipe> getRecipes() {
-        return Collections.unmodifiableList(recipes);
+    public static List<RecipeHolder<IBrewingRecipe>> getRecipes() {
+        return getAllBrewingRecipes(getRecipeManager(null));
+    }
+
+    private static RecipeManager getRecipeManager(@Nullable Container container) {
+        if (container instanceof BlockEntity be) {
+            return be.getLevel().getRecipeManager();
+        } else {
+            return LogicalSidedProvider.RECIPE_MANAGER.get(EffectiveSide.get());
+        }
+    }
+
+    private static List<RecipeHolder<IBrewingRecipe>> getAllBrewingRecipes(RecipeManager recipeManager) {
+        List<RecipeHolder<IBrewingRecipe>> list = new ArrayList<>(recipeManager.getAllRecipesFor(NeoForgeMod.BREWING_RECIPE_TYPE.get()));
+        list.add(VanillaBrewingRecipe.INSTANCE);
+        return list;
     }
 }

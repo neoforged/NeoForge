@@ -23,7 +23,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -102,7 +101,6 @@ import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
 import net.neoforged.neoforge.event.brewing.PlayerBrewedPotionEvent;
-import net.neoforged.neoforge.event.brewing.PotionBrewEvent;
 import net.neoforged.neoforge.event.enchanting.EnchantmentLevelSetEvent;
 import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
@@ -543,29 +541,6 @@ public class EventHooks {
     public static float onLivingHeal(LivingEntity entity, float amount) {
         LivingHealEvent event = new LivingHealEvent(entity, amount);
         return (NeoForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
-    }
-
-    public static boolean onPotionAttemptBrew(NonNullList<ItemStack> stacks) {
-        NonNullList<ItemStack> tmp = NonNullList.withSize(stacks.size(), ItemStack.EMPTY);
-        for (int x = 0; x < tmp.size(); x++)
-            tmp.set(x, stacks.get(x).copy());
-
-        PotionBrewEvent.Pre event = new PotionBrewEvent.Pre(tmp);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
-            boolean changed = false;
-            for (int x = 0; x < stacks.size(); x++) {
-                changed |= ItemStack.matches(tmp.get(x), stacks.get(x));
-                stacks.set(x, event.getItem(x));
-            }
-            if (changed)
-                onPotionBrewed(stacks);
-            return true;
-        }
-        return false;
-    }
-
-    public static void onPotionBrewed(NonNullList<ItemStack> brewingItemStacks) {
-        NeoForge.EVENT_BUS.post(new PotionBrewEvent.Post(brewingItemStacks));
     }
 
     public static void onPlayerBrewedPotion(Player player, ItemStack stack) {

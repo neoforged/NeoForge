@@ -5,73 +5,91 @@
 
 package net.neoforged.neoforge.event.brewing;
 
-import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
 
 public abstract class PotionBrewEvent extends Event {
-    private NonNullList<ItemStack> stacks;
 
-    protected PotionBrewEvent(NonNullList<ItemStack> stacks) {
-        this.stacks = stacks;
+    private final Level level;
+    private final IBrewingRecipe.IBrewingContainer brewingContainer;
+    private final RecipeHolder<IBrewingRecipe> recipe;
+
+    protected PotionBrewEvent(Level level, IBrewingRecipe.IBrewingContainer brewingContainer, RecipeHolder<IBrewingRecipe> recipe) {
+        this.level = level;
+        this.brewingContainer = brewingContainer;
+        this.recipe = recipe;
     }
 
-    public ItemStack getItem(int index) {
-        if (index < 0 || index >= stacks.size()) return ItemStack.EMPTY;
-        return stacks.get(index);
+    public Level getLevel() {
+        return this.level;
     }
 
-    public void setItem(int index, ItemStack stack) {
-        if (index < stacks.size()) {
-            stacks.set(index, stack);
-        }
+    public IBrewingRecipe.IBrewingContainer getBrewingContainer() {
+        return this.brewingContainer;
     }
 
-    public int getLength() {
-        return stacks.size();
+    public ItemStack getInput() {
+        return this.getBrewingContainer().getInput();
+    }
+
+    public ItemStack getCatalyst() {
+        return this.getBrewingContainer().getCatalyst();
+    }
+
+    public RecipeHolder<IBrewingRecipe> getRecipe() {
+        return this.recipe;
+    }
+
+    public ResourceLocation getRecipeId() {
+        return this.getRecipe().id();
     }
 
     /**
-     * PotionBrewEvent.Pre is fired before vanilla brewing takes place.
-     * All changes made to the event's array will be made to the TileEntity if the event is canceled.
-     * <br>
-     * The event is fired during the {@code BrewingStandBlockEntity#doBrew(Level, BlockPos, NonNullList)} method invocation.<br>
-     * <br>
-     * {@link #stacks} contains the itemstack array from the TileEntityBrewer holding all items in Brewer.<br>
-     * <br>
+     * PotionBrewEvent.Pre is fired before brewing takes place.
+     * <p>
      * This event is {@link net.neoforged.bus.api.ICancellableEvent}.<br>
-     * If the event is not canceled, the vanilla brewing will take place instead of modded brewing.
-     * <br>
+     * If the event is canceled, the brewing will not take place.
+     * <p>
      * This event does not have a result. {@link HasResult}<br>
-     * <br>
+     * <p>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
-     * <br>
-     * If this event is canceled, and items have been modified, PotionBrewEvent.Post will automatically be fired.
      **/
     public static class Pre extends PotionBrewEvent implements ICancellableEvent {
-        public Pre(NonNullList<ItemStack> stacks) {
-            super(stacks);
+        public Pre(Level level, IBrewingRecipe.IBrewingContainer brewingContainer, RecipeHolder<IBrewingRecipe> recipe) {
+            super(level, brewingContainer, recipe);
         }
     }
 
     /**
-     * PotionBrewEvent.Post is fired when a potion is brewed in the brewing stand.
-     * <br>
-     * The event is fired during the {@code BrewingStandBlockEntity#doBrew(Level, BlockPos, NonNullList)} method invocation.<br>
-     * <br>
-     * {@link #stacks} contains the itemstack array from the TileEntityBrewer holding all items in Brewer.<br>
-     * <br>
-     * This event is not {@link net.neoforged.bus.api.ICancellableEvent}.<br>
-     * <br>
-     * This event does not have a result. {@link HasResult}<br>
-     * <br>
-     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
+     * PotionBrewEvent.Post is fired when a potion is brewed in the brewing stand.<br>
+     * If the output is changed the result of the brewing will be the newly set output.
+     * <p>
+     * This event is not {@link net.neoforged.bus.api.ICancellableEvent}.
+     * <p>
+     * This event does not have a result. {@link HasResult}
+     * <p>
+     * This event is fired on the {@link NeoForge#EVENT_BUS}.
      **/
     public static class Post extends PotionBrewEvent {
-        public Post(NonNullList<ItemStack> stacks) {
-            super(stacks);
+        private ItemStack output;
+
+        public Post(Level level, IBrewingRecipe.IBrewingContainer brewingContainer, RecipeHolder<IBrewingRecipe> recipe, ItemStack output) {
+            super(level, brewingContainer, recipe);
+            this.output = output;
+        }
+
+        public ItemStack getOutput() {
+            return output;
+        }
+
+        public void setOutput(ItemStack output) {
+            this.output = output;
         }
     }
 }
