@@ -52,7 +52,7 @@
                  mob.finalizeSpawn(p_262637_, p_262637_.getCurrentDifficultyAt(mob.blockPosition()), p_262666_, null, p_262687_);
 +
 +                if (mob.isSpawnCancelled()) {
-+                    // Neo: Discord mob, spawn was cancelled
++                    // Neo: Discard mob, spawn was cancelled
 +                    mob.discard();
 +                    // return null, mob was killed, context should be lost
 +                    // fixes llamas for wandering trader spawning if wandering trader was cancelled
