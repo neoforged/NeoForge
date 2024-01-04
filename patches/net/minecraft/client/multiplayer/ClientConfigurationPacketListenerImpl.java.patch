@@ -38,7 +38,7 @@
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtClient(this, p_295727_);
 +            return;
 +        }
-+        
++
          this.handleUnknownCustomPayload(p_295411_);
      }
  
@@ -69,13 +69,13 @@
          super.onDisconnect(p_314649_);
          this.minecraft.clearDownloadedResourcePacks();
 +    }
-+    
++
 +    @Override
 +    protected net.minecraft.client.gui.screens.Screen createDisconnectScreen(net.minecraft.network.chat.Component p_296470_) {
 +        final net.minecraft.client.gui.screens.Screen superScreen = super.createDisconnectScreen(p_296470_);
 +        if (failureReasons.isEmpty())
 +            return superScreen;
-+        
++
 +        return new net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen(superScreen, p_296470_, failureReasons);
      }
  }

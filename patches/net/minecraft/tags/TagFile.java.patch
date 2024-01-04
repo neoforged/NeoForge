@@ -15,7 +15,7 @@
                  )
                  .apply(p_215967_, TagFile::new)
      );
-+    
++
 +    /**
 +     * @deprecated Forge: Use {@link TagFile#TagFile(List, boolean, List)} which has support for remove entries.
 +     */
