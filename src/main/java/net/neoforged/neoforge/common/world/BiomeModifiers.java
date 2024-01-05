@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.common.world;
 
 import com.mojang.serialization.Codec;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -195,10 +194,10 @@ public final class BiomeModifiers {
         public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
             if (phase == Phase.REMOVE && this.biomes.contains(biome)) {
                 MobSpawnSettingsBuilder spawnBuilder = builder.getMobSpawnSettings();
-                Arrays.stream(MobCategory.values()).forEach(category -> {
+                for (MobCategory category : MobCategory.values()) {
                     List<SpawnerData> spawns = spawnBuilder.getSpawner(category);
                     spawns.removeIf(spawnerData -> this.entityTypes.contains(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(spawnerData.type)));
-                });
+                }
             }
         }
 
