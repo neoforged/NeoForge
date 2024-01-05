@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public final class ItemStack {
-+public final class ItemStack extends net.neoforged.neoforge.attachment.AttachmentHolder implements net.neoforged.neoforge.common.extensions.IItemStackExtension {
++public final class ItemStack extends net.neoforged.neoforge.attachment.AttachmentHolder<ItemStack> implements net.neoforged.neoforge.common.extensions.IItemStackExtension {
 +    // TODO: add attachment support here
      public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
          p_311716_ -> p_311716_.group(

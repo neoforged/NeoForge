@@ -112,7 +112,7 @@ public class AttachmentTests {
         }
 
         var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
-                .register("chunk_mutable_int", () -> AttachmentType.serializable(chunk -> new ChunkMutableInt((LevelChunk) chunk, 0)).build());
+                .register("chunk_mutable_int", () -> AttachmentType.serializable(LevelChunk.class, chunk -> new ChunkMutableInt(chunk, 0)).build());
 
         NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent event) -> {
             event.getDispatcher()

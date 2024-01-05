@@ -11,17 +11,16 @@ import org.jetbrains.annotations.Nullable;
 /**
  * An object that can hold data attachments.
  */
-public interface IAttachmentHolder {
+public interface IAttachmentHolder<H extends IAttachmentHolder<H>> {
     /**
      * Returns {@code true} if there is a data attachment of the give type, {@code false} otherwise.
      */
-    boolean hasData(AttachmentType<?> type);
+    boolean hasData(AttachmentType<? super H, ?> type);
 
     /**
      * Returns {@code true} if there is a data attachment of the give type, {@code false} otherwise.
      */
-    default <T> boolean hasData(Supplier<AttachmentType<T>> type) {
-        //Note: The unused T generic is necessary so that DeferredHolders can be properly matched as a Supplier
+    default <AT extends AttachmentType<? super H, ?>> boolean hasData(Supplier<AT> type) {
         return hasData(type.get());
     }
 
@@ -30,14 +29,14 @@ public interface IAttachmentHolder {
      *
      * <p>If there is no data attachment of the given type, <b>the default value is stored in this holder and returned.</b>
      */
-    <T> T getData(AttachmentType<T> type);
+    <T> T getData(AttachmentType<? super H, T> type);
 
     /**
      * {@return the data attachment of the given type}
      *
      * <p>If there is no data attachment of the given type, <b>the default value is stored in this holder and returned.</b>
      */
-    default <T> T getData(Supplier<AttachmentType<T>> type) {
+    default <T, AT extends AttachmentType<? super H, T>> T getData(Supplier<AT> type) {
         return getData(type.get());
     }
 
@@ -46,14 +45,14 @@ public interface IAttachmentHolder {
      *
      * @return the previous value for that attachment type, if any, or {@code null} if there was none
      */
-    <T> @Nullable T setData(AttachmentType<T> type, T data);
+    <T> @Nullable T setData(AttachmentType<? super H, T> type, T data);
 
     /**
      * Sets the data attachment of the given type.
      *
      * @return the previous value for that attachment type, if any, or {@code null} if there was none
      */
-    default <T> @Nullable T setData(Supplier<AttachmentType<T>> type, T data) {
+    default <T, AT extends AttachmentType<? super H, T>> @Nullable T setData(Supplier<AT> type, T data) {
         return setData(type.get(), data);
     }
 }

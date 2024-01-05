@@ -20,11 +20,11 @@ import org.jetbrains.annotations.Nullable;
  * Implementation class for objects that can hold data attachments.
  * For the user-facing methods, see {@link IAttachmentHolder}.
  */
-public abstract class AttachmentHolder implements IAttachmentHolder {
+public abstract class AttachmentHolder<H extends IAttachmentHolder<H>> implements IAttachmentHolder<H> {
     public static final String ATTACHMENTS_NBT_KEY = "neoforge:attachments";
     private static final boolean IN_DEV = !FMLLoader.isProduction();
 
-    private void validateAttachmentType(AttachmentType<?> type) {
+    private void validateAttachmentType(AttachmentType<? super H, ?> type) {
         Objects.requireNonNull(type);
         if (!IN_DEV) return;
 
@@ -33,25 +33,25 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         }
     }
 
-    final Map<AttachmentType<?>, Object> attachments = new IdentityHashMap<>();
+    final Map<AttachmentType<? super H, ?>, Object> attachments = new IdentityHashMap<>();
 
     /**
      * Returns the attachment holder that is exposed to the user.
      * This is the same as {@code this} for most cases,
      * but when using {@link AsField} it is the field holder.
      */
-    IAttachmentHolder getExposedHolder() {
-        return this;
+    H getExposedHolder() {
+        return (H) this;
     }
 
     @Override
-    public final boolean hasData(AttachmentType<?> type) {
+    public final boolean hasData(AttachmentType<? super H, ?> type) {
         validateAttachmentType(type);
         return attachments.containsKey(type);
     }
 
     @Override
-    public final <T> T getData(AttachmentType<T> type) {
+    public final <T> T getData(AttachmentType<? super H, T> type) {
         validateAttachmentType(type);
         T ret = (T) attachments.get(type);
         if (ret == null) {
@@ -63,7 +63,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
 
     @Override
     @MustBeInvokedByOverriders
-    public <T> @Nullable T setData(AttachmentType<T> type, T data) {
+    public <T> @Nullable T setData(AttachmentType<? super H, T> type, T data) {
         validateAttachmentType(type);
         Objects.requireNonNull(data);
         return (T) attachments.put(type, data);
@@ -81,7 +81,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             if (type.serializer != null) {
                 if (tag == null)
                     tag = new CompoundTag();
-                tag.put(NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type).toString(), ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue()));
+                tag.put(NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type).toString(), ((IAttachmentSerializer<H, ?, Object>) type.serializer).write(entry.getValue()));
             }
         }
         return tag;
@@ -97,7 +97,9 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             if (keyLocation != null) {
                 var type = NeoForgeRegistries.ATTACHMENT_TYPES.get(keyLocation);
                 if (type != null && type.serializer != null) {
-                    attachments.put(type, ((IAttachmentSerializer<Tag, ?>) type.serializer).read(getExposedHolder(), tag.get(key)));
+                    if (type.holderClass.isAssignableFrom(getExposedHolder().getClass())) {
+                        attachments.put((AttachmentType<? super H, ?>) type, ((IAttachmentSerializer<H, Tag, ?>) type.serializer).read(getExposedHolder(), tag.get(key)));
+                    }
                 }
             }
         }
@@ -112,9 +114,9 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      *
      * @return {@code true} if the attachments are compatible, {@code false} otherwise
      */
-    public static <H extends AttachmentHolder> boolean areAttachmentsCompatible(H first, H second) {
+    public static <H extends AttachmentHolder<H>> boolean areAttachmentsCompatible(H first, H second) {
         for (var entry : first.attachments.entrySet()) {
-            AttachmentType<Object> type = (AttachmentType<Object>) entry.getKey();
+            AttachmentType<? super H, Object> type = (AttachmentType<? super H, Object>) entry.getKey();
             if (type.serializer != null) {
                 var otherData = second.attachments.get(type);
                 if (otherData == null)
@@ -125,7 +127,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             }
         }
         for (var entry : second.attachments.entrySet()) {
-            AttachmentType<Object> type = (AttachmentType<Object>) entry.getKey();
+            AttachmentType<? super H, Object> type = (AttachmentType<? super H, Object>) entry.getKey();
             if (type.serializer != null) {
                 var data = first.attachments.get(type);
                 if (data != null)
@@ -143,15 +145,15 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      * To be used when extending {@link AttachmentHolder} is not possible,
      * for example because the class already has a supertype.
      */
-    public static class AsField extends AttachmentHolder {
-        private final IAttachmentHolder exposedHolder;
+    public static class AsField<H extends IAttachmentHolder<H>> extends AttachmentHolder<H> {
+        private final H exposedHolder;
 
-        public AsField(IAttachmentHolder exposedHolder) {
+        public AsField(H exposedHolder) {
             this.exposedHolder = exposedHolder;
         }
 
         @Override
-        IAttachmentHolder getExposedHolder() {
+        H getExposedHolder() {
             return exposedHolder;
         }
 

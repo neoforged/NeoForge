@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public abstract class BlockEntity {
-+public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
++public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder<BlockEntity> implements net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
      private static final Logger LOGGER = LogUtils.getLogger();
      private final BlockEntityType<?> type;
      @Nullable
@@ -62,7 +62,7 @@
 +
 +    @Override
 +    @Nullable
-+    public final <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
++    public final <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<? super BlockEntity, T> type, T data) {
 +        setChanged();
 +        return super.setData(type, data);
      }

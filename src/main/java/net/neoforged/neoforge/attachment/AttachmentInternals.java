@@ -78,11 +78,11 @@ public final class AttachmentInternals {
     /**
      * Copy some attachments to another holder.
      */
-    private static <H extends AttachmentHolder> void copyAttachments(H from, H to, Predicate<AttachmentType<?>> filter) {
+    private static <H extends AttachmentHolder<H>> void copyAttachments(H from, H to, Predicate<AttachmentType<? super H, ?>> filter) {
         for (var entry : from.attachments.entrySet()) {
-            AttachmentType<?> type = entry.getKey();
+            AttachmentType<? super H, ?> type = entry.getKey();
             @SuppressWarnings("unchecked")
-            var serializer = (IAttachmentSerializer<Tag, Object>) type.serializer;
+            var serializer = (IAttachmentSerializer<H, Tag, Object>) type.serializer;
             if (serializer != null && filter.test(type)) {
                 to.attachments.put(type, serializer.read(to.getExposedHolder(), serializer.write(entry.getValue())));
             }

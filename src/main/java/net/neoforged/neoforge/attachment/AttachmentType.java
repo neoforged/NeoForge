@@ -50,21 +50,23 @@ import org.jetbrains.annotations.Nullable;
  * </ul>
  */
 // TODO Future work: maybe add copy handlers for stacks and entities, to customize copying behavior (instead of serializing, copying the NBT, deserializing).
-public final class AttachmentType<T> {
-    final Function<IAttachmentHolder, T> defaultValueSupplier;
+public final class AttachmentType<H, T> {
+    final Class<H> holderClass;
+    final Function<H, T> defaultValueSupplier;
     @Nullable
-    final IAttachmentSerializer<?, T> serializer;
+    final IAttachmentSerializer<H, ?, T> serializer;
     final boolean copyOnDeath;
     final IAttachmentComparator<T> comparator;
 
-    private AttachmentType(Builder<T> builder) {
+    private AttachmentType(Builder<H, T> builder) {
+        this.holderClass = builder.holderClass;
         this.defaultValueSupplier = builder.defaultValueSupplier;
         this.serializer = builder.serializer;
         this.copyOnDeath = builder.copyOnDeath;
         this.comparator = builder.comparator != null ? builder.comparator : defaultComparator(serializer);
     }
 
-    private static <T> IAttachmentComparator<T> defaultComparator(IAttachmentSerializer<?, T> serializer) {
+    private static <T> IAttachmentComparator<T> defaultComparator(IAttachmentSerializer<?, ?, T> serializer) {
         if (serializer == null) {
             return (first, second) -> {
                 throw new UnsupportedOperationException("Cannot compare non-serializable attachments");
@@ -76,12 +78,12 @@ public final class AttachmentType<T> {
     /**
      * Creates a builder for an attachment type.
      *
-     * <p>See {@link #builder(Function)} for attachments that want to capture a reference to their holder.
+     * <p>See {@link #builder(Class, Function)} for attachments that want to capture a reference to their holder.
      *
      * @param defaultValueSupplier A supplier for a new default value of this attachment type.
      */
-    public static <T> Builder<T> builder(Supplier<T> defaultValueSupplier) {
-        return builder(holder -> defaultValueSupplier.get());
+    public static <T> Builder<Object, T> builder(Supplier<T> defaultValueSupplier) {
+        return builder(Object.class, holder -> defaultValueSupplier.get());
     }
 
     /**
@@ -93,18 +95,18 @@ public final class AttachmentType<T> {
      *
      * @param defaultValueSupplier A supplier for a new default value of this attachment type.
      */
-    public static <T> Builder<T> builder(Function<IAttachmentHolder, T> defaultValueSupplier) {
-        return new Builder<>(defaultValueSupplier);
+    public static <H, T> Builder<H, T> builder(Class<H> holderClass, Function<H, T> defaultValueSupplier) {
+        return new Builder<>(holderClass, defaultValueSupplier);
     }
 
     /**
      * Create a builder for an attachment type that uses {@link INBTSerializable} for serialization.
      * Other kinds of serialization can be implemented using {@link #builder(Supplier)} and {@link Builder#serialize(IAttachmentSerializer)}.
      *
-     * <p>See {@link #serializable(Function)} for attachments that want to capture a reference to their holder.
+     * <p>See {@link #serializable(Class, Function)} for attachments that want to capture a reference to their holder.
      */
-    public static <S extends Tag, T extends INBTSerializable<S>> Builder<T> serializable(Supplier<T> defaultValueSupplier) {
-        return serializable(holder -> defaultValueSupplier.get());
+    public static <S extends Tag, T extends INBTSerializable<S>> Builder<Object, T> serializable(Supplier<T> defaultValueSupplier) {
+        return serializable(Object.class, holder -> defaultValueSupplier.get());
     }
 
     /**
@@ -115,10 +117,10 @@ public final class AttachmentType<T> {
      * To obtain a specific subtype, the holder can be cast.
      * See {@link #serializable(Supplier)} for an overload that does not capture the holder.
      */
-    public static <S extends Tag, T extends INBTSerializable<S>> Builder<T> serializable(Function<IAttachmentHolder, T> defaultValueSupplier) {
-        return builder(defaultValueSupplier).serialize(new IAttachmentSerializer<S, T>() {
+    public static <H, S extends Tag, T extends INBTSerializable<S>> Builder<H, T> serializable(Class<H> holderClass, Function<H, T> defaultValueSupplier) {
+        return builder(holderClass, defaultValueSupplier).serialize(new IAttachmentSerializer<H, S, T>() {
             @Override
-            public T read(IAttachmentHolder holder, S tag) {
+            public T read(H holder, S tag) {
                 var ret = defaultValueSupplier.apply(holder);
                 ret.deserializeNBT(tag);
                 return ret;
@@ -131,15 +133,17 @@ public final class AttachmentType<T> {
         });
     }
 
-    public static class Builder<T> {
-        private final Function<IAttachmentHolder, T> defaultValueSupplier;
+    public static class Builder<H, T> {
+        private final Class<H> holderClass;
+        private final Function<H, T> defaultValueSupplier;
         @Nullable
-        private IAttachmentSerializer<?, T> serializer;
+        private IAttachmentSerializer<H, ?, T> serializer;
         private boolean copyOnDeath;
         @Nullable
         private IAttachmentComparator<T> comparator;
 
-        private Builder(Function<IAttachmentHolder, T> defaultValueSupplier) {
+        private Builder(Class<H> holderClass, Function<H, T> defaultValueSupplier) {
+            this.holderClass = holderClass;
             this.defaultValueSupplier = defaultValueSupplier;
         }
 
@@ -148,7 +152,7 @@ public final class AttachmentType<T> {
          *
          * @param serializer The serializer to use.
          */
-        public Builder<T> serialize(IAttachmentSerializer<?, T> serializer) {
+        public Builder<H, T> serialize(IAttachmentSerializer<H, ?, T> serializer) {
             Objects.requireNonNull(serializer);
             if (this.serializer != null)
                 throw new IllegalStateException("Serializer already set");
@@ -167,12 +171,12 @@ public final class AttachmentType<T> {
          *
          * @param codec The codec to use.
          */
-        public Builder<T> serialize(Codec<T> codec) {
+        public Builder<H, T> serialize(Codec<T> codec) {
             Objects.requireNonNull(codec);
             // TODO: better error handling
             return serialize(new IAttachmentSerializer<>() {
                 @Override
-                public T read(IAttachmentHolder holder, Tag tag) {
+                public T read(H holder, Tag tag) {
                     return codec.parse(NbtOps.INSTANCE, tag).result().get();
                 }
 
@@ -186,7 +190,7 @@ public final class AttachmentType<T> {
         /**
          * Requests that this attachment be persisted when a player respawns or when a living entity is converted.
          */
-        public Builder<T> copyOnDeath() {
+        public Builder<H, T> copyOnDeath() {
             if (this.serializer == null)
                 throw new IllegalStateException("copyOnDeath requires a serializer");
             this.copyOnDeath = true;
@@ -201,7 +205,7 @@ public final class AttachmentType<T> {
          *
          * <p>A comparator can only be provided for serializable attachments.
          */
-        public Builder<T> comparator(IAttachmentComparator<T> comparator) {
+        public Builder<H, T> comparator(IAttachmentComparator<T> comparator) {
             Objects.requireNonNull(comparator);
             // Check for serializer because only serializable attachments can be compared.
             if (this.serializer == null)
@@ -210,7 +214,7 @@ public final class AttachmentType<T> {
             return this;
         }
 
-        public AttachmentType<T> build() {
+        public AttachmentType<H, T> build() {
             return new AttachmentType<>(this);
         }
     }

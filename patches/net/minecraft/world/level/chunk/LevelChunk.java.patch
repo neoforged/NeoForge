@@ -5,7 +5,7 @@
  import org.slf4j.Logger;
  
 -public class LevelChunk extends ChunkAccess {
-+public class LevelChunk extends ChunkAccess implements net.neoforged.neoforge.attachment.IAttachmentHolder {
++public class LevelChunk extends ChunkAccess implements net.neoforged.neoforge.attachment.IAttachmentHolder<LevelChunk> {
      static final Logger LOGGER = LogUtils.getLogger();
      private static final TickingBlockEntity NULL_TICKER = new TickingBlockEntity() {
          @Override
@@ -100,21 +100,21 @@
      }
  
 +    // FORGE START
-+    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
++    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField<LevelChunk> attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
 +
 +    @Override
-+    public boolean hasData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
++    public boolean hasData(net.neoforged.neoforge.attachment.AttachmentType<? super LevelChunk, ?> type) {
 +        return attachmentHolder.hasData(type);
 +    }
 +
 +    @Override
-+    public <T> T getData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
++    public <T> T getData(net.neoforged.neoforge.attachment.AttachmentType<? super LevelChunk, T> type) {
 +        return attachmentHolder.getData(type);
 +    }
 +
 +    @Override
 +    @Nullable
-+    public <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
++    public <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<? super LevelChunk, T> type, T data) {
 +        setUnsaved(true);
 +        return attachmentHolder.setData(type, data);
 +    }
