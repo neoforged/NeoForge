@@ -1,29 +1,81 @@
 --- a/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
-@@ -45,11 +_,15 @@
+@@ -26,6 +_,9 @@
+     private final GameProfile localGameProfile;
+     private RegistryAccess.Frozen receivedRegistries;
+     private FeatureFlagSet enabledFeatures;
++    private boolean isModdedConnection = false;
++    private boolean isVanillaConnection = true;
++    private java.util.Map<net.minecraft.resources.ResourceLocation, net.minecraft.network.chat.Component> failureReasons = new java.util.HashMap<>();
+ 
+     public ClientConfigurationPacketListenerImpl(Minecraft p_295262_, Connection p_296339_, CommonListenerCookie p_294706_) {
+         super(p_295262_, p_296339_, p_294706_);
+@@ -45,7 +_,30 @@
      }
  
      @Override
 -    protected void handleCustomPayload(CustomPacketPayload p_295411_) {
--        this.handleUnknownCustomPayload(p_295411_);
 +    protected void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295411_) {
-+        this.handleUnknownCustomPayload(p_295727_, p_295411_);
-     }
- 
--    private void handleUnknownCustomPayload(CustomPacketPayload p_296412_) {
-+    private void handleUnknownCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_296412_) {
-+        if (p_296412_ instanceof net.neoforged.neoforge.network.custom.payload.SimplePayload simplePayload && net.neoforged.neoforge.network.NetworkHooks.onCustomPayload(p_295727_, simplePayload, connection)) {
++        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload) {
++            this.isModdedConnection = true;
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onNetworkQuery(this);
 +            return;
 +        }
-+        
-         LOGGER.warn("Unknown custom packet payload: {}", p_296412_.id());
++        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkPayload moddedNetworkPayload) {
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedNetworkConnectionEstablished(this, moddedNetworkPayload.configuration(), moddedNetworkPayload.play());
++            return;
++        }
++        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkSetupFailedPayload setupFailedPayload) {
++            failureReasons = setupFailedPayload.failureReasons();
++        }
++        if (!this.isModdedConnection && p_295411_ instanceof net.minecraft.network.protocol.common.custom.BrandPayload) {
++            this.isVanillaConnection = true;
++            if (!net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaNetworkConnectionEstablished(this)) {
++                return;
++            }
++        }
++        if (this.isModdedConnection) {
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtClient(this, p_295727_);
++            return;
++        }
++
+         this.handleUnknownCustomPayload(p_295411_);
      }
  
-@@ -93,6 +_,7 @@
-             );
-         this.connection.resumeInboundAfterProtocolChange();
-         this.connection.send(new ServerboundFinishConfigurationPacket());
-+        net.neoforged.neoforge.network.NetworkHooks.handleClientLoginSuccess(this.connection);
+@@ -69,6 +_,11 @@
+     @Override
+     public void handleEnabledFeatures(ClientboundUpdateEnabledFeaturesPacket p_294410_) {
+         this.enabledFeatures = FeatureFlags.REGISTRY.fromNames(p_294410_.features());
++        //Fallback detection layer for vanilla servers
++        if (!this.isModdedConnection) {
++            this.isVanillaConnection = true;
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaNetworkConnectionEstablished(this);
++        }
      }
  
      @Override
+@@ -87,7 +_,8 @@
+                         this.enabledFeatures,
+                         this.serverBrand,
+                         this.serverData,
+-                        this.postDisconnectScreen
++                        this.postDisconnectScreen,
++                        this.isModdedConnection
+                     )
+                 )
+             );
+@@ -104,5 +_,14 @@
+     public void onDisconnect(Component p_314649_) {
+         super.onDisconnect(p_314649_);
+         this.minecraft.clearDownloadedResourcePacks();
++    }
++
++    @Override
++    protected net.minecraft.client.gui.screens.Screen createDisconnectScreen(net.minecraft.network.chat.Component p_296470_) {
++        final net.minecraft.client.gui.screens.Screen superScreen = super.createDisconnectScreen(p_296470_);
++        if (failureReasons.isEmpty())
++            return superScreen;
++
++        return new net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen(superScreen, p_296470_, failureReasons);
+     }
+ }

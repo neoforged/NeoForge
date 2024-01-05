@@ -135,8 +135,6 @@ import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.internal.versions.neoform.NeoFormVersion;
 import net.neoforged.neoforge.network.DualStackUtils;
-import net.neoforged.neoforge.network.NetworkConstants;
-import net.neoforged.neoforge.network.filters.VanillaPacketSplitter;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -546,7 +544,7 @@ public class NeoForgeMod {
             return uuid.toString();
         });
 
-        LOGGER.debug(NEOFORGEMOD, "Loading Network data for FML net version: {}", NetworkConstants.init());
+        LOGGER.debug(NEOFORGEMOD, "Loading Network data for FML net version: {}", NeoForgeVersion.getSpec());
         CrashReportCallables.registerCrashCallable("FML", NeoForgeVersion::getSpec);
         CrashReportCallables.registerCrashCallable(NeoForgeVersion.MOD_ID, () -> NeoForgeVersion.getGroup() + ":" + NeoForgeVersion.getVersion());
 
@@ -606,7 +604,6 @@ public class NeoForgeMod {
 
     public void preInit(FMLCommonSetupEvent evt) {
         VersionChecker.startVersionCheck();
-        VanillaPacketSplitter.register();
     }
 
     public void loadComplete(FMLLoadCompleteEvent event) {}

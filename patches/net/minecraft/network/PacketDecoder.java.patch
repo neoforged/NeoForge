@@ -1,0 +1,11 @@
+--- a/net/minecraft/network/PacketDecoder.java
++++ b/net/minecraft/network/PacketDecoder.java
+@@ -28,7 +_,7 @@
+             ConnectionProtocol.CodecData<?> codecdata = attribute.get();
+             FriendlyByteBuf friendlybytebuf = new FriendlyByteBuf(p_130536_);
+             int j = friendlybytebuf.readVarInt();
+-            Packet<?> packet = codecdata.createPacket(j, friendlybytebuf);
++            Packet<?> packet = codecdata.createPacket(j, friendlybytebuf, p_130535_);
+             if (packet == null) {
+                 throw new IOException("Bad packet id " + j);
+             } else {

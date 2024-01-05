@@ -47,28 +47,15 @@
      }
  
      @Override
-@@ -521,15 +_,12 @@
-     public void aiStep() {
-         super.aiStep();
-         this.level().getProfiler().push("looting");
--        if (!this.level().isClientSide
--            && this.canPickUpLoot()
--            && this.isAlive()
--            && !this.dead
+@@ -525,7 +_,7 @@
+             && this.canPickUpLoot()
+             && this.isAlive()
+             && !this.dead
 -            && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
--            Vec3i vec3i = this.getPickupReach();
--
--            for(ItemEntity itementity : this.level()
--                .getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ()))) {
-+        Vec3i vec3i = this.getPickupReach();
-+        
-+        for(ItemEntity itementity : this.level()
-+                                                     .getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ()))) {
-+            if (!this.level().isClientSide && this.canPickUpLoot() && this.isAlive() && !this.dead &&
-+                         net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), this)) {
-                 if (!itementity.isRemoved() && !itementity.getItem().isEmpty() && !itementity.hasPickUpDelay() && this.wantsToPickUp(itementity.getItem())) {
-                     this.pickUpItem(itementity);
-                 }
++            && net.neoforged.neoforge.event.EventHooks.getMobGriefingEvent(this.level(), this)) {
+             Vec3i vec3i = this.getPickupReach();
+ 
+             for(ItemEntity itementity : this.level()
 @@ -698,6 +_,14 @@
              this.discard();
          } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {

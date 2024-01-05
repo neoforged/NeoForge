@@ -125,7 +125,7 @@
              Optional.ofNullable(this.statusIcon),
 -            this.enforceSecureProfile()
 +            this.enforceSecureProfile(),
-+            Optional.of(new net.neoforged.neoforge.network.ServerStatusPing())
++            true //TODO Neo: Possible build a system which indicates what the status of the modded server is.
          );
      }
  
