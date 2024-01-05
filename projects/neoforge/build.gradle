@@ -15,10 +15,6 @@ installerProfile {
     profile = 'NeoForge'
 }
 
-if (project.findProperty('neogradle.runtime.platform.installer.debug') == 'true' && System.getenv('CI')) {
-    project.setProperty('neogradle.runtime.platform.installer.debug', 'false')
-}
-
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(project.java_version))
