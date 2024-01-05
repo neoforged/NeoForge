@@ -114,12 +114,12 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      */
     public static <H extends AttachmentHolder> boolean areAttachmentsCompatible(H first, H second) {
         // Confirm both maps are present or not present
-        if(first.attachments == second.attachments) {
+        if (first.attachments == second.attachments) {
             return true;
         }
         // If either of the maps are not present, then only one attachment holder has a populated map.
         // They are not compatible.
-        if(first.attachments == null || second.attachments == null) {
+        if (first.attachments == null || second.attachments == null) {
             return false;
         }
         for (var entry : first.attachments.entrySet()) {
