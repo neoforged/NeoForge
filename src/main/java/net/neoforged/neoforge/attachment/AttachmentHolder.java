@@ -113,19 +113,13 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      * @return {@code true} if the attachments are compatible, {@code false} otherwise
      */
     public static <H extends AttachmentHolder> boolean areAttachmentsCompatible(H first, H second) {
-        // Confirm both maps are present or not present
-        if (first.attachments == second.attachments) {
-            return true;
-        }
-        // If either of the maps are not present, then only one attachment holder has a populated map.
-        // They are not compatible.
-        if (first.attachments == null || second.attachments == null) {
-            return false;
-        }
-        for (var entry : first.attachments.entrySet()) {
+        Map<AttachmentType<?>, Object> firstAttachments = first.attachments != null ? first.attachments : Map.of();
+        Map<AttachmentType<?>, Object> secondAttachments = second.attachments != null ? second.attachments : Map.of();
+
+        for (var entry : firstAttachments.entrySet()) {
             AttachmentType<Object> type = (AttachmentType<Object>) entry.getKey();
             if (type.serializer != null) {
-                var otherData = second.attachments.get(type);
+                var otherData = secondAttachments.get(type);
                 if (otherData == null)
                     // TODO: cache serialization of default value?
                     otherData = type.defaultValueSupplier.get();
@@ -133,10 +127,10 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
                     return false;
             }
         }
-        for (var entry : second.attachments.entrySet()) {
+        for (var entry : secondAttachments.entrySet()) {
             AttachmentType<Object> type = (AttachmentType<Object>) entry.getKey();
             if (type.serializer != null) {
-                var data = first.attachments.get(type);
+                var data = firstAttachments.get(type);
                 if (data != null)
                     continue; // already checked in the first loop
                 data = type.defaultValueSupplier.get();
