@@ -17,7 +17,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.network.IContainerFactory;
+import net.neoforged.neoforge.network.IMenuFactory;
 
 public interface IPlayerExtension {
 
@@ -101,7 +101,7 @@ public interface IPlayerExtension {
     /**
      * Request to open a GUI on the client, from the server
      * <p>
-     * Refer to {@link MenuType#create(IContainerFactory)} for how to provide a function to consume
+     * Refer to {@link MenuType#create(IMenuFactory)} for how to provide a function to consume
      * these GUI requests on the client.
      *
      * @param menuProvider A supplier of container properties including the registry name of the container
@@ -115,7 +115,7 @@ public interface IPlayerExtension {
     /**
      * Request to open a GUI on the client, from the server
      * <p>
-     * Refer to {@link MenuType#create(IContainerFactory)} for how to provide a function to consume
+     * Refer to {@link MenuType#create(IMenuFactory)} for how to provide a function to consume
      * these GUI requests on the client.
      * <p>
      * The maximum size for #extraDataWriter is 32600 bytes.
