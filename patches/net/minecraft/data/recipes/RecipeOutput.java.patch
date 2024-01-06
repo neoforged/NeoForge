@@ -8,7 +8,7 @@
 -    void accept(ResourceLocation p_312249_, Recipe<?> p_312328_, @Nullable AdvancementHolder p_312176_);
 +public interface RecipeOutput extends net.neoforged.neoforge.common.extensions.IRecipeOutputExtension {
 +    default void accept(ResourceLocation p_312249_, Recipe<?> p_312328_, @Nullable AdvancementHolder p_312176_) {
-+        accept(p_312249_, p_312328_, p_312176_, new net.neoforged.neoforge.common.conditions.ICondition[0]);
++        accept(p_312249_, p_312328_, p_312176_, java.util.List.of(), java.util.List.of());
 +    }
  
      Advancement.Builder advancement();
