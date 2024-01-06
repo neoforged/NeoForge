@@ -41,7 +41,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      */
     final Map<AttachmentType<?>, Object> getAttachmentMap() {
         if (attachments == null) {
-            attachments = new IdentityHashMap<>();
+            attachments = new IdentityHashMap<>(4);
         }
         return attachments;
     }
