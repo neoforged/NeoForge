@@ -33,18 +33,29 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         }
     }
 
-    final Map<AttachmentType<?>, Object> attachments = new IdentityHashMap<>();
+    @Nullable
+    Map<AttachmentType<?>, Object> attachments = null;
+
+    /**
+     * Create the attachment map if it does not yet exist, or return the current map.
+     */
+    final Map<AttachmentType<?>, Object> getAttachmentMap() {
+        if (attachments == null) {
+            attachments = new IdentityHashMap<>(4);
+        }
+        return attachments;
+    }
 
     @Override
     public final boolean hasData(AttachmentType<?> type) {
         validateAttachmentType(type);
-        return attachments.containsKey(type);
+        return attachments != null && attachments.containsKey(type);
     }
 
     @Override
     public final <T> T getData(AttachmentType<T> type) {
         validateAttachmentType(type);
-        return (T) attachments.computeIfAbsent(type, t -> Objects.requireNonNull(t.defaultValueSupplier.get()));
+        return (T) getAttachmentMap().computeIfAbsent(type, t -> Objects.requireNonNull(t.defaultValueSupplier.get()));
     }
 
     @Override
@@ -52,7 +63,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     public <T> @Nullable T setData(AttachmentType<T> type, T data) {
         validateAttachmentType(type);
         Objects.requireNonNull(data);
-        return (T) attachments.put(type, data);
+        return (T) getAttachmentMap().put(type, data);
     }
 
     /**
@@ -61,6 +72,9 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      */
     @Nullable
     public final CompoundTag serializeAttachments() {
+        if (attachments == null) {
+            return null;
+        }
         CompoundTag tag = null;
         for (var entry : attachments.entrySet()) {
             var type = entry.getKey();
@@ -83,7 +97,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             if (keyLocation != null) {
                 var type = NeoForgeRegistries.ATTACHMENT_TYPES.get(keyLocation);
                 if (type != null && type.serializer != null) {
-                    attachments.put(type, ((IAttachmentSerializer<Tag, ?>) type.serializer).read(tag.get(key)));
+                    getAttachmentMap().put(type, ((IAttachmentSerializer<Tag, ?>) type.serializer).read(tag.get(key)));
                 }
             }
         }
@@ -99,10 +113,13 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      * @return {@code true} if the attachments are compatible, {@code false} otherwise
      */
     public static <H extends AttachmentHolder> boolean areAttachmentsCompatible(H first, H second) {
-        for (var entry : first.attachments.entrySet()) {
+        Map<AttachmentType<?>, Object> firstAttachments = first.attachments != null ? first.attachments : Map.of();
+        Map<AttachmentType<?>, Object> secondAttachments = second.attachments != null ? second.attachments : Map.of();
+
+        for (var entry : firstAttachments.entrySet()) {
             AttachmentType<Object> type = (AttachmentType<Object>) entry.getKey();
             if (type.serializer != null) {
-                var otherData = second.attachments.get(type);
+                var otherData = secondAttachments.get(type);
                 if (otherData == null)
                     // TODO: cache serialization of default value?
                     otherData = type.defaultValueSupplier.get();
@@ -110,10 +127,10 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
                     return false;
             }
         }
-        for (var entry : second.attachments.entrySet()) {
+        for (var entry : secondAttachments.entrySet()) {
             AttachmentType<Object> type = (AttachmentType<Object>) entry.getKey();
             if (type.serializer != null) {
-                var data = first.attachments.get(type);
+                var data = firstAttachments.get(type);
                 if (data != null)
                     continue; // already checked in the first loop
                 data = type.defaultValueSupplier.get();
