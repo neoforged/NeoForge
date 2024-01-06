@@ -14,7 +14,7 @@ public interface IMenuFactory<T extends AbstractContainerMenu> extends MenuType.
     T create(int windowId, Inventory inv, FriendlyByteBuf data);
 
     @Override
-    default T create(int windowId, Inventory inventory) {
-        return create(windowId, inventory, null);
+    default T create(int p_create_1, Inventory p_create_2) {
+        return create(p_create_1, p_create_2, null);
     }
 }
