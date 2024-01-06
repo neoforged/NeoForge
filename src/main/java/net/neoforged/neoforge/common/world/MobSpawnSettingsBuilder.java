@@ -50,4 +50,11 @@ public class MobSpawnSettingsBuilder extends MobSpawnSettings.Builder {
     public MobSpawnSettingsBuilder disablePlayerSpawn() {
         return this;
     }
+
+    public MobSpawnSettingsBuilder removeSpawnCost(EntityType<?>... entityTypes) {
+        for (EntityType<?> entityType : entityTypes) {
+            this.mobSpawnCosts.remove(entityType);
+        }
+        return this;
+    }
 }
