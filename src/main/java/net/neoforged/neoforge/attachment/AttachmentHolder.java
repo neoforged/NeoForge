@@ -39,7 +39,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     /**
      * Create the attachment map if it does not yet exist, or return the current map.
      */
-    Map<AttachmentType<?>, Object> getAttachmentMap() {
+    final Map<AttachmentType<?>, Object> getAttachmentMap() {
         if (attachments == null) {
             attachments = new IdentityHashMap<>();
         }
