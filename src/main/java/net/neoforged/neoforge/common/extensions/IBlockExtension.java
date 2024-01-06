@@ -951,7 +951,7 @@ public interface IBlockExtension {
     /**
      * Return true if the state is able to be replaced with Blocks.AIR in chunk sections that is entirely made of blocks that return true for isEmpty
      *
-     * @param state  The current state
+     * @param state The current state
      * @return True if the block should be allowed to be optimized away into Blocks.AIR
      */
     default boolean isEmpty(BlockState state) {
