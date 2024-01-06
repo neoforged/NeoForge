@@ -1,0 +1,9 @@
+{
+  "values": [
+    "minecraft:stone",
+    {
+      "id": "#forge:ore_bearing_ground/stone",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "#forge:is_sparse_vegetation/end",
+      "required": false
+    },
+    {
+      "id": "#forge:is_sparse/end",
+      "required": false
+    }
+  ]
+}

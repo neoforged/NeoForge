@@ -1,0 +1,16 @@
+{
+  "values": [
+    "minecraft:andesite",
+    "minecraft:diorite",
+    "minecraft:granite",
+    "minecraft:infested_stone",
+    "minecraft:stone",
+    "minecraft:deepslate",
+    "minecraft:infested_deepslate",
+    "minecraft:tuff",
+    {
+      "id": "#forge:stones",
+      "required": false
+    }
+  ]
+}

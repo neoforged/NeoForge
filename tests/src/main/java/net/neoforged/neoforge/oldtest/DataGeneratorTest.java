@@ -494,9 +494,9 @@ public class DataGeneratorTest {
             tag(BlockTags.create(new ResourceLocation(MODID, "test")))
                     .add(Blocks.DIAMOND_BLOCK)
                     .addTag(BlockTags.STONE_BRICKS)
-                    .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONE)
+                    .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONES)
                     .addOptional(new ResourceLocation("chisel", "marble/raw"))
-                    .addOptionalTag(new ResourceLocation("neoforge", "storage_blocks/ruby"));
+                    .addOptionalTag(new ResourceLocation("forge", "storage_blocks/ruby"));
 
             // Hopefully sorting issues
             tag(BlockTags.create(new ResourceLocation(MODID, "thing/one")))

@@ -4,7 +4,7 @@
   "group": "gold_ingot",
   "key": {
     "#": {
-      "tag": "forge:nuggets/gold"
+      "tag": "c:nuggets/gold"
     }
   },
   "pattern": [
