@@ -50,7 +50,7 @@
   "fml.modmismatchscreen.missingmods.client": "Al tuo client mancano le seguenti mod, installale per unirti a questo server:",
   "fml.modmismatchscreen.missingmods.server": "Al server mancano le seguenti mod, rimuoverle dal client per unirsi a questo server:",
   "fml.modmismatchscreen.mismatchedmods": "Le versioni delle seguenti mod non corrispondono, installare la stessa versione che ha il server per potersi unire:",
-  "fml.modmismatchscreen.table.channelname": "Channel name",
+  "fml.modmismatchscreen.table.channelname": "Nome del canale",
   "fml.modmismatchscreen.table.youneed": "Ti serve",
   "fml.modmismatchscreen.table.youhave": "Hai",
   "fml.modmismatchscreen.table.serverhas": "Il server ha",
