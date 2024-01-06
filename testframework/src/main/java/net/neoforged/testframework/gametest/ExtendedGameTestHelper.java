@@ -132,6 +132,30 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         return serverplayer;
     }
 
+    public Player makeOpMockPlayer(int commandLevel) {
+        return new Player(this.getLevel(), BlockPos.ZERO, 0.0F, new GameProfile(UUID.randomUUID(), "test-mock-player")) {
+            @Override
+            public boolean isSpectator() {
+                return false;
+            }
+
+            @Override
+            public boolean isCreative() {
+                return true;
+            }
+
+            @Override
+            public boolean isLocalPlayer() {
+                return true;
+            }
+
+            @Override
+            protected int getPermissionLevel() {
+                return commandLevel;
+            }
+        };
+    }
+
     public Stream<BlockPos> blocksBetween(int x, int y, int z, int length, int height, int width) {
         final AABB bounds = AABB.encapsulatingFullBlocks(this.absolutePos(new BlockPos(x, y, z)), this.absolutePos(new BlockPos(x + length, y + height, z + width)));
         return BlockPos.MutableBlockPos.betweenClosedStream(bounds);

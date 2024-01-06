@@ -13,8 +13,17 @@ import net.minecraft.nbt.Tag;
  * @param <S> A {@link Tag} subclass: the serialized representation.
  * @param <T> The type of the data attachment.
  */
-public interface IAttachmentSerializer<S extends Tag, T> {
-    T read(S tag);
+public interface IAttachmentSerializer<H, S extends Tag, T> {
+    /**
+     * Reads the attachment from NBT.
+     *
+     * @param holder the holder for the attachment, can be cast if the subtype is known
+     * @param tag    the serialized attachment
+     */
+    T read(H holder, S tag);
 
+    /**
+     * Writes the attachment to NBT.
+     */
     S write(T attachment);
 }

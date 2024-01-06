@@ -141,7 +141,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         return entityTypes;
     }
 
-    private final DeferredRegistrar<AttachmentType<?>, DeferredAttachmentTypes> attachments = new DeferredRegistrar<>((namespace, reg) -> new DeferredAttachmentTypes(namespace));
+    private final DeferredRegistrar<AttachmentType<?, ?>, DeferredAttachmentTypes> attachments = new DeferredRegistrar<>((namespace, reg) -> new DeferredAttachmentTypes(namespace));
 
     @Override
     public DeferredAttachmentTypes attachments() {

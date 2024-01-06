@@ -11,16 +11,16 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-public class DeferredAttachmentTypes extends DeferredRegister<AttachmentType<?>> {
+public class DeferredAttachmentTypes extends DeferredRegister<AttachmentType<?, ?>> {
     public DeferredAttachmentTypes(String namespace) {
         super(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, namespace);
     }
 
-    public <T> AttachmentType<T> registerSimpleAttachment(String name, Supplier<T> defaultValue) {
+    public <T> AttachmentType<Object, T> registerSimpleAttachment(String name, Supplier<T> defaultValue) {
         return register(name, defaultValue, UnaryOperator.identity());
     }
 
-    public <T> AttachmentType<T> register(String name, Supplier<T> defaultValue, UnaryOperator<AttachmentType.Builder<T>> factory) {
+    public <T> AttachmentType<Object, T> register(String name, Supplier<T> defaultValue, UnaryOperator<AttachmentType.Builder<Object, T>> factory) {
         final var attach = factory.apply(AttachmentType.builder(defaultValue)).build();
         register(name, () -> attach);
         return attach;
