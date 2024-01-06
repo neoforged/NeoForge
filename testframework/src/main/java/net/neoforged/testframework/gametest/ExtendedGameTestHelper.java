@@ -51,6 +51,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import org.jetbrains.annotations.Nullable;
 
 public class ExtendedGameTestHelper extends GameTestHelper {
@@ -111,14 +112,23 @@ public class ExtendedGameTestHelper extends GameTestHelper {
                 super.tick();
                 serverplayer.resetLastActionTime();
             }
+
+            @Override
+            public boolean isMemoryConnection() {
+                return true;
+            }
         };
         EmbeddedChannel embeddedchannel = new EmbeddedChannel(connection);
         embeddedchannel.attr(Connection.ATTRIBUTE_SERVERBOUND_PROTOCOL).set(ConnectionProtocol.PLAY.codec(PacketFlow.SERVERBOUND));
+        embeddedchannel.attr(Connection.ATTRIBUTE_CLIENTBOUND_PROTOCOL).set(ConnectionProtocol.PLAY.codec(PacketFlow.CLIENTBOUND));
+        NetworkRegistry.getInstance().configureMockConnection(connection);
         this.getLevel().getServer().getPlayerList().placeNewPlayer(connection, serverplayer, commonlistenercookie);
         this.getLevel().getServer().getConnection().getConnections().add(connection);
         this.testInfo.addListener(serverplayer);
         serverplayer.gameMode.changeGameModeForPlayer(gameType);
         serverplayer.setYRot(180);
+        serverplayer.connection.chunkSender.sendNextChunks(serverplayer);
+        serverplayer.connection.chunkSender.onChunkBatchReceivedByClient(64f);
         return serverplayer;
     }
 

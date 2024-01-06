@@ -1,18 +1,15 @@
 --- a/net/minecraft/resources/ResourceLocation.java
 +++ b/net/minecraft/resources/ResourceLocation.java
-@@ -142,8 +_,14 @@
-         if (i == 0) {
-             i = this.namespace.compareTo(p_135826_.namespace);
-         }
--
-+        
+@@ -146,6 +_,12 @@
          return i;
-+    }
-+
+     }
+ 
 +    // Normal compare sorts by path first, this compares namespace first.
 +    public int compareNamespaced(ResourceLocation o) {
 +        int ret = this.namespace.compareTo(o.namespace);
 +        return ret != 0 ? ret : this.path.compareTo(o.path);
-     }
- 
++    }
++
      public String toDebugFileName() {
+         return this.toString().replace('/', '_').replace(':', '_');
+     }

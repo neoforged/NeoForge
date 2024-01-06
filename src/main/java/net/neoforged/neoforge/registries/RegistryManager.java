@@ -20,8 +20,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.neoforge.network.HandshakeMessages;
-import net.neoforged.neoforge.network.simple.MessageFunctions;
+import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
@@ -199,12 +198,12 @@ public class RegistryManager {
         return map;
     }
 
-    public static List<MessageFunctions.LoginPacket<HandshakeMessages.S2CRegistry>> generateRegistryPackets(boolean isLocal) {
+    public static List<FrozenRegistryPayload> generateRegistryPackets(boolean isLocal) {
         if (isLocal)
             return List.of();
 
         return takeSnapshot(SnapshotType.SYNC_TO_CLIENT).entrySet().stream()
-                .map(e -> new MessageFunctions.LoginPacket<>("Registry " + e.getKey(), new HandshakeMessages.S2CRegistry(e.getKey(), e.getValue())))
+                .map(e -> new FrozenRegistryPayload(e.getKey(), e.getValue()))
                 .toList();
     }
 

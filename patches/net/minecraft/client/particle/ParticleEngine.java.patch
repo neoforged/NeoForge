@@ -83,7 +83,7 @@
                  particlerendertype.begin(bufferbuilder, this.textureManager);
  
                  for(Particle particle : iterable) {
-+                    if (clippingHelper != null && particle.shouldCull() && !clippingHelper.isVisible(particle.getBoundingBox())) continue;
++                    if (clippingHelper != null && particle.shouldCull() && !clippingHelper.isVisible(particle.getBoundingBox().inflate(1.0))) continue;
                      try {
                          particle.render(bufferbuilder, p_107340_, p_107341_);
                      } catch (Throwable throwable) {
