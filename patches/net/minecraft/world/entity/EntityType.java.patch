@@ -4,7 +4,7 @@
      private final EntityDimensions dimensions;
      private final FeatureFlagSet requiredFeatures;
  
-+    private final java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier;
++    private final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier;
 +
@@ -15,7 +15,7 @@
          int p_273451_,
          FeatureFlagSet p_273518_
      ) {
-+         this(p_273268_, p_272918_, p_273417_, p_273389_, p_273556_, p_272654_, p_273631_, p_272946_, p_272895_, p_273451_, p_273518_, EntityType::defaultVelocitySupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier);
++         this(p_273268_, p_272918_, p_273417_, p_273389_, p_273556_, p_272654_, p_273631_, p_272946_, p_272895_, p_273451_, p_273518_, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier);
 +    }
 +    public EntityType(
 +        EntityType.EntityFactory<T> p_273268_,
@@ -29,7 +29,7 @@
 +        int p_272895_,
 +        int p_273451_,
 +        FeatureFlagSet p_273518_,
-+        final java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier,
++        final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier,
 +        final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
 +        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier
 +    ) {
@@ -40,7 +40,7 @@
          this.clientTrackingRange = p_272895_;
          this.updateInterval = p_273451_;
          this.requiredFeatures = p_273518_;
-+        this.velocityUpdateSupplier = velocityUpdateSupplier;
++        this.trackDeltasSupplier = trackDeltasSupplier;
 +        this.trackingRangeSupplier = trackingRangeSupplier;
 +        this.updateIntervalSupplier = updateIntervalSupplier;
      }
@@ -62,17 +62,7 @@
                  mob.playAmbientSound();
              }
  
-@@ -811,6 +_,9 @@
-     }
- 
-     public boolean canSpawnFarFromPlayer() {
-+        return velocityUpdateSupplier.test(this);
-+    }
-+    private boolean defaultVelocitySupplier() {
-         return this.canSpawnFarFromPlayer;
-     }
- 
-@@ -958,10 +_,16 @@
+@@ -958,14 +_,23 @@
      }
  
      public int clientTrackingRange() {
@@ -89,6 +79,13 @@
          return this.updateInterval;
      }
  
+     public boolean trackDeltas() {
++        return this.trackDeltasSupplier.test(this);
++    }
++    private boolean defaultTrackDeltasSupplier() {
+         return this != PLAYER
+             && this != LLAMA_SPIT
+             && this != WITHER
 @@ -1001,6 +_,8 @@
          return this.builtInRegistryHolder;
      }
@@ -102,7 +99,7 @@
          private EntityDimensions dimensions = EntityDimensions.scalable(0.6F, 1.8F);
          private FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
  
-+        private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultVelocitySupplier;
++        private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultTrackDeltasSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier = EntityType::defaultTrackingRangeSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier = EntityType::defaultUpdateIntervalSupplier;
 +
