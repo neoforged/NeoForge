@@ -157,7 +157,7 @@
   "neoforge.update.newversion": "Nouvelle version de NeoForge disponible : %s",
   "neoforge.menu.updatescreen.title": "Mise à jour du mod",
   "neoforge.configgui.removeErroringEntities.tooltip": "Réglez cette valeur sur true pour supprimer toute entité qui rencontre une erreur dans sa méthode update au lieu de fermer le serveur et de rapporter un log de crash. SOYEZ AVERTI CECI PEUT TOUT GÂCHER À UTILISER AVEC PARCIMONIE NOUS NE SOMMES PAS RESPONSABLES DES DOMMAGES.",
-  "neoforge.configgui.removeErroringEntities": "Supprimer les entités erronées",
+  "neoforge.configgui.removeErroringEntities": "Remove Erroring Entities",
   "neoforge.configgui.removeErroringBlockEntities.tooltip": "Réglez cette valeur sur true pour supprimer toute BlockEntity qui rencontre une erreur dans sa méthode update au lieu de fermer le serveur et de rapporter un log de crash. SOYEZ AVERTI CECI PEUT TOUT GÂCHER À UTILISER AVEC PARCIMONIE NOUS NE SOMMES PAS RESPONSABLES DES DOMMAGES.",
   "neoforge.configgui.removeErroringBlockEntities": "Supprimer les Block Entities en erreur",
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Mettez ceci à true pour vérifier la bounding box de collision entière de l'entité pour les échelles au lieu du seul bloc dans lequel elles se trouvent. Cela cause des différences notables dans les mécaniques, donc la valeur par défaut est le comportement vanilla. Par défaut: false.",
@@ -206,9 +206,9 @@
   "neoforge.swim_speed": "Vitesse de nage",
   "neoforge.name_tag_distance": "Distance de rendu du nametag",
   "neoforge.entity_gravity": "Gravité",
-  "neoforge.block_reach": "Portée des blocs",
-  "neoforge.entity_reach": "Portée des entités",
-  "neoforge.step_height": "Hauteur des pas",
+  "neoforge.block_reach": "Block Reach",
+  "neoforge.entity_reach": "Entity Reach",
+  "neoforge.step_height": "Step Height",
   "fluid_type.minecraft.milk": "Lait",
   "fluid_type.minecraft.flowing_milk": "Lait",
   "neoforge.froge.warningScreen.title": "NeoForge snapshots notice",
@@ -231,8 +231,8 @@
   "neoforge.network.invalid_flow": "Failed to process a payload that was send with an invalid flow: %s",
   "neoforge.network.negotiation.failure.vanilla.client.not_supported": "You are trying to connect to a server that is running NeoForge, but you are not. Please install NeoForge Version: %s to connect to this server.",
   "neoforge.network.advanced_add_entity.failed": "Failed to process advanced entity spawn data: %s",
-  "neoforge.network.advanced_open_screen.failed": "Échec de l'ouverture de l'interface avec les données : %s",
-  "neoforge.network.registries.sync.missing": "Tous les registres attendus n'ont pas été reçus de la part du serveur ! (manquants : %s)",
+  "neoforge.network.advanced_open_screen.failed": "Failed to open a screen with advanced data: %s",
+  "neoforge.network.registries.sync.missing": "Not all expected registries were received from the server! (missing: %s)",
   "neoforge.network.registries.sync.server-with-unknown-keys": "The server send registries with unknown keys: %s",
-  "neoforge.network.registries.sync.failed": "Impossible de synchroniser les registres depuis le serveur: %s"
+  "neoforge.network.registries.sync.failed": "Failed to sync registries from the server: %s"
 }
