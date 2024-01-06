@@ -1,9 +1,30 @@
 --- a/net/minecraft/client/renderer/chunk/RenderChunkRegion.java
 +++ b/net/minecraft/client/renderer/chunk/RenderChunkRegion.java
-@@ -74,4 +_,14 @@
+@@ -20,12 +_,19 @@
+     private final int centerZ;
+     protected final RenderChunk[][] chunks;
+     protected final Level level;
++    @Nullable
++    private final net.neoforged.neoforge.client.model.data.ModelDataManager.Snapshot modelDataManager;
+ 
++    @Deprecated
+     RenderChunkRegion(Level p_200456_, int p_200457_, int p_200458_, RenderChunk[][] p_200459_) {
++        this(p_200456_, p_200457_, p_200458_, p_200459_, null);
++    }
++    RenderChunkRegion(Level p_200456_, int p_200457_, int p_200458_, RenderChunk[][] p_200459_, @Nullable net.neoforged.neoforge.client.model.data.ModelDataManager.Snapshot modelDataManager) {
+         this.level = p_200456_;
+         this.centerX = p_200457_;
+         this.centerZ = p_200458_;
+         this.chunks = p_200459_;
++        this.modelDataManager = modelDataManager;
+     }
+ 
+     @Override
+@@ -73,5 +_,16 @@
+     @Override
      public int getHeight() {
          return this.level.getHeight();
-     }
++    }
 +
 +    @Override
 +    public float getShade(float normalX, float normalY, float normalZ, boolean shade) {
@@ -11,7 +32,8 @@
 +    }
 +
 +    @Override
-+    public net.neoforged.neoforge.client.model.data.ModelDataManager getModelDataManager() {
-+        return level.getModelDataManager();
-+    }
++    @Nullable
++    public net.neoforged.neoforge.client.model.data.ModelDataManager.Snapshot getModelDataManager() {
++        return modelDataManager;
+     }
  }

@@ -1,0 +1,14 @@
+--- a/net/minecraft/client/renderer/chunk/RenderRegionCache.java
++++ b/net/minecraft/client/renderer/chunk/RenderRegionCache.java
+@@ -44,7 +_,10 @@
+                 }
+             }
+ 
+-            return new RenderChunkRegion(p_200466_, i, j, arenderchunk);
++            int sectionMinY = SectionPos.blockToSectionCoord(p_200467_.getY() - p_200469_);
++            int sectionMaxY = SectionPos.blockToSectionCoord(p_200468_.getY() + p_200469_);
++            var modelDataManager = p_200466_.getModelDataManager().snapshotSectionRegion(i, sectionMinY, j, k, sectionMaxY, l);
++            return new RenderChunkRegion(p_200466_, i, j, arenderchunk, modelDataManager);
+         }
+     }
+ 
