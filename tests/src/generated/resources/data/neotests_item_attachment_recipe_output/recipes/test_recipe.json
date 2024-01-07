@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "type": "testframework:test_enabled",
+      "base": {
+        "item": "minecraft:apple"
+      },
+      "framework": "neotests:tests",
+      "testId": "itemAttachmentRecipeOutput"
+    }
+  ],
+  "result": {
+    "item": "minecraft:apple",
+    "neoforge:attachments": "{\"neotests_item_attachment_recipe_output:test_int\":1}"
+  }
+}
