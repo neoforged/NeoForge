@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:mixing_brewing",
+  "catalyst": {
+    "tag": "forge:storage_blocks/diamond"
+  },
+  "potionIn": "minecraft:thick",
+  "potionOut": "minecraft:luck"
+}

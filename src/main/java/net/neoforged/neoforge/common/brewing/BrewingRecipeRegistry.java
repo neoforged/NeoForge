@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.common.brewing;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
@@ -22,7 +21,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import net.neoforged.neoforge.event.brewing.PotionBrewEvent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class BrewingRecipeRegistry {
@@ -69,7 +67,7 @@ public final class BrewingRecipeRegistry {
     }
 
     public static void brew(Level level, IBrewingRecipe.IBrewingContainer brewingContainer) {
-        Optional<RecipeHolder<IBrewingRecipe>> recipe = level.getRecipeManager().getRecipeFor(NeoForgeMod.BREWING_RECIPE_TYPE.get(), brewingContainer, level).or(() -> VanillaBrewingRecipe.getFallback(level, brewingContainer));
+        Optional<RecipeHolder<IBrewingRecipe>> recipe = level.getRecipeManager().getRecipeFor(NeoForgeMod.BREWING_RECIPE_TYPE.get(), brewingContainer, level);
         if (recipe.isEmpty()) return;
         RecipeHolder<IBrewingRecipe> brewingRecipe = recipe.get();
         if (NeoForge.EVENT_BUS.post(new PotionBrewEvent.Pre(level, brewingContainer, brewingRecipe)).isCanceled()) return;
@@ -125,10 +123,7 @@ public final class BrewingRecipeRegistry {
         }
     }
 
-    @NotNull
     private static List<RecipeHolder<IBrewingRecipe>> getAllBrewingRecipes(RecipeManager recipeManager) {
-        List<RecipeHolder<IBrewingRecipe>> list = new ArrayList<>(recipeManager.getAllRecipesFor(NeoForgeMod.BREWING_RECIPE_TYPE.get()));
-        list.add(VanillaBrewingRecipe.INSTANCE);
-        return list;
+        return recipeManager.getAllRecipesFor(NeoForgeMod.BREWING_RECIPE_TYPE.get());
     }
 }

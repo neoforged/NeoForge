@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:container_brewing",
+  "catalyst": {
+    "tag": "forge:glass_panes"
+  },
+  "input": {
+    "item": "minecraft:potion"
+  },
+  "output": "minecraft:lingering_potion"
+}
