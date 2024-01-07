@@ -46,6 +46,22 @@
      }
  
      @Nullable
+@@ -760,6 +_,15 @@
+                 mob.yHeadRot = mob.getYRot();
+                 mob.yBodyRot = mob.getYRot();
+                 mob.finalizeSpawn(p_262637_, p_262637_.getCurrentDifficultyAt(mob.blockPosition()), p_262666_, null, p_262687_);
++
++                if (mob.isSpawnCancelled()) {
++                    // Neo: Discard mob, spawn was cancelled
++                    mob.discard();
++                    // return null, mob was killed, context should be lost
++                    // fixes llamas for wandering trader spawning if wandering trader was cancelled
++                    return null;
++                }
++
+                 mob.playAmbientSound();
+             }
+ 
 @@ -811,6 +_,9 @@
      }
  

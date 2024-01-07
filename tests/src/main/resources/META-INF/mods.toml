@@ -27,6 +27,9 @@ license="LGPL v2.1"
 [[mods]]
     modId="custom_break_sound_test"
 
+[[mods]]
+    modId="finalize_spawn_fix_test"
+
 # LEGACY TEST CASES
 ###### The mods below are from the old test framework and need to be yeeted later again.
 
