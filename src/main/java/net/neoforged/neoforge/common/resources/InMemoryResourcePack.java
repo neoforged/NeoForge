@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.common.resources;
 
 import com.google.gson.JsonElement;
@@ -50,7 +55,7 @@ public final class InMemoryResourcePack implements PackResources {
 
         putMeta(PackMetadataSection.TYPE, new PackMetadataSection(Component.literal("A virtual resource pack."), SharedConstants.getCurrentVersion().getPackVersion(PackType.SERVER_DATA)));
     }
-    
+
     public static Pack createInMemoryResourcePack(String id, Component title, Component description, boolean required, boolean hidden, boolean fixedPosition, FeatureFlagSet requestedFeatures, List<String> overlays, Pack.Position position, Consumer<InMemoryResourcePack> populator) {
         InMemoryResourcePack pack = new InMemoryResourcePack(id);
         populator.accept(pack);
@@ -64,12 +69,10 @@ public final class InMemoryResourcePack implements PackResources {
                         PackCompatibility.COMPATIBLE,
                         requestedFeatures,
                         overlays,
-                        hidden
-                ),
+                        hidden),
                 position,
                 fixedPosition,
-                PackSource.BUILT_IN
-        );
+                PackSource.BUILT_IN);
     }
 
     @Nullable

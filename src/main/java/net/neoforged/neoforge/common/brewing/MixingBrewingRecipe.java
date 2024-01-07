@@ -29,8 +29,7 @@ public record MixingBrewingRecipe(
         List<MobEffectInstance> effectsIn,
         Ingredient catalyst,
         Potion potionOut,
-        List<MobEffectInstance> effectsOut
-) implements IBrewingRecipe {
+        List<MobEffectInstance> effectsOut) implements IBrewingRecipe {
 
     @Override
     public RecipeSerializer<MixingBrewingRecipe> getSerializer() {
