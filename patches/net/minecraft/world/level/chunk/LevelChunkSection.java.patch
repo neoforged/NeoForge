@@ -5,7 +5,7 @@
          FluidState fluidstate = blockstate.getFluidState();
          FluidState fluidstate1 = p_62995_.getFluidState();
 -        if (!blockstate.isAir()) {
-+        if (!blockstate.isEmpty()) { // NEO: Patched to make modded isAir blocks not be replaced with Blocks.AIR in all-air chunk sections
++        if (!blockstate.isEmpty()) { // NEO: Fix MC-232360 for modded blocks (Makes modded isAir blocks not be replaced with Blocks.AIR in all-air chunk sections)
              --this.nonEmptyBlockCount;
              if (blockstate.isRandomlyTicking()) {
                  --this.tickingBlockCount;
@@ -14,7 +14,7 @@
          }
  
 -        if (!p_62995_.isAir()) {
-+        if (!p_62995_.isEmpty()) { // NEO: Patched to make modded isAir blocks not be replaced with Blocks.AIR in all-air chunk sections
++        if (!p_62995_.isEmpty()) { // NEO: Fix MC-232360 for modded blocks (Makes modded isAir blocks not be replaced with Blocks.AIR in all-air chunk sections)
              ++this.nonEmptyBlockCount;
              if (p_62995_.isRandomlyTicking()) {
                  ++this.tickingBlockCount;
