@@ -79,6 +79,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.biome.Biome;
@@ -114,6 +115,8 @@ import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.client.model.generators.ModelFile.UncheckedModelFile;
 import net.neoforged.neoforge.client.model.generators.MultiPartBlockStateBuilder;
 import net.neoforged.neoforge.client.model.generators.VariantBlockStateBuilder;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.brewing.BrewingRecipeBuilder;
 import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import net.neoforged.neoforge.common.conditions.WithConditions;
@@ -293,6 +296,10 @@ public class DataGeneratorTest {
                     }))))
                     .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
                     .save(consumer, new ResourceLocation("data_gen_test", "compound_ingredient_custom_types"));
+
+            BrewingRecipeBuilder.mixing(Potions.THICK, net.neoforged.neoforge.common.Tags.Items.STORAGE_BLOCKS_DIAMOND, Potions.LUCK).save(consumer, "datadriven_brewing:brewing/luck");
+            BrewingRecipeBuilder.container(Items.POTION, net.neoforged.neoforge.common.Tags.Items.GLASS_PANES, Items.LINGERING_POTION).save(consumer, "datadriven_brewing:brewing/glass_pane_to_lingering");
+            BrewingRecipeBuilder.simple().withInput(Items.BOWL).withCatalyst(net.neoforged.neoforge.common.Tags.Items.MUSHROOMS).withOutput(Items.MUSHROOM_STEW).save(consumer, "datadriven_brewing:brewing/mushroom_stew");
         }
     }
 

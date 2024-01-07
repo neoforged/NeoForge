@@ -6,7 +6,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
@@ -24,6 +28,7 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class BrewingRecipeBuilder {
     private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
@@ -62,9 +67,9 @@ public abstract class BrewingRecipeBuilder {
         output.accept(id, build(), advancementBuilder.build(id.withPrefix("recipes/brewing/")), conditions.toArray(ICondition[]::new));
     }
 
-    protected abstract IBrewingRecipe build();
+    public abstract IBrewingRecipe build();
 
-    protected abstract ResourceLocation getDefaultRecipeId();
+    public abstract ResourceLocation getDefaultRecipeId();
 
     public static Mixing mixing(Potion in, ItemLike catalyst, Potion out) {
         return mixing().withPotionIn(in).withCatalyst(catalyst).withPotionOut(out);
@@ -98,6 +103,10 @@ public abstract class BrewingRecipeBuilder {
         return container().withInput(input).withCatalyst(catalyst).withOutput(output);
     }
 
+    public static Container container(ItemLike input, TagKey<Item> catalyst, ItemLike output) {
+        return container().withInput(input).withCatalyst(catalyst).withOutput(output);
+    }
+
     public static Container container(Ingredient input, Ingredient catalyst, ItemStack output) {
         return container().withInput(input).withCatalyst(catalyst).withOutput(output);
     }
@@ -106,36 +115,46 @@ public abstract class BrewingRecipeBuilder {
         return container().withInput(input).withCatalyst(catalyst).withOutput(output);
     }
 
+    public static Container container(ItemLike input, Ingredient catalyst, ItemLike output) {
+        return container().withInput(input).withCatalyst(catalyst).withOutput(output);
+    }
+
     public static Container container() {
         return new Container();
     }
-
-    public static Simple simple(ItemLike input, ItemLike catalyst, ItemStack output) {
-        return simple().withInput(input).withCatalyst(catalyst).withOutput(output);
-    }
-
-    public static Simple simple(ItemLike input, ItemLike catalyst, ItemLike output) {
-        return simple().withInput(input).withCatalyst(catalyst).withOutput(output);
-    }
-
-    public static Simple simple(ItemLike input, TagKey<Item> catalyst, ItemStack output) {
-        return simple().withInput(input).withCatalyst(catalyst).withOutput(output);
-    }
-
-    public static Simple simple(ItemLike input, TagKey<Item> catalyst, ItemLike output) {
-        return simple().withInput(input).withCatalyst(catalyst).withOutput(output);
-    }
-
-    public static Simple simple(Ingredient input, Ingredient catalyst, ItemStack output) {
-        return simple().withInput(input).withCatalyst(catalyst).withOutput(output);
-    }
-
-    public static Simple simple(Ingredient input, Ingredient catalyst, ItemLike output) {
-        return simple().withInput(input).withCatalyst(catalyst).withOutput(output);
-    }
-
     public static Simple simple() {
         return new Simple();
+    }
+
+    @Nullable
+    protected static ResourceLocation getKeyForIngredient(Ingredient ingredient) {
+        Ingredient.Value[] values = ingredient.getValues();
+        if (values.length == 1) {
+            if (values[0] instanceof Ingredient.ItemValue item) {
+                return BuiltInRegistries.ITEM.getKey(item.item().getItem());
+            } else if (values[0] instanceof Ingredient.TagValue tag) {
+                return tag.tag().location();
+            }
+        }
+        return null;
+    }
+
+    protected static ResourceLocation composeKey(ResourceLocation[] in, ResourceLocation[] out) {
+        String namespace = Stream.concat(Arrays.stream(in), Arrays.stream(out))
+                .filter(Objects::nonNull)
+                .map(ResourceLocation::getNamespace)
+                .filter(Predicate.not(Predicate.isEqual(ResourceLocation.DEFAULT_NAMESPACE)))
+                .findFirst()
+                .orElse(ResourceLocation.DEFAULT_NAMESPACE);
+        String inPath = Arrays.stream(in)
+                .filter(Objects::nonNull)
+                .map(ResourceLocation::getPath)
+                .collect(Collectors.joining("_"));
+        String outPath = Arrays.stream(out)
+                .filter(Objects::nonNull)
+                .map(ResourceLocation::getPath)
+                .collect(Collectors.joining("_"));
+        return new ResourceLocation(namespace, inPath.isEmpty() ? outPath : inPath + "_to_" + outPath);
     }
 
     public static class Mixing extends BrewingRecipeBuilder {
@@ -211,7 +230,7 @@ public abstract class BrewingRecipeBuilder {
         }
 
         @Override
-        protected MixingBrewingRecipe build() {
+        public MixingBrewingRecipe build() {
             if (this.catalyst == null) {
                 throw new IllegalArgumentException("catalyst must not be null");
             }
@@ -219,8 +238,11 @@ public abstract class BrewingRecipeBuilder {
         }
 
         @Override
-        protected ResourceLocation getDefaultRecipeId() {
-            return BuiltInRegistries.POTION.getKey(this.potionOut);
+        public ResourceLocation getDefaultRecipeId() {
+            ResourceLocation inKey = BuiltInRegistries.POTION.getKey(this.potionIn);
+            ResourceLocation catalystKey = getKeyForIngredient(this.catalyst);
+            ResourceLocation outKey = BuiltInRegistries.POTION.getKey(this.potionOut);
+            return composeKey(new ResourceLocation[]{inKey, catalystKey}, new ResourceLocation[]{outKey});
         }
     }
     
@@ -278,7 +300,7 @@ public abstract class BrewingRecipeBuilder {
         }
 
         @Override
-        protected ContainerBrewingRecipe build() {
+        public ContainerBrewingRecipe build() {
             if (this.input == null) {
                 throw new IllegalArgumentException("input must not be null");
             }
@@ -292,8 +314,11 @@ public abstract class BrewingRecipeBuilder {
         }
 
         @Override
-        protected ResourceLocation getDefaultRecipeId() {
-            return BuiltInRegistries.ITEM.getKey(this.output.getItem());
+        public ResourceLocation getDefaultRecipeId() {
+            ResourceLocation inputKey = getKeyForIngredient(this.input);
+            ResourceLocation catalystKey = getKeyForIngredient(this.catalyst);
+            ResourceLocation outputKey = BuiltInRegistries.ITEM.getKey(this.output.getItem());
+            return composeKey(new ResourceLocation[]{inputKey, catalystKey}, new ResourceLocation[]{outputKey});
         }
     }
 
@@ -350,7 +375,7 @@ public abstract class BrewingRecipeBuilder {
         }
 
         @Override
-        protected SimpleBrewingRecipe build() {
+        public SimpleBrewingRecipe build() {
             if (this.input == null) {
                 throw new IllegalArgumentException("input must not be null");
             }
@@ -364,8 +389,11 @@ public abstract class BrewingRecipeBuilder {
         }
 
         @Override
-        protected ResourceLocation getDefaultRecipeId() {
-            return BuiltInRegistries.ITEM.getKey(this.output.getItem());
+        public ResourceLocation getDefaultRecipeId() {
+            ResourceLocation inputKey = getKeyForIngredient(this.input);
+            ResourceLocation catalystKey = getKeyForIngredient(this.catalyst);
+            ResourceLocation outputKey = BuiltInRegistries.ITEM.getKey(this.output.getItem());
+            return composeKey(new ResourceLocation[]{inputKey, catalystKey}, new ResourceLocation[]{outputKey});
         }
     }
 }

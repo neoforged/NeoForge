@@ -18,18 +18,9 @@ import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.EncoderException;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.MappedRegistry;
@@ -40,22 +31,18 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
 import net.minecraft.server.packs.repository.BuiltInPackSource;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
-import net.minecraft.server.packs.resources.IoSupplier;
-import net.minecraft.util.GsonHelper;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.resources.InMemoryResourcePack;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
@@ -85,7 +72,7 @@ public class LoginPacketSplitTest {
                     final InMemoryResourcePack pack = new InMemoryResourcePack("virtual_bigdata");
                     generateEntries(pack);
                     event.addRepositorySource(packs -> packs.accept(Pack.readMetaAndCreate(
-                            pack.id,
+                            pack.packId(),
                             Component.literal("Pack containing big datapack registries"),
                             true,
                             BuiltInPackSource.fixedResources(pack),
@@ -116,7 +103,7 @@ public class LoginPacketSplitTest {
             final JsonObject json = new JsonObject();
             json.addProperty("text", bigData.text);
             json.addProperty("number", bigData.number);
-            pack.putData(new ResourceLocation(MOD_ID, MOD_ID + "/big_data/entry_" + i + ".json"), json);
+            pack.putData(PackType.SERVER_DATA, new ResourceLocation(MOD_ID, MOD_ID + "/big_data/entry_" + i + ".json"), json);
             Registry.register(dummyRegistry, new ResourceLocation(MOD_ID, MOD_ID + "/big_data/entry_" + i), bigData);
         }
         stopwatch.stop();
@@ -142,111 +129,6 @@ public class LoginPacketSplitTest {
         public static final Codec<BigData> CODEC = RecordCodecBuilder.create(in -> in.group(
                 Codec.STRING.fieldOf("text").forGetter(BigData::text),
                 Codec.INT.fieldOf("number").forGetter(BigData::number)).apply(in, BigData::new));
-    }
-
-    public static final class InMemoryResourcePack implements PackResources {
-        private final Map<ResourceLocation, Supplier<byte[]>> data = new ConcurrentHashMap<>();
-        private final Map<String, Supplier<byte[]>> root = new ConcurrentHashMap<>();
-
-        private final String id;
-
-        public InMemoryResourcePack(String id) {
-            this.id = id;
-
-            final JsonObject mcmeta = new JsonObject();
-            final JsonObject packJson = new JsonObject();
-            packJson.addProperty("description", "A virtual resource pack.");
-            packJson.addProperty("pack_format", SharedConstants.getCurrentVersion().getPackVersion(PackType.SERVER_DATA));
-            mcmeta.add("pack", packJson);
-
-            putRoot("pack.mcmeta", mcmeta);
-        }
-
-        @Nullable
-        @Override
-        public IoSupplier<InputStream> getRootResource(String... loc) {
-            return openResource(this.root, String.join("/", loc));
-        }
-
-        @Nullable
-        @Override
-        public IoSupplier<InputStream> getResource(PackType type, ResourceLocation loc) {
-            if (type != PackType.SERVER_DATA) return null;
-            return openResource(data, loc);
-        }
-
-        private <T> @Nullable IoSupplier<InputStream> openResource(Map<T, Supplier<byte[]>> map, T key) {
-            final Supplier<byte[]> supplier = map.get(key);
-            if (supplier == null) {
-                return null;
-            }
-            final byte[] bytes = supplier.get();
-            if (bytes == null) {
-                return null;
-            }
-            return () -> new ByteArrayInputStream(bytes);
-        }
-
-        @Override
-        public void listResources(PackType type, String namespace, String startingPath, ResourceOutput out) {
-            if (type != PackType.SERVER_DATA) return;
-            data.forEach((key, data) -> {
-                if (key.getNamespace().equals(namespace) && key.getPath().startsWith(startingPath)) {
-                    final byte[] bytes = data.get();
-                    if (bytes != null) {
-                        out.accept(key, () -> new ByteArrayInputStream(bytes));
-                    }
-                }
-            });
-        }
-
-        @Override
-        public Set<String> getNamespaces(PackType type) {
-            return type == PackType.CLIENT_RESOURCES ? Set.of()
-                    : data.keySet().stream().map(ResourceLocation::getNamespace)
-                            .collect(Collectors.toUnmodifiableSet());
-        }
-
-        @Nullable
-        @Override
-        public <T> T getMetadataSection(MetadataSectionSerializer<T> section) throws IOException {
-            final JsonObject json = GsonHelper.parse(new String(root.get("pack.mcmeta").get()));
-            if (!json.has(section.getMetadataSectionName())) {
-                return null;
-            } else {
-                return section.fromJson(GsonHelper.getAsJsonObject(json, section.getMetadataSectionName()));
-            }
-        }
-
-        @Override
-        public String packId() {
-            return id;
-        }
-
-        @Override
-        public void close() {}
-
-        public void putRoot(String path, JsonObject json) {
-            final byte[] bytes = fromJson(json);
-            putRoot(path, () -> bytes);
-        }
-
-        public void putRoot(String path, Supplier<byte[]> data) {
-            root.put(path, data);
-        }
-
-        public void putData(ResourceLocation path, JsonObject json) {
-            final byte[] bytes = fromJson(json);
-            putData(path, () -> bytes);
-        }
-
-        public void putData(ResourceLocation path, Supplier<byte[]> data) {
-            this.data.put(path, data);
-        }
-
-        public static byte[] fromJson(JsonElement json) {
-            return GsonHelper.toStableString(json).getBytes(StandardCharsets.UTF_8);
-        }
     }
 
     public <T> void writeJsonWithCodec(FriendlyByteBuf buf, Codec<T> codec, T instance) {

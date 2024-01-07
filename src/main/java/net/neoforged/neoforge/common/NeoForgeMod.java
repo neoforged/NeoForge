@@ -37,10 +37,12 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
+import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ExtraCodecs;
@@ -54,9 +56,14 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -94,6 +101,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.capabilities.CapabilityHooks;
 import net.neoforged.neoforge.client.ClientCommandHandler;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
@@ -102,6 +110,7 @@ import net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate
 import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.PiglinNeutralArmorEntityPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.ToolActionItemPredicate;
+import net.neoforged.neoforge.common.brewing.BrewingRecipeBuilder;
 import net.neoforged.neoforge.common.brewing.ContainerBrewingRecipe;
 import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
 import net.neoforged.neoforge.common.brewing.MixingBrewingRecipe;
@@ -140,6 +149,7 @@ import net.neoforged.neoforge.common.loot.AddTableLootModifier;
 import net.neoforged.neoforge.common.loot.CanToolPerformAction;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
+import net.neoforged.neoforge.common.resources.InMemoryResourcePack;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers;
 import net.neoforged.neoforge.common.world.BiomeModifiers.AddFeaturesBiomeModifier;
@@ -151,6 +161,7 @@ import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifiers;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
@@ -597,6 +608,7 @@ public class NeoForgeMod {
         modEventBus.addListener(this::registerFluids);
         modEventBus.addListener(EventPriority.HIGHEST, this::registerVanillaDisplayContexts);
         modEventBus.addListener(this::registerLootData);
+        modEventBus.addListener(NeoForgeMod::onAddServerPack);
         ATTRIBUTES.register(modEventBus);
         COMMAND_ARGUMENT_TYPES.register(modEventBus);
         BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
@@ -609,6 +621,7 @@ public class NeoForgeMod {
         INGREDIENT_TYPES.register(modEventBus);
         CONDITION_CODECS.register(modEventBus);
         RECIPE_TYPES.register(modEventBus);
+        RECIPE_SERIALIZERS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.clientSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, NeoForgeConfig.serverSpec);
@@ -745,6 +758,41 @@ public class NeoForgeMod {
 
         event.register(Registries.LOOT_CONDITION_TYPE, new ResourceLocation("neoforge:loot_table_id"), () -> LootTableIdCondition.LOOT_TABLE_ID);
         event.register(Registries.LOOT_CONDITION_TYPE, new ResourceLocation("neoforge:can_tool_perform_action"), () -> CanToolPerformAction.LOOT_CONDITION_TYPE);
+    }
+
+    public static void onAddServerPack(AddPackFindersEvent event) {
+        if (event.getPackType() != PackType.SERVER_DATA) return;
+        Pack vanillaBrewingRecipes = InMemoryResourcePack.createInMemoryResourcePack(
+                "vanilla_brewing_recipes",
+                Component.literal("NeoForge: vanilla brewing recipes"),
+                Component.literal("vanilla brewing recipes"),
+                true,
+                false,
+                false,
+                FeatureFlagSet.of(),
+                List.of(),
+                Pack.Position.BOTTOM,
+                pack -> {
+                    FileToIdConverter converter = FileToIdConverter.json("recipes/brewing");
+                    List<PotionBrewing.Mix<Potion>> potionMixes = ObfuscationReflectionHelper.getPrivateValue(PotionBrewing.class, null, "POTION_MIXES");
+                    if (potionMixes == null) throw new IllegalStateException(PotionBrewing.class.getName() + " has no static field POTION_MIXES");
+                    for (PotionBrewing.Mix<Potion> potionMix : potionMixes) {
+                        BrewingRecipeBuilder.Mixing mixing = BrewingRecipeBuilder.mixing(potionMix.from, potionMix.ingredient, potionMix.to);
+                        MixingBrewingRecipe recipe = mixing.build();
+                        ResourceLocation recipeId = mixing.getDefaultRecipeId();
+                        pack.putJsonData(PackType.SERVER_DATA, converter.idToFile(recipeId), Recipe.CODEC, recipe);
+                    }
+
+                    List<PotionBrewing.Mix<Item>> containerMixes = ObfuscationReflectionHelper.getPrivateValue(PotionBrewing.class, null, "CONTAINER_MIXES");
+                    if (containerMixes == null) throw new IllegalStateException(PotionBrewing.class.getName() + " has no static field CONTAINER_MIXES");
+                    for (PotionBrewing.Mix<Item> containerMix : containerMixes) {
+                        BrewingRecipeBuilder.Container container = BrewingRecipeBuilder.container(containerMix.from, containerMix.ingredient, containerMix.to);
+                        ContainerBrewingRecipe recipe = container.build();
+                        ResourceLocation recipeId = container.getDefaultRecipeId();
+                        pack.putJsonData(PackType.SERVER_DATA, converter.idToFile(recipeId), Recipe.CODEC, recipe);
+                    }
+                });
+        event.addRepositorySource(packConsumer -> packConsumer.accept(vanillaBrewingRecipes));
     }
 
     public static final PermissionNode<Boolean> USE_SELECTORS_PERMISSION = new PermissionNode<>(NeoForgeVersion.MOD_ID, "use_entity_selectors",
