@@ -87,7 +87,7 @@ public final class AttachmentInternals {
             @SuppressWarnings("unchecked")
             var serializer = (IAttachmentSerializer<Tag, Object>) type.serializer;
             if (serializer != null && filter.test(type)) {
-                to.getAttachmentMap().put(type, serializer.read(serializer.write(entry.getValue())));
+                to.getAttachmentMap().put(type, serializer.read(to.getExposedHolder(), serializer.write(entry.getValue())));
             }
         }
     }

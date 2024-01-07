@@ -24,12 +24,12 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     public static final String ATTACHMENTS_NBT_KEY = "neoforge:attachments";
     private static final boolean IN_DEV = !FMLLoader.isProduction();
 
-    private static void validateAttachmentType(AttachmentType<?> type) {
+    private void validateAttachmentType(AttachmentType<?> type) {
         Objects.requireNonNull(type);
         if (!IN_DEV) return;
 
         if (!NeoForgeRegistries.ATTACHMENT_TYPES.containsValue(type)) {
-            throw new IllegalArgumentException("Data attachment type with default value " + type.defaultValueSupplier.get() + " must be registered!");
+            throw new IllegalArgumentException("Data attachment type with default value " + type.defaultValueSupplier.apply(getExposedHolder()) + " must be registered!");
         }
     }
 
@@ -46,6 +46,15 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         return attachments;
     }
 
+    /**
+     * Returns the attachment holder that is exposed to the user.
+     * This is the same as {@code this} for most cases,
+     * but when using {@link AsField} it is the field holder.
+     */
+    IAttachmentHolder getExposedHolder() {
+        return this;
+    }
+
     @Override
     public final boolean hasData(AttachmentType<?> type) {
         validateAttachmentType(type);
@@ -55,7 +64,12 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     @Override
     public final <T> T getData(AttachmentType<T> type) {
         validateAttachmentType(type);
-        return (T) getAttachmentMap().computeIfAbsent(type, t -> Objects.requireNonNull(t.defaultValueSupplier.get()));
+        T ret = (T) getAttachmentMap().get(type);
+        if (ret == null) {
+            ret = type.defaultValueSupplier.apply(getExposedHolder());
+            attachments.put(type, ret);
+        }
+        return ret;
     }
 
     @Override
@@ -97,7 +111,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             if (keyLocation != null) {
                 var type = NeoForgeRegistries.ATTACHMENT_TYPES.get(keyLocation);
                 if (type != null && type.serializer != null) {
-                    getAttachmentMap().put(type, ((IAttachmentSerializer<Tag, ?>) type.serializer).read(tag.get(key)));
+                    getAttachmentMap().put(type, ((IAttachmentSerializer<Tag, ?>) type.serializer).read(getExposedHolder(), tag.get(key)));
                 }
             }
         }
@@ -122,7 +136,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
                 var otherData = secondAttachments.get(type);
                 if (otherData == null)
                     // TODO: cache serialization of default value?
-                    otherData = type.defaultValueSupplier.get();
+                    otherData = type.defaultValueSupplier.apply(second.getExposedHolder());
                 if (!type.comparator.areCompatible(entry.getValue(), otherData))
                     return false;
             }
@@ -133,7 +147,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
                 var data = firstAttachments.get(type);
                 if (data != null)
                     continue; // already checked in the first loop
-                data = type.defaultValueSupplier.get();
+                data = type.defaultValueSupplier.apply(first.getExposedHolder());
                 if (!type.comparator.areCompatible(entry.getValue(), data))
                     return false;
             }
@@ -147,6 +161,17 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      * for example because the class already has a supertype.
      */
     public static class AsField extends AttachmentHolder {
+        private final IAttachmentHolder exposedHolder;
+
+        public AsField(IAttachmentHolder exposedHolder) {
+            this.exposedHolder = exposedHolder;
+        }
+
+        @Override
+        IAttachmentHolder getExposedHolder() {
+            return exposedHolder;
+        }
+
         public void deserializeInternal(CompoundTag tag) {
             deserializeAttachments(tag);
         }

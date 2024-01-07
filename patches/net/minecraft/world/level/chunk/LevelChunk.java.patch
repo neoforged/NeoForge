@@ -100,7 +100,7 @@
      }
  
 +    // FORGE START
-+    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField();
++    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
 +
 +    @Override
 +    public boolean hasData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
