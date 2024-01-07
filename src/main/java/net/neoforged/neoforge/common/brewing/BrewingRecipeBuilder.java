@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.common.brewing;
 
 import java.util.ArrayList;
@@ -122,6 +127,7 @@ public abstract class BrewingRecipeBuilder {
     public static Container container() {
         return new Container();
     }
+
     public static Simple simple() {
         return new Simple();
     }
@@ -242,10 +248,10 @@ public abstract class BrewingRecipeBuilder {
             ResourceLocation inKey = BuiltInRegistries.POTION.getKey(this.potionIn);
             ResourceLocation catalystKey = getKeyForIngredient(this.catalyst);
             ResourceLocation outKey = BuiltInRegistries.POTION.getKey(this.potionOut);
-            return composeKey(new ResourceLocation[]{inKey, catalystKey}, new ResourceLocation[]{outKey});
+            return composeKey(new ResourceLocation[] { inKey, catalystKey }, new ResourceLocation[] { outKey });
         }
     }
-    
+
     public static class Container extends BrewingRecipeBuilder {
         private Ingredient input;
         private Ingredient catalyst;
@@ -318,7 +324,7 @@ public abstract class BrewingRecipeBuilder {
             ResourceLocation inputKey = getKeyForIngredient(this.input);
             ResourceLocation catalystKey = getKeyForIngredient(this.catalyst);
             ResourceLocation outputKey = BuiltInRegistries.ITEM.getKey(this.output.getItem());
-            return composeKey(new ResourceLocation[]{inputKey, catalystKey}, new ResourceLocation[]{outputKey});
+            return composeKey(new ResourceLocation[] { inputKey, catalystKey }, new ResourceLocation[] { outputKey });
         }
     }
 
@@ -393,7 +399,7 @@ public abstract class BrewingRecipeBuilder {
             ResourceLocation inputKey = getKeyForIngredient(this.input);
             ResourceLocation catalystKey = getKeyForIngredient(this.catalyst);
             ResourceLocation outputKey = BuiltInRegistries.ITEM.getKey(this.output.getItem());
-            return composeKey(new ResourceLocation[]{inputKey, catalystKey}, new ResourceLocation[]{outputKey});
+            return composeKey(new ResourceLocation[] { inputKey, catalystKey }, new ResourceLocation[] { outputKey });
         }
     }
 }
