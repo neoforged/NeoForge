@@ -11,6 +11,10 @@ dynamicProject {
             rootProject.layout.projectDirectory.dir('rejects'))
 }
 
+installerProfile {
+    profile = 'NeoForge'
+}
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(project.java_version))
