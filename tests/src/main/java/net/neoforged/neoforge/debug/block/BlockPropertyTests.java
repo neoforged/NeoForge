@@ -30,33 +30,28 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.eventtest.internal.TestsMod;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
-import net.neoforged.testframework.annotation.RegisterStructureTemplate;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = BlockTests.GROUP + ".properties")
 public class BlockPropertyTests {
-    private static final String TEMPLATE_3x4_BOX = "neotests_level_sensitive_light:light_box_3x3:";
 
-    @RegisterStructureTemplate(TEMPLATE_3x4_BOX)
-    public static final StructureTemplate TEMPLATE3x4 = StructureTemplateBuilder.withSize(3, 4, 3)
-            .fill(0, 0, 0, 2, 3, 2, Blocks.STONE)
-            .set(1, 1, 1, Blocks.AIR.defaultBlockState())
-            .set(1, 2, 1, Blocks.AIR.defaultBlockState())
-            .build();
-
-    @GameTest(template = TEMPLATE_3x4_BOX)
+    @GameTest
     @TestHolder(description = "Adds a toggleable light source to test if level-sensitive light emission works")
     static void levelSensitiveLight(final DynamicTest test, final RegistrationHelper reg) {
         final var lightBlock = reg.blocks().registerBlockWithBEType("light_block", LightBlock::new, LightBlockEntity::new, BlockBehaviour.Properties.of())
                 .withLang("Light block").withBlockItem();
+
+        test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 4, 3)
+                .fill(0, 0, 0, 2, 3, 2, Blocks.STONE)
+                .set(1, 1, 1, Blocks.AIR.defaultBlockState())
+                .set(1, 2, 1, Blocks.AIR.defaultBlockState()));
 
         BlockPos lightPos = new BlockPos(1, 2, 1);
         BlockPos testPos = new BlockPos(1, 3, 1);

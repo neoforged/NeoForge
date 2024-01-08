@@ -15,7 +15,7 @@ import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
 public record AuxiliaryLightDataPayload(ChunkPos pos, Map<BlockPos, Integer> entries) implements CustomPacketPayload {
 
-    public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "aux_light_data");
+    public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "auxiliary_light_data");
 
     public AuxiliaryLightDataPayload(FriendlyByteBuf buf) {
         this(buf.readChunkPos(), buf.readMap(FriendlyByteBuf::readBlockPos, FriendlyByteBuf::readInt));
