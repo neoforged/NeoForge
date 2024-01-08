@@ -947,4 +947,14 @@ public interface IBlockExtension {
     default PushReaction getPistonPushReaction(BlockState state) {
         return null;
     }
+
+    /**
+     * Return true if the state is able to be replaced with Blocks.AIR in chunk sections that is entirely made of blocks that return true for isEmpty
+     *
+     * @param state The current state
+     * @return True if the block should be allowed to be optimized away into Blocks.AIR
+     */
+    default boolean isEmpty(BlockState state) {
+        return state.is(Blocks.AIR) || state.is(Blocks.CAVE_AIR) || state.is(Blocks.VOID_AIR);
+    }
 }
