@@ -87,6 +87,7 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
         }
 
         @Override
+        @Nullable
         public ModelData getAt(BlockPos pos) {
             Preconditions.checkArgument(level.isClientSide, "Cannot request model data for server level");
             long sectionPos = SectionPos.asLong(pos);
@@ -167,6 +168,7 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
         }
 
         @Override
+        @Nullable
         public ModelData getAt(BlockPos pos) {
             return modelDataCache.get(pos.asLong());
         }

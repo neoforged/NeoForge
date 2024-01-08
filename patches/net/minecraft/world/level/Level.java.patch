@@ -219,7 +219,7 @@
                          this.neighborChanged(blockstate, blockpos, p_46719_, p_46718_, false);
                      }
                  }
-@@ -1070,6 +_,23 @@
+@@ -1070,6 +_,24 @@
      @Override
      public BiomeManager getBiomeManager() {
          return this.biomeManager;
@@ -238,6 +238,7 @@
 +    }
 +
 +    @Override
++    @Nullable
 +    public net.neoforged.neoforge.client.model.data.ModelDataManager.Active getModelDataManager() {
 +        return null;
      }
