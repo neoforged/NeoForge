@@ -1,88 +1,27 @@
 --- a/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
-@@ -76,7 +_,7 @@
-     final LevelRenderer renderer;
-     private Vec3 camera = Vec3.ZERO;
- 
--    public SectionRenderDispatcher(ClientLevel p_295274_, LevelRenderer p_295323_, Executor p_295234_, RenderBuffers p_307511_) {
-+    public SectionRenderDispatcher(ClientLevel p_295274_, LevelRenderer p_295323_, Executor p_295234_, RenderBuffers p_307511_) { // TODO 1.20.3 PORTING: reevaluate the patch (where does it go now?)
-         this.level = p_295274_;
-         this.renderer = p_295323_;
-         this.fixedBuffers = p_307511_.fixedBufferPack();
-@@ -404,7 +_,7 @@
-                 return false;
-             } else {
-                 this.lastResortTransparencyTask = new SectionRenderDispatcher.RenderSection.ResortTransparencyTask(
--                    this.getDistToPlayerSqr(), sectionrenderdispatcher$compiledsection
-+                    SectionPos.of(getOrigin()), this.getDistToPlayerSqr(), sectionrenderdispatcher$compiledsection
-                 );
-                 p_294363_.schedule(this.lastResortTransparencyTask);
-                 return true;
-@@ -440,7 +_,7 @@
-             }
- 
-             this.lastRebuildTask = new SectionRenderDispatcher.RenderSection.RebuildTask(
--                this.getDistToPlayerSqr(), renderchunkregion, !flag1 || this.initialCompilationCancelCount.get() > 2
-+                SectionPos.of(getOrigin()), this.getDistToPlayerSqr(), renderchunkregion, !flag1 || this.initialCompilationCancelCount.get() > 2
-             );
-             return this.lastRebuildTask;
-         }
-@@ -481,10 +_,22 @@
-             protected final double distAtCreation;
-             protected final AtomicBoolean isCancelled = new AtomicBoolean(false);
-             protected final boolean isHighPriority;
-+            protected final java.util.Map<net.minecraft.core.BlockPos, net.neoforged.neoforge.client.model.data.ModelData> modelData;
- 
-+            @Deprecated
-             public CompileTask(double p_294428_, boolean p_295051_) {
-+                this(null, p_294428_, p_295051_);
-+            }
-+
-+            public CompileTask(@Nullable SectionPos sectionPos, double p_294428_, boolean p_295051_) {
-                 this.distAtCreation = p_294428_;
-                 this.isHighPriority = p_295051_;
-+
-+                if (sectionPos == null || Minecraft.getInstance().level == null || Minecraft.getInstance().level.getModelDataManager() == null) {
-+                    this.modelData = java.util.Collections.emptyMap();
-+                } else {
-+                    this.modelData = Minecraft.getInstance().level.getModelDataManager().getAt(sectionPos);
-+                }
-             }
- 
-             public abstract CompletableFuture<SectionRenderDispatcher.SectionTaskResult> doTask(SectionBufferBuilderPack p_294622_);
-@@ -496,6 +_,10 @@
-             public int compareTo(SectionRenderDispatcher.RenderSection.CompileTask p_296186_) {
-                 return Doubles.compare(this.distAtCreation, p_296186_.distAtCreation);
-             }
-+
-+            public net.neoforged.neoforge.client.model.data.ModelData getModelData(BlockPos pos) {
-+                return modelData.getOrDefault(pos, net.neoforged.neoforge.client.model.data.ModelData.EMPTY);
-+            }
-         }
- 
-         @OnlyIn(Dist.CLIENT)
-@@ -503,8 +_,13 @@
+@@ -502,10 +_,13 @@
+         class RebuildTask extends SectionRenderDispatcher.RenderSection.CompileTask {
              @Nullable
              protected RenderChunkRegion region;
++            private final net.neoforged.neoforge.client.model.data.ModelDataManager.Snapshot modelData;
  
-+            @Deprecated
              public RebuildTask(double p_294400_, @Nullable RenderChunkRegion p_294382_, boolean p_295207_) {
--                super(p_294400_, p_295207_);
-+                this(null, p_294400_, p_294382_, p_295207_);
-+            }
-+
-+            public RebuildTask(@Nullable SectionPos pos, double p_294400_, @Nullable RenderChunkRegion p_294382_, boolean p_295207_) {
-+                super(pos, p_294400_, p_295207_);
+                 super(p_294400_, p_295207_);
                  this.region = p_294382_;
++                var manager = p_294382_ != null ? p_294382_.getModelDataManager() : null;
++                this.modelData = manager != null ? manager : net.neoforged.neoforge.client.model.data.ModelDataManager.Snapshot.EMPTY;
              }
  
-@@ -609,7 +_,10 @@
+             @Override
+@@ -609,7 +_,11 @@
                          }
  
                          if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
 -                            RenderType rendertype2 = ItemBlockRenderTypes.getChunkRenderType(blockstate);
 +                            var model = blockrenderdispatcher.getBlockModel(blockstate);
-+                            var modelData = model.getModelData(renderchunkregion, blockpos2, blockstate, getModelData(blockpos2));
++                            var modelData = this.modelData.getAtOrEmpty(blockpos2);
++                            modelData = model.getModelData(renderchunkregion, blockpos2, blockstate, modelData);
 +                            randomsource.setSeed(blockstate.getSeed(blockpos2));
 +                            for (RenderType rendertype2 : model.getRenderTypes(blockstate, randomsource, modelData)) {
                              BufferBuilder bufferbuilder2 = p_294319_.builder(rendertype2);
@@ -111,18 +50,3 @@
                      }
                  }
              }
-@@ -681,8 +_,13 @@
-         class ResortTransparencyTask extends SectionRenderDispatcher.RenderSection.CompileTask {
-             private final SectionRenderDispatcher.CompiledSection compiledSection;
- 
-+            @Deprecated
-             public ResortTransparencyTask(double p_294102_, SectionRenderDispatcher.CompiledSection p_294601_) {
--                super(p_294102_, true);
-+                this(null, p_294102_, p_294601_);
-+            }
-+
-+            public ResortTransparencyTask(@Nullable SectionPos pos, double p_294102_, SectionRenderDispatcher.CompiledSection p_294601_) {
-+                super(pos, p_294102_, true);
-                 this.compiledSection = p_294601_;
-             }
- 
