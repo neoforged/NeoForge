@@ -89,6 +89,7 @@ public final class AttachmentType<T> {
      *
      * <p>This overload allows capturing a reference to the {@link IAttachmentHolder} for the attachment.
      * To obtain a specific subtype, the holder can be cast.
+     * If the holder is of the wrong type, the constructor should throw an exception.
      * See {@link #builder(Supplier)} for an overload that does not capture the holder.
      *
      * @param defaultValueConstructor A constructor for a new default value of this attachment type.
@@ -113,6 +114,7 @@ public final class AttachmentType<T> {
      *
      * <p>This overload allows capturing a reference to the {@link IAttachmentHolder} for the attachment.
      * To obtain a specific subtype, the holder can be cast.
+     * If the holder is of the wrong type, the constructor should throw an exception.
      * See {@link #serializable(Supplier)} for an overload that does not capture the holder.
      */
     public static <S extends Tag, T extends INBTSerializable<S>> Builder<T> serializable(Function<IAttachmentHolder, T> defaultValueConstructor) {
