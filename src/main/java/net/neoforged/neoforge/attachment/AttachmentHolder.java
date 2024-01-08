@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.attachment;
 
+import com.mojang.logging.LogUtils;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -15,6 +16,7 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * Implementation class for objects that can hold data attachments.
@@ -23,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class AttachmentHolder implements IAttachmentHolder {
     public static final String ATTACHMENTS_NBT_KEY = "neoforge:attachments";
     private static final boolean IN_DEV = !FMLLoader.isProduction();
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     private void validateAttachmentType(AttachmentType<?> type) {
         Objects.requireNonNull(type);
@@ -108,11 +111,20 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         for (var key : tag.getAllKeys()) {
             // Use tryParse to not discard valid attachment type keys, even if there is a malformed key.
             ResourceLocation keyLocation = ResourceLocation.tryParse(key);
-            if (keyLocation != null) {
-                var type = NeoForgeRegistries.ATTACHMENT_TYPES.get(keyLocation);
-                if (type != null && type.serializer != null) {
-                    getAttachmentMap().put(type, ((IAttachmentSerializer<Tag, ?>) type.serializer).read(getExposedHolder(), tag.get(key)));
-                }
+            if (keyLocation == null) {
+                LOGGER.error("Encountered invalid data attachment key {}. Skipping.", key);
+                continue;
+            }
+
+            var type = NeoForgeRegistries.ATTACHMENT_TYPES.get(keyLocation);
+            if (type == null || type.serializer == null) {
+                LOGGER.error("Encountered unknown or non-serializable data attachment {}. Skipping.", key);
+            }
+
+            try {
+                getAttachmentMap().put(type, ((IAttachmentSerializer<Tag, ?>) type.serializer).read(getExposedHolder(), tag.get(key)));
+            } catch (Exception exception) {
+                LOGGER.error("Failed to deserialize data attachment {}. Skipping.", key, exception);
             }
         }
     }

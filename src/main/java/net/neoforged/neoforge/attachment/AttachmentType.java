@@ -91,10 +91,10 @@ public final class AttachmentType<T> {
      * To obtain a specific subtype, the holder can be cast.
      * See {@link #builder(Supplier)} for an overload that does not capture the holder.
      *
-     * @param defaultValueSupplier A supplier for a new default value of this attachment type.
+     * @param defaultValueConstructor A constructor for a new default value of this attachment type.
      */
-    public static <T> Builder<T> builder(Function<IAttachmentHolder, T> defaultValueSupplier) {
-        return new Builder<>(defaultValueSupplier);
+    public static <T> Builder<T> builder(Function<IAttachmentHolder, T> defaultValueConstructor) {
+        return new Builder<>(defaultValueConstructor);
     }
 
     /**
@@ -115,11 +115,11 @@ public final class AttachmentType<T> {
      * To obtain a specific subtype, the holder can be cast.
      * See {@link #serializable(Supplier)} for an overload that does not capture the holder.
      */
-    public static <S extends Tag, T extends INBTSerializable<S>> Builder<T> serializable(Function<IAttachmentHolder, T> defaultValueSupplier) {
-        return builder(defaultValueSupplier).serialize(new IAttachmentSerializer<S, T>() {
+    public static <S extends Tag, T extends INBTSerializable<S>> Builder<T> serializable(Function<IAttachmentHolder, T> defaultValueConstructor) {
+        return builder(defaultValueConstructor).serialize(new IAttachmentSerializer<S, T>() {
             @Override
             public T read(IAttachmentHolder holder, S tag) {
-                var ret = defaultValueSupplier.apply(holder);
+                var ret = defaultValueConstructor.apply(holder);
                 ret.deserializeNBT(tag);
                 return ret;
             }
