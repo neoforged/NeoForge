@@ -14,10 +14,13 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Decoder;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.MapLike;
+import com.mojang.serialization.RecordBuilder;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.crafting.Recipe;
@@ -30,8 +33,10 @@ import net.neoforged.neoforge.common.conditions.WithConditions;
  * @see ExtraCodecs
  */
 public class NeoForgeExtraCodecs {
-    public static final Codec<Optional<WithConditions<Recipe<?>>>> CONDITIONAL_RECIPE_CODEC = ConditionalOps.createConditionalCodecWithConditions(Recipe.CODEC);
-    public static final Codec<Optional<WithConditions<Advancement>>> CONDITIONAL_ADVANCEMENT_CODEC = ConditionalOps.createConditionalCodecWithConditions(Advancement.CODEC);
+    //Lazily initialize these codecs so that loading NeoForgeExtraCodecs in things like JUnit don't cause cascading class loading of things that
+    // can't be initialized properly such as registries
+    public static final Codec<Optional<WithConditions<Recipe<?>>>> CONDITIONAL_RECIPE_CODEC = ExtraCodecs.lazyInitializedCodec(() -> ConditionalOps.createConditionalCodecWithConditions(Recipe.CODEC));
+    public static final Codec<Optional<WithConditions<Advancement>>> CONDITIONAL_ADVANCEMENT_CODEC = ExtraCodecs.lazyInitializedCodec(() -> ConditionalOps.createConditionalCodecWithConditions(Advancement.CODEC));
 
     public static <T> MapCodec<T> aliasedFieldOf(final Codec<T> codec, final String... names) {
         if (names.length == 0)
@@ -112,9 +117,26 @@ public class NeoForgeExtraCodecs {
      * the first codec and then the second codec for decoding, <b>but only the first for encoding</b>.
      * <p>
      * Unlike vanilla, this alternative codec also tries to encode with the second codec if the first encode fails.
+     * <p>
+     * This codec will also try to keep the resulting codec to a MapCodecCodec if both inputs are MapCodecCodecs.
      */
     public static <T> Codec<T> withAlternative(final Codec<T> codec, final Codec<T> alternative) {
+        if (codec instanceof MapCodec.MapCodecCodec<T> mCodec && alternative instanceof MapCodec.MapCodecCodec<T> mAlternative) {
+            //If both codecs are MapCodecCodecs then return it as a MapCodecCodec to allow for cleaner support in dispatch codecs
+            return withAlternative(mCodec.codec(), mAlternative.codec()).codec();
+        }
         return new AlternativeCodec<>(codec, alternative);
+    }
+
+    /**
+     * MapCodec with two alternatives.
+     * <p>
+     * {@link #mapWithAlternative(MapCodec, MapCodec)} will try the first codec and then the second codec for decoding, <b>but only the first for encoding</b>.
+     * <p>
+     * Unlike {@link #mapWithAlternative(MapCodec, MapCodec)}, this alternative codec also tries to encode with the second codec if the first encode fails.
+     */
+    public static <T> MapCodec<T> withAlternative(final MapCodec<T> codec, final MapCodec<T> alternative) {
+        return new AlternativeMapCodec<>(codec, alternative);
     }
 
     private record AlternativeCodec<T>(Codec<T> codec, Codec<T> alternative) implements Codec<T> {
@@ -141,6 +163,48 @@ public class NeoForgeExtraCodecs {
         @Override
         public String toString() {
             return "Alternative[" + codec + ", " + alternative + "]";
+        }
+    }
+
+    private static class AlternativeMapCodec<TYPE> extends MapCodec<TYPE> {
+
+        private final MapCodec<TYPE> codec;
+        private final MapCodec<TYPE> alternative;
+
+        private AlternativeMapCodec(MapCodec<TYPE> codec, MapCodec<TYPE> alternative) {
+            this.codec = codec;
+            this.alternative = alternative;
+        }
+
+        @Override
+        public <T> Stream<T> keys(DynamicOps<T> ops) {
+            return Stream.concat(codec.keys(ops), alternative.keys(ops)).distinct();
+        }
+
+        @Override
+        public <T> DataResult<TYPE> decode(DynamicOps<T> ops, MapLike<T> input) {
+            DataResult<TYPE> result = codec.decode(ops, input);
+            if (result.error().isEmpty()) {
+                return result;
+            }
+            return alternative.decode(ops, input);
+        }
+
+        @Override
+        public <T> RecordBuilder<T> encode(TYPE input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
+            //Build it to see if there is an error
+            DataResult<T> result = codec.encode(input, ops, prefix).build(ops.empty());
+            if (result.error().isEmpty()) {
+                //But then we even if there isn't we have to encode it again so that we can actually allow the building to apply
+                // as our earlier build consumes the result
+                return codec.encode(input, ops, prefix);
+            }
+            return alternative.encode(input, ops, prefix);
+        }
+
+        @Override
+        public String toString() {
+            return "AlternativeMapCodec[" + codec + ", " + alternative + "]";
         }
     }
 }
