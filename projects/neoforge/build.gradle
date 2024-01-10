@@ -39,14 +39,9 @@ sourceSets {
 }
 
 dependencies {
-    pluginLayerLibrary "net.neoforged.fancymodloader:core:${project.fancy_mod_loader_version}"
     pluginLayerLibrary "net.neoforged.fancymodloader:language-java:${project.fancy_mod_loader_version}"
     pluginLayerLibrary "net.neoforged.fancymodloader:language-lowcode:${project.fancy_mod_loader_version}"
     pluginLayerLibrary "net.neoforged.fancymodloader:language-minecraft:${project.fancy_mod_loader_version}"
-
-    gameLayerLibrary ("net.neoforged.fancymodloader:events:${project.fancy_mod_loader_version}") {
-        exclude group: 'org.slf4j'
-    }
 
     runtimeOnly "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
 
