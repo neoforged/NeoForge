@@ -115,6 +115,7 @@ import net.neoforged.neoforge.client.model.generators.ModelFile.UncheckedModelFi
 import net.neoforged.neoforge.client.model.generators.MultiPartBlockStateBuilder;
 import net.neoforged.neoforge.client.model.generators.VariantBlockStateBuilder;
 import net.neoforged.neoforge.common.conditions.IConditionBuilder;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
@@ -161,7 +162,9 @@ public class DataGeneratorTest {
 
         gen.addProvider(true, new PackMetadataGenerator(packOutput)
                 .add(OverlayMetadataSection.TYPE, new OverlayMetadataSection(List.of(
-                        new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "pack_overlays_test"))))
+                        new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "pack_overlays_test"),
+                        new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled", List.of(new ModLoadedCondition("neoforge"))),
+                        new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled", List.of(new ModLoadedCondition("does_not_exist"))))))
                 .add(PackMetadataSection.TYPE, new PackMetadataSection(
                         Component.literal("NeoForge tests resource pack"),
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),

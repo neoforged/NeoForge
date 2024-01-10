@@ -1,0 +1,33 @@
+--- a/net/minecraft/server/packs/OverlayMetadataSection.java
++++ b/net/minecraft/server/packs/OverlayMetadataSection.java
+@@ -28,18 +_,28 @@
+         return this.overlays.stream().filter(p_296207_ -> p_296207_.isApplicable(p_296262_)).map(OverlayMetadataSection.OverlayEntry::overlay).toList();
+     }
+ 
+-    public static record OverlayEntry(InclusiveRange<Integer> format, String overlay) {
++    public static record OverlayEntry(InclusiveRange<Integer> format, String overlay, List<net.neoforged.neoforge.common.conditions.ICondition> conditions) {
++        public OverlayEntry(InclusiveRange<Integer> format, String overlay) {
++            this(format, overlay, List.of());
++        }
++
+         static final Codec<OverlayMetadataSection.OverlayEntry> CODEC = RecordCodecBuilder.create(
+             p_295923_ -> p_295923_.group(
+                         InclusiveRange.codec(Codec.INT).fieldOf("formats").forGetter(OverlayMetadataSection.OverlayEntry::format),
+                         ExtraCodecs.validate(Codec.STRING, OverlayMetadataSection::validateOverlayDir)
+                             .fieldOf("directory")
+-                            .forGetter(OverlayMetadataSection.OverlayEntry::overlay)
++                            .forGetter(OverlayMetadataSection.OverlayEntry::overlay),
++                        net.neoforged.neoforge.common.conditions.ICondition.LIST_CODEC.optionalFieldOf(net.neoforged.neoforge.common.conditions.ConditionalOps.DEFAULT_CONDITIONS_KEY, List.of()).forGetter(OverlayMetadataSection.OverlayEntry::conditions)
+                     )
+                     .apply(p_295923_, OverlayMetadataSection.OverlayEntry::new)
+         );
+ 
+         public boolean isApplicable(int p_295083_) {
++            for (var condition : this.conditions) {
++                if (!condition.test(net.neoforged.neoforge.common.conditions.ICondition.IContext.EMPTY)) {
++                    return false;
++                }
++            }
+             return this.format.isValueInRange(p_295083_);
+         }
+     }
