@@ -172,7 +172,7 @@
   "neoforge.configgui.clumpingThreshold": "封包聚合閾值",
   "neoforge.configgui.treatEmptyTagsAsAir.tooltip": "原版會將使用空標籤的製作配方視為空氣，允許你在此欄位不放置任何物品進行製作。這會將空標籤變更為使用屏障作為物品，以防止使用空氣進行製作。",
   "neoforge.configgui.treatEmptyTagsAsAir": "將空標籤視為空氣",
-  "neoforge.configgui.skipEmptyShapelessCheck.tooltip": "Skip checking if an ingredient is empty during shapeless recipe deserialization to prevent complex ingredients from caching tags too early.",
+  "neoforge.configgui.skipEmptyShapelessCheck.tooltip": "在無序配方反序列化過程中跳過檢查成分是否為空，以防止複雜成分過早快取標籤。",
   "neoforge.configgui.skipEmptyShapelessCheck": "Skip checking for empty ingredients in Shapeless Recipe Deserialization",
   "neoforge.configgui.forceSystemNanoTime.tooltip": "Force the use of System.nanoTime instead of glfwGetTime as the main client Time provider.",
   "neoforge.configgui.forceSystemNanoTime": "強制使用 System.nanoTime",
