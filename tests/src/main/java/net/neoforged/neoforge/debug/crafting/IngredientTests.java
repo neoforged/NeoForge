@@ -17,6 +17,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CrafterBlock;
 import net.minecraft.world.level.block.entity.CrafterBlockEntity;
@@ -125,6 +129,46 @@ public class IngredientTests {
                 .thenExecuteAfter(7, () -> helper.assertContainerContains(1, 2, 1, Items.ACACIA_BOAT))
 
                 .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if recipe alternatives work")
+    static void recipeAlternative(final DynamicTest test, final RegistrationHelper reg) {
+        final ResourceLocation recipeId = new ResourceLocation(reg.modId(), "betterdiamond");
+        reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+            @Override
+            protected void buildRecipes(RecipeOutput output) {
+                ShapedRecipeBuilder.shaped(RecipeCategory.BREWING, Items.DIAMOND)
+                        .pattern("SSS")
+                        .define('S', Items.STICK)
+                        .unlockedBy("has_stick", has(Items.STICK))
+                        .save(output
+                                .withConditions(FALSE())
+                                .inheritAdvancements()
+                                .withAlternative(
+                                        ShapedRecipeBuilder.shaped(RecipeCategory.BREWING, Items.DIAMOND)
+                                                .pattern("S S")
+                                                .define('S', Items.STICK)),
+                                recipeId);
+            }
+        });
+
+        test.onGameTest(helper -> {
+            final Recipe<?> expected = helper.getLevel().getRecipeManager()
+                    .getAllRecipesFor(RecipeType.CRAFTING)
+                    .stream().filter(recipe -> recipe.id().equals(recipeId))
+                    .findFirst().map(RecipeHolder::value).orElse(null);
+            helper.assertFalse(expected == null, "Recipe was null");
+            helper.assertTrue(expected instanceof ShapedRecipe, "Recipe was not shaped");
+            final ShapedRecipe shaped = (ShapedRecipe) expected;
+
+            helper.assertTrue(shaped.getIngredients().get(0).test(Items.STICK.getDefaultInstance()), "First ingredient wasn't a stick");
+            helper.assertTrue(shaped.getIngredients().get(1).isEmpty(), "Second ingredient wasn't air");
+            helper.assertTrue(shaped.getIngredients().get(2).test(Items.STICK.getDefaultInstance()), "Third ingredient wasn't a stick");
+
+            helper.succeed();
+        });
     }
 
     private static CompoundTag putInt(CompoundTag tag, String key, int value) {
