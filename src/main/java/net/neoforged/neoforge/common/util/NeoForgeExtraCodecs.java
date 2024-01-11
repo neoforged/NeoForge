@@ -109,14 +109,10 @@ public class NeoForgeExtraCodecs {
      * the first codec and then the second codec for decoding, <b>but only the first for encoding</b>.
      * <p>
      * Unlike vanilla, this alternative codec also tries to encode with the second codec if the first encode fails.
-     * <p>
-     * This codec will also try to keep the resulting codec to a MapCodecCodec if both inputs are MapCodecCodecs.
+     * 
+     * @see #withAlternative(MapCodec, MapCodec) for keeping {@link com.mojang.serialization.MapCodec MapCodecs} as MapCodecs.
      */
     public static <T> Codec<T> withAlternative(final Codec<T> codec, final Codec<T> alternative) {
-        if (codec instanceof MapCodec.MapCodecCodec<T> mCodec && alternative instanceof MapCodec.MapCodecCodec<T> mAlternative) {
-            //If both codecs are MapCodecCodecs then return it as a MapCodecCodec to allow for cleaner support in dispatch codecs
-            return withAlternative(mCodec.codec(), mAlternative.codec()).codec();
-        }
         return new AlternativeCodec<>(codec, alternative);
     }
 
