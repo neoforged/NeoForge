@@ -33,7 +33,7 @@
 +    }
 +
 +    public static Optional<RecipeHolder<?>> fromJson(ResourceLocation p_44046_, JsonObject p_44047_, com.mojang.serialization.DynamicOps<com.google.gson.JsonElement> jsonElementOps) {
-+        Optional<? extends Recipe<?>> recipe = net.neoforged.neoforge.common.conditions.ICondition.getWithWithConditionsCodec(Recipe.CONDITIONAL_RECIPE_CODEC, jsonElementOps, p_44047_);
++        Optional<? extends Recipe<?>> recipe = net.neoforged.neoforge.common.conditions.ICondition.getWithWithConditionsCodec(Recipe.CONDITIONAL_CODEC, jsonElementOps, p_44047_);
 +        return recipe.map(r -> new RecipeHolder<>(p_44046_, r));
      }
  
