@@ -83,6 +83,15 @@
              if (this.unregisteredIntrusiveHolders != null) {
                  throw new IllegalStateException("This registry can't create new holders without value");
              } else {
+@@ -247,7 +_,7 @@
+     @Nullable
+     @Override
+     public T get(@Nullable ResourceLocation p_122739_) {
+-        Holder.Reference<T> reference = this.byLocation.get(p_122739_);
++        Holder.Reference<T> reference = this.byLocation.get(resolve(p_122739_));
+         return getValueFromNullable(reference);
+     }
+ 
 @@ -323,13 +_,18 @@
          return this.byKey.containsKey(p_175392_);
      }
