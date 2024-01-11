@@ -608,6 +608,8 @@ public class EventHooks {
     }
 
     public static LootTable loadLootTable(ResourceLocation name, LootTable table) {
+        if (table == LootTable.EMPTY) // Empty table has a null name, and shouldn't be modified anyway.
+            return table;
         LootTableLoadEvent event = new LootTableLoadEvent(name, table);
         if (NeoForge.EVENT_BUS.post(event).isCanceled())
             return LootTable.EMPTY;
