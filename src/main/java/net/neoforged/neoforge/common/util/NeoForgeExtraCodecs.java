@@ -166,12 +166,12 @@ public class NeoForgeExtraCodecs {
         }
     }
 
-    private static class AlternativeMapCodec<TYPE> extends MapCodec<TYPE> {
+    private static class AlternativeMapCodec<T> extends MapCodec<T> {
 
-        private final MapCodec<TYPE> codec;
-        private final MapCodec<TYPE> alternative;
+        private final MapCodec<T> codec;
+        private final MapCodec<T> alternative;
 
-        private AlternativeMapCodec(MapCodec<TYPE> codec, MapCodec<TYPE> alternative) {
+        private AlternativeMapCodec(MapCodec<T> codec, MapCodec<T> alternative) {
             this.codec = codec;
             this.alternative = alternative;
         }
@@ -182,8 +182,8 @@ public class NeoForgeExtraCodecs {
         }
 
         @Override
-        public <T> DataResult<TYPE> decode(DynamicOps<T> ops, MapLike<T> input) {
-            DataResult<TYPE> result = codec.decode(ops, input);
+        public <T1> DataResult<T> decode(DynamicOps<T1> ops, MapLike<T1> input) {
+            DataResult<T> result = codec.decode(ops, input);
             if (result.error().isEmpty()) {
                 return result;
             }
@@ -191,9 +191,9 @@ public class NeoForgeExtraCodecs {
         }
 
         @Override
-        public <T> RecordBuilder<T> encode(TYPE input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
+        public <T1> RecordBuilder<T1> encode(T input, DynamicOps<T1> ops, RecordBuilder<T1> prefix) {
             //Build it to see if there is an error
-            DataResult<T> result = codec.encode(input, ops, prefix).build(ops.empty());
+            DataResult<T1> result = codec.encode(input, ops, prefix).build(ops.empty());
             if (result.error().isEmpty()) {
                 //But then we even if there isn't we have to encode it again so that we can actually allow the building to apply
                 // as our earlier build consumes the result
