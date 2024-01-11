@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/item/crafting/Recipe.java
 +++ b/net/minecraft/world/item/crafting/Recipe.java
+@@ -12,6 +_,7 @@
+ 
+ public interface Recipe<C extends Container> {
+     Codec<Recipe<?>> CODEC = BuiltInRegistries.RECIPE_SERIALIZER.byNameCodec().dispatch(Recipe::getSerializer, RecipeSerializer::codec);
++    Codec<java.util.Optional<net.neoforged.neoforge.common.conditions.WithConditions<Recipe<?>>>> CONDITIONAL_RECIPE_CODEC = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(CODEC);
+ 
+     boolean matches(C p_44002_, Level p_44003_);
+ 
 @@ -25,9 +_,9 @@
          NonNullList<ItemStack> nonnulllist = NonNullList.withSize(p_44004_.getContainerSize(), ItemStack.EMPTY);
  

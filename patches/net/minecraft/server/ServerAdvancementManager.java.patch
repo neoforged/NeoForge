@@ -5,7 +5,7 @@
          p_136034_.forEach((p_311532_, p_311533_) -> {
              try {
 -                Advancement advancement = Util.getOrThrow(Advancement.CODEC.parse(JsonOps.INSTANCE, p_311533_), JsonParseException::new);
-+                Advancement advancement = net.neoforged.neoforge.common.conditions.ICondition.getWithWithConditionsCodec(net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.CONDITIONAL_ADVANCEMENT_CODEC, registryAccess == null ? com.mojang.serialization.JsonOps.INSTANCE : net.neoforged.neoforge.common.conditions.ConditionalOps.create(net.minecraft.resources.RegistryOps.create(JsonOps.INSTANCE, registryAccess), conditionContext), p_311533_).orElse(null);
++                Advancement advancement = net.neoforged.neoforge.common.conditions.ICondition.getWithWithConditionsCodec(Advancement.CONDITIONAL_ADVANCEMENT_CODEC, registryAccess == null ? com.mojang.serialization.JsonOps.INSTANCE : net.neoforged.neoforge.common.conditions.ConditionalOps.create(net.minecraft.resources.RegistryOps.create(JsonOps.INSTANCE, registryAccess), conditionContext), p_311533_).orElse(null);
 +                if (advancement == null) {
 +                    LOGGER.debug("Skipping loading advancement {} as its conditions were not met", p_311532_);
 +                    return;
