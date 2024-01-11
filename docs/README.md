@@ -32,6 +32,10 @@ For support and questions, visit [the NeoForged Discord server][Discord].
 If you wish to actually inspect NeoForge, submit PRs or otherwise work
 with NeoForge itself, you're in the right place!
 
+### Translations
+
+Translations are done on [Crowdin][Crowdin].
+
 ### Pull requests
 
 Please read the contributing guidelines found [here][Contributing] before making a pull request.
@@ -42,6 +46,7 @@ Please ensure you have a valid email address associated with your GitHub account
  signed it, you should be OK.
 
 [CLA]: https://cla-assistant.io/neoforged/NeoForge
+[Crowdin]: https://neoforged.crowdin.com/u/projects/2
 [Contributing]: ../../NeoForge/docs/CONTRIBUTING.md
 [Discord]: https://discord.neoforged.net/
 [Documentation]: https://docs.neoforged.net/
