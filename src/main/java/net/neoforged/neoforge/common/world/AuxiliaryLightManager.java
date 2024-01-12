@@ -11,19 +11,21 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 /**
  * Manager for light values controlled by dynamic data in {@link BlockEntity}s.
  */
-public abstract class AuxiliaryLightManager {
+public interface AuxiliaryLightManager {
     /**
      * Set the light value at the given position to the given value
      */
-    public abstract void setLightAt(BlockPos pos, int value);
+    void setLightAt(BlockPos pos, int value);
 
     /**
      * Remove the light value at the given position
      */
-    public abstract void removeLightAt(BlockPos pos);
+    default void removeLightAt(BlockPos pos) {
+        setLightAt(pos, 0);
+    }
 
     /**
      * {@return the light value at the given position or 0 if none is present}
      */
-    public abstract int getLightAt(BlockPos pos);
+    int getLightAt(BlockPos pos);
 }

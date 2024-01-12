@@ -24,7 +24,7 @@ import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public final class LevelChunkAuxiliaryLightManager extends AuxiliaryLightManager implements INBTSerializable<ListTag> {
+public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightManager, INBTSerializable<ListTag> {
     public static final String LIGHT_NBT_KEY = "neoforge:aux_lights";
 
     private final LevelChunk owner;
@@ -46,15 +46,6 @@ public final class LevelChunkAuxiliaryLightManager extends AuxiliaryLightManager
             oldValue = lights.remove(pos);
         }
         if (Objects.requireNonNullElse(oldValue, (byte) 0) != value) {
-            owner.getLevel().getChunkSource().getLightEngine().checkBlock(pos);
-            owner.setUnsaved(true);
-        }
-    }
-
-    @Override
-    public void removeLightAt(BlockPos pos) {
-        Byte oldValue = lights.remove(pos);
-        if (oldValue != null) {
             owner.getLevel().getChunkSource().getLightEngine().checkBlock(pos);
             owner.setUnsaved(true);
         }
