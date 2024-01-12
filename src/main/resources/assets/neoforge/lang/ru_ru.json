@@ -92,7 +92,7 @@
   "fml.messages.artifactversion.ornotinstalled": "{0,ornull,fml.messages.artifactversion.notinstalled}",
   "fml.messages.artifactversion": "{0,ornull,fml.messages.artifactversion.none}",
   "fml.messages.artifactversion.none": "none",
-  "fml.messages.artifactversion.notinstalled": "§nnot installed",
+  "fml.messages.artifactversion.notinstalled": "§nне установлен",
   "fml.messages.version.restriction.any": "any",
   "fml.messages.version.restriction.lower.inclusive": "{0} or above",
   "fml.messages.version.restriction.lower.exclusive": "above {0}",
