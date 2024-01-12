@@ -6,18 +6,22 @@
 package net.neoforged.neoforge.common.world;
 
 import com.google.common.base.Preconditions;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.game.ClientboundBundlePacket;
+import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.lighting.LightEngine;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -98,11 +102,12 @@ public final class AuxiliaryLightManager implements INBTSerializable<ListTag> {
     }
 
     @ApiStatus.Internal
-    public void sendLightDataTo(ServerPlayer player) {
-        if (!lights.isEmpty() && player.connection.isConnected(AuxiliaryLightDataPayload.ID)) {
-            PacketDistributor.PLAYER.with(player)
-                    .send(new AuxiliaryLightDataPayload(owner.getPos(), Map.copyOf(lights)));
+    public Packet<?> sendLightDataTo(ServerPlayer player, ClientboundLevelChunkWithLightPacket chunkPacket) {
+        if (lights.isEmpty() || !player.connection.isConnected(AuxiliaryLightDataPayload.ID)) {
+            return chunkPacket;
         }
+        return new ClientboundBundlePacket(List.of(chunkPacket, new ClientboundCustomPayloadPacket(
+                new AuxiliaryLightDataPayload(owner.getPos(), Map.copyOf(lights)))));
     }
 
     @ApiStatus.Internal
