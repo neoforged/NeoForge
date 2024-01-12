@@ -25,6 +25,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.TierSortingRegistry;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
+import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
@@ -145,8 +146,8 @@ public class ClientPayloadHandler {
             if (mc.level == null) return;
 
             AuxiliaryLightManager lightManager = mc.level.getAuxLightManager(msg.pos());
-            if (lightManager != null) {
-                lightManager.handleLightDataSync(msg.entries());
+            if (lightManager instanceof LevelChunkAuxiliaryLightManager manager) {
+                manager.handleLightDataSync(msg.entries());
             }
         }).exceptionally(e -> {
             context.packetHandler().disconnect(Component.translatable("neoforge.network.aux_light_data.failed", msg.pos(), e.getMessage()));

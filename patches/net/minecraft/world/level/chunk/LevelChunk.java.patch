@@ -117,7 +117,7 @@
  
 +    // FORGE START
 +    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
-+    private final net.neoforged.neoforge.common.world.AuxiliaryLightManager auxLightManager = new net.neoforged.neoforge.common.world.AuxiliaryLightManager(this);
++    private final net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager auxLightManager = new net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager(this);
 +
 +    @Override
 +    public boolean hasData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
@@ -137,7 +137,7 @@
 +    }
 +
 +    @Override
-+    public net.neoforged.neoforge.common.world.AuxiliaryLightManager getAuxLightManager(ChunkPos pos) {
++    public net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager getAuxLightManager(ChunkPos pos) {
 +        return auxLightManager;
 +    }
 +    // FORGE END

@@ -5,111 +5,25 @@
 
 package net.neoforged.neoforge.common.world;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
-import net.minecraft.network.protocol.game.ClientboundBundlePacket;
-import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.lighting.LightEngine;
-import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Manager for light values controlled by dynamic data in {@link BlockEntity}s.
  */
-public final class AuxiliaryLightManager implements INBTSerializable<ListTag> {
-    public static final String LIGHT_NBT_KEY = "neoforge:aux_lights";
-
-    private final LevelChunk owner;
-    private final Map<BlockPos, Byte> lights = new ConcurrentHashMap<>();
-
-    @ApiStatus.Internal
-    public AuxiliaryLightManager(LevelChunk owner) {
-        this.owner = owner;
-    }
-
+public abstract class AuxiliaryLightManager {
     /**
      * Set the light value at the given position to the given value
      */
-    public void setLightAt(BlockPos pos, int value) {
-        pos = pos.immutable();
-        value = Mth.clamp(value, 0, LightEngine.MAX_LEVEL);
-
-        Byte oldValue;
-        if (value > 0) {
-            oldValue = lights.put(pos, (byte) value);
-        } else {
-            oldValue = lights.remove(pos);
-        }
-        if (Objects.requireNonNullElse(oldValue, (byte) 0) != value) {
-            owner.getLevel().getChunkSource().getLightEngine().checkBlock(pos);
-            owner.setUnsaved(true);
-        }
-    }
+    public abstract void setLightAt(BlockPos pos, int value);
 
     /**
      * Remove the light value at the given position
      */
-    public void removeLightAt(BlockPos pos) {
-        Byte oldValue = lights.remove(pos);
-        if (oldValue != null) {
-            owner.getLevel().getChunkSource().getLightEngine().checkBlock(pos);
-            owner.setUnsaved(true);
-        }
-    }
+    public abstract void removeLightAt(BlockPos pos);
 
     /**
      * {@return the light value at the given position or 0 if none is present}
      */
-    public int getLightAt(BlockPos pos) {
-        return lights.getOrDefault(pos, (byte) 0);
-    }
-
-    @Override
-    @ApiStatus.Internal
-    public ListTag serializeNBT() {
-        if (lights.isEmpty()) {
-            return null;
-        }
-
-        ListTag list = new ListTag();
-        lights.forEach((pos, light) -> {
-            CompoundTag tag = new CompoundTag();
-            tag.putLong("pos", pos.asLong());
-            tag.putByte("level", light);
-            list.add(tag);
-        });
-        return list;
-    }
-
-    @Override
-    @ApiStatus.Internal
-    public void deserializeNBT(ListTag list) {
-        for (int i = 0; i < list.size(); i++) {
-            CompoundTag tag = list.getCompound(i);
-            lights.put(BlockPos.of(tag.getLong("pos")), tag.getByte("level"));
-        }
-    }
-
-    @ApiStatus.Internal
-    public Packet<?> sendLightDataTo(ClientboundLevelChunkWithLightPacket chunkPacket) {
-        return new ClientboundBundlePacket(List.of(chunkPacket, new ClientboundCustomPayloadPacket(
-                new AuxiliaryLightDataPayload(owner.getPos(), Map.copyOf(lights)))));
-    }
-
-    @ApiStatus.Internal
-    public void handleLightDataSync(Map<BlockPos, Byte> lights) {
-        this.lights.clear();
-        this.lights.putAll(lights);
-    }
+    public abstract int getLightAt(BlockPos pos);
 }

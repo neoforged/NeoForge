@@ -6,8 +6,8 @@
              );
 +            if (p_188234_.contains(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND))
 +                ((LevelChunk)chunkaccess).readAttachmentsFromNBT(p_188234_.getCompound(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY));
-+            if (p_188234_.contains(net.neoforged.neoforge.common.world.AuxiliaryLightManager.LIGHT_NBT_KEY, net.minecraft.nbt.Tag.TAG_LIST))
-+                Objects.requireNonNull(chunkaccess.getAuxLightManager(p_188233_)).deserializeNBT(p_188234_.getList(net.neoforged.neoforge.common.world.AuxiliaryLightManager.LIGHT_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND));
++            if (p_188234_.contains(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY, net.minecraft.nbt.Tag.TAG_LIST))
++                Objects.requireNonNull(((LevelChunk)chunkaccess).getAuxLightManager(p_188233_)).deserializeNBT(p_188234_.getList(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND));
          } else {
              ProtoChunkTicks<Block> protochunkticks = ProtoChunkTicks.load(
                  p_188234_.getList("block_ticks", 10), p_258992_ -> BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(p_258992_)), p_188233_
@@ -41,7 +41,7 @@
 +             }
 +
 +             Tag lightTag = levelChunk.getAuxLightManager(chunkpos).serializeNBT();
-+             if (lightTag != null) compoundtag.put(net.neoforged.neoforge.common.world.AuxiliaryLightManager.LIGHT_NBT_KEY, lightTag);
++             if (lightTag != null) compoundtag.put(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY, lightTag);
          }
  
          saveTicks(p_63455_, compoundtag, p_63456_.getTicksForSerialization());
