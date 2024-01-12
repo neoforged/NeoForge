@@ -5,17 +5,22 @@
 
 package net.neoforged.neoforge.common.brewing;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.fml.util.thread.EffectiveSide;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -24,7 +29,27 @@ import net.neoforged.neoforge.event.brewing.PotionBrewEvent;
 import org.jetbrains.annotations.Nullable;
 
 public final class BrewingRecipeRegistry {
+    private static final List<PotionBrewing.Mix<Potion>> POTION_MIXES;
+    private static final List<PotionBrewing.Mix<Item>> CONTAINER_MIXES;
+
+    static {
+        List<PotionBrewing.Mix<Potion>> potionMixes = ObfuscationReflectionHelper.getPrivateValue(PotionBrewing.class, null, "POTION_MIXES");
+        if (potionMixes == null) throw new IllegalStateException(PotionBrewing.class.getName() + " has no static field POTION_MIXES");
+        POTION_MIXES = Collections.unmodifiableList(potionMixes);
+        List<PotionBrewing.Mix<Item>> containerMixes = ObfuscationReflectionHelper.getPrivateValue(PotionBrewing.class, null, "CONTAINER_MIXES");
+        if (containerMixes == null) throw new IllegalStateException(PotionBrewing.class.getName() + " has no static field CONTAINER_MIXES");
+        CONTAINER_MIXES = Collections.unmodifiableList(containerMixes);
+    }
+
     private BrewingRecipeRegistry() {}
+
+    public static List<PotionBrewing.Mix<Potion>> getPotionMixes() {
+        return POTION_MIXES;
+    }
+
+    public static List<PotionBrewing.Mix<Item>> getContainerMixes() {
+        return CONTAINER_MIXES;
+    }
 
     /**
      * Used by the brewing stand to determine if its contents can be brewed.

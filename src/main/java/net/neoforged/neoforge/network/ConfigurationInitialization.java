@@ -7,6 +7,7 @@ package net.neoforged.neoforge.network;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.network.configuration.CheckBrewingRecipeCompatability;
 import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
 import net.neoforged.neoforge.network.configuration.SyncConfig;
 import net.neoforged.neoforge.network.configuration.SyncRegistries;
@@ -33,7 +34,8 @@ public class ConfigurationInitialization {
             event.register(new SyncConfig(event.getListener()));
         }
 
-        //These two can always be registered they detect the listener connection type internally and will skip themselves.
+        //These three can always be registered they detect the listener connection type internally and will skip themselves.
+        event.register(new CheckBrewingRecipeCompatability(event.getListener()));
         event.register(new SyncTierSortingRegistry(event.getListener()));
         event.register(new RegistryDataMapNegotiation(event.getListener()));
     }

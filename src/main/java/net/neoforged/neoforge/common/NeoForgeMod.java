@@ -12,6 +12,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -19,6 +20,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
@@ -57,11 +60,8 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.flag.FeatureFlagSet;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -101,7 +101,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.capabilities.CapabilityHooks;
 import net.neoforged.neoforge.client.ClientCommandHandler;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
@@ -111,6 +110,7 @@ import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPr
 import net.neoforged.neoforge.common.advancements.critereon.PiglinNeutralArmorEntityPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.ToolActionItemPredicate;
 import net.neoforged.neoforge.common.brewing.BrewingRecipeBuilder;
+import net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry;
 import net.neoforged.neoforge.common.brewing.ContainerBrewingRecipe;
 import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
 import net.neoforged.neoforge.common.brewing.MixingBrewingRecipe;
@@ -762,37 +762,27 @@ public class NeoForgeMod {
 
     public static void onAddServerPack(AddPackFindersEvent event) {
         if (event.getPackType() != PackType.SERVER_DATA) return;
-        Pack vanillaBrewingRecipes = InMemoryResourcePack.createInMemoryResourcePack(
-                "vanilla_brewing_recipes",
-                Component.literal("NeoForge: vanilla brewing recipes"),
-                Component.literal("vanilla brewing recipes"),
-                true,
-                false,
-                false,
-                FeatureFlagSet.of(),
-                List.of(),
-                Pack.Position.BOTTOM,
-                pack -> {
-                    FileToIdConverter converter = FileToIdConverter.json("recipes/brewing");
-                    List<PotionBrewing.Mix<Potion>> potionMixes = ObfuscationReflectionHelper.getPrivateValue(PotionBrewing.class, null, "POTION_MIXES");
-                    if (potionMixes == null) throw new IllegalStateException(PotionBrewing.class.getName() + " has no static field POTION_MIXES");
-                    for (PotionBrewing.Mix<Potion> potionMix : potionMixes) {
-                        BrewingRecipeBuilder.Mixing mixing = BrewingRecipeBuilder.mixing(potionMix.from, potionMix.ingredient, potionMix.to);
-                        MixingBrewingRecipe recipe = mixing.build();
-                        ResourceLocation recipeId = mixing.getDefaultRecipeId();
-                        pack.putJsonData(PackType.SERVER_DATA, converter.idToFile(recipeId), Recipe.CODEC, recipe);
-                    }
+        event.addRepositorySource(packConsumer -> {
+            FileToIdConverter converter = FileToIdConverter.json("recipes/brewing");
 
-                    List<PotionBrewing.Mix<Item>> containerMixes = ObfuscationReflectionHelper.getPrivateValue(PotionBrewing.class, null, "CONTAINER_MIXES");
-                    if (containerMixes == null) throw new IllegalStateException(PotionBrewing.class.getName() + " has no static field CONTAINER_MIXES");
-                    for (PotionBrewing.Mix<Item> containerMix : containerMixes) {
-                        BrewingRecipeBuilder.Container container = BrewingRecipeBuilder.container(containerMix.from, containerMix.ingredient, containerMix.to);
-                        ContainerBrewingRecipe recipe = container.build();
-                        ResourceLocation recipeId = container.getDefaultRecipeId();
-                        pack.putJsonData(PackType.SERVER_DATA, converter.idToFile(recipeId), Recipe.CODEC, recipe);
-                    }
-                });
-        event.addRepositorySource(packConsumer -> packConsumer.accept(vanillaBrewingRecipes));
+            Map<ResourceLocation, IBrewingRecipe> vanillaBrewingRecipes = Stream.concat(
+                    BrewingRecipeRegistry.getPotionMixes().stream().map(potionMix -> BrewingRecipeBuilder.mixing(potionMix.from, potionMix.ingredient, potionMix.to)),
+                    BrewingRecipeRegistry.getContainerMixes().stream().map(containerMix -> BrewingRecipeBuilder.container(containerMix.from, containerMix.ingredient, containerMix.to))).collect(Collectors.toMap(BrewingRecipeBuilder::getDefaultRecipeId, BrewingRecipeBuilder::build));
+
+            Pack vanillaBrewingRecipesPack = InMemoryResourcePack.createInMemoryResourcePack(
+                    "vanilla_brewing_recipes",
+                    Component.literal("NeoForge: vanilla brewing recipes"),
+                    Component.literal("vanilla brewing recipes"),
+                    true,
+                    false,
+                    false,
+                    FeatureFlagSet.of(),
+                    List.of(),
+                    Pack.Position.BOTTOM,
+                    pack -> vanillaBrewingRecipes.forEach((id, recipe) -> pack.putJsonData(PackType.SERVER_DATA, converter.idToFile(id), Recipe.CODEC, recipe)));
+
+            packConsumer.accept(vanillaBrewingRecipesPack);
+        });
     }
 
     public static final PermissionNode<Boolean> USE_SELECTORS_PERMISSION = new PermissionNode<>(NeoForgeVersion.MOD_ID, "use_entity_selectors",
