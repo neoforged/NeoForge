@@ -6,7 +6,7 @@
      private static void sendChunk(ServerGamePacketListenerImpl p_295237_, ServerLevel p_294963_, LevelChunk p_295144_) {
 -        p_295237_.send(new ClientboundLevelChunkWithLightPacket(p_295144_, p_294963_.getLightEngine(), null, null));
 +        p_295237_.send(p_295144_.getAuxLightManager(p_295144_.getPos()).sendLightDataTo(
-+                p_295237_.player, new ClientboundLevelChunkWithLightPacket(p_295144_, p_294963_.getLightEngine(), null, null)
++                new ClientboundLevelChunkWithLightPacket(p_295144_, p_294963_.getLightEngine(), null, null)
 +        ));
          ChunkPos chunkpos = p_295144_.getPos();
          DebugPackets.sendPoiPacketsForChunk(p_294963_, chunkpos);
