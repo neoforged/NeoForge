@@ -46,7 +46,7 @@ Please ensure you have a valid email address associated with your GitHub account
  signed it, you should be OK.
 
 [CLA]: https://cla-assistant.io/neoforged/NeoForge
-[Crowdin]: https://neoforged.crowdin.com/u/projects/2
+[Crowdin]: https://crowdin.neoforged.net/neoforge
 [Contributing]: ../../NeoForge/docs/CONTRIBUTING.md
 [Discord]: https://discord.neoforged.net/
 [Documentation]: https://docs.neoforged.net/
