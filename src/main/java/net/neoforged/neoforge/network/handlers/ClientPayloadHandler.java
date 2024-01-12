@@ -140,7 +140,7 @@ public class ClientPayloadHandler {
     }
 
     public void handle(AuxiliaryLightDataPayload msg, PlayPayloadContext context) {
-        context.workHandler().execute(() -> {
+        context.workHandler().submitAsync(() -> {
             Minecraft mc = Minecraft.getInstance();
             if (mc.level == null) return;
 
@@ -148,6 +148,9 @@ public class ClientPayloadHandler {
             if (lightManager != null) {
                 lightManager.handleLightDataSync(msg.entries());
             }
+        }).exceptionally(e -> {
+            context.packetHandler().disconnect(Component.translatable("neoforge.network.aux_light_data.failed", msg.pos(), e.getMessage()));
+            return null;
         });
     }
 }

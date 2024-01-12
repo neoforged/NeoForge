@@ -6,9 +6,11 @@
 package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.level.chunk.ImposterProtoChunk;
 import net.minecraft.world.level.chunk.LightChunk;
 import net.neoforged.neoforge.client.model.data.ModelDataManager;
@@ -25,7 +27,8 @@ public interface IBlockGetterExtension {
      * where {@code BlockEntity}s are not yet added to the chunk.
      *
      * @param pos The position for whose containing chunk the light manager is requested
-     * @return the light manager or {@code null} if the chunk is not accessible
+     * @return the light manager or {@code null} if the chunk is not accessible ({@link ChunkSource#getChunkForLighting(int, int)}
+     *         returned {@code null}) or the given implementation of {@link BlockGetter} does not implement {@link #getAuxLightManager(ChunkPos)}
      */
     @Nullable
     @ApiStatus.NonExtendable
@@ -41,7 +44,8 @@ public interface IBlockGetterExtension {
      * where {@code BlockEntity}s are not yet added to the chunk.
      *
      * @param pos The position of the chunk from which the light manager is requested
-     * @return the light manager or {@code null} if the chunk is not accessible
+     * @return the light manager or {@code null} if the chunk is not accessible ({@link ChunkSource#getChunkForLighting(int, int)}
+     *         returned {@code null}) or the given implementation of {@link BlockGetter} does not implement this method
      */
     @Nullable
     default AuxiliaryLightManager getAuxLightManager(ChunkPos pos) {

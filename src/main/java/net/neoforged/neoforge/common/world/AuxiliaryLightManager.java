@@ -5,7 +5,9 @@
 
 package net.neoforged.neoforge.common.world;
 
+import com.google.common.base.Preconditions;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -13,6 +15,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.lighting.LightEngine;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
@@ -23,6 +26,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public final class AuxiliaryLightManager implements INBTSerializable<ListTag> {
     public static final String LIGHT_NBT_KEY = "neoforge:aux_lights";
+    private static final String LEVEL_ERROR_MSG = "Light level must be in range 0-%d".formatted(LightEngine.MAX_LEVEL);
 
     private final LevelChunk owner;
     private final Map<BlockPos, Integer> lights = new ConcurrentHashMap<>();
@@ -36,20 +40,28 @@ public final class AuxiliaryLightManager implements INBTSerializable<ListTag> {
      * Set the light value at the given position to the given value
      */
     public void setLightAt(BlockPos pos, int value) {
+        Preconditions.checkArgument(value >= 0 && value <= LightEngine.MAX_LEVEL, LEVEL_ERROR_MSG);
+        Integer oldValue;
         if (value > 0) {
-            lights.put(pos, value);
+            oldValue = lights.put(pos, value);
         } else {
-            lights.remove(pos);
+            oldValue = lights.remove(pos);
         }
-        owner.setUnsaved(true);
+        if (Objects.requireNonNullElse(oldValue, 0) != value) {
+            owner.getLevel().getChunkSource().getLightEngine().checkBlock(pos);
+            owner.setUnsaved(true);
+        }
     }
 
     /**
      * Remove the light value at the given position
      */
     public void removeLightAt(BlockPos pos) {
-        lights.remove(pos);
-        owner.setUnsaved(true);
+        Integer oldValue = lights.remove(pos);
+        if (oldValue != null) {
+            owner.getLevel().getChunkSource().getLightEngine().checkBlock(pos);
+            owner.setUnsaved(true);
+        }
     }
 
     /**

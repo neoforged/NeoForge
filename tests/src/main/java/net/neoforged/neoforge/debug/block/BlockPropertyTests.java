@@ -154,7 +154,6 @@ public class BlockPropertyTests {
                 AuxiliaryLightManager lightManager = level.getAuxLightManager(worldPosition);
                 if (lightManager != null) {
                     lightManager.setLightAt(worldPosition, lit ? 15 : 0);
-                    level.getLightEngine().checkBlock(worldPosition);
                 }
             }
         }
