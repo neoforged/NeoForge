@@ -7,9 +7,8 @@ package net.neoforged.neoforge.client.extensions.common;
 
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.vertex.PoseStack;
-import java.util.function.Consumer;
-
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import java.util.function.Consumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -342,11 +341,11 @@ public interface IClientFluidTypeExtensions {
      * <p>Note: this method will be called once for every fluid block during chunk meshing, so any logic
      * here needs to be performant.
      *
-     * @param fluidState  the state of the fluid
-     * @param getter      the getter the fluid can be obtained from
-     * @param pos         the position of the fluid
-     * @param vertexConsumer the vertex consumer to emit quads to
-     * @param blockState the blockstate at the position of the fluid
+     * @param fluidState      the state of the fluid
+     * @param getter          the getter the fluid can be obtained from
+     * @param pos             the position of the fluid
+     * @param vertexConsumer  the vertex consumer to emit quads to
+     * @param blockState      the blockstate at the position of the fluid
      * @param vanillaRenderer the vanilla fluid renderer object
      */
     default void renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, LiquidBlockRenderer vanillaRenderer) {
