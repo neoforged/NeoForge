@@ -26,6 +26,7 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.registries.RegistryAttachmentLoader;
 import net.neoforged.neoforge.server.command.ConfigCommand;
 import net.neoforged.neoforge.server.command.NeoForgeCommand;
 import org.jetbrains.annotations.ApiStatus;
@@ -92,6 +93,7 @@ public class NeoForgeEventHandler {
         if (event.shouldUpdateStaticData()) {
             CommonHooks.updateBurns();
         }
+        ATTACHMENTS.apply();
     }
 
     @SubscribeEvent
@@ -101,12 +103,15 @@ public class NeoForgeEventHandler {
     }
 
     private static LootModifierManager INSTANCE;
+    private static RegistryAttachmentLoader ATTACHMENTS;
 
     @SubscribeEvent
     public void onResourceReload(AddReloadListenerEvent event) {
         INSTANCE = new LootModifierManager();
         event.addListener(INSTANCE);
+        event.addListener(ATTACHMENTS = new RegistryAttachmentLoader(event.getConditionContext(), event.getRegistryAccess()));
     }
+
 
     static LootModifierManager getLootModifierManager() {
         if (INSTANCE == null)

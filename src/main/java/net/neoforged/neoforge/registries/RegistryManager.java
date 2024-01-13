@@ -7,8 +7,10 @@ package net.neoforged.neoforge.registries;
 
 import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -21,6 +23,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
+import net.neoforged.neoforge.registries.attachment.RegisterRegistryAttachmentsEvent;
+import net.neoforged.neoforge.registries.attachment.RegistryAttachment;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
@@ -32,6 +37,7 @@ public class RegistryManager {
     private static Set<ResourceLocation> vanillaRegistryKeys = Set.of();
     private static Map<ResourceLocation, RegistrySnapshot> vanillaSnapshot = null;
     private static Map<ResourceLocation, RegistrySnapshot> frozenSnapshot = null;
+    private static Map<ResourceKey<Registry<?>>, Map<ResourceLocation, RegistryAttachment<?, ?, ?>>> attachments = Map.of();
 
     /**
      * Called by {@link RegistryBuilder} to make sure that modders don't forget to register their registries.
@@ -48,6 +54,12 @@ public class RegistryManager {
         }
     }
 
+    @Nullable
+    public static <T> RegistryAttachment<?, T, ?> getAttachment(ResourceKey<Registry<T>> registry, ResourceLocation key) {
+        final var map = attachments.get(registry);
+        return map == null ? null : (RegistryAttachment<?, T, ?>) map.get(key);
+    }
+
     public static void postNewRegistryEvent() {
         NewRegistryEvent event = new NewRegistryEvent();
         DataPackRegistryEvent.NewRegistry dataPackEvent = new DataPackRegistryEvent.NewRegistry();
@@ -60,6 +72,12 @@ public class RegistryManager {
         dataPackEvent.process();
 
         ModLoader.get().postEvent(new ModifyRegistriesEvent());
+
+        final Map<ResourceKey<Registry<?>>, Map<ResourceLocation, RegistryAttachment<?, ?, ?>>> attachmentMap = new HashMap<>();
+        ModLoader.get().postEvent(new RegisterRegistryAttachmentsEvent(attachmentMap));
+        attachments = new IdentityHashMap<>();
+        attachmentMap.forEach((key, values) -> attachments.put(key, Collections.unmodifiableMap(values)));
+        attachments = Collections.unmodifiableMap(attachmentMap);
 
         pendingModdedRegistries.removeIf(BuiltInRegistries.REGISTRY::containsKey);
         if (!pendingModdedRegistries.isEmpty()) {

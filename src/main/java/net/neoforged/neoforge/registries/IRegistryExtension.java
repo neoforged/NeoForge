@@ -8,10 +8,12 @@ package net.neoforged.neoforge.registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.registries.attachment.RegistryAttachment;
 import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 import net.neoforged.neoforge.registries.callback.ClearCallback;
 import net.neoforged.neoforge.registries.callback.RegistryCallback;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An extension for {@link Registry}, adding some additional functionality to vanilla registries, such as
@@ -116,4 +118,6 @@ public interface IRegistryExtension<T> {
      */
     boolean containsValue(T value);
 
+    @Nullable
+    <A> A getAttachment(RegistryAttachment<A, T, ?> attachment, ResourceKey<T> key);
 }

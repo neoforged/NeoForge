@@ -1,0 +1,13 @@
+{
+  "values": {
+    "minecraft:carrot": {
+      "value": 12
+    },
+    "#minecraft:logs": {
+      "value": 14
+    }
+  },
+  "remove": [
+    "minecraft:birch_log"
+  ]
+}

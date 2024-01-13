@@ -50,6 +50,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -124,6 +125,7 @@ import net.neoforged.neoforge.common.world.NoneBiomeModifier;
 import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
@@ -138,6 +140,10 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistriesSetup;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.registries.attachment.RegisterRegistryAttachmentsEvent;
+import net.neoforged.neoforge.registries.attachment.RegistryAttachment;
+import net.neoforged.neoforge.registries.attachment.RegistryAttachmentValueMerger;
+import net.neoforged.neoforge.registries.attachment.RegistryAttachmentValueRemover;
 import net.neoforged.neoforge.registries.holdersets.AndHolderSet;
 import net.neoforged.neoforge.registries.holdersets.AnyHolderSet;
 import net.neoforged.neoforge.registries.holdersets.HolderSetType;
@@ -518,6 +524,23 @@ public class NeoForgeMod {
                     container.getModInfo(), ModLoadingStage.CONSTRUCT,
                     "loadwarning.neoforge.prbuild"));
         }
+
+        record SomeThing(int value) {
+            public static final Codec<SomeThing> CODEC = Codec.INT.fieldOf("value").xmap(SomeThing::new, SomeThing::value).codec();
+        }
+        final RegistryAttachment<SomeThing, Item, RegistryAttachmentValueRemover.Default<SomeThing, Item>> attachment = new RegistryAttachment<>(
+                new ResourceLocation("neo:thing"),
+                SomeThing.CODEC, null, false,
+                i -> null,
+                RegistryAttachmentValueRemover.Default.codec(),
+                RegistryAttachmentValueMerger.defaultMerger()
+        );
+        modEventBus.addListener((final RegisterRegistryAttachmentsEvent event) -> {
+            event.register(Registries.ITEM, attachment);
+        });
+        NeoForge.EVENT_BUS.addListener((final UseItemOnBlockEvent event) -> {
+            System.out.println(event.getItemStack().getItemHolder().getAttachment(attachment));
+        });
     }
 
     public void preInit(FMLCommonSetupEvent evt) {

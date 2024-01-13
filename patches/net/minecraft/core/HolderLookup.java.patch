@@ -1,0 +1,27 @@
+--- a/net/minecraft/core/HolderLookup.java
++++ b/net/minecraft/core/HolderLookup.java
+@@ -117,6 +_,11 @@
+                 : this);
+         }
+ 
++        @org.jetbrains.annotations.Nullable
++        default <A> A getAttachment(net.neoforged.neoforge.registries.attachment.RegistryAttachment<A, T, ?> attachment, ResourceKey<T> key) {
++            return null;
++        }
++
+         public abstract static class Delegate<T> implements HolderLookup.RegistryLookup<T> {
+             protected abstract HolderLookup.RegistryLookup<T> parent();
+ 
+@@ -148,6 +_,12 @@
+             @Override
+             public Stream<HolderSet.Named<T>> listTags() {
+                 return this.parent().listTags();
++            }
++
++            @Override
++            @org.jetbrains.annotations.Nullable
++            public <A> A getAttachment(net.neoforged.neoforge.registries.attachment.RegistryAttachment<A, T, ?> attachment, ResourceKey<T> key) {
++                return parent().getAttachment(attachment, key);
+             }
+         }
+     }
