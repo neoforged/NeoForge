@@ -233,6 +233,7 @@
   "neoforge.network.advanced_add_entity.failed": "Failed to process advanced entity spawn data: %s",
   "neoforge.network.advanced_open_screen.failed": "Failed to open a screen with advanced data: %s",
   "neoforge.network.registries.sync.missing": "Not all expected registries were received from the server! (missing: %s)",
-  "neoforge.network.registries.sync.server-with-unknown-keys": "The server sent registries with unknown keys: %s",
-  "neoforge.network.registries.sync.failed": "Failed to sync registries from the server: %s"
+  "neoforge.network.registries.sync.server-with-unknown-keys": "The server send registries with unknown keys: %s",
+  "neoforge.network.registries.sync.failed": "Failed to sync registries from the server: %s",
+  "neoforge.network.aux_light_data.failed": "Failed to handle auxiliary light data for chunk %s: %s"
 }
