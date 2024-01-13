@@ -234,5 +234,6 @@
   "neoforge.network.advanced_open_screen.failed": "無法開啟含有進階資料的畫面：%s",
   "neoforge.network.registries.sync.missing": "從伺服器接收的並非所有預期的註冊表！（缺少：%s）",
   "neoforge.network.registries.sync.server-with-unknown-keys": "伺服器發送了帶有未知鍵的註冊表：%s",
-  "neoforge.network.registries.sync.failed": "從伺服器同步註冊表失敗：%s"
+  "neoforge.network.registries.sync.failed": "從伺服器同步註冊表失敗：%s",
+  "neoforge.network.aux_light_data.failed": "Failed to handle auxiliary light data for chunk %s: %s"
 }
