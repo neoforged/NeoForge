@@ -50,13 +50,13 @@
   "fml.modmismatchscreen.missingmods.client": "Al tuo client mancano le seguenti mod, installale per unirti a questo server:",
   "fml.modmismatchscreen.missingmods.server": "Al server mancano le seguenti mod, rimuoverle dal client per unirsi a questo server:",
   "fml.modmismatchscreen.mismatchedmods": "Le versioni delle seguenti mod non corrispondono, installare la stessa versione che ha il server per potersi unire:",
-  "fml.modmismatchscreen.table.channelname": "Channel name",
+  "fml.modmismatchscreen.table.channelname": "Nome del canale",
   "fml.modmismatchscreen.table.youneed": "Ti serve",
   "fml.modmismatchscreen.table.youhave": "Hai",
   "fml.modmismatchscreen.table.serverhas": "Il server ha",
   "fml.modmismatchscreen.additional": "[Altri {0}, vedi latest.log per la lista completa]",
   "fml.modmismatchscreen.homepage": "Fare clic per raggiungere la pagina principale di questa mod",
-  "fml.modmismatchscreen.table.reason": "Reason",
+  "fml.modmismatchscreen.table.reason": "Ragione",
   "fml.modmismatchscreen.table.visit.mod_page": "Open the mod page of the mod that registers the channel: %s",
   "fml.language.missingversion": "Il file della mod {5} richiede il provider di lingua {3}:{4,vr} per essere caricata\n§7Abbiamo trovato {6,i18n,fml.messages.artifactversion}",
   "fml.modloading.missingclasses": "Il File della Mod {3} ha delle mod che non sono state trovate",
@@ -233,6 +233,6 @@
   "neoforge.network.advanced_add_entity.failed": "Failed to process advanced entity spawn data: %s",
   "neoforge.network.advanced_open_screen.failed": "Failed to open a screen with advanced data: %s",
   "neoforge.network.registries.sync.missing": "Not all expected registries were received from the server! (missing: %s)",
-  "neoforge.network.registries.sync.server-with-unknown-keys": "The server send registries with unknown keys: %s",
+  "neoforge.network.registries.sync.server-with-unknown-keys": "The server sent registries with unknown keys: %s",
   "neoforge.network.registries.sync.failed": "Failed to sync registries from the server: %s"
 }

@@ -92,7 +92,7 @@
   "fml.messages.artifactversion.ornotinstalled": "{0,ornull,fml.messages.artifactversion.notinstalled}",
   "fml.messages.artifactversion": "{0,ornull,fml.messages.artifactversion.none}",
   "fml.messages.artifactversion.none": "none",
-  "fml.messages.artifactversion.notinstalled": "§nnot installed",
+  "fml.messages.artifactversion.notinstalled": "§nне установлен",
   "fml.messages.version.restriction.any": "any",
   "fml.messages.version.restriction.lower.inclusive": "{0} or above",
   "fml.messages.version.restriction.lower.exclusive": "above {0}",
@@ -233,6 +233,6 @@
   "neoforge.network.advanced_add_entity.failed": "Failed to process advanced entity spawn data: %s",
   "neoforge.network.advanced_open_screen.failed": "Failed to open a screen with advanced data: %s",
   "neoforge.network.registries.sync.missing": "Not all expected registries were received from the server! (missing: %s)",
-  "neoforge.network.registries.sync.server-with-unknown-keys": "The server send registries with unknown keys: %s",
+  "neoforge.network.registries.sync.server-with-unknown-keys": "The server sent registries with unknown keys: %s",
   "neoforge.network.registries.sync.failed": "Failed to sync registries from the server: %s"
 }
