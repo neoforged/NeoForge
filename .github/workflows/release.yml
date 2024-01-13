@@ -18,7 +18,7 @@ jobs:
     with:
       java: 17
       pre_gradle_tasks: setup
-      gradle_tasks: publish -P"neogradle.runtime.platform.installer.debug=false"
+      gradle_tasks: publish '-Pneogradle.runtime.platform.installer.debug=false'
       version_labels: -beta, -stable
 
     # We only publish the main repository. This way we avoid publishing Kits

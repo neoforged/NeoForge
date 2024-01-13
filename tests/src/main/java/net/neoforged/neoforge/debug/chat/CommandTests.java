@@ -5,17 +5,14 @@
 
 package net.neoforged.neoforge.debug.chat;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.ParsedCommandNode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -58,27 +55,7 @@ public class CommandTests {
         });
 
         test.onGameTest(helper -> {
-            final Player player = new Player(helper.getLevel(), BlockPos.ZERO, 0.0F, new GameProfile(UUID.randomUUID(), "test-mock-player")) {
-                @Override
-                public boolean isSpectator() {
-                    return false;
-                }
-
-                @Override
-                public boolean isCreative() {
-                    return false;
-                }
-
-                @Override
-                public boolean isLocalPlayer() {
-                    return true;
-                }
-
-                @Override
-                protected int getPermissionLevel() {
-                    return Commands.LEVEL_GAMEMASTERS;
-                }
-            };
+            final Player player = helper.makeOpMockPlayer(Commands.LEVEL_GAMEMASTERS);
             helper.startSequence()
                     .thenExecute(() -> helper.getLevel().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), "/attribute"))
                     .thenExecuteAfter(5, () -> helper.assertLivingEntityHasMobEffect(player, MobEffects.BLINDNESS, 2))
