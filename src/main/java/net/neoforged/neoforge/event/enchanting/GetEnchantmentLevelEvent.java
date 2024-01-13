@@ -6,13 +6,11 @@
 package net.neoforged.neoforge.event.enchanting;
 
 import java.util.Map;
-
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.extensions.IItemStackExtension;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This event is fired whenever the enchantment level of a particular item is requested for gameplay purposes.<br>
@@ -59,5 +57,16 @@ public class GetEnchantmentLevelEvent extends Event {
     @Nullable
     public Enchantment getTargetEnchant() {
         return this.targetEnchant;
+    }
+
+    /**
+     * Helper method around {@link #getTargetEnchant()} that checks if the target is the specified enchantment, or if the target is null.
+     * 
+     * @param ench The enchantment to check.
+     * @return If modifications to the passed enchantment are relevant for this event.
+     * @see {@link #getTargetEnchant()} for more information about the target enchantment.
+     */
+    public boolean isTargetting(Enchantment ench) {
+        return this.targetEnchant == null || this.targetEnchant == ench;
     }
 }
