@@ -20,7 +20,7 @@
      }
  
      @Override
-@@ -73,5 +_,16 @@
+@@ -73,5 +_,23 @@
      @Override
      public int getHeight() {
          return this.level.getHeight();
@@ -35,5 +35,12 @@
 +    @Nullable
 +    public net.neoforged.neoforge.client.model.data.ModelDataManager.Snapshot getModelDataManager() {
 +        return modelDataManager;
++    }
++
++    @Override
++    public net.neoforged.neoforge.common.world.AuxiliaryLightManager getAuxLightManager(net.minecraft.world.level.ChunkPos pos) {
++        int relX = pos.x - this.centerX;
++        int relZ = pos.z - this.centerZ;
++        return this.chunks[relX][relZ].wrapped.getAuxLightManager(pos);
      }
  }

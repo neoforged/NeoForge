@@ -13,6 +13,7 @@ import net.neoforged.neoforge.network.handlers.ClientPayloadHandler;
 import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
+import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
@@ -64,6 +65,10 @@ public class NetworkInitialization {
                 .play(
                         AdvancedOpenScreenPayload.ID,
                         AdvancedOpenScreenPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
+                .play(
+                        AuxiliaryLightDataPayload.ID,
+                        AuxiliaryLightDataPayload::new,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle));
     }
 }
