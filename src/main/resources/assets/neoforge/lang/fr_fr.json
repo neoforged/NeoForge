@@ -234,5 +234,6 @@
   "neoforge.network.advanced_open_screen.failed": "Échec de l'ouverture de l'interface avec les données : %s",
   "neoforge.network.registries.sync.missing": "Tous les registres attendus n'ont pas été reçus de la part du serveur ! (manquants : %s)",
   "neoforge.network.registries.sync.server-with-unknown-keys": "Le serveur a renvoyé des registres avec des clés inconnues : %s",
-  "neoforge.network.registries.sync.failed": "Impossible de synchroniser les registres depuis le serveur: %s"
+  "neoforge.network.registries.sync.failed": "Impossible de synchroniser les registres depuis le serveur: %s",
+  "neoforge.network.aux_light_data.failed": "Failed to handle auxiliary light data for chunk %s: %s"
 }
