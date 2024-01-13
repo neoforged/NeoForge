@@ -145,7 +145,7 @@ public class FluidTypeTest {
                 }
 
                 @Override
-                public boolean renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, LiquidBlockRenderer vanillaRenderer) {
+                public boolean renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState) {
                     // Flip RGB to BGR *only* for fluid blocks rendered at Y 100
                     if (pos.getY() == 100) {
                         vertexConsumer = new VertexConsumerWrapper(vertexConsumer) {
@@ -156,7 +156,7 @@ public class FluidTypeTest {
                         };
                     }
                     // Replace vanilla fluid rendering
-                    vanillaRenderer.tesselate(getter, pos, vertexConsumer, blockState, fluidState);
+                    Minecraft.getInstance().getBlockRenderer().getLiquidBlockRenderer().tesselate(getter, pos, vertexConsumer, blockState, fluidState);
                     return true;
                 }
             });
