@@ -234,5 +234,6 @@
   "neoforge.network.advanced_open_screen.failed": "Täpsemate andmetega kuva avamine ebaõnnestus: %s",
   "neoforge.network.registries.sync.missing": "Kõiki oodatud registreid serverist ei saadud! (puudub: %s)",
   "neoforge.network.registries.sync.server-with-unknown-keys": "Server saatis tundmatute võtmetega registreid: %s",
-  "neoforge.network.registries.sync.failed": "Registrite sünkroonimine serveriga ebaõnnestus: %s"
+  "neoforge.network.registries.sync.failed": "Registrite sünkroonimine serveriga ebaõnnestus: %s",
+  "neoforge.network.aux_light_data.failed": "Failed to handle auxiliary light data for chunk %s: %s"
 }
