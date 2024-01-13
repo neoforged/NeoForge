@@ -14,7 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
-import net.minecraft.client.renderer.block.LiquidBlockRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -345,10 +344,9 @@ public interface IClientFluidTypeExtensions {
      * @param pos             the position of the fluid
      * @param vertexConsumer  the vertex consumer to emit quads to
      * @param blockState      the blockstate at the position of the fluid
-     * @param vanillaRenderer the vanilla fluid renderer object
      * @return true if vanilla fluid rendering should be skipped
      */
-    default boolean renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, LiquidBlockRenderer vanillaRenderer) {
+    default boolean renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState) {
         return false;
     }
 }
