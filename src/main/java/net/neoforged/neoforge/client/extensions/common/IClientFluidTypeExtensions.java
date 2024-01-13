@@ -8,14 +8,18 @@ package net.neoforged.neoforge.client.extensions.common;
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.function.Consumer;
+
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
+import net.minecraft.client.renderer.block.LiquidBlockRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
@@ -328,5 +332,24 @@ public interface IClientFluidTypeExtensions {
      */
     default ResourceLocation getOverlayTexture(FluidStack stack) {
         return this.getOverlayTexture();
+    }
+
+    /**
+     * Called to tessellate a fluid during chunk meshing. The default implementation just calls the vanilla
+     * fluid renderer, but mods are free to replace the logic with their own (and optionally call super to
+     * augment the vanilla logic).
+     *
+     * <p>Note: this method will be called once for every fluid block during chunk meshing, so any logic
+     * here needs to be performant.
+     *
+     * @param fluidState  the state of the fluid
+     * @param getter      the getter the fluid can be obtained from
+     * @param pos         the position of the fluid
+     * @param vertexConsumer the vertex consumer to emit quads to
+     * @param blockState the blockstate at the position of the fluid
+     * @param vanillaRenderer the vanilla fluid renderer object
+     */
+    default void renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, LiquidBlockRenderer vanillaRenderer) {
+        vanillaRenderer.tesselate(getter, pos, vertexConsumer, blockState, fluidState);
     }
 }

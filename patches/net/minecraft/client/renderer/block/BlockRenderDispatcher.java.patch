@@ -59,6 +59,15 @@
                      );
              }
          } catch (Throwable throwable) {
+@@ -90,7 +_,7 @@
+ 
+     public void renderLiquid(BlockPos p_234364_, BlockAndTintGetter p_234365_, VertexConsumer p_234366_, BlockState p_234367_, FluidState p_234368_) {
+         try {
+-            this.liquidBlockRenderer.tesselate(p_234365_, p_234364_, p_234366_, p_234367_, p_234368_);
++            net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(p_234368_).renderFluid(p_234368_, p_234365_, p_234364_, p_234366_, p_234367_, this.liquidBlockRenderer);
+         } catch (Throwable throwable) {
+             CrashReport crashreport = CrashReport.forThrowable(throwable, "Tesselating liquid in world");
+             CrashReportCategory crashreportcategory = crashreport.addCategory("Block being tesselated");
 @@ -107,7 +_,11 @@
          return this.blockModelShaper.getBlockModel(p_110911_);
      }
