@@ -234,5 +234,6 @@
   "neoforge.network.advanced_open_screen.failed": "打开带有高级数据的屏幕失败：%s",
   "neoforge.network.registries.sync.missing": "未从服务器收到所有预期的注册表！（缺失：%s）",
   "neoforge.network.registries.sync.server-with-unknown-keys": "服务器发送含有未知键的注册表：%s",
-  "neoforge.network.registries.sync.failed": "从服务器同步注册表失败：%s"
+  "neoforge.network.registries.sync.failed": "从服务器同步注册表失败：%s",
+  "neoforge.network.aux_light_data.failed": "Failed to handle auxiliary light data for chunk %s: %s"
 }
