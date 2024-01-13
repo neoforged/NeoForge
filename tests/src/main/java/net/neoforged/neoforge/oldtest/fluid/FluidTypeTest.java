@@ -145,7 +145,7 @@ public class FluidTypeTest {
                 }
 
                 @Override
-                public void renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, LiquidBlockRenderer vanillaRenderer) {
+                public boolean renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, LiquidBlockRenderer vanillaRenderer) {
                     // Flip RGB to BGR *only* for fluid blocks rendered at Y 100
                     if (pos.getY() == 100) {
                         vertexConsumer = new VertexConsumerWrapper(vertexConsumer) {
@@ -155,7 +155,9 @@ public class FluidTypeTest {
                             }
                         };
                     }
-                    IClientFluidTypeExtensions.super.renderFluid(fluidState, getter, pos, vertexConsumer, blockState, vanillaRenderer);
+                    // Replace vanilla fluid rendering
+                    vanillaRenderer.tesselate(getter, pos, vertexConsumer, blockState, fluidState);
+                    return true;
                 }
             });
         }

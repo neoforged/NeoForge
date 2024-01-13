@@ -334,9 +334,8 @@ public interface IClientFluidTypeExtensions {
     }
 
     /**
-     * Called to tessellate a fluid during chunk meshing. The default implementation just calls the vanilla
-     * fluid renderer, but mods are free to replace the logic with their own (and optionally call super to
-     * augment the vanilla logic).
+     * Called to allow rendering custom quads for a fluid during chunk meshing. You may replace the fluid
+     * rendering entirely, or return false to allow vanilla's fluid rendering to also run.
      *
      * <p>Note: this method will be called once for every fluid block during chunk meshing, so any logic
      * here needs to be performant.
@@ -347,8 +346,9 @@ public interface IClientFluidTypeExtensions {
      * @param vertexConsumer  the vertex consumer to emit quads to
      * @param blockState      the blockstate at the position of the fluid
      * @param vanillaRenderer the vanilla fluid renderer object
+     * @return true if vanilla fluid rendering should be skipped
      */
-    default void renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, LiquidBlockRenderer vanillaRenderer) {
-        vanillaRenderer.tesselate(getter, pos, vertexConsumer, blockState, fluidState);
+    default boolean renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, LiquidBlockRenderer vanillaRenderer) {
+        return false;
     }
 }
