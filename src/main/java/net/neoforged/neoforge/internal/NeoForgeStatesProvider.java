@@ -20,7 +20,7 @@ public class NeoForgeStatesProvider implements IModStateProvider {
     final ModLoadingState UNFREEZE = ModLoadingState.withInline("UNFREEZE_DATA", "CREATE_REGISTRIES", ModLoadingPhase.GATHER, ml -> GameData.unfreezeData());
     final ModLoadingState LOAD_REGISTRIES = ModLoadingState.withInline("LOAD_REGISTRIES", "UNFREEZE_DATA", ModLoadingPhase.GATHER, ml -> GameData.postRegisterEvents());
     final ModLoadingState FREEZE = ModLoadingState.withInline("FREEZE_DATA", "LOAD_REGISTRIES", ModLoadingPhase.GATHER, ml -> GameData.freezeData());
-    final ModLoadingState REGISTRATION_EVENTS = ModLoadingState.withInline("REGISTRATION_EVENTS", "SIDED_SETUP", ModLoadingPhase.LOAD, ml -> RegistrationEvents.init());
+    final ModLoadingState REGISTRATION_EVENTS = ModLoadingState.withInline("REGISTRATION_EVENTS", "CLIENT_REGISTRATION_EVENTS", ModLoadingPhase.LOAD, ml -> RegistrationEvents.init());
     final ModLoadingState CLIENT_REGISTRATION_EVENTS = ModLoadingState.withInline("CLIENT_REGISTRATION_EVENTS", "SIDED_SETUP", ModLoadingPhase.LOAD, ml -> ClientRegistrationEvents.init());
     final ModLoadingState NETLOCK = ModLoadingState.withInline("NETWORK_LOCK", "COMPLETE", ModLoadingPhase.COMPLETE, ml -> NetworkRegistry.getInstance().setup());
 
