@@ -99,7 +99,7 @@ public class RegistryAttachmentLoader implements PreparableReloadListener {
                     final var key = holder.unwrapKey().get();
                     final var oldValue = result.get(key);
                     if (oldValue != null) {
-                        final var newValue = trRemoval.remover().get().remove(oldValue.attachment(), registry, oldValue.source());
+                        final var newValue = trRemoval.remover().get().remove(oldValue.attachment(), registry, oldValue.source(), holder.value());
                         if (newValue.isEmpty()) {
                             result.remove(key);
                         } else {

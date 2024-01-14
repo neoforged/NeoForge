@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import net.minecraft.DetectedVersion;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.commands.Commands;
@@ -542,7 +541,6 @@ public class NeoForgeMod {
         NeoForge.EVENT_BUS.addListener((final UseItemOnBlockEvent event) -> {
             System.out.println(event.getItemStack().getItemHolder().getAttachment(attachment));
         });
-        Util.PA
     }
 
     public void preInit(FMLCommonSetupEvent evt) {
