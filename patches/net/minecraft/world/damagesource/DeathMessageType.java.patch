@@ -27,7 +27,7 @@
 +    private final net.neoforged.neoforge.common.damagesource.IDeathMessageProvider msgFunction;
 +
 +    private DeathMessageType(String id, net.neoforged.neoforge.common.damagesource.IDeathMessageProvider msgFunction) {
-+        this.f_268617_ = id;
++        this.id = id;
 +        this.msgFunction = msgFunction;
 +    }
 +

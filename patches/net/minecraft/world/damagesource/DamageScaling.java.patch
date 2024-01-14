@@ -51,7 +51,7 @@
 +     * @return A newly created DamageScaling. Store this result in a static final field.
 +     * @apiNote This method must be called as early as possible, as if {@link #CODEC} is resolved before this is called, it will be unusable.
 +     */
-+    public static DamageScaling create(String name, String id, net.minecraftforge.common.damagesource.IScalingFunction scaling) {
++    public static DamageScaling create(String name, String id, net.neoforged.neoforge.common.damagesource.IScalingFunction scaling) {
 +        throw new IllegalStateException("Enum not extended");
      }
  }
