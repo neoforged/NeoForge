@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/damagesource/CombatTracker.java
++++ b/net/minecraft/world/damagesource/CombatTracker.java
+@@ -90,6 +_,11 @@
+             DamageSource damagesource = combatentry.source();
+             CombatEntry combatentry1 = this.getMostSignificantFall();
+             DeathMessageType deathmessagetype = damagesource.type().deathMessageType();
++            // Neo: Implement IDeathMessageProvider#getDeathMessage
++            // Vanilla logic is replicated in IDeathMessageProvider.DEFAULT
++            if (true) {
++                return deathmessagetype.getMessageFunction().getDeathMessage(this.mob, combatentry, combatentry1);
++            }
+             if (deathmessagetype == DeathMessageType.FALL_VARIANTS && combatentry1 != null) {
+                 return this.getFallMessage(combatentry1, damagesource.getEntity());
+             } else if (deathmessagetype == DeathMessageType.INTENTIONAL_GAME_DESIGN) {
