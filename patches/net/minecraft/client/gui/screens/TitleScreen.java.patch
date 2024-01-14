@@ -18,7 +18,7 @@
          } else {
              this.createNormalMenuOptions(l, 24);
 +            modButton = this.addRenderableWidget(Button.builder(Component.translatable("fml.menu.mods"), button -> this.minecraft.setScreen(new net.neoforged.neoforge.client.gui.ModListScreen(this)))
-+                .pos(this.width / 2 - 100, l + 24 * 2).size(200, 20).build());
++                .pos(this.width / 2 - 100, l + 24 * 3).size(200, 20).build());
          }
 +        modUpdateNotification = net.neoforged.neoforge.client.gui.TitleScreenModUpdateIndicator.init(this, modButton);
  
@@ -47,15 +47,6 @@
          this.addRenderableWidget(
              new PlainTextButton(
                  j, this.height - 10, i, 10, COPYRIGHT_TEXT, p_280834_ -> this.minecraft.setScreen(new CreditsAndAttributionScreen(this)), this.font
-@@ -179,7 +_,7 @@
-         }).bounds(this.width / 2 - 100, p_96764_ + p_96765_ * 1, 200, 20).tooltip(tooltip).build()).active = flag;
-         this.addRenderableWidget(
-                 Button.builder(Component.translatable("menu.online"), p_210872_ -> this.realmsButtonClicked())
--                    .bounds(this.width / 2 - 100, p_96764_ + p_96765_ * 2, 200, 20)
-+                    .bounds(this.width / 2 - 100, p_96764_ + p_96765_ * 3, 200, 20)
-                     .tooltip(tooltip)
-                     .build()
-             )
 @@ -294,6 +_,7 @@
                  this.warningLabel.render(p_282860_, i);
              }
