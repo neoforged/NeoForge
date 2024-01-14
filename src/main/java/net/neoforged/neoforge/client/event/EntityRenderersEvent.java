@@ -160,7 +160,8 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
         }
 
         /**
-         * Returns an entity renderer for the given entity type.
+         * Returns an entity renderer for the given entity type. Note that the returned renderer may not be a
+         * {@link LivingEntityRenderer}.
          *
          * @param entityType the entity type to return a renderer for
          * @param <T>        the type of entity the renderer is for
@@ -169,7 +170,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          */
         @Nullable
         @SuppressWarnings("unchecked")
-        public <T extends LivingEntity, R extends LivingEntityRenderer<T, ? extends EntityModel<T>>> R getRenderer(EntityType<? extends T> entityType) {
+        public <T extends LivingEntity, R extends EntityRenderer<T>> R getRenderer(EntityType<? extends T> entityType) {
             return (R) renderers.get(entityType);
         }
 
