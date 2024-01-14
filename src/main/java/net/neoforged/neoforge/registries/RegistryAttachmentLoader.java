@@ -85,12 +85,13 @@ public class RegistryAttachmentLoader implements PreparableReloadListener {
 
             entry.values().forEach((tKey, value) -> valueResolver.accept(tKey, holder -> {
                 if (value.isEmpty()) return;
+                final var newValue = value.get();
                 final var key = holder.unwrapKey().get();
                 final var oldValue = result.get(key);
-                if (oldValue == null) {
-                    result.put(key, new WithSource<>(value.get(), tKey));
+                if (oldValue == null || newValue.replace()) {
+                    result.put(key, new WithSource<>(newValue.attachment(), tKey));
                 } else {
-                    result.put(key, new WithSource<>(attachment.merger().merge(registry, oldValue.source(), oldValue.attachment(), tKey, value.get()), tKey));
+                    result.put(key, new WithSource<>(attachment.merger().merge(registry, oldValue.source(), oldValue.attachment(), tKey, newValue.attachment()), tKey));
                 }
             }));
 
@@ -193,9 +194,15 @@ public class RegistryAttachmentLoader implements PreparableReloadListener {
         }
     }
 
+    private record AttachmentValue<T>(T attachment, boolean replace) {
+        private AttachmentValue(T attachment) {
+            this(attachment, false);
+        }
+    }
+
     private record LoadEntry<T, R>(
             boolean replace,
-            Map<Either<TagKey<R>, ResourceKey<R>>, Optional<T>> values,
+            Map<Either<TagKey<R>, ResourceKey<R>>, Optional<AttachmentValue<T>>> values,
             List<Removal<T, R>> removals
     ) {
         public static <T, R, VR extends RegistryAttachmentValueRemover<T, R>> Codec<LoadEntry<T, R>> codec(ResourceKey<Registry<R>> registryKey, RegistryAttachment<T, R, VR> attachment) {
@@ -206,7 +213,12 @@ public class RegistryAttachmentLoader implements PreparableReloadListener {
             final var removalCodec = Removal.codec(tagOrValue, attachment);
             return RecordCodecBuilder.create(in -> in.group(
                     ExtraCodecs.strictOptionalField(Codec.BOOL, "replace", false).forGetter(LoadEntry::replace),
-                    ExtraCodecs.strictUnboundedMap(tagOrValue, ConditionalOps.createConditionalCodec(attachment.codec())).fieldOf("values").forGetter(LoadEntry::values),
+                    ExtraCodecs.strictUnboundedMap(tagOrValue, ConditionalOps.createConditionalCodec(ExtraCodecs.withAlternative(
+                            RecordCodecBuilder.create(i -> i.group(
+                                    attachment.codec().fieldOf("attachment").forGetter(AttachmentValue::attachment),
+                                    ExtraCodecs.strictOptionalField(Codec.BOOL, "replace", false).forGetter(AttachmentValue::replace)
+                            ).apply(i, AttachmentValue::new)), attachment.codec().xmap(AttachmentValue::new, AttachmentValue::attachment)
+                    ))).fieldOf("values").forGetter(LoadEntry::values),
                     ExtraCodecs.strictOptionalField(NeoForgeExtraCodecs.withAlternative(
                             NeoForgeExtraCodecs.withAlternative(removalCodec.listOf(), NeoForgeExtraCodecs.decodeOnly(tagOrValue.listOf()
                                     .map(l -> l.stream().map(k -> new Removal<T, R>(k, Optional.empty())).toList()))),
