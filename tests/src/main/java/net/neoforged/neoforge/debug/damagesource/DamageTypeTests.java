@@ -30,7 +30,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.damagesource.IDeathMessageProvider;
 import net.neoforged.neoforge.common.damagesource.IScalingFunction;
-import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
