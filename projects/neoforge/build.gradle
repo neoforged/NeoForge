@@ -39,10 +39,6 @@ sourceSets {
 }
 
 dependencies {
-    pluginLayerLibrary "net.neoforged.fancymodloader:language-java:${project.fancy_mod_loader_version}"
-    pluginLayerLibrary "net.neoforged.fancymodloader:language-lowcode:${project.fancy_mod_loader_version}"
-    pluginLayerLibrary "net.neoforged.fancymodloader:language-minecraft:${project.fancy_mod_loader_version}"
-
     runtimeOnly "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
 
     moduleOnly "cpw.mods:securejarhandler:${project.securejarhandler_version}"
