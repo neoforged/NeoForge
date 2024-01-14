@@ -23,3 +23,18 @@
      }
  
      @Nullable
+@@ -65,6 +_,14 @@
+         if (screenconstructor != null) {
+             throw new IllegalStateException("Duplicate registration for " + BuiltInRegistries.MENU.getKey(p_96207_));
+         }
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public static void init() {
++        var map = new java.util.HashMap<MenuType<?>, ScreenConstructor<?, ?>>();
++        var event = new net.neoforged.neoforge.client.event.RegisterMenuScreensEvent(map);
++        SCREENS.putAll(map);
++        net.neoforged.fml.ModLoader.get().postEvent(event);
+     }
+ 
+     public static boolean selfTest() {
