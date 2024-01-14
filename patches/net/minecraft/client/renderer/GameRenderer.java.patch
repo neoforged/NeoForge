@@ -74,7 +74,7 @@
              posestack.pushPose();
              posestack.setIdentity();
 -            posestack.translate(0.0F, 0.0F, -11000.0F);
-+            posestack.translate(0.0D, 0.0D, 1000F - net.neoforged.neoforge.client.ClientHooks.getGuiFarPlane());
++            posestack.translate(0.0D, 0.0D, 10000F - net.neoforged.neoforge.client.ClientHooks.getGuiFarPlane());
              RenderSystem.applyModelViewMatrix();
              Lighting.setupFor3DItems();
              GuiGraphics guigraphics = new GuiGraphics(this.minecraft, this.renderBuffers.bufferSource());
