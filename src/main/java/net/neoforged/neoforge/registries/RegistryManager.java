@@ -5,8 +5,11 @@
 
 package net.neoforged.neoforge.registries;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,13 +19,25 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import io.netty.util.AttributeKey;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.neoforge.network.NetworkInitialization;
+import net.neoforged.neoforge.network.configuration.RegistryAttachmentNegotiation;
+import net.neoforged.neoforge.network.connection.ConnectionUtils;
+import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
+import net.neoforged.neoforge.network.payload.KnownRegistryAttachmentsPayload;
+import net.neoforged.neoforge.network.payload.KnownRegistryAttachmentsReplyPayload;
+import net.neoforged.neoforge.network.payload.RegistryAttachmentSyncPayload;
 import net.neoforged.neoforge.registries.attachment.RegisterRegistryAttachmentsEvent;
 import net.neoforged.neoforge.registries.attachment.RegistryAttachment;
 import org.jetbrains.annotations.Nullable;
@@ -55,9 +70,13 @@ public class RegistryManager {
     }
 
     @Nullable
-    public static <T> RegistryAttachment<?, T, ?> getAttachment(ResourceKey<Registry<T>> registry, ResourceLocation key) {
+    public static <T> RegistryAttachment<?, T, ?> getAttachment(ResourceKey<? extends Registry<T>> registry, ResourceLocation key) {
         final var map = attachments.get(registry);
         return map == null ? null : (RegistryAttachment<?, T, ?>) map.get(key);
+    }
+
+    public static Map<ResourceKey<Registry<?>>, Map<ResourceLocation, RegistryAttachment<?, ?, ?>>> getAttachments() {
+        return attachments;
     }
 
     public static void postNewRegistryEvent() {
@@ -251,4 +270,59 @@ public class RegistryManager {
          */
         FULL
     }
+
+    public static <R> void handleAttachmentSync(final RegistryAttachmentSyncPayload<R> payload, final PlayPayloadContext context) {
+        context.workHandler().execute(() -> {
+            final BaseMappedRegistry<R> registry = (BaseMappedRegistry<R>) context.level().orElseThrow().registryAccess()
+                    .registryOrThrow(payload.registryKey());
+            registry.attachments.clear();
+            payload.attachments().forEach((attachKey, attachments) -> registry.attachments.put(getAttachment(payload.registryKey(), attachKey), Collections.unmodifiableMap(attachments)));
+        });
+    }
+
+    public static void handleKnownAttachments(final KnownRegistryAttachmentsPayload payload, final ConfigurationPayloadContext context) {
+        record MandatoryEntry(ResourceKey<Registry<?>> registry, ResourceLocation attachment) {
+        }
+        final Set<MandatoryEntry> ourMandatory = new HashSet<>();
+        getAttachments().forEach((reg, values) -> values.values().forEach(attach -> {
+            if (attach.networkCodec() != null && attach.mandatorySync()) {
+                ourMandatory.add(new MandatoryEntry(reg, attach.id()));
+            }
+        }));
+
+        final Set<MandatoryEntry> theirMandatory = new HashSet<>();
+        payload.attachments().forEach((reg, values) -> values.forEach(attach -> {
+            if (attach.mandatory()) {
+                theirMandatory.add(new MandatoryEntry(reg, attach.id()));
+            }
+        }));
+
+        final var common = Sets.intersection(ourMandatory, theirMandatory);
+        if (common.size() != ourMandatory.size() || common.size() != theirMandatory.size()) {
+            // TODO - fix
+            final var missingOur = Sets.difference(common, ourMandatory);
+            if (!missingOur.isEmpty()) {
+                context.packetHandler().disconnect(Component.literal("TODO"));
+                return;
+            } else {
+                final var missingTheir = Sets.difference(common, theirMandatory);
+                if (!missingTheir.isEmpty()) {
+                    context.packetHandler().disconnect(Component.literal("TODO"));
+                    return;
+                }
+            }
+        }
+
+        final var known = new HashMap<ResourceKey<Registry<?>>, Collection<ResourceLocation>>();
+        getAttachments().forEach((key, vals) -> known.put(key, vals.keySet()));
+        context.replyHandler().send(new KnownRegistryAttachmentsReplyPayload(known));
+    }
+
+    public static final AttributeKey<Map<ResourceKey<Registry<?>>, Collection<ResourceLocation>>> ATTRIBUTE_KNOWN = AttributeKey.valueOf("neoforge:known_registry_attachments");
+
+    public static void handleKnownAttachmentsReply(final KnownRegistryAttachmentsReplyPayload payload, final ConfigurationPayloadContext context) {
+        context.channelHandlerContext().attr(ATTRIBUTE_KNOWN).set(payload.attachments());
+        context.taskCompletedHandler().onTaskCompleted(RegistryAttachmentNegotiation.TYPE);
+    }
+
 }

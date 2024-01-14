@@ -125,4 +125,9 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
         final var innerMap = attachments.get(attachment);
         return innerMap == null ? null : (A) innerMap.get(key);
     }
+
+    @Override
+    public <A> Map<ResourceKey<T>, A> getAttachments(RegistryAttachment<A, T, ?> attachment) {
+        return (Map<ResourceKey<T>, A>) attachments.getOrDefault(attachment, Map.of());
+    }
 }

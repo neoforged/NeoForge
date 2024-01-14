@@ -15,6 +15,8 @@ import net.neoforged.neoforge.registries.callback.ClearCallback;
 import net.neoforged.neoforge.registries.callback.RegistryCallback;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+
 /**
  * An extension for {@link Registry}, adding some additional functionality to vanilla registries, such as
  * callbacks and ID limits.
@@ -120,4 +122,6 @@ public interface IRegistryExtension<T> {
 
     @Nullable
     <A> A getAttachment(RegistryAttachment<A, T, ?> attachment, ResourceKey<T> key);
+
+    <A> Map<ResourceKey<T>, A> getAttachments(RegistryAttachment<A, T, ?> attachment);
 }

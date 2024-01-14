@@ -9,14 +9,20 @@ import static net.neoforged.neoforge.attachment.AttachmentInternals.addAttachmen
 import static net.neoforged.neoforge.attachment.AttachmentInternals.reconstructItemStack;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.IntFunction;
+
+import com.google.common.collect.Maps;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.apache.commons.lang3.function.TriConsumer;
 
 /**
  * Additional helper methods for {@link FriendlyByteBuf}.
@@ -143,4 +149,25 @@ public interface IFriendlyByteBufExtension {
     default FriendlyByteBuf writeByte(byte value) {
         return self().writeByte((int) value);
     }
+
+    default <K, V> Map<K, V> readMap(FriendlyByteBuf.Reader<K> keyReader, BiFunction<FriendlyByteBuf, K, V> valueReader) {
+        final int size = self().readVarInt();
+        final Map<K, V> map = Maps.newHashMapWithExpectedSize(size);
+
+        for (int i = 0; i < size; ++i) {
+            final K k = keyReader.apply(self());
+            map.put(k, valueReader.apply(self(), k));
+        }
+
+        return map;
+    }
+
+    default <K, V> void writeMap(Map<K, V> map, FriendlyByteBuf.Writer<K> keyWriter, TriConsumer<FriendlyByteBuf, K, V> valueWriter) {
+        self().writeVarInt(map.size());
+        map.forEach((key, value) -> {
+            keyWriter.accept(self(), key);
+            valueWriter.accept(self(), key, value);
+        });
+    }
+
 }

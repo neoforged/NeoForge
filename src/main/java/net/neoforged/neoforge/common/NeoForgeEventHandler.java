@@ -5,8 +5,12 @@
 
 package net.neoforged.neoforge.common;
 
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -19,6 +23,7 @@ import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.TickEvent;
@@ -26,10 +31,18 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.payload.RegistryAttachmentSyncPayload;
 import net.neoforged.neoforge.registries.RegistryAttachmentLoader;
+import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.server.command.ConfigCommand;
 import net.neoforged.neoforge.server.command.NeoForgeCommand;
 import org.jetbrains.annotations.ApiStatus;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @ApiStatus.Internal
 public class NeoForgeEventHandler {
@@ -93,7 +106,37 @@ public class NeoForgeEventHandler {
         if (event.shouldUpdateStaticData()) {
             CommonHooks.updateBurns();
         }
-        ATTACHMENTS.apply();
+        if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
+            ATTACHMENTS.apply();
+        }
+    }
+
+    @SubscribeEvent
+    public void onDpSync(final OnDatapackSyncEvent event) {
+        final List<ServerPlayer> players = event.getPlayer() == null ? event.getPlayerList().getPlayers() : List.of(event.getPlayer());
+        RegistryManager.getAttachments().forEach((registry, values) -> {
+            final var regOpt = event.getPlayerList().getServer().overworld().registryAccess()
+                    .registry(registry);
+            if (regOpt.isEmpty()) return;
+            players.forEach(player -> {
+                if (player.connection.isVanillaConnection()) {
+                    return;
+                }
+                handleSync(player, regOpt.get(), player.connection.connection.channel().attr(RegistryManager.ATTRIBUTE_KNOWN)
+                        .get().getOrDefault(registry, List.of()));
+            });
+        });
+    }
+
+    private <T> void handleSync(ServerPlayer player, Registry<T> registry, Collection<ResourceLocation> attachments) {
+        if (attachments.isEmpty()) return;
+        final Map<ResourceLocation, Map<ResourceKey<T>, ?>> att = new HashMap<>();
+        attachments.forEach(key -> {
+            final var attach = RegistryManager.getAttachment(registry.key(), key);
+            if (attach == null || attach.networkCodec() == null) return;
+            att.put(key, registry.getAttachments(attach));
+        });
+        PacketDistributor.PLAYER.with(player).send(new RegistryAttachmentSyncPayload<>(registry.key(), att));
     }
 
     @SubscribeEvent

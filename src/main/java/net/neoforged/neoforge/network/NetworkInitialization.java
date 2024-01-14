@@ -18,9 +18,13 @@ import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
+import net.neoforged.neoforge.network.payload.KnownRegistryAttachmentsPayload;
+import net.neoforged.neoforge.network.payload.KnownRegistryAttachmentsReplyPayload;
+import net.neoforged.neoforge.network.payload.RegistryAttachmentSyncPayload;
 import net.neoforged.neoforge.network.payload.TierSortingRegistryPayload;
 import net.neoforged.neoforge.network.payload.TierSortingRegistrySyncCompletePayload;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.ApiStatus;
 
 @Mod.EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -58,6 +62,16 @@ public class NetworkInitialization {
                         ConfigFilePayload.ID,
                         ConfigFilePayload::new,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
+                .configuration(
+                        KnownRegistryAttachmentsPayload.ID,
+                        KnownRegistryAttachmentsPayload::new,
+                        handlers -> handlers.client(RegistryManager::handleKnownAttachments)
+                )
+                .configuration(
+                        KnownRegistryAttachmentsReplyPayload.ID,
+                        KnownRegistryAttachmentsReplyPayload::new,
+                        handlers -> handlers.server(RegistryManager::handleKnownAttachmentsReply)
+                )
                 .play(
                         AdvancedAddEntityPayload.ID,
                         AdvancedAddEntityPayload::new,
@@ -69,6 +83,9 @@ public class NetworkInitialization {
                 .play(
                         AuxiliaryLightDataPayload.ID,
                         AuxiliaryLightDataPayload::new,
-                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle));
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
+                .play(RegistryAttachmentSyncPayload.ID,
+                        RegistryAttachmentSyncPayload::decode,
+                        handlers -> handlers.client(RegistryManager::handleAttachmentSync));
     }
 }
