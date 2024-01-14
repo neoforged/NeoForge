@@ -44,8 +44,8 @@
 +    public static void init() {
 +        var map = new java.util.HashMap<MenuType<?>, ScreenConstructor<?, ?>>();
 +        var event = new net.neoforged.neoforge.client.event.RegisterMenuScreensEvent(map);
-+        SCREENS.putAll(map);
 +        net.neoforged.fml.ModLoader.get().postEvent(event);
++        SCREENS.putAll(map);
      }
  
      public static boolean selfTest() {
