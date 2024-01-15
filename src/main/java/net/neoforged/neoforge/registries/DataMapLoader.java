@@ -38,7 +38,7 @@ import net.neoforged.neoforge.registries.datamaps.DataMapFile;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.slf4j.Logger;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class DataMapLoader implements PreparableReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final String PATH = "data_maps";
