@@ -1,0 +1,24 @@
+{
+  "values": {
+    "minecraft:potato": {
+      "value1": {
+        "intValue": 1,
+        "stringValue": "a"
+      },
+      "value2": {
+        "intValue": 2,
+        "stringValue": "b"
+      },
+      "value3": {
+        "intValue": 3,
+        "stringValue": "c"
+      }
+    },
+    "minecraft:shears": {
+      "akey": {
+        "intValue": 14,
+        "stringValue": "abc"
+      }
+    }
+  }
+}

@@ -50,6 +50,8 @@ public interface RegistrationHelper {
      */
     String modId();
 
+    String registerSubpack(String name);
+
     void addProvider(Function<GatherDataEvent, DataProvider> provider);
 
     <T extends DataProvider> void provider(Class<T> type, Consumer<T> consumer);

@@ -5,21 +5,31 @@
 
 package net.neoforged.neoforge.debug.data;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.data.DataMapProvider;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
+import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
+import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover.Default;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 import net.neoforged.testframework.DynamicTest;
@@ -33,8 +43,154 @@ public class DataMapTests {
 
     @GameTest
     @EmptyTemplate
+    @TestHolder(description = "Tests if data map mergers function properly")
+    static void dataMapMerger(final DynamicTest test, final RegistrationHelper reg) {
+        final DataMapType<List<SomeObject>, Item, Default<List<SomeObject>, Item>> someData = DataMapType.builder(
+                new ResourceLocation(reg.modId(), "some_list"),
+                Registries.ITEM, SomeObject.CODEC.listOf())
+                .merger(DataMapValueMerger.listMerger())
+                .build();
+
+        test.framework().modEventBus().addListener((final RegisterDataMapTypesEvent event) -> event.register(someData));
+
+        final String subpackName = reg.registerSubpack("second_layer");
+
+        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+            @Override
+            protected void gather() {
+                builder(someData)
+                        .add(Items.BLUE_ORCHID.builtInRegistryHolder(), List.of(
+                                new SomeObject(1, "a")), false);
+
+                builder(someData)
+                        .add(Items.DANDELION.builtInRegistryHolder(), List.of(
+                                new SomeObject(14, "abc")), false);
+            }
+
+            @Override
+            public String getName() {
+                return "generator 1";
+            }
+        });
+
+        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
+            @Override
+            protected void gather() {
+                builder(someData)
+                        .add(Items.BLUE_ORCHID.builtInRegistryHolder(), List.of(
+                                new SomeObject(2, "b"),
+                                new SomeObject(3, "c")), false);
+
+                builder(someData)
+                        .add(Items.DANDELION.builtInRegistryHolder(), List.of(
+                                new SomeObject(99, "override")), true);
+            }
+
+            @Override
+            public String getName() {
+                return "generator 2";
+            }
+        });
+
+        test.onGameTest(helper -> {
+            helper.assertTrue(Objects.equals(Items.BLUE_ORCHID.builtInRegistryHolder()
+                    .getData(someData),
+                    List.of(
+                            new SomeObject(1, "a"),
+                            new SomeObject(2, "b"),
+                            new SomeObject(3, "c"))),
+                    "Merging didn't merge the lists!");
+
+            helper.assertTrue(Objects.equals(Items.DANDELION.builtInRegistryHolder()
+                    .getData(someData),
+                    List.of(
+                            new SomeObject(99, "override"))),
+                    "Replace still merged!");
+
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if data map removers function properly")
+    static void dataMapRemover(final DynamicTest test, final RegistrationHelper reg) {
+        record CustomRemover(List<String> keys) implements DataMapValueRemover<Map<String, SomeObject>, Item> {
+            @Override
+            public Optional<Map<String, SomeObject>> remove(Map<String, SomeObject> value, Registry<Item> registry, Either<TagKey<Item>, ResourceKey<Item>> source, Item object) {
+                final var newMap = new HashMap<>(value);
+                keys.forEach(newMap::remove);
+                return Optional.of(newMap);
+            }
+        }
+
+        final DataMapType<Map<String, SomeObject>, Item, CustomRemover> someData = DataMapType.builder(
+                new ResourceLocation(reg.modId(), "some_map"),
+                Registries.ITEM, ExtraCodecs.strictUnboundedMap(Codec.STRING, SomeObject.CODEC))
+                .merger(DataMapValueMerger.mapMerger())
+                .remover(Codec.STRING.listOf().xmap(CustomRemover::new, CustomRemover::keys))
+                .build();
+
+        test.framework().modEventBus().addListener((final RegisterDataMapTypesEvent event) -> event.register(someData));
+
+        final String subpackName = reg.registerSubpack("second_layer");
+
+        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+            @Override
+            protected void gather() {
+                builder(someData)
+                        .add(Items.POTATO.builtInRegistryHolder(), Map.of(
+                                "value1", new SomeObject(1, "a"),
+                                "value2", new SomeObject(2, "b"),
+                                "value3", new SomeObject(3, "c")), false);
+
+                builder(someData)
+                        .add(Items.SHEARS.builtInRegistryHolder(), Map.of(
+                                "akey", new SomeObject(14, "abc")), false);
+            }
+
+            @Override
+            public String getName() {
+                return "generator 1";
+            }
+        });
+
+        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
+            @Override
+            protected void gather() {
+                builder(someData)
+                        .remove(Items.POTATO.builtInRegistryHolder(), new CustomRemover(
+                                List.of("value2")));
+
+                builder(someData)
+                        .remove(Items.SHEARS.builtInRegistryHolder());
+            }
+
+            @Override
+            public String getName() {
+                return "generator 2";
+            }
+        });
+
+        test.onGameTest(helper -> {
+            helper.assertTrue(Objects.equals(Items.POTATO.builtInRegistryHolder()
+                    .getData(someData),
+                    Map.of(
+                            "value1", new SomeObject(1, "a"),
+                            "value3", new SomeObject(3, "c"))),
+                    "Remover didn't remove the map entries!");
+
+            helper.assertTrue(Items.SHEARS.builtInRegistryHolder()
+                    .getData(someData) == null, "Remove entry didn't remove the data!");
+
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
     @TestHolder(description = "Tests if registry data maps work")
-    static void testDataMap(final DynamicTest test, final RegistrationHelper reg) {
+    static void dataMapTest(final DynamicTest test, final RegistrationHelper reg) {
         final DataMapType<SomeObject, Item, Default<SomeObject, Item>> someData = DataMapType.builder(
                 new ResourceLocation(reg.modId(), "some_data"),
                 Registries.ITEM, SomeObject.CODEC)
