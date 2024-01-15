@@ -32,12 +32,3 @@
      private boolean shouldSpreadLiquid(Level p_54697_, BlockPos p_54698_, BlockState p_54699_) {
          if (this.fluid.is(FluidTags.LAVA)) {
              boolean flag = p_54697_.getBlockState(p_54698_.below()).is(Blocks.SOUL_SOIL);
-@@ -197,6 +_,8 @@
-             return ItemStack.EMPTY;
-         }
-     }
-+
-+    // Forge start
- 
-     @Override
-     public Optional<SoundEvent> getPickupSound() {
