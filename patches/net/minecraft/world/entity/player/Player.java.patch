@@ -120,6 +120,17 @@
          if (this.isInvulnerableTo(p_36154_)) {
              return false;
          } else if (this.abilities.invulnerable && !p_36154_.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+@@ -844,7 +_,9 @@
+                     this.removeEntitiesOnShoulder();
+                 }
+ 
+-                if (p_36154_.scalesWithDifficulty()) {
++                p_36155_ = Math.max(0.0F, p_36154_.type().scaling().getScalingFunction().scaleDamage(p_36154_, this, p_36155_, this.level().getDifficulty()));
++
++                if (false && p_36154_.scalesWithDifficulty()) {
+                     if (this.level().getDifficulty() == Difficulty.PEACEFUL) {
+                         p_36155_ = 0.0F;
+                     }
 @@ -898,7 +_,7 @@
  
      @Override
