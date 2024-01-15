@@ -17,6 +17,10 @@
     "minecraft:cramming",
     "minecraft:fly_into_wall",
     "minecraft:sweet_berry_bush",
-    "minecraft:in_wall"
+    "minecraft:in_wall",
+    {
+      "id": "#forge:is_environment",
+      "required": false
+    }
   ]
 }

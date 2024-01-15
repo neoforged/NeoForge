@@ -4,7 +4,11 @@
     "minecraft:indirect_magic",
     "minecraft:thorns",
     "minecraft:dragon_breath",
-    "#forge:is_poison",
-    "#forge:is_wither"
+    "#neoforge:is_poison",
+    "#neoforge:is_wither",
+    {
+      "id": "#forge:is_magic",
+      "required": false
+    }
   ]
 }
