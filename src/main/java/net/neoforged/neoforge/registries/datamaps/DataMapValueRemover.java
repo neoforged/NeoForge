@@ -45,7 +45,7 @@ public interface DataMapValueRemover<T, R> {
         public static final Default<?, ?> INSTANCE = new Default<>();
 
         public static <T, R> Default<T, R> defaultRemover() {
-            return new Default<>();
+            return (Default<T, R>) INSTANCE;
         }
 
         public static <T, R> Codec<Default<T, R>> codec() {
