@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/level/block/LiquidBlock.java
 +++ b/net/minecraft/world/level/block/LiquidBlock.java
-@@ -51,7 +_,7 @@
-                 .apply(p_308830_, LiquidBlock::new)
-     );
-     public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL;
--    protected final FlowingFluid fluid;
-+    private final FlowingFluid fluid;
-     private final List<FluidState> stateCache;
-     public static final VoxelShape STABLE_SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
-     public static final ImmutableList<Direction> POSSIBLE_FLOW_DIRECTIONS = ImmutableList.of(
 @@ -134,7 +_,7 @@
  
      @Override
