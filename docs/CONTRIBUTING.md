@@ -18,7 +18,6 @@ Contributor License Agreement
 - You assign copyright ownership of your contributions to the patches codebase (everything under patches) to NeoForged, where it will be licensed under the LGPLv2.1 license.
 
 <br>
-"NeoForge" is NeoForged Development LLC, a legally incorporated entity.
 
 [Wiki]:
 https://github.com/neoforged/NeoForge/wiki/***
