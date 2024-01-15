@@ -5,6 +5,10 @@
 
 package net.neoforged.neoforge.common;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -38,11 +42,6 @@ import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.server.command.ConfigCommand;
 import net.neoforged.neoforge.server.command.NeoForgeCommand;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @ApiStatus.Internal
 public class NeoForgeEventHandler {
@@ -155,7 +154,6 @@ public class NeoForgeEventHandler {
         event.addListener(INSTANCE);
         event.addListener(DATA_MAPS = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
     }
-
 
     static LootModifierManager getLootModifierManager() {
         if (INSTANCE == null)

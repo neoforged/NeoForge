@@ -1,5 +1,15 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.network.configuration;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -10,12 +20,6 @@ import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 
 @ApiStatus.Internal
 public record RegistryDataMapNegotiation(ServerConfigurationPacketListener listener) implements ICustomConfigurationTask {
@@ -35,9 +39,9 @@ public record RegistryDataMapNegotiation(ServerConfigurationPacketListener liste
             if (anyMandatory) {
                 final List<String> text = new ArrayList<>();
                 RegistryManager.getDataMaps().forEach((registry, maps) -> maps.forEach((id, map) -> {
-                     if (map.mandatorySync()) {
-                         text.add(id + " ( " + registry.location() + ")");
-                     }
+                    if (map.mandatorySync()) {
+                        text.add(id + " ( " + registry.location() + ")");
+                    }
                 }));
 
                 // Use plain components as vanilla connections will be missing our translation keys

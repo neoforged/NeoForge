@@ -1,13 +1,17 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.registries.datamaps;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
-
-import java.util.Optional;
 
 public record DataMapEntry<T>(T value, boolean replace) {
     private DataMapEntry(T value) {
@@ -18,18 +22,16 @@ public record DataMapEntry<T>(T value, boolean replace) {
         return ExtraCodecs.withAlternative(
                 RecordCodecBuilder.create(i -> i.group(
                         type.codec().fieldOf("value").forGetter(DataMapEntry::value),
-                        ExtraCodecs.strictOptionalField(Codec.BOOL, "replace", false).forGetter(DataMapEntry::replace)
-                ).apply(i, DataMapEntry::new)), type.codec().xmap(DataMapEntry::new, DataMapEntry::value)
-        );
+                        ExtraCodecs.strictOptionalField(Codec.BOOL, "replace", false).forGetter(DataMapEntry::replace)).apply(i, DataMapEntry::new)),
+                type.codec().xmap(DataMapEntry::new, DataMapEntry::value));
     }
 
     public record Removal<T, R>(Either<TagKey<R>, ResourceKey<R>> key,
-                                 Optional<DataMapValueRemover<T, R>> remover) {
+            Optional<DataMapValueRemover<T, R>> remover) {
         public static <T, R, VR extends DataMapValueRemover<T, R>> Codec<Removal<T, R>> codec(Codec<Either<TagKey<R>, ResourceKey<R>>> tagOrValue, DataMapType<T, R, VR> attachment) {
             return RecordCodecBuilder.create(in -> in.group(
                     tagOrValue.fieldOf("key").forGetter(Removal::key),
-                    attachment.remover().<DataMapValueRemover<T, R>>xmap(vr -> vr, v -> (VR) v).optionalFieldOf("remover").forGetter(Removal::remover)
-            ).apply(in, Removal::new));
+                    attachment.remover().<DataMapValueRemover<T, R>>xmap(vr -> vr, v -> (VR) v).optionalFieldOf("remover").forGetter(Removal::remover)).apply(in, Removal::new));
         }
     }
 }

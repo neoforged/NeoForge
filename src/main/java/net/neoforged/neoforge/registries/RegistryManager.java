@@ -7,6 +7,7 @@ package net.neoforged.neoforge.registries;
 
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
+import io.netty.util.AttributeKey;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,8 +19,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import io.netty.util.AttributeKey;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
@@ -35,8 +34,8 @@ import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
-import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
+import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -284,8 +283,7 @@ public class RegistryManager {
     }
 
     public static void handleKnownAttachments(final KnownRegistryDataMapsPayload payload, final ConfigurationPayloadContext context) {
-        record MandatoryEntry(ResourceKey<Registry<?>> registry, ResourceLocation id) {
-        }
+        record MandatoryEntry(ResourceKey<Registry<?>> registry, ResourceLocation id) {}
         final Set<MandatoryEntry> ourMandatory = new HashSet<>();
         getDataMaps().forEach((reg, values) -> values.values().forEach(attach -> {
             if (attach.mandatorySync()) {

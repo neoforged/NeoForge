@@ -1,25 +1,33 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.registries.datamaps;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
+import java.util.function.Function;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Function;
-
 /**
  * A registry data map contains data-driven object that can be attached to a registry object. <p>
  * Data maps are registered to the {@link RegisterDataMapTypesEvent}. <p>
  * They are loaded from JSON files located at:
+ * 
  * <pre>
  * <code>:mapNamespace/data_maps/:registryNamespace/:registryPath/:mapPath.json</code>
  * </pre>
+ * 
  * The {@code registryNamespace} is omitted if it is {@value ResourceLocation#DEFAULT_NAMESPACE}. <br>
  * The structure of the json file is as follows:
- * <pre><code>
+ * 
+ * <pre>
+ * <code>
  *     {
  *         "replace": false // If true, all previous data will be cleared.
  *         // The values object is a map of registry entry ID / tag to attachment values.
@@ -33,7 +41,9 @@ import java.util.function.Function;
  *              "someobject:someid2": {} // Remover object
  *         }
  *     }
- * </pre></code>
+ * </pre>
+ * 
+ * </code>
  * Data maps support conditions both JSON-level and attachment-level through the {@value ConditionalOps#CONDITIONAL_VALUE_KEY} object.
  * <p>
  * Data maps may be synced by specifying a {@link #networkCodec()}. If the map is {@link #mandatorySync() mandatory},
@@ -77,8 +87,7 @@ public record DataMapType<T, R, VR extends DataMapValueRemover<T, R>>(
         boolean mandatorySync,
         Function<R, T> defaultValue,
         Codec<VR> remover,
-        DataMapValueMerger<T, R> merger
-) {
+        DataMapValueMerger<T, R> merger) {
 
     public DataMapType {
         Preconditions.checkArgument(networkCodec != null || !mandatorySync, "Mandatory sync cannot be enabled when the attachment isn't synchronized");
@@ -96,7 +105,6 @@ public record DataMapType<T, R, VR extends DataMapValueRemover<T, R>>(
     public static <T, R> Builder<T, R, DataMapValueRemover.Default<T, R>> builder(ResourceLocation id, ResourceKey<Registry<R>> registry, Codec<T> codec) {
         return new Builder<>(registry, id, codec).remover(DataMapValueRemover.Default.codec());
     }
-
 
     /**
      * A builder for {@link DataMapType data map types}.

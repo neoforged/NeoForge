@@ -1,7 +1,13 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Objects;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
@@ -22,8 +28,6 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
-import java.util.Objects;
-
 @ForEachTest(groups = "data.data_map")
 public class DataMapTests {
 
@@ -32,9 +36,8 @@ public class DataMapTests {
     @TestHolder(description = "Tests if registry data maps work")
     static void testDataMap(final DynamicTest test, final RegistrationHelper reg) {
         final DataMapType<SomeObject, Item, Default<SomeObject, Item>> someData = DataMapType.builder(
-                    new ResourceLocation(reg.modId(), "some_data"),
-                    Registries.ITEM, SomeObject.CODEC
-                )
+                new ResourceLocation(reg.modId(), "some_data"),
+                Registries.ITEM, SomeObject.CODEC)
                 .synced(SomeObject.CODEC, true)
                 .build();
 
@@ -63,7 +66,7 @@ public class DataMapTests {
 
         test.onGameTest(helper -> {
             final Registry<Item> registry = helper.getLevel().registryAccess()
-                            .registryOrThrow(Registries.ITEM);
+                    .registryOrThrow(Registries.ITEM);
             helper.assertTrue(Objects.equals(registry.wrapAsHolder(Items.CARROT).getData(someData), new SomeObject(14, "some_string")), "Data wasn't attached to carrot!");
 
             // All logs but birch should have the value
@@ -82,11 +85,9 @@ public class DataMapTests {
 
     public record SomeObject(
             int intValue,
-            String stringValue
-    ) {
+            String stringValue) {
         public static final Codec<SomeObject> CODEC = RecordCodecBuilder.create(in -> in.group(
                 Codec.INT.fieldOf("intValue").forGetter(SomeObject::intValue),
-                Codec.STRING.fieldOf("stringValue").forGetter(SomeObject::stringValue)
-        ).apply(in, SomeObject::new));
+                Codec.STRING.fieldOf("stringValue").forGetter(SomeObject::stringValue)).apply(in, SomeObject::new));
     }
 }

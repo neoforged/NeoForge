@@ -8,14 +8,12 @@ package net.neoforged.neoforge.common.extensions;
 import static net.neoforged.neoforge.attachment.AttachmentInternals.addAttachmentsToTag;
 import static net.neoforged.neoforge.attachment.AttachmentInternals.reconstructItemStack;
 
+import com.google.common.collect.Maps;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.IntFunction;
-
-import com.google.common.collect.Maps;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;

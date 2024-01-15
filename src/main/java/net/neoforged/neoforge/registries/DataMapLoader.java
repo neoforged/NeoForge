@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.registries;
 
 import com.google.gson.JsonElement;
@@ -5,6 +10,16 @@ import com.google.gson.JsonParser;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
+import java.io.Reader;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -22,17 +37,6 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.registries.datamaps.DataMapFile;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.slf4j.Logger;
-
-import java.io.Reader;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class DataMapLoader implements PreparableReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -63,15 +67,13 @@ public class DataMapLoader implements PreparableReloadListener {
     private <T> void apply(BaseMappedRegistry<T> registry, LoadResult<T> result) {
         registry.dataMaps.clear();
         result.results().forEach((key, entries) -> registry.dataMaps.put(
-                key, this.buildDataMap(registry, key, (List) entries)
-        ));
+                key, this.buildDataMap(registry, key, (List) entries)));
     }
 
     private <T, R> Map<ResourceKey<R>, T> buildDataMap(Registry<R> registry, DataMapType<T, R, ?> attachment, List<DataMapFile<T, R>> entries) {
         record WithSource<T, R>(T attachment, Either<TagKey<R>, ResourceKey<R>> source) {}
         final Map<ResourceKey<R>, WithSource<T, R>> result = new IdentityHashMap<>();
-        final BiConsumer<Either<TagKey<R>, ResourceKey<R>>, Consumer<Holder<R>>> valueResolver = (key, cons) ->
-                key.ifLeft(tag -> registry.getTagOrEmpty(tag).forEach(cons)).ifRight(k -> cons.accept(registry.getHolderOrThrow(k)));
+        final BiConsumer<Either<TagKey<R>, ResourceKey<R>>, Consumer<Holder<R>>> valueResolver = (key, cons) -> key.ifLeft(tag -> registry.getTagOrEmpty(tag).forEach(cons)).ifRight(k -> cons.accept(registry.getHolderOrThrow(k)));
         entries.forEach(entry -> {
             if (entry.replace()) {
                 result.clear();
@@ -130,8 +132,7 @@ public class DataMapLoader implements PreparableReloadListener {
         final RegistryOps<JsonElement> ops = ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, access), context);
 
         final Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> values = new HashMap<>();
-        access.registries().forEach(registryEntry ->
-        {
+        access.registries().forEach(registryEntry -> {
             final var registryKey = registryEntry.key();
             profiler.push("registry_attachments/" + registryKey.location() + "/locating");
             final var fileToId = FileToIdConverter.json(PATH + "/" + getFolderLocation(registryKey.location()));
@@ -145,8 +146,7 @@ public class DataMapLoader implements PreparableReloadListener {
                 }
                 profiler.popPush("registry_attachments/" + registryKey.location() + "/" + attachmentId + "/loading");
                 values.computeIfAbsent(registryKey, k -> new LoadResult<>(new HashMap<>())).results.put(attachment, readData(
-                        ops, attachment, (ResourceKey) registryKey, entry.getValue(), context
-                ));
+                        ops, attachment, (ResourceKey) registryKey, entry.getValue(), context));
             }
             profiler.pop();
         });
@@ -175,7 +175,6 @@ public class DataMapLoader implements PreparableReloadListener {
         return entries;
     }
 
-    private record LoadResult<T>(Map<DataMapType<?, T, ?>, List<DataMapFile<?, T>>> results) {
-    }
+    private record LoadResult<T>(Map<DataMapType<?, T, ?>, List<DataMapFile<?, T>>> results) {}
 
 }

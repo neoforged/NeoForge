@@ -1,12 +1,16 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.registries.datamaps;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import java.util.Optional;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-
-import java.util.Optional;
 
 /**
  * An interface used to remove values from registry data maps. This allows "decomposing" the data
@@ -27,7 +31,7 @@ public interface DataMapValueRemover<T, R> {
      * @param source   the source of the data
      * @param object   the object to remove the data from
      * @return the removed data map value. If an {@link Optional#empty() empty optional}, the value will be removed
-     * completely. Otherwise, this method returns the new value of the attached data.
+     *         completely. Otherwise, this method returns the new value of the attached data.
      */
     Optional<T> remove(T value, Registry<R> registry, Either<TagKey<R>, ResourceKey<R>> source, R object);
 
@@ -48,8 +52,7 @@ public interface DataMapValueRemover<T, R> {
             return Codec.unit(defaultRemover());
         }
 
-        private Default() {
-        }
+        private Default() {}
 
         @Override
         public Optional<T> remove(T value, Registry<R> registry, Either<TagKey<R>, ResourceKey<R>> source, R object) {

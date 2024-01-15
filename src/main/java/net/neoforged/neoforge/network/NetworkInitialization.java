@@ -65,13 +65,11 @@ public class NetworkInitialization {
                 .configuration(
                         KnownRegistryDataMapsPayload.ID,
                         KnownRegistryDataMapsPayload::new,
-                        handlers -> handlers.client(RegistryManager::handleKnownAttachments)
-                )
+                        handlers -> handlers.client(RegistryManager::handleKnownAttachments))
                 .configuration(
                         KnownRegistryDataMapsReplyPayload.ID,
                         KnownRegistryDataMapsReplyPayload::new,
-                        handlers -> handlers.server(RegistryManager::handleKnownDataMapsReply)
-                )
+                        handlers -> handlers.server(RegistryManager::handleKnownDataMapsReply))
                 .play(
                         AdvancedAddEntityPayload.ID,
                         AdvancedAddEntityPayload::new,
