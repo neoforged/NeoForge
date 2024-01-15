@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import io.netty.util.AttributeKey;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -270,20 +271,24 @@ public class RegistryManager {
     }
 
     public static <R> void handleDataMapSync(final RegistryDataMapSyncPayload<R> payload, final PlayPayloadContext context) {
-        context.workHandler().execute(() -> {
+        context.workHandler().submitAsync(() -> {
             final BaseMappedRegistry<R> registry = (BaseMappedRegistry<R>) context.level().orElseThrow().registryAccess()
                     .registryOrThrow(payload.registryKey());
             registry.dataMaps.clear();
             payload.dataMaps().forEach((attachKey, attachments) -> registry.dataMaps.put(getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(attachments)));
+        }).exceptionally(ex -> {
+            context.packetHandler().disconnect(Component.translatable("neoforge.network.data_maps.failed", payload.registryKey().location(), ex.getMessage()));
+            LOGGER.error("Failed to handle registry data map sync: ", ex);
+            return null;
         });
     }
 
     public static void handleKnownAttachments(final KnownRegistryDataMapsPayload payload, final ConfigurationPayloadContext context) {
-        record MandatoryEntry(ResourceKey<Registry<?>> registry, ResourceLocation attachment) {
+        record MandatoryEntry(ResourceKey<Registry<?>> registry, ResourceLocation id) {
         }
         final Set<MandatoryEntry> ourMandatory = new HashSet<>();
         getDataMaps().forEach((reg, values) -> values.values().forEach(attach -> {
-            if (attach.networkCodec() != null && attach.mandatorySync()) {
+            if (attach.mandatorySync()) {
                 ourMandatory.add(new MandatoryEntry(reg, attach.id()));
             }
         }));
@@ -297,18 +302,23 @@ public class RegistryManager {
 
         final var common = Sets.intersection(ourMandatory, theirMandatory);
         if (common.size() != ourMandatory.size() || common.size() != theirMandatory.size()) {
-            // TODO - fix
             final var missingOur = Sets.difference(common, ourMandatory);
+            final Set<MandatoryEntry> missing;
+            final String key;
             if (!missingOur.isEmpty()) {
+                missing = missingOur;
+                key = "neoforge.network.data_maps.missing_our";
                 context.packetHandler().disconnect(Component.literal("TODO"));
-                return;
             } else {
-                final var missingTheir = Sets.difference(common, theirMandatory);
-                if (!missingTheir.isEmpty()) {
-                    context.packetHandler().disconnect(Component.literal("TODO"));
-                    return;
-                }
+                missing = Sets.difference(common, theirMandatory);
+                key = "neoforge.network.data_maps.missing_their";
             }
+
+            context.packetHandler().disconnect(Component.translatable(key, Component.literal(missing.stream()
+                    .map(e -> e.id() + " (" + e.registry() + ")")
+                    .collect(Collectors.joining(", "))).withStyle(ChatFormatting.GOLD)));
+
+            return;
         }
 
         final var known = new HashMap<ResourceKey<Registry<?>>, Collection<ResourceLocation>>();

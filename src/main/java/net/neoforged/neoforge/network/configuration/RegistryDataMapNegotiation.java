@@ -33,8 +33,15 @@ public record RegistryDataMapNegotiation(ServerConfigurationPacketListener liste
             final var anyMandatory = RegistryManager.getDataMaps().values()
                     .stream().anyMatch(map -> map.values().stream().anyMatch(DataMapType::mandatorySync));
             if (anyMandatory) {
-                // TODO - fix
-                listener.disconnect(Component.literal("TODO"));
+                final List<String> text = new ArrayList<>();
+                RegistryManager.getDataMaps().forEach((registry, maps) -> maps.forEach((id, map) -> {
+                     if (map.mandatorySync()) {
+                         text.add(id + " ( " + registry.location() + ")");
+                     }
+                }));
+
+                // Use plain components as vanilla connections will be missing our translation keys
+                listener.disconnect(Component.literal("This server does not support vanilla clients as it has mandatory registry data maps: " + String.join(", ", text)));
                 return;
             }
         }
