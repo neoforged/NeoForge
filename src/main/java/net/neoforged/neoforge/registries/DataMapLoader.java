@@ -38,6 +38,7 @@ import net.neoforged.neoforge.registries.datamaps.DataMapFile;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.slf4j.Logger;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class DataMapLoader implements PreparableReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final String PATH = "data_maps";
@@ -124,17 +125,17 @@ public class DataMapLoader implements PreparableReloadListener {
         final Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> values = new HashMap<>();
         access.registries().forEach(registryEntry -> {
             final var registryKey = registryEntry.key();
-            profiler.push("registry_attachments/" + registryKey.location() + "/locating");
+            profiler.push("registry_data_maps/" + registryKey.location() + "/locating");
             final var fileToId = FileToIdConverter.json(PATH + "/" + getFolderLocation(registryKey.location()));
             for (Map.Entry<ResourceLocation, List<Resource>> entry : fileToId.listMatchingResourceStacks(manager).entrySet()) {
                 ResourceLocation key = entry.getKey();
                 final ResourceLocation attachmentId = fileToId.fileToId(key);
                 final var attachment = RegistryManager.getDataMap((ResourceKey) registryKey, attachmentId);
                 if (attachment == null) {
-                    LOGGER.warn("Found attachment file for inexistent attachment type '{}' on registry '{}'.", attachmentId, registryKey.location());
+                    LOGGER.warn("Found data map file for inexistent data map type '{}' on registry '{}'.", attachmentId, registryKey.location());
                     continue;
                 }
-                profiler.popPush("registry_attachments/" + registryKey.location() + "/" + attachmentId + "/loading");
+                profiler.popPush("registry_data_maps/" + registryKey.location() + "/" + attachmentId + "/loading");
                 values.computeIfAbsent(registryKey, k -> new LoadResult<>(new HashMap<>())).results.put(attachment, readData(
                         ops, attachment, (ResourceKey) registryKey, entry.getValue(), context));
             }
