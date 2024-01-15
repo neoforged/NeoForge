@@ -119,11 +119,21 @@ public abstract sealed class ModelDataManager permits ModelDataManager.Active, M
                 Long2ObjectMap<ModelData> data = modelDataCache.computeIfAbsent(section, $ -> new Long2ObjectOpenHashMap<>());
                 for (BlockPos pos : needUpdate) {
                     BlockEntity toUpdate = level.getBlockEntity(pos);
+                    ModelData newData = ModelData.EMPTY;
+                    // Query the BE for new model data if it exists
                     if (toUpdate != null && !toUpdate.isRemoved()) {
-                        data.put(pos.asLong(), toUpdate.getModelData());
+                        newData = toUpdate.getModelData();
+                    }
+                    // Make sure we don't bother storing empty data in the map
+                    if (newData != ModelData.EMPTY) {
+                        data.put(pos.asLong(), newData);
                     } else {
                         data.remove(pos.asLong());
                     }
+                }
+                // Remove the map completely if it's now empty
+                if (data.isEmpty()) {
+                    modelDataCache.remove(section);
                 }
             }
         }

@@ -153,7 +153,7 @@
   "commands.config.getwithtype": "Konfiguration für %s vom Typ %s gefunden bei %s",
   "commands.config.noconfig": "Konfiguration für %s vom Typ %s nicht gefunden",
   "neoforge.update.beta.1": "%sWARNUNG: %sNeoForge Beta",
-  "neoforge.update.beta.2": "Gravierende Probleme können auftreten, bitte überprüfe diese, bevor du sie meldest.",
+  "neoforge.update.beta.2": "Es könnten gravierende Probleme auftreten, bitte überprüfe diese, bevor du sie meldest.",
   "neoforge.update.newversion": "Neue NeoForge-Version verfügbar: %s",
   "neoforge.menu.updatescreen.title": "Mod Update",
   "neoforge.configgui.removeErroringEntities.tooltip": "Ändere dies zu 'true', um alle Entitäten mit Fehlern in ihrer Update-Methode zu entfernen, anstatt den Server zu schließen und einen Absturzbericht zu erstellen. SEI GEWARNT: DIES KANN ALLES BESCHÄDIGEN, MIT BEDACHT ZU VERWENDEN, WIR SIND NICHT FÜR SCHÄDEN VERANTWORTLICH.",

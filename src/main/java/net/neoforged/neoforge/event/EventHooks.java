@@ -9,7 +9,9 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import java.io.File;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -67,6 +69,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Explosion;
@@ -80,6 +83,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
+import net.minecraft.world.level.levelgen.feature.treedecorators.AlterGroundDecorator;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecorator;
 import net.minecraft.world.level.portal.PortalShape;
 import net.minecraft.world.level.storage.PlayerDataStorage;
@@ -96,6 +100,7 @@ import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.event.brewing.PlayerBrewedPotionEvent;
 import net.neoforged.neoforge.event.brewing.PotionBrewEvent;
 import net.neoforged.neoforge.event.enchanting.EnchantmentLevelSetEvent;
+import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityMobGriefingEvent;
 import net.neoforged.neoforge.event.entity.EntityMountEvent;
@@ -608,6 +613,8 @@ public class EventHooks {
     }
 
     public static LootTable loadLootTable(ResourceLocation name, LootTable table) {
+        if (table == LootTable.EMPTY) // Empty table has a null name, and shouldn't be modified anyway.
+            return table;
         LootTableLoadEvent event = new LootTableLoadEvent(name, table);
         if (NeoForge.EVENT_BUS.post(event).isCanceled())
             return LootTable.EMPTY;
@@ -869,5 +876,35 @@ public class EventHooks {
 
     public static boolean onEffectRemoved(LivingEntity entity, MobEffectInstance effectInstance, @Nullable EffectCure cure) {
         return NeoForge.EVENT_BUS.post(new MobEffectEvent.Remove(entity, effectInstance, cure)).isCanceled();
+    }
+
+    /**
+     * Fires {@link GetEnchantmentLevelEvent} and for a single enchantment, returning the (possibly event-modified) level.
+     * 
+     * @param level The original level of the enchantment as provided by the Item.
+     * @param stack The stack being queried against.
+     * @param ench  The enchantment being queried for.
+     * @return The new level of the enchantment.
+     */
+    public static int getEnchantmentLevelSpecific(int level, ItemStack stack, Enchantment ench) {
+        Map<Enchantment, Integer> map = new HashMap<>();
+        map.put(ench, level);
+        var event = new GetEnchantmentLevelEvent(stack, map, ench);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getEnchantments().getOrDefault(ench, 0);
+    }
+
+    /**
+     * Fires {@link GetEnchantmentLevelEvent} and for all enchantments, returning the (possibly event-modified) enchantment map.
+     * 
+     * @param enchantments The original enchantment map as provided by the Item.
+     * @param stack        The stack being queried against.
+     * @return The new enchantment map.
+     */
+    public static Map<Enchantment, Integer> getEnchantmentLevel(Map<Enchantment, Integer> enchantments, ItemStack stack) {
+        enchantments = new HashMap<>(enchantments);
+        var event = new GetEnchantmentLevelEvent(stack, enchantments, null);
+        NeoForge.EVENT_BUS.post(event);
+        return enchantments;
     }
 }

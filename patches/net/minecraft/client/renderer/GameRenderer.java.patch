@@ -62,6 +62,17 @@
          }
      }
  
+@@ -919,6 +_,10 @@
+                 return;
+             }
+ 
++            // Neo: Prevent screen shake if the damage type is marked as "forge:no_flinch"
++            var lastSrc = livingentity.getLastDamageSource();
++            if (lastSrc != null && lastSrc.is(net.neoforged.neoforge.common.Tags.DamageTypes.NO_FLINCH)) return;
++
+             float f3 = f2 / (float)livingentity.hurtDuration;
+             float f4 = Mth.sin(f3 * f3 * f3 * f3 * (float) Math.PI);
+             float f5 = livingentity.getHurtDir();
 @@ -1074,13 +_,13 @@
                      (float)((double)window.getHeight() / window.getGuiScale()),
                      0.0F,

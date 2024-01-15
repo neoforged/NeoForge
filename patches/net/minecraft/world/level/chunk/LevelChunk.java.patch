@@ -55,6 +55,14 @@
          }
      }
  
+@@ -385,6 +_,7 @@
+             BlockEntity blockentity = this.blockEntities.put(blockpos.immutable(), p_156374_);
+             if (blockentity != null && blockentity != p_156374_) {
+                 blockentity.setRemoved();
++                auxLightManager.removeLightAt(blockpos);
+             }
+         }
+     }
 @@ -394,9 +_,14 @@
      public CompoundTag getBlockEntityNbtForSaving(BlockPos p_62932_) {
          BlockEntity blockentity = this.getBlockEntity(p_62932_);
@@ -70,6 +78,14 @@
          } else {
              CompoundTag compoundtag = this.pendingBlockEntities.get(p_62932_);
              if (compoundtag != null) {
+@@ -419,6 +_,7 @@
+                 }
+ 
+                 blockentity.setRemoved();
++                auxLightManager.removeLightAt(p_62919_);
+             }
+         }
+ 
 @@ -479,7 +_,7 @@
          p_187974_.accept((p_187968_, p_187969_, p_187970_) -> {
              BlockEntity blockentity = this.getBlockEntity(p_187968_, LevelChunk.EntityCreationType.IMMEDIATE);
@@ -95,12 +111,13 @@
          this.blockEntities.values().forEach(p_187988_ -> {
              Level level = this.level;
              if (level instanceof ServerLevel serverlevel) {
-@@ -646,6 +_,27 @@
+@@ -646,6 +_,33 @@
          return new LevelChunk.BoundTickingBlockEntity<>(p_156376_, p_156377_);
      }
  
 +    // FORGE START
 +    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
++    private final net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager auxLightManager = new net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager(this);
 +
 +    @Override
 +    public boolean hasData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
@@ -117,6 +134,11 @@
 +    public <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
 +        setUnsaved(true);
 +        return attachmentHolder.setData(type, data);
++    }
++
++    @Override
++    public net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager getAuxLightManager(ChunkPos pos) {
++        return auxLightManager;
 +    }
 +    // FORGE END
 +

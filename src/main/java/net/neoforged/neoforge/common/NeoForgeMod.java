@@ -45,6 +45,9 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.InclusiveRange;
+import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -102,6 +105,7 @@ import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import net.neoforged.neoforge.common.crafting.NBTIngredient;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.NeoForgeDamageTypeTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeBiomeTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeBlockTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeEntityTypeTagsProvider;
@@ -163,11 +167,11 @@ public class NeoForgeMod {
 
     private static boolean isPRBuild;
 
-    private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, "neoforge");
-    private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, "neoforge");
-    private static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, "neoforge");
-    private static final DeferredRegister<Codec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, "neoforge");
-    private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.HOLDER_SET_TYPES, "neoforge");
+    private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<Codec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.HOLDER_SET_TYPES, NeoForgeVersion.MOD_ID);
 
     @SuppressWarnings({ "unchecked", "rawtypes" }) // Uses Holder instead of DeferredHolder as the type due to weirdness between ECJ and javac.
     private static final Holder<ArgumentTypeInfo<?, ?>> ENUM_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("enum", () -> ArgumentTypeInfos.registerByClass(EnumArgument.class, new EnumArgument.Info()));
@@ -282,14 +286,14 @@ public class NeoForgeMod {
      */
     public static final Holder<HolderSetType> NOT_HOLDER_SET = HOLDER_SET_TYPES.register("not", () -> NotHolderSet::codec);
 
-    private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, "neoforge");
+    private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, NeoForgeVersion.MOD_ID);
 
     public static final DeferredHolder<IngredientType<?>, IngredientType<CompoundIngredient>> COMPOUND_INGREDIENT_TYPE = INGREDIENT_TYPES.register("compound", () -> new IngredientType<>(CompoundIngredient.CODEC, CompoundIngredient.CODEC_NONEMPTY));
     public static final DeferredHolder<IngredientType<?>, IngredientType<NBTIngredient>> NBT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("nbt", () -> new IngredientType<>(NBTIngredient.CODEC, NBTIngredient.CODEC_NONEMPTY));
     public static final DeferredHolder<IngredientType<?>, IngredientType<DifferenceIngredient>> DIFFERENCE_INGREDIENT_TYPE = INGREDIENT_TYPES.register("difference", () -> new IngredientType<>(DifferenceIngredient.CODEC, DifferenceIngredient.CODEC_NONEMPTY));
     public static final DeferredHolder<IngredientType<?>, IngredientType<IntersectionIngredient>> INTERSECTION_INGREDIENT_TYPE = INGREDIENT_TYPES.register("intersection", () -> new IngredientType<>(IntersectionIngredient.CODEC, IntersectionIngredient.CODEC_NONEMPTY));
 
-    private static final DeferredRegister<Codec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, "neoforge");
+    private static final DeferredRegister<Codec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, NeoForgeVersion.MOD_ID);
     public static final DeferredHolder<Codec<? extends ICondition>, Codec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
     public static final DeferredHolder<Codec<? extends ICondition>, Codec<FalseCondition>> FALSE_CONDITION = CONDITION_CODECS.register("false", () -> FalseCondition.CODEC);
     public static final DeferredHolder<Codec<? extends ICondition>, Codec<ItemExistsCondition>> ITEM_EXISTS_CONDITION = CONDITION_CODECS.register("item_exists", () -> ItemExistsCondition.CODEC);
@@ -446,6 +450,15 @@ public class NeoForgeMod {
     public static final DeferredHolder<Fluid, Fluid> FLOWING_MILK = DeferredHolder.create(Registries.FLUID, new ResourceLocation("flowing_milk"));
 
     /**
+     * Used in place of {@link DamageSources#magic()} for damage dealt by {@link MobEffects#POISON}.
+     * <p>
+     * May also be used by mods providing poison-like effects.
+     * 
+     * @see {@link Tags.DamageTypes#IS_POISON}
+     */
+    public static final ResourceKey<DamageType> POISON_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(NeoForgeVersion.MOD_ID, "poison"));
+
+    /**
      * Run this method during mod constructor to enable milk and add it to the Minecraft milk bucket
      */
     public static void enableMilkFluid() {
@@ -549,6 +562,7 @@ public class NeoForgeMod {
         gen.addProvider(event.includeServer(), new NeoForgeRecipeProvider(packOutput, lookupProvider));
         gen.addProvider(event.includeServer(), new NeoForgeLootTableProvider(packOutput));
         gen.addProvider(event.includeServer(), new NeoForgeBiomeTagsProvider(packOutput, lookupProvider, existingFileHelper));
+        gen.addProvider(event.includeServer(), new NeoForgeDamageTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
 
         gen.addProvider(event.includeClient(), new NeoForgeSpriteSourceProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeClient(), new VanillaSoundDefinitionsProvider(packOutput, existingFileHelper));
@@ -571,8 +585,8 @@ public class NeoForgeMod {
                 @Override
                 public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
                     consumer.accept(new IClientFluidTypeExtensions() {
-                        private static final ResourceLocation MILK_STILL = new ResourceLocation("neoforge", "block/milk_still"),
-                                MILK_FLOW = new ResourceLocation("neoforge", "block/milk_flowing");
+                        private static final ResourceLocation MILK_STILL = new ResourceLocation(NeoForgeVersion.MOD_ID, "block/milk_still"),
+                                MILK_FLOW = new ResourceLocation(NeoForgeVersion.MOD_ID, "block/milk_flowing");
 
                         @Override
                         public ResourceLocation getStillTexture() {
@@ -618,7 +632,7 @@ public class NeoForgeMod {
         event.register(Registries.LOOT_CONDITION_TYPE, new ResourceLocation("neoforge:can_tool_perform_action"), () -> CanToolPerformAction.LOOT_CONDITION_TYPE);
     }
 
-    public static final PermissionNode<Boolean> USE_SELECTORS_PERMISSION = new PermissionNode<>("neoforge", "use_entity_selectors",
+    public static final PermissionNode<Boolean> USE_SELECTORS_PERMISSION = new PermissionNode<>(NeoForgeVersion.MOD_ID, "use_entity_selectors",
             PermissionTypes.BOOLEAN, (player, uuid, contexts) -> player != null && player.hasPermissions(Commands.LEVEL_GAMEMASTERS));
 
     public void registerPermissionNodes(PermissionGatherEvent.Nodes event) {
