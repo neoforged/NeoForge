@@ -50,11 +50,6 @@ import org.jetbrains.annotations.Nullable;
  * then vanilla clients (or any client that doesn't support this map) will not be able to connect.
  *
  * <p>
- * If the data map is used as a replacement for a vanilla map, a {@link #defaultValue() default value function} may be provided,
- * which will be invoked for entries that have no explicit value attached. You should refrain from using the default value
- * in order to use data maps in a code-driven way.
- *
- * <p>
  * Data maps also provide a {@link #remover() remover} which will be used to support targeted removals that
  * support decomposition, instead of the removal of the entire value. That way, for instance, one is able to remove just a value with
  * a specific key from a {@link java.util.Map map-based} data map, instead of the entire map.
@@ -73,7 +68,6 @@ import org.jetbrains.annotations.Nullable;
  * @param codec         the codec used to decode and encode the values to and from JSON
  * @param networkCodec  an optional codec that is used to sync the data map to clients
  * @param mandatorySync if {@code true}, this data map must be present on the client
- * @param defaultValue  a function providing default, fallback values
  * @param remover       a remover used to remove specific values
  * @param merger        a merger that merges conflicting values
  * @param <T>           the type of the data map
@@ -85,7 +79,6 @@ public record DataMapType<T, R, VR extends DataMapValueRemover<T, R>>(
         ResourceLocation id,
         Codec<T> codec, @Nullable Codec<T> networkCodec,
         boolean mandatorySync,
-        Function<R, T> defaultValue,
         Codec<VR> remover,
         DataMapValueMerger<T, R> merger) {
 
@@ -120,7 +113,6 @@ public record DataMapType<T, R, VR extends DataMapValueRemover<T, R>>(
 
         private @Nullable Codec<T> networkCodec;
         private boolean mandatorySync;
-        private Function<R, T> defaultValue = val -> null;
         private Codec<VR> remover;
         private DataMapValueMerger<T, R> merger = DataMapValueMerger.defaultMerger();
 
@@ -158,18 +150,6 @@ public record DataMapType<T, R, VR extends DataMapValueRemover<T, R>>(
         }
 
         /**
-         * Sets the function that provides a fallback value for objects that have no data attached. <br>
-         * This is useful if the data map replaces vanilla maps, for instance.
-         *
-         * @param defaultValue a function providing fallback values
-         * @return the builder instacen
-         */
-        public Builder<T, R, VR> defaultValue(Function<R, T> defaultValue) {
-            this.defaultValue = defaultValue;
-            return this;
-        }
-
-        /**
          * Configures the merger that will handle conflicting values for the same registry object.
          *
          * @param merger a merger that handles conflicting values
@@ -184,7 +164,7 @@ public record DataMapType<T, R, VR extends DataMapValueRemover<T, R>>(
          * {@return a built data map type}
          */
         public DataMapType<T, R, VR> build() {
-            return new DataMapType<>(registryKey, id, codec, networkCodec, mandatorySync, defaultValue, remover, merger);
+            return new DataMapType<>(registryKey, id, codec, networkCodec, mandatorySync, remover, merger);
         }
     }
 }

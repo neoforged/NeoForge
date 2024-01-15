@@ -111,16 +111,6 @@ public class DataMapLoader implements PreparableReloadListener {
         final Map<ResourceKey<R>, T> newMap = new IdentityHashMap<>();
         result.forEach((key, val) -> newMap.put(key, val.attachment()));
 
-        registry.holders().forEach(ref -> {
-            final var key = ref.key();
-            if (newMap.get(key) == null) {
-                final var def = attachment.defaultValue().apply(ref.value());
-                if (def != null) {
-                    newMap.put(key, def);
-                }
-            }
-        });
-
         return newMap;
     }
 
