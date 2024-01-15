@@ -69,7 +69,7 @@ public class ItemTests {
     static void customMobBucket(final DynamicTest test, final RegistrationHelper reg) {
         final var cowBucket = reg.items().register("cow_bucket", () -> new MobBucketItem(
                 () -> EntityType.COW,
-                () -> Fluids.WATER,
+                Fluids.WATER,
                 () -> SoundEvents.BUCKET_EMPTY_FISH,
                 (new Item.Properties()).stacksTo(1)))
                 .withLang("Cow bucket");

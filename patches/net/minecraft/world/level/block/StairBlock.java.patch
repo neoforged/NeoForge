@@ -1,36 +1,6 @@
 --- a/net/minecraft/world/level/block/StairBlock.java
 +++ b/net/minecraft/world/level/block/StairBlock.java
-@@ -27,7 +_,7 @@
- 
- public class StairBlock extends Block implements SimpleWaterloggedBlock {
-     public static final MapCodec<StairBlock> CODEC = RecordCodecBuilder.mapCodec(
--        p_308839_ -> p_308839_.group(BlockState.CODEC.fieldOf("base_state").forGetter(p_304378_ -> p_304378_.baseState), propertiesCodec())
-+        p_308839_ -> p_308839_.group(BlockState.CODEC.fieldOf("base_state").forGetter(StairBlock::getModelState), propertiesCodec())
-                 .apply(p_308839_, StairBlock::new)
-     );
-     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-@@ -47,6 +_,7 @@
-     protected static final VoxelShape[] TOP_SHAPES = makeShapes(TOP_AABB, OCTET_NNN, OCTET_PNN, OCTET_NNP, OCTET_PNP);
-     protected static final VoxelShape[] BOTTOM_SHAPES = makeShapes(BOTTOM_AABB, OCTET_NPN, OCTET_PPN, OCTET_NPP, OCTET_PPP);
-     private static final int[] SHAPE_BY_STATE = new int[]{12, 5, 3, 10, 14, 13, 7, 11, 13, 7, 11, 14, 8, 4, 1, 2, 4, 1, 2, 8};
-+    /** Neo: Field accesses are redirected to {@link #getModelBlock()} with a coremod. */
-     private final Block base;
-     protected final BlockState baseState;
- 
-@@ -84,7 +_,12 @@
-         return voxelshape;
-     }
- 
-+    @Deprecated // Forge: Use the other constructor that takes a Supplier
-     public StairBlock(BlockState p_56862_, BlockBehaviour.Properties p_56863_) {
-+        this(() -> p_56862_, p_56863_);
-+    }
-+
-+    public StairBlock(java.util.function.Supplier<net.minecraft.world.level.block.state.BlockState> p_56862_, BlockBehaviour.Properties p_56863_) {
-         super(p_56863_);
-         this.registerDefaultState(
-             this.stateDefinition
-@@ -94,8 +_,9 @@
+@@ -94,8 +_,8 @@
                  .setValue(SHAPE, StairsShape.STRAIGHT)
                  .setValue(WATERLOGGED, Boolean.valueOf(false))
          );
@@ -38,22 +8,6 @@
 -        this.baseState = p_56862_;
 +        this.base = Blocks.AIR;
 +        this.baseState = Blocks.AIR.defaultBlockState();
-+        this.stateSupplier = p_56862_;
      }
  
      @Override
-@@ -243,4 +_,14 @@
-     public boolean isPathfindable(BlockState p_56891_, BlockGetter p_56892_, BlockPos p_56893_, PathComputationType p_56894_) {
-         return false;
-     }
-+
-+    // Forge Start
-+    private final java.util.function.Supplier<BlockState> stateSupplier;
-+    private Block getModelBlock() {
-+         return getModelState().getBlock();
-+    }
-+    protected BlockState getModelState() {
-+         return stateSupplier.get();
-+    }
-+    // Forge end
- }
