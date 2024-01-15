@@ -7,7 +7,6 @@ package net.neoforged.neoforge.registries.datamaps;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
-import java.util.function.Function;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;

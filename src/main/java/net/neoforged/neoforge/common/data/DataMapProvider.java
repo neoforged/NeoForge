@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -99,7 +100,7 @@ public abstract class DataMapProvider implements DataProvider {
 
     public static class Builder<T, R, VR extends DataMapValueRemover<T, R>> {
         private boolean replace;
-        private final Map<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapEntry<T>>>> values = new HashMap<>();
+        private final Map<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapEntry<T>>>> values = new LinkedHashMap<>();
         private final List<DataMapEntry.Removal<T, R>> removals = new ArrayList<>();
         private final ResourceKey<Registry<R>> registryKey;
         private final DataMapType<T, R, VR> type;
