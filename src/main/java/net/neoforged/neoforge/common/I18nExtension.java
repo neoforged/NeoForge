@@ -12,6 +12,7 @@ import java.text.ParsePosition;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -55,6 +56,8 @@ public class I18nExtension {
         customFactories.put("i18ntranslate", (name, formatString, locale) -> new CustomReadOnlyFormat((stringBuffer, o) -> stringBuffer.append(I18nExtension.parseMessage((String) o))));
         // {0,ornull,fml.absent} -> append String value of o, or i18n string 'fml.absent' (message format transforms nulls into the string literal "null")
         customFactories.put("ornull", ((name, formatString, locale) -> new CustomReadOnlyFormat((stringBuffer, o) -> stringBuffer.append(Objects.equals(String.valueOf(o), "null") ? I18nExtension.parseMessage(formatString) : String.valueOf(o)))));
+        // {0,optional,[prefix]} -> append String value of o if the optional is present, with an optional prefix at the start
+        customFactories.put("optional", (name, formatString, locale) -> new CustomReadOnlyFormat((stringBuffer, o) -> ((Optional<?>) o).ifPresent(val -> stringBuffer.append(formatString == null ? "" : formatString).append(val))));
     }
 
     private static void parseException(final String formatString, final StringBuffer stringBuffer, final Object objectToParse) {

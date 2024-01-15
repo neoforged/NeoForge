@@ -9,6 +9,14 @@
                  .apply(p_308839_, StairBlock::new)
      );
      public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+@@ -47,6 +_,7 @@
+     protected static final VoxelShape[] TOP_SHAPES = makeShapes(TOP_AABB, OCTET_NNN, OCTET_PNN, OCTET_NNP, OCTET_PNP);
+     protected static final VoxelShape[] BOTTOM_SHAPES = makeShapes(BOTTOM_AABB, OCTET_NPN, OCTET_PPN, OCTET_NPP, OCTET_PPP);
+     private static final int[] SHAPE_BY_STATE = new int[]{12, 5, 3, 10, 14, 13, 7, 11, 13, 7, 11, 14, 8, 4, 1, 2, 4, 1, 2, 8};
++    /** Neo: Field accesses are redirected to {@link #getModelBlock()} with a coremod. */
+     private final Block base;
+     protected final BlockState baseState;
+ 
 @@ -84,7 +_,12 @@
          return voxelshape;
      }

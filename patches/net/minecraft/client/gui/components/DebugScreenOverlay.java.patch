@@ -10,7 +10,7 @@
 +            final List<String> systemInformation = new java.util.ArrayList<>();
 +            var event = new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.DebugText(minecraft.getWindow(), p_281427_, minecraft.getFrameTime(), gameInformation, systemInformation);
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
-+            
++
 +            this.drawGameInformation(p_281427_, gameInformation);
 +            this.drawSystemInformation(p_281427_, systemInformation);
              if (this.renderFpsCharts) {

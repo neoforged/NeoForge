@@ -1,22 +1,21 @@
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
-@@ -620,6 +_,11 @@
+@@ -620,6 +_,10 @@
      private final EntityDimensions dimensions;
      private final FeatureFlagSet requiredFeatures;
  
-+    private final java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier;
++    private final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier;
-+    private final java.util.function.BiFunction<net.neoforged.neoforge.network.PlayMessages.SpawnEntity, Level, T> customClientFactory;
 +
      private static <T extends Entity> EntityType<T> register(String p_20635_, EntityType.Builder<T> p_20636_) {
          return Registry.register(BuiltInRegistries.ENTITY_TYPE, p_20635_, p_20636_.build(p_20635_));
      }
-@@ -645,6 +_,25 @@
+@@ -645,6 +_,24 @@
          int p_273451_,
          FeatureFlagSet p_273518_
      ) {
-+         this(p_273268_, p_272918_, p_273417_, p_273389_, p_273556_, p_272654_, p_273631_, p_272946_, p_272895_, p_273451_, p_273518_, EntityType::defaultVelocitySupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier, null);
++         this(p_273268_, p_272918_, p_273417_, p_273389_, p_273556_, p_272654_, p_273631_, p_272946_, p_272895_, p_273451_, p_273518_, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier);
 +    }
 +    public EntityType(
 +        EntityType.EntityFactory<T> p_273268_,
@@ -30,36 +29,40 @@
 +        int p_272895_,
 +        int p_273451_,
 +        FeatureFlagSet p_273518_,
-+        final java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier,
++        final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier,
 +        final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
-+        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier,
-+        final java.util.function.BiFunction<net.neoforged.neoforge.network.PlayMessages.SpawnEntity, Level, T> customClientFactory
++        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier
 +    ) {
          this.factory = p_273268_;
          this.category = p_272918_;
          this.canSpawnFarFromPlayer = p_272654_;
-@@ -656,6 +_,10 @@
+@@ -656,6 +_,9 @@
          this.clientTrackingRange = p_272895_;
          this.updateInterval = p_273451_;
          this.requiredFeatures = p_273518_;
-+        this.velocityUpdateSupplier = velocityUpdateSupplier;
++        this.trackDeltasSupplier = trackDeltasSupplier;
 +        this.trackingRangeSupplier = trackingRangeSupplier;
 +        this.updateIntervalSupplier = updateIntervalSupplier;
-+        this.customClientFactory = customClientFactory;
      }
  
      @Nullable
-@@ -811,6 +_,9 @@
-     }
+@@ -760,6 +_,15 @@
+                 mob.yHeadRot = mob.getYRot();
+                 mob.yBodyRot = mob.getYRot();
+                 mob.finalizeSpawn(p_262637_, p_262637_.getCurrentDifficultyAt(mob.blockPosition()), p_262666_, null, p_262687_);
++
++                if (mob.isSpawnCancelled()) {
++                    // Neo: Discard mob, spawn was cancelled
++                    mob.discard();
++                    // return null, mob was killed, context should be lost
++                    // fixes llamas for wandering trader spawning if wandering trader was cancelled
++                    return null;
++                }
++
+                 mob.playAmbientSound();
+             }
  
-     public boolean canSpawnFarFromPlayer() {
-+        return velocityUpdateSupplier.test(this);
-+    }
-+    private boolean defaultVelocitySupplier() {
-         return this.canSpawnFarFromPlayer;
-     }
- 
-@@ -958,10 +_,16 @@
+@@ -958,14 +_,23 @@
      }
  
      public int clientTrackingRange() {
@@ -76,32 +79,34 @@
          return this.updateInterval;
      }
  
-@@ -1001,6 +_,12 @@
+     public boolean trackDeltas() {
++        return this.trackDeltasSupplier.test(this);
++    }
++    private boolean defaultTrackDeltasSupplier() {
+         return this != PLAYER
+             && this != LLAMA_SPIT
+             && this != WITHER
+@@ -1001,6 +_,8 @@
          return this.builtInRegistryHolder;
      }
  
-+    public T customClientSpawn(net.neoforged.neoforge.network.PlayMessages.SpawnEntity packet, Level world) {
-+         if (customClientFactory == null) return this.create(world);
-+         return customClientFactory.apply(packet, world);
-+    }
 +    public Stream<TagKey<EntityType<?>>> getTags() {return this.builtInRegistryHolder().tags();}
 +
      public static class Builder<T extends Entity> {
          private final EntityType.EntityFactory<T> factory;
          private final MobCategory category;
-@@ -1014,6 +_,11 @@
+@@ -1014,6 +_,10 @@
          private EntityDimensions dimensions = EntityDimensions.scalable(0.6F, 1.8F);
          private FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
  
-+        private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultVelocitySupplier;
++        private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultTrackDeltasSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier = EntityType::defaultTrackingRangeSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier = EntityType::defaultUpdateIntervalSupplier;
-+        private java.util.function.BiFunction<net.neoforged.neoforge.network.PlayMessages.SpawnEntity, Level, T> customClientFactory;
 +
          private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
              this.factory = p_20696_;
              this.category = p_20697_;
-@@ -1073,6 +_,30 @@
+@@ -1073,6 +_,21 @@
              return this;
          }
  
@@ -120,19 +125,10 @@
 +             return this;
 +        }
 +
-+        /**
-+         * By default, entities are spawned clientside via {@link EntityType#create(Level)}}.
-+         * If you need finer control over the spawning process, use this to get read access to the spawn packet.
-+         */
-+        public EntityType.Builder<T> setCustomClientFactory(java.util.function.BiFunction<net.neoforged.neoforge.network.PlayMessages.SpawnEntity, Level, T> customClientFactory) {
-+             this.customClientFactory = customClientFactory;
-+             return this;
-+        }
-+
          public EntityType<T> build(String p_20713_) {
              if (this.serialize) {
                  Util.fetchChoiceType(References.ENTITY_TREE, p_20713_);
-@@ -1089,7 +_,11 @@
+@@ -1089,7 +_,10 @@
                  this.dimensions,
                  this.clientTrackingRange,
                  this.updateInterval,
@@ -140,8 +136,7 @@
 +                this.requiredFeatures,
 +                velocityUpdateSupplier,
 +                trackingRangeSupplier,
-+                updateIntervalSupplier,
-+                customClientFactory
++                updateIntervalSupplier
              );
          }
      }

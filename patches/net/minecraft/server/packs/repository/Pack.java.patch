@@ -52,13 +52,17 @@
              }
  
              return pack$info;
-@@ -172,6 +_,33 @@
+@@ -172,6 +_,37 @@
          return this.packSource;
      }
  
 +    public boolean isHidden() { return hidden; }
 +
 +    public List<Pack> getChildren() { return children; }
++
++    public java.util.stream.Stream<Pack> streamSelfAndChildren() {
++        return java.util.stream.Stream.concat(java.util.stream.Stream.of(this), children.stream());
++    }
 +
 +    /**
 +     * {@return a copy of the pack with the provided children in place of any children this pack currently has}

@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.visitors.CollectFields;
@@ -96,7 +97,8 @@ public class GenerationTask {
 
         this.listener = listener;
 
-        this.server.submit(() -> CompletableFuture.runAsync(this::tryEnqueueTasks));
+        // Off thread chunk scanning to skip already generated chunks
+        CompletableFuture.runAsync(this::tryEnqueueTasks, Util.backgroundExecutor());
     }
 
     public void stop() {
@@ -125,6 +127,8 @@ public class GenerationTask {
             }
 
             this.queuedCount.getAndAdd(chunks.size());
+
+            // Keep on server thread as chunk acquiring and releasing (tickets) is not thread safe.
             this.server.submit(() -> this.enqueueChunks(chunks));
         }
     }
@@ -185,16 +189,14 @@ public class GenerationTask {
         int i = 0;
         while (i < count && iterator.hasNext()) {
             ChunkPos chunkPosInLocalSpace = iterator.next();
-            if (Math.abs(chunkPosInLocalSpace.x) <= this.radius && Math.abs(chunkPosInLocalSpace.z) <= this.radius) {
-                if (isChunkFullyGenerated(chunkPosInLocalSpace)) {
-                    this.skippedCount.incrementAndGet();
-                    this.listener.update(this.okCount.get(), this.errorCount.get(), this.skippedCount.get(), this.totalCount);
-                    continue;
-                }
-
-                chunks.add(ChunkPos.asLong(chunkPosInLocalSpace.x + this.x, chunkPosInLocalSpace.z + this.z));
-                i++;
+            if (isChunkFullyGenerated(chunkPosInLocalSpace)) {
+                this.skippedCount.incrementAndGet();
+                this.listener.update(this.okCount.get(), this.errorCount.get(), this.skippedCount.get(), this.totalCount);
+                continue;
             }
+
+            chunks.add(ChunkPos.asLong(chunkPosInLocalSpace.x + this.x, chunkPosInLocalSpace.z + this.z));
+            i++;
         }
 
         return chunks;

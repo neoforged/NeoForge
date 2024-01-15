@@ -15,6 +15,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.TimeUtil;
 import net.minecraft.world.level.dimension.DimensionType;
 
 class TPSCommand {
@@ -32,7 +33,7 @@ class TPSCommand {
 
                     long[] times = ctx.getSource().getServer().getTickTimesNanos();
                     double meanTickTime = mean(times) * 1.0E-6D;
-                    double meanTPS = Math.min(1000.0 / meanTickTime, 20);
+                    double meanTPS = TimeUtil.MILLISECONDS_PER_SECOND / Math.max(meanTickTime, ctx.getSource().getServer().tickRateManager().millisecondsPerTick());
                     ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.tps.summary.all", TIME_FORMATTER.format(meanTickTime), TIME_FORMATTER.format(meanTPS)), false);
 
                     return 0;
@@ -47,7 +48,7 @@ class TPSCommand {
 
         final Registry<DimensionType> reg = cs.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE);
         double worldTickTime = mean(times) * 1.0E-6D;
-        double worldTPS = Math.min(1000.0 / worldTickTime, 20);
+        double worldTPS = TimeUtil.MILLISECONDS_PER_SECOND / Math.max(worldTickTime, dim.tickRateManager().millisecondsPerTick());
         cs.sendSuccess(() -> Component.translatable("commands.neoforge.tps.summary.named", dim.dimension().location().toString(), reg.getKey(dim.dimensionType()), TIME_FORMATTER.format(worldTickTime), TIME_FORMATTER.format(worldTPS)), false);
 
         return 1;

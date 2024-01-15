@@ -5,9 +5,11 @@
 
 package net.neoforged.neoforge.client.model;
 
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -18,6 +20,7 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.SimpleBakedModel;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.RenderTypeGroup;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
@@ -51,8 +54,17 @@ public class EmptyModel extends SimpleUnbakedGeometry<EmptyModel> {
     private static class Baked extends SimpleBakedModel {
         private static final Material MISSING_TEXTURE = new Material(TextureAtlas.LOCATION_BLOCKS, MissingTextureAtlasSprite.getLocation());
 
+        // SimpleBakedModel must have a quad list per face in its map.
+        private static Map<Direction, List<BakedQuad>> makeEmptyCulledFaces() {
+            Map<Direction, List<BakedQuad>> map = new EnumMap<>(Direction.class);
+            for (Direction direction : Direction.values()) {
+                map.put(direction, List.of());
+            }
+            return map;
+        }
+
         public Baked() {
-            super(List.of(), Map.of(), false, false, false, UnitTextureAtlasSprite.INSTANCE, ItemTransforms.NO_TRANSFORMS, ItemOverrides.EMPTY, RenderTypeGroup.EMPTY);
+            super(List.of(), makeEmptyCulledFaces(), false, false, false, UnitTextureAtlasSprite.INSTANCE, ItemTransforms.NO_TRANSFORMS, ItemOverrides.EMPTY, RenderTypeGroup.EMPTY);
         }
 
         @Override

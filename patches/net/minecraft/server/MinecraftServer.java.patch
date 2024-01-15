@@ -125,7 +125,7 @@
              Optional.ofNullable(this.statusIcon),
 -            this.enforceSecureProfile()
 +            this.enforceSecureProfile(),
-+            Optional.of(new net.neoforged.neoforge.network.ServerStatusPing())
++            true //TODO Neo: Possible build a system which indicates what the status of the modded server is.
          );
      }
  
@@ -163,7 +163,7 @@
          this.profiler.popPush("players");
          this.playerList.tick();
 -        if (SharedConstants.IS_RUNNING_IN_IDE && this.tickRateManager.runsNormally()) {
-+        if (net.neoforged.neoforge.gametest.GameTestHooks.isGametestEnabled()) {
++        if (net.neoforged.neoforge.gametest.GameTestHooks.isGametestEnabled() && this.tickRateManager.runsNormally()) {
              GameTestTicker.SINGLETON.tick();
          }
  
@@ -176,6 +176,15 @@
      }
  
      public SystemReport fillSystemReport(SystemReport p_177936_) {
+@@ -1379,7 +_,7 @@
+     public CompletableFuture<Void> reloadResources(Collection<String> p_129862_) {
+         RegistryAccess.Frozen registryaccess$frozen = this.registries.getAccessForLoading(RegistryLayer.RELOADABLE);
+         CompletableFuture<Void> completablefuture = CompletableFuture.<ImmutableList>supplyAsync(
+-                () -> p_129862_.stream().map(this.packRepository::getPack).filter(Objects::nonNull).map(Pack::open).collect(ImmutableList.toImmutableList()),
++                () -> p_129862_.stream().map(this.packRepository::getPack).filter(Objects::nonNull).flatMap(Pack::streamSelfAndChildren).map(Pack::open).collect(ImmutableList.toImmutableList()),
+                 this
+             )
+             .thenCompose(
 @@ -1416,6 +_,7 @@
                      this.getPlayerList().reloadResources();
                      this.functionManager.replaceLibrary(this.resources.managers.getFunctionLibrary());

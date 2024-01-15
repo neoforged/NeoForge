@@ -60,7 +60,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.TestListener;
 import net.neoforged.testframework.annotation.OnInit;
@@ -69,9 +68,9 @@ import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.conf.FrameworkConfiguration;
 import net.neoforged.testframework.gametest.DynamicStructureTemplates;
 import net.neoforged.testframework.group.Group;
-import net.neoforged.testframework.impl.packet.ChangeEnabledPacket;
-import net.neoforged.testframework.impl.packet.ChangeStatusPacket;
-import net.neoforged.testframework.impl.packet.TFPackets;
+import net.neoforged.testframework.impl.packet.ChangeEnabledPayload;
+import net.neoforged.testframework.impl.packet.ChangeStatusPayload;
+import net.neoforged.testframework.impl.packet.TestFrameworkPayloadInitialization;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -111,8 +110,6 @@ public class TestFrameworkImpl implements MutableTestFramework {
     private final ResourceLocation id;
     private final TestsImpl tests = new TestsImpl();
 
-    private final SimpleChannel channel;
-
     private @Nullable MinecraftServer server;
     private final DynamicStructureTemplates structures;
     private final SummaryDumper summaryDumper;
@@ -124,7 +121,6 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
         this.configuration = configuration;
         this.id = configuration.id();
-        this.channel = configuration.networkingChannel();
         this.structures = new DynamicStructureTemplates();
         this.summaryDumper = new SummaryDumper(this);
 
@@ -262,7 +258,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
             }
         });
 
-        modBus.addListener(new TFPackets(channel, this)::onCommonSetup);
+        modBus.addListener(new TestFrameworkPayloadInitialization(this)::onNetworkSetup);
         modBus.addListener((final RegisterGameTestsEvent event) -> event.register(GameTestRegistration.REGISTER_METHOD));
 
         if (FMLLoader.getDist().isClient()) {
@@ -327,10 +323,10 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
         logger.info("Status of test '{}' has had status changed to {}{}.", test.id(), newStatus, changer instanceof Player player ? " by " + player.getGameProfile().getName() : "");
 
-        final ChangeStatusPacket packet = new ChangeStatusPacket(this, test.id(), newStatus);
+        final ChangeStatusPayload packet = new ChangeStatusPayload(this, test.id(), newStatus);
         sendPacketIfOn(
-                () -> channel.send(PacketDistributor.ALL.noArg(), packet),
-                () -> channel.sendToServer(packet),
+                () -> PacketDistributor.ALL.noArg().send(packet),
+                () -> PacketDistributor.SERVER.noArg().send(packet),
                 null);
     }
 
@@ -354,10 +350,10 @@ public class TestFrameworkImpl implements MutableTestFramework {
         tests.globalListeners.forEach(listenerConsumer);
         test.listeners().forEach(listenerConsumer);
 
-        final ChangeEnabledPacket packet = new ChangeEnabledPacket(TestFrameworkImpl.this, test.id(), enabled);
+        final ChangeEnabledPayload packet = new ChangeEnabledPayload(TestFrameworkImpl.this, test.id(), enabled);
         sendPacketIfOn(
-                () -> channel.send(PacketDistributor.ALL.noArg(), packet),
-                () -> channel.sendToServer(packet),
+                () -> PacketDistributor.ALL.noArg().send(packet),
+                () -> PacketDistributor.SERVER.noArg().send(packet),
                 null);
     }
 

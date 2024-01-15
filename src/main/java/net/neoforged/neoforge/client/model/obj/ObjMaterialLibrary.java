@@ -103,7 +103,7 @@ public class ObjMaterialLibrary {
         public float transparency = 0.0f;
 
         // non-standard
-        public int diffuseTintIndex = 0;
+        public int diffuseTintIndex = -1;
 
         public Material(String name) {
             this.name = name;

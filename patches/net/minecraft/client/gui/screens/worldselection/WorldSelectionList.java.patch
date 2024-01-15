@@ -22,7 +22,7 @@
                              }
 -            
 +
-+                            if (this.minecraft.screen instanceof ProgressScreen) // Neo - fix MC-251068
++                            if (this.minecraft.screen instanceof ProgressScreen || this.minecraft.screen instanceof ConfirmScreen) // Neo - fix MC-251068
                              this.minecraft.setScreen(this.screen);
                          },
                          Component.translatable("selectWorld.deleteQuestion"),

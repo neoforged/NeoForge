@@ -5,27 +5,32 @@
 
 package net.neoforged.neoforge.oldtest.misc;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
+import net.neoforged.neoforge.network.handling.IConfigurationPayloadHandler;
 
 /**
- * This test mod provides a way to register a {@link SimpleChannel} with a different protocol version on the client and the server to cause a mod channel mismatch.
- * Additionally, this test mod can register a registry object for the dedicated server only, causing a registry mismatch. Registering a registry object for the client only is not supported, since that would not cause a registry mismatch.
+ * This test mod provides a way to register a {@link CustomPacketPayload} with a different protocol version on the client and the server to cause a mod channel mismatch.
  * With this test mod and at least one of its features enabled, a {@link ModMismatchDisconnectedScreen} should appear when trying to join a test server,
  * displaying detailed information about why the handshake failed.
  * In case of a mismatch, the two displayed mod versions will be the same due to not being able to specify a different client and server mod version of this test mod.
  * This test mod is disabled by default to ensure that users can join test servers without needing to specifically disable this test mod.
+ * <p>
+ * In the past this test mod also registered a {@link SoundEvent} to cause a registry mismatch, but this is no longer the case,
+ * as the network negotiation does not care for registry mismatches anymore.
+ * </p>
  */
 @Mod(ModMismatchTest.MOD_ID)
-public class ModMismatchTest {
+public class ModMismatchTest implements IConfigurationPayloadHandler<ModMismatchTest.ModMismatchPayload> {
     public static final String MOD_ID = "mod_mismatch_test";
 
     private static final boolean ENABLED = false;
@@ -35,21 +40,48 @@ public class ModMismatchTest {
     // Additionally, if the channel is missing for the client, a S2CModMismatchData packet will be sent to the client, containing all the information about the channel mismatch detected on the server.
     private static final boolean REGISTER_FOR_SERVER = true;
     private static final boolean REGISTER_FOR_CLIENT = true;
-    // Enabling this field (and disabling the two above to not cause a channel mismatch) will cause a registry mismatch due to a server registry entry not being present on the client. Since this test mod is loaded on both dists, a mod mismatch will be displayed as the cause.
-    private static final boolean REGISTER_REGISTRY_ENTRY = false;
 
-    private static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, MOD_ID);
-    private static final String CHANNEL_PROTOCOL_VERSION = FMLEnvironment.dist.isClient() ? "V1" : "V2";
+    private static final String CHANNEL_PROTOCOL_VERSION = FMLEnvironment.dist == Dist.CLIENT ? "V1" : "V2";
 
-    public ModMismatchTest(IEventBus eventBus) {
+    public ModMismatchTest(IEventBus modBus) {
         if (ENABLED) {
-            if ((FMLEnvironment.dist.isDedicatedServer() && REGISTER_FOR_SERVER) || (FMLEnvironment.dist.isClient() && REGISTER_FOR_CLIENT)) {
-                NetworkRegistry.newSimpleChannel(new ResourceLocation(MOD_ID, "channel"), () -> CHANNEL_PROTOCOL_VERSION, p -> p.equals(CHANNEL_PROTOCOL_VERSION), (p) -> p.equals(CHANNEL_PROTOCOL_VERSION));
-            }
-            if (REGISTER_REGISTRY_ENTRY && FMLEnvironment.dist.isDedicatedServer()) {
-                SOUND_EVENTS.register("mismatching_sound_event", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MOD_ID, "server.connect.fail")));
-                SOUND_EVENTS.register(eventBus);
-            }
+            modBus.addListener(RegisterPayloadHandlerEvent.class, this::onRegisterPacketHandler);
         }
     }
+
+    private void onRegisterPacketHandler(RegisterPayloadHandlerEvent event) {
+        if ((FMLEnvironment.dist == Dist.DEDICATED_SERVER && REGISTER_FOR_SERVER) || (FMLEnvironment.dist == Dist.CLIENT && REGISTER_FOR_CLIENT)) {
+            event
+                    .registrar(MOD_ID)
+                    .versioned(CHANNEL_PROTOCOL_VERSION)
+                    .configuration(
+                            ModMismatchPayload.ID,
+                            ModMismatchPayload::new,
+                            this);
+        }
+    }
+
+    @Override
+    public void handle(ModMismatchPayload payload, ConfigurationPayloadContext context) {
+        //Noop
+    }
+
+    public record ModMismatchPayload() implements CustomPacketPayload {
+
+        private static final ResourceLocation ID = new ResourceLocation(MOD_ID, "mod_mismatch");
+
+        public ModMismatchPayload(FriendlyByteBuf buf) {
+            this();
+        }
+
+        @Override
+        public void write(FriendlyByteBuf p_294947_) {}
+
+        @Override
+        public ResourceLocation id() {
+            return ID;
+        }
+
+    }
+
 }

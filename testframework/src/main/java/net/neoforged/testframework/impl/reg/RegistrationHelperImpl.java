@@ -13,8 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
@@ -25,6 +27,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelProvider;
@@ -33,6 +36,7 @@ import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.testframework.registration.DeferredAttachmentTypes;
 import net.neoforged.testframework.registration.DeferredBlocks;
 import net.neoforged.testframework.registration.DeferredEntityTypes;
 import net.neoforged.testframework.registration.DeferredItems;
@@ -137,6 +141,13 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         return entityTypes;
     }
 
+    private final DeferredRegistrar<AttachmentType<?>, DeferredAttachmentTypes> attachments = new DeferredRegistrar<>((namespace, reg) -> new DeferredAttachmentTypes(namespace));
+
+    @Override
+    public DeferredAttachmentTypes attachments() {
+        return attachments.get();
+    }
+
     @Override
     public String modId() {
         return modId;
@@ -186,5 +197,25 @@ public class RegistrationHelperImpl implements RegistrationHelper {
                 return modId + " generator " + p.getName();
             }
         }));
+    }
+
+    private final class DeferredRegistrar<R, T extends DeferredRegister<R>> implements Supplier<T> {
+        private final BiFunction<String, RegistrationHelper, T> factory;
+
+        private T cached;
+
+        private DeferredRegistrar(BiFunction<String, RegistrationHelper, T> factory) {
+            this.factory = factory;
+        }
+
+        @Override
+        public T get() {
+            if (cached == null) {
+                cached = factory.apply(RegistrationHelperImpl.this.modId, RegistrationHelperImpl.this);
+                registrars.put(cached.getRegistryKey(), cached);
+                if (RegistrationHelperImpl.this.bus != null) cached.register(bus);
+            }
+            return cached;
+        }
     }
 }

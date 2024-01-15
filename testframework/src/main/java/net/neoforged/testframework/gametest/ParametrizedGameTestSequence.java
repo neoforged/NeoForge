@@ -11,6 +11,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestSequence;
 
@@ -25,7 +26,13 @@ public class ParametrizedGameTestSequence<T> {
 
         final AtomicReference<T> val = new AtomicReference<>();
         sequence.thenExecute(() -> val.set(value.get()));
-        this.value = val::get;
+        this.value = () -> {
+            final var v = val.get();
+            if (v == null) {
+                throw new GameTestAssertException("Expected value to be non-null!");
+            }
+            return v;
+        };
     }
 
     public ParametrizedGameTestSequence<T> thenWaitUntil(Runnable condition) {

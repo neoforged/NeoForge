@@ -101,11 +101,11 @@
                          posestack$pose1.normal(),
                          1.0F
                      );
-+                    net.neoforged.neoforge.client.model.data.ModelData modelData = level.getModelDataManager().getAt(blockpos2);
++                    net.neoforged.neoforge.client.model.data.ModelData modelData = level.getModelDataManager().getAtOrEmpty(blockpos2);
                      this.minecraft
                          .getBlockRenderer()
 -                        .renderBreakingTexture(this.level.getBlockState(blockpos2), blockpos2, this.level, p_109600_, vertexconsumer1);
-+                        .renderBreakingTexture(this.level.getBlockState(blockpos2), blockpos2, this.level, p_109600_, vertexconsumer1, modelData == null ? net.neoforged.neoforge.client.model.data.ModelData.EMPTY : modelData);
++                        .renderBreakingTexture(this.level.getBlockState(blockpos2), blockpos2, this.level, p_109600_, vertexconsumer1, modelData);
                      p_109600_.popPose();
                  }
              }

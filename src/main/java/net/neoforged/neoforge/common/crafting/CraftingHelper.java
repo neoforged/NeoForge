@@ -5,24 +5,16 @@
 
 package net.neoforged.neoforge.common.crafting;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import java.util.function.Function;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -38,39 +30,6 @@ public class CraftingHelper {
     private static final Logger LOGGER = LogManager.getLogger();
     @SuppressWarnings("unused")
     private static final Marker CRAFTHELPER = MarkerManager.getMarker("CRAFTHELPER");
-    private static Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-    public static final Recipe<?> EMPTY_RECIPE = new Recipe<>() {
-        @Override
-        public boolean matches(Container p_44002_, Level p_44003_) {
-            return false;
-        }
-
-        @Override
-        public ItemStack assemble(Container p_44001_, RegistryAccess p_267165_) {
-            return ItemStack.EMPTY;
-        }
-
-        @Override
-        public boolean canCraftInDimensions(int p_43999_, int p_44000_) {
-            return false;
-        }
-
-        @Override
-        public ItemStack getResultItem(RegistryAccess p_267052_) {
-            return ItemStack.EMPTY;
-        }
-
-        @Override
-        public RecipeSerializer<?> getSerializer() {
-            throw new UnsupportedOperationException("Empty recipe has no serializer");
-        }
-
-        @Override
-        public RecipeType<?> getType() {
-            throw new UnsupportedOperationException("Empty recipe has no type");
-        }
-    };
-
     public static final Codec<CompoundTag> TAG_CODEC = ExtraCodecs.withAlternative(TagParser.AS_CODEC, net.minecraft.nbt.CompoundTag.CODEC);
 
     @ApiStatus.Internal

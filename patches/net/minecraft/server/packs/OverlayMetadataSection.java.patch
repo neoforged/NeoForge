@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/packs/OverlayMetadataSection.java
++++ b/net/minecraft/server/packs/OverlayMetadataSection.java
+@@ -13,7 +_,7 @@
+ public record OverlayMetadataSection(List<OverlayMetadataSection.OverlayEntry> overlays) {
+     private static final Pattern DIR_VALIDATOR = Pattern.compile("[-_a-zA-Z0-9.]+");
+     private static final Codec<OverlayMetadataSection> CODEC = RecordCodecBuilder.create(
+-        p_294898_ -> p_294898_.group(OverlayMetadataSection.OverlayEntry.CODEC.listOf().fieldOf("entries").forGetter(OverlayMetadataSection::overlays))
++        p_294898_ -> p_294898_.group(net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(OverlayMetadataSection.OverlayEntry.CODEC).fieldOf("entries").forGetter(OverlayMetadataSection::overlays))
+                 .apply(p_294898_, OverlayMetadataSection::new)
+     );
+     public static final MetadataSectionType<OverlayMetadataSection> TYPE = MetadataSectionType.fromCodec("overlays", CODEC);

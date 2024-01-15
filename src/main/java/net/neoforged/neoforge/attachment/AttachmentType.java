@@ -7,11 +7,13 @@ package net.neoforged.neoforge.attachment;
 
 import com.mojang.serialization.Codec;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.common.util.INBTSerializable;
@@ -38,15 +40,18 @@ import org.jetbrains.annotations.Nullable;
  * <li>Serializable item stack attachments are copied when an item stack is copied.</li>
  * <li>Serializable item stack attachments must match for item stack comparison to succeed.</li>
  * </ul>
+ * <h3>{@link Level}-exclusive behavior:</h3>
+ * <ul>
+ * <li>(nothing)</li>
+ * </ul>
  * <h3>{@link LevelChunk}-exclusive behavior:</h3>
  * <ul>
  * <li>Modifications to attachments should be followed by a call to {@link LevelChunk#setUnsaved(boolean)}.</li>
  * </ul>
  */
 // TODO Future work: maybe add copy handlers for stacks and entities, to customize copying behavior (instead of serializing, copying the NBT, deserializing).
-// TODO Future work: maybe add custom comparison handlers for item stacks.
 public final class AttachmentType<T> {
-    final Supplier<T> defaultValueSupplier;
+    final Function<IAttachmentHolder, T> defaultValueSupplier;
     @Nullable
     final IAttachmentSerializer<?, T> serializer;
     final boolean copyOnDeath;
@@ -71,21 +76,52 @@ public final class AttachmentType<T> {
     /**
      * Creates a builder for an attachment type.
      *
+     * <p>See {@link #builder(Function)} for attachments that want to capture a reference to their holder.
+     *
      * @param defaultValueSupplier A supplier for a new default value of this attachment type.
      */
     public static <T> Builder<T> builder(Supplier<T> defaultValueSupplier) {
-        return new Builder<>(defaultValueSupplier);
+        return builder(holder -> defaultValueSupplier.get());
+    }
+
+    /**
+     * Creates a builder for an attachment type.
+     *
+     * <p>This overload allows capturing a reference to the {@link IAttachmentHolder} for the attachment.
+     * To obtain a specific subtype, the holder can be cast.
+     * If the holder is of the wrong type, the constructor should throw an exception.
+     * See {@link #builder(Supplier)} for an overload that does not capture the holder.
+     *
+     * @param defaultValueConstructor A constructor for a new default value of this attachment type.
+     */
+    public static <T> Builder<T> builder(Function<IAttachmentHolder, T> defaultValueConstructor) {
+        return new Builder<>(defaultValueConstructor);
     }
 
     /**
      * Create a builder for an attachment type that uses {@link INBTSerializable} for serialization.
      * Other kinds of serialization can be implemented using {@link #builder(Supplier)} and {@link Builder#serialize(IAttachmentSerializer)}.
+     *
+     * <p>See {@link #serializable(Function)} for attachments that want to capture a reference to their holder.
      */
     public static <S extends Tag, T extends INBTSerializable<S>> Builder<T> serializable(Supplier<T> defaultValueSupplier) {
-        return builder(defaultValueSupplier).serialize(new IAttachmentSerializer<S, T>() {
+        return serializable(holder -> defaultValueSupplier.get());
+    }
+
+    /**
+     * Create a builder for an attachment type that uses {@link INBTSerializable} for serialization.
+     * Other kinds of serialization can be implemented using {@link #builder(Supplier)} and {@link Builder#serialize(IAttachmentSerializer)}.
+     *
+     * <p>This overload allows capturing a reference to the {@link IAttachmentHolder} for the attachment.
+     * To obtain a specific subtype, the holder can be cast.
+     * If the holder is of the wrong type, the constructor should throw an exception.
+     * See {@link #serializable(Supplier)} for an overload that does not capture the holder.
+     */
+    public static <S extends Tag, T extends INBTSerializable<S>> Builder<T> serializable(Function<IAttachmentHolder, T> defaultValueConstructor) {
+        return builder(defaultValueConstructor).serialize(new IAttachmentSerializer<S, T>() {
             @Override
-            public T read(S tag) {
-                var ret = defaultValueSupplier.get();
+            public T read(IAttachmentHolder holder, S tag) {
+                var ret = defaultValueConstructor.apply(holder);
                 ret.deserializeNBT(tag);
                 return ret;
             }
@@ -98,14 +134,14 @@ public final class AttachmentType<T> {
     }
 
     public static class Builder<T> {
-        private final Supplier<T> defaultValueSupplier;
+        private final Function<IAttachmentHolder, T> defaultValueSupplier;
         @Nullable
         private IAttachmentSerializer<?, T> serializer;
         private boolean copyOnDeath;
         @Nullable
         private IAttachmentComparator<T> comparator;
 
-        private Builder(Supplier<T> defaultValueSupplier) {
+        private Builder(Function<IAttachmentHolder, T> defaultValueSupplier) {
             this.defaultValueSupplier = defaultValueSupplier;
         }
 
@@ -129,6 +165,8 @@ public final class AttachmentType<T> {
          * <p>Using a {@link Codec} to serialize attachments is discouraged for item stack attachments,
          * for performance reasons. Prefer one of the other options.
          *
+         * <p>Codec-based attachments cannot capture a reference to their holder.
+         *
          * @param codec The codec to use.
          */
         public Builder<T> serialize(Codec<T> codec) {
@@ -136,7 +174,7 @@ public final class AttachmentType<T> {
             // TODO: better error handling
             return serialize(new IAttachmentSerializer<>() {
                 @Override
-                public T read(Tag tag) {
+                public T read(IAttachmentHolder holder, Tag tag) {
                     return codec.parse(NbtOps.INSTANCE, tag).result().get();
                 }
 

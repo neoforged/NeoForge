@@ -59,8 +59,8 @@
                                      } else {
 -                                        return aingredient.length > 9
 -                                            ? DataResult.error(() -> "Too many ingredients for shapeless recipe")
-+                                        return aingredient.length > ShapedRecipePattern.MAX_HEIGHT * ShapedRecipePattern.MAX_WIDTH
-+                                            ? DataResult.error(() -> "Too many ingredients for shapeless recipe. The maximum is: %s".formatted(ShapedRecipePattern.MAX_HEIGHT * ShapedRecipePattern.MAX_WIDTH))
++                                        return aingredient.length > ShapedRecipePattern.maxHeight * ShapedRecipePattern.maxWidth
++                                            ? DataResult.error(() -> "Too many ingredients for shapeless recipe. The maximum is: %s".formatted(ShapedRecipePattern.maxHeight * ShapedRecipePattern.maxWidth))
                                              : DataResult.success(NonNullList.of(Ingredient.EMPTY, aingredient));
                                      }
                                  },

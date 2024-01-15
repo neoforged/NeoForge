@@ -30,4 +30,19 @@ public class OverlayTests {
             helper.succeed();
         });
     }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if conditions work for pack overlays")
+    static void conditionalOverlay(final DynamicTest test) {
+        var enabledKey = TagKey.create(Registries.BLOCK, new ResourceLocation("conditional_overlays_test", "overlay_enabled"));
+        var disabledKey = TagKey.create(Registries.BLOCK, new ResourceLocation("conditional_overlays_test", "overlay_disabled"));
+        test.onGameTest(helper -> {
+            helper.assertTrue(Blocks.DIAMOND_BLOCK.defaultBlockState().is(enabledKey), "Enabled overlay was not applied");
+            helper.assertFalse(Blocks.COBBLESTONE.defaultBlockState().is(enabledKey), "File under enabled overlay was applied");
+            helper.assertFalse(Blocks.DIAMOND_BLOCK.defaultBlockState().is(disabledKey), "Disabled overlay was applied");
+            helper.assertTrue(Blocks.COBBLESTONE.defaultBlockState().is(disabledKey), "File under disabled overlay was not applied");
+            helper.succeed();
+        });
+    }
 }

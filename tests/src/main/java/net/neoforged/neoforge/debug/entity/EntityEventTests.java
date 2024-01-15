@@ -5,17 +5,21 @@
 
 package net.neoforged.neoforge.debug.entity;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = { EntityTests.GROUP + ".event", "event" })
 public class EntityEventTests {
@@ -48,6 +52,21 @@ public class EntityEventTests {
 
                 .thenIdle(10)
                 .thenExecute(helper::killAllEntities)
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if the EntityAttributeModificationEvent is fired")
+    static void entityAttributeModificationEvent(final DynamicTest test, final RegistrationHelper reg) {
+        final var testAttr = reg.registrar(Registries.ATTRIBUTE).register("test_attribute", () -> new RangedAttribute(reg.modId() + ".test_attr", 1.5D, 0.0D, 1024.0D).setSyncable(true));
+        test.framework().modEventBus().addListener((final EntityAttributeModificationEvent event) -> {
+            event.add(EntityType.DONKEY, testAttr.get());
+        });
+
+        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.DONKEY, 1, 2, 1))
+                .thenExecute(donkey -> helper.assertEntityProperty(
+                        donkey, d -> d.getAttribute(testAttr.get()).getValue(), "test attribute", 1.5D))
                 .thenSucceed());
     }
 }

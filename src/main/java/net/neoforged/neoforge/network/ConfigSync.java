@@ -14,8 +14,10 @@ import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.network.simple.MessageFunctions;
+import net.neoforged.neoforge.network.payload.ConfigFilePayload;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public class ConfigSync {
     public static final ConfigSync INSTANCE = new ConfigSync(ConfigTracker.INSTANCE);
     private final ConfigTracker tracker;
@@ -24,7 +26,7 @@ public class ConfigSync {
         this.tracker = tracker;
     }
 
-    public List<MessageFunctions.LoginPacket<HandshakeMessages.S2CConfigData>> syncConfigs(boolean isLocal) {
+    public List<ConfigFilePayload> syncConfigs() {
         final Map<String, byte[]> configData = tracker.configSets().get(ModConfig.Type.SERVER).stream().collect(Collectors.toMap(ModConfig::getFileName, mc -> {
             try {
                 return Files.readAllBytes(mc.getFullPath());
@@ -32,12 +34,15 @@ public class ConfigSync {
                 throw new RuntimeException(e);
             }
         }));
-        return configData.entrySet().stream().map(e -> new MessageFunctions.LoginPacket<>("Config " + e.getKey(), new HandshakeMessages.S2CConfigData(e.getKey(), e.getValue()))).toList();
+
+        return configData.entrySet().stream()
+                .map(e -> new ConfigFilePayload(e.getValue(), e.getKey()))
+                .toList();
     }
 
-    public void receiveSyncedConfig(final HandshakeMessages.S2CConfigData s2CConfigData, final NetworkEvent.Context contextSupplier) {
+    public void receiveSyncedConfig(final byte[] contents, final String fileName) {
         if (!Minecraft.getInstance().isLocalServer()) {
-            Optional.ofNullable(tracker.fileMap().get(s2CConfigData.getFileName())).ifPresent(mc -> mc.acceptSyncedConfig(s2CConfigData.getBytes()));
+            Optional.ofNullable(tracker.fileMap().get(fileName)).ifPresent(mc -> mc.acceptSyncedConfig(contents));
         }
     }
 }

@@ -1,0 +1,20 @@
+--- a/net/minecraft/network/protocol/BundlePacket.java
++++ b/net/minecraft/network/protocol/BundlePacket.java
+@@ -4,13 +_,13 @@
+ import net.minecraft.network.PacketListener;
+ 
+ public abstract class BundlePacket<T extends PacketListener> implements Packet<T> {
+-    private final Iterable<Packet<T>> packets;
++    private final Iterable<Packet<? super T>> packets;
+ 
+-    protected BundlePacket(Iterable<Packet<T>> p_265290_) {
+-        this.packets = p_265290_;
++    protected BundlePacket(Iterable<Packet<? super T>> p_265290_) {
++        this.packets = net.neoforged.neoforge.network.bundle.BundlePacketUtils.flatten(p_265290_);
+     }
+ 
+-    public final Iterable<Packet<T>> subPackets() {
++    public final Iterable<Packet<? super T>> subPackets() {
+         return this.packets;
+     }
+ 

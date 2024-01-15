@@ -1,5 +1,8 @@
 var ASMAPI = Java.type('net.neoforged.coremod.api.ASMAPI')
 
+// If you add or remove a new field,
+// please also add or remove a corresponding comment in the source code,
+// in the interest of modders reading it.
 function initializeCoreMod() {
     return {
         'biome': {

@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/block/LiquidBlock.java
 +++ b/net/minecraft/world/level/block/LiquidBlock.java
-@@ -51,7 +_,8 @@
+@@ -51,7 +_,9 @@
                  .apply(p_308830_, LiquidBlock::new)
      );
      public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL;
 -    protected final FlowingFluid fluid;
++    /** Neo: Field accesses are redirected to {@link #getFluid()} with a coremod. */
 +    @Deprecated // Use getFluid
 +    private final FlowingFluid fluid;
      private final List<FluidState> stateCache;

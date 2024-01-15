@@ -41,6 +41,11 @@ public interface RegistrationHelper {
     DeferredEntityTypes entityTypes();
 
     /**
+     * {@return a helper for attachment type registration}
+     */
+    DeferredAttachmentTypes attachments();
+
+    /**
      * {@return the mod id of this helper}
      */
     String modId();

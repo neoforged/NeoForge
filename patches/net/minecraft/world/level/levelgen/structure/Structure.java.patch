@@ -5,7 +5,7 @@
      public static final Codec<Structure> DIRECT_CODEC = BuiltInRegistries.STRUCTURE_TYPE.byNameCodec().dispatch(Structure::type, StructureType::codec);
      public static final Codec<Holder<Structure>> CODEC = RegistryFileCodec.create(Registries.STRUCTURE, DIRECT_CODEC);
 -    protected final Structure.StructureSettings settings;
-+    //Forge: Make this field private so that the redirect coremod can target it
++    /** Neo: Field accesses are redirected to {@link #getModifiedStructureSettings()} with a coremod. */
 +    private final Structure.StructureSettings settings;
  
      public static <S extends Structure> RecordCodecBuilder<S, Structure.StructureSettings> settingsCodec(Instance<S> p_226568_) {

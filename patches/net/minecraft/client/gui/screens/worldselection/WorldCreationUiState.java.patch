@@ -1,11 +1,6 @@
 --- a/net/minecraft/client/gui/screens/worldselection/WorldCreationUiState.java
 +++ b/net/minecraft/client/gui/screens/worldselection/WorldCreationUiState.java
-@@ -223,11 +_,11 @@
-     public WorldCreationUiState.WorldTypeEntry getWorldType() {
-         return this.worldType;
-     }
--
-+    
+@@ -227,7 +_,7 @@
      @Nullable
      public PresetEditor getPresetEditor() {
          Holder<WorldPreset> holder = this.getWorldType().preset();

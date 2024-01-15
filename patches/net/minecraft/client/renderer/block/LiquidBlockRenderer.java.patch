@@ -81,15 +81,16 @@
 -                    this.vertex(p_234372_, d5, d2 + (double)f45, d6, f37, f38, f39, f32, f34, j);
 -                    this.vertex(p_234372_, d5, d2 + (double)f17, d6, f37, f38, f39, f32, f35, j);
 -                    this.vertex(p_234372_, d3, d2 + (double)f17, d4, f37, f38, f39, f53, f35, j);
-+                    this.vertex(p_234372_, d3, d2 + (double)f44, d4, f37, f38, f39, alpha, f53, f33, j);
-+                    this.vertex(p_234372_, d5, d2 + (double)f45, d6, f37, f38, f39, alpha, f32, f34, j);
-+                    this.vertex(p_234372_, d5, d2 + (double)f17, d6, f37, f38, f39, alpha, f32, f35, j);
-+                    this.vertex(p_234372_, d3, d2 + (double)f17, d4, f37, f38, f39, alpha, f53, f35, j);
-                     if (textureatlassprite2 != this.waterOverlay) {
+-                    if (textureatlassprite2 != this.waterOverlay) {
 -                        this.vertex(p_234372_, d3, d2 + (double)f17, d4, f37, f38, f39, f53, f35, j);
 -                        this.vertex(p_234372_, d5, d2 + (double)f17, d6, f37, f38, f39, f32, f35, j);
 -                        this.vertex(p_234372_, d5, d2 + (double)f45, d6, f37, f38, f39, f32, f34, j);
 -                        this.vertex(p_234372_, d3, d2 + (double)f44, d4, f37, f38, f39, f53, f33, j);
++                    this.vertex(p_234372_, d3, d2 + (double)f44, d4, f37, f38, f39, alpha, f53, f33, j);
++                    this.vertex(p_234372_, d5, d2 + (double)f45, d6, f37, f38, f39, alpha, f32, f34, j);
++                    this.vertex(p_234372_, d5, d2 + (double)f17, d6, f37, f38, f39, alpha, f32, f35, j);
++                    this.vertex(p_234372_, d3, d2 + (double)f17, d4, f37, f38, f39, alpha, f53, f35, j);
++                    if (textureatlassprite2 != atextureatlassprite[2]) {
 +                        this.vertex(p_234372_, d3, d2 + (double)f17, d4, f37, f38, f39, alpha, f53, f35, j);
 +                        this.vertex(p_234372_, d5, d2 + (double)f17, d6, f37, f38, f39, alpha, f32, f35, j);
 +                        this.vertex(p_234372_, d5, d2 + (double)f45, d6, f37, f38, f39, alpha, f32, f34, j);
@@ -102,7 +103,7 @@
          BlockState blockstate = p_203157_.getBlockState(p_203159_);
          return this.getHeight(p_203157_, p_203158_, p_203159_, blockstate, blockstate.getFluidState());
 +    }
-+    
++
 +    private void vertex(VertexConsumer p_110985_, double p_110986_, double p_110987_, double p_110988_, float p_110989_, float p_110990_, float p_110991_, float alpha, float p_110992_, float p_110993_, int p_110994_) {
 +        p_110985_.vertex(p_110986_, p_110987_, p_110988_).color(p_110989_, p_110990_, p_110991_, alpha).uv(p_110992_, p_110993_).uv2(p_110994_).normal(0.0F, 1.0F, 0.0F).endVertex();
      }

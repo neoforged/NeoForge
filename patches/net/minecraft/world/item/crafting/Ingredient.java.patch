@@ -1,21 +1,20 @@
 --- a/net/minecraft/world/item/crafting/Ingredient.java
 +++ b/net/minecraft/world/item/crafting/Ingredient.java
-@@ -34,17 +_,37 @@
+@@ -34,15 +_,35 @@
      private ItemStack[] itemStacks;
      @Nullable
      private IntList stackingIds;
 -    public static final Codec<Ingredient> CODEC = codec(true);
 -    public static final Codec<Ingredient> CODEC_NONEMPTY = codec(false);
--
 +    private final java.util.function.Supplier<? extends net.neoforged.neoforge.common.crafting.IngredientType<?>> type;
-+    
++
 +    public static final Codec<Ingredient> VANILLA_CODEC = codec(true);
 +    public static final Codec<Ingredient> VANILLA_CODEC_NONEMPTY = codec(false);
 +    public static final Codec<Ingredient> CODEC = net.neoforged.neoforge.common.crafting.CraftingHelper.makeIngredientCodec(true, VANILLA_CODEC);
 +    public static final Codec<Ingredient> CODEC_NONEMPTY = net.neoforged.neoforge.common.crafting.CraftingHelper.makeIngredientCodec(false, VANILLA_CODEC_NONEMPTY);
 +    public static final Codec<List<Ingredient>> LIST_CODEC = CODEC.listOf();
 +    public static final Codec<List<Ingredient>> LIST_CODEC_NONEMPTY = CODEC_NONEMPTY.listOf();
-+    
+ 
      protected Ingredient(Stream<? extends Ingredient.Value> p_43907_) {
 -        this.values = p_43907_.toArray(p_43933_ -> new Ingredient.Value[p_43933_]);
 +        this(p_43907_, net.neoforged.neoforge.common.NeoForgeMod.VANILLA_INGREDIENT_TYPE);
@@ -33,15 +32,13 @@
 +    private Ingredient(Ingredient.Value[] p_301044_, java.util.function.Supplier<? extends net.neoforged.neoforge.common.crafting.IngredientType<?>> type) {
          this.values = p_301044_;
 +        this.type = type;
-     }
- 
++    }
++
 +    public net.neoforged.neoforge.common.crafting.IngredientType<?> getType() {
 +        return type.get();
-+    }
-+    
+     }
+ 
      public ItemStack[] getItems() {
-         if (this.itemStacks == null) {
-             this.itemStacks = Arrays.stream(this.values)
 @@ -63,7 +_,7 @@
              return p_43914_.isEmpty();
          } else {
@@ -51,17 +48,17 @@
                      return true;
                  }
              }
-@@ -71,6 +_,10 @@
-             return false;
+@@ -72,6 +_,10 @@
          }
      }
-+    
+ 
 +    protected boolean areStacksEqual(ItemStack left, ItemStack right) {
 +        return left.is(right.getItem());
 +    }
- 
++
      public IntList getStackingIds() {
          if (this.stackingIds == null) {
+             ItemStack[] aitemstack = this.getItems();
 @@ -88,11 +_,24 @@
      }
  

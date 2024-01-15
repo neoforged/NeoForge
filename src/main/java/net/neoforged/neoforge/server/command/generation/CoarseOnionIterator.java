@@ -75,7 +75,7 @@ public class CoarseOnionIterator extends AbstractIterator<ChunkPos> {
 
         @Override
         public boolean hasNext() {
-            return this.z <= this.z1;
+            return this.x <= this.x1 && this.z <= this.z1;
         }
 
         @Override

@@ -32,7 +32,7 @@ import net.minecraft.network.protocol.game.ClientboundUpdateAttributesPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagNetworkSerialization;
-import net.neoforged.neoforge.network.NetworkHooks;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -55,8 +55,8 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
     }
 
     @Override
-    protected boolean isNecessary(Connection manager) {
-        return NetworkHooks.isVanillaConnection(manager);
+    public boolean isNecessary(Connection manager) {
+        return NetworkRegistry.getInstance().isVanillaConnection(manager);
     }
 
     /**

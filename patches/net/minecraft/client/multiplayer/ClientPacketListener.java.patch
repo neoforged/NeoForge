@@ -1,5 +1,21 @@
 --- a/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/net/minecraft/client/multiplayer/ClientPacketListener.java
+@@ -340,6 +_,7 @@
+     private MessageSignatureCache messageSignatureCache = MessageSignatureCache.createDefault();
+     private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
+     private final PingDebugMonitor pingDebugMonitor;
++    private final boolean isModdedConnection;
+     @Nullable
+     private LevelLoadStatusManager levelLoadStatusManager;
+     private boolean seenInsecureChatWarning = false;
+@@ -353,6 +_,7 @@
+         this.advancements = new ClientAdvancements(p_253924_, this.telemetryManager);
+         this.suggestionsProvider = new ClientSuggestionProvider(this, p_253924_);
+         this.pingDebugMonitor = new PingDebugMonitor(this, p_253924_.getDebugOverlay().getPingLogger());
++        this.isModdedConnection = p_295121_.isModdedConnection();
+     }
+ 
+     public ClientSuggestionProvider getSuggestionsProvider() {
 @@ -416,6 +_,7 @@
  
          this.minecraft.debugRenderer.clear();
@@ -8,14 +24,16 @@
          this.minecraft.player.setId(p_105030_.playerId());
          this.level.addEntity(this.minecraft.player);
          this.minecraft.player.input = new KeyboardInput(this.minecraft.options);
-@@ -429,6 +_,7 @@
-         this.minecraft.player.setPortalCooldown(commonplayerspawninfo.portalCooldown());
-         this.minecraft.gameMode.setLocalMode(commonplayerspawninfo.gameType(), commonplayerspawninfo.previousGameType());
-         this.minecraft.options.setServerRenderDistance(p_105030_.chunkRadius());
-+        net.neoforged.neoforge.network.NetworkHooks.sendMCRegistryPackets(connection, net.neoforged.neoforge.network.PlayNetworkDirection.PLAY_TO_SERVER);
-         this.chatSession = null;
-         this.lastSeenMessages = new LastSeenMessagesTracker(20);
-         this.messageSignatureCache = MessageSignatureCache.createDefault();
+@@ -801,7 +_,8 @@
+                         this.enabledFeatures,
+                         this.serverBrand,
+                         this.serverData,
+-                        this.postDisconnectScreen
++                        this.postDisconnectScreen,
++                        this.isModdedConnection
+                     )
+                 )
+             );
 @@ -1143,6 +_,7 @@
          }
  
@@ -65,33 +83,28 @@
      }
  
      @Override
-@@ -1916,7 +_,7 @@
+@@ -1916,7 +_,11 @@
      }
  
      @Override
 -    public void handleCustomPayload(CustomPacketPayload p_295851_) {
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295851_) {
++        if (this.isModdedConnection && net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtClient(this, p_295727_)) {
++            return;
++        }
++        PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
          if (p_295851_ instanceof PathfindingDebugPayload pathfindingdebugpayload) {
              this.minecraft
                  .debugRenderer
-@@ -1985,11 +_,15 @@
-         } else if (p_295851_ instanceof BreezeDebugPayload breezedebugpayload) {
-             this.minecraft.debugRenderer.breezeDebugRenderer.add(breezedebugpayload.breezeInfo());
-         } else {
--            this.handleUnknownCustomPayload(p_295851_);
-+            this.handleUnknownCustomPayload(p_295727_, p_295851_);
+@@ -2267,7 +_,7 @@
+     public void handleBundlePacket(ClientboundBundlePacket p_265195_) {
+         PacketUtils.ensureRunningOnSameThread(p_265195_, this, this.minecraft);
+ 
+-        for(Packet<ClientGamePacketListener> packet : p_265195_.subPackets()) {
++        for(Packet<? super ClientGamePacketListener> packet : p_265195_.subPackets()) {
+             packet.handle(this);
          }
      }
- 
--    private void handleUnknownCustomPayload(CustomPacketPayload p_294389_) {
-+    private void handleUnknownCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_294389_) {
-+        if (p_294389_ instanceof net.neoforged.neoforge.network.custom.payload.SimplePayload simplePayload && net.neoforged.neoforge.network.NetworkHooks.onCustomPayload(p_295727_, simplePayload, connection)) {
-+            return;
-+        }
-+
-         LOGGER.warn("Unknown custom packet payload: {}", p_294389_.id());
-     }
- 
 @@ -2389,6 +_,8 @@
      }
  

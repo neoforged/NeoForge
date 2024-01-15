@@ -1,0 +1,20 @@
+--- a/net/minecraft/server/network/CommonListenerCookie.java
++++ b/net/minecraft/server/network/CommonListenerCookie.java
+@@ -3,7 +_,16 @@
+ import com.mojang.authlib.GameProfile;
+ import net.minecraft.server.level.ClientInformation;
+ 
+-public record CommonListenerCookie(GameProfile gameProfile, int latency, ClientInformation clientInformation) {
++public record CommonListenerCookie(GameProfile gameProfile, int latency, ClientInformation clientInformation, boolean isModdedConnection) {
++
++    /**
++     * @deprecated Use {@link #CommonListenerCookie(GameProfile, int, ClientInformation, boolean)} instead, to indicate whether the connection is modded.
++     */
++    @Deprecated
++    public CommonListenerCookie(GameProfile gameProfile, int latency, ClientInformation clientInformation) {
++        this(gameProfile, latency, clientInformation, false);
++    }
++
+     public static CommonListenerCookie createInitial(GameProfile p_302024_) {
+         return new CommonListenerCookie(p_302024_, 0, ClientInformation.createDefault());
+     }

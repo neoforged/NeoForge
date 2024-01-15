@@ -1,0 +1,29 @@
+--- a/net/minecraft/world/level/chunk/LevelChunkSection.java
++++ b/net/minecraft/world/level/chunk/LevelChunkSection.java
+@@ -65,7 +_,7 @@
+ 
+         FluidState fluidstate = blockstate.getFluidState();
+         FluidState fluidstate1 = p_62995_.getFluidState();
+-        if (!blockstate.isAir()) {
++        if (!blockstate.isEmpty()) { // Neo: Fix MC-232360 for modded blocks (Makes modded isAir blocks not be replaced with Blocks.AIR in all-air chunk sections)
+             --this.nonEmptyBlockCount;
+             if (blockstate.isRandomlyTicking()) {
+                 --this.tickingBlockCount;
+@@ -76,7 +_,7 @@
+             --this.tickingFluidCount;
+         }
+ 
+-        if (!p_62995_.isAir()) {
++        if (!p_62995_.isEmpty()) { // Neo: Fix MC-232360 for modded blocks (Makes modded isAir blocks not be replaced with Blocks.AIR in all-air chunk sections)
+             ++this.nonEmptyBlockCount;
+             if (p_62995_.isRandomlyTicking()) {
+                 ++this.tickingBlockCount;
+@@ -114,7 +_,7 @@
+ 
+             public void accept(BlockState p_204444_, int p_204445_) {
+                 FluidState fluidstate = p_204444_.getFluidState();
+-                if (!p_204444_.isAir()) {
++                if (!p_204444_.isEmpty()) { // Neo: Fix MC-232360 for modded blocks (Makes modded isAir blocks not be replaced with Blocks.AIR in all-air chunk sections)
+                     this.nonEmptyBlockCount += p_204445_;
+                     if (p_204444_.isRandomlyTicking()) {
+                         this.tickingBlockCount += p_204445_;

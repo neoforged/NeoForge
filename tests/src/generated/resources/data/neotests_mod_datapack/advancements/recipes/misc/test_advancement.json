@@ -1,0 +1,27 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_scute": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:scute"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_scute"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:turtle_helmet"
+    ]
+  }
+}
