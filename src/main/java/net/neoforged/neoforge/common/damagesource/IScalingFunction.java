@@ -31,7 +31,7 @@ public interface IScalingFunction {
                 case HARD -> amount * 1.5F;
             };
         }
-        return 1.0F;
+        return amount;
     };
 
     /**
