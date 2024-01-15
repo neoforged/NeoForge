@@ -1,0 +1,59 @@
+--- a/net/minecraft/world/damagesource/DamageEffects.java
++++ b/net/minecraft/world/damagesource/DamageEffects.java
+@@ -5,7 +_,7 @@
+ import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.util.StringRepresentable;
+ 
+-public enum DamageEffects implements StringRepresentable {
++public enum DamageEffects implements StringRepresentable, net.minecraftforge.common.IExtensibleEnum {
+    HURT("hurt", SoundEvents.f_12323_),
+    THORNS("thorns", SoundEvents.f_12511_),
+    DROWNING("drowning", SoundEvents.f_12324_),
+@@ -13,13 +_,12 @@
+    POKING("poking", SoundEvents.f_12274_),
+    FREEZING("freezing", SoundEvents.f_144205_);
+ 
+-   public static final Codec<DamageEffects> f_268463_ = StringRepresentable.m_216439_(DamageEffects::values);
++   public static final Codec<DamageEffects> f_268463_ = net.minecraft.util.ExtraCodecs.m_184415_(() -> StringRepresentable.m_216439_(DamageEffects::values));
+    private final String f_268435_;
+    private final SoundEvent f_268660_;
+ 
+    private DamageEffects(String p_270875_, SoundEvent p_270383_) {
+-      this.f_268435_ = p_270875_;
+-      this.f_268660_ = p_270383_;
++      this(p_270875_, () -> p_270383_);
+    }
+ 
+    public String m_7912_() {
+@@ -27,6 +_,30 @@
+    }
+ 
+    public SoundEvent m_269402_() {
+-      return this.f_268660_;
++      return this.soundSupplier.get();
++   }
++
++   private final java.util.function.Supplier<SoundEvent> soundSupplier;
++
++   private DamageEffects(String id, java.util.function.Supplier<SoundEvent> sound) {
++      this.f_268435_ = id;
++      this.soundSupplier = sound;
++      this.f_268660_ = null;
++   }
++
++   /**
++    * Creates a new DamageEffects with the specified ID and sound.<br>
++    * Example usage:
++    * <code><pre>
++    * public static final DamageEffects ELECTRIFYING = DamageEffects.create("MYMOD_ELECTRIFYING", "mymod:electrifying", MySounds.ELECTRIFYING);
++    * </pre></code>
++    * @param name The {@linkplain Enum#name() true enum name}. Prefix this with your modid.
++    * @param id The {@linkplain StringRepresentable#getSerializedName() serialized name}. Prefix this with your modid and `:`
++    * @param sound The sound event that will play when a damage type with this effect deals damage to a player.
++    * @return A newly created DamageEffects. Store this result in a static final field.
++    * @apiNote This method must be called as early as possible, as if {@link #CODEC} is resolved before this is called, it will be unusable.
++    */
++   public static DamageEffects create(String name, String id, java.util.function.Supplier<SoundEvent> sound) {
++      throw new IllegalStateException("Enum not extended");
+    }
+ }

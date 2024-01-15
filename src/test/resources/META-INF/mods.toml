@@ -301,5 +301,7 @@ modId="alter_ground_event_test"
 modId="keymapping_test"
 [[mods]]
 modId="player_spawn_phantoms_event_test"
+[[mods]]
+modId="custom_damage_type_test"
 
 # ADD ABOVE THIS LINE

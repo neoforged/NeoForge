@@ -117,4 +117,12 @@ public interface IForgeTagAppender<T>
         }
         return self();
     }
+
+    /**
+     * SafeVarargs version of {@link #addTags(TagKey...)}.
+     */
+    @SafeVarargs
+    static <T> TagsProvider.TagAppender<T> addTags(TagsProvider.TagAppender<T> builder, TagKey<T>... values) {
+        return builder.addTags(values);
+    }
 }
