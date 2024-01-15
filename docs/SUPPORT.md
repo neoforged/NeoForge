@@ -1,8 +1,6 @@
 Getting Support Surrounding NeoForge
 =================================
 
-**If you do not want to read the following wall of text, no matter its relevance for helping get your issue resolved quickly, please refer to the [NeoForge Forums][Bug-Reports] for support.**
-
 Before reporting an issue on this repository's bug tracker, please carefully read this document. There are various resources that are more likely to be able to help you with certain kinds of issues. This document provides instructions on how to determine which place best to report to.
 
 *Note: While this guide generally is more geared towards end-user problems, modders should also read it before reporting any issue with NeoForge in order to ensure it actually is one. This does of course not cover feature suggestions.*
@@ -78,10 +76,8 @@ Please note that this list has to be considered incomplete as there is a large n
 
 If you're certain you've found an issue that is directly caused by NeoForge, you have the following three platforms available for dealing with it, with decreasing relevance for end-users:
 
- 1. **NeoForge Forums:** There's a dedicated [Support & Bug Report][Bug-Reports] section on the NeoForge forums, which is led by team of moderators and volunteers who will try to deal with your reports as quickly as possible. *As a player you should probably report here first.*
-   - For modders, there also is a separate [Modder Support][Modder-Support] section where you can ask all your development-related questions. *You should prefer this section for coding help.*
- 2. **NeoForge Discord Server:** You can find a lot of help on the official [Discord Server][Discord], especially smaller issues that you quickly need help with. *Be aware that the channel is more suited towards development questions, so while you may get support there as a player, you should almost always prefer the forums.*
- 3. **NeoForge Issue Tracker:** If you're absolutely certain that you've found an issue in the Forge codebase (e.g. you're a modder yourself and have analyzed the stacktrace and relevant code), don't refrain from reporting it on this repository's [issue tracker](https://github.com/neoforged/NeoForge/issues). *Please do not use the issues as a means of getting coding help. For developers, the IRC and the [official documentation][Documentation] are the best sources of information.*
+ 1. **NeoForge Discord Server:** You can find a lot of help on the official [Discord Server][Discord], especially smaller issues that you quickly need help with. *Be aware that the channel is more suited towards development questions, so while you may get support there as a player.*
+ 2. **NeoForge Issue Tracker:** If you're absolutely certain that you've found an issue in the Forge codebase (e.g. you're a modder yourself and have analyzed the stacktrace and relevant code), don't refrain from reporting it on this repository's [issue tracker](https://github.com/neoforged/NeoForge/issues). *Please do not use the issues as a means of getting coding help. For developers, the IRC and the [official documentation][Documentation] are the best sources of information.*
 
 ### Mod Support
 
@@ -152,7 +148,6 @@ Every project has a different way of dealing with issues, so don't wonder if the
 
 Once your issue is closed, you will know whether it was valid or turned out to be unreproducible. If you included all of the data from above in your report, chances are that the latter won't be the case.
 
-[Bug-Reports]: https://forums.minecraftforge.net/forum/18-support-bug-reports/
 [Modder-Support]: https://docs.neoforged.net/docs/gettingstarted/
 
 [Discord]:
