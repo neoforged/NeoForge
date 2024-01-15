@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.registries;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
@@ -24,22 +23,20 @@ import io.netty.util.AttributeKey;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.neoforge.network.NetworkInitialization;
-import net.neoforged.neoforge.network.configuration.RegistryAttachmentNegotiation;
-import net.neoforged.neoforge.network.connection.ConnectionUtils;
+import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
 import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
-import net.neoforged.neoforge.network.payload.KnownRegistryAttachmentsPayload;
-import net.neoforged.neoforge.network.payload.KnownRegistryAttachmentsReplyPayload;
-import net.neoforged.neoforge.network.payload.RegistryAttachmentSyncPayload;
-import net.neoforged.neoforge.registries.attachment.RegisterRegistryAttachmentsEvent;
-import net.neoforged.neoforge.registries.attachment.RegistryAttachment;
+import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
+import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
+import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
+import net.neoforged.neoforge.registries.attachment.RegisterDataMapTypesEvent;
+import net.neoforged.neoforge.registries.attachment.DataMapType;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
@@ -52,7 +49,7 @@ public class RegistryManager {
     private static Set<ResourceLocation> vanillaRegistryKeys = Set.of();
     private static Map<ResourceLocation, RegistrySnapshot> vanillaSnapshot = null;
     private static Map<ResourceLocation, RegistrySnapshot> frozenSnapshot = null;
-    private static Map<ResourceKey<Registry<?>>, Map<ResourceLocation, RegistryAttachment<?, ?, ?>>> attachments = Map.of();
+    private static Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?, ?>>> dataMaps = Map.of();
 
     /**
      * Called by {@link RegistryBuilder} to make sure that modders don't forget to register their registries.
@@ -70,13 +67,14 @@ public class RegistryManager {
     }
 
     @Nullable
-    public static <T> RegistryAttachment<?, T, ?> getAttachment(ResourceKey<? extends Registry<T>> registry, ResourceLocation key) {
-        final var map = attachments.get(registry);
-        return map == null ? null : (RegistryAttachment<?, T, ?>) map.get(key);
+    @ApiStatus.Internal
+    public static <T> DataMapType<?, T, ?> getDataMap(ResourceKey<? extends Registry<T>> registry, ResourceLocation key) {
+        final var map = dataMaps.get(registry);
+        return map == null ? null : (DataMapType<?, T, ?>) map.get(key);
     }
 
-    public static Map<ResourceKey<Registry<?>>, Map<ResourceLocation, RegistryAttachment<?, ?, ?>>> getAttachments() {
-        return attachments;
+    public static Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?, ?>>> getDataMaps() {
+        return dataMaps;
     }
 
     public static void postNewRegistryEvent() {
@@ -92,11 +90,11 @@ public class RegistryManager {
 
         ModLoader.get().postEvent(new ModifyRegistriesEvent());
 
-        final Map<ResourceKey<Registry<?>>, Map<ResourceLocation, RegistryAttachment<?, ?, ?>>> attachmentMap = new HashMap<>();
-        ModLoader.get().postEvent(new RegisterRegistryAttachmentsEvent(attachmentMap));
-        attachments = new IdentityHashMap<>();
-        attachmentMap.forEach((key, values) -> attachments.put(key, Collections.unmodifiableMap(values)));
-        attachments = Collections.unmodifiableMap(attachmentMap);
+        final Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?, ?>>> attachmentMap = new HashMap<>();
+        ModLoader.get().postEvent(new RegisterDataMapTypesEvent(attachmentMap));
+        dataMaps = new IdentityHashMap<>();
+        attachmentMap.forEach((key, values) -> dataMaps.put(key, Collections.unmodifiableMap(values)));
+        dataMaps = Collections.unmodifiableMap(attachmentMap);
 
         pendingModdedRegistries.removeIf(BuiltInRegistries.REGISTRY::containsKey);
         if (!pendingModdedRegistries.isEmpty()) {
@@ -271,27 +269,27 @@ public class RegistryManager {
         FULL
     }
 
-    public static <R> void handleAttachmentSync(final RegistryAttachmentSyncPayload<R> payload, final PlayPayloadContext context) {
+    public static <R> void handleDataMapSync(final RegistryDataMapSyncPayload<R> payload, final PlayPayloadContext context) {
         context.workHandler().execute(() -> {
             final BaseMappedRegistry<R> registry = (BaseMappedRegistry<R>) context.level().orElseThrow().registryAccess()
                     .registryOrThrow(payload.registryKey());
-            registry.attachments.clear();
-            payload.attachments().forEach((attachKey, attachments) -> registry.attachments.put(getAttachment(payload.registryKey(), attachKey), Collections.unmodifiableMap(attachments)));
+            registry.dataMaps.clear();
+            payload.dataMaps().forEach((attachKey, attachments) -> registry.dataMaps.put(getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(attachments)));
         });
     }
 
-    public static void handleKnownAttachments(final KnownRegistryAttachmentsPayload payload, final ConfigurationPayloadContext context) {
+    public static void handleKnownAttachments(final KnownRegistryDataMapsPayload payload, final ConfigurationPayloadContext context) {
         record MandatoryEntry(ResourceKey<Registry<?>> registry, ResourceLocation attachment) {
         }
         final Set<MandatoryEntry> ourMandatory = new HashSet<>();
-        getAttachments().forEach((reg, values) -> values.values().forEach(attach -> {
+        getDataMaps().forEach((reg, values) -> values.values().forEach(attach -> {
             if (attach.networkCodec() != null && attach.mandatorySync()) {
                 ourMandatory.add(new MandatoryEntry(reg, attach.id()));
             }
         }));
 
         final Set<MandatoryEntry> theirMandatory = new HashSet<>();
-        payload.attachments().forEach((reg, values) -> values.forEach(attach -> {
+        payload.dataMaps().forEach((reg, values) -> values.forEach(attach -> {
             if (attach.mandatory()) {
                 theirMandatory.add(new MandatoryEntry(reg, attach.id()));
             }
@@ -314,15 +312,15 @@ public class RegistryManager {
         }
 
         final var known = new HashMap<ResourceKey<Registry<?>>, Collection<ResourceLocation>>();
-        getAttachments().forEach((key, vals) -> known.put(key, vals.keySet()));
-        context.replyHandler().send(new KnownRegistryAttachmentsReplyPayload(known));
+        getDataMaps().forEach((key, vals) -> known.put(key, vals.keySet()));
+        context.replyHandler().send(new KnownRegistryDataMapsReplyPayload(known));
     }
 
-    public static final AttributeKey<Map<ResourceKey<Registry<?>>, Collection<ResourceLocation>>> ATTRIBUTE_KNOWN = AttributeKey.valueOf("neoforge:known_registry_attachments");
+    public static final AttributeKey<Map<ResourceKey<Registry<?>>, Collection<ResourceLocation>>> ATTRIBUTE_KNOWN_DATA_MAPS = AttributeKey.valueOf("neoforge:known_data_maps");
 
-    public static void handleKnownAttachmentsReply(final KnownRegistryAttachmentsReplyPayload payload, final ConfigurationPayloadContext context) {
-        context.channelHandlerContext().attr(ATTRIBUTE_KNOWN).set(payload.attachments());
-        context.taskCompletedHandler().onTaskCompleted(RegistryAttachmentNegotiation.TYPE);
+    public static void handleKnownDataMapsReply(final KnownRegistryDataMapsReplyPayload payload, final ConfigurationPayloadContext context) {
+        context.channelHandlerContext().attr(ATTRIBUTE_KNOWN_DATA_MAPS).set(payload.dataMaps());
+        context.taskCompletedHandler().onTaskCompleted(RegistryDataMapNegotiation.TYPE);
     }
 
 }

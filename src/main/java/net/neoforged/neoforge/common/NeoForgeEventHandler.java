@@ -32,8 +32,8 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.payload.RegistryAttachmentSyncPayload;
-import net.neoforged.neoforge.registries.RegistryAttachmentLoader;
+import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
+import net.neoforged.neoforge.registries.DataMapLoader;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.server.command.ConfigCommand;
 import net.neoforged.neoforge.server.command.NeoForgeCommand;
@@ -107,14 +107,14 @@ public class NeoForgeEventHandler {
             CommonHooks.updateBurns();
         }
         if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
-            ATTACHMENTS.apply();
+            DATA_MAPS.apply();
         }
     }
 
     @SubscribeEvent
     public void onDpSync(final OnDatapackSyncEvent event) {
         final List<ServerPlayer> players = event.getPlayer() == null ? event.getPlayerList().getPlayers() : List.of(event.getPlayer());
-        RegistryManager.getAttachments().forEach((registry, values) -> {
+        RegistryManager.getDataMaps().forEach((registry, values) -> {
             final var regOpt = event.getPlayerList().getServer().overworld().registryAccess()
                     .registry(registry);
             if (regOpt.isEmpty()) return;
@@ -122,7 +122,7 @@ public class NeoForgeEventHandler {
                 if (player.connection.isVanillaConnection()) {
                     return;
                 }
-                handleSync(player, regOpt.get(), player.connection.connection.channel().attr(RegistryManager.ATTRIBUTE_KNOWN)
+                handleSync(player, regOpt.get(), player.connection.connection.channel().attr(RegistryManager.ATTRIBUTE_KNOWN_DATA_MAPS)
                         .get().getOrDefault(registry, List.of()));
             });
         });
@@ -132,11 +132,11 @@ public class NeoForgeEventHandler {
         if (attachments.isEmpty()) return;
         final Map<ResourceLocation, Map<ResourceKey<T>, ?>> att = new HashMap<>();
         attachments.forEach(key -> {
-            final var attach = RegistryManager.getAttachment(registry.key(), key);
+            final var attach = RegistryManager.getDataMap(registry.key(), key);
             if (attach == null || attach.networkCodec() == null) return;
-            att.put(key, registry.getAttachments(attach));
+            att.put(key, registry.getDataMap(attach));
         });
-        PacketDistributor.PLAYER.with(player).send(new RegistryAttachmentSyncPayload<>(registry.key(), att));
+        PacketDistributor.PLAYER.with(player).send(new RegistryDataMapSyncPayload<>(registry.key(), att));
     }
 
     @SubscribeEvent
@@ -146,13 +146,13 @@ public class NeoForgeEventHandler {
     }
 
     private static LootModifierManager INSTANCE;
-    private static RegistryAttachmentLoader ATTACHMENTS;
+    private static DataMapLoader DATA_MAPS;
 
     @SubscribeEvent
     public void onResourceReload(AddReloadListenerEvent event) {
         INSTANCE = new LootModifierManager();
         event.addListener(INSTANCE);
-        event.addListener(ATTACHMENTS = new RegistryAttachmentLoader(event.getConditionContext(), event.getRegistryAccess()));
+        event.addListener(DATA_MAPS = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
     }
 
 

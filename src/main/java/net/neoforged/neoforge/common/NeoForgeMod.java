@@ -140,10 +140,10 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistriesSetup;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import net.neoforged.neoforge.registries.attachment.RegisterRegistryAttachmentsEvent;
-import net.neoforged.neoforge.registries.attachment.RegistryAttachment;
-import net.neoforged.neoforge.registries.attachment.RegistryAttachmentValueMerger;
-import net.neoforged.neoforge.registries.attachment.RegistryAttachmentValueRemover;
+import net.neoforged.neoforge.registries.attachment.RegisterDataMapTypesEvent;
+import net.neoforged.neoforge.registries.attachment.DataMapType;
+import net.neoforged.neoforge.registries.attachment.DataMapValueMerger;
+import net.neoforged.neoforge.registries.attachment.DataMapValueRemover;
 import net.neoforged.neoforge.registries.holdersets.AndHolderSet;
 import net.neoforged.neoforge.registries.holdersets.AnyHolderSet;
 import net.neoforged.neoforge.registries.holdersets.HolderSetType;
@@ -528,18 +528,18 @@ public class NeoForgeMod {
         record SomeThing(int value) {
             public static final Codec<SomeThing> CODEC = Codec.INT.fieldOf("value").xmap(SomeThing::new, SomeThing::value).codec();
         }
-        final RegistryAttachment<SomeThing, Item, RegistryAttachmentValueRemover.Default<SomeThing, Item>> attachment = new RegistryAttachment<>(
+        final DataMapType<SomeThing, Item, DataMapValueRemover.Default<SomeThing, Item>> attachment = new DataMapType<>(
                 new ResourceLocation("neo:thing"),
                 SomeThing.CODEC, SomeThing.CODEC, true,
                 i -> null,
-                RegistryAttachmentValueRemover.Default.codec(),
-                RegistryAttachmentValueMerger.defaultMerger()
+                DataMapValueRemover.Default.codec(),
+                DataMapValueMerger.defaultMerger()
         );
-        modEventBus.addListener((final RegisterRegistryAttachmentsEvent event) -> {
+        modEventBus.addListener((final RegisterDataMapTypesEvent event) -> {
             event.register(Registries.ITEM, attachment);
         });
         NeoForge.EVENT_BUS.addListener((final UseItemOnBlockEvent event) -> {
-            System.out.println(event.getItemStack().getItemHolder().getAttachment(attachment));
+            System.out.println(event.getItemStack().getItemHolder().getData(attachment));
         });
     }
 

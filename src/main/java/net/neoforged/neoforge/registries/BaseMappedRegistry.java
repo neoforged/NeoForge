@@ -13,7 +13,7 @@ import java.util.Map;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.registries.attachment.RegistryAttachment;
+import net.neoforged.neoforge.registries.attachment.DataMapType;
 import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 import net.neoforged.neoforge.registries.callback.ClearCallback;
@@ -27,7 +27,7 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     protected final List<BakeCallback<T>> bakeCallbacks = new ArrayList<>();
     protected final List<ClearCallback<T>> clearCallbacks = new ArrayList<>();
     final Map<ResourceLocation, ResourceLocation> aliases = new HashMap<>();
-    final Map<RegistryAttachment<?, T, ?>, Map<ResourceKey<T>, ?>> attachments = new IdentityHashMap<>();
+    final Map<DataMapType<?, T, ?>, Map<ResourceKey<T>, ?>> dataMaps = new IdentityHashMap<>();
 
     private int maxId = Integer.MAX_VALUE - 1;
     private boolean sync;
@@ -108,7 +108,7 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     protected void clear(boolean full) {
         this.aliases.clear();
         if (full) {
-            this.attachments.clear();
+            this.dataMaps.clear();
         }
     }
 
@@ -121,13 +121,13 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     protected abstract void unfreeze();
 
     @Override
-    public <A> @Nullable A getAttachment(RegistryAttachment<A, T, ?> attachment, ResourceKey<T> key) {
-        final var innerMap = attachments.get(attachment);
+    public <A> @Nullable A getData(DataMapType<A, T, ?> attachment, ResourceKey<T> key) {
+        final var innerMap = dataMaps.get(attachment);
         return innerMap == null ? null : (A) innerMap.get(key);
     }
 
     @Override
-    public <A> Map<ResourceKey<T>, A> getAttachments(RegistryAttachment<A, T, ?> attachment) {
-        return (Map<ResourceKey<T>, A>) attachments.getOrDefault(attachment, Map.of());
+    public <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<A, T, ?> attachment) {
+        return (Map<ResourceKey<T>, A>) dataMaps.getOrDefault(attachment, Map.of());
     }
 }

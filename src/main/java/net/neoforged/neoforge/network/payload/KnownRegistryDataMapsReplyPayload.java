@@ -9,17 +9,17 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Collection;
 import java.util.Map;
 
-public record KnownRegistryAttachmentsReplyPayload(
-        Map<ResourceKey<Registry<?>>, Collection<ResourceLocation>> attachments) implements CustomPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation("neoforge:known_registry_attachments_reply");
+public record KnownRegistryDataMapsReplyPayload(
+        Map<ResourceKey<Registry<?>>, Collection<ResourceLocation>> dataMaps) implements CustomPacketPayload {
+    public static final ResourceLocation ID = new ResourceLocation("neoforge:known_registry_data_maps_reply");
 
-    public KnownRegistryAttachmentsReplyPayload(FriendlyByteBuf buf) {
+    public KnownRegistryDataMapsReplyPayload(FriendlyByteBuf buf) {
         this(buf.readMap(b1 -> (ResourceKey<Registry<?>>) (Object) b1.readRegistryKey(), b1 -> b1.readList(FriendlyByteBuf::readResourceLocation)));
     }
 
     @Override
     public void write(FriendlyByteBuf buf) {
-        buf.writeMap(attachments, FriendlyByteBuf::writeResourceKey, (b1, list) -> b1.writeCollection(list, FriendlyByteBuf::writeResourceLocation));
+        buf.writeMap(dataMaps, FriendlyByteBuf::writeResourceKey, (b1, list) -> b1.writeCollection(list, FriendlyByteBuf::writeResourceLocation));
     }
 
     @Override

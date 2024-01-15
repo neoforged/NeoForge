@@ -5,7 +5,7 @@
          }
  
 +        @org.jetbrains.annotations.Nullable
-+        default <A> A getAttachment(net.neoforged.neoforge.registries.attachment.RegistryAttachment<A, T, ?> attachment, ResourceKey<T> key) {
++        default <A> A getData(net.neoforged.neoforge.registries.attachment.DataMapType<A, T, ?> attachment, ResourceKey<T> key) {
 +            return null;
 +        }
 +
@@ -20,8 +20,8 @@
 +
 +            @Override
 +            @org.jetbrains.annotations.Nullable
-+            public <A> A getAttachment(net.neoforged.neoforge.registries.attachment.RegistryAttachment<A, T, ?> attachment, ResourceKey<T> key) {
-+                return parent().getAttachment(attachment, key);
++            public <A> A getData(net.neoforged.neoforge.registries.attachment.DataMapType<A, T, ?> attachment, ResourceKey<T> key) {
++                return parent().getData(attachment, key);
              }
          }
      }

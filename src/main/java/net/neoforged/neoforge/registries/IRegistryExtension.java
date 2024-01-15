@@ -8,7 +8,7 @@ package net.neoforged.neoforge.registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.registries.attachment.RegistryAttachment;
+import net.neoforged.neoforge.registries.attachment.DataMapType;
 import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 import net.neoforged.neoforge.registries.callback.ClearCallback;
@@ -121,7 +121,7 @@ public interface IRegistryExtension<T> {
     boolean containsValue(T value);
 
     @Nullable
-    <A> A getAttachment(RegistryAttachment<A, T, ?> attachment, ResourceKey<T> key);
+    <A> A getData(DataMapType<A, T, ?> attachment, ResourceKey<T> key);
 
-    <A> Map<ResourceKey<T>, A> getAttachments(RegistryAttachment<A, T, ?> attachment);
+    <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<A, T, ?> attachment);
 }

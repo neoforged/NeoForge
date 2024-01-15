@@ -18,9 +18,9 @@ import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
-import net.neoforged.neoforge.network.payload.KnownRegistryAttachmentsPayload;
-import net.neoforged.neoforge.network.payload.KnownRegistryAttachmentsReplyPayload;
-import net.neoforged.neoforge.network.payload.RegistryAttachmentSyncPayload;
+import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
+import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
+import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.network.payload.TierSortingRegistryPayload;
 import net.neoforged.neoforge.network.payload.TierSortingRegistrySyncCompletePayload;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
@@ -63,14 +63,14 @@ public class NetworkInitialization {
                         ConfigFilePayload::new,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
                 .configuration(
-                        KnownRegistryAttachmentsPayload.ID,
-                        KnownRegistryAttachmentsPayload::new,
+                        KnownRegistryDataMapsPayload.ID,
+                        KnownRegistryDataMapsPayload::new,
                         handlers -> handlers.client(RegistryManager::handleKnownAttachments)
                 )
                 .configuration(
-                        KnownRegistryAttachmentsReplyPayload.ID,
-                        KnownRegistryAttachmentsReplyPayload::new,
-                        handlers -> handlers.server(RegistryManager::handleKnownAttachmentsReply)
+                        KnownRegistryDataMapsReplyPayload.ID,
+                        KnownRegistryDataMapsReplyPayload::new,
+                        handlers -> handlers.server(RegistryManager::handleKnownDataMapsReply)
                 )
                 .play(
                         AdvancedAddEntityPayload.ID,
@@ -84,8 +84,8 @@ public class NetworkInitialization {
                         AuxiliaryLightDataPayload.ID,
                         AuxiliaryLightDataPayload::new,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
-                .play(RegistryAttachmentSyncPayload.ID,
-                        RegistryAttachmentSyncPayload::decode,
-                        handlers -> handlers.client(RegistryManager::handleAttachmentSync));
+                .play(RegistryDataMapSyncPayload.ID,
+                        RegistryDataMapSyncPayload::decode,
+                        handlers -> handlers.client(RegistryManager::handleDataMapSync));
     }
 }

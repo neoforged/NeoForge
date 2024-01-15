@@ -23,9 +23,8 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
-import net.neoforged.neoforge.registries.attachment.RegistryAttachment;
-import net.neoforged.neoforge.registries.attachment.RegistryAttachmentValueRemover;
-import net.neoforged.neoforge.resource.ContextAwareReloadListener;
+import net.neoforged.neoforge.registries.attachment.DataMapType;
+import net.neoforged.neoforge.registries.attachment.DataMapValueRemover;
 import org.slf4j.Logger;
 
 import java.io.Reader;
@@ -40,14 +39,14 @@ import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class RegistryAttachmentLoader implements PreparableReloadListener {
+public class DataMapLoader implements PreparableReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final String PATH = "attachments";
+    private static final String PATH = "data_maps";
     private Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> results;
     private final ICondition.IContext conditionContext;
     private final RegistryAccess registryAccess;
 
-    public RegistryAttachmentLoader(ICondition.IContext conditionContext, RegistryAccess registryAccess) {
+    public DataMapLoader(ICondition.IContext conditionContext, RegistryAccess registryAccess) {
         this.conditionContext = conditionContext;
         this.registryAccess = registryAccess;
     }
@@ -67,13 +66,13 @@ public class RegistryAttachmentLoader implements PreparableReloadListener {
     }
 
     private <T> void apply(BaseMappedRegistry<T> registry, LoadResult<T> result) {
-        registry.attachments.clear();
-        result.results().forEach((key, entries) -> registry.attachments.put(
-                key, this.buildAttachmentMap(registry, key, (List) entries)
+        registry.dataMaps.clear();
+        result.results().forEach((key, entries) -> registry.dataMaps.put(
+                key, this.buildDataMap(registry, key, (List) entries)
         ));
     }
 
-    private <T, R> Map<ResourceKey<R>, T> buildAttachmentMap(Registry<R> registry, RegistryAttachment<T, R, ?> attachment, List<LoadEntry<T, R>> entries) {
+    private <T, R> Map<ResourceKey<R>, T> buildDataMap(Registry<R> registry, DataMapType<T, R, ?> attachment, List<LoadEntry<T, R>> entries) {
         record WithSource<T, R>(T attachment, Either<TagKey<R>, ResourceKey<R>> source) {}
         final Map<ResourceKey<R>, WithSource<T, R>> result = new IdentityHashMap<>();
         final BiConsumer<Either<TagKey<R>, ResourceKey<R>>, Consumer<Holder<R>>> valueResolver = (key, cons) ->
@@ -140,11 +139,11 @@ public class RegistryAttachmentLoader implements PreparableReloadListener {
         {
             final var registryKey = registryEntry.key();
             profiler.push("registry_attachments/" + registryKey.location() + "/locating");
-            final var fileToId = FileToIdConverter.json(getAttachmentLocation(registryKey.location()));
+            final var fileToId = FileToIdConverter.json(getFolderLocation(registryKey.location()));
             for (Map.Entry<ResourceLocation, List<Resource>> entry : fileToId.listMatchingResourceStacks(manager).entrySet()) {
                 ResourceLocation key = entry.getKey();
                 final ResourceLocation attachmentId = fileToId.fileToId(key);
-                final var attachment = RegistryManager.getAttachment((ResourceKey) registryKey, attachmentId);
+                final var attachment = RegistryManager.getDataMap((ResourceKey) registryKey, attachmentId);
                 if (attachment == null) {
                     LOGGER.warn("Found attachment file for inexistent attachment type '{}' on registry '{}'.", attachmentId, registryKey.location());
                     continue;
@@ -160,11 +159,11 @@ public class RegistryAttachmentLoader implements PreparableReloadListener {
         return values;
     }
 
-    public static String getAttachmentLocation(ResourceLocation registryId) {
+    public static String getFolderLocation(ResourceLocation registryId) {
         return PATH + "/" + (registryId.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE) ? "" : registryId.getNamespace() + "/") + registryId.getPath();
     }
 
-    private static <A, T> List<LoadEntry<A, T>> readAttachments(RegistryOps<JsonElement> ops, RegistryAttachment<A, T, ?> attachmentType, ResourceKey<Registry<T>> registryKey, List<Resource> resources, ICondition.IContext context) {
+    private static <A, T> List<LoadEntry<A, T>> readAttachments(RegistryOps<JsonElement> ops, DataMapType<A, T, ?> attachmentType, ResourceKey<Registry<T>> registryKey, List<Resource> resources, ICondition.IContext context) {
         final var codec = LoadEntry.codec(registryKey, attachmentType);
         final List<LoadEntry<A, T>> entries = new LinkedList<>();
         for (final Resource resource : resources) {
@@ -175,21 +174,21 @@ public class RegistryAttachmentLoader implements PreparableReloadListener {
                             .getOrThrow(false, LOGGER::error).getFirst());
                 }
             } catch (Exception exception) {
-                LOGGER.error("Could not read attachments of type {} for registry {}", attachmentType.id(), registryKey, exception);
+                LOGGER.error("Could not read data map of type {} for registry {}", attachmentType.id(), registryKey, exception);
             }
         }
         return entries;
     }
 
-    private record LoadResult<T>(Map<RegistryAttachment<?, T, ?>, List<LoadEntry<?, T>>> results) {
+    private record LoadResult<T>(Map<DataMapType<?, T, ?>, List<LoadEntry<?, T>>> results) {
     }
 
     private record Removal<T, R>(Either<TagKey<R>, ResourceKey<R>> key,
-                                 Optional<RegistryAttachmentValueRemover<T, R>> remover) {
-        public static <T, R, VR extends RegistryAttachmentValueRemover<T, R>> Codec<Removal<T, R>> codec(Codec<Either<TagKey<R>, ResourceKey<R>>> tagOrValue, RegistryAttachment<T, R, VR> attachment) {
+                                 Optional<DataMapValueRemover<T, R>> remover) {
+        public static <T, R, VR extends DataMapValueRemover<T, R>> Codec<Removal<T, R>> codec(Codec<Either<TagKey<R>, ResourceKey<R>>> tagOrValue, DataMapType<T, R, VR> attachment) {
             return RecordCodecBuilder.create(in -> in.group(
                     tagOrValue.fieldOf("key").forGetter(Removal::key),
-                    attachment.remover().<RegistryAttachmentValueRemover<T, R>>xmap(vr -> vr, v -> (VR) v).optionalFieldOf("remover").forGetter(Removal::remover)
+                    attachment.remover().<DataMapValueRemover<T, R>>xmap(vr -> vr, v -> (VR) v).optionalFieldOf("remover").forGetter(Removal::remover)
             ).apply(in, Removal::new));
         }
     }
@@ -205,7 +204,7 @@ public class RegistryAttachmentLoader implements PreparableReloadListener {
             Map<Either<TagKey<R>, ResourceKey<R>>, Optional<AttachmentValue<T>>> values,
             List<Removal<T, R>> removals
     ) {
-        public static <T, R, VR extends RegistryAttachmentValueRemover<T, R>> Codec<LoadEntry<T, R>> codec(ResourceKey<Registry<R>> registryKey, RegistryAttachment<T, R, VR> attachment) {
+        public static <T, R, VR extends DataMapValueRemover<T, R>> Codec<LoadEntry<T, R>> codec(ResourceKey<Registry<R>> registryKey, DataMapType<T, R, VR> attachment) {
             final Codec<Either<TagKey<R>, ResourceKey<R>>> tagOrValue = ExtraCodecs.TAG_OR_ELEMENT_ID.xmap(
                     l -> l.tag() ? Either.left(TagKey.create(registryKey, l.id())) : Either.right(ResourceKey.create(registryKey, l.id())),
                     e -> e.map(t -> new ExtraCodecs.TagOrElementLocation(t.location(), true), r -> new ExtraCodecs.TagOrElementLocation(r.location(), false))
@@ -215,7 +214,7 @@ public class RegistryAttachmentLoader implements PreparableReloadListener {
                     ExtraCodecs.strictOptionalField(Codec.BOOL, "replace", false).forGetter(LoadEntry::replace),
                     ExtraCodecs.strictUnboundedMap(tagOrValue, ConditionalOps.createConditionalCodec(ExtraCodecs.withAlternative(
                             RecordCodecBuilder.create(i -> i.group(
-                                    attachment.codec().fieldOf("attachment").forGetter(AttachmentValue::attachment),
+                                    attachment.codec().fieldOf("value").forGetter(AttachmentValue::attachment),
                                     ExtraCodecs.strictOptionalField(Codec.BOOL, "replace", false).forGetter(AttachmentValue::replace)
                             ).apply(i, AttachmentValue::new)), attachment.codec().xmap(AttachmentValue::new, AttachmentValue::attachment)
                     ))).fieldOf("values").forGetter(LoadEntry::values),

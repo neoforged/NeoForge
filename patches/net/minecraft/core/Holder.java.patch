@@ -5,7 +5,7 @@
  import net.minecraft.tags.TagKey;
  
 -public interface Holder<T> {
-+public interface Holder<T> extends net.neoforged.neoforge.registries.attachment.IWithRegistryAttachments<T> {
++public interface Holder<T> extends net.neoforged.neoforge.registries.attachment.IWithData<T> {
      T value();
  
      boolean isBound();
@@ -16,8 +16,8 @@
 +        }
 +
 +        @org.jetbrains.annotations.Nullable
-+        public <A> A getAttachment(net.neoforged.neoforge.registries.attachment.RegistryAttachment<A, T, ?> type) {
-+            return ((HolderLookup.RegistryLookup<T>) owner).getAttachment(type, key());
++        public <A> A getData(net.neoforged.neoforge.registries.attachment.DataMapType<A, T, ?> type) {
++            return ((HolderLookup.RegistryLookup<T>) owner).getData(type, key());
          }
  
          public void bindTags(Collection<TagKey<T>> p_205770_) {

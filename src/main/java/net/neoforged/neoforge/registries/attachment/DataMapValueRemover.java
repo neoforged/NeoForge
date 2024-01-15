@@ -6,39 +6,38 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**
- * An interface used to remove values from registry attachments. This allows "decomposing" the attachment
- * and removing only a specific part of it (like a specific key in the case of maps).
+ * An interface used to remove values from registry data maps. This allows "decomposing" the data
+ * and removing only a specific part of it (like a specific key in the case of {@linkplain java.util.Map map-based} data).
  *
- * @param <T> the attachment type
+ * @param <T> the data type
  * @param <R> the type of the registry this remover is for
  */
 @FunctionalInterface
-public interface RegistryAttachmentValueRemover<T, R> {
+public interface DataMapValueRemover<T, R> {
 
     /**
      * Remove the entry specified in this remover from the {@code value}.
      *
-     * @param value    the attachment to remove. Do <b>NOT</b> mutate this object. You should return copies instead,
+     * @param value    the data to remove. Do <b>NOT</b> mutate this object. You should return copies instead,
      *                 if you need to
      * @param registry the registry
-     * @param source   the source of the attachment
-     * @param object   the object to remove the attachment from
-     * @return the removed attachment. If an {@link Optional#empty() empty optional}, the attachment will be removed
-     * completely. Otherwise, this method returns the new value of the attachment.
+     * @param source   the source of the data
+     * @param object   the object to remove the data from
+     * @return the removed data map value. If an {@link Optional#empty() empty optional}, the value will be removed
+     * completely. Otherwise, this method returns the new value of the attached data.
      */
     Optional<T> remove(T value, Registry<R> registry, Either<TagKey<R>, ResourceKey<R>> source, R object);
 
     /**
-     * A remover that completely removes the attachment.
+     * A remover that completely removes the value.
      *
-     * @param <T> the type of the attachment
+     * @param <T> the type of the data
      * @param <R> the registry type
      */
-    class Default<T, R> implements RegistryAttachmentValueRemover<T, R> {
+    class Default<T, R> implements DataMapValueRemover<T, R> {
         public static final Default<?, ?> INSTANCE = new Default<>();
 
         public static <T, R> Default<T, R> defaultRemover() {

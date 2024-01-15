@@ -9,17 +9,17 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.List;
 import java.util.Map;
 
-public record KnownRegistryAttachmentsPayload(Map<ResourceKey<Registry<?>>, List<KnownAttachment>> attachments) implements CustomPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation("neoforge:known_registry_attachments");
+public record KnownRegistryDataMapsPayload(Map<ResourceKey<Registry<?>>, List<KnownDataMap>> dataMaps) implements CustomPacketPayload {
+    public static final ResourceLocation ID = new ResourceLocation("neoforge:known_registry_data_maps");
 
-    public KnownRegistryAttachmentsPayload(FriendlyByteBuf buf) {
+    public KnownRegistryDataMapsPayload(FriendlyByteBuf buf) {
         this(buf.readMap(b1 -> (ResourceKey<Registry<?>>) (Object) b1.readRegistryKey(), b1 -> b1.readList(b2 ->
-                new KnownAttachment(b2.readResourceLocation(), b2.readBoolean()))));
+                new KnownDataMap(b2.readResourceLocation(), b2.readBoolean()))));
     }
 
     @Override
     public void write(FriendlyByteBuf buf) {
-        buf.writeMap(attachments, FriendlyByteBuf::writeResourceKey, (b1, list) -> b1.writeCollection(list,
+        buf.writeMap(dataMaps, FriendlyByteBuf::writeResourceKey, (b1, list) -> b1.writeCollection(list,
                 (b2, known) -> {
                     b2.writeResourceLocation(known.id());
                     b2.writeBoolean(known.mandatory());
@@ -31,5 +31,5 @@ public record KnownRegistryAttachmentsPayload(Map<ResourceKey<Registry<?>>, List
         return ID;
     }
 
-    public record KnownAttachment(ResourceLocation id, boolean mandatory) {}
+    public record KnownDataMap(ResourceLocation id, boolean mandatory) {}
 }
