@@ -167,11 +167,13 @@ public interface IForgeItemStack extends ICapabilitySerializable<CompoundTag>
     }
 
     /**
-     * Gets the level of the enchantment currently present on the stack. By default, returns the enchantment level present in NBT.
+     * Gets the gameplay level of the target enchantment on this stack.
      * <p>
-     * Equivalent to calling {@link EnchantmentHelper#getItemEnchantmentLevel(Enchantment, ItemStack)}
-     * Use in place of {@link EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)} for checking presence of an enchantment in logic implementing the enchantment behavior.
-     * Use {@link EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)} instead when modifying an item's enchantments.
+     * Equivalent to calling {@link EnchantmentHelper#getItemEnchantmentLevel(Enchantment, ItemStack)}.
+     * <p>
+     * Use in place of {@link EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)} for gameplay logic.
+     * <p>
+     * Use {@link EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)} instead when modifying the item's enchantments.
      *
      * @param enchantment The enchantment being checked for
      * @return The level of the enchantment, or 0 if not present.
@@ -185,12 +187,13 @@ public interface IForgeItemStack extends ICapabilitySerializable<CompoundTag>
     }
 
     /**
-     * Gets a map of all enchantments present on the stack. By default, returns the enchantments present in NBT, ignoring book enchantments.
+     * Gets the gameplay level of all enchantments on this stack.
      * <p>
-     * Use in place of {@link EnchantmentHelper#getEnchantments(ItemStack)} for checking presence of an enchantment in logic implementing the enchantment behavior.
-     * Use {@link EnchantmentHelper#getEnchantments(ItemStack)} instead when modifying an item's enchantments.
+     * Use in place of {@link EnchantmentHelper#getEnchantments(ItemStack)} for gameplay logic.
+     * <p>
+     * Use {@link EnchantmentHelper#getEnchantments(ItemStack)} instead when modifying the item's enchantments.
      *
-     * @return  Map of all enchantments on the stack, empty if no enchantments are present
+     * @return  Map of all enchantments on the stack, or an empty map if no enchantments are present
      * @see #getEnchantmentLevel(Enchantment)
      * @see EnchantmentHelper#getEnchantments(ItemStack)
      */

@@ -10,11 +10,19 @@
 +      return p_44845_.getEnchantmentLevel(p_44844_);
 +   }
 +
-+   /** Gets the enchantment level from NBT. Generally should use {@link ItemStack#getEnchantmentLevel(Enchantment)} for gameplay logic */
++   /** Gets the enchantment level from NBT. Use {@link ItemStack#getEnchantmentLevel(Enchantment)} for gameplay logic */
 +   public static int getTagEnchantmentLevel(Enchantment p_44844_, ItemStack p_44845_) {
        if (p_44845_.m_41619_()) {
           return 0;
        } else {
+@@ -78,6 +_,7 @@
+       }
+    }
+ 
++   /** Gets all enchantment levels from NBT. Use {@link ItemStack#getAllEnchantments()} for gameplay logic */
+    public static Map<Enchantment, Integer> m_44831_(ItemStack p_44832_) {
+       ListTag listtag = p_44832_.m_150930_(Items.f_42690_) ? EnchantedBookItem.m_41163_(p_44832_) : p_44832_.m_41785_();
+       return m_44882_(listtag);
 @@ -120,6 +_,13 @@
  
     private static void m_44850_(EnchantmentHelper.EnchantmentVisitor p_44851_, ItemStack p_44852_) {

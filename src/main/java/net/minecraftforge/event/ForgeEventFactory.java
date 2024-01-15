@@ -990,9 +990,9 @@ public class ForgeEventFactory
     public static int getEnchantmentLevelSpecific(int level, ItemStack stack, Enchantment ench) {
         Map<Enchantment, Integer> map = new HashMap<>();
         map.put(ench, level);
-        var event = new GetEnchantmentLevelEvent(stack, map);
+        var event = new GetEnchantmentLevelEvent(stack, map, ench);
         MinecraftForge.EVENT_BUS.post(event);
-        return event.getEnchantments().get(ench);
+        return event.getEnchantments().getOrDefault(ench, 0);
     }
 
     /**
@@ -1004,7 +1004,7 @@ public class ForgeEventFactory
      */
     public static Map<Enchantment, Integer> getEnchantmentLevel(Map<Enchantment, Integer> enchantments, ItemStack stack) {
         enchantments = new HashMap<>(enchantments);
-        var event = new GetEnchantmentLevelEvent(stack, enchantments);
+        var event = new GetEnchantmentLevelEvent(stack, enchantments, null);
         MinecraftForge.EVENT_BUS.post(event);
         return enchantments;
     }

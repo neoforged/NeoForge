@@ -542,7 +542,7 @@ public interface IForgeItem
     /**
      * Gets a map of all enchantments present on the stack. By default, returns the enchantments present in NBT.
      * Used in several places in code including armor enchantment hooks.
-     * For consistency, any enchantments in the returned map should include the same level in {@link #getEnchantmentLevel(ItemStack, Enchantment)}
+     * The returned value(s) must have the same level as {@link #getEnchantmentLevel(ItemStack, Enchantment)}.
      *
      * @param stack The item stack being checked
      * @return Map of all enchantments on the stack, empty if no enchantments are present
