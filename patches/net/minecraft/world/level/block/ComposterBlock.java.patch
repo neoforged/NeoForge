@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/block/ComposterBlock.java
 +++ b/net/minecraft/world/level/block/ComposterBlock.java
+@@ -47,6 +_,8 @@
+     public static final int MIN_LEVEL = 0;
+     public static final int MAX_LEVEL = 7;
+     public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL_COMPOSTER;
++    /** Neo: Replaced with a {@link net.neoforged.neoforge.registries.datamaps.neo.ComposterValue data map}. */
++    @Deprecated
+     public static final Object2FloatMap<ItemLike> COMPOSTABLES = new Object2FloatOpenHashMap<>();
+     private static final int AABB_SIDE_THICKNESS = 2;
+     private static final VoxelShape OUTER_SHAPE = Shapes.block();
 @@ -226,6 +_,15 @@
          if (p_51978_.getValue(LEVEL) == 7) {
              p_51979_.scheduleTick(p_51980_, p_51978_.getBlock(), 20);
@@ -16,3 +25,38 @@
      }
  
      @Override
+@@ -253,7 +_,9 @@
+ 
+     public static BlockState insertItem(Entity p_270919_, BlockState p_270087_, ServerLevel p_270284_, ItemStack p_270253_, BlockPos p_270678_) {
+         int i = p_270087_.getValue(LEVEL);
+-        if (i < 7 && COMPOSTABLES.containsKey(p_270253_.getItem())) {
++        var value = p_270253_.getItemHolder().getData(net.neoforged.neoforge.registries.datamaps.neo.ComposterValue.COMPOSTABLES);
++        if (value != null) {
++            if (i < MAX_LEVEL - value.value()) return p_270087_;
+             BlockState blockstate = addItem(p_270919_, p_270087_, p_270284_, p_270678_, p_270253_);
+             p_270253_.shrink(1);
+             return blockstate;
+@@ -284,11 +_,12 @@
+ 
+     static BlockState addItem(@Nullable Entity p_270464_, BlockState p_270603_, LevelAccessor p_270151_, BlockPos p_270547_, ItemStack p_270354_) {
+         int i = p_270603_.getValue(LEVEL);
+-        float f = COMPOSTABLES.getFloat(p_270354_.getItem());
++        var value = p_270354_.getItemHolder().getData(net.neoforged.neoforge.registries.datamaps.neo.ComposterValue.COMPOSTABLES);
++        float f = value.probability();
+         if ((i != 0 || !(f > 0.0F)) && !(p_270151_.getRandom().nextDouble() < (double)f)) {
+             return p_270603_;
+         } else {
+-            int j = i + 1;
++            int j = i + value.value();
+             BlockState blockstate = p_270603_.setValue(LEVEL, Integer.valueOf(j));
+             p_270151_.setBlock(p_270547_, blockstate, 3);
+             p_270151_.gameEvent(GameEvent.BLOCK_CHANGE, p_270547_, GameEvent.Context.of(p_270464_, blockstate));
+@@ -384,7 +_,7 @@
+ 
+         @Override
+         public boolean canPlaceItemThroughFace(int p_52028_, ItemStack p_52029_, @Nullable Direction p_52030_) {
+-            return !this.changed && p_52030_ == Direction.UP && ComposterBlock.COMPOSTABLES.containsKey(p_52029_.getItem());
++            return !this.changed && p_52030_ == Direction.UP && p_52029_.getItemHolder().getData(net.neoforged.neoforge.registries.datamaps.neo.ComposterValue.COMPOSTABLES) != null;
+         }
+ 
+         @Override
