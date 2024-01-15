@@ -37,7 +37,7 @@ public class RegisterDataMapTypesEvent extends Event implements IModBusEvent {
         final var registry = type.registryKey();
         final var map = attachments.computeIfAbsent((ResourceKey) registry, k -> new HashMap<>());
         if (map.containsKey(type.id())) {
-            throw new IllegalArgumentException("Tried to register attachment with ID " + type.id() + " to registry " + registry.location() + " twice");
+            throw new IllegalArgumentException("Tried to register data map type with ID " + type.id() + " to registry " + registry.location() + " twice");
         }
         map.put(type.id(), type);
     }

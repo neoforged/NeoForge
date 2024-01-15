@@ -90,11 +90,11 @@ public class RegistryManager {
 
         ModLoader.get().postEvent(new ModifyRegistriesEvent());
 
-        final Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?, ?>>> attachmentMap = new HashMap<>();
-        ModLoader.get().postEvent(new RegisterDataMapTypesEvent(attachmentMap));
+        final Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?, ?>>> dataMapTypes = new HashMap<>();
+        ModLoader.get().postEvent(new RegisterDataMapTypesEvent(dataMapTypes));
         dataMaps = new IdentityHashMap<>();
-        attachmentMap.forEach((key, values) -> dataMaps.put(key, Collections.unmodifiableMap(values)));
-        dataMaps = Collections.unmodifiableMap(attachmentMap);
+        dataMapTypes.forEach((key, values) -> dataMaps.put(key, Collections.unmodifiableMap(values)));
+        dataMaps = Collections.unmodifiableMap(dataMapTypes);
 
         pendingModdedRegistries.removeIf(BuiltInRegistries.REGISTRY::containsKey);
         if (!pendingModdedRegistries.isEmpty()) {
