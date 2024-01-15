@@ -804,7 +804,7 @@ public class Tags {
             return TagKey.create(Registries.BIOME, new ResourceLocation("c", name));
         }
     }
-    
+
     public static class DamageTypes {
 
         /**
