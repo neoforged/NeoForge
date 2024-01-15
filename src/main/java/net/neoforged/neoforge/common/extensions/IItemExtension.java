@@ -45,6 +45,7 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -456,13 +457,15 @@ public interface IItemExtension {
     /**
      * Gets the level of the enchantment currently present on the stack. By default, returns the enchantment level present in NBT.
      * Most enchantment implementations rely upon this method.
-     * For consistency, results of this method should be the same as getting the enchantment from {@link #getAllEnchantments(ItemStack)}
+     * The returned value must be the same as getting the enchantment from {@link #getAllEnchantments(ItemStack)}
      *
-     * @param stack       the item stack being checked
-     * @param enchantment the enchantment being checked for
+     * @param stack       The item stack being checked
+     * @param enchantment The enchantment being checked for
      * @return Level of the enchantment, or 0 if not present
      * @see #getAllEnchantments(ItemStack)
+     * @apiNote Call via {@link IItemStackExtension#getEnchantmentLevel(Enchantment)}.
      */
+    @ApiStatus.OverrideOnly
     default int getEnchantmentLevel(ItemStack stack, Enchantment enchantment) {
         return EnchantmentHelper.getTagEnchantmentLevel(enchantment, stack);
     }
@@ -470,12 +473,14 @@ public interface IItemExtension {
     /**
      * Gets a map of all enchantments present on the stack. By default, returns the enchantments present in NBT.
      * Used in several places in code including armor enchantment hooks.
-     * For consistency, any enchantments in the returned map should include the same level in {@link #getEnchantmentLevel(ItemStack, Enchantment)}
+     * The returned value(s) must have the same level as {@link #getEnchantmentLevel(ItemStack, Enchantment)}.
      *
-     * @param stack the item stack being checked
+     * @param stack The item stack being checked
      * @return Map of all enchantments on the stack, empty if no enchantments are present
      * @see #getEnchantmentLevel(ItemStack, Enchantment)
+     * @apiNote Call via {@link IItemStackExtension#getAllEnchantments()}.
      */
+    @ApiStatus.OverrideOnly
     default Map<Enchantment, Integer> getAllEnchantments(ItemStack stack) {
         return EnchantmentHelper.deserializeEnchantments(stack.getEnchantmentTags());
     }
