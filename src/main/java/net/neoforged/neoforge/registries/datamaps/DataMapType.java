@@ -1,4 +1,4 @@
-package net.neoforged.neoforge.registries.attachment;
+package net.neoforged.neoforge.registries.datamaps;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
@@ -58,16 +58,16 @@ import java.util.function.Function;
  * <p>
  * Both datapack registries and normal, built-in registries support data maps.
  *
- * @param id
- * @param codec
- * @param networkCodec
- * @param mandatorySync
- * @param defaultValue
- * @param remover
- * @param merger
- * @param <T>
- * @param <R>
- * @param <VR>
+ * @param id            the ID of the data map
+ * @param codec         the codec used to decode and encode the values to and from JSON
+ * @param networkCodec  an optional codec that is used to sync the data map to clients
+ * @param mandatorySync if {@code true}, this data map must be present on the client
+ * @param defaultValue  a function providing default, fallback values
+ * @param remover       a remover used to remove specific values
+ * @param merger        a merger that merges conflicting values
+ * @param <T>           the type of the data map
+ * @param <R>           the registry the data map is for
+ * @param <VR>          the type of the remover
  */
 public record DataMapType<T, R, VR extends DataMapValueRemover<T, R>>(
         ResourceLocation id,
@@ -78,11 +78,31 @@ public record DataMapType<T, R, VR extends DataMapValueRemover<T, R>>(
         DataMapValueMerger<T, R> merger
 ) {
 
+    public DataMapType {
+        Preconditions.checkArgument(networkCodec != null || !mandatorySync, "Mandatory sync cannot be enabled when the attachment isn't synchronized");
+    }
+
+    /**
+     * {@return a data map type builder}
+     *
+     * @param id       the ID of the data map
+     * @param registry the key of the registry the data map is for
+     * @param codec    the codec used to deserialize the values from JSON
+     * @param <T>      the type of the data map
+     * @param <R>      the registry the data is for
+     */
     public static <T, R> Builder<T, R, DataMapValueRemover.Default<T, R>> builder(ResourceLocation id, ResourceKey<Registry<R>> registry, Codec<T> codec) {
         return new Builder<T, R, DataMapValueRemover<T, R>>(id, codec).remover(DataMapValueRemover.Default.codec());
     }
 
 
+    /**
+     * A builder for {@link DataMapType data map types}.
+     *
+     * @param <T>  the type of the data
+     * @param <R>  the registry the data is for
+     * @param <VR> the type of the remover
+     */
     public static class Builder<T, R, VR extends DataMapValueRemover<T, R>> {
         private final ResourceLocation id;
         private final Codec<T> codec;
@@ -98,29 +118,60 @@ public record DataMapType<T, R, VR extends DataMapValueRemover<T, R>>(
             this.codec = codec;
         }
 
+        /**
+         * Configures a remover for the data map.
+         *
+         * @param remover a codec used to decode the remover
+         * @param <VR1>   the type of the new remover
+         * @return the builder instance
+         * @see DataMapValueRemover
+         */
         public <VR1 extends DataMapValueRemover<T, R>> Builder<T, R, VR1> remover(Codec<VR1> remover) {
             this.remover = (Codec) remover;
             return (Builder<T, R, VR1>) this;
         }
 
+        /**
+         * Marks the data map as synced. <br>
+         * A synced data map will be sent to clients that support it.
+         *
+         * @param networkCodec a codec used to sync the values
+         * @param mandatory    if {@code true}, clients that do not support this data map will not be able to connect to the server
+         * @return the builder instance
+         */
         public Builder<T, R, VR> synced(Codec<T> networkCodec, boolean mandatory) {
             this.mandatorySync = mandatory;
             this.networkCodec = networkCodec;
             return this;
         }
 
+        /**
+         * Sets the function that provides a fallback value for objects that have no data attached. <br>
+         * This is useful if the data map replaces vanilla maps, for instance.
+         *
+         * @param defaultValue a function providing fallback values
+         * @return the builder instacen
+         */
         public Builder<T, R, VR> defaultValue(Function<R, T> defaultValue) {
             this.defaultValue = defaultValue;
             return this;
         }
 
+        /**
+         * Configures the merger that will handle conflicting values for the same registry object.
+         *
+         * @param merger a merger that handles conflicting values
+         * @return the builder instance
+         */
         public Builder<T, R, VR> merger(DataMapValueMerger<T, R> merger) {
             this.merger = merger;
             return this;
         }
 
+        /**
+         * {@return a built data map type}
+         */
         public DataMapType<T, R, VR> build() {
-            Preconditions.checkArgument(networkCodec != null || !mandatorySync, "Mandatory sync cannot be enabled when the attachment isn't synchronized");
             return new DataMapType<>(id, codec, networkCodec, mandatorySync, defaultValue, remover, merger);
         }
     }

@@ -23,8 +23,8 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
-import net.neoforged.neoforge.registries.attachment.DataMapType;
-import net.neoforged.neoforge.registries.attachment.DataMapValueRemover;
+import net.neoforged.neoforge.registries.datamaps.DataMapType;
+import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover;
 import org.slf4j.Logger;
 
 import java.io.Reader;

@@ -1,4 +1,4 @@
-package net.neoforged.neoforge.registries.attachment;
+package net.neoforged.neoforge.registries.datamaps;
 
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;

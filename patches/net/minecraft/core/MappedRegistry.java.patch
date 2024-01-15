@@ -16,7 +16,7 @@
 +
 +        @Override
 +        @org.jetbrains.annotations.Nullable
-+        public <A> A getData(net.neoforged.neoforge.registries.attachment.DataMapType<A, T, ?> attachment, ResourceKey<T> key) {
++        public <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<A, T, ?> attachment, ResourceKey<T> key) {
 +            return MappedRegistry.this.getData(attachment, key);
 +        }
      };

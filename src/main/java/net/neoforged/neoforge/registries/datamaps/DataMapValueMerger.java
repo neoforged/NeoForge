@@ -1,4 +1,4 @@
-package net.neoforged.neoforge.registries.attachment;
+package net.neoforged.neoforge.registries.datamaps;
 
 import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Registry;

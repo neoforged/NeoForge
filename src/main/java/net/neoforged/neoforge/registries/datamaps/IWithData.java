@@ -1,4 +1,4 @@
-package net.neoforged.neoforge.registries.attachment;
+package net.neoforged.neoforge.registries.datamaps;
 
 import org.jetbrains.annotations.Nullable;
 

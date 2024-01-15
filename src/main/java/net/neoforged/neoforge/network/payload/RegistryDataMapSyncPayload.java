@@ -6,7 +6,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.RegistryManager;
-import net.neoforged.neoforge.registries.attachment.DataMapType;
+import net.neoforged.neoforge.registries.datamaps.DataMapType;
 
 import java.util.Map;
 
