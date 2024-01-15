@@ -524,23 +524,6 @@ public class NeoForgeMod {
                     container.getModInfo(), ModLoadingStage.CONSTRUCT,
                     "loadwarning.neoforge.prbuild"));
         }
-
-        record SomeThing(int value) {
-            public static final Codec<SomeThing> CODEC = Codec.INT.fieldOf("value").xmap(SomeThing::new, SomeThing::value).codec();
-        }
-        final DataMapType<SomeThing, Item, DataMapValueRemover.Default<SomeThing, Item>> attachment = new DataMapType<>(
-                new ResourceLocation("neo:thing"),
-                SomeThing.CODEC, SomeThing.CODEC, true,
-                i -> null,
-                DataMapValueRemover.Default.codec(),
-                DataMapValueMerger.defaultMerger()
-        );
-        modEventBus.addListener((final RegisterDataMapTypesEvent event) -> {
-            event.register(Registries.ITEM, attachment);
-        });
-        NeoForge.EVENT_BUS.addListener((final UseItemOnBlockEvent event) -> {
-            System.out.println(event.getItemStack().getItemHolder().getData(attachment));
-        });
     }
 
     public void preInit(FMLCommonSetupEvent evt) {

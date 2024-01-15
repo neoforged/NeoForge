@@ -58,6 +58,7 @@ import java.util.function.Function;
  * <p>
  * Both datapack registries and normal, built-in registries support data maps.
  *
+ * @param registryKey   the ID of the registry this data map is for
  * @param id            the ID of the data map
  * @param codec         the codec used to decode and encode the values to and from JSON
  * @param networkCodec  an optional codec that is used to sync the data map to clients
@@ -70,6 +71,7 @@ import java.util.function.Function;
  * @param <VR>          the type of the remover
  */
 public record DataMapType<T, R, VR extends DataMapValueRemover<T, R>>(
+        ResourceKey<Registry<R>> registryKey,
         ResourceLocation id,
         Codec<T> codec, @Nullable Codec<T> networkCodec,
         boolean mandatorySync,
@@ -92,7 +94,7 @@ public record DataMapType<T, R, VR extends DataMapValueRemover<T, R>>(
      * @param <R>      the registry the data is for
      */
     public static <T, R> Builder<T, R, DataMapValueRemover.Default<T, R>> builder(ResourceLocation id, ResourceKey<Registry<R>> registry, Codec<T> codec) {
-        return new Builder<T, R, DataMapValueRemover<T, R>>(id, codec).remover(DataMapValueRemover.Default.codec());
+        return new Builder<>(registry, id, codec).remover(DataMapValueRemover.Default.codec());
     }
 
 
@@ -104,16 +106,18 @@ public record DataMapType<T, R, VR extends DataMapValueRemover<T, R>>(
      * @param <VR> the type of the remover
      */
     public static class Builder<T, R, VR extends DataMapValueRemover<T, R>> {
+        private final ResourceKey<Registry<R>> registryKey;
         private final ResourceLocation id;
         private final Codec<T> codec;
 
         private @Nullable Codec<T> networkCodec;
         private boolean mandatorySync;
-        private Function<R, T> defaultValue;
+        private Function<R, T> defaultValue = val -> null;
         private Codec<VR> remover;
         private DataMapValueMerger<T, R> merger = DataMapValueMerger.defaultMerger();
 
-        private Builder(ResourceLocation id, Codec<T> codec) {
+        private Builder(ResourceKey<Registry<R>> registryKey, ResourceLocation id, Codec<T> codec) {
+            this.registryKey = registryKey;
             this.id = id;
             this.codec = codec;
         }
@@ -172,7 +176,7 @@ public record DataMapType<T, R, VR extends DataMapValueRemover<T, R>>(
          * {@return a built data map type}
          */
         public DataMapType<T, R, VR> build() {
-            return new DataMapType<>(id, codec, networkCodec, mandatorySync, defaultValue, remover, merger);
+            return new DataMapType<>(registryKey, id, codec, networkCodec, mandatorySync, defaultValue, remover, merger);
         }
     }
 }

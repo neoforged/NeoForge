@@ -122,8 +122,9 @@ public class NeoForgeEventHandler {
                 if (player.connection.isVanillaConnection()) {
                     return;
                 }
-                handleSync(player, regOpt.get(), player.connection.connection.channel().attr(RegistryManager.ATTRIBUTE_KNOWN_DATA_MAPS)
-                        .get().getOrDefault(registry, List.of()));
+                final var playerMaps = player.connection.connection.channel().attr(RegistryManager.ATTRIBUTE_KNOWN_DATA_MAPS).get();
+                if (playerMaps == null) return; // Skip gametest players for instance
+                handleSync(player, regOpt.get(), playerMaps.getOrDefault(registry, List.of()));
             });
         });
     }

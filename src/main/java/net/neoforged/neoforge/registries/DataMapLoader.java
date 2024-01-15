@@ -4,9 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -18,13 +16,11 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
+import net.neoforged.neoforge.registries.datamaps.DataMapFile;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
-import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover;
 import org.slf4j.Logger;
 
 import java.io.Reader;
@@ -33,7 +29,6 @@ import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
@@ -41,7 +36,7 @@ import java.util.function.Consumer;
 
 public class DataMapLoader implements PreparableReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final String PATH = "data_maps";
+    public static final String PATH = "data_maps";
     private Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> results;
     private final ICondition.IContext conditionContext;
     private final RegistryAccess registryAccess;
@@ -72,25 +67,25 @@ public class DataMapLoader implements PreparableReloadListener {
         ));
     }
 
-    private <T, R> Map<ResourceKey<R>, T> buildDataMap(Registry<R> registry, DataMapType<T, R, ?> attachment, List<LoadEntry<T, R>> entries) {
+    private <T, R> Map<ResourceKey<R>, T> buildDataMap(Registry<R> registry, DataMapType<T, R, ?> attachment, List<DataMapFile<T, R>> entries) {
         record WithSource<T, R>(T attachment, Either<TagKey<R>, ResourceKey<R>> source) {}
         final Map<ResourceKey<R>, WithSource<T, R>> result = new IdentityHashMap<>();
         final BiConsumer<Either<TagKey<R>, ResourceKey<R>>, Consumer<Holder<R>>> valueResolver = (key, cons) ->
                 key.ifLeft(tag -> registry.getTagOrEmpty(tag).forEach(cons)).ifRight(k -> cons.accept(registry.getHolderOrThrow(k)));
         entries.forEach(entry -> {
-            if (entry.replace) {
+            if (entry.replace()) {
                 result.clear();
             }
 
             entry.values().forEach((tKey, value) -> valueResolver.accept(tKey, holder -> {
                 if (value.isEmpty()) return;
-                final var newValue = value.get();
+                final var newValue = value.get().carrier();
                 final var key = holder.unwrapKey().get();
                 final var oldValue = result.get(key);
                 if (oldValue == null || newValue.replace()) {
-                    result.put(key, new WithSource<>(newValue.attachment(), tKey));
+                    result.put(key, new WithSource<>(newValue.value(), tKey));
                 } else {
-                    result.put(key, new WithSource<>(attachment.merger().merge(registry, oldValue.source(), oldValue.attachment(), tKey, newValue.attachment()), tKey));
+                    result.put(key, new WithSource<>(attachment.merger().merge(registry, oldValue.source(), oldValue.attachment(), tKey, newValue.value()), tKey));
                 }
             }));
 
@@ -139,7 +134,7 @@ public class DataMapLoader implements PreparableReloadListener {
         {
             final var registryKey = registryEntry.key();
             profiler.push("registry_attachments/" + registryKey.location() + "/locating");
-            final var fileToId = FileToIdConverter.json(getFolderLocation(registryKey.location()));
+            final var fileToId = FileToIdConverter.json(PATH + "/" + getFolderLocation(registryKey.location()));
             for (Map.Entry<ResourceLocation, List<Resource>> entry : fileToId.listMatchingResourceStacks(manager).entrySet()) {
                 ResourceLocation key = entry.getKey();
                 final ResourceLocation attachmentId = fileToId.fileToId(key);
@@ -149,7 +144,7 @@ public class DataMapLoader implements PreparableReloadListener {
                     continue;
                 }
                 profiler.popPush("registry_attachments/" + registryKey.location() + "/" + attachmentId + "/loading");
-                values.computeIfAbsent(registryKey, k -> new LoadResult<>(new HashMap<>())).results.put(attachment, readAttachments(
+                values.computeIfAbsent(registryKey, k -> new LoadResult<>(new HashMap<>())).results.put(attachment, readData(
                         ops, attachment, (ResourceKey) registryKey, entry.getValue(), context
                 ));
             }
@@ -160,12 +155,12 @@ public class DataMapLoader implements PreparableReloadListener {
     }
 
     public static String getFolderLocation(ResourceLocation registryId) {
-        return PATH + "/" + (registryId.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE) ? "" : registryId.getNamespace() + "/") + registryId.getPath();
+        return (registryId.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE) ? "" : registryId.getNamespace() + "/") + registryId.getPath();
     }
 
-    private static <A, T> List<LoadEntry<A, T>> readAttachments(RegistryOps<JsonElement> ops, DataMapType<A, T, ?> attachmentType, ResourceKey<Registry<T>> registryKey, List<Resource> resources, ICondition.IContext context) {
-        final var codec = LoadEntry.codec(registryKey, attachmentType);
-        final List<LoadEntry<A, T>> entries = new LinkedList<>();
+    private static <A, T> List<DataMapFile<A, T>> readData(RegistryOps<JsonElement> ops, DataMapType<A, T, ?> attachmentType, ResourceKey<Registry<T>> registryKey, List<Resource> resources, ICondition.IContext context) {
+        final var codec = DataMapFile.codec(registryKey, attachmentType);
+        final List<DataMapFile<A, T>> entries = new LinkedList<>();
         for (final Resource resource : resources) {
             try {
                 try (Reader reader = resource.openAsReader()) {
@@ -180,52 +175,7 @@ public class DataMapLoader implements PreparableReloadListener {
         return entries;
     }
 
-    private record LoadResult<T>(Map<DataMapType<?, T, ?>, List<LoadEntry<?, T>>> results) {
+    private record LoadResult<T>(Map<DataMapType<?, T, ?>, List<DataMapFile<?, T>>> results) {
     }
 
-    private record Removal<T, R>(Either<TagKey<R>, ResourceKey<R>> key,
-                                 Optional<DataMapValueRemover<T, R>> remover) {
-        public static <T, R, VR extends DataMapValueRemover<T, R>> Codec<Removal<T, R>> codec(Codec<Either<TagKey<R>, ResourceKey<R>>> tagOrValue, DataMapType<T, R, VR> attachment) {
-            return RecordCodecBuilder.create(in -> in.group(
-                    tagOrValue.fieldOf("key").forGetter(Removal::key),
-                    attachment.remover().<DataMapValueRemover<T, R>>xmap(vr -> vr, v -> (VR) v).optionalFieldOf("remover").forGetter(Removal::remover)
-            ).apply(in, Removal::new));
-        }
-    }
-
-    private record AttachmentValue<T>(T attachment, boolean replace) {
-        private AttachmentValue(T attachment) {
-            this(attachment, false);
-        }
-    }
-
-    private record LoadEntry<T, R>(
-            boolean replace,
-            Map<Either<TagKey<R>, ResourceKey<R>>, Optional<AttachmentValue<T>>> values,
-            List<Removal<T, R>> removals
-    ) {
-        public static <T, R, VR extends DataMapValueRemover<T, R>> Codec<LoadEntry<T, R>> codec(ResourceKey<Registry<R>> registryKey, DataMapType<T, R, VR> attachment) {
-            final Codec<Either<TagKey<R>, ResourceKey<R>>> tagOrValue = ExtraCodecs.TAG_OR_ELEMENT_ID.xmap(
-                    l -> l.tag() ? Either.left(TagKey.create(registryKey, l.id())) : Either.right(ResourceKey.create(registryKey, l.id())),
-                    e -> e.map(t -> new ExtraCodecs.TagOrElementLocation(t.location(), true), r -> new ExtraCodecs.TagOrElementLocation(r.location(), false))
-            );
-            final var removalCodec = Removal.codec(tagOrValue, attachment);
-            return RecordCodecBuilder.create(in -> in.group(
-                    ExtraCodecs.strictOptionalField(Codec.BOOL, "replace", false).forGetter(LoadEntry::replace),
-                    ExtraCodecs.strictUnboundedMap(tagOrValue, ConditionalOps.createConditionalCodec(ExtraCodecs.withAlternative(
-                            RecordCodecBuilder.create(i -> i.group(
-                                    attachment.codec().fieldOf("value").forGetter(AttachmentValue::attachment),
-                                    ExtraCodecs.strictOptionalField(Codec.BOOL, "replace", false).forGetter(AttachmentValue::replace)
-                            ).apply(i, AttachmentValue::new)), attachment.codec().xmap(AttachmentValue::new, AttachmentValue::attachment)
-                    ))).fieldOf("values").forGetter(LoadEntry::values),
-                    ExtraCodecs.strictOptionalField(NeoForgeExtraCodecs.withAlternative(
-                            NeoForgeExtraCodecs.withAlternative(removalCodec.listOf(), NeoForgeExtraCodecs.decodeOnly(tagOrValue.listOf()
-                                    .map(l -> l.stream().map(k -> new Removal<T, R>(k, Optional.empty())).toList()))),
-                            NeoForgeExtraCodecs.decodeOnly(ExtraCodecs.strictUnboundedMap(tagOrValue, attachment.remover())
-                                    .map(map -> map.entrySet().stream()
-                                            .map(entry -> new Removal<>(entry.getKey(), Optional.of(entry.getValue()))).toList()))
-                    ), "remove", List.of()).forGetter(LoadEntry::removals)
-            ).apply(in, LoadEntry::new));
-        }
-    }
 }
