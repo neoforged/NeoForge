@@ -252,8 +252,8 @@ public class DataMapTests {
         }
 
         final DataMapType<ExperienceGrant, DamageType, Default<ExperienceGrant, DamageType>> xpGrant = DataMapType.builder(
-                        new ResourceLocation(reg.modId(), "xp_grant"),
-                        Registries.DAMAGE_TYPE, ExperienceGrant.CODEC)
+                new ResourceLocation(reg.modId(), "xp_grant"),
+                Registries.DAMAGE_TYPE, ExperienceGrant.CODEC)
                 .build();
 
         test.framework().modEventBus().addListener((final RegisterDataMapTypesEvent event) -> event.register(xpGrant));
