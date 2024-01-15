@@ -8,10 +8,12 @@ package net.neoforged.neoforge.debug.damagesource;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.PackOutput;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageEffects;
@@ -30,6 +32,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.damagesource.IDeathMessageProvider;
 import net.neoforged.neoforge.common.damagesource.IScalingFunction;
+import net.neoforged.neoforge.common.data.JsonCodecProvider;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -71,6 +74,21 @@ public class DamageTypeTests {
                     living.hurt(player.level().damageSources().source(TEST_DMG_TYPE, player), 2);
                 }
                 return true;
+            }
+        });
+        reg.addProvider(event -> new JsonCodecProvider<>(
+                event.getGenerator().getPackOutput(),
+                PackOutput.Target.DATA_PACK,
+                "damage_type",
+                PackType.SERVER_DATA,
+                DamageType.CODEC,
+                event.getLookupProvider(),
+                "test",
+                event.getExistingFileHelper()) {
+            @Override
+            protected void gather() {
+                unconditional(new ResourceLocation("test:test"), new DamageType(
+                        "test_mod", SCALING, 0.0f, EFFECTS, MSGTYPE));
             }
         });
 
