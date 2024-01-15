@@ -274,7 +274,7 @@ public class RegistryManager {
             final BaseMappedRegistry<R> registry = (BaseMappedRegistry<R>) context.level().orElseThrow().registryAccess()
                     .registryOrThrow(payload.registryKey());
             registry.dataMaps.clear();
-            payload.dataMaps().forEach((attachKey, attachments) -> registry.dataMaps.put(getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(attachments)));
+            payload.dataMaps().forEach((attachKey, maps) -> registry.dataMaps.put(getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(maps)));
         }).exceptionally(ex -> {
             context.packetHandler().disconnect(Component.translatable("neoforge.network.data_maps.failed", payload.registryKey().location(), ex.getMessage()));
             LOGGER.error("Failed to handle registry data map sync: ", ex);
@@ -282,7 +282,7 @@ public class RegistryManager {
         });
     }
 
-    public static void handleKnownAttachments(final KnownRegistryDataMapsPayload payload, final ConfigurationPayloadContext context) {
+    public static void handleKnownDataMaps(final KnownRegistryDataMapsPayload payload, final ConfigurationPayloadContext context) {
         record MandatoryEntry(ResourceKey<Registry<?>> registry, ResourceLocation id) {}
         final Set<MandatoryEntry> ourMandatory = new HashSet<>();
         getDataMaps().forEach((reg, values) -> values.values().forEach(attach -> {
