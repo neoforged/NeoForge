@@ -23,9 +23,13 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.data.DataMapProvider;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
@@ -235,6 +239,44 @@ public class DataMapTests {
 
             helper.assertTrue(registry.wrapAsHolder(Items.BIRCH_LOG).getData(someData) == null, "Data was attached to birch!");
 
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if data maps can be successfully attached to dynamic registries")
+    static void dynamicRegDataMaps(final DynamicTest test, final RegistrationHelper reg) {
+        record ExperienceGrant(int amount) {
+            static final Codec<ExperienceGrant> CODEC = Codec.INT.xmap(ExperienceGrant::new, ExperienceGrant::amount);
+        }
+
+        final DataMapType<ExperienceGrant, DamageType, Default<ExperienceGrant, DamageType>> xpGrant = DataMapType.builder(
+                        new ResourceLocation(reg.modId(), "xp_grant"),
+                        Registries.DAMAGE_TYPE, ExperienceGrant.CODEC)
+                .build();
+
+        test.framework().modEventBus().addListener((final RegisterDataMapTypesEvent event) -> event.register(xpGrant));
+
+        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+            @Override
+            protected void gather() {
+                builder(xpGrant)
+                        .add(DamageTypes.FELL_OUT_OF_WORLD, new ExperienceGrant(130), false);
+            }
+        });
+
+        test.eventListeners().forge().addListener((final LivingDamageEvent event) -> {
+            final ExperienceGrant grant = event.getSource().typeHolder().getData(xpGrant);
+            if (grant != null && event.getEntity() instanceof Player player) {
+                player.giveExperiencePoints(grant.amount());
+            }
+        });
+
+        test.onGameTest(helper -> {
+            final Player player = helper.makeMockPlayer();
+            player.hurt(helper.getLevel().damageSources().fellOutOfWorld(), 1f);
+            helper.assertTrue(player.totalExperience == 130, "Player didn't receive experience");
             helper.succeed();
         });
     }

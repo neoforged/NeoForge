@@ -111,9 +111,13 @@ public abstract class DataMapProvider implements DataProvider {
             this.registryKey = type.registryKey();
         }
 
-        public Builder<T, R, VR> add(ResourceLocation id, T value, boolean replace, ICondition... conditions) {
-            this.values.put(Either.right(ResourceKey.create(registryKey, id)), Optional.of(new WithConditions<>(new DataMapEntry<>(value, replace), conditions)));
+        public Builder<T, R, VR> add(ResourceKey<R> key, T value, boolean replace, ICondition... conditions) {
+            this.values.put(Either.right(key), Optional.of(new WithConditions<>(new DataMapEntry<>(value, replace), conditions)));
             return this;
+        }
+
+        public Builder<T, R, VR> add(ResourceLocation id, T value, boolean replace, ICondition... conditions) {
+            return add(ResourceKey.create(registryKey, id), value, replace, conditions);
         }
 
         public Builder<T, R, VR> add(Holder<R> object, T value, boolean replace, ICondition... conditions) {
