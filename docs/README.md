@@ -17,10 +17,8 @@ NeoForge is a free, open-source modding API many of your favourite mods use!
 
 # Installing NeoForge
 
-Go to [CurseForge][CurseForge] project, select the minecraft version and installer, and run it.
-
 You can download the installer for the *Recommended Build* or the
- *Latest build* there. Latest builds may have newer features but may be
+ *Latest build* at [NeoForged]. Latest builds may have newer features but may be
  more unstable as a result. The installer will attempt to install Forge
  into your vanilla launcher environment, where you can then create a new
  profile using that version and play the game!
@@ -55,7 +53,7 @@ free to use and modify. However, it costs money to run such a large project as t
 our opencollective.*
 
 [Contributing]: ./CONTRIBUTING.md
-[CLA]: https://cla-assistant.io/MinecraftForge/MinecraftForge
+[CLA]: https://cla-assistant.io/neoforged/NeoForge
 
 [Download]: https://maven.neoforged.net/#/releases/net/neoforged/forge/
 
@@ -65,4 +63,4 @@ our opencollective.*
 [Getting-Started]: https://docs.neoforged.net/docs/gettingstarted/
 [NeoForgeDev]: https://docs.neoforged.net/docs/forgedev/
 [Pull-Requests]: https://docs.neoforged.net/docs/forgedev/#making-changes-and-pull-requests
-[CurseForge]: https://curseforge.com/
+[NeoForged]: https://neoforged.net/
