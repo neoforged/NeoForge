@@ -18,7 +18,30 @@ import org.jetbrains.annotations.Nullable;
  * A {@link #remover() remover} will be used to support targeted removals that
  * support decomposition, instead of the removal of the entire value. That way, for instance, one is able to remove just a value with
  * a specific key from a {@link Map map-based} data map, instead of the entire map.
- *
+ * <br>
+ * To use a remover one has to change the structure of the {@code remove} list, to an object:
+ * 
+ * <pre>
+ * <code>
+ * "remove": {
+ *     "someobject:someid": {} // Remover object
+ * }
+ * </code>
+ * </pre>
+ * 
+ * Or, to an object list:
+ * 
+ * <pre>
+ * <code>
+ * "remove": [
+ *  {
+ *      "key": someobject:someid",
+ *      "remover": {} // Remover object. Optional. If not provided, the attached value will be removed from the object completely, without invoking the remover
+ *  }
+ * ]
+ * </code>
+ * </pre>
+ * 
  * <p>
  * Advanced data map types also have the ability of handling conflicts between datapacks that attach an object to the same registry object.
  * Using {@link #merger() mergers}, {@linkplain DataMapValueMerger#listMerger() collection-based} data maps can, as such, merge values provided by multiple packs

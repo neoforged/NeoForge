@@ -30,16 +30,13 @@ import org.jetbrains.annotations.Nullable;
  * <code>
  *     {
  *         "replace": false // If true, all previous data will be cleared.
- *         // The values object is a map of registry entry ID / tag to attachment values.
+ *         // The values object is a map of registry entry ID / tag to data map values.
  *         "values": {
- *             "someobject:someid": {},
- *             "#somepath:sometag": {}
+ *             "someobject:someid": {}, // The object being attached
+ *             "#somepath:sometag": {} // Tags are also supported. All objects in the tag will then receieve the same value
  *         },
  *         // Optional object. Entries specified here will be removed after the data of the current json file is attached
- *         // The remove object can also be a list (i.e. ["minecraft:carrot", "#minecraft:logs"]). When it is a list the data of the objects with the specified IDs/tags will simply be removed, without invoking the remover.
- *         "remove": {
- *              "someobject:someid2": {} // Remover object
- *         }
+ *         "remove": ["minecraft:carrot", "#minecraft:logs"]
  *     }
  * </pre>
  *
