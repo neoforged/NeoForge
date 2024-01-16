@@ -16,6 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * VillagerChangeProfessionEvent is fired on the server when a Villager Entity changes profession.
  * This event is fired via the {@link EventHooks#onVillagerProfessionChanged(Villager, VillagerProfession, VillagerProfession)}.
+ * This event is {@link ICancellableEvent cancellable}. Effects of the cancellation are noted in {@link #setCanceled(boolean)}.
  * You can change the profession that the villager will change to via {@link #setNewProfession(VillagerProfession)}.
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
@@ -28,6 +29,14 @@ public class VillagerChangeProfessionEvent extends EntityEvent implements ICance
         super(villager);
         this.oldProfession = oldProfession;
         this.newProfession = newProfession;
+    }
+
+    /**
+     * If the event is canceled, no {@link VillagerProfession} change will occur.
+     */
+    @Override
+    public void setCanceled(boolean canceled) {
+        ICancellableEvent.super.setCanceled(canceled);
     }
 
     @Override
