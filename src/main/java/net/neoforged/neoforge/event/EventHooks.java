@@ -61,6 +61,7 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -124,6 +125,7 @@ import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.AllowDespawn;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
+import net.neoforged.neoforge.event.entity.living.SlimeSplitEvent;
 import net.neoforged.neoforge.event.entity.living.ZombieEvent.SummonAidEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
@@ -941,5 +943,17 @@ public class EventHooks {
 
         for (var entry : entries)
             output.accept(entry.getKey(), entry.getValue());
+    }
+
+    /**
+     * Fires the slime split event. Returns the event for cancellation checking.
+     * 
+     * @param parent The parent slime
+     * @param child  The child slime
+     */
+    public static SlimeSplitEvent onSlimeSplit(Slime parent, Slime child) {
+        var event = new SlimeSplitEvent(parent, child);
+        NeoForge.EVENT_BUS.post(event);
+        return event;
     }
 }

@@ -9,6 +9,18 @@
              for(int j = 0; j < i * 8; ++j) {
                  float f = this.random.nextFloat() * (float) (Math.PI * 2);
                  float f1 = this.random.nextFloat() * 0.5F + 0.5F;
+@@ -214,7 +_,10 @@
+                     slime.setInvulnerable(this.isInvulnerable());
+                     slime.setSize(j, true);
+                     slime.moveTo(this.getX() + (double)f1, this.getY() + 0.5, this.getZ() + (double)f2, this.random.nextFloat() * 360.0F, 0.0F);
+-                    this.level().addFreshEntity(slime);
++
++                    if (!net.neoforged.neoforge.event.EventHooks.onSlimeSplit(this, slime).isCanceled())  {
++                        this.level().addFreshEntity(slime);
++                    }
+                 }
+             }
+         }
 @@ -366,6 +_,12 @@
      public EntityDimensions getDimensions(Pose p_33597_) {
          return super.getDimensions(p_33597_).scale(0.255F * (float)this.getSize());
