@@ -213,7 +213,8 @@ public class CommonHooks {
 
     public static boolean isCorrectToolForDrops(@NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
         if (level instanceof LevelAccessor accessor) { //BlockEvent expects a LevelAccessor
-            BlockEvent.ToolCheck event = EventHooks.doToolCheck(accessor, pos, state, player, player.getMainHandItem());
+            BlockEvent.ToolCheck event = new BlockEvent.ToolCheck(accessor, pos, state, player, player.getMainHandItem());
+            NeoForge.EVENT_BUS.post(event);
             if (event.getResult() != Event.Result.DEFAULT)
                 return event.getResult() == Event.Result.ALLOW;
         }

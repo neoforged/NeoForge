@@ -187,12 +187,6 @@ public class EventHooks {
         return event.canHarvest();
     }
 
-    public static BlockEvent.ToolCheck doToolCheck(LevelAccessor accessor, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack tool) {
-        BlockEvent.ToolCheck event = new BlockEvent.ToolCheck(accessor, pos, state, entity, tool);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
-    }
-
     public static float getBreakSpeed(Player player, BlockState state, float original, BlockPos pos) {
         PlayerEvent.BreakSpeed event = new PlayerEvent.BreakSpeed(player, state, original, pos);
         return (NeoForge.EVENT_BUS.post(event).isCanceled() ? -1 : event.getNewSpeed());
