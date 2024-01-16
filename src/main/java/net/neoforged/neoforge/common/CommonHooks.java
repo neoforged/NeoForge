@@ -182,6 +182,7 @@ import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.BlockToolCheckEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -213,12 +214,12 @@ public class CommonHooks {
 
     public static boolean isCorrectToolForDrops(@NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
         if (level instanceof LevelAccessor accessor) { //BlockEvent expects a LevelAccessor
-            BlockEvent.ToolCheck event = new BlockEvent.ToolCheck(accessor, pos, state, player, player.getMainHandItem());
-            NeoForge.EVENT_BUS.post(event);
+            BlockToolCheckEvent event = NeoForge.EVENT_BUS.post(new BlockToolCheckEvent(accessor, pos, state, player, player.getMainHandItem()));
             if (event.getResult() != Event.Result.DEFAULT)
                 return event.getResult() == Event.Result.ALLOW;
         }
 
+        //TODO 1.20.5 remove
         if (!state.requiresCorrectToolForDrops())
             return EventHooks.doPlayerHarvestCheck(player, state, true);
 
