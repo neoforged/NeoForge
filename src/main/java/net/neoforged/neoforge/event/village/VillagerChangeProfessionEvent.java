@@ -37,6 +37,7 @@ public class VillagerChangeProfessionEvent extends EntityEvent implements ICance
 
     /**
      * contains the {@link VillagerProfession} the villager held before the change.
+     * 
      * @return the {@link VillagerProfession} before the change
      */
     public VillagerProfession getOldProfession() {
@@ -45,6 +46,7 @@ public class VillagerChangeProfessionEvent extends EntityEvent implements ICance
 
     /**
      * contains the {@link VillagerProfession} the villager will hold after the change
+     * 
      * @return the {@link VillagerProfession} after the change
      */
     public VillagerProfession getNewProfession() {
