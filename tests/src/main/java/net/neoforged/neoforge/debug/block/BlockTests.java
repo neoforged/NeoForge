@@ -17,6 +17,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -31,6 +32,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.event.village.VillagerChangeProfessionEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -125,5 +127,19 @@ public class BlockTests {
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DEAD_BUSH, farmlandBlock.above()))
 
                 .thenSucceed();
+    }
+
+    // @todo not sure if needed to turn this into a game test
+    @TestHolder(description = "testing the event by converting a nitwit into a butcher")
+    static void villagerChangeProfessionEvent(final DynamicTest test) {
+        test.eventListeners().forge().addListener((final VillagerChangeProfessionEvent event) -> {
+            if (event.getOldProfession() == event.getNewProfession())
+                return;
+
+            if (event.getOldProfession() == VillagerProfession.NITWIT) {
+                event.setNewProfession(VillagerProfession.BUTCHER);
+            }
+            test.pass();
+        });
     }
 }

@@ -11,10 +11,12 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
+import net.neoforged.neoforge.event.village.VillagerChangeProfessionEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -68,5 +70,18 @@ public class EntityEventTests {
                 .thenExecute(donkey -> helper.assertEntityProperty(
                         donkey, d -> d.getAttribute(testAttr.get()).getValue(), "test attribute", 1.5D))
                 .thenSucceed());
+    }
+
+    @TestHolder(description = "testing the event by converting a nitwit into a butcher")
+    static void villagerChangeProfessionEvent(final DynamicTest test) {
+        test.eventListeners().forge().addListener((final VillagerChangeProfessionEvent event) -> {
+            if (event.getOldProfession() == event.getNewProfession())
+                return;
+
+            if (event.getOldProfession() == VillagerProfession.NITWIT) {
+                event.setNewProfession(VillagerProfession.BUTCHER);
+            }
+            test.pass();
+        });
     }
 }
