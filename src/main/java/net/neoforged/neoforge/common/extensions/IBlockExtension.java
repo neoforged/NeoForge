@@ -180,7 +180,7 @@ public interface IBlockExtension {
      * @return True to spawn the drops
      */
     default public boolean canHarvestBlock(BlockState state, BlockGetter level, BlockPos pos, Player player) {
-        return CommonHooks.isCorrectToolForDrops(state, player);
+        return CommonHooks.isCorrectToolForDrops(level, pos, state, player);
     }
 
     /**
