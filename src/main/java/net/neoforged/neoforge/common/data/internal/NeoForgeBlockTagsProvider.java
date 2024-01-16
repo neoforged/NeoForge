@@ -99,6 +99,8 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.ORES_IN_GROUND_DEEPSLATE).add(Blocks.DEEPSLATE_COAL_ORE, Blocks.DEEPSLATE_COPPER_ORE, Blocks.DEEPSLATE_DIAMOND_ORE, Blocks.DEEPSLATE_EMERALD_ORE, Blocks.DEEPSLATE_GOLD_ORE, Blocks.DEEPSLATE_IRON_ORE, Blocks.DEEPSLATE_LAPIS_ORE, Blocks.DEEPSLATE_REDSTONE_ORE);
         tag(Tags.Blocks.ORES_IN_GROUND_NETHERRACK).add(Blocks.NETHER_GOLD_ORE, Blocks.NETHER_QUARTZ_ORE);
         tag(Tags.Blocks.ORES_IN_GROUND_STONE).add(Blocks.COAL_ORE, Blocks.COPPER_ORE, Blocks.DIAMOND_ORE, Blocks.EMERALD_ORE, Blocks.GOLD_ORE, Blocks.IRON_ORE, Blocks.LAPIS_ORE, Blocks.REDSTONE_ORE);
+        tag(Tags.Blocks.PLAYER_WORKSTATIONS_CRAFTING_TABLES).add(Blocks.CRAFTING_TABLE);
+        tag(Tags.Blocks.PLAYER_WORKSTATIONS_FURNACES).add(Blocks.FURNACE);
         tag(Tags.Blocks.SANDS).addTags(Tags.Blocks.SANDS_COLORLESS, Tags.Blocks.SANDS_RED);
         tag(Tags.Blocks.RELOCATION_NOT_SUPPORTED);
         tag(Tags.Blocks.ROPES);

@@ -162,6 +162,8 @@ public class Tags {
          * Ores in stone (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_STONE}) which could logically use stone as recipe input or output
          */
         public static final TagKey<Block> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
+        public static final TagKey<Block> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
+        public static final TagKey<Block> PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
         /**
          * Blocks should be included in this tag if their movement/relocation can cause serious issues such
          * as world corruption upon being moved or for balance reason where the block should not be able to be relocated.
@@ -474,6 +476,8 @@ public class Tags {
          * Ores in stone (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_STONE}) which could logically use stone as recipe input or output
          */
         public static final TagKey<Item> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
+        public static final TagKey<Item> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
+        public static final TagKey<Item> PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
         public static final TagKey<Item> RAW_BLOCKS = tag("raw_blocks");
         public static final TagKey<Item> RAW_BLOCKS_COPPER = tag("raw_blocks/copper");
         public static final TagKey<Item> RAW_BLOCKS_GOLD = tag("raw_blocks/gold");

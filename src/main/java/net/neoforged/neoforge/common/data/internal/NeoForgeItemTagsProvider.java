@@ -155,6 +155,8 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.ORES_IN_GROUND_DEEPSLATE, Tags.Items.ORES_IN_GROUND_DEEPSLATE);
         copy(Tags.Blocks.ORES_IN_GROUND_NETHERRACK, Tags.Items.ORES_IN_GROUND_NETHERRACK);
         copy(Tags.Blocks.ORES_IN_GROUND_STONE, Tags.Items.ORES_IN_GROUND_STONE);
+        copy(Tags.Blocks.PLAYER_WORKSTATIONS_CRAFTING_TABLES, Tags.Items.PLAYER_WORKSTATIONS_CRAFTING_TABLES);
+        copy(Tags.Blocks.PLAYER_WORKSTATIONS_FURNACES, Tags.Items.PLAYER_WORKSTATIONS_FURNACES);
         tag(Tags.Items.RAW_BLOCKS).addTags(Tags.Items.RAW_BLOCKS_COPPER, Tags.Items.RAW_BLOCKS_GOLD, Tags.Items.RAW_BLOCKS_IRON);
         tag(Tags.Items.RAW_BLOCKS_COPPER).add(Items.RAW_COPPER_BLOCK);
         tag(Tags.Items.RAW_BLOCKS_GOLD).add(Items.RAW_GOLD_BLOCK);

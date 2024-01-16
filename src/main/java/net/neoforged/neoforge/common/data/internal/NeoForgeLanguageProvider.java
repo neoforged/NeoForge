@@ -81,6 +81,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.ORES_IN_GROUND_DEEPSLATE, "Deepslate Ores In Ground");
         add(Tags.Blocks.ORES_IN_GROUND_NETHERRACK, "Netherrack Ores In Ground");
         add(Tags.Blocks.ORES_IN_GROUND_STONE, "Stone Ores In Ground");
+        add(Tags.Blocks.PLAYER_WORKSTATIONS_CRAFTING_TABLES, "Crafting Tables");
+        add(Tags.Blocks.PLAYER_WORKSTATIONS_FURNACES, "Furnaces");
         add(Tags.Blocks.RELOCATION_NOT_SUPPORTED, "Relocation Not Supported");
         add(Tags.Blocks.ROPES, "Ropes");
         add(Tags.Blocks.SANDS, "Sands");
@@ -220,6 +222,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.ORES_IN_GROUND_DEEPSLATE, "Deepslate Ores In Ground");
         add(Tags.Items.ORES_IN_GROUND_NETHERRACK, "Netherrack Ores In Ground");
         add(Tags.Items.ORES_IN_GROUND_STONE, "Stone Ores In Ground");
+        add(Tags.Items.PLAYER_WORKSTATIONS_CRAFTING_TABLES, "Crafting Tables");
+        add(Tags.Items.PLAYER_WORKSTATIONS_FURNACES, "Furnaces");
         add(Tags.Items.RAW_BLOCKS, "Raw Blocks");
         add(Tags.Items.RAW_BLOCKS_COPPER, "Copper Raw Blocks");
         add(Tags.Items.RAW_BLOCKS_GOLD, "Gold Raw Blocks");
