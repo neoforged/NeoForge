@@ -29,7 +29,8 @@ license="LGPL v2.1"
 
 [[mods]]
     modId="finalize_spawn_fix_test"
-
+[[mods]]
+    modId="villager_change_profession_event_test"
 # LEGACY TEST CASES
 ###### The mods below are from the old test framework and need to be yeeted later again.
 
