@@ -73,6 +73,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.BaseSpawner;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
@@ -154,6 +155,7 @@ import net.neoforged.neoforge.event.level.BlockEvent.CreateFluidSourceEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityMultiPlaceEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.NeighborNotifyEvent;
+import net.neoforged.neoforge.event.level.BlockToolCheckEvent;
 import net.neoforged.neoforge.event.level.ChunkTicketLevelUpdatedEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
@@ -184,6 +186,10 @@ public class EventHooks {
         return event;
     }
 
+    /**
+     * DEPRECATED use {@link net.neoforged.neoforge.common.CommonHooks#isCorrectToolForDrops(BlockGetter, BlockPos, BlockState, Player)} instead
+     */
+    @Deprecated(forRemoval = true) //TODO remove in 1.20.5
     public static boolean doPlayerHarvestCheck(Player player, BlockState state, boolean success) {
         PlayerEvent.HarvestCheck event = new PlayerEvent.HarvestCheck(player, state, success);
         NeoForge.EVENT_BUS.post(event);

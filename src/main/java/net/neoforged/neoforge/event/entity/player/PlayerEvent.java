@@ -47,6 +47,8 @@ public abstract class PlayerEvent extends LivingEvent {
     }
 
     /**
+     * DEPRECATED use {@link net.neoforged.neoforge.event.level.BlockToolCheckEvent} instead
+     * <br>
      * HarvestCheck is fired when a player attempts to harvest a block.<br>
      * This event is fired whenever a player attempts to harvest a block in
      * {@link Player#hasCorrectToolForDrops(BlockState)}.<br>
@@ -62,6 +64,7 @@ public abstract class PlayerEvent extends LivingEvent {
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.
      **/
+    @Deprecated(forRemoval = true)
     public static class HarvestCheck extends PlayerEvent {
         private final BlockState state;
         private boolean success;
