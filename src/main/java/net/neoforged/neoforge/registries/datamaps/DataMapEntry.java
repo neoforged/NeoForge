@@ -19,7 +19,7 @@ public record DataMapEntry<T>(T value, boolean replace) {
         this(value, false);
     }
 
-    public static <T> Codec<DataMapEntry<T>> codec(DataMapType<T, ?, ?> type) {
+    public static <T> Codec<DataMapEntry<T>> codec(DataMapType<T, ?> type) {
         return ExtraCodecs.either(
                 RecordCodecBuilder.<DataMapEntry<T>>create(i -> i.group(
                         type.codec().fieldOf("value").forGetter(DataMapEntry::value),
@@ -30,10 +30,13 @@ public record DataMapEntry<T>(T value, boolean replace) {
 
     public record Removal<T, R>(Either<TagKey<R>, ResourceKey<R>> key,
             Optional<DataMapValueRemover<T, R>> remover) {
-        public static <T, R, VR extends DataMapValueRemover<T, R>> Codec<Removal<T, R>> codec(Codec<Either<TagKey<R>, ResourceKey<R>>> tagOrValue, DataMapType<T, R, VR> attachment) {
-            return RecordCodecBuilder.create(in -> in.group(
-                    tagOrValue.fieldOf("key").forGetter(Removal::key),
-                    attachment.remover().<DataMapValueRemover<T, R>>xmap(vr -> vr, v -> (VR) v).optionalFieldOf("remover").forGetter(Removal::remover)).apply(in, Removal::new));
+        public static <T, R> Codec<Removal<T, R>> codec(Codec<Either<TagKey<R>, ResourceKey<R>>> tagOrValue, DataMapType<T, R> attachment) {
+            if (attachment instanceof AdvancedDataMapType<?, ?, ?> advanced) {
+                return RecordCodecBuilder.create(in -> in.group(
+                        tagOrValue.fieldOf("key").forGetter(Removal::key),
+                        ExtraCodecs.strictOptionalField((Codec<DataMapValueRemover<T, R>>) advanced.remover(), "remover").forGetter(Removal::remover)).apply(in, Removal::new));
+            }
+            return RecordCodecBuilder.create(in -> in.group(tagOrValue.fieldOf("key").forGetter(Removal::key)).apply(in, o -> new DataMapEntry.Removal<>(o, Optional.empty())));
         }
     }
 }

@@ -120,7 +120,7 @@ public interface IRegistryExtension<T> {
     boolean containsValue(T value);
 
     @Nullable
-    <A> A getData(DataMapType<A, T, ?> attachment, ResourceKey<T> key);
+    <A> A getData(DataMapType<A, T> attachment, ResourceKey<T> key);
 
-    <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<A, T, ?> attachment);
+    <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<A, T> attachment);
 }

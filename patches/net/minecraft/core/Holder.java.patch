@@ -16,7 +16,7 @@
 +        }
 +
 +        @org.jetbrains.annotations.Nullable
-+        public <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<A, T, ?> type) {
++        public <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<A, T> type) {
 +            return ((HolderLookup.RegistryLookup<T>) owner).getData(type, key());
          }
  

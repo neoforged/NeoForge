@@ -27,7 +27,7 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     protected final List<BakeCallback<T>> bakeCallbacks = new ArrayList<>();
     protected final List<ClearCallback<T>> clearCallbacks = new ArrayList<>();
     final Map<ResourceLocation, ResourceLocation> aliases = new HashMap<>();
-    final Map<DataMapType<?, T, ?>, Map<ResourceKey<T>, ?>> dataMaps = new IdentityHashMap<>();
+    final Map<DataMapType<?, T>, Map<ResourceKey<T>, ?>> dataMaps = new IdentityHashMap<>();
 
     private int maxId = Integer.MAX_VALUE - 1;
     private boolean sync;
@@ -121,13 +121,13 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     protected abstract void unfreeze();
 
     @Override
-    public <A> @Nullable A getData(DataMapType<A, T, ?> attachment, ResourceKey<T> key) {
+    public <A> @Nullable A getData(DataMapType<A, T> attachment, ResourceKey<T> key) {
         final var innerMap = dataMaps.get(attachment);
         return innerMap == null ? null : (A) innerMap.get(key);
     }
 
     @Override
-    public <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<A, T, ?> attachment) {
+    public <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<A, T> attachment) {
         return (Map<ResourceKey<T>, A>) dataMaps.getOrDefault(attachment, Map.of());
     }
 }

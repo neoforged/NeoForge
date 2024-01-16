@@ -49,7 +49,7 @@ public class RegistryManager {
     private static Set<ResourceLocation> vanillaRegistryKeys = Set.of();
     private static Map<ResourceLocation, RegistrySnapshot> vanillaSnapshot = null;
     private static Map<ResourceLocation, RegistrySnapshot> frozenSnapshot = null;
-    private static Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?, ?>>> dataMaps = Map.of();
+    private static Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?>>> dataMaps = Map.of();
 
     /**
      * Called by {@link RegistryBuilder} to make sure that modders don't forget to register their registries.
@@ -68,12 +68,12 @@ public class RegistryManager {
 
     @Nullable
     @ApiStatus.Internal
-    public static <T> DataMapType<?, T, ?> getDataMap(ResourceKey<? extends Registry<T>> registry, ResourceLocation key) {
+    public static <T> DataMapType<?, T> getDataMap(ResourceKey<? extends Registry<T>> registry, ResourceLocation key) {
         final var map = dataMaps.get(registry);
-        return map == null ? null : (DataMapType<?, T, ?>) map.get(key);
+        return map == null ? null : (DataMapType<?, T>) map.get(key);
     }
 
-    public static Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?, ?>>> getDataMaps() {
+    public static Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?>>> getDataMaps() {
         return dataMaps;
     }
 
@@ -90,7 +90,7 @@ public class RegistryManager {
 
         ModLoader.get().postEvent(new ModifyRegistriesEvent());
 
-        final Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?, ?>>> dataMapTypes = new HashMap<>();
+        final Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?>>> dataMapTypes = new HashMap<>();
         ModLoader.get().postEvent(new RegisterDataMapTypesEvent(dataMapTypes));
         dataMaps = new IdentityHashMap<>();
         dataMapTypes.forEach((key, values) -> dataMaps.put(key, Collections.unmodifiableMap(values)));

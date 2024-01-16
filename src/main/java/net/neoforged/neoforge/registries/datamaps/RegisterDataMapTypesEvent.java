@@ -18,10 +18,10 @@ import org.jetbrains.annotations.ApiStatus;
  * Event fired on the mod event bus, in order to register {@link DataMapType data map types}.
  */
 public class RegisterDataMapTypesEvent extends Event implements IModBusEvent {
-    private final Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?, ?>>> attachments;
+    private final Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?>>> attachments;
 
     @ApiStatus.Internal
-    public RegisterDataMapTypesEvent(Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?, ?>>> attachments) {
+    public RegisterDataMapTypesEvent(Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?>>> attachments) {
         this.attachments = attachments;
     }
 
@@ -33,7 +33,7 @@ public class RegisterDataMapTypesEvent extends Event implements IModBusEvent {
      * @param <R>  the type of the registry
      * @throws IllegalArgumentException if a type with the same ID has already been registered for that registry
      */
-    public <T, R> void register(DataMapType<T, R, ?> type) {
+    public <T, R> void register(DataMapType<T, R> type) {
         final var registry = type.registryKey();
         final var map = attachments.computeIfAbsent((ResourceKey) registry, k -> new HashMap<>());
         if (map.containsKey(type.id())) {

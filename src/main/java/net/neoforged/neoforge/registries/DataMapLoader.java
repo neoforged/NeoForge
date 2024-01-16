@@ -34,8 +34,10 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapFile;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
+import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
 import org.slf4j.Logger;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -71,10 +73,11 @@ public class DataMapLoader implements PreparableReloadListener {
                 key, this.buildDataMap(registry, key, (List) entries)));
     }
 
-    private <T, R> Map<ResourceKey<R>, T> buildDataMap(Registry<R> registry, DataMapType<T, R, ?> attachment, List<DataMapFile<T, R>> entries) {
+    private <T, R> Map<ResourceKey<R>, T> buildDataMap(Registry<R> registry, DataMapType<T, R> attachment, List<DataMapFile<T, R>> entries) {
         record WithSource<T, R>(T attachment, Either<TagKey<R>, ResourceKey<R>> source) {}
         final Map<ResourceKey<R>, WithSource<T, R>> result = new IdentityHashMap<>();
         final BiConsumer<Either<TagKey<R>, ResourceKey<R>>, Consumer<Holder<R>>> valueResolver = (key, cons) -> key.ifLeft(tag -> registry.getTagOrEmpty(tag).forEach(cons)).ifRight(k -> cons.accept(registry.getHolderOrThrow(k)));
+        final DataMapValueMerger<T, R> merger = attachment instanceof AdvancedDataMapType adv ? adv.merger() : DataMapValueMerger.defaultMerger();
         entries.forEach(entry -> {
             if (entry.replace()) {
                 result.clear();
@@ -88,7 +91,7 @@ public class DataMapLoader implements PreparableReloadListener {
                 if (oldValue == null || newValue.replace()) {
                     result.put(key, new WithSource<>(newValue.value(), tKey));
                 } else {
-                    result.put(key, new WithSource<>(attachment.merger().merge(registry, oldValue.source(), oldValue.attachment(), tKey, newValue.value()), tKey));
+                    result.put(key, new WithSource<>(merger.merge(registry, oldValue.source(), oldValue.attachment(), tKey, newValue.value()), tKey));
                 }
             }));
 
@@ -149,7 +152,7 @@ public class DataMapLoader implements PreparableReloadListener {
         return (registryId.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE) ? "" : registryId.getNamespace() + "/") + registryId.getPath();
     }
 
-    private static <A, T> List<DataMapFile<A, T>> readData(RegistryOps<JsonElement> ops, DataMapType<A, T, ?> attachmentType, ResourceKey<Registry<T>> registryKey, List<Resource> resources, ICondition.IContext context) {
+    private static <A, T> List<DataMapFile<A, T>> readData(RegistryOps<JsonElement> ops, DataMapType<A, T> attachmentType, ResourceKey<Registry<T>> registryKey, List<Resource> resources, ICondition.IContext context) {
         final var codec = DataMapFile.codec(registryKey, attachmentType);
         final List<DataMapFile<A, T>> entries = new LinkedList<>();
         for (final Resource resource : resources) {
@@ -166,6 +169,6 @@ public class DataMapLoader implements PreparableReloadListener {
         return entries;
     }
 
-    private record LoadResult<T>(Map<DataMapType<?, T, ?>, List<DataMapFile<?, T>>> results) {}
+    private record LoadResult<T>(Map<DataMapType<?, T>, List<DataMapFile<?, T>>> results) {}
 
 }

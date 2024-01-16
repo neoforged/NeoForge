@@ -31,6 +31,7 @@ import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.data.DataMapProvider;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
+import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover;
@@ -49,7 +50,7 @@ public class DataMapTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if data map mergers function properly")
     static void dataMapMerger(final DynamicTest test, final RegistrationHelper reg) {
-        final DataMapType<List<SomeObject>, Item, Default<List<SomeObject>, Item>> someData = DataMapType.builder(
+        final AdvancedDataMapType<List<SomeObject>, Item, Default<List<SomeObject>, Item>> someData = AdvancedDataMapType.builder(
                 new ResourceLocation(reg.modId(), "some_list"),
                 Registries.ITEM, SomeObject.CODEC.listOf())
                 .merger(DataMapValueMerger.listMerger())
@@ -128,7 +129,7 @@ public class DataMapTests {
             }
         }
 
-        final DataMapType<Map<String, SomeObject>, Item, CustomRemover> someData = DataMapType.builder(
+        final AdvancedDataMapType<Map<String, SomeObject>, Item, CustomRemover> someData = AdvancedDataMapType.builder(
                 new ResourceLocation(reg.modId(), "some_map"),
                 Registries.ITEM, ExtraCodecs.strictUnboundedMap(Codec.STRING, SomeObject.CODEC))
                 .merger(DataMapValueMerger.mapMerger())
@@ -195,7 +196,7 @@ public class DataMapTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if registry data maps work")
     static void dataMapTest(final DynamicTest test, final RegistrationHelper reg) {
-        final DataMapType<SomeObject, Item, Default<SomeObject, Item>> someData = DataMapType.builder(
+        final DataMapType<SomeObject, Item> someData = DataMapType.builder(
                 new ResourceLocation(reg.modId(), "some_data"),
                 Registries.ITEM, SomeObject.CODEC)
                 .synced(SomeObject.CODEC, true)
@@ -251,7 +252,7 @@ public class DataMapTests {
             static final Codec<ExperienceGrant> CODEC = Codec.INT.xmap(ExperienceGrant::new, ExperienceGrant::amount);
         }
 
-        final DataMapType<ExperienceGrant, DamageType, Default<ExperienceGrant, DamageType>> xpGrant = DataMapType.builder(
+        final DataMapType<ExperienceGrant, DamageType> xpGrant = DataMapType.builder(
                 new ResourceLocation(reg.modId(), "xp_grant"),
                 Registries.DAMAGE_TYPE, ExperienceGrant.CODEC)
                 .build();
