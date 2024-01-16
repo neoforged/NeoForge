@@ -948,11 +948,12 @@ public class EventHooks {
     /**
      * Fires the slime split event. Returns the event for cancellation checking.
      * 
-     * @param parent The parent slime
-     * @param child  The child slime
+     * @param parent   The parent slime.
+     * @param children All children slimes that would have normally spawned.
+     * @return The event object.
      */
-    public static SlimeSplitEvent onSlimeSplit(Slime parent, Slime child) {
-        var event = new SlimeSplitEvent(parent, child);
+    public static SlimeSplitEvent onSlimeSplit(Slime parent, List<Slime> children) {
+        var event = new SlimeSplitEvent(parent, children);
         NeoForge.EVENT_BUS.post(event);
         return event;
     }

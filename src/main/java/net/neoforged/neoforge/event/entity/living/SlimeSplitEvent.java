@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
+import java.util.List;
 import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.monster.Slime;
 import net.neoforged.bus.api.Event;
@@ -14,19 +15,17 @@ import net.neoforged.bus.api.ICancellableEvent;
  * This event is fired whenever a slime is removed and splits into multiple child slimes.
  * <p>
  * It is called from {@link Slime#remove(RemovalReason)}, and is only fired on the logical server.
- * <p>
- * Additionally, this event fires one for each child slime, and can be cancelled to prevent spawning the child.
  */
 public class SlimeSplitEvent extends Event implements ICancellableEvent {
 
     protected final Slime parent;
-    protected final Slime child;
+    protected final List<Slime> children;
 
     protected boolean cancelled = false;
 
-    public SlimeSplitEvent(Slime parent, Slime child) {
+    public SlimeSplitEvent(Slime parent, List<Slime> children) {
         this.parent = parent;
-        this.child = child;
+        this.children = children;
     }
 
     /**
@@ -37,14 +36,16 @@ public class SlimeSplitEvent extends Event implements ICancellableEvent {
     }
 
     /**
-     * Gets the child slime, after basic information has been copied from the parent.
+     * Gets the mutable list of all child slimes.
+     * <p>
+     * Slimes can be modified, removed, or added to the list.
      */
-    public Slime getChild() {
-        return child;
+    public List<Slime> getChildren() {
+        return children;
     }
 
     /**
-     * Canceling this event will prevent the child slime from being spawned.
+     * Canceling this event will prevent any child slimes from being spawned.
      */
     @Override
     public void setCanceled(boolean canceled) {

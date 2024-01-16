@@ -228,10 +228,12 @@ public class LivingEntityEventTests {
             }
 
             for (String key : nbt.getAllKeys()) {
-                event.getChild().getPersistentData().put(key, nbt.get(key));
+                event.getChildren().forEach(slime -> slime.getPersistentData().put(key, nbt.get(key)));
             }
 
-            childSlimes.add(event.getChild()); // Test only thing so we can skip iterating all entities to find the children post-event.
+            // Test only thing so we can skip iterating all entities to find the children post-event.
+            // Need to ensure that they come into the world with the copied NBT data.
+            childSlimes.addAll(event.getChildren());
         });
 
         AtomicBoolean throwIfSlimeSpawns = new AtomicBoolean(false);
