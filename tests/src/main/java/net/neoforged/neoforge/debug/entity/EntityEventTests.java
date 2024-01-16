@@ -72,6 +72,7 @@ public class EntityEventTests {
                 .thenSucceed());
     }
 
+    // @todo not sure if needed to turn this into a game test
     @TestHolder(description = "testing the event by converting a nitwit into a butcher")
     static void villagerChangeProfessionEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final VillagerChangeProfessionEvent event) -> {

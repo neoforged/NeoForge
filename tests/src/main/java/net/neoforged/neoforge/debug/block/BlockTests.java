@@ -128,18 +128,4 @@ public class BlockTests {
 
                 .thenSucceed();
     }
-
-    // @todo not sure if needed to turn this into a game test
-    @TestHolder(description = "testing the event by converting a nitwit into a butcher")
-    static void villagerChangeProfessionEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final VillagerChangeProfessionEvent event) -> {
-            if (event.getOldProfession() == event.getNewProfession())
-                return;
-
-            if (event.getOldProfession() == VillagerProfession.NITWIT) {
-                event.setNewProfession(VillagerProfession.BUTCHER);
-            }
-            test.pass();
-        });
-    }
 }
