@@ -67,12 +67,14 @@ public class RegistryManager {
     }
 
     @Nullable
-    @ApiStatus.Internal
     public static <T> DataMapType<?, T> getDataMap(ResourceKey<? extends Registry<T>> registry, ResourceLocation key) {
         final var map = dataMaps.get(registry);
         return map == null ? null : (DataMapType<?, T>) map.get(key);
     }
 
+    /**
+     * {@return a view of all registered data maps}
+     */
     public static Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?>>> getDataMaps() {
         return dataMaps;
     }
@@ -269,6 +271,7 @@ public class RegistryManager {
         FULL
     }
 
+    @ApiStatus.Internal
     public static <R> void handleDataMapSync(final RegistryDataMapSyncPayload<R> payload, final PlayPayloadContext context) {
         context.workHandler().submitAsync(() -> {
             final BaseMappedRegistry<R> registry = (BaseMappedRegistry<R>) context.level().orElseThrow().registryAccess()
@@ -282,6 +285,7 @@ public class RegistryManager {
         });
     }
 
+    @ApiStatus.Internal
     public static void handleKnownDataMaps(final KnownRegistryDataMapsPayload payload, final ConfigurationPayloadContext context) {
         record MandatoryEntry(ResourceKey<Registry<?>> registry, ResourceLocation id) {}
         final Set<MandatoryEntry> ourMandatory = new HashSet<>();
@@ -326,6 +330,7 @@ public class RegistryManager {
 
     public static final AttributeKey<Map<ResourceKey<Registry<?>>, Collection<ResourceLocation>>> ATTRIBUTE_KNOWN_DATA_MAPS = AttributeKey.valueOf("neoforge:known_data_maps");
 
+    @ApiStatus.Internal
     public static void handleKnownDataMapsReply(final KnownRegistryDataMapsReplyPayload payload, final ConfigurationPayloadContext context) {
         context.channelHandlerContext().attr(ATTRIBUTE_KNOWN_DATA_MAPS).set(payload.dataMaps());
         context.taskCompletedHandler().onTaskCompleted(RegistryDataMapNegotiation.TYPE);
