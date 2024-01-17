@@ -133,4 +133,14 @@ public interface IFriendlyByteBufExtension {
         }
         return self();
     }
+
+    /**
+     * Writes a byte to the buffer
+     *
+     * @param value The value to be written
+     * @return The buffer
+     */
+    default FriendlyByteBuf writeByte(byte value) {
+        return self().writeByte((int) value);
+    }
 }

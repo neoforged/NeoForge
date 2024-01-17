@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/dedicated/ServerWatchdog.java
 +++ b/net/minecraft/server/dedicated/ServerWatchdog.java
-@@ -48,7 +_,7 @@
+@@ -48,14 +_,14 @@
                  ThreadMXBean threadmxbean = ManagementFactory.getThreadMXBean();
                  ThreadInfo[] athreadinfo = threadmxbean.dumpAllThreads(true, true);
                  StringBuilder stringbuilder = new StringBuilder();
@@ -9,3 +9,11 @@
  
                  for(ThreadInfo threadinfo : athreadinfo) {
                      if (threadinfo.getThreadId() == this.server.getRunningThread().getId()) {
+                         error.setStackTrace(threadinfo.getStackTrace());
+                     }
+ 
+-                    stringbuilder.append(threadinfo);
++                    stringbuilder.append(net.neoforged.neoforge.logging.ThreadInfoUtil.getEntireStacktrace(threadinfo));
+                     stringbuilder.append("\n");
+                 }
+ 

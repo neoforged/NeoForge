@@ -38,7 +38,7 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
     int vertexIndex = 0;
     private int[] quadData = new int[QUAD_DATA_SIZE];
 
-    private int tintIndex;
+    private int tintIndex = -1;
     private Direction direction = Direction.DOWN;
     private TextureAtlasSprite sprite = UnitTextureAtlasSprite.INSTANCE;
     private boolean shade;

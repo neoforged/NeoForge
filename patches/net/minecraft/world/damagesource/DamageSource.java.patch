@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/damagesource/DamageSource.java
++++ b/net/minecraft/world/damagesource/DamageSource.java
+@@ -88,6 +_,10 @@
+         return this.type().msgId();
+     }
+ 
++    /**
++     * @deprecated Use {@link DamageScaling#getScalingFunction()}
++     */
++    @Deprecated(since = "1.20.1")
+     public boolean scalesWithDifficulty() {
+         return switch(this.type().scaling()) {
+             case NEVER -> false;

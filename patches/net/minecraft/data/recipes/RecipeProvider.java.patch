@@ -33,12 +33,12 @@
                          throw new IllegalStateException("Duplicate recipe " + p_312039_);
                      } else {
 -                        list.add(DataProvider.saveStable(p_254020_, Recipe.CODEC, p_312254_, RecipeProvider.this.recipePathProvider.json(p_312039_)));
-+                        list.add(DataProvider.saveStable(p_254020_, net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.CONDITIONAL_RECIPE_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_312254_, conditions)), RecipeProvider.this.recipePathProvider.json(p_312039_)));
++                        list.add(DataProvider.saveStable(p_254020_, Recipe.CONDITIONAL_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_312254_, conditions)), RecipeProvider.this.recipePathProvider.json(p_312039_)));
                          if (p_311794_ != null) {
                              list.add(
                                  DataProvider.saveStable(
 -                                    p_254020_, Advancement.CODEC, p_311794_.value(), RecipeProvider.this.advancementPathProvider.json(p_311794_.id())
-+                                    p_254020_, net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.CONDITIONAL_ADVANCEMENT_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_311794_.value(), conditions)), RecipeProvider.this.advancementPathProvider.json(p_311794_.id())
++                                    p_254020_, Advancement.CONDITIONAL_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_311794_.value(), conditions)), RecipeProvider.this.advancementPathProvider.json(p_311794_.id())
                                  )
                              );
                          }
@@ -56,7 +56,7 @@
 +    }
 +
 +    protected CompletableFuture<?> buildAdvancement(CachedOutput p_253674_, AdvancementHolder p_301116_, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
-+        return DataProvider.saveStable(p_253674_, net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.CONDITIONAL_ADVANCEMENT_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_301116_.value(), conditions)), this.advancementPathProvider.json(p_301116_.id()));
++        return DataProvider.saveStable(p_253674_, Advancement.CONDITIONAL_CODEC, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(p_301116_.value(), conditions)), this.advancementPathProvider.json(p_301116_.id()));
      }
  
      protected abstract void buildRecipes(RecipeOutput p_301172_);

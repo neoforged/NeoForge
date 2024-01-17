@@ -15,6 +15,14 @@
          if (p_44845_.isEmpty()) {
              return 0;
          } else {
+@@ -79,6 +_,7 @@
+         }
+     }
+ 
++    /** Gets all enchantment levels from NBT. Use {@link ItemStack#getAllEnchantments()} for gameplay logic */
+     public static Map<Enchantment, Integer> getEnchantments(ItemStack p_44832_) {
+         ListTag listtag = p_44832_.is(Items.ENCHANTED_BOOK) ? EnchantedBookItem.getEnchantments(p_44832_) : p_44832_.getEnchantmentTags();
+         return deserializeEnchantments(listtag);
 @@ -118,6 +_,13 @@
  
      private static void runIterationOnItem(EnchantmentHelper.EnchantmentVisitor p_44851_, ItemStack p_44852_) {
