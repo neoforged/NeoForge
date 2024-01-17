@@ -163,7 +163,7 @@
          this.profiler.popPush("players");
          this.playerList.tick();
 -        if (SharedConstants.IS_RUNNING_IN_IDE && this.tickRateManager.runsNormally()) {
-+        if (net.neoforged.neoforge.gametest.GameTestHooks.isGametestEnabled()) {
++        if (net.neoforged.neoforge.gametest.GameTestHooks.isGametestEnabled() && this.tickRateManager.runsNormally()) {
              GameTestTicker.SINGLETON.tick();
          }
  

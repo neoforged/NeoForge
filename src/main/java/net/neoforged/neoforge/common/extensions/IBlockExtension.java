@@ -75,6 +75,7 @@ import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("deprecation")
@@ -121,9 +122,10 @@ public interface IBlockExtension {
      *           will cause issues such as wrapping coordinates returning values from the opposing chunk edge
      *           </li>
      *           <li>
-     *           This method may be called on a worker thread and must therefore use
-     *           {@link IBlockGetterExtension#getExistingBlockEntity(BlockPos)} to retrieve the {@link BlockEntity}
-     *           at the given position
+     *           If the light value depends on data from a {@link BlockEntity} then the light level must be stored in
+     *           the {@link AuxiliaryLightManager} by the {@code BlockEntity} and retrieved from the
+     *           {@code AuxiliaryLightManager} in this method. This is to ensure thread-safety and availability of
+     *           the data during chunk load from disk.
      *           </li>
      *           </ul>
      */
@@ -826,13 +828,11 @@ public interface IBlockExtension {
      * This method should only be used for blocks you don't control, for your own blocks override
      * {@link Block#skipRendering(BlockState, BlockState, Direction)} on the respective block instead
      * <p>
-     * WARNING: This method is likely to be called from a worker thread! If you want to retrieve a
-     * {@link net.minecraft.world.level.block.entity.BlockEntity} from the given level, make sure to use
-     * {@link IBlockGetterExtension#getExistingBlockEntity(BlockPos)} to not
-     * accidentally create a new or delete an old {@link net.minecraft.world.level.block.entity.BlockEntity}
-     * off of the main thread as this would cause a write operation to the given {@link BlockGetter} and cause
-     * a CME in the process. Any other direct or indirect write operation to the {@link BlockGetter} will have
-     * the same outcome.
+     * <b>Note that this method may be called on any of the client's meshing threads.</b><br/>
+     * As such, if you need any data from your {@link BlockEntity}, you should put it in {@link ModelData} to guarantee
+     * safe concurrent access to it on the client.<br/>
+     * {@link ModelDataManager#getAt(BlockPos)} will return the {@link ModelData} for the queried block,
+     * or {@code null} if none is present.
      *
      * @param level         The world
      * @param pos           The blocks position in the world
@@ -946,5 +946,15 @@ public interface IBlockExtension {
     @Nullable
     default PushReaction getPistonPushReaction(BlockState state) {
         return null;
+    }
+
+    /**
+     * Return true if the state is able to be replaced with Blocks.AIR in chunk sections that is entirely made of blocks that return true for isEmpty
+     *
+     * @param state The current state
+     * @return True if the block should be allowed to be optimized away into Blocks.AIR
+     */
+    default boolean isEmpty(BlockState state) {
+        return state.is(Blocks.AIR) || state.is(Blocks.CAVE_AIR) || state.is(Blocks.VOID_AIR);
     }
 }
