@@ -35,6 +35,15 @@
          this.resourcePackRepository.reload();
          this.options.loadSelectedResourcePacks(this.resourcePackRepository);
          this.languageManager = new LanguageManager(this.options.languageCode);
+@@ -504,7 +_,7 @@
+         this.commandHistory = new CommandHistory(path);
+         this.soundManager = new SoundManager(this.options);
+         this.resourceManager.registerReloadListener(this.soundManager);
+-        this.splashManager = new SplashManager(this.user);
++        this.splashManager = new net.neoforged.neoforge.client.resources.NeoSplashManager(this.user); // Neo: Use our custom splash manager
+         this.resourceManager.registerReloadListener(this.splashManager);
+         this.musicManager = new MusicManager(this);
+         this.fontManager = new FontManager(this.textureManager);
 @@ -560,10 +_,13 @@
          this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getItemInHandRenderer(), this.resourceManager, this.renderBuffers);
          this.resourceManager.registerReloadListener(this.gameRenderer.createReloadListener());
