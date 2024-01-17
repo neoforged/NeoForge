@@ -65,23 +65,19 @@
                      if (this.minecraft.player.isSpectator()) {
                          if (this.minecraft.gui.getSpectatorGui().isMenuActive()) {
                              this.minecraft.gui.getSpectatorGui().onMouseScrolled(-k);
-@@ -235,12 +_,17 @@
+@@ -235,12 +_,13 @@
          double d1 = d0 - this.lastMouseEventTime;
          this.lastMouseEventTime = d0;
          if (this.isMouseGrabbed() && this.minecraft.isWindowActive()) {
 -            double d4 = this.minecraft.options.sensitivity().get() * 0.6F + 0.2F;
-+            double mouseSensitivity = this.minecraft.options.sensitivity().get();
-+            boolean cinematicCameraEnabled = this.minecraft.options.smoothCamera;
-+            final net.neoforged.neoforge.client.event.CalculateTurnPlayerValuesEvent event = net.neoforged.neoforge.client.ClientHooks.getTurnPlayerValues(mouseSensitivity, cinematicCameraEnabled);
-+            mouseSensitivity = event.getMouseSensitivity();
-+            cinematicCameraEnabled = event.getCinematicCameraEnabled();
-+            double d4 = mouseSensitivity * 0.6F + 0.2F;
++            final net.neoforged.neoforge.client.event.CalculateTurnPlayerValuesEvent event = net.neoforged.neoforge.client.ClientHooks.getTurnPlayerValues(this.minecraft.options.sensitivity().get(), this.minecraft.options.smoothCamera);
++            double d4 = event.getMouseSensitivity() * 0.6F + 0.2F;
              double d5 = d4 * d4 * d4;
              double d6 = d5 * 8.0;
              double d2;
              double d3;
 -            if (this.minecraft.options.smoothCamera) {
-+            if (cinematicCameraEnabled) {
++            if (event.getCinematicCameraEnabled()) {
                  double d7 = this.smoothTurnX.getNewDeltaValue(this.accumulatedDX * d6, d1 * d6);
                  double d8 = this.smoothTurnY.getNewDeltaValue(this.accumulatedDY * d6, d1 * d6);
                  d2 = d7;
