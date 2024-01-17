@@ -1,15 +1,14 @@
 --- a/net/minecraft/data/recipes/SimpleCookingRecipeBuilder.java
 +++ b/net/minecraft/data/recipes/SimpleCookingRecipeBuilder.java
-@@ -26,7 +_,7 @@
- public class SimpleCookingRecipeBuilder implements RecipeBuilder {
+@@ -27,6 +_,7 @@
      private final RecipeCategory category;
      private final CookingBookCategory bookCategory;
--    private final Item result;
-+    private final ItemStack result; // Neo: patched to ItemStack
+     private final Item result;
++    private final ItemStack stackResult; // Neo: add stack result support
      private final Ingredient ingredient;
      private final float experience;
      private final int cookingTime;
-@@ -44,9 +_,21 @@
+@@ -44,9 +_,22 @@
          int p_250189_,
          AbstractCookingRecipe.Factory<?> p_311960_
      ) {
@@ -28,7 +27,8 @@
          this.category = p_251345_;
          this.bookCategory = p_251607_;
 -        this.result = p_252112_.asItem();
-+        this.result = result;
++        this.result = result.getItem();
++        this.stackResult = result;
          this.ingredient = p_250362_;
          this.experience = p_251204_;
          this.cookingTime = p_250189_;
@@ -71,21 +71,12 @@
      public SimpleCookingRecipeBuilder unlockedBy(String p_176792_, Criterion<?> p_300970_) {
          this.criteria.put(p_176792_, p_300970_);
          return this;
-@@ -97,7 +_,7 @@
- 
-     @Override
-     public Item getResult() {
--        return this.result;
-+        return this.result.getItem();
-     }
- 
-     @Override
 @@ -110,7 +_,7 @@
          this.criteria.forEach(advancement$builder::addCriterion);
          AbstractCookingRecipe abstractcookingrecipe = this.factory
              .create(
 -                Objects.requireNonNullElse(this.group, ""), this.bookCategory, this.ingredient, new ItemStack(this.result), this.experience, this.cookingTime
-+                Objects.requireNonNullElse(this.group, ""), this.bookCategory, this.ingredient, this.result, this.experience, this.cookingTime
++                Objects.requireNonNullElse(this.group, ""), this.bookCategory, this.ingredient, this.stackResult, this.experience, this.cookingTime
              );
          p_301266_.accept(p_126264_, abstractcookingrecipe, advancement$builder.build(p_126264_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
      }

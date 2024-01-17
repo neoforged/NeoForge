@@ -1,12 +1,10 @@
 --- a/net/minecraft/data/recipes/ShapelessRecipeBuilder.java
 +++ b/net/minecraft/data/recipes/ShapelessRecipeBuilder.java
-@@ -20,17 +_,19 @@
- 
- public class ShapelessRecipeBuilder implements RecipeBuilder {
+@@ -22,15 +_,21 @@
      private final RecipeCategory category;
--    private final Item result;
--    private final int count;
-+    private final ItemStack result; // Neo: patched to ItemStack
+     private final Item result;
+     private final int count;
++    private final ItemStack resultStack; // Neo: add stack result support
      private final NonNullList<Ingredient> ingredients = NonNullList.create();
      private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
      @Nullable
@@ -20,7 +18,9 @@
          this.category = p_250837_;
 -        this.result = p_251897_.asItem();
 -        this.count = p_252227_;
-+        this.result = result;
++        this.result = result.getItem();
++        this.count = result.getCount();
++        this.resultStack = result;
      }
  
      public static ShapelessRecipeBuilder shapeless(RecipeCategory p_250714_, ItemLike p_249659_) {
@@ -35,21 +35,12 @@
      public ShapelessRecipeBuilder requires(TagKey<Item> p_206420_) {
          return this.requires(Ingredient.of(p_206420_));
      }
-@@ -81,7 +_,7 @@
- 
-     @Override
-     public Item getResult() {
--        return this.result;
-+        return this.result.getItem();
-     }
- 
-     @Override
 @@ -95,7 +_,7 @@
          ShapelessRecipe shapelessrecipe = new ShapelessRecipe(
              Objects.requireNonNullElse(this.group, ""),
              RecipeBuilder.determineBookCategory(this.category),
 -            new ItemStack(this.result, this.count),
-+            this.result,
++            this.resultStack,
              this.ingredients
          );
          p_301215_.accept(p_126206_, shapelessrecipe, advancement$builder.build(p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
