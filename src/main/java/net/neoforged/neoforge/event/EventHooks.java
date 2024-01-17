@@ -186,7 +186,7 @@ public class EventHooks {
     }
 
     /**
-     * DEPRECATED use {@link net.neoforged.neoforge.common.CommonHooks#isCorrectToolForDrops(BlockGetter, BlockPos, BlockState, Player)} instead
+     * @deprecated use {@link net.neoforged.neoforge.common.CommonHooks#isCorrectToolForDrops(BlockGetter, BlockPos, BlockState, Player)} instead
      */
     @Deprecated(forRemoval = true) //TODO remove in 1.20.5
     public static boolean doPlayerHarvestCheck(Player player, BlockState state, boolean success) {
