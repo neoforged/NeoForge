@@ -1,18 +1,22 @@
 {
-  "type": "minecraft:crafting_shapeless",
+  "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "ingredients": [
-    {
+  "key": {
+    "x": {
       "type": "testframework:test_enabled",
       "base": {
-        "item": "minecraft:apple"
+        "item": "minecraft:golden_shovel"
       },
       "framework": "neotests:tests",
       "testId": "itemAttachmentRecipeOutput"
     }
+  },
+  "pattern": [
+    "xx",
+    "xx"
   ],
   "result": {
-    "item": "minecraft:apple",
+    "item": "minecraft:golden_shovel",
     "neoforge:attachments": "{\"neotests_item_attachment_recipe_output:test_int\":1}"
   }
 }

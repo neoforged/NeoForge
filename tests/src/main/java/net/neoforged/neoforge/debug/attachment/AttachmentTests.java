@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.attachment;
 
+import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import static net.minecraft.commands.Commands.literal;
 
@@ -14,11 +15,16 @@ import java.util.List;
 import net.minecraft.Util;
 import net.minecraft.core.FrontAndTop;
 import net.minecraft.core.NonNullList;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -28,6 +34,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CrafterBlock;
@@ -170,24 +178,38 @@ public class AttachmentTests {
         var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
                 .register("test_int", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).build());
 
-        var recipeId = new ResourceLocation(reg.modId(), "test_recipe");
+        var ingredient = new TestEnabledIngredient(
+                Ingredient.of(Items.GOLDEN_SHOVEL),
+                test.framework(),
+                test.id());
+        var outputStack = Suppliers.memoize(() -> {
+            var stack = new ItemStack(Items.GOLDEN_SHOVEL);
+            stack.setData(attachmentType, 1);
+            return stack;
+        });
+
+        var shapelessId = new ResourceLocation(reg.modId(), "test_shapeless");
+        var shapedId = new ResourceLocation(reg.modId(), "test_shaped");
+        var blastingId = new ResourceLocation(reg.modId(), "test_blasting");
 
         reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void buildRecipes(RecipeOutput recipeOutput) {
-                // ShapelessRecipeBuilder doesn't accept attachments (yet), so we build the ShapelessRecipe directly!
-                recipeOutput.accept(
-                        recipeId,
-                        new ShapelessRecipe(
-                                "",
-                                CraftingBookCategory.MISC,
-                                Util.make(new ItemStack(Items.APPLE), s -> s.setData(attachmentType, 1)),
-                                NonNullList.copyOf(List.of(
-                                        new TestEnabledIngredient(
-                                                Ingredient.of(Items.APPLE),
-                                                test.framework(),
-                                                test.id())))),
-                        null);
+                ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, outputStack.get())
+                        .requires(ingredient)
+                        .unlockedBy("has_shovel", has(Items.GOLDEN_SHOVEL))
+                        .save(recipeOutput, shapelessId);
+
+                ShapedRecipeBuilder.shaped(RecipeCategory.MISC, outputStack.get())
+                        .pattern("xx")
+                        .pattern("xx")
+                        .define('x', ingredient)
+                        .unlockedBy("has_shovel", has(Items.GOLDEN_SHOVEL))
+                        .save(recipeOutput, shapedId);
+
+                SimpleCookingRecipeBuilder.blasting(ingredient, RecipeCategory.MISC, outputStack.get(), 1.0f, 100)
+                        .unlockedBy("has_shovel", has(Items.GOLDEN_SHOVEL))
+                        .save(recipeOutput, blastingId);
             }
         });
 
@@ -197,7 +219,7 @@ public class AttachmentTests {
                 .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.CHEST))
 
                 .thenMap(() -> helper.requireBlockEntity(1, 1, 1, CrafterBlockEntity.class))
-                .thenExecute(crafter -> crafter.setItem(0, Items.APPLE.getDefaultInstance()))
+                .thenExecute(crafter -> crafter.setItem(0, Items.GOLDEN_SHOVEL.getDefaultInstance()))
                 .thenIdle(3)
 
                 .thenExecute(() -> helper.pulseRedstone(1, 1, 2, 2))
@@ -205,10 +227,25 @@ public class AttachmentTests {
                     var chest = helper.requireBlockEntity(1, 2, 1, ChestBlockEntity.class);
                     var stack = chest.getItem(0);
 
-                    helper.assertTrue(stack.getItem() == Items.APPLE, "Expected apple");
+                    helper.assertTrue(stack.getItem() == Items.GOLDEN_SHOVEL, "Expected apple");
                     helper.assertTrue(stack.hasData(attachmentType), "Expected attachment");
                     helper.assertTrue(stack.getData(attachmentType) == 1, "Expected attachment value of 1");
                 })
+
+                .thenExecute(() -> {
+                    // Just look at the output via the RecipeManager
+                    var recipeManager = helper.getLevel().getRecipeManager();
+
+                    for (var id : List.of(shapelessId, shapedId, blastingId)) {
+                        var recipe = recipeManager.byKey(id).map(RecipeHolder::value).orElse(null);
+                        if (recipe == null) {
+                            helper.fail("No recipe " + id);
+                        }
+
+                        helper.assertTrue(ItemStack.matches(outputStack.get(), recipe.getResultItem(helper.getLevel().registryAccess())), "Recipe output should match stack.");
+                    }
+                })
+
                 .thenSucceed());
     }
 
