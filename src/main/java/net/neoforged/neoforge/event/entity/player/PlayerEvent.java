@@ -63,6 +63,7 @@ public abstract class PlayerEvent extends LivingEvent {
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.
      * <br>
+     * 
      * @deprecated use {@link net.neoforged.neoforge.event.level.BlockToolCheckEvent} instead
      **/
     @Deprecated(forRemoval = true)
