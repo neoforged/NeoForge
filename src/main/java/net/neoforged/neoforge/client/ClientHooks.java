@@ -130,7 +130,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.CalculateTurnPlayerValuesEvent;
+import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
 import net.neoforged.neoforge.client.event.ClientPauseUpdatedEvent;
@@ -343,8 +343,8 @@ public class ClientHooks {
         return event.getFOV();
     }
 
-    public static CalculateTurnPlayerValuesEvent getTurnPlayerValues(double mouseSensitivity, boolean cinematicCameraEnabled) {
-        var event = new CalculateTurnPlayerValuesEvent(mouseSensitivity, cinematicCameraEnabled);
+    public static CalculatePlayerTurnEvent getTurnPlayerValues(double mouseSensitivity, boolean cinematicCameraEnabled) {
+        var event = new CalculatePlayerTurnEvent(mouseSensitivity, cinematicCameraEnabled);
         NeoForge.EVENT_BUS.post(event);
         return event;
     }

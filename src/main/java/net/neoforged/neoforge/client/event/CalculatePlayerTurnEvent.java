@@ -21,13 +21,13 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-public class CalculateTurnPlayerValuesEvent extends Event {
+public class CalculatePlayerTurnEvent extends Event {
 
     private double mouseSensitivity;
     private boolean cinematicCameraEnabled;
 
     @ApiStatus.Internal
-    public CalculateTurnPlayerValuesEvent(double mouseSensitivity, boolean cinematicCameraEnabled) {
+    public CalculatePlayerTurnEvent(double mouseSensitivity, boolean cinematicCameraEnabled) {
         setMouseSensitivity(mouseSensitivity);
         setCinematicCameraEnabled(cinematicCameraEnabled);
     }
