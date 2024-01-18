@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.resources;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.logging.LogUtils;
 import net.minecraft.client.User;
 import net.minecraft.client.gui.components.SplashRenderer;
 import net.minecraft.client.resources.SplashManager;
@@ -15,17 +14,18 @@ import net.minecraft.util.RandomSource;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.event.RegisterSplashProvidersEvent;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * An implementation of {@link SplashManager} which supports custom splashes via {@link RegisterSplashProvidersEvent}.
  */
 public class NeoSplashManager extends SplashManager {
-
-    private static final Logger LOGGER = LogUtils.getLogger();
-
     private final ImmutableList<ISplashProvider> providers;
 
     public NeoSplashManager(final User user) {
