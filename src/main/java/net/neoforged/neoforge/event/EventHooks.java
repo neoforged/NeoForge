@@ -61,7 +61,6 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -125,7 +124,7 @@ import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.AllowDespawn;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
-import net.neoforged.neoforge.event.entity.living.SlimeSplitEvent;
+import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
 import net.neoforged.neoforge.event.entity.living.ZombieEvent.SummonAidEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
@@ -952,8 +951,8 @@ public class EventHooks {
      * @param children All children slimes that would have normally spawned.
      * @return The event object.
      */
-    public static SlimeSplitEvent onSlimeSplit(Slime parent, List<Slime> children) {
-        var event = new SlimeSplitEvent(parent, children);
+    public static MobSplitEvent onMobSplit(Mob parent, List<Mob> children) {
+        var event = new MobSplitEvent(parent, children);
         NeoForge.EVENT_BUS.post(event);
         return event;
     }

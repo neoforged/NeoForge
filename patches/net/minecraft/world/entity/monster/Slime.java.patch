@@ -13,7 +13,7 @@
              int j = i / 2;
              int k = 2 + this.random.nextInt(3);
  
-+            var children = new java.util.ArrayList<Slime>(); // Neo: Children list for SlimeSplitEvent.
++            var children = new java.util.ArrayList<Mob>(); // Neo: Children list for MobSplitEvent.
 +
              for(int l = 0; l < k; ++l) {
                  float f1 = ((float)(l % 2) - 0.5F) * f;
@@ -28,7 +28,7 @@
                  }
 +            }
 +
-+            if (!net.neoforged.neoforge.event.EventHooks.onSlimeSplit(this, children).isCanceled()) {
++            if (!net.neoforged.neoforge.event.EventHooks.onMobSplit(this, children).isCanceled()) {
 +                children.forEach(this.level()::addFreshEntity);
              }
          }

@@ -21,6 +21,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.entity.monster.Slime;
@@ -42,8 +43,8 @@ import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
+import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
 import net.neoforged.neoforge.event.entity.living.ShieldBlockEvent;
-import net.neoforged.neoforge.event.entity.living.SlimeSplitEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -217,9 +218,9 @@ public class LivingEntityEventTests {
     @TestHolder(description = "Tests if the SlimeSplitEvent is fired")
     static void slimeSplitEvent(final DynamicTest test) {
 
-        Set<Slime> childSlimes = new HashSet<>();
+        Set<Mob> childSlimes = new HashSet<>();
 
-        test.eventListeners().forge().addListener((SlimeSplitEvent event) -> {
+        test.eventListeners().forge().addListener((MobSplitEvent event) -> {
             CompoundTag nbt = event.getParent().getPersistentData();
 
             if (nbt.getBoolean("test.no_split_slime")) {
@@ -256,7 +257,7 @@ public class LivingEntityEventTests {
             slime.remove(RemovalReason.KILLED);
 
             helper.assertTrue(!childSlimes.isEmpty(), "No child slimes received by event");
-            for (Slime s : childSlimes) {
+            for (Mob s : childSlimes) {
                 helper.assertTrue(s.getPersistentData().getString("test.something").equals("whatever"), "NBT Data not copied");
             }
 
