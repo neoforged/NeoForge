@@ -213,7 +213,7 @@ public class CommonHooks {
     }
 
     public static boolean isCorrectToolForDrops(@NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
-        if (level instanceof LevelAccessor accessor) { //BlockEvent expects a LevelAccessor
+        if (level instanceof LevelAccessor accessor) { //TODO 1.20.5 change parameter to LevelAccessor, (BlockEvent expects a LevelAccessor, but HarvestCheck requires a BlockGetter)
             BlockToolCheckEvent event = NeoForge.EVENT_BUS.post(new BlockToolCheckEvent(accessor, pos, state, player, player.getMainHandItem()));
             if (event.getResult() != Event.Result.DEFAULT)
                 return event.getResult() == Event.Result.ALLOW;
