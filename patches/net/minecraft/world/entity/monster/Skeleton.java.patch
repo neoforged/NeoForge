@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/entity/monster/Skeleton.java
++++ b/net/minecraft/world/entity/monster/Skeleton.java
+@@ -86,7 +_,9 @@
+     }
+ 
+     protected void doFreezeConversion() {
+-        this.convertTo(EntityType.STRAY, true);
++        if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.STRAY, (timer) -> this.conversionTime = timer)) return;
++        Stray stray = this.convertTo(EntityType.STRAY, true);
++        if (stray != null) net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, stray);
+         if (!this.isSilent()) {
+             this.level().levelEvent(null, 1048, this.blockPosition(), 0);
+         }
