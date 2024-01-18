@@ -31,8 +31,4 @@ public class RegisterMenuScreensEvent extends Event implements IModBusEvent {
         }
         registeredScreens.put(menuType, screenConstructor);
     }
-
-    public Map<MenuType<?>, MenuScreens.ScreenConstructor<?, ?>> getRegisteredScreens() {
-        return registeredScreens;
-    }
 }
