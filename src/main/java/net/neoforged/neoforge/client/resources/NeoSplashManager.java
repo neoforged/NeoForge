@@ -6,6 +6,12 @@
 package net.neoforged.neoforge.client.resources;
 
 import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import net.minecraft.client.User;
 import net.minecraft.client.gui.components.SplashRenderer;
 import net.minecraft.client.resources.SplashManager;
@@ -14,13 +20,6 @@ import net.minecraft.util.RandomSource;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.event.RegisterSplashProvidersEvent;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * An implementation of {@link SplashManager} which supports custom splashes via {@link RegisterSplashProvidersEvent}.
@@ -41,8 +40,8 @@ public class NeoSplashManager extends SplashManager {
     }
 
     private static void preRegisterVanillaProviders(
-        HashMap<ResourceLocation, ISplashProvider> namedProviders,
-        List<ISplashProvider> orderedProviders) {
+            HashMap<ResourceLocation, ISplashProvider> namedProviders,
+            List<ISplashProvider> orderedProviders) {
         for (var entry : VanillaSplash.values()) {
             namedProviders.put(entry.id(), entry.provider());
             orderedProviders.add(entry.provider());
@@ -78,8 +77,7 @@ public class NeoSplashManager extends SplashManager {
      * An interface which can be used to provide splashes
      */
     @FunctionalInterface
-    public interface ISplashProvider
-    {
+    public interface ISplashProvider {
         /**
          * Gets the splash to render, or null if there is no splash to render.
          *
@@ -100,28 +98,23 @@ public class NeoSplashManager extends SplashManager {
      * @param sizeOfRandomPool The size of the random splash pool, or 0 if there are none.
      */
     public record SelectionContext(
-        Calendar calendar,
-        RandomSource randomSource,
-        @Nullable
-        User user,
-        int sizeOfRandomPool) { }
+            Calendar calendar,
+            RandomSource randomSource,
+            @Nullable User user,
+            int sizeOfRandomPool) {}
 
     // The vanilla splashes, including the logic in which they trigger.
     private enum VanillaSplash {
-        CHRISTMAS("christmas", (context) ->
-            context.calendar().get(Calendar.MONTH) + 1 == 12 && context.calendar().get(Calendar.DAY_OF_MONTH) == 24
+        CHRISTMAS("christmas", (context) -> context.calendar().get(Calendar.MONTH) + 1 == 12 && context.calendar().get(Calendar.DAY_OF_MONTH) == 24
                 ? SplashRenderer.CHRISTMAS
                 : null),
-        NEW_YEAR("new_year", (context) ->
-            context.calendar().get(Calendar.MONTH) + 1 == 1 && context.calendar().get(Calendar.DAY_OF_MONTH) == 1
+        NEW_YEAR("new_year", (context) -> context.calendar().get(Calendar.MONTH) + 1 == 1 && context.calendar().get(Calendar.DAY_OF_MONTH) == 1
                 ? SplashRenderer.NEW_YEAR
                 : null),
-        HALLOWEEN("halloween", (context) ->
-            context.calendar().get(Calendar.MONTH) + 1 == 10 && context.calendar().get(Calendar.DAY_OF_MONTH) == 31
+        HALLOWEEN("halloween", (context) -> context.calendar().get(Calendar.MONTH) + 1 == 10 && context.calendar().get(Calendar.DAY_OF_MONTH) == 31
                 ? SplashRenderer.HALLOWEEN
                 : null),
-        USERNAME_IS_YOU("username_is_you", (context) ->
-            context.user() != null && context.randomSource().nextInt(context.sizeOfRandomPool()) == 42
+        USERNAME_IS_YOU("username_is_you", (context) -> context.user() != null && context.randomSource().nextInt(context.sizeOfRandomPool()) == 42
                 ? new SplashRenderer(context.user().getName().toUpperCase(Locale.ROOT) + " IS YOU")
                 : null);
 

@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.client.event;
 
 import com.google.common.base.Preconditions;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -14,9 +16,6 @@ import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.client.resources.NeoSplashManager.ISplashProvider;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Allows users to register custom {@link SplashProvider splash providers}.
