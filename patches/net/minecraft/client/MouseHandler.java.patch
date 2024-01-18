@@ -70,7 +70,7 @@
          this.lastMouseEventTime = d0;
          if (this.isMouseGrabbed() && this.minecraft.isWindowActive()) {
 -            double d4 = this.minecraft.options.sensitivity().get() * 0.6F + 0.2F;
-+            final net.neoforged.neoforge.client.event.CalculateTurnPlayerValuesEvent event = net.neoforged.neoforge.client.ClientHooks.getTurnPlayerValues(this.minecraft.options.sensitivity().get(), this.minecraft.options.smoothCamera);
++            var event = net.neoforged.neoforge.client.ClientHooks.getTurnPlayerValues(this.minecraft.options.sensitivity().get(), this.minecraft.options.smoothCamera);
 +            double d4 = event.getMouseSensitivity() * 0.6F + 0.2F;
              double d5 = d4 * d4 * d4;
              double d6 = d5 * 8.0;
