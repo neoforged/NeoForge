@@ -38,14 +38,14 @@ public class MobSplitEvent extends Event implements ICancellableEvent {
     }
 
     /**
-     * {@return the parent mob, which is in the process of being removed.}
+     * {@return the parent mob, which is in the process of being removed}
      */
     public Mob getParent() {
         return parent;
     }
 
     /**
-     * {@return the mutable list of all children.}
+     * {@return the mutable list of all children}
      * <p>
      * Children can be modified, removed, or added to the list.
      */
