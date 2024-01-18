@@ -33,7 +33,7 @@ public class CalculatePlayerTurnEvent extends Event {
     }
 
     /**
-     * @return the raw {@linkplain Options#sensitivity() mouse sensitivity} value
+     * Returns the raw {@linkplain Options#sensitivity() mouse sensitivity} value
      */
     public double getMouseSensitivity() {
         return mouseSensitivity;
@@ -49,7 +49,7 @@ public class CalculatePlayerTurnEvent extends Event {
     }
 
     /**
-     * @return the raw {@linkplain Options#smoothCamera cinematic camera} value
+     * Returns the raw {@linkplain Options#smoothCamera cinematic camera} value
      */
     public boolean getCinematicCameraEnabled() {
         return cinematicCameraEnabled;
