@@ -1,14 +1,13 @@
 --- a/net/minecraft/world/entity/monster/Zombie.java
 +++ b/net/minecraft/world/entity/monster/Zombie.java
-@@ -203,7 +_,7 @@
-         if (!this.level().isClientSide && this.isAlive() && !this.isNoAi()) {
-             if (this.isUnderWaterConverting()) {
-                 --this.conversionTime;
--                if (this.conversionTime < 0) {
-+                if (this.conversionTime < 0 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.DROWNED, (timer) -> this.conversionTime = timer)) {
-                     this.doUnderWaterConversion();
-                 }
-             } else if (this.convertsInWater()) {
+@@ -254,6 +_,7 @@
+     }
+ 
+     protected void doUnderWaterConversion() {
++        if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.DROWNED, (timer) -> this.conversionTime = timer)) return;
+         this.convertToZombieType(EntityType.DROWNED);
+         if (!this.isSilent()) {
+             this.level().levelEvent(null, 1040, this.blockPosition(), 0);
 @@ -265,6 +_,7 @@
          if (zombie != null) {
              zombie.handleAttributes(zombie.level().getCurrentDifficultyAt(zombie.blockPosition()).getSpecialMultiplier());
