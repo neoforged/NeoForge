@@ -151,20 +151,20 @@ public class CapabilityHooks {
     }
 
     public static void invalidateCapsOnChunkLoad(ChunkEvent.Load event) {
-        if (!event.getLevel().isClientSide()) {
-            ((ServerLevel) event.getLevel()).invalidateCapabilities(event.getChunk().getPos());
+        if (event.getLevel() instanceof ServerLevel sl) {
+            sl.invalidateCapabilities(event.getChunk().getPos());
         }
     }
 
     public static void invalidateCapsOnChunkUnload(ChunkEvent.Unload event) {
-        if (!event.getLevel().isClientSide()) {
-            ((ServerLevel) event.getLevel()).invalidateCapabilities(event.getChunk().getPos());
+        if (event.getLevel() instanceof ServerLevel sl) {
+            sl.invalidateCapabilities(event.getChunk().getPos());
         }
     }
 
     public static void cleanCapabilityListenerReferencesOnTick(LevelTickEvent.Post event) {
-        if (!event.getLevel().isClientSide()) {
-            ((ServerLevel) event.getLevel()).cleanCapabilityListenerReferences();
+        if (event.getLevel() instanceof ServerLevel sl) {
+            sl.cleanCapabilityListenerReferences();
         }
     }
 }
