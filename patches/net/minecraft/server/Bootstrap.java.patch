@@ -9,7 +9,12 @@
                      wrapStreams();
                      bootstrapDuration.set(Duration.between(instant, Instant.now()).toMillis());
                  }
-@@ -121,7 +_,6 @@
+@@ -117,11 +_,11 @@
+     public static void validate() {
+         checkBootstrapCalled(() -> "validate");
+         if (SharedConstants.IS_RUNNING_IN_IDE) {
++            if (false) // Neo: this can be very annoying
+             getMissingTranslations().forEach(p_179915_ -> LOGGER.error("Missing translations: {}", p_179915_));
              Commands.validate();
          }
  

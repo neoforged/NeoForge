@@ -15,7 +15,14 @@
      private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
          .maximumSize(512L)
          .weakKeys()
-@@ -193,6 +_,7 @@
+@@ -187,12 +_,13 @@
+         this.createBlockStateDefinition(builder);
+         this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
+         this.registerDefaultState(this.stateDefinition.any());
+-        if (SharedConstants.IS_RUNNING_IN_IDE) {
++        if (false) {
+             String s = this.getClass().getSimpleName();
+             if (!s.endsWith("Block")) {
                  LOGGER.error("Block classes should end with Block and {} doesn't.", s);
              }
          }
