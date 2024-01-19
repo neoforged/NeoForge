@@ -1,7 +1,0 @@
-{
-    "exhaustion": 0.0,
-    "message_id": "test_mod",
-    "scaling": "test:scaling",
-    "effects": "test:effects",
-    "death_message_type": "test:msgtype"
-}
