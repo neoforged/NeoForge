@@ -43,7 +43,7 @@ public abstract class LevelTickEvent extends Event {
     /**
      * {@link LevelTickEvent.Pre} is fired once per game tick, per level, before the level performs work for the current tick.
      * <p>
-     * This event may fire on both the logical server and logical client, since the both {@link ClientLevel} and {@link ServerLevel} tick.
+     * This event may fire on both the logical server and logical client, since both {@link ClientLevel} and {@link ServerLevel} tick.
      * <p>
      * As such, be sure to check {@link Level#isClientSide()} before performing any operations.
      */
@@ -58,7 +58,7 @@ public abstract class LevelTickEvent extends Event {
     /**
      * {@link LevelTickEvent.Post} is fired once per game tick, per level, after the level performs work for the current tick.
      * <p>
-     * This event may fire on both the logical server and logical client, since the both {@link ClientLevel} and {@link ServerLevel} tick.
+     * This event may fire on both the logical server and logical client, since both {@link ClientLevel} and {@link ServerLevel} tick.
      * <p>
      * As such, be sure to check {@link Level#isClientSide()} before performing any operations.
      */
