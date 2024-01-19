@@ -109,9 +109,7 @@ public class EntityRendererEventsTest {
             }
 
             @Override
-            public void setupAnim(MyEntity p_102618_, float p_102619_, float p_102620_, float p_102621_, float p_102622_, float p_102623_) {
-
-            }
+            public void setupAnim(MyEntity p_102618_, float p_102619_, float p_102620_, float p_102621_, float p_102622_, float p_102623_) {}
 
             @Override
             public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
@@ -168,9 +166,7 @@ public class EntityRendererEventsTest {
         }
 
         @Override
-        public void setItemSlot(EquipmentSlot p_21036_, ItemStack p_21037_) {
-
-        }
+        public void setItemSlot(EquipmentSlot p_21036_, ItemStack p_21037_) {}
 
         @Override
         public HumanoidArm getMainArm() {

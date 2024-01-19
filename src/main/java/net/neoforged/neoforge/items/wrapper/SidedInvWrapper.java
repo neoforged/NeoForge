@@ -155,7 +155,6 @@ public class SidedInvWrapper implements IItemHandlerModifiable {
                 return ItemStack.EMPTY;
             }
         }
-
     }
 
     @Override

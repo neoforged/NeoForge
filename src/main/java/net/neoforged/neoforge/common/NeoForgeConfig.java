@@ -68,7 +68,6 @@ public class NeoForgeConfig {
      * General configuration that doesn't need to be synchronized but needs to be available before server startup
      */
     public static class Common {
-
         Common(ModConfigSpec.Builder builder) {
             builder.comment("[DEPRECATED / NO EFFECT]: General configuration settings")
                     .push("general");

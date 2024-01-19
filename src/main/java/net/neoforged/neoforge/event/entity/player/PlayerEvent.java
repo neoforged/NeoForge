@@ -248,7 +248,6 @@ public abstract class PlayerEvent extends LivingEvent {
      *
      */
     public static class StartTracking extends PlayerEvent {
-
         private final Entity target;
 
         public StartTracking(Player player, Entity target) {
@@ -269,7 +268,6 @@ public abstract class PlayerEvent extends LivingEvent {
      *
      */
     public static class StopTracking extends PlayerEvent {
-
         private final Entity target;
 
         public StopTracking(Player player, Entity target) {
@@ -467,7 +465,6 @@ public abstract class PlayerEvent extends LivingEvent {
         public boolean isEndConquered() {
             return this.endConquered;
         }
-
     }
 
     public static class PlayerChangedDimensionEvent extends PlayerEvent {

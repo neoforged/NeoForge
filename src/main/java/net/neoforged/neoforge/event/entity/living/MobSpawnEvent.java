@@ -409,5 +409,4 @@ public abstract class MobSpawnEvent extends EntityEvent {
             super(mob, level, mob.getX(), mob.getY(), mob.getZ());
         }
     }
-
 }

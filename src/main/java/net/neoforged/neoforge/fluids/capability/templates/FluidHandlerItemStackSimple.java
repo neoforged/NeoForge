@@ -60,26 +60,22 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
 
     @Override
     public int getTanks() {
-
         return 1;
     }
 
     @NotNull
     @Override
     public FluidStack getFluidInTank(int tank) {
-
         return getFluid();
     }
 
     @Override
     public int getTankCapacity(int tank) {
-
         return capacity;
     }
 
     @Override
     public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-
         return true;
     }
 

@@ -22,7 +22,6 @@ import net.neoforged.neoforge.common.NeoForge;
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
 public class PlayerNegotiationEvent extends Event {
-
     private final Connection connection;
     private final GameProfile profile;
     private final List<Future<Void>> futures;

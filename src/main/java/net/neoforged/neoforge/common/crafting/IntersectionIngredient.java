@@ -97,7 +97,6 @@ public class IntersectionIngredient extends Ingredient {
     }
 
     public record IntersectionValue(Value inner, List<Ingredient> other) implements Ingredient.Value {
-
         @Override
         public Collection<ItemStack> getItems() {
             final Collection<ItemStack> inner = new ArrayList<>(inner().getItems());

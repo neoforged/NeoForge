@@ -67,7 +67,6 @@ import org.jetbrains.annotations.VisibleForTesting;
  * @see net.minecraft.client.particle.ParticleDescription
  */
 public abstract class ParticleDescriptionProvider implements DataProvider {
-
     private final PackOutput.PathProvider particlesPath;
     @VisibleForTesting
     protected final ExistingFileHelper fileHelper;
@@ -140,7 +139,6 @@ public abstract class ParticleDescriptionProvider implements DataProvider {
     protected void spriteSet(ParticleType<?> type, ResourceLocation baseName, int numOfTextures, boolean reverse) {
         Preconditions.checkArgument(numOfTextures > 0, "The number of textures to generate must be positive");
         this.spriteSet(type, () -> new Iterator<>() {
-
             private int counter = 0;
 
             @Override

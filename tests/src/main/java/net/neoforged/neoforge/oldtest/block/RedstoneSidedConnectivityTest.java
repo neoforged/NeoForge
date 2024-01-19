@@ -51,7 +51,6 @@ public class RedstoneSidedConnectivityTest {
     private static class EastRedstoneBlock extends Block {
         //This block visually connect to redstone dust only on the east side
         //if a furnace block is placed on top of it
-
         public EastRedstoneBlock() {
             super(Properties.of());
         }

@@ -940,7 +940,6 @@ public class DataGeneratorTest {
     }
 
     private static class Advancements implements AdvancementProvider.AdvancementGenerator {
-
         @Override
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
             var obtainDirt = Advancement.Builder.advancement()
@@ -1008,7 +1007,6 @@ public class DataGeneratorTest {
     }
 
     private static class ParticleDescriptions extends ParticleDescriptionProvider {
-
         public ParticleDescriptions(PackOutput output, ExistingFileHelper fileHelper) {
             super(output, fileHelper);
         }
@@ -1026,7 +1024,6 @@ public class DataGeneratorTest {
                     new ResourceLocation("splash_3"));
 
             this.spriteSet(ParticleTypes.ENCHANT, () -> new Iterator<>() {
-
                 private final ResourceLocation base = new ResourceLocation("sga");
                 private char suffix = 'a';
 

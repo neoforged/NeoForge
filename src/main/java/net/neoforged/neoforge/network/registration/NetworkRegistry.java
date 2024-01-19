@@ -76,7 +76,6 @@ import org.slf4j.Logger;
  */
 @ApiStatus.Internal
 public class NetworkRegistry {
-
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private static final AttributeKey<NetworkPayloadSetup> ATTRIBUTE_PAYLOAD_SETUP = AttributeKey.valueOf("neoforge:payload_setup");
@@ -253,7 +252,6 @@ public class NetworkRegistry {
             LOGGER.error("Received a modded custom payload packet from a client that is not in the configuration or play phase. Not parsing packet.");
             throw new IllegalStateException("A client sent a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
         }
-
     }
 
     /**
@@ -869,7 +867,6 @@ public class NetworkRegistry {
     @SuppressWarnings("resource")
     private record EventLoopSynchronizedWorkHandler<T>(
             ReentrantBlockableEventLoop<?> eventLoop, T payload) implements ISynchronizedWorkHandler {
-
         private static final Logger LOGGER = LogUtils.getLogger();
 
         /**
@@ -903,7 +900,6 @@ public class NetworkRegistry {
 
     @SuppressWarnings("unchecked")
     private record ServerPacketHandler(ServerCommonPacketListener listener) implements IPacketHandler {
-
         @Override
         public void handle(Packet<?> packet) {
             resolvePacketGenerics(packet, listener());
@@ -930,7 +926,6 @@ public class NetworkRegistry {
 
     @SuppressWarnings("unchecked")
     private record ClientPacketHandler(ClientCommonPacketListener listener) implements IPacketHandler {
-
         @Override
         public void handle(Packet<?> packet) {
             resolvePacketGenerics(packet, listener());
@@ -954,5 +949,4 @@ public class NetworkRegistry {
             }
         }
     }
-
 }

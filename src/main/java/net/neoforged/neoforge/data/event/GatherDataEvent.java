@@ -102,7 +102,6 @@ public class GatherDataEvent extends Event implements IModBusEvent {
             this.reports = reports;
             this.validate = validate;
             this.flat = flat;
-
         }
 
         public Collection<Path> getInputs() {
