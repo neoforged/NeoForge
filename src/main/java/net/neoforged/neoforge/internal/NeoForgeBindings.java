@@ -9,8 +9,6 @@ import java.util.function.Supplier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.I18NParser;
 import net.neoforged.fml.IBindingsProvider;
-import net.neoforged.fml.config.IConfigEvent;
-import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.I18nExtension;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -33,10 +31,5 @@ public class NeoForgeBindings implements IBindingsProvider {
                 return I18nExtension.stripControlCodes(toStrip);
             }
         };
-    }
-
-    @Override
-    public Supplier<IConfigEvent.ConfigConfig> getConfigConfiguration() {
-        return () -> new IConfigEvent.ConfigConfig(ModConfigEvent.Loading::new, ModConfigEvent.Reloading::new, ModConfigEvent.Unloading::new);
     }
 }
