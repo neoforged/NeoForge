@@ -1,0 +1,13 @@
+{
+  "values": [
+    "minecraft:desert",
+    "minecraft:badlands",
+    "minecraft:wooded_badlands",
+    "minecraft:windswept_savanna",
+    "minecraft:eroded_badlands",
+    {
+      "id": "#forge:is_dry/overworld",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "values": [
+    "minecraft:meadow",
+    "minecraft:sunflower_plains",
+    "minecraft:cherry_grove",
+    {
+      "id": "#forge:is_floral",
+      "required": false
+    }
+  ]
+}

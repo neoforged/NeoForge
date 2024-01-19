@@ -4,7 +4,7 @@
   "group": "iron_ingot",
   "key": {
     "#": {
-      "tag": "forge:nuggets/iron"
+      "tag": "c:nuggets/iron"
     }
   },
   "pattern": [

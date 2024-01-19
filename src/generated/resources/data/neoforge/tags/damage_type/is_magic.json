@@ -1,0 +1,14 @@
+{
+  "values": [
+    "minecraft:magic",
+    "minecraft:indirect_magic",
+    "minecraft:thorns",
+    "minecraft:dragon_breath",
+    "#neoforge:is_poison",
+    "#neoforge:is_wither",
+    {
+      "id": "#forge:is_magic",
+      "required": false
+    }
+  ]
+}

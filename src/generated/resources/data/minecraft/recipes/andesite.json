@@ -6,7 +6,7 @@
       "item": "minecraft:diorite"
     },
     {
-      "tag": "forge:cobblestone/normal"
+      "tag": "c:cobblestones/normal"
     }
   ],
   "result": {

@@ -1,0 +1,10 @@
+{
+  "values": [
+    "#c:rods/wooden",
+    "#c:rods/blaze",
+    {
+      "id": "#forge:rods",
+      "required": false
+    }
+  ]
+}
