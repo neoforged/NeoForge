@@ -149,6 +149,7 @@ import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourceTypesEvent;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
 import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
+import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -993,5 +994,13 @@ public class ClientHooks {
         ColorResolverManager.init();
         ItemDecoratorHandler.init();
         PresetEditorManager.init();
+    }
+
+    public static void preRenderFrame(float partialTick) {
+        NeoForge.EVENT_BUS.post(new RenderFrameEvent.Pre(partialTick));
+    }
+
+    public static void postRenderFrame(float partialRick) {
+        NeoForge.EVENT_BUS.post(new RenderFrameEvent.Post(partialRick));
     }
 }

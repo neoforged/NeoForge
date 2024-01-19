@@ -160,6 +160,10 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.level.SaplingGrowTreeEvent;
 import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
+import net.neoforged.neoforge.event.tick.ClientTickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -811,44 +815,36 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerEvent.ItemSmeltedEvent(player, smelted));
     }
 
-    public static void onRenderTickStart(float timer) {
-        NeoForge.EVENT_BUS.post(new TickEvent.RenderTickEvent(TickEvent.Phase.START, timer));
-    }
-
-    public static void onRenderTickEnd(float timer) {
-        NeoForge.EVENT_BUS.post(new TickEvent.RenderTickEvent(TickEvent.Phase.END, timer));
-    }
-
     public static void onPlayerPreTick(Player player) {
-        NeoForge.EVENT_BUS.post(new TickEvent.PlayerTickEvent(TickEvent.Phase.START, player));
+        NeoForge.EVENT_BUS.post(new PlayerTickEvent.Pre(player));
     }
 
     public static void onPlayerPostTick(Player player) {
-        NeoForge.EVENT_BUS.post(new TickEvent.PlayerTickEvent(TickEvent.Phase.END, player));
+        NeoForge.EVENT_BUS.post(new PlayerTickEvent.Post(player));
     }
 
     public static void onPreLevelTick(Level level, BooleanSupplier haveTime) {
-        NeoForge.EVENT_BUS.post(new TickEvent.LevelTickEvent(level.isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER, TickEvent.Phase.START, level, haveTime));
+        NeoForge.EVENT_BUS.post(new LevelTickEvent.Pre(haveTime, level));
     }
 
     public static void onPostLevelTick(Level level, BooleanSupplier haveTime) {
-        NeoForge.EVENT_BUS.post(new TickEvent.LevelTickEvent(level.isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER, TickEvent.Phase.END, level, haveTime));
+        NeoForge.EVENT_BUS.post(new LevelTickEvent.Post(haveTime, level));
     }
 
     public static void onPreClientTick() {
-        NeoForge.EVENT_BUS.post(new TickEvent.ClientTickEvent(TickEvent.Phase.START));
+        NeoForge.EVENT_BUS.post(new ClientTickEvent.Pre());
     }
 
     public static void onPostClientTick() {
-        NeoForge.EVENT_BUS.post(new TickEvent.ClientTickEvent(TickEvent.Phase.END));
+        NeoForge.EVENT_BUS.post(new ClientTickEvent.Post());
     }
 
     public static void onPreServerTick(BooleanSupplier haveTime, MinecraftServer server) {
-        NeoForge.EVENT_BUS.post(new TickEvent.ServerTickEvent(TickEvent.Phase.START, haveTime, server));
+        NeoForge.EVENT_BUS.post(new ServerTickEvent.Pre(haveTime, server));
     }
 
     public static void onPostServerTick(BooleanSupplier haveTime, MinecraftServer server) {
-        NeoForge.EVENT_BUS.post(new TickEvent.ServerTickEvent(TickEvent.Phase.END, haveTime, server));
+        NeoForge.EVENT_BUS.post(new ServerTickEvent.Post(haveTime, server));
     }
 
     public static WeightedRandomList<MobSpawnSettings.SpawnerData> getPotentialSpawns(LevelAccessor level, MobCategory category, BlockPos pos, WeightedRandomList<MobSpawnSettings.SpawnerData> oldList) {

@@ -216,11 +216,11 @@
          this.profiler.pop();
          if (!this.noRender) {
 +            this.realPartialTick = this.pause ? this.pausePartialTick : this.timer.partialTick; // Cache this since pause is volatile
-+            net.neoforged.neoforge.event.EventHooks.onRenderTickStart(this.realPartialTick);
++            net.neoforged.neoforge.client.ClientHooks.preRenderFrame(this.realPartialTick);
              this.profiler.popPush("gameRenderer");
              this.gameRenderer.render(this.pause ? this.pausePartialTick : this.timer.partialTick, i, p_91384_);
              this.profiler.pop();
-+            net.neoforged.neoforge.event.EventHooks.onRenderTickEnd(this.realPartialTick);
++            net.neoforged.neoforge.client.ClientHooks.postRenderFrame(this.realPartialTick);
          }
  
          if (this.fpsPieResults != null) {
