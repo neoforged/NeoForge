@@ -7,7 +7,7 @@
 -            LOGGER.error("No data fixer registered for {}", p_137553_);
 -            if (SharedConstants.IS_RUNNING_IN_IDE) {
 +            LOGGER.debug("No data fixer registered for {}", p_137553_);
-+            if (false) {
++            if (SharedConstants.IS_RUNNING_IN_IDE && false) {
                  throw illegalargumentexception;
              }
          }

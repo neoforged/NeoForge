@@ -20,7 +20,7 @@
          this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
          this.registerDefaultState(this.stateDefinition.any());
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
-+        if (false) {
++        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
              String s = this.getClass().getSimpleName();
              if (!s.endsWith("Block")) {
                  LOGGER.error("Block classes should end with Block and {} doesn't.", s);

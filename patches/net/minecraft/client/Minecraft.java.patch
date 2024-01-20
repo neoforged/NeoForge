@@ -79,7 +79,7 @@
 -                        if (SharedConstants.IS_RUNNING_IN_IDE) {
 +            net.neoforged.fml.loading.ImmediateWindowHandler.<LoadingOverlay>loadingOverlay(
 +                () -> this, () -> reloadinstance, p_299779_ -> Util.ifElse(p_299779_, p_299772_ -> this.rollbackResourcePacks(p_299772_, minecraft$gameloadcookie), () -> {
-+                        if (false) {
++                        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
                              this.selfTest();
                          }
          

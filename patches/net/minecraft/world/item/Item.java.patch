@@ -17,7 +17,7 @@
          this.isFireResistant = p_41383_.isFireResistant;
          this.requiredFeatures = p_41383_.requiredFeatures;
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
-+        if (false) {
++        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
              String s = this.getClass().getSimpleName();
              if (!s.endsWith("Item")) {
                  LOGGER.error("Item classes should end with Item and {} doesn't.", s);

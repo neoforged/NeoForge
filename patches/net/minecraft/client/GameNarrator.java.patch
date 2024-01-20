@@ -5,7 +5,7 @@
  
      private void logNarratedMessage(String p_168788_) {
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
-+        if (false) {
++        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
              LOGGER.debug("Narrating: {}", p_168788_.replaceAll("\n", "\\\\n"));
          }
      }
