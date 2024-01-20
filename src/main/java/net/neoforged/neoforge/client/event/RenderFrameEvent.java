@@ -16,8 +16,7 @@ public abstract class RenderFrameEvent extends Event {
 
     protected final float partialTick;
 
-    @ApiStatus.Internal
-    public RenderFrameEvent(float partialTick) {
+    protected RenderFrameEvent(float partialTick) {
         this.partialTick = partialTick;
     }
 
@@ -35,6 +34,7 @@ public abstract class RenderFrameEvent extends Event {
      */
     public static class Pre extends RenderFrameEvent {
 
+        @ApiStatus.Internal
         public Pre(float partialTick) {
             super(partialTick);
         }
@@ -48,6 +48,7 @@ public abstract class RenderFrameEvent extends Event {
      */
     public static class Post extends RenderFrameEvent {
 
+        @ApiStatus.Internal
         public Post(float partialTick) {
             super(partialTick);
         }
