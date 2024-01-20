@@ -468,10 +468,18 @@
  
      @Override
      public void tick() {
-+        if (net.neoforged.neoforge.common.CommonHooks.onLivingTick(this)) return;
++        if (net.neoforged.neoforge.common.CommonHooks.onLivingTick(this).isCanceled()) return;
          super.tick();
          this.updatingUsingItem();
          this.updateSwimAmount();
+@@ -2391,6 +_,7 @@
+         }
+ 
+         this.refreshDirtyAttributes();
++        net.neoforged.neoforge.common.CommonHooks.afterLivingTick(this);
+     }
+ 
+     private void detectEquipmentUpdates() {
 @@ -2422,6 +_,7 @@
  
              ItemStack itemstack1 = this.getItemBySlot(equipmentslot);

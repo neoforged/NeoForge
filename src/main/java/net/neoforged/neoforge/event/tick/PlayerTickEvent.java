@@ -1,7 +1,7 @@
 package net.neoforged.neoforge.event.tick;
 
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -10,31 +10,22 @@ import org.jetbrains.annotations.ApiStatus;
  * @see Pre
  * @see Post
  */
-public abstract class PlayerTickEvent extends Event {
+public abstract class PlayerTickEvent extends PlayerEvent {
 
-    private final Player player;
-
-    @ApiStatus.Internal
-    public PlayerTickEvent(Player player) {
-        this.player = player;
-    }
-
-    /**
-     * {@return the player being ticked}
-     */
-    public Player getPlayer() {
-        return player;
+    protected PlayerTickEvent(Player player) {
+        super(player);
     }
 
     /**
      * {@link PlayerTickEvent.Pre} is fired once per game tick, per player, before the player performs work for the current tick.
      * <p>
-     * This event may fire on both the logical server and logical client, for all subclasses of {@link Player} on their respective sides.
+     * This event will fire on both the logical server and logical client, for all subclasses of {@link Player} on their respective sides.
      * <p>
-     * As such, be sure to check {@link Player#isClientSide()} before performing any operations.
+     * As such, be sure to check {@link Level#isClientSide()} before performing any operations.
      */
     public static class Pre extends PlayerTickEvent {
 
+        @ApiStatus.Internal
         public Pre(Player player) {
             super(player);
         }
@@ -44,12 +35,13 @@ public abstract class PlayerTickEvent extends Event {
     /**
      * {@link PlayerTickEvent.Post} is fired once per game tick, per player, after the player performs work for the current tick.
      * <p>
-     * This event may fire on both the logical server and logical client, for all subclasses of {@link Player} on their respective sides.
+     * This event will fire on both the logical server and logical client, for all subclasses of {@link Player} on their respective sides.
      * <p>
-     * As such, be sure to check {@link Player#isClientSide()} before performing any operations.
+     * As such, be sure to check {@link Level#isClientSide()} before performing any operations.
      */
     public static class Post extends PlayerTickEvent {
 
+        @ApiStatus.Internal
         public Post(Player player) {
             super(player);
         }

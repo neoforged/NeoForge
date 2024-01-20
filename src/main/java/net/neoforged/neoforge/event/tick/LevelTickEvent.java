@@ -18,8 +18,7 @@ public abstract class LevelTickEvent extends Event {
     private final BooleanSupplier hasTime;
     private final Level level;
 
-    @ApiStatus.Internal
-    public LevelTickEvent(BooleanSupplier hasTime, Level level) {
+    protected LevelTickEvent(BooleanSupplier hasTime, Level level) {
         this.hasTime = hasTime;
         this.level = level;
     }
@@ -43,12 +42,13 @@ public abstract class LevelTickEvent extends Event {
     /**
      * {@link LevelTickEvent.Pre} is fired once per game tick, per level, before the level performs work for the current tick.
      * <p>
-     * This event may fire on both the logical server and logical client, since both {@link ClientLevel} and {@link ServerLevel} tick.
+     * This event will fire on both the logical server and logical client, since both {@link ClientLevel} and {@link ServerLevel} tick.
      * <p>
      * As such, be sure to check {@link Level#isClientSide()} before performing any operations.
      */
     public static class Pre extends LevelTickEvent {
 
+        @ApiStatus.Internal
         public Pre(BooleanSupplier haveTime, Level level) {
             super(haveTime, level);
         }
@@ -58,12 +58,13 @@ public abstract class LevelTickEvent extends Event {
     /**
      * {@link LevelTickEvent.Post} is fired once per game tick, per level, after the level performs work for the current tick.
      * <p>
-     * This event may fire on both the logical server and logical client, since both {@link ClientLevel} and {@link ServerLevel} tick.
+     * This event will fire on both the logical server and logical client, since both {@link ClientLevel} and {@link ServerLevel} tick.
      * <p>
      * As such, be sure to check {@link Level#isClientSide()} before performing any operations.
      */
     public static class Post extends LevelTickEvent {
 
+        @ApiStatus.Internal
         public Post(BooleanSupplier haveTime, Level level) {
             super(haveTime, level);
         }

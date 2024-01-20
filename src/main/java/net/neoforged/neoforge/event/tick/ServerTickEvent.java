@@ -16,8 +16,7 @@ public abstract class ServerTickEvent extends Event {
     private final BooleanSupplier hasTime;
     private final MinecraftServer server;
 
-    @ApiStatus.Internal
-    public ServerTickEvent(BooleanSupplier hasTime, MinecraftServer server) {
+    protected ServerTickEvent(BooleanSupplier hasTime, MinecraftServer server) {
         this.hasTime = hasTime;
         this.server = server;
     }
@@ -45,6 +44,7 @@ public abstract class ServerTickEvent extends Event {
      */
     public static class Pre extends ServerTickEvent {
 
+        @ApiStatus.Internal
         public Pre(BooleanSupplier haveTime, MinecraftServer server) {
             super(haveTime, server);
         }
@@ -58,6 +58,7 @@ public abstract class ServerTickEvent extends Event {
      */
     public static class Post extends ServerTickEvent {
 
+        @ApiStatus.Internal
         public Post(BooleanSupplier haveTime, MinecraftServer server) {
             super(haveTime, server);
         }

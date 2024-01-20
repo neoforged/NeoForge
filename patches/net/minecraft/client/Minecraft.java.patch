@@ -333,15 +333,15 @@
                      if (!itemstack.isEmpty()) {
                          InteractionResult interactionresult2 = this.gameMode.useItem(this.player, interactionhand);
                          if (interactionresult2.consumesAction()) {
-@@ -1815,6 +_,8 @@
-             --this.rightClickDelay;
-         }
+@@ -1806,6 +_,8 @@
+     }
  
-+        net.neoforged.neoforge.event.EventHooks.onPreClientTick();
+     public void tick() {
++        net.neoforged.neoforge.client.ClientHooks.onPreClientTick();
 +
-         this.profiler.push("gui");
-         this.chatListener.tick();
-         this.gui.tick(this.pause);
+         ++this.clientTickCount;
+         if (this.level != null && !this.pause) {
+             this.level.tickRateManager().tick();
 @@ -1900,6 +_,7 @@
  
                  this.tutorial.tick();
@@ -363,7 +363,7 @@
          this.keyboardHandler.tick();
          this.profiler.pop();
 +
-+        net.neoforged.neoforge.event.EventHooks.onPostClientTick();
++        net.neoforged.neoforge.client.ClientHooks.onPostClientTick();
      }
  
      private boolean isMultiplayerServer() {

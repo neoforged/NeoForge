@@ -1,4 +1,4 @@
-package net.neoforged.neoforge.event.tick;
+package net.neoforged.neoforge.client.event;
 
 import net.minecraft.client.Minecraft;
 import net.neoforged.bus.api.Event;

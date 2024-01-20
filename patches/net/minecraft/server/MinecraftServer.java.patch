@@ -86,14 +86,15 @@
                  this.onServerExit();
              }
          }
-@@ -838,12 +_,14 @@
+@@ -837,6 +_,7 @@
+     }
  
      public void tickServer(BooleanSupplier p_129871_) {
-         long i = Util.getNanos();
 +        net.neoforged.neoforge.event.EventHooks.onPreServerTick(p_129871_, this);
+         long i = Util.getNanos();
          ++this.tickCount;
          this.tickRateManager.tick();
-         this.tickChildren(p_129871_);
+@@ -844,6 +_,7 @@
          if (i - this.lastServerStatus >= STATUS_EXPIRE_TIME_NANOS) {
              this.lastServerStatus = i;
              this.status = this.buildServerStatus();
