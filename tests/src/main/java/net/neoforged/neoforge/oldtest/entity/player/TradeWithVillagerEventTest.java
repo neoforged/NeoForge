@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 @Mod("trade_with_villager_event_test")
 @Mod.EventBusSubscriber()
 public class TradeWithVillagerEventTest {
-
     private static final boolean ENABLE = true;
     private static final Logger LOGGER = LogUtils.getLogger();
 

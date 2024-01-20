@@ -22,7 +22,6 @@ import org.jetbrains.annotations.ApiStatus;
  * In vanilla, this is only fired on the logical client, but mods may request creative mode tab contents on the server.
  */
 public final class BuildCreativeModeTabContentsEvent extends Event implements IModBusEvent, CreativeModeTab.Output {
-
     private final CreativeModeTab tab;
     private final CreativeModeTab.ItemDisplayParameters parameters;
     private final MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility> entries;

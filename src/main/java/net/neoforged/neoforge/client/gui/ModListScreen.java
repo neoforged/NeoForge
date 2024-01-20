@@ -390,7 +390,6 @@ public class ModListScreen extends Screen {
                 if (logo != null) {
 
                     return Pair.of(tm.register("modlogo", new DynamicTexture(logo) {
-
                         @Override
                         public void upload() {
                             this.bind();

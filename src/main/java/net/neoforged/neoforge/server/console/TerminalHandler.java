@@ -15,7 +15,6 @@ import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 
 public final class TerminalHandler {
-
     private TerminalHandler() {}
 
     public static boolean handleCommands(DedicatedServer server) {
@@ -59,5 +58,4 @@ public final class TerminalHandler {
 
         return true;
     }
-
 }

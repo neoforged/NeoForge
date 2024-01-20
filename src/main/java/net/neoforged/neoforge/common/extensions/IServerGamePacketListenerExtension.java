@@ -18,7 +18,6 @@ import net.minecraft.network.protocol.game.ServerGamePacketListener;
  * Extension class for {@link ServerGamePacketListener}
  */
 public interface IServerGamePacketListenerExtension extends IServerCommonPacketListenerExtension {
-
     /**
      * {@return the listener this extension is attached to}
      */

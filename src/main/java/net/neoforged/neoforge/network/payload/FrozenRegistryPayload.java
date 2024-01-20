@@ -22,7 +22,6 @@ import org.jetbrains.annotations.ApiStatus;
 public record FrozenRegistryPayload(ResourceLocation registryName, RegistrySnapshot snapshot) implements CustomPacketPayload {
 
     public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "frozen_registry");
-
     public FrozenRegistryPayload(FriendlyByteBuf buf) {
         this(buf.readResourceLocation(), new RegistrySnapshot(buf));
     }

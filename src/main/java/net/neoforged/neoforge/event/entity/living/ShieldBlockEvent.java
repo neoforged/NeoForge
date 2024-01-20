@@ -75,5 +75,4 @@ public class ShieldBlockEvent extends LivingEvent implements ICancellableEvent {
     public void setShieldTakesDamage(boolean damage) {
         this.shieldTakesDamage = damage;
     }
-
 }

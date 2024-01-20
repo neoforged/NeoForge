@@ -43,7 +43,6 @@ import net.neoforged.testframework.registration.DeferredItems;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 public class RegistrationHelperImpl implements RegistrationHelper {
-
     public RegistrationHelperImpl(String modId) {
         this.modId = modId;
     }

@@ -24,7 +24,6 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType;
 import org.jetbrains.annotations.VisibleForTesting;
 
 public abstract class ModelProvider<T extends ModelBuilder<T>> implements DataProvider {
-
     public static final String BLOCK_FOLDER = "block";
     public static final String ITEM_FOLDER = "item";
 

@@ -19,7 +19,6 @@ import net.minecraft.data.registries.RegistryPatchGenerator;
  * object.
  */
 public class DatapackBuiltinEntriesProvider extends RegistriesDatapackGenerator {
-
     private final CompletableFuture<HolderLookup.Provider> fullRegistries;
 
     /**

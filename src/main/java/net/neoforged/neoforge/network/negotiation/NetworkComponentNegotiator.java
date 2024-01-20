@@ -24,7 +24,6 @@ import org.jetbrains.annotations.VisibleForTesting;
  */
 @ApiStatus.Internal
 public class NetworkComponentNegotiator {
-
     /**
      * Negotiates the network components between the server and client.
      * <p>

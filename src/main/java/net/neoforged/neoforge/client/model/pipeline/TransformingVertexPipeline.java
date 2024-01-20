@@ -36,5 +36,4 @@ public class TransformingVertexPipeline extends VertexConsumerWrapper {
         vec.normalize();
         return super.normal(vec.x(), vec.y(), vec.z());
     }
-
 }

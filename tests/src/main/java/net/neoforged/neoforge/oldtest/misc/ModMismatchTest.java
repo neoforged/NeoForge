@@ -67,7 +67,6 @@ public class ModMismatchTest implements IConfigurationPayloadHandler<ModMismatch
     }
 
     public record ModMismatchPayload() implements CustomPacketPayload {
-
         private static final ResourceLocation ID = new ResourceLocation(MOD_ID, "mod_mismatch");
 
         public ModMismatchPayload(FriendlyByteBuf buf) {
@@ -81,7 +80,5 @@ public class ModMismatchTest implements IConfigurationPayloadHandler<ModMismatch
         public ResourceLocation id() {
             return ID;
         }
-
     }
-
 }

@@ -10,7 +10,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.neoforged.fml.ModList;
 
 public record ModLoadedCondition(String modid) implements ICondition {
-
     public static Codec<ModLoadedCondition> CODEC = RecordCodecBuilder.create(
             builder -> builder
                     .group(

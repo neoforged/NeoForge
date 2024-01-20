@@ -82,5 +82,4 @@ public class RegisterParticleProvidersEvent extends Event implements IModBusEven
     public <T extends ParticleOptions> void registerSpriteSet(ParticleType<T> type, ParticleEngine.SpriteParticleRegistration<T> registration) {
         particleEngine.register(type, registration);
     }
-
 }
