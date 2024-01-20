@@ -10,7 +10,7 @@
   "fml.menu.modoptions": "Opcje modyfikacji...",
   "fml.menu.mods.info.version": "Wersja: {0}",
   "fml.menu.mods.info.idstate": "ID Modyfikacji: {0} Stan: {1,lower}",
-  "fml.menu.mods.info.credits": "Credits: {0}",
+  "fml.menu.mods.info.credits": "Podziękowania: {0}",
   "fml.menu.mods.info.authors": "Autorzy: {0}",
   "fml.menu.mods.info.displayurl": "Strona główna: {0}",
   "fml.menu.mods.info.license": "Licencja: {0}",
