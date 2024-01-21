@@ -132,6 +132,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
@@ -210,8 +211,8 @@ public class CommonHooks {
     }
 
     public static boolean isCorrectToolForDrops(@NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
-        PlayerEvent.HarvestCheck event = NeoForge.EVENT_BUS.post(new PlayerEvent.HarvestCheck(player, level, pos, state, !state.requiresCorrectToolForDrops()));
-        return event.canHarvest() || player.hasCorrectToolForDrops(state);
+        PlayerEvent.HarvestCheck event = NeoForge.EVENT_BUS.post(new PlayerEvent.HarvestCheck(player, level, pos, state));
+        return event.getResult() == Event.Result.DEFAULT ? player.hasCorrectToolForDrops(state) : event.getResult() == Event.Result.ALLOW;
     }
 
     public static boolean onItemStackedOn(ItemStack carriedItem, ItemStack stackedOnItem, Slot slot, ClickAction action, Player player, SlotAccess carriedSlotAccess) {
