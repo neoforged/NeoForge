@@ -235,5 +235,5 @@
   "neoforge.network.registries.sync.missing": "Nicht alle erwarteten Registries wurden vom Server empfangen! (es fehlt: %s)",
   "neoforge.network.registries.sync.server-with-unknown-keys": "Der Server sendet Registries mit unbekannten Schlüsseln: %s",
   "neoforge.network.registries.sync.failed": "Fehler beim Synchronisieren von Registries vom Server: %s",
-  "neoforge.network.aux_light_data.failed": "Failed to handle auxiliary light data for chunk %s: %s"
+  "neoforge.network.aux_light_data.failed": "Fehler beim Verarbeiten von Hilfslichtdaten für den Chunk %s:%s"
 }
