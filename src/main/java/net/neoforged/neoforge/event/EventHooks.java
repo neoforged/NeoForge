@@ -124,6 +124,7 @@ import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.AllowDespawn;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
+import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
 import net.neoforged.neoforge.event.entity.living.ZombieEvent.SummonAidEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
@@ -941,5 +942,18 @@ public class EventHooks {
 
         for (var entry : entries)
             output.accept(entry.getKey(), entry.getValue());
+    }
+
+    /**
+     * Fires the mob split event. Returns the event for cancellation checking.
+     * 
+     * @param parent   The parent mob, which is in the process of being removed.
+     * @param children All child mobs that would have normally spawned.
+     * @return The event object.
+     */
+    public static MobSplitEvent onMobSplit(Mob parent, List<Mob> children) {
+        var event = new MobSplitEvent(parent, children);
+        NeoForge.EVENT_BUS.post(event);
+        return event;
     }
 }
