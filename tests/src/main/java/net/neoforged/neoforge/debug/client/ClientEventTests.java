@@ -8,11 +8,9 @@ package net.neoforged.neoforge.debug.client;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent;
@@ -41,16 +39,25 @@ public class ClientEventTests {
 
     @TestHolder(description = { "Tests if the RegisterRenderBuffersEvent event is fired and whether the registered render buffer is represented within a fixed render buffer map" }, enabledByDefault = true)
     static void registerRenderBuffersEvent(final DynamicTest test) {
-        test.framework().modEventBus().addListener((final RegisterRenderBuffersEvent event) -> {
+        test.eventListeners().mod().addListener((final RegisterRenderBuffersEvent event) -> {
             event.registerRenderBuffer(RenderType.lightning());
         });
-        test.framework().modEventBus().addListener((final RenderLevelStageEvent.RegisterStageEvent event) -> {
-            Map<RenderType, BufferBuilder> fixedBuffers = ObfuscationReflectionHelper.getPrivateValue(MultiBufferSource.BufferSource.class, Minecraft.getInstance().renderBuffers().bufferSource(), "fixedBuffers");
+        test.eventListeners().mod().addListener((final RenderLevelStageEvent.RegisterStageEvent event) -> {
+            try {
+                var bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+                var field = bufferSource.getClass().getDeclaredField("fixedBuffers");
 
-            if (fixedBuffers != null && fixedBuffers.containsKey(RenderType.lightning())) {
-                test.pass();
-            } else {
-                test.fail("The render buffer for the specified render type was not registered");
+                field.setAccessible(true);
+
+                var fixedBuffers = (Map<RenderType, BufferBuilder>) field.get(bufferSource);
+
+                if (fixedBuffers != null && fixedBuffers.containsKey(RenderType.lightning())) {
+                    test.pass();
+                } else {
+                    test.fail("The render buffer for the specified render type was not registered");
+                }
+            } catch (Exception e) {
+                test.fail("Failed to access fixed buffers map");
             }
         });
     }
