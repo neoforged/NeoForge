@@ -22,7 +22,6 @@ import org.jetbrains.annotations.ApiStatus;
  * Mods may elect to fire this event for any mob that splits on removal.
  */
 public class MobSplitEvent extends Event implements ICancellableEvent {
-
     protected final Mob parent;
     protected final List<Mob> children;
 
@@ -60,5 +59,4 @@ public class MobSplitEvent extends Event implements ICancellableEvent {
     public void setCanceled(boolean canceled) {
         ICancellableEvent.super.setCanceled(canceled);
     }
-
 }
