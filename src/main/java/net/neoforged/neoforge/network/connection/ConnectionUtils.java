@@ -14,7 +14,6 @@ import org.jetbrains.annotations.ApiStatus;
  * Utility class for storing and retrieving {@link Connection} objects from {@link ChannelHandlerContext} objects.
  */
 public class ConnectionUtils {
-
     private ConnectionUtils() {
         throw new IllegalStateException("Tried to create utility class!");
     }

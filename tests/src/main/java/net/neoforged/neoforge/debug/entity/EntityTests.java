@@ -83,57 +83,39 @@ public class EntityTests {
     }
 
     public static final class CustomComplexSpawnEntity extends Entity implements IEntityWithComplexSpawn {
-
         public CustomComplexSpawnEntity(EntityType<?> type, Level level) {
             super(type, level);
         }
 
         @Override
-        protected void defineSynchedData() {
-
-        }
+        protected void defineSynchedData() {}
 
         @Override
-        protected void readAdditionalSaveData(@NotNull CompoundTag tag) {
-
-        }
+        protected void readAdditionalSaveData(@NotNull CompoundTag tag) {}
 
         @Override
-        protected void addAdditionalSaveData(@NotNull CompoundTag tag) {
-
-        }
+        protected void addAdditionalSaveData(@NotNull CompoundTag tag) {}
 
         @Override
-        public void writeSpawnData(FriendlyByteBuf buffer) {
-
-        }
+        public void writeSpawnData(FriendlyByteBuf buffer) {}
 
         @Override
-        public void readSpawnData(FriendlyByteBuf additionalData) {
-
-        }
+        public void readSpawnData(FriendlyByteBuf additionalData) {}
     }
 
     public static final class AdaptedSpawnEntity extends Entity {
-
         public AdaptedSpawnEntity(EntityType<?> type, Level level) {
             super(type, level);
         }
 
         @Override
-        protected void defineSynchedData() {
-
-        }
+        protected void defineSynchedData() {}
 
         @Override
-        protected void readAdditionalSaveData(@NotNull CompoundTag tag) {
-
-        }
+        protected void readAdditionalSaveData(@NotNull CompoundTag tag) {}
 
         @Override
-        protected void addAdditionalSaveData(@NotNull CompoundTag tag) {
-
-        }
+        protected void addAdditionalSaveData(@NotNull CompoundTag tag) {}
 
         @Override
         public void sendPairingData(ServerPlayer serverPlayer, Consumer<CustomPacketPayload> bundleBuilder) {
@@ -142,29 +124,21 @@ public class EntityTests {
     }
 
     public static final class SimpleEntity extends Entity {
-
         public SimpleEntity(EntityType<?> type, Level level) {
             super(type, level);
         }
 
         @Override
-        protected void defineSynchedData() {
-
-        }
+        protected void defineSynchedData() {}
 
         @Override
-        protected void readAdditionalSaveData(@NotNull CompoundTag tag) {
-
-        }
+        protected void readAdditionalSaveData(@NotNull CompoundTag tag) {}
 
         @Override
-        protected void addAdditionalSaveData(@NotNull CompoundTag tag) {
-
-        }
+        protected void addAdditionalSaveData(@NotNull CompoundTag tag) {}
     }
 
     public record CustomSyncPayload() implements CustomPacketPayload {
-
         private static final ResourceLocation ID = new ResourceLocation("test", "custom_sync_payload");
 
         public CustomSyncPayload(FriendlyByteBuf buf) {

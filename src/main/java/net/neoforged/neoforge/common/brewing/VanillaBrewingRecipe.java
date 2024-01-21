@@ -16,7 +16,6 @@ import net.minecraft.world.item.alchemy.PotionBrewing;
  * Most of the code was simply adapted from net.minecraft.tileentity.TileEntityBrewingStand
  */
 public class VanillaBrewingRecipe implements IBrewingRecipe {
-
     /**
      * Code adapted from TileEntityBrewingStand.isItemValidForSlot(int index, ItemStack stack)
      */

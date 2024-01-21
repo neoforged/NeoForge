@@ -279,7 +279,6 @@ public class CompositeModel implements IUnbakedGeometry<CompositeModel> {
                 return new Baked(isGui3d, isSideLit, isAmbientOcclusion, particle, transforms, overrides, childrenBuilder.build(), itemPassesBuilder.build());
             }
         }
-
     }
 
     /**

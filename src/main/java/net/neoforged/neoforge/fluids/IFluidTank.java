@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
  * DO NOT ASSUME that these objects are used internally in all cases.
  */
 public interface IFluidTank {
-
     /**
      * @return FluidStack representing the fluid in the tank, null if the tank is empty.
      */
@@ -59,5 +58,4 @@ public interface IFluidTank {
      */
     @NotNull
     FluidStack drain(FluidStack resource, FluidAction action);
-
 }

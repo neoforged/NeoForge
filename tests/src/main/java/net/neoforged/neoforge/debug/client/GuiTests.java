@@ -67,10 +67,9 @@ public class GuiTests {
         }
 
         @Override
-        public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-            this.renderTransparentBackground(graphics);
+        public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            super.renderBackground(graphics, mouseX, mouseY, partialTicks);
             graphics.drawString(this.font, this.title, this.width / 2, 15, 0xFFFFFF);
-            super.render(graphics, mouseX, mouseY, partialTicks);
         }
 
         @Override

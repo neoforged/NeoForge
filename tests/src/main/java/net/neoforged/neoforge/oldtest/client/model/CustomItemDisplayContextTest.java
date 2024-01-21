@@ -144,7 +144,6 @@ public class CustomItemDisplayContextTest {
     }
 
     public static class BlockStateModels extends BlockStateProvider {
-
         public BlockStateModels(PackOutput output, ExistingFileHelper exFileHelper) {
             super(output, MODID, exFileHelper);
         }

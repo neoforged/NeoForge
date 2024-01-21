@@ -28,7 +28,6 @@ import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
  * match if the item's tags contain all of the elements of the provided one, while allowing for additional elements to exist.
  */
 public class NBTIngredient extends Ingredient {
-
     public static final Codec<NBTIngredient> CODEC = RecordCodecBuilder.create(
             builder -> builder
                     .group(

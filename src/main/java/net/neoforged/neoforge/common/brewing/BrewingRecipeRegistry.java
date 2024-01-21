@@ -13,7 +13,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public class BrewingRecipeRegistry {
-
     private static List<IBrewingRecipe> recipes = new ArrayList<IBrewingRecipe>();
 
     static {

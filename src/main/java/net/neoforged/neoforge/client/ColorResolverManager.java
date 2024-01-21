@@ -18,7 +18,6 @@ import org.jetbrains.annotations.ApiStatus;
  * Manager for custom {@link ColorResolver} instances, collected via {@link RegisterColorHandlersEvent.ColorResolvers}.
  */
 public final class ColorResolverManager {
-
     private static ImmutableList<ColorResolver> colorResolvers;
 
     @ApiStatus.Internal

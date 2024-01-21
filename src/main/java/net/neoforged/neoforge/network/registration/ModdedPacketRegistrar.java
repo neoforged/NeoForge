@@ -22,7 +22,6 @@ import net.neoforged.neoforge.network.handling.IPlayPayloadHandler;
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 class ModdedPacketRegistrar implements IPayloadRegistrar {
-
     private final String modId;
     private final Map<ResourceLocation, ConfigurationRegistration<?>> configurationPayloads;
     private final Map<ResourceLocation, PlayRegistration<?>> playPayloads;

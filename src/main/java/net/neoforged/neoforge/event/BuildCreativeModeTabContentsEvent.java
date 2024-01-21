@@ -10,17 +10,16 @@ import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
-import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Fired when the contents of a specific creative mode tab are being populated.
+ * Fired when the contents of a specific creative mode tab are being populated in {@link CreativeModeTab#buildContents(CreativeModeTab.ItemDisplayParameters)}.
+ * <p>
  * This event may be fired multiple times if the operator status of the local player or enabled feature flags changes.
  * <p>
- * This event is not {@linkplain net.neoforged.bus.api.ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
- * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.
+ * In vanilla, this is only fired on the logical client, but mods may request creative mode tab contents on the server.
  */
 public final class BuildCreativeModeTabContentsEvent extends Event implements IModBusEvent, CreativeModeTab.Output {
     private final CreativeModeTab tab;

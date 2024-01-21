@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.oldtest.misc;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
@@ -25,7 +24,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -75,7 +74,7 @@ public class ContainerTypeTest {
 
     public ContainerTypeTest(IEventBus modEventBus) {
         modEventBus.addListener(this::registerContainers);
-        modEventBus.addListener(this::setup);
+        modEventBus.addListener(this::registerMenuScreens);
         NeoForge.EVENT_BUS.addListener(this::onRightClick);
     }
 
@@ -83,8 +82,8 @@ public class ContainerTypeTest {
         event.register(Registries.MENU, helper -> helper.register(new ResourceLocation("containertypetest", "container"), IMenuTypeExtension.create(TestContainer::new)));
     }
 
-    private void setup(FMLClientSetupEvent event) {
-        MenuScreens.register(TYPE.get(), TestGui::new);
+    private void registerMenuScreens(RegisterMenuScreensEvent event) {
+        event.register(TYPE.get(), TestGui::new);
     }
 
     private void onRightClick(PlayerInteractEvent.RightClickBlock event) {

@@ -18,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 
 @ApiStatus.Internal
 public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable {
-
     private final ItemStack stack;
 
     private CompoundTag cachedTag;

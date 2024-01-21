@@ -51,7 +51,6 @@ import org.joml.Vector3f;
  * @param <T> Self type, for simpler chaining of methods.
  */
 public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
-
     @Nullable
     protected ModelFile parent;
     protected final Map<String, String> textures = new LinkedHashMap<>();
@@ -389,7 +388,6 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
     }
 
     public class ElementBuilder {
-
         private Vector3f from = new Vector3f();
         private Vector3f to = new Vector3f(16, 16, 16);
         private final Map<Direction, FaceBuilder> faces = new LinkedHashMap<>();
@@ -583,7 +581,6 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         }
 
         public class FaceBuilder {
-
             private Direction cullface;
             private int tintindex = -1;
             private String texture = MissingTextureAtlasSprite.getLocation().toString();
@@ -687,7 +684,6 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         }
 
         public class RotationBuilder {
-
             private Vector3f origin;
             private Direction.Axis axis;
             private float angle;
@@ -751,7 +747,6 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
     }
 
     public class TransformsBuilder {
-
         private final Map<ItemDisplayContext, TransformVecBuilder> transforms = new LinkedHashMap<>();
 
         /**
@@ -778,7 +773,6 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         }
 
         public class TransformVecBuilder {
-
             private Vector3f rotation = new Vector3f(ItemTransform.Deserializer.DEFAULT_ROTATION);
             private Vector3f translation = new Vector3f(ItemTransform.Deserializer.DEFAULT_TRANSLATION);
             private Vector3f scale = new Vector3f(ItemTransform.Deserializer.DEFAULT_SCALE);

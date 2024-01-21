@@ -13,7 +13,6 @@ import net.minecraft.server.MinecraftServer;
  * @author cpw
  */
 public class ServerStartedEvent extends ServerLifecycleEvent {
-
     public ServerStartedEvent(final MinecraftServer server) {
         super(server);
     }

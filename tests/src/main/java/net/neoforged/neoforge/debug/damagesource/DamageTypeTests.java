@@ -5,8 +5,10 @@
 
 package net.neoforged.neoforge.debug.damagesource;
 
+import java.util.Set;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
@@ -30,6 +32,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.damagesource.IDeathMessageProvider;
 import net.neoforged.neoforge.common.damagesource.IScalingFunction;
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -58,12 +61,12 @@ public class DamageTypeTests {
     public static final DamageScaling SCALING = DamageScaling.create("TEST_SCALING", "test:scaling", SCALE_FUNC);
     public static final DeathMessageType MSGTYPE = DeathMessageType.create("TEST_MSGTYPE", "test:msgtype", MSG_PROVIDER);
 
-    public static final ResourceKey<DamageType> TEST_DMG_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation("test", "test"));
-
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests if custom damage types function as expected")
     static void dmgTypeTests(final DynamicTest test, final RegistrationHelper reg) {
+        ResourceKey<DamageType> TEST_DMG_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(reg.modId(), "test"));
+
         Holder<Item> customSword = reg.registrar(Registries.ITEM).register("custom_damage_sword", () -> new Item(new Item.Properties()) {
             @Override
             public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
@@ -73,6 +76,17 @@ public class DamageTypeTests {
                 return true;
             }
         });
+
+        RegistrySetBuilder registrySetBuilder = new RegistrySetBuilder();
+        registrySetBuilder.add(Registries.DAMAGE_TYPE, bootstrap -> {
+            bootstrap.register(TEST_DMG_TYPE, new DamageType("test_mod", SCALING, 0.0f, EFFECTS, MSGTYPE));
+        });
+
+        reg.addProvider(event -> new DatapackBuiltinEntriesProvider(
+                event.getGenerator().getPackOutput(),
+                event.getLookupProvider(),
+                registrySetBuilder,
+                Set.of(reg.modId())));
 
         test.onGameTest(helper -> {
             Skeleton target = helper.spawnWithNoFreeWill(EntityType.SKELETON, 1, 1, 1);

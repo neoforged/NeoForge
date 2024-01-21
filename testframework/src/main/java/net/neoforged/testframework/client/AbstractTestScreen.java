@@ -337,5 +337,4 @@ public abstract class AbstractTestScreen extends Screen {
             }
         }
     }
-
 }

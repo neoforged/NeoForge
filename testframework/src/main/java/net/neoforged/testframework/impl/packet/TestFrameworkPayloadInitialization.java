@@ -14,10 +14,8 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record TestFrameworkPayloadInitialization(MutableTestFramework framework) {
-
     @SubscribeEvent
     public void onNetworkSetup(final RegisterPayloadHandlerEvent event) {
-
         final IPayloadRegistrar registrar = event.registrar(NeoForgeVersion.MOD_ID);
 
         registrar.play(ChangeStatusPayload.ID, buf -> ChangeStatusPayload.decode(framework, buf), (payload, context) -> context.workHandler().submitAsync(() -> payload.handle(context)));

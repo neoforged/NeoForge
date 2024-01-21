@@ -512,5 +512,4 @@ public class TestFrameworkImpl implements MutableTestFramework {
     public static String capitaliseWords(String string, String splitOn) {
         return Stream.of(string.split(splitOn)).map(StringUtils::capitalize).collect(Collectors.joining(" "));
     }
-
 }

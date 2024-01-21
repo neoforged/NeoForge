@@ -11,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 public class RecipeWrapper implements Container {
-
     protected final IItemHandlerModifiable inv;
 
     public RecipeWrapper(IItemHandlerModifiable inv) {
@@ -101,5 +100,4 @@ public class RecipeWrapper implements Container {
 
     @Override
     public void stopOpen(Player player) {}
-
 }

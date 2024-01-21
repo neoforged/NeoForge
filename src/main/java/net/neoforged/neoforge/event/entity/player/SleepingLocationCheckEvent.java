@@ -25,7 +25,6 @@ import net.neoforged.neoforge.event.entity.living.LivingEvent;
  */
 @HasResult
 public class SleepingLocationCheckEvent extends LivingEvent {
-
     private final BlockPos sleepingLocation;
 
     public SleepingLocationCheckEvent(LivingEntity player, BlockPos sleepingLocation) {

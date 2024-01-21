@@ -14,7 +14,6 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class NeoForgeEntityTypeTagsProvider extends EntityTypeTagsProvider {
-
     public NeoForgeEntityTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, "neoforge", existingFileHelper);
     }
