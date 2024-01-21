@@ -111,7 +111,6 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
@@ -133,7 +132,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
@@ -182,7 +180,6 @@ import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.event.level.BlockToolCheckEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -213,17 +210,8 @@ public class CommonHooks {
     }
 
     public static boolean isCorrectToolForDrops(@NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
-        if (level instanceof LevelAccessor accessor) { //TODO 1.20.5 change parameter to LevelAccessor, (BlockEvent expects a LevelAccessor, but HarvestCheck requires a BlockGetter)
-            BlockToolCheckEvent event = NeoForge.EVENT_BUS.post(new BlockToolCheckEvent(accessor, pos, state, player, player.getMainHandItem()));
-            if (event.getResult() != Event.Result.DEFAULT)
-                return event.getResult() == Event.Result.ALLOW;
-        }
-
-        //TODO 1.20.5 remove
-        if (!state.requiresCorrectToolForDrops())
-            return EventHooks.doPlayerHarvestCheck(player, state, true);
-
-        return player.hasCorrectToolForDrops(state);
+        PlayerEvent.HarvestCheck event = NeoForge.EVENT_BUS.post(new PlayerEvent.HarvestCheck(player, level, pos, state, !state.requiresCorrectToolForDrops()));
+        return event.canHarvest() || player.hasCorrectToolForDrops(state);
     }
 
     public static boolean onItemStackedOn(ItemStack carriedItem, ItemStack stackedOnItem, Slot slot, ClickAction action, Player player, SlotAccess carriedSlotAccess) {

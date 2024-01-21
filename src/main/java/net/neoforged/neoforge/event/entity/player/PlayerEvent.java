@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -50,31 +51,42 @@ public abstract class PlayerEvent extends LivingEvent {
     /**
      * HarvestCheck is fired when a player attempts to harvest a block.<br>
      * This event is fired whenever a player attempts to harvest a block in
-     * {@link Player#hasCorrectToolForDrops(BlockState)}.<br>
+     * {@link Player#hasCorrectToolForDrops(Level, BlockPos, BlockState)}.<br>
      * <br>
-     * This event is fired via the {@link EventHooks#doPlayerHarvestCheck(Player, BlockState, boolean)}.<br>
+     * This event is fired via the {@link net.neoforged.neoforge.common.CommonHooks#isCorrectToolForDrops(BlockGetter, BlockPos, BlockState, Player)} method.<br>
      * <br>
-     * {@link #state} contains the {@link BlockState} that is being checked for harvesting. <br>
-     * {@link #success} contains the boolean value for whether the Block will be successfully harvested. <br>
+     * {@link #level} contains the {@link BlockGetter} the check occurs in.<br>
+     * {@link #pos} contains the {@link BlockPos} the check occurs at.<br>
+     * {@link #state} contains the {@link BlockState} that is being checked for harvesting.<br>
      * <br>
      * This event is not {@link net.neoforged.bus.api.ICancellableEvent}.<br>
      * <br>
-     * This event does not have a result. {@link Event.HasResult}<br>
+     * This event has a {@link Result}.
+     * If the result is {@link Result#ALLOW}, the player is considered to be able to break the block.
+     * If the result is {@link Result#DENY}, the player is considered to be unable to break the block.
+     * If the result is {@link Result#DEFAULT}, further vanilla behavior will run.<br>
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.
-     * <br>
-     * 
-     * @deprecated use {@link net.neoforged.neoforge.event.level.BlockToolCheckEvent} instead
      **/
-    @Deprecated(forRemoval = true)
+    @HasResult
     public static class HarvestCheck extends PlayerEvent {
+        private final BlockGetter level;
+        private final BlockPos pos;
         private final BlockState state;
-        private boolean success;
 
-        public HarvestCheck(Player player, BlockState state, boolean success) {
+        public HarvestCheck(Player player, BlockGetter level, BlockPos pos, BlockState state) {
             super(player);
+            this.level = level;
+            this.pos = pos;
             this.state = state;
-            this.success = success;
+        }
+
+        public BlockGetter getLevel() {
+            return level;
+        }
+
+        public BlockPos getPos() {
+            return pos;
         }
 
         public BlockState getTargetBlock() {
@@ -82,11 +94,11 @@ public abstract class PlayerEvent extends LivingEvent {
         }
 
         public boolean canHarvest() {
-            return this.success;
+            return getResult() == Result.ALLOW;
         }
 
         public void setCanHarvest(boolean success) {
-            this.success = success;
+            setResult(success ? Result.ALLOW : Result.DENY);
         }
     }
 
