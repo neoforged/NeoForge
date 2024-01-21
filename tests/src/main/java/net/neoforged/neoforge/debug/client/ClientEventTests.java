@@ -39,10 +39,10 @@ public class ClientEventTests {
 
     @TestHolder(description = { "Tests if the RegisterRenderBuffersEvent event is fired and whether the registered render buffer is represented within a fixed render buffer map" }, enabledByDefault = true)
     static void registerRenderBuffersEvent(final DynamicTest test) {
-        test.eventListeners().mod().addListener((final RegisterRenderBuffersEvent event) -> {
+        test.framework().modEventBus().addListener((final RegisterRenderBuffersEvent event) -> {
             event.registerRenderBuffer(RenderType.lightning());
         });
-        test.eventListeners().mod().addListener((final RenderLevelStageEvent.RegisterStageEvent event) -> {
+        test.framework().modEventBus().addListener((final RenderLevelStageEvent.RegisterStageEvent event) -> {
             try {
                 var bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
                 var field = bufferSource.getClass().getDeclaredField("fixedBuffers");
