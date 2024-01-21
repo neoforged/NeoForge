@@ -12,11 +12,21 @@
                      Codec.INT.fieldOf("Count").forGetter(ItemStack::getCount),
 -                    CompoundTag.CODEC.optionalFieldOf("tag").forGetter(p_281115_ -> Optional.ofNullable(p_281115_.getTag()))
 +                    CompoundTag.CODEC.optionalFieldOf("tag").forGetter(p_281115_ -> Optional.ofNullable(p_281115_.getTag())),
-+                    ExtraCodecs.strictOptionalField(net.neoforged.neoforge.common.crafting.CraftingHelper.TAG_CODEC, ATTACHMENTS_NBT_KEY).forGetter(s -> Optional.ofNullable(s.serializeAttachments()))
++                    ExtraCodecs.strictOptionalField(CompoundTag.CODEC, ATTACHMENTS_NBT_KEY).forGetter(s -> Optional.ofNullable(s.serializeAttachments()))
                  )
                  .apply(p_311716_, ItemStack::new)
      );
-@@ -104,7 +_,9 @@
+@@ -97,14 +_,17 @@
+     public static final Codec<ItemStack> ADVANCEMENT_ICON_CODEC = RecordCodecBuilder.create(
+         p_311717_ -> p_311717_.group(
+                     BuiltInRegistries.ITEM.holderByNameCodec().fieldOf("item").forGetter(ItemStack::getItemHolder),
+-                    ExtraCodecs.strictOptionalField(TagParser.AS_CODEC, "nbt").forGetter(p_311718_ -> Optional.ofNullable(p_311718_.getTag()))
++                    ExtraCodecs.strictOptionalField(TagParser.AS_CODEC, "nbt").forGetter(p_311718_ -> Optional.ofNullable(p_311718_.getTag())),
++                    ExtraCodecs.strictOptionalField(TagParser.AS_CODEC, ATTACHMENTS_NBT_KEY).forGetter(s -> Optional.ofNullable(s.serializeAttachments()))
+                 )
+-                .apply(p_311717_, (p_311722_, p_311723_) -> new ItemStack(p_311722_, 1, p_311723_))
++                .apply(p_311717_, (p_311722_, p_311723_, attachments) -> new ItemStack(p_311722_, 1, p_311723_, attachments))
+     );
      public static final Codec<ItemStack> ITEM_WITH_COUNT_CODEC = RecordCodecBuilder.create(
          p_311720_ -> p_311720_.group(
                      ITEM_NON_AIR_CODEC.fieldOf("item").forGetter(ItemStack::getItem),
