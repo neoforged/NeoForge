@@ -217,7 +217,6 @@ public class LivingEntityEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the SlimeSplitEvent is fired")
     static void slimeSplitEvent(final DynamicTest test) {
-
         Set<Mob> childSlimes = new HashSet<>();
 
         test.eventListeners().forge().addListener((MobSplitEvent event) -> {
