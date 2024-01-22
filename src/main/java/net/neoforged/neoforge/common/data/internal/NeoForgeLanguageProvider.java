@@ -350,6 +350,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Biomes.IS_PLATEAU, "Plateaus");
         add(Tags.Biomes.IS_MODIFIED, "Modified");
         add(Tags.Biomes.IS_FLORAL, "Floral");
+        add(Tags.Biomes.IS_OLD_GROWTH, "Old Growth");
+        add(Tags.Biomes.IS_WINDSWEPT, "Windswept");
 
         add(Tags.Biomes.IS_WATER, "Water");
         add(Tags.Biomes.IS_DESERT, "Deserts");

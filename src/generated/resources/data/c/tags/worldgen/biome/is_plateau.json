@@ -1,9 +1,9 @@
 {
   "values": [
-    "minecraft:savanna_plateau",
     "minecraft:wooded_badlands",
-    "minecraft:meadow",
+    "minecraft:savanna_plateau",
     "minecraft:cherry_grove",
+    "minecraft:meadow",
     {
       "id": "#forge:is_plateau",
       "required": false

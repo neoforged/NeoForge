@@ -1,15 +1,16 @@
 {
   "values": [
-    "minecraft:windswept_forest",
+    "minecraft:wooded_badlands",
+    "minecraft:eroded_badlands",
     "minecraft:savanna",
     "minecraft:savanna_plateau",
-    "minecraft:wooded_badlands",
+    "minecraft:windswept_savanna",
+    "minecraft:windswept_forest",
+    "minecraft:windswept_hills",
+    "minecraft:windswept_gravelly_hills",
     "minecraft:snowy_slopes",
     "minecraft:jagged_peaks",
     "minecraft:frozen_peaks",
-    "minecraft:windswept_gravelly_hills",
-    "minecraft:windswept_savanna",
-    "minecraft:eroded_badlands",
     "minecraft:dripstone_caves",
     {
       "id": "#forge:is_sparse_vegetation/overworld",

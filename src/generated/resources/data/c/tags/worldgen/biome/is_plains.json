@@ -1,9 +1,9 @@
 {
   "values": [
     "minecraft:plains",
+    "minecraft:sunflower_plains",
     "minecraft:snowy_plains",
     "minecraft:meadow",
-    "minecraft:sunflower_plains",
     {
       "id": "#forge:is_plains",
       "required": false

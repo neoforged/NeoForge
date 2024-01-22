@@ -1,11 +1,11 @@
 {
   "values": [
-    "minecraft:savanna_plateau",
     "minecraft:wooded_badlands",
+    "minecraft:savanna_plateau",
+    "minecraft:cherry_grove",
     "minecraft:meadow",
     "minecraft:grove",
     "minecraft:snowy_slopes",
-    "minecraft:cherry_grove",
     {
       "id": "#forge:is_slope",
       "required": false

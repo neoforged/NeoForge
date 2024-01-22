@@ -340,6 +340,7 @@
   "tag.worldgen.biome.c.is_mountain.peak": "Peaks",
   "tag.worldgen.biome.c.is_mountain.slope": "Slopes",
   "tag.worldgen.biome.c.is_mushroom": "Mushrooms",
+  "tag.worldgen.biome.c.is_old_growth": "Old Growth",
   "tag.worldgen.biome.c.is_plains": "Plains",
   "tag.worldgen.biome.c.is_plateau": "Plateaus",
   "tag.worldgen.biome.c.is_rare": "Rare",
@@ -359,5 +360,6 @@
   "tag.worldgen.biome.c.is_wet.end": "Wet End",
   "tag.worldgen.biome.c.is_wet.nether": "Wet Nether",
   "tag.worldgen.biome.c.is_wet.overworld": "Wet Overworld",
+  "tag.worldgen.biome.c.is_windswept": "Windswept",
   "tag.worldgen.biome.c.no_default_monsters": "No Default Monsters"
 }

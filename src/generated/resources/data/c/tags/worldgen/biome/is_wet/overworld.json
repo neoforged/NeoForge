@@ -1,12 +1,12 @@
 {
   "values": [
     "minecraft:swamp",
+    "minecraft:mangrove_swamp",
     "minecraft:jungle",
+    "minecraft:bamboo_jungle",
     "minecraft:sparse_jungle",
     "minecraft:beach",
-    "minecraft:bamboo_jungle",
     "minecraft:lush_caves",
-    "minecraft:mangrove_swamp",
     {
       "id": "#forge:is_wet/overworld",
       "required": false
