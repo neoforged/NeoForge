@@ -19,7 +19,7 @@ NeoForge is a free, open-source modding API many of your favourite mods use!
 
 You can download the installer for the *Recommended Build* or the
  *Latest build* at [NeoForged]. Latest builds may have newer features but may be
- more unstable as a result. The installer will attempt to install Forge
+ more unstable as a result. The installer will attempt to install NeoForge
  into your vanilla launcher environment, where you can then create a new
  profile using that version and play the game!
  
