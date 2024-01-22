@@ -17,7 +17,5 @@ Contributor License Agreement
 - You grant NeoForged a license to use your code contributed to the primary codebase (everything **not** under patches) in NeoForge, under the LGPLv2.1 license.
 - You assign copyright ownership of your contributions to the patches codebase (everything under patches) to NeoForged, where it will be licensed under the LGPLv2.1 license.
 
-<br>
-
 [Wiki]:
 https://github.com/neoforged/NeoForge/wiki/***
