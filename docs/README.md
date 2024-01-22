@@ -48,9 +48,9 @@ Please ensure you have a valid email address associated with your GitHub account
  signed it, you should be OK.
 
 #### Donate
-*NeoForge is a large project with many collaborators working on it around the clock. It will always remain 
-free to use and modify. However, it costs money to run such a large project as this, so please consider visiting
-our opencollective.*
+*NeoForged is a large project with many collaborators working on it around the clock. It will always remain 
+free to use and modify. However, it costs money to run such a large project as this, so please consider donating to
+NeoForged in the future when donations are being accepted.*
 
 [Contributing]: ./CONTRIBUTING.md
 [CLA]: https://cla-assistant.io/neoforged/NeoForge
