@@ -20,7 +20,7 @@
                 this.m_170323_();
              }
  
-+            if (this.f_101693_.f_91080_ instanceof ProgressScreen) // Neo - fix MC-251068
++            if (this.f_101693_.f_91080_ instanceof ProgressScreen || this.f_101693_.f_91080_ instanceof ConfirmScreen) // Neo - fix MC-251068
              this.f_101693_.m_91152_(this.f_101694_);
           }, Component.m_237115_("selectWorld.deleteQuestion"), Component.m_237110_("selectWorld.deleteWarning", this.f_101695_.m_78361_()), Component.m_237115_("selectWorld.deleteButton"), CommonComponents.f_130656_));
        }
