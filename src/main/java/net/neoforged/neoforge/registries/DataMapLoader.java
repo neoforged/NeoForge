@@ -135,7 +135,7 @@ public class DataMapLoader implements PreparableReloadListener {
                 final ResourceLocation attachmentId = fileToId.fileToId(key);
                 final var attachment = RegistryManager.getDataMap((ResourceKey) registryKey, attachmentId);
                 if (attachment == null) {
-                    LOGGER.warn("Found data map file for inexistent data map type '{}' on registry '{}'.", attachmentId, registryKey.location());
+                    LOGGER.warn("Found data map file for non-existent data map type '{}' on registry '{}'.", attachmentId, registryKey.location());
                     continue;
                 }
                 profiler.popPush("registry_data_maps/" + registryKey.location() + "/" + attachmentId + "/loading");
