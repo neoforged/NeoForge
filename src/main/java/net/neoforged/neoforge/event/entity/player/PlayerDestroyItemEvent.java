@@ -19,7 +19,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.EventHooks;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -47,18 +46,16 @@ import org.jetbrains.annotations.Nullable;
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class PlayerDestroyItemEvent extends PlayerEvent {
-    @NotNull
     private final ItemStack original;
     @Nullable
     private final InteractionHand hand; // May be null if this player destroys the item by any use besides holding it.
 
-    public PlayerDestroyItemEvent(Player player, @NotNull ItemStack original, @Nullable InteractionHand hand) {
+    public PlayerDestroyItemEvent(Player player, ItemStack original, @Nullable InteractionHand hand) {
         super(player);
         this.original = original;
         this.hand = hand;
     }
 
-    @NotNull
     public ItemStack getOriginal() {
         return this.original;
     }

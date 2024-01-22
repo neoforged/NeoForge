@@ -14,7 +14,6 @@ import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -23,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
  * without evaluating the biome info if it's accessed outside of a server context.
  */
 public class ModifiableBiomeInfo {
-    @NotNull
     private final BiomeInfo originalBiomeInfo;
     @Nullable
     private BiomeInfo modifiedBiomeInfo = null;
@@ -31,14 +29,13 @@ public class ModifiableBiomeInfo {
     /**
      * @param originalBiomeInfo BiomeInfo representing the original state of a biome when the biome was constructed.
      */
-    public ModifiableBiomeInfo(@NotNull final BiomeInfo originalBiomeInfo) {
+    public ModifiableBiomeInfo(final BiomeInfo originalBiomeInfo) {
         this.originalBiomeInfo = originalBiomeInfo;
     }
 
     /**
      * {@return The modified biome info if modified biome info has been generated, otherwise gets original biome info}
      */
-    @NotNull
     public BiomeInfo get() {
         return this.modifiedBiomeInfo == null
                 ? originalBiomeInfo
@@ -48,7 +45,6 @@ public class ModifiableBiomeInfo {
     /**
      * {@return The original biome info that the associated biome was created with}
      */
-    @NotNull
     public BiomeInfo getOriginalBiomeInfo() {
         return this.originalBiomeInfo;
     }

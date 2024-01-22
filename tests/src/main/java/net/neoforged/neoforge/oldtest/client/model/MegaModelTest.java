@@ -44,7 +44,6 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -130,7 +129,7 @@ public class MegaModelTest {
             }
 
             @Override
-            public @NotNull ModelData getModelData() {
+            public ModelData getModelData() {
                 return ModelData.builder().with(TestData.PROPERTY, new TestData(new Transformation(
                         new Vector3f(0, y * 0.2f, 0),
                         new Quaternionf(1f, 1f, 1f, 1f),
@@ -150,7 +149,7 @@ public class MegaModelTest {
         }
 
         @Override
-        public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData data, @Nullable RenderType renderType) {
+        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand, ModelData data, @Nullable RenderType renderType) {
             var quads = super.getQuads(state, side, rand, data, renderType);
             if (!data.has(TestData.PROPERTY))
                 return quads;

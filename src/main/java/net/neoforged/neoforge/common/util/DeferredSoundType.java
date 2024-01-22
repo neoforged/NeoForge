@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * A subclass of {@link SoundType} that uses {@link Supplier<SoundEvent>}s.
@@ -48,31 +47,26 @@ public class DeferredSoundType extends SoundType {
         this.fallSound = fallSoundIn;
     }
 
-    @NotNull
     @Override
     public SoundEvent getBreakSound() {
         return breakSound.get();
     }
 
-    @NotNull
     @Override
     public SoundEvent getStepSound() {
         return stepSound.get();
     }
 
-    @NotNull
     @Override
     public SoundEvent getPlaceSound() {
         return placeSound.get();
     }
 
-    @NotNull
     @Override
     public SoundEvent getHitSound() {
         return hitSound.get();
     }
 
-    @NotNull
     @Override
     public SoundEvent getFallSound() {
         return fallSound.get();

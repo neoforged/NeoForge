@@ -10,7 +10,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Flexible implementation of a Fluid Storage object. NOT REQUIRED.
@@ -19,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class FluidTank implements IFluidHandler, IFluidTank {
     protected Predicate<FluidStack> validator;
-    @NotNull
     protected FluidStack fluid = FluidStack.EMPTY;
     protected int capacity;
 
@@ -52,7 +50,6 @@ public class FluidTank implements IFluidHandler, IFluidTank {
         return capacity;
     }
 
-    @NotNull
     public FluidStack getFluid() {
         return fluid;
     }
@@ -78,7 +75,6 @@ public class FluidTank implements IFluidHandler, IFluidTank {
         return 1;
     }
 
-    @NotNull
     @Override
     public FluidStack getFluidInTank(int tank) {
         return getFluid();
@@ -90,7 +86,7 @@ public class FluidTank implements IFluidHandler, IFluidTank {
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+    public boolean isFluidValid(int tank, FluidStack stack) {
         return isFluidValid(stack);
     }
 
@@ -129,7 +125,6 @@ public class FluidTank implements IFluidHandler, IFluidTank {
         return filled;
     }
 
-    @NotNull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
         if (resource.isEmpty() || !resource.isFluidEqual(fluid)) {
@@ -138,7 +133,6 @@ public class FluidTank implements IFluidHandler, IFluidTank {
         return drain(resource.getAmount(), action);
     }
 
-    @NotNull
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         int drained = maxDrain;

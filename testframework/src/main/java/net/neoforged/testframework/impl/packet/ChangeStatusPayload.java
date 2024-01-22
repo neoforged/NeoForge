@@ -14,7 +14,6 @@ import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.impl.MutableTestFramework;
-import org.jetbrains.annotations.NotNull;
 
 public record ChangeStatusPayload(MutableTestFramework framework, String testId, Test.Status status) implements CustomPacketPayload {
 
@@ -27,7 +26,7 @@ public record ChangeStatusPayload(MutableTestFramework framework, String testId,
     }
 
     @Override
-    public @NotNull ResourceLocation id() {
+    public ResourceLocation id() {
         return ID;
     }
 

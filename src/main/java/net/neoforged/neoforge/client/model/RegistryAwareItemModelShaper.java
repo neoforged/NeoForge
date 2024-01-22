@@ -15,7 +15,6 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -50,7 +49,7 @@ public class RegistryAwareItemModelShaper extends ItemModelShaper {
         }
     }
 
-    public ModelResourceLocation getLocation(@NotNull ItemStack stack) {
+    public ModelResourceLocation getLocation(ItemStack stack) {
         ModelResourceLocation location = locations.get(stack.getItem());
         return location == null ? ModelBakery.MISSING_MODEL_LOCATION : location;
     }

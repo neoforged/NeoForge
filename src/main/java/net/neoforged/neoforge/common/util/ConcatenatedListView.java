@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Spliterator;
 import java.util.function.Supplier;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * A list that concatenates multiple other lists for efficient iteration.<p/>
@@ -103,7 +102,6 @@ public class ConcatenatedListView<T> implements List<T> {
         return -1;
     }
 
-    @NotNull
     @Override
     public Iterator<T> iterator() {
         return Iterables.unmodifiableIterable(Iterables.concat(lists)).iterator();
@@ -122,20 +120,18 @@ public class ConcatenatedListView<T> implements List<T> {
         return concat;
     }
 
-    @NotNull
     @Override
     public Object[] toArray() {
         return concatenate(ArrayList::new).toArray();
     }
 
-    @NotNull
     @Override
-    public <T1> T1[] toArray(@NotNull T1[] a) {
+    public <T1> T1[] toArray(T1[] a) {
         return concatenate(ArrayList::new).toArray(a);
     }
 
     @Override
-    public boolean containsAll(@NotNull Collection<?> c) {
+    public boolean containsAll(Collection<?> c) {
         return concatenate(HashSet::new).containsAll(c);
     }
 
@@ -156,12 +152,12 @@ public class ConcatenatedListView<T> implements List<T> {
     }
 
     @Override
-    public boolean addAll(@NotNull Collection<? extends T> c) {
+    public boolean addAll(Collection<? extends T> c) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean addAll(int index, @NotNull Collection<? extends T> c) {
+    public boolean addAll(int index, Collection<? extends T> c) {
         throw new UnsupportedOperationException();
     }
 
@@ -176,12 +172,12 @@ public class ConcatenatedListView<T> implements List<T> {
     }
 
     @Override
-    public boolean removeAll(@NotNull Collection<?> c) {
+    public boolean removeAll(Collection<?> c) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean retainAll(@NotNull Collection<?> c) {
+    public boolean retainAll(Collection<?> c) {
         throw new UnsupportedOperationException();
     }
 
@@ -191,19 +187,17 @@ public class ConcatenatedListView<T> implements List<T> {
     }
 
     // Other unsupported operations - we could support these, but effort
-    @NotNull
+
     @Override
     public ListIterator<T> listIterator() {
         throw new UnsupportedOperationException();
     }
 
-    @NotNull
     @Override
     public ListIterator<T> listIterator(int index) {
         throw new UnsupportedOperationException();
     }
 
-    @NotNull
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
         throw new UnsupportedOperationException();

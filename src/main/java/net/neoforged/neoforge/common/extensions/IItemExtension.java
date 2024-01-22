@@ -46,7 +46,6 @@ import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 // TODO systemic review of all extension functions. lots of unused -C
@@ -699,8 +698,8 @@ public interface IItemExtension {
      * @param target the entity targeted by the attack.
      * @return the bounding box.
      */
-    @NotNull
-    default AABB getSweepHitBox(@NotNull ItemStack stack, @NotNull Player player, @NotNull Entity target) {
+
+    default AABB getSweepHitBox(ItemStack stack, Player player, Entity target) {
         return target.getBoundingBox().inflate(1.0D, 0.25D, 1.0D);
     }
 
@@ -711,7 +710,7 @@ public interface IItemExtension {
      * @param stack the stack
      * @return the default hide flags
      */
-    default int getDefaultTooltipHideFlags(@NotNull ItemStack stack) {
+    default int getDefaultTooltipHideFlags(ItemStack stack) {
         return 0;
     }
 

@@ -17,7 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** Ingredient that matches if any of the child ingredients match */
@@ -85,7 +84,6 @@ public class CompoundIngredient extends Ingredient {
         return synchronizeWithContents;
     }
 
-    @NotNull
     public List<Ingredient> getChildren() {
         return this.children;
     }

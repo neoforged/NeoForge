@@ -7,7 +7,6 @@ package net.neoforged.neoforge.fluids.capability.templates;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * VoidFluidHandler is a template fluid handler that can be filled indefinitely without ever getting full.
@@ -23,7 +22,6 @@ public class VoidFluidHandler implements IFluidHandler {
         return 1;
     }
 
-    @NotNull
     @Override
     public FluidStack getFluidInTank(int tank) {
         return FluidStack.EMPTY;
@@ -35,7 +33,7 @@ public class VoidFluidHandler implements IFluidHandler {
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+    public boolean isFluidValid(int tank, FluidStack stack) {
         return true;
     }
 
@@ -44,13 +42,11 @@ public class VoidFluidHandler implements IFluidHandler {
         return resource.getAmount();
     }
 
-    @NotNull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
         return FluidStack.EMPTY;
     }
 
-    @NotNull
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         return FluidStack.EMPTY;

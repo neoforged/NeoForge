@@ -30,7 +30,6 @@ import net.neoforged.fml.StartupMessageManager;
 import net.neoforged.fml.earlydisplay.ColourScheme;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.progress.ProgressMeter;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL30C;
 
@@ -66,7 +65,7 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
     }
 
     @Override
-    public void render(final @NotNull GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTick) {
+    public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTick) {
         long millis = Util.getMillis();
         float fadeouttimer = this.fadeOutStart > -1L ? (float) (millis - this.fadeOutStart) / 1000.0F : -1.0F;
         this.currentProgress = Mth.clamp(this.currentProgress * 0.95F + this.reload.getActualProgress() * 0.05F, 0.0F, 1.0F);

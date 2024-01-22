@@ -10,7 +10,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Helper class to define a custom tier
@@ -21,13 +20,13 @@ public final class SimpleTier implements Tier {
     private final float speed;
     private final float attackDamageBonus;
     private final int enchantmentValue;
-    @NotNull
+
     private final TagKey<Block> tag;
-    @NotNull
+
     private final Supplier<Ingredient> repairIngredient;
 
     public SimpleTier(int level, int uses, float speed, float attackDamageBonus, int enchantmentValue,
-            @NotNull TagKey<Block> tag, @NotNull Supplier<Ingredient> repairIngredient) {
+            TagKey<Block> tag, Supplier<Ingredient> repairIngredient) {
         this.level = level;
         this.uses = uses;
         this.speed = speed;
@@ -62,12 +61,10 @@ public final class SimpleTier implements Tier {
         return this.enchantmentValue;
     }
 
-    @NotNull
     public TagKey<Block> getTag() {
         return this.tag;
     }
 
-    @NotNull
     @Override
     public Ingredient getRepairIngredient() {
         return this.repairIngredient.get();

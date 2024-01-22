@@ -5,21 +5,24 @@
 
 package net.neoforged.neoforge.client;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import java.util.function.Function;
-import java.util.function.Supplier;
+
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderStateShard.OutputStateShard;
 import net.minecraft.client.renderer.RenderStateShard.TextureStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.util.NonNullLazy;
-import net.neoforged.neoforge.common.util.NonNullSupplier;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.common.util.Lazy;
 
 @SuppressWarnings("deprecation")
 public enum NeoForgeRenderTypes {
@@ -146,11 +149,11 @@ public enum NeoForgeRenderTypes {
     //  Implementation details below this line
     // ----------------------------------------
 
-    private final NonNullSupplier<RenderType> renderTypeSupplier;
+    private final Supplier<RenderType> renderTypeSupplier;
 
-    NeoForgeRenderTypes(NonNullSupplier<RenderType> renderTypeSupplier) {
+    NeoForgeRenderTypes(Supplier<RenderType> renderTypeSupplier) {
         // Wrap in a Lazy<> to avoid running the supplier more than once.
-        this.renderTypeSupplier = NonNullLazy.of(renderTypeSupplier);
+        this.renderTypeSupplier = Lazy.of(renderTypeSupplier);
     }
 
     public RenderType get() {

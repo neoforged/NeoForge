@@ -27,7 +27,6 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.registration.RegistrationHelper;
-import org.jetbrains.annotations.NotNull;
 
 @ForEachTest(groups = EntityTests.GROUP)
 public class EntityTests {
@@ -91,10 +90,10 @@ public class EntityTests {
         protected void defineSynchedData() {}
 
         @Override
-        protected void readAdditionalSaveData(@NotNull CompoundTag tag) {}
+        protected void readAdditionalSaveData(CompoundTag tag) {}
 
         @Override
-        protected void addAdditionalSaveData(@NotNull CompoundTag tag) {}
+        protected void addAdditionalSaveData(CompoundTag tag) {}
 
         @Override
         public void writeSpawnData(FriendlyByteBuf buffer) {}
@@ -112,10 +111,10 @@ public class EntityTests {
         protected void defineSynchedData() {}
 
         @Override
-        protected void readAdditionalSaveData(@NotNull CompoundTag tag) {}
+        protected void readAdditionalSaveData(CompoundTag tag) {}
 
         @Override
-        protected void addAdditionalSaveData(@NotNull CompoundTag tag) {}
+        protected void addAdditionalSaveData(CompoundTag tag) {}
 
         @Override
         public void sendPairingData(ServerPlayer serverPlayer, Consumer<CustomPacketPayload> bundleBuilder) {
@@ -132,10 +131,10 @@ public class EntityTests {
         protected void defineSynchedData() {}
 
         @Override
-        protected void readAdditionalSaveData(@NotNull CompoundTag tag) {}
+        protected void readAdditionalSaveData(CompoundTag tag) {}
 
         @Override
-        protected void addAdditionalSaveData(@NotNull CompoundTag tag) {}
+        protected void addAdditionalSaveData(CompoundTag tag) {}
     }
 
     public record CustomSyncPayload() implements CustomPacketPayload {
@@ -146,10 +145,10 @@ public class EntityTests {
         }
 
         @Override
-        public void write(@NotNull FriendlyByteBuf buf) {}
+        public void write(FriendlyByteBuf buf) {}
 
         @Override
-        public @NotNull ResourceLocation id() {
+        public ResourceLocation id() {
             return ID;
         }
     }

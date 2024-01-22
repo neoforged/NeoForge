@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.common.util;
 
 import java.util.function.Supplier;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -20,7 +19,7 @@ public interface Lazy<T> extends Supplier<T> {
      * 
      * @param supplier The supplier for the value, to be called the first time the value is needed.
      */
-    static <T> Lazy<T> of(@NotNull Supplier<T> supplier) {
+    static <T> Lazy<T> of(Supplier<T> supplier) {
         return new Lazy.Fast<>(supplier);
     }
 
@@ -29,7 +28,7 @@ public interface Lazy<T> extends Supplier<T> {
      * 
      * @param supplier The supplier for the value, to be called the first time the value is needed.
      */
-    static <T> Lazy<T> concurrentOf(@NotNull Supplier<T> supplier) {
+    static <T> Lazy<T> concurrentOf(Supplier<T> supplier) {
         return new Lazy.Concurrent<>(supplier);
     }
 

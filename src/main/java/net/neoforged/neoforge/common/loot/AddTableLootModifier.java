@@ -15,7 +15,6 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * <p>Loot modifier that rolls one loot table (the "subtable" and adds the results to the loot being modified (the "target table").
@@ -56,7 +55,7 @@ public class AddTableLootModifier extends LootModifier {
 
     @SuppressWarnings("deprecation")
     @Override
-    protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
+    protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         LootTable extraTable = context.getResolver().getLootTable(this.table);
         // Don't run loot modifiers for subtables;
         // the added loot will be modifiable by downstream loot modifiers modifying the target table,
