@@ -15,7 +15,6 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public final class DebuggingHelper {
-
     private DebuggingHelper() {
         throw new IllegalStateException("Tried to create utility class!");
     }

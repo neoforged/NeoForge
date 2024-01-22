@@ -19,7 +19,6 @@ import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
  * To add trades to the merchant, simply add new trades to the list. {@link BasicItemListing} provides a default implementation.
  */
 public class WandererTradesEvent extends Event {
-
     protected List<ItemListing> generic;
     protected List<ItemListing> rare;
 

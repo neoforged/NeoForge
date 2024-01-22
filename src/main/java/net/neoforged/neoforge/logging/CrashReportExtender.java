@@ -24,7 +24,6 @@ import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.logging.log4j.Logger;
 
 public class CrashReportExtender {
-
     public static void extendSystemReport(final SystemReport systemReport) {
         for (final ISystemReportExtender call : CrashReportCallables.allCrashCallables()) {
             if (call.isActive()) {

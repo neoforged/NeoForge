@@ -185,5 +185,4 @@ public class BlockSnapshot {
     public CompoundTag getTag() {
         return nbt;
     }
-
 }

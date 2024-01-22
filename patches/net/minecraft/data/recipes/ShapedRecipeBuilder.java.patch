@@ -1,0 +1,47 @@
+--- a/net/minecraft/data/recipes/ShapedRecipeBuilder.java
++++ b/net/minecraft/data/recipes/ShapedRecipeBuilder.java
+@@ -25,6 +_,7 @@
+     private final RecipeCategory category;
+     private final Item result;
+     private final int count;
++    private final ItemStack resultStack; // Neo: add stack result support
+     private final List<String> rows = Lists.newArrayList();
+     private final Map<Character, Ingredient> key = Maps.newLinkedHashMap();
+     private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
+@@ -33,9 +_,14 @@
+     private boolean showNotification = true;
+ 
+     public ShapedRecipeBuilder(RecipeCategory p_249996_, ItemLike p_251475_, int p_248948_) {
++        this(p_249996_, new ItemStack(p_251475_, p_248948_));
++    }
++
++    public ShapedRecipeBuilder(RecipeCategory p_249996_, ItemStack result) {
+         this.category = p_249996_;
+-        this.result = p_251475_.asItem();
+-        this.count = p_248948_;
++        this.result = result.getItem();
++        this.count = result.getCount();
++        this.resultStack = result;
+     }
+ 
+     public static ShapedRecipeBuilder shaped(RecipeCategory p_250853_, ItemLike p_249747_) {
+@@ -46,6 +_,10 @@
+         return new ShapedRecipeBuilder(p_251325_, p_250636_, p_249081_);
+     }
+ 
++    public static ShapedRecipeBuilder shaped(RecipeCategory p_251325_, ItemStack result) {
++        return new ShapedRecipeBuilder(p_251325_, result);
++    }
++
+     public ShapedRecipeBuilder define(Character p_206417_, TagKey<Item> p_206418_) {
+         return this.define(p_206417_, Ingredient.of(p_206418_));
+     }
+@@ -106,7 +_,7 @@
+             Objects.requireNonNullElse(this.group, ""),
+             RecipeBuilder.determineBookCategory(this.category),
+             shapedrecipepattern,
+-            new ItemStack(this.result, this.count),
++            this.resultStack,
+             this.showNotification
+         );
+         p_301098_.accept(p_126142_, shapedrecipe, advancement$builder.build(p_126142_.withPrefix("recipes/" + this.category.getFolderName() + "/")));

@@ -67,5 +67,4 @@ public class PlayerDestroyItemEvent extends PlayerEvent {
     public InteractionHand getHand() {
         return this.hand;
     }
-
 }

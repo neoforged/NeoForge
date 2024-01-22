@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public class TableRow<T> {
-
     private final List<T> columns;
 
     public TableRow() {
@@ -49,5 +48,4 @@ public class TableRow<T> {
     public List<T> getColumns() {
         return columns;
     }
-
 }

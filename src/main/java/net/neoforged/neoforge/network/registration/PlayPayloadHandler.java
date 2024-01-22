@@ -21,7 +21,6 @@ import org.jetbrains.annotations.Nullable;
  */
 @ApiStatus.Internal
 final class PlayPayloadHandler<T extends CustomPacketPayload> implements IPlayPayloadHandler<T> {
-
     @Nullable
     private final IPlayPayloadHandler<T> clientSide;
     @Nullable

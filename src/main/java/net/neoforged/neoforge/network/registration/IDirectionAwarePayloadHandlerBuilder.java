@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
  * @param <T> The type of handler.
  */
 public interface IDirectionAwarePayloadHandlerBuilder<P extends CustomPacketPayload, T> {
-
     /**
      * Sets the client side handler.
      *

@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 public record ChangeEnabledPayload(MutableTestFramework framework, String testId, boolean enabled) implements CustomPacketPayload {
 
     public static final ResourceLocation ID = new ResourceLocation("neoforge", "tf_change_enabled");
-
     public void handle(PlayPayloadContext context) {
         switch (context.flow().getReceptionSide()) {
             case CLIENT -> {

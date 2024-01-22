@@ -24,7 +24,6 @@ public record ModdedNetworkPayload(Set<ModdedNetworkComponent> configuration, Se
 
     public static final ResourceLocation ID = new ResourceLocation("network");
     public static final FriendlyByteBuf.Reader<? extends CustomPacketPayload> READER = ModdedNetworkPayload::new;
-
     public ModdedNetworkPayload(FriendlyByteBuf buf) {
         this(buf.readCollection(HashSet::new, ModdedNetworkComponent::new), buf.readCollection(HashSet::new, ModdedNetworkComponent::new));
     }

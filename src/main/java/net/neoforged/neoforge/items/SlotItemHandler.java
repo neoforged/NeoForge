@@ -51,9 +51,7 @@ public class SlotItemHandler extends Slot {
     }
 
     @Override
-    public void onQuickCraft(@NotNull ItemStack oldStackIn, @NotNull ItemStack newStackIn) {
-
-    }
+    public void onQuickCraft(@NotNull ItemStack oldStackIn, @NotNull ItemStack newStackIn) {}
 
     @Override
     public int getMaxStackSize() {

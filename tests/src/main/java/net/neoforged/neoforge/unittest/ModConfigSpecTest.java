@@ -152,7 +152,6 @@ public class ModConfigSpecTest {
     }
 
     private final static class TestResult {
-
         private final Stopwatch enabledWatch;
         private final Stopwatch disabledWatch;
 

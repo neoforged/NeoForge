@@ -22,7 +22,6 @@ import org.jetbrains.annotations.ApiStatus;
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class CalculatePlayerTurnEvent extends Event {
-
     private double mouseSensitivity;
     private boolean cinematicCameraEnabled;
 
@@ -63,5 +62,4 @@ public class CalculatePlayerTurnEvent extends Event {
     public void setCinematicCameraEnabled(boolean cinematicCameraEnabled) {
         this.cinematicCameraEnabled = cinematicCameraEnabled;
     }
-
 }

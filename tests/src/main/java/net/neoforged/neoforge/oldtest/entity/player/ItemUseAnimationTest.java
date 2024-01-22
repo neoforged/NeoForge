@@ -32,7 +32,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  */
 @Mod(ItemUseAnimationTest.MOD_ID)
 public class ItemUseAnimationTest {
-
     public static final String MOD_ID = "item_use_animation_test";
 
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
@@ -50,7 +49,6 @@ public class ItemUseAnimationTest {
     }
 
     private static class ThingItem extends Item {
-
         public ThingItem(Item.Properties props) {
             super(props);
         }
@@ -63,7 +61,6 @@ public class ItemUseAnimationTest {
         @Override
         public void initializeClient(Consumer<IClientItemExtensions> consumer) {
             consumer.accept(new IClientItemExtensions() {
-
                 private static final HumanoidModel.ArmPose SWING_POSE = HumanoidModel.ArmPose.create("SWING", false, (model, entity, arm) -> {
                     if (arm == HumanoidArm.RIGHT) {
                         model.rightArm.xRot = (float) (Math.random() * Math.PI * 2);
@@ -101,5 +98,4 @@ public class ItemUseAnimationTest {
             });
         }
     }
-
 }
