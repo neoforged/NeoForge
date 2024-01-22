@@ -235,5 +235,5 @@
   "neoforge.network.registries.sync.missing": "未从服务器收到所有预期的注册表！（缺失：%s）",
   "neoforge.network.registries.sync.server-with-unknown-keys": "服务器发送含有未知键的注册表：%s",
   "neoforge.network.registries.sync.failed": "从服务器同步注册表失败：%s",
-  "neoforge.network.aux_light_data.failed": "无法处理区块 %s 的辅助光线数据: %s"
+  "neoforge.network.aux_light_data.failed": "无法处理区块 %s 的辅助光线数据：%s"
 }
