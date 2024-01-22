@@ -169,14 +169,19 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          *
          * @param skinName the name of the skin to get the renderer for
          * @param <R>      the type of the skin renderer, usually {@link PlayerRenderer}
-         * @return the skin renderer, or {@code null} if no renderer is registered for that skin name
+         * @return the skin renderer, or {@code null} if no {@link LivingEntityRenderer} is registered for that skin name
          * @see #getSkins()
          */
         @Nullable
         @SuppressWarnings("unchecked")
         public <R extends LivingEntityRenderer<? extends Player, ? extends EntityModel<? extends Player>>> R getSkin(String skinName)
         {
-            return (R) skinMap.get(skinName);
+            var entityRenderer = skinMap.get(skinName);
+            if (entityRenderer instanceof LivingEntityRenderer<?,?>) {
+                return (R)entityRenderer;
+            } else {
+                return null;
+            }
         }
 
         /**
@@ -185,13 +190,18 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          * @param entityType the entity type to return a renderer for
          * @param <T>        the type of entity the renderer is for
          * @param <R>        the type of the renderer
-         * @return the renderer, or {@code null} if no renderer is registered for that entity type
+         * @return the renderer, or {@code null} if no {@link LivingEntityRenderer} is registered for that entity type
          */
         @Nullable
         @SuppressWarnings("unchecked")
         public <T extends LivingEntity, R extends LivingEntityRenderer<T, ? extends EntityModel<T>>> R getRenderer(EntityType<? extends T> entityType)
         {
-            return (R) renderers.get(entityType);
+            var entityRenderer = renderers.get(entityType);
+            if (entityRenderer instanceof LivingEntityRenderer<?,?>) {
+                return (R)entityRenderer;
+            } else {
+                return null;
+            }
         }
 
         /**
