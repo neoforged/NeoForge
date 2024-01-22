@@ -27,7 +27,7 @@ Identifying the Source of a Problem
 
 You're most likely to get fast and valuable responses to your issues if you report them in the correct place. For this, you need to find the root cause of the problem.
 
-The most important source for this information are the log files NeoForge creates for every run of the game. You can find them in the `logs` subdirectory of your Minecraft game directory. The most important log file is `latest.log` which contains all of Forge's and any mod's output for `info` of above. `debug.log` contains all the logs in `latest.log` plus the `debug` logs for more detailed debugging.
+The most important source for this information are the log files NeoForge creates for every run of the game. You can find them in the `logs` subdirectory of your Minecraft game directory. The most important log file is `latest.log` which contains all of NeoForge's and any mod's output for `info` of above. `debug.log` contains all the logs in `latest.log` plus the `debug` logs for more detailed debugging.
 
 If you're faced by a crash, consult these logs files first. Near the end of the log should be a section labelled 'Minecraft Crash Report', and after it, one about `a detailed walkthrough of the error, ...`. In these sections, you'll see a bunch of lines that look like
 
@@ -43,12 +43,12 @@ You can generally tell pretty quickly what caused the error at the head of your 
 
  1. If you can find the name of a mod in the trace, that mod most likely is the culprit.
     - Be aware that you may find multiple mods as participants of a crash. In that case, you can either report to both or try to reason (using the names in the stacktrace) about which mod is at fault.
- 2. If you can only find NeoForge (usually starting with `net.minecraftforge`) alongside Vanilla (usually starting with `net.minecraft`) references, chances are that you have found a bug in NeoForge. In this case, use one of the various [support channels](#neoforge-support) listed below.
-    - The occurrence of a single call to NeoForge somewhere in the stacktrace *does not* warrant a report to Forge if there are mods present in the crash report.
- 3. If there's no mention of Forge or a mod, but any Vanilla class, you might have found a Vanilla bug. You should probably still report it via the NeoForge channels first, however, due the nature of modded environments and the rarity of Vanilla crash bugs.
+ 2. If you can only find NeoForge (usually starting with `net.neoforged`) alongside vanilla (usually starting with `net.minecraft`) references, chances are that you have found a bug in NeoForge. In this case, use one of the various [support channels](#neoforge-support) listed below.
+    - The occurrence of a single call to NeoForge somewhere in the stacktrace *does not* warrant a report to NeoForge if there are mods present in the crash report.
+ 3. If there's no mention of NeoForge or a mod, but any vanilla class, you might have found a vanilla bug. You should probably still report it via the NeoForge channels first, however, due the nature of modded environments and the rarity of vanilla crash bugs.
  4. Always check whether there's a mention of coremods at the beginning of a crash report. If there is and you can't find any clear culprit, consider reporting to these coremods first, since they are free to change any of the code executed in your environment.
 
-The rules are numbered in decreasing priority, which means that you should always prefer finding a mod in a crash report over directly jumping to conclusions about Forge or even Vanilla.
+The rules are numbered in decreasing priority, which means that you should always prefer finding a mod in a crash report over directly jumping to conclusions about NeoForge or even vanilla.
 
 ### Isolating an Issue
 
@@ -76,20 +76,21 @@ Please note that this list has to be considered incomplete as there is a large n
 
 If you're certain you've found an issue that is directly caused by NeoForge, you have the following three platforms available for dealing with it, with decreasing relevance for end-users:
 
- 1. **NeoForge Discord Server:** You can find a lot of help on the official [Discord Server][Discord], especially smaller issues that you quickly need help with. *Be aware that the channel is more suited towards development questions, so while you may get support there as a player.*
- 2. **NeoForge Issue Tracker:** If you're absolutely certain that you've found an issue in the Forge codebase (e.g. you're a modder yourself and have analyzed the stacktrace and relevant code), don't refrain from reporting it on this repository's [issue tracker](https://github.com/neoforged/NeoForge/issues). *Please do not use the issues as a means of getting coding help. For developers, the IRC and the [official documentation][Documentation] are the best sources of information.*
+ 1. **NeoForge Discord Server:** You can find a lot of help on the official [Discord Server][Discord]. This is especially helpful for smaller issues and will allow you to get quicker help. *Be aware that the channel is more suited towards development questions, so while you may get support there as a player it may take longer or there may be better suitable options of support, the #user-support channel is also a good place to ask for help as a user.*
+ 2. **NeoForge Issue Tracker:** If you're absolutely certain that you've found an issue in the NeoForge codebase (e.g. you're a modder yourself and have analyzed the stacktrace and relevant code), please confirm it is a bug first on the [Discord] before opening an issue at the [issue tracker](https://github.com/neoforged/NeoForge/issues). *Please do not use the issues as a means of getting coding help. For developers, the [Discord] and the [official documentation][Documentation] are the best sources of information.*
 
 ### Mod Support
 
 A lot of mods also use GitHub or other source management systems and their integrated issue trackers. The following options will give you the best chances of reporting your issue in the right place:
 
- - **CurseForge:** Many mods are hosted on the [CurseForge platform](https://curseforge.com) nowadays. Chances are you already downloaded them from there or as a part of a modpack hosted there. Projects may specify an issue reporting link on their own page, so simply look for it on the mod's project page and you should be directed to the preferred means of error reporting.
- - **Modrinth:** Some modders use [Modrinth](https://modrinth.com) to host their mods, but be mindful that not all mods on this platform are for the NeoForge modloader.
+ - **Modding Platform:** Many mods are hosted on the [CurseForge platform](https://curseforge.com) or the [Modrinth platform](https://modrinth.com) nowadays. Chances are you already downloaded them from there or as a part of a modpack hosted there. Projects may specify an issue reporting link on their own page, so simply look for it on the mod's project page and you should be directed to the preferred means of error reporting. Please be mindful of selecting the modloader you are using when downloading mods.
  - **Searching for a repository directly:** You may need to try and find a repository directly on source control sites. The most common ones are [GitHub](https://github.com), [GitLab](https://gitlab.com), and [BitBucket](https://bitbucket.org). Both come with search capabilities, so simply try to search for the mod's name.
 
 ### Vanilla Support
 
-Just like NeoForge or mods, Mojang has its own issue tracker for Vanilla Minecraft. This official [bug tracker](https://bugs.mojang.com/projects/MC/issues/) has the exclusive purpose of managing any concrete issues with the game's code and functionality. It is *not* a place for requesting any features or getting help with playing the game, similar to the Forge issue tracker.
+> It is advised to check in at the [NeoForge Discord][Discord] before reporting a bug to Mojang to confirm it is not a bug caused by NeoForge.
+
+Just like NeoForge or mods, Mojang has its own issue tracker for vanilla Minecraft. This official [bug tracker](https://bugs.mojang.com/projects/MC/issues/) has the exclusive purpose of managing any concrete issues with the game's code and functionality. It is *not* a place for requesting any features or getting help with playing the game, similar to the NeoForge issue tracker. 
 
 <br>
 
@@ -108,10 +109,10 @@ If you're certain that your issue went unnoticed up until now, you can get to ac
 
  - **Minecraft Version:** Although many developers can deduce the Minecraft version in use from the mod's version, it is still an important piece of information to include, since it helps maintainers more easily decide whether to look into your issue at all or whether to close it right away due to being for an outdated version.
  - **NeoForge Version:** The NeoForge API is in constant flux and while breaking changes are limited to major Minecraft updates, new bugs or regressions might creep in during active development or newer versions than a mod was built with might change semantics slightly that manifest themselves for this mod.
- - **Mod Version:** Just like the NeoForge and Minecraft version, this is crucial for quickly telling where an issue might come from. *If you're reporting an issue caused by NeoForge that only occurs with a certain mod installed, include this mod here. No mod version is required if it's a pure Forge bug.*
+ - **Mod Version:** Just like the NeoForge and Minecraft version, this is crucial for quickly telling where an issue might come from. *If you're reporting an issue caused by NeoForge that only occurs with a certain mod installed, include this mod here. No mod version is required if it's a pure NeoForge bug.*
  - **Complete List of Mods:** In order to reliably analyze a bug, developers need the exact same context as you do when trying to find its cause. Hence, you should always include a *full list of mods with their corresponding version* in your report. Note that you should probably only include the ones you found by [isolating the issue](#isolating-an-issue).
  - **Steps to Reproduce:** You should always include a list of steps required to provoke an issue to occur. Without it, developers can only take rough guesses at what might cause the bug. Try to reduce the amount of steps to a bare minimum, to make reproducing the issue easier. If you require a sophisticated setup to get even close to the issue, you might want to consider including your save file in your report.
- - **Full Log:** This is probably the most important part of your bug report. You *always* have to include the full log (`debug.log` from earlier), since it is the only way of telling what has caused an issue in code. *Do not* paste the full log as plain text in your report, but use [GitHub Gist](https://gist.github.com) instead and link to that from your report.
+ - **Full Log:** This is probably the most important part of your bug report. You *always* have to include the full log (`debug.log` from earlier), since it is the only way of telling what has caused an issue in code. *Do not* paste the full log as plain text in your report, you should use [GitHub Gist](https://gist.github.com) instead and link to the gist in the report.
 
 ### Markdown Issue Template
 GitHub and BitBucket allow you to use the Markdown format for writing your issues. Below you can find a simple template that you can copy and fill in with your data. `{variables}` are written in braces and are supposed to be replaced by you with the information the variable name indicates. Everything behind two slashes (`//`) has to be interpreted as a comment and should be removed. If you want to include any link, you have to write in the `[title](url)` form. For further information on Markdown, see [this cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet).
@@ -121,7 +122,7 @@ GitHub and BitBucket allow you to use the Markdown format for writing your issue
 
 **NeoForge Version:** {neoforge version}
 
-**Mod Version:** {mod version} // Remove this line if you're reporting to Forge and no specific mod is involved
+**Mod Version:** {mod version} // Remove this line if you're reporting to NeoForge and no specific mod is involved
 
 [**Full Log**]({link to gist/pastebin with full log})
 
@@ -153,4 +154,4 @@ Once your issue is closed, you will know whether it was valid or turned out to b
 [Discord]:
 https://discord.neoforged.net/
 
-[Documentation]: https://docs.neoforged.net/docs/forgedev/
+[Documentation]: https://docs.neoforged.net/docs/gettingstarted/
