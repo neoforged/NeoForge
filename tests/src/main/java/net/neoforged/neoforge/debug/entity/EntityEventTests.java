@@ -74,13 +74,13 @@ public class EntityEventTests {
 
     @GameTest
     @EmptyTemplate(floor = true)
-    @TestHolder(description = "testing the event by converting a nitwit into a butcher")
+    @TestHolder(description = "testing the event by converting a nitwit into a butcher", enabledByDefault = true)
     static void villagerChangeProfessionEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final VillagerChangeProfessionEvent event) -> {
             if (event.getOldProfession() == event.getNewProfession())
                 return;
 
-            if (event.getOldProfession() == VillagerProfession.NITWIT) {
+            if (event.getOldProfession() == VillagerProfession.FLETCHER) {
                 event.setNewProfession(VillagerProfession.BUTCHER);
             }
             test.pass();

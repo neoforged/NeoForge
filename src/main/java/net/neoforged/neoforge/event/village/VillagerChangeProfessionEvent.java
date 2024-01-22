@@ -14,7 +14,7 @@ import net.neoforged.neoforge.event.entity.EntityEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * VillagerChangeProfessionEvent is fired on the server when a Villager Entity changes profession.
+ * VillagerChangeProfessionEvent is fired on the server when a Villager changes profession.
  * This event is fired via the {@link EventHooks#onVillagerProfessionChanged(Villager, VillagerProfession, VillagerProfession)}.
  * This event is {@link ICancellableEvent cancellable}. Effects of the cancellation are noted in {@link #setCanceled(boolean)}.
  * You can change the profession that the villager will change to via {@link #setNewProfession(VillagerProfession)}.
