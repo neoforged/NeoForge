@@ -22,6 +22,10 @@ import net.neoforged.neoforge.common.CommonHooks;
  * <br>
  * {@link #source} contains the DamageSource that caused this Entity to be hurt. <br>
  * {@link #amount} contains the final amount of damage that will be dealt to entity. <br>
+ * {@link #armorMitigatedDamage} contains the final amount of damage prevented by armor. <br>
+ * {@link #magicMitigatedDamage} contains the final amount of damage prevented by resistance and enchantments. <br>
+ * {@link #absorptionConsumed} contains the final amount of absorption consumed by the original damage amount. <br>
+ * {@link #originalDamage} contains the final amount of damage before reductions but after {@link LivingHurtEvent}. <br>
  * <br>
  * This event is {@link ICancellableEvent}.<br>
  * If this event is canceled, the Entity is not hurt. Used resources WILL NOT be restored.<br>
@@ -32,12 +36,17 @@ import net.neoforged.neoforge.common.CommonHooks;
  **/
 public class LivingDamageEvent extends LivingEvent implements ICancellableEvent {
     private final DamageSource source;
+    private final float armorMitigatedDamage, magicMitigatedDamage, absorptionConsumed, originalDamage;
     private float amount;
 
-    public LivingDamageEvent(LivingEntity entity, DamageSource source, float amount) {
+    public LivingDamageEvent(LivingEntity entity, DamageSource source, float amount, float armorMitigatedDamage, float magicMitigatedDamage, float absorptionConsumed) {
         super(entity);
         this.source = source;
         this.amount = amount;
+        this.armorMitigatedDamage = armorMitigatedDamage;
+        this.magicMitigatedDamage = magicMitigatedDamage;
+        this.absorptionConsumed = absorptionConsumed;
+        this.originalDamage = amount + armorMitigatedDamage + magicMitigatedDamage + absorptionConsumed;
     }
 
     public DamageSource getSource() {
@@ -51,4 +60,12 @@ public class LivingDamageEvent extends LivingEvent implements ICancellableEvent 
     public void setAmount(float amount) {
         this.amount = amount;
     }
+
+    public float getArmorMitigatedDamage() {return armorMitigatedDamage;}
+
+    public float getMagicMitigatedDamage() {return magicMitigatedDamage;}
+
+    public float getAbsorptionConsumed() {return absorptionConsumed;}
+
+    public float getOriginalDamage() {return originalDamage;}
 }

@@ -156,6 +156,7 @@ import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
+import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.living.EnderManAngerEvent;
 import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
 import net.neoforged.neoforge.event.entity.living.LivingBreatheEvent;
@@ -257,8 +258,13 @@ public class CommonHooks {
         return (NeoForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
     }
 
-    public static float onLivingDamage(LivingEntity entity, DamageSource src, float amount) {
-        LivingDamageEvent event = new LivingDamageEvent(entity, src, amount);
+    public static float onArmorHurt(ItemStack armorItemStack, float damage, int slotIndex, Player player) {
+        ArmorHurtEvent event = new ArmorHurtEvent(armorItemStack, damage, slotIndex, player);
+        return NeoForge.EVENT_BUS.post(event).isCanceled() ? event.getOriginalDamage() : event.getNewDamage();
+    }
+
+    public static float onLivingDamage(LivingEntity entity, DamageSource src, float amount, float armorMitigatedDamage, float magicMitigatedDamage, float absorptionConsumed) {
+        LivingDamageEvent event = new LivingDamageEvent(entity, src, amount, armorMitigatedDamage, magicMitigatedDamage, absorptionConsumed);
         return (NeoForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
     }
 
