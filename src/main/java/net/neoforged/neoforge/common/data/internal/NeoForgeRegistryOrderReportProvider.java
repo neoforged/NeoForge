@@ -1,14 +1,18 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.common.data.internal;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.DataProvider;
-import net.minecraft.data.CachedOutput;
-import net.minecraft.data.PackOutput;
-
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.CachedOutput;
+import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
 
 public final class NeoForgeRegistryOrderReportProvider implements DataProvider {
     private final PackOutput output;
