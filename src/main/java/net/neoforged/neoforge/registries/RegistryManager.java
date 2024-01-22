@@ -310,7 +310,6 @@ public class RegistryManager {
             if (!missingOur.isEmpty()) {
                 missing = missingOur;
                 key = "neoforge.network.data_maps.missing_our";
-                context.packetHandler().disconnect(Component.literal("TODO"));
             } else {
                 missing = Sets.difference(common, theirMandatory);
                 key = "neoforge.network.data_maps.missing_their";

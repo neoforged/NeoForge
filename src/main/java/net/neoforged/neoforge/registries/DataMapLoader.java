@@ -64,6 +64,7 @@ public class DataMapLoader implements PreparableReloadListener {
         results.forEach((key, result) -> this.apply((BaseMappedRegistry) registryAccess.registryOrThrow(key), result));
 
         // Clear the intermediary maps and objects
+        results = null;
         System.gc();
     }
 
@@ -83,17 +84,20 @@ public class DataMapLoader implements PreparableReloadListener {
                 result.clear();
             }
 
-            entry.values().forEach((tKey, value) -> valueResolver.accept(tKey, holder -> {
+            entry.values().forEach((tKey, value) -> {
                 if (value.isEmpty()) return;
-                final var newValue = value.get().carrier();
-                final var key = holder.unwrapKey().get();
-                final var oldValue = result.get(key);
-                if (oldValue == null || newValue.replace()) {
-                    result.put(key, new WithSource<>(newValue.value(), tKey));
-                } else {
-                    result.put(key, new WithSource<>(merger.merge(registry, oldValue.source(), oldValue.attachment(), tKey, newValue.value()), tKey));
-                }
-            }));
+
+                valueResolver.accept(tKey, holder -> {
+                    final var newValue = value.get().carrier();
+                    final var key = holder.unwrapKey().get();
+                    final var oldValue = result.get(key);
+                    if (oldValue == null || newValue.replace()) {
+                        result.put(key, new WithSource<>(newValue.value(), tKey));
+                    } else {
+                        result.put(key, new WithSource<>(merger.merge(registry, oldValue.source(), oldValue.attachment(), tKey, newValue.value()), tKey));
+                    }
+                });
+            });
 
             entry.removals().forEach(trRemoval -> valueResolver.accept(trRemoval.key(), holder -> {
                 if (trRemoval.remover().isPresent()) {

@@ -30,7 +30,7 @@ public interface DataMapValueRemover<T, R> {
      * @param registry the registry
      * @param source   the source of the data
      * @param object   the object to remove the data from
-     * @return the removed data map value. If an {@link Optional#empty() empty optional}, the value will be removed
+     * @return the remainder. If an {@link Optional#empty() empty optional}, the value will be removed
      *         completely. Otherwise, this method returns the new value of the attached data.
      */
     Optional<T> remove(T value, Registry<R> registry, Either<TagKey<R>, ResourceKey<R>> source, R object);
