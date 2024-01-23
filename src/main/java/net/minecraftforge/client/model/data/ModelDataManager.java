@@ -46,7 +46,7 @@ public class ModelDataManager
     public void requestRefresh(@NotNull BlockEntity blockEntity)
     {
         Preconditions.checkNotNull(blockEntity, "Block entity must not be null");
-        needModelDataRefresh.computeIfAbsent(new ChunkPos(blockEntity.getBlockPos()), $ -> Collections.synchronizedSet(new HashSet<>()))
+        needModelDataRefresh.computeIfAbsent(new ChunkPos(blockEntity.getBlockPos()), $ -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
                             .add(blockEntity.getBlockPos());
     }
 
