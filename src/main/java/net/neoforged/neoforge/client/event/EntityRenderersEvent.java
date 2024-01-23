@@ -159,6 +159,13 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
         }
 
         /**
+         * {@return the set of entity types which have a renderer}
+         */
+        public Set<EntityType<?>> getEntityTypes() {
+            return renderers.keySet();
+        }
+
+        /**
          * Returns an entity renderer for the given entity type. Note that the returned renderer may not be a
          * {@link LivingEntityRenderer}.
          *
