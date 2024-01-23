@@ -294,7 +294,11 @@ public class ModListScreen extends Screen {
     private void displayModConfig() {
         if (selected == null) return;
         try {
-            ConfigScreenHandler.getScreenFactoryFor(selected.getInfo()).map(f -> f.apply(this.minecraft, this)).ifPresent(newScreen -> this.minecraft.setScreen(newScreen));
+            var factory = ConfigScreenHandler.getScreenFactory(selected.getInfo().getModId());
+            if (factory != null) {
+                var newScreen = factory.createScreen(this.minecraft, this);
+                this.minecraft.setScreen(newScreen);
+            }
         } catch (final Exception e) {
             LOGGER.error("There was a critical issue trying to build the config GUI for {}", selected.getInfo().getModId(), e);
         }
@@ -373,7 +377,7 @@ public class ModListScreen extends Screen {
             return;
         }
         IModInfo selectedMod = selected.getInfo();
-        this.configButton.active = ConfigScreenHandler.getScreenFactoryFor(selectedMod).isPresent();
+        this.configButton.active = ConfigScreenHandler.getScreenFactory(selectedMod.getModId()) != null;
         List<String> lines = new ArrayList<>();
         VersionChecker.CheckResult vercheck = VersionChecker.getResult(selectedMod);
 
