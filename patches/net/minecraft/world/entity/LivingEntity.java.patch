@@ -167,21 +167,16 @@
                  if (!p_21016_.is(DamageTypeTags.IS_PROJECTILE)) {
                      Entity entity = p_21016_.getDirectEntity();
                      if (entity instanceof LivingEntity livingentity) {
-@@ -1119,12 +_,13 @@
+@@ -1119,7 +_,8 @@
                      }
                  }
  
 -                flag = true;
 +                flag = p_21017_ <= 0;
++            }
              }
  
              if (p_21016_.is(DamageTypeTags.IS_FREEZING) && this.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
-                 p_21017_ *= 5.0F;
-             }
-+            }
- 
-             this.walkAnimation.setSpeed(1.5F);
-             boolean flag1 = true;
 @@ -1158,9 +_,9 @@
                  if (entity1 instanceof Player player1) {
                      this.lastHurtByPlayerTime = 100;
