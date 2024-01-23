@@ -25,7 +25,6 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.SkullBlock.Type;
@@ -176,7 +175,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          */
         @Nullable
         @SuppressWarnings("unchecked")
-        public <T extends LivingEntity, R extends EntityRenderer<T>> R getRenderer(EntityType<? extends T> entityType) {
+        public <T extends Entity, R extends EntityRenderer<T>> R getRenderer(EntityType<? extends T> entityType) {
             return (R) renderers.get(entityType);
         }
 
