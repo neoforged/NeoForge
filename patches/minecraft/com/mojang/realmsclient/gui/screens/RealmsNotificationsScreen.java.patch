@@ -13,3 +13,15 @@
           return datafetcher$subscription;
        }
  
+@@ -113,6 +_,11 @@
+          f_88826_ = true;
+          (new Thread("Realms Notification Availability checker #1") {
+             public void run() {
++               if (!net.minecraftforge.fml.loading.FMLLoader.isProduction() && net.minecraft.client.Minecraft.m_91087_().m_91094_().m_92547_().equals("0")) {
++                  // Neo: we use '0' in dev, so short-circuit to avoid exception
++                  return;
++               }
++
+                RealmsClient realmsclient = RealmsClient.m_87169_();
+ 
+                try {
