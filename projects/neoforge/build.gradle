@@ -107,29 +107,6 @@ dependencies {
     }
 }
 
-test {
-    useJUnitPlatform {
-        systemProperty('bsl.debug', 'true')
-//        jvmArgs('@args.txt')
-//        environment([
-//                'MOD_CLASSES': 'minecraft%%P:\\NeoForged\\NeoForge\\projects\\neoforge\\build\\resources\\main;minecraft%%P:\\NeoForged\\NeoForge\\projects\\neoforge\\build\\classes\\java\\main;minecraft%%P:\\NeoForged\\NeoForge\\projects\\neoforge\\build\\resources\\test;minecraft%%P:\\NeoForged\\NeoForge\\projects\\neoforge\\build\\classes\\java\\test',
-//                'NEOFORGE_SPEC': '20.4.29-beta-breaks-clause'
-//        ])
-//        workingDir(file('runstest'))
-//
-//        jvmArgumentProviders.add(new CommandLineArgumentProvider() {
-//            @Override
-//            Iterable<String> asArguments() {
-//                return [
-//                        "--module-path",
-//                        (project.configurations.moduleOnly.resolve() + project.configurations.junit.resolve())
-//                                .join(File.pathSeparator)
-//                ]
-//            }
-//        })
-    }
-}
-
 runTypes {
     client {
         singleInstance false
