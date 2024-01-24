@@ -68,7 +68,7 @@ public abstract class ModelEvent extends Event {
          * @apiNote Looking up sprites from an {@link AtlasSet.StitchResult} does not handle missing sprites automatically,
          *          the fallback to the missing sprite must be implemented manually
          */
-        public Map<ResourceLocation, AtlasSet.StitchResult> getAtlasStitchResults() {
+        public Map<ResourceLocation, AtlasSet.StitchResult> getPreliminaryStitchResults() {
             return stitchResults;
         }
 
