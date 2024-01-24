@@ -41,15 +41,7 @@ public final class BlockEntityRenderBoundsDebugRenderer {
         Vec3 camera = event.getCamera().getPosition();
         VertexConsumer consumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.lines());
 
-        for (SectionRenderDispatcher.RenderSection section : levelRenderer.getVisibleSections()) {
-            for (BlockEntity be : section.getCompiled().getRenderableBlockEntities()) {
-                drawRenderBoundingBox(poseStack, consumer, camera, be);
-            }
-        }
-
-        for (BlockEntity be : levelRenderer.getGlobalBlockEntities()) {
-            drawRenderBoundingBox(poseStack, consumer, camera, be);
-        }
+        levelRenderer.iterateVisibleBlockEntities(be -> drawRenderBoundingBox(poseStack, consumer, camera, be));
     }
 
     private static void drawRenderBoundingBox(PoseStack poseStack, VertexConsumer consumer, Vec3 camera, BlockEntity be) {
