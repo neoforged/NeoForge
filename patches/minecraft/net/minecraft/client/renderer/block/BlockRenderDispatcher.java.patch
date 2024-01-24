@@ -9,7 +9,7 @@
        this.f_110901_ = new LiquidBlockRenderer();
     }
  
-@@ -45,19 +_,27 @@
+@@ -45,19 +_,28 @@
        return this.f_110899_;
     }
  
@@ -22,6 +22,7 @@
           BakedModel bakedmodel = this.f_110899_.m_110893_(p_110919_);
           long i = p_110919_.m_60726_(p_110920_);
 -         this.f_110900_.m_234379_(p_110921_, bakedmodel, p_110919_, p_110920_, p_110922_, p_110923_, true, this.f_110902_, i, OverlayTexture.f_118083_);
++         modelData = bakedmodel.getModelData(p_110921_, p_110920_, p_110919_, modelData);
 +         this.f_110900_.tesselateBlock(p_110921_, bakedmodel, p_110919_, p_110920_, p_110922_, p_110923_, true, this.f_110902_, i, OverlayTexture.f_118083_, modelData, null);
        }
     }
