@@ -50,6 +50,7 @@ import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.PrimaryLevelData;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -57,6 +58,34 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.slf4j.Logger;
 
+/**
+ * A {@link ParameterResolver} that provides a {@link MinecraftServer} parameter.
+ * <p>
+ * The server is ephemeral, meaning that it doesn't store any data, and only has a void overworld available.
+ * <p>
+ * You should <strong>NOT</strong> not interact with the world of that server as it purely exists to load datapack data.
+ * If you need an actual world, you should use a {@linkplain net.minecraft.gametest.framework.GameTest GameTest} instead.
+ *
+ * <p>
+ * Example usage:
+ * 
+ * <pre>
+ * {@code
+ * @Test
+ * @ExtendWith(EphemeralTestServerProvider.class)
+ * void someJUnitTest(MinecraftServer server) {
+ *     assert server.registryAccess().registryOrThrow(Registries.ITEM).getTag(ItemTags.ANVIL).isPresent();
+ * }
+ * }
+ * </pre>
+ * 
+ * You can also annotate a class with {@link ExtendWith} to provide a server to all tests in that class.
+ *
+ * <p>
+ * The server instance is lazy (only created if a test needs it) and <strong>singleton</strong>.
+ * 
+ * @see ExtendWith
+ */
 public class EphemeralTestServerProvider implements ParameterResolver, Extension {
     public static final AtomicReference<MinecraftServer> SERVER = new AtomicReference<>();
     public static final AtomicBoolean IN_CONSTRUCTION = new AtomicBoolean();
