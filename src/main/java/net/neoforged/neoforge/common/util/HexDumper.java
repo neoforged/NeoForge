@@ -20,7 +20,6 @@ import io.netty.buffer.ByteBuf;
  * </PRE>
  */
 public class HexDumper {
-
     public static String dump(ByteBuf data) {
         int current = data.readerIndex();
         data.readerIndex(0);

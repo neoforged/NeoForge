@@ -18,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
  * boilerplate constructor parameters.
  */
 public abstract class ItemModelProvider extends ModelProvider<ItemModelBuilder> {
-
     public ItemModelProvider(PackOutput output, String modid, ExistingFileHelper existingFileHelper) {
         super(output, modid, ITEM_FOLDER, ItemModelBuilder::new, existingFileHelper);
     }

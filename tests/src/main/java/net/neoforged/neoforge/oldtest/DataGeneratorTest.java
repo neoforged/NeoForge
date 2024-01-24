@@ -115,6 +115,8 @@ import net.neoforged.neoforge.client.model.generators.ModelFile.UncheckedModelFi
 import net.neoforged.neoforge.client.model.generators.MultiPartBlockStateBuilder;
 import net.neoforged.neoforge.client.model.generators.VariantBlockStateBuilder;
 import net.neoforged.neoforge.common.conditions.IConditionBuilder;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
+import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
@@ -123,6 +125,7 @@ import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.GeneratingOverlayMetadataSection;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.common.data.ParticleDescriptionProvider;
 import net.neoforged.neoforge.common.data.SoundDefinition;
@@ -160,8 +163,10 @@ public class DataGeneratorTest {
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
         gen.addProvider(true, new PackMetadataGenerator(packOutput)
-                .add(OverlayMetadataSection.TYPE, new OverlayMetadataSection(List.of(
-                        new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "pack_overlays_test"))))
+                .add(GeneratingOverlayMetadataSection.TYPE, new GeneratingOverlayMetadataSection(List.of(
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "pack_overlays_test")),
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), new ModLoadedCondition("neoforge")),
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), new ModLoadedCondition("does_not_exist")))))
                 .add(PackMetadataSection.TYPE, new PackMetadataSection(
                         Component.literal("NeoForge tests resource pack"),
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
@@ -935,7 +940,6 @@ public class DataGeneratorTest {
     }
 
     private static class Advancements implements AdvancementProvider.AdvancementGenerator {
-
         @Override
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
             var obtainDirt = Advancement.Builder.advancement()
@@ -1003,7 +1007,6 @@ public class DataGeneratorTest {
     }
 
     private static class ParticleDescriptions extends ParticleDescriptionProvider {
-
         public ParticleDescriptions(PackOutput output, ExistingFileHelper fileHelper) {
             super(output, fileHelper);
         }
@@ -1021,7 +1024,6 @@ public class DataGeneratorTest {
                     new ResourceLocation("splash_3"));
 
             this.spriteSet(ParticleTypes.ENCHANT, () -> new Iterator<>() {
-
                 private final ResourceLocation base = new ResourceLocation("sga");
                 private char suffix = 'a';
 

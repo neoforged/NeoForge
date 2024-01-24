@@ -14,7 +14,6 @@ import com.mojang.serialization.Encoder;
 import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.ObjIntConsumer;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.ExtraCodecs;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
@@ -24,7 +23,6 @@ import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
  * This allows getting the {@link ICondition.IContext} while decoding an entry from within a codec.
  */
 public class ConditionalOps<T> extends RegistryOps<T> {
-
     public static <T> ConditionalOps<T> create(RegistryOps<T> ops, ICondition.IContext context) {
         return new ConditionalOps<T>(ops, context);
     }
@@ -90,23 +88,6 @@ public class ConditionalOps<T> extends RegistryOps<T> {
         return Codec.of(
                 ownerCodec.listOf(),
                 NeoForgeExtraCodecs.listWithOptionalElements(createConditionalCodec(ownerCodec)));
-    }
-
-    /**
-     * Creates a codec that can decode a list of elements, and will check for conditions on element.
-     * Additionally, a callback will be invoked with each deserialized element and its index in the list.
-     *
-     * <p>The index is computed before filtering out the elements with non-matching conditions,
-     * but the callback will only be invoked on the elements with matching conditions.
-     */
-    public static <T> Codec<List<T>> decodeListWithElementConditionsAndIndexedPeek(final Codec<T> ownerCodec, final ObjIntConsumer<T> consumer) {
-        return Codec.of(
-                ownerCodec.listOf(),
-                NeoForgeExtraCodecs.listWithoutEmpty(
-                        NeoForgeExtraCodecs.decodeOnly(
-                                NeoForgeExtraCodecs.listDecoderWithIndexedPeek(
-                                        createConditionalCodec(ownerCodec).listOf(),
-                                        (op, i) -> op.ifPresent(o -> consumer.accept(o, i))))));
     }
 
     /**

@@ -25,7 +25,6 @@ import net.neoforged.neoforge.common.NeoForge;
  */
 
 public class EntityMountEvent extends EntityEvent implements ICancellableEvent {
-
     private final Entity entityMounting;
     private final Entity entityBeingMounted;
     private final Level level;

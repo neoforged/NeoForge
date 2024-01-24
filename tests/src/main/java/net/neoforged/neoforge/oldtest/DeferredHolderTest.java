@@ -20,7 +20,6 @@ import org.apache.logging.log4j.Logger;
  */
 @Mod(DeferredHolderTest.MODID)
 public class DeferredHolderTest {
-
     static final String MODID = "deferred_holder_test";
 
     private static final boolean ENABLED = true;

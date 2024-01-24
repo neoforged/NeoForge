@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/MenuProvider.java
++++ b/net/minecraft/world/MenuProvider.java
+@@ -3,6 +_,6 @@
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.world.inventory.MenuConstructor;
+ 
+-public interface MenuProvider extends MenuConstructor {
++public interface MenuProvider extends MenuConstructor, net.neoforged.neoforge.client.extensions.IMenuProviderExtension {
+     Component getDisplayName();
+ }

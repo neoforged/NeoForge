@@ -14,7 +14,6 @@ import net.minecraft.server.packs.PackType;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public interface IAdvancementBuilderExtension {
-
     private Advancement.Builder self() {
         return (Advancement.Builder) this;
     }

@@ -11,7 +11,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
  * Extension interface for {@link AbstractWidget}.
  */
 public interface IAbstractWidgetExtension {
-
     private AbstractWidget self() {
         return (AbstractWidget) this;
     }

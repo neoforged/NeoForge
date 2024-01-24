@@ -22,6 +22,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -30,27 +31,42 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.eventtest.internal.TestsMod;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
+import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = BlockTests.GROUP + ".properties")
 public class BlockPropertyTests {
-    @GameTest(template = TestsMod.TEMPLATE_3x3)
+    @GameTest
     @TestHolder(description = "Adds a toggleable light source to test if level-sensitive light emission works")
     static void levelSensitiveLight(final DynamicTest test, final RegistrationHelper reg) {
         final var lightBlock = reg.blocks().registerBlockWithBEType("light_block", LightBlock::new, LightBlockEntity::new, BlockBehaviour.Properties.of())
                 .withLang("Light block").withBlockItem();
 
+        test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 4, 3)
+                .fill(0, 0, 0, 2, 3, 2, Blocks.STONE)
+                .set(1, 1, 1, Blocks.AIR.defaultBlockState())
+                .set(1, 2, 1, Blocks.AIR.defaultBlockState()));
+
+        BlockPos lightPos = new BlockPos(1, 2, 1);
+        BlockPos testPos = new BlockPos(1, 3, 1);
+
         test.onGameTest(helper -> helper.startSequence()
-                .thenExecute(() -> helper.setBlock(new BlockPos(1, 1, 1), lightBlock.get()))
-                .thenExecute(() -> helper.useBlock(new BlockPos(1, 1, 1), helper.makeMockPlayer(), Items.ACACIA_BUTTON.getDefaultInstance()))
-                .thenMap(() -> helper.getLevel().getChunkAt(helper.absolutePos(new BlockPos(1, 2, 1))))
+                .thenExecute(() -> helper.setBlock(lightPos, lightBlock.get()))
+                .thenExecute(() -> helper.useBlock(lightPos, helper.makeMockPlayer(), Items.ACACIA_BUTTON.getDefaultInstance()))
+                .thenMap(() -> helper.getLevel().getChunkAt(helper.absolutePos(testPos)))
                 .thenMap(chunk -> ((ThreadedLevelLightEngine) helper.getLevel().getLightEngine()).waitForPendingTasks(chunk.getPos().x, chunk.getPos().z))
-                .thenWaitUntil(future -> helper.assertTrue(future.isDone(), "Light engine did not update"))
-                .thenExecute(() -> helper.assertTrue(helper.getLevel().getLightEngine().getRawBrightness(helper.absolutePos(new BlockPos(1, 2, 1)), 15) == 14, "light level was not as expected"))
+                .thenWaitUntil(future -> helper.assertTrue(future.isDone(), "Light engine did not update to lit"))
+                .thenExecute(() -> helper.assertTrue(helper.getLevel().getLightEngine().getRawBrightness(helper.absolutePos(testPos), 15) == 14, "Lit light level was not as expected"))
+                .thenExecute(() -> helper.destroyBlock(lightPos))
+                .thenMap(() -> helper.getLevel().getChunkAt(helper.absolutePos(new BlockPos(1, 3, 1))))
+                .thenMap(chunk -> ((ThreadedLevelLightEngine) helper.getLevel().getLightEngine()).waitForPendingTasks(chunk.getPos().x, chunk.getPos().z))
+                .thenWaitUntil(future -> helper.assertTrue(future.isDone(), "Light engine did not update to unlit"))
+                .thenExecute(() -> helper.assertTrue(helper.getLevel().getLightEngine().getRawBrightness(helper.absolutePos(testPos), 15) == 0, "Unlit light level was not as expected"))
                 .thenSucceed());
     }
 
@@ -105,8 +121,9 @@ public class BlockPropertyTests {
 
         @Override
         public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
-            if (pos == BlockPos.ZERO || (level.getExistingBlockEntity(pos) instanceof LightBlockEntity be && be.lit)) {
-                return 15;
+            AuxiliaryLightManager lightManager = level.getAuxLightManager(pos);
+            if (lightManager != null) {
+                return lightManager.getLightAt(pos);
             }
             return 0;
         }
@@ -133,7 +150,10 @@ public class BlockPropertyTests {
         private void setLit(boolean lit) {
             if (lit != this.lit) {
                 this.lit = lit;
-                level.getLightEngine().checkBlock(worldPosition);
+                AuxiliaryLightManager lightManager = level.getAuxLightManager(worldPosition);
+                if (lightManager != null) {
+                    lightManager.setLightAt(worldPosition, lit ? 15 : 0);
+                }
             }
         }
 

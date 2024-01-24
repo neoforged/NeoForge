@@ -31,5 +31,4 @@ class ModListCommand {
                     return 0;
                 });
     }
-
 }

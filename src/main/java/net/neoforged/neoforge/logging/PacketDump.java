@@ -8,7 +8,6 @@ package net.neoforged.neoforge.logging;
 import io.netty.buffer.ByteBuf;
 
 public class PacketDump {
-
     public static String getContentDump(ByteBuf buffer) {
         int currentLength = buffer.readableBytes();
         StringBuffer returnString = new StringBuffer((currentLength * 3) + // The
@@ -67,6 +66,5 @@ public class PacketDump {
         returnString.append("Length: " + currentLength);
 
         return returnString.toString();
-
     }
 }

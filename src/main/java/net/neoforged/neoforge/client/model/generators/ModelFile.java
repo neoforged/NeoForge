@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public abstract class ModelFile {
-
     protected ResourceLocation location;
 
     protected ModelFile(ResourceLocation location) {
@@ -38,7 +37,6 @@ public abstract class ModelFile {
     }
 
     public static class UncheckedModelFile extends ModelFile {
-
         public UncheckedModelFile(String location) {
             this(new ResourceLocation(location));
         }

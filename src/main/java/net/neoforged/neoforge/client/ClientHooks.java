@@ -19,7 +19,6 @@ import com.mojang.datafixers.util.Either;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,7 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -48,11 +46,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -60,7 +58,6 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -74,10 +71,12 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.model.BakedModel;
@@ -97,8 +96,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.protocol.status.ServerStatus;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.util.Mth;
@@ -112,10 +109,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.GameType;
@@ -131,10 +126,9 @@ import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.IExtensionPoint;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
 import net.neoforged.neoforge.client.event.ClientPauseUpdatedEvent;
@@ -171,18 +165,11 @@ import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtension
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.overlay.GuiOverlayManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.common.I18nExtension;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.gametest.GameTestHooks;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
-import net.neoforged.neoforge.network.NetworkConstants;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.ServerStatusPing;
-import net.neoforged.neoforge.registries.RegistryManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -243,10 +230,10 @@ public class ClientHooks {
     }
 
     public static float getGuiFarPlane() {
-        // 1000 units for the overlay background,
+        // 11000 units for the overlay background,
         // and 10000 units for each layered Screen,
 
-        return 1000.0F + 10000.0F * (1 + guiLayers.size());
+        return 11000.0F + 10000.0F * (1 + guiLayers.size());
     }
 
     public static String getArmorTexture(Entity entity, ItemStack armor, String _default, EquipmentSlot slot, String type) {
@@ -352,6 +339,12 @@ public class ClientHooks {
         return event.getFOV();
     }
 
+    public static CalculatePlayerTurnEvent getTurnPlayerValues(double mouseSensitivity, boolean cinematicCameraEnabled) {
+        var event = new CalculatePlayerTurnEvent(mouseSensitivity, cinematicCameraEnabled);
+        NeoForge.EVENT_BUS.post(event);
+        return event;
+    }
+
     /**
      * Initialization of Forge Renderers.
      */
@@ -386,7 +379,7 @@ public class ClientHooks {
         guiLayers.forEach(layer -> {
             // Prevent the background layers from thinking the mouse is over their controls and showing them as highlighted.
             drawScreenInternal(layer, guiGraphics, Integer.MAX_VALUE, Integer.MAX_VALUE, partialTick);
-            guiGraphics.pose().translate(0, 0, 2000);
+            guiGraphics.pose().translate(0, 0, 10000);
         });
         drawScreenInternal(screen, guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.pose().popPose();
@@ -684,114 +677,7 @@ public class ClientHooks {
         layerDefinitions.forEach((k, v) -> builder.put(k, v.get()));
     }
 
-    public static void processForgeListPingData(ServerStatus packet, ServerData target) {
-        packet.neoForgeData().ifPresentOrElse(neoForgeData -> {
-            final Map<String, String> mods = neoForgeData.getRemoteModData();
-            final Map<ResourceLocation, ServerStatusPing.ChannelData> remoteChannels = neoForgeData.getRemoteChannels();
-            final int fmlver = neoForgeData.getFMLNetworkVersion();
-
-            boolean fmlNetMatches = fmlver == NetworkConstants.FMLNETVERSION;
-            boolean channelsMatch = NetworkRegistry.checkListPingCompatibilityForClient(remoteChannels);
-            AtomicBoolean result = new AtomicBoolean(true);
-            final List<String> extraClientMods = new ArrayList<>();
-            ModList.get().forEachModContainer((modid, mc) -> mc.getCustomExtension(IExtensionPoint.DisplayTest.class).ifPresent(ext -> {
-                boolean foundModOnServer = ext.remoteVersionTest().test(mods.get(modid), true);
-                result.compareAndSet(true, foundModOnServer);
-                if (!foundModOnServer) {
-                    extraClientMods.add(modid);
-                }
-            }));
-            boolean modsMatch = result.get();
-
-            final Map<String, String> extraServerMods = mods.entrySet().stream().filter(e -> !Objects.equals(NetworkConstants.IGNORESERVERONLY, e.getValue())).filter(e -> !ModList.get().isLoaded(e.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-            LOGGER.debug(CLIENTHOOKS, "Received FML ping data from server at {}: FMLNETVER={}, mod list is compatible : {}, channel list is compatible: {}, extra server mods: {}", target.ip, fmlver, modsMatch, channelsMatch, extraServerMods);
-
-            String extraReason = null;
-
-            if (!extraServerMods.isEmpty()) {
-                extraReason = "fml.menu.multiplayer.extraservermods";
-                LOGGER.info(CLIENTHOOKS, I18nExtension.parseMessage(extraReason) + ": {}", extraServerMods.entrySet().stream()
-                        .map(e -> e.getKey() + "@" + e.getValue())
-                        .collect(Collectors.joining(", ")));
-            }
-            if (!modsMatch) {
-                extraReason = "fml.menu.multiplayer.modsincompatible";
-                LOGGER.info(CLIENTHOOKS, "Client has mods that are missing on server: {}", extraClientMods);
-            }
-            if (!channelsMatch) {
-                extraReason = "fml.menu.multiplayer.networkincompatible";
-            }
-
-            if (fmlver < NetworkConstants.FMLNETVERSION) {
-                extraReason = "fml.menu.multiplayer.serveroutdated";
-            }
-            if (fmlver > NetworkConstants.FMLNETVERSION) {
-                extraReason = "fml.menu.multiplayer.clientoutdated";
-            }
-            target.neoForgeData = new ExtendedServerListData("FML", extraServerMods.isEmpty() && fmlNetMatches && channelsMatch && modsMatch, mods.size(), extraReason, neoForgeData.isTruncated());
-        }, () -> target.neoForgeData = new ExtendedServerListData("VANILLA", NetworkRegistry.canConnectToVanillaServer(), 0, null));
-    }
-
     private static final ResourceLocation ICON_SHEET = new ResourceLocation(NeoForgeVersion.MOD_ID, "textures/gui/icons.png");
-
-    public static void drawForgePingInfo(JoinMultiplayerScreen gui, ServerData target, GuiGraphics guiGraphics, int x, int y, int width, int relativeMouseX, int relativeMouseY) {
-        int idx;
-        String tooltip;
-        if (target.neoForgeData == null)
-            return;
-        switch (target.neoForgeData.type()) {
-            case "FML":
-                if (target.neoForgeData.isCompatible()) {
-                    idx = 0;
-                    tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.compatible", target.neoForgeData.numberOfMods());
-                } else {
-                    idx = 16;
-                    if (target.neoForgeData.extraReason() != null) {
-                        String extraReason = I18nExtension.parseMessage(target.neoForgeData.extraReason());
-                        tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.incompatible.extra", extraReason);
-                    } else {
-                        tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.incompatible");
-                    }
-                }
-                if (target.neoForgeData.truncated()) {
-                    tooltip += "\n" + I18nExtension.parseMessage("fml.menu.multiplayer.truncated");
-                }
-                break;
-            case "VANILLA":
-                if (target.neoForgeData.isCompatible()) {
-                    idx = 48;
-                    tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.vanilla");
-                } else {
-                    idx = 80;
-                    tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.vanilla.incompatible");
-                }
-                break;
-            default:
-                idx = 64;
-                tooltip = I18nExtension.parseMessage("fml.menu.multiplayer.unknown", target.neoForgeData.type());
-        }
-
-        guiGraphics.blit(ICON_SHEET, x + width - 18, y + 10, 16, 16, 0, idx, 16, 16, 256, 256);
-
-        if (relativeMouseX > width - 15 && relativeMouseX < width && relativeMouseY > 10 && relativeMouseY < 26) {
-            //this is not the most proper way to do it,
-            //but works best here and has the least maintenance overhead
-            gui.setToolTip(Arrays.stream(tooltip.split("\n")).map(Component::literal).collect(Collectors.toList()));
-        }
-    }
-
-    private static Connection getClientConnection() {
-        return Minecraft.getInstance().getConnection() != null ? Minecraft.getInstance().getConnection().getConnection() : null;
-    }
-
-    public static void handleClientLevelClosing(ClientLevel level) {
-        Connection client = getClientConnection();
-        // ONLY revert a non-local connection
-        if (client != null && !client.isMemoryConnection()) {
-            RegistryManager.revertToFrozen();
-        }
-    }
 
     public static void firePlayerLogin(MultiPlayerGameMode pc, LocalPlayer player, Connection networkManager) {
         NeoForge.EVENT_BUS.post(new ClientPlayerNetworkEvent.LoggingIn(pc, player, networkManager));
@@ -1024,27 +910,6 @@ public class ClientHooks {
         return new ResourceLocation(loc.getNamespace(), normalised);
     }
 
-    public static void onCreativeModeTabBuildContents(CreativeModeTab tab, ResourceKey<CreativeModeTab> tabKey, CreativeModeTab.DisplayItemsGenerator originalGenerator, CreativeModeTab.ItemDisplayParameters params, CreativeModeTab.Output output) {
-        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>(ItemStackLinkedSet.TYPE_AND_TAG,
-                (key, left, right) -> {
-                    //throw new IllegalStateException("Accidentally adding the same item stack twice " + key.getDisplayName().getString() + " to a Creative Mode Tab: " + tab.getDisplayName().getString());
-                    // Vanilla adds enchanting books twice in both visibilities.
-                    // This is just code cleanliness for them. For us lets just increase the visibility and merge the entries.
-                    return CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
-                });
-
-        originalGenerator.accept(params, (stack, vis) -> {
-            if (stack.getCount() != 1)
-                throw new IllegalArgumentException("The stack count must be 1");
-            entries.put(stack, vis);
-        });
-
-        ModLoader.get().postEvent(new BuildCreativeModeTabContentsEvent(tab, tabKey, params, entries));
-
-        for (var entry : entries)
-            output.accept(entry.getKey(), entry.getValue());
-    }
-
     private static final BiMap<ResourceLocation, SpriteSourceType> SPRITE_SOURCE_TYPES_MAP = HashBiMap.create();
 
     public static BiMap<ResourceLocation, SpriteSourceType> makeSpriteSourceTypesMap() {
@@ -1063,6 +928,44 @@ public class ClientHooks {
         return renderer != null && frustum.isVisible(renderer.getRenderBoundingBox((T) blockEntity));
     }
 
+    /**
+     * Modify the position and UVs of the edge quads of generated item models to account for sprite expansion of the
+     * front and back quad. Fixes <a href="https://bugs.mojang.com/browse/MC-73186">MC-73186</a> on generated item models.
+     * 
+     * @param elements The generated elements, may include the front and back face
+     * @param sprite   The texture from which the elements were generated
+     * @return the original elements list
+     */
+    public static List<BlockElement> fixItemModelSeams(List<BlockElement> elements, TextureAtlasSprite sprite) {
+        float expand = -sprite.uvShrinkRatio();
+        for (BlockElement element : elements) {
+            // Edge elements are guaranteed to have exactly one face, anything else is either invalid or the front/back
+            if (element.faces.size() != 1) continue;
+
+            var faceEntry = element.faces.entrySet().iterator().next();
+            if (faceEntry.getKey().getAxis() == Direction.Axis.Z) continue;
+
+            // Move edge quads to account for sprite expansion of the front and back quads
+            element.from.x = Mth.clamp(Mth.lerp(expand, element.from.x, 8F), 0F, 16F);
+            element.from.y = Mth.clamp(Mth.lerp(expand, element.from.y, 8F), 0F, 16F);
+            element.to.x = Mth.clamp(Mth.lerp(expand, element.to.x, 8F), 0F, 16F);
+            element.to.y = Mth.clamp(Mth.lerp(expand, element.to.y, 8F), 0F, 16F);
+
+            float[] uv = faceEntry.getValue().uv.uvs;
+            // Counteract sprite expansion on edge quads to ensure alignment with pixels on the front and back quads
+            if (faceEntry.getKey().getAxis() == Direction.Axis.Y) {
+                float centerU = (uv[0] + uv[0] + uv[2] + uv[2]) / 4.0F;
+                uv[0] = Mth.clamp(Mth.lerp(expand, uv[0], centerU), 0F, 16F);
+                uv[2] = Mth.clamp(Mth.lerp(expand, uv[2], centerU), 0F, 16F);
+            } else {
+                float centerV = (uv[1] + uv[1] + uv[3] + uv[3]) / 4.0F;
+                uv[1] = Mth.clamp(Mth.lerp(expand, uv[1], centerV), 0F, 16F);
+                uv[3] = Mth.clamp(Mth.lerp(expand, uv[3], centerV), 0F, 16F);
+            }
+        }
+        return elements;
+    }
+
     // Make sure the below method is only ever called once (by forge).
     private static boolean initializedClientHooks = false;
 
@@ -1076,6 +979,7 @@ public class ClientHooks {
 
         GameTestHooks.registerGametests();
         registerSpriteSourceTypes();
+        MenuScreens.init();
         ModLoader.get().postEvent(new RegisterClientReloadListenersEvent(resourceManager));
         ModLoader.get().postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
         ModLoader.get().postEvent(new EntityRenderersEvent.RegisterRenderers());

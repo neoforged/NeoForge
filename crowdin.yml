@@ -1,0 +1,12 @@
+project_id_env: NEOFORGE_CROWDIN_PROJECT_ID
+api_token_env: NEOFORGE_CROWDIN_API_TOKEN
+base_path: .
+base_url: 'https://neoforged.api.crowdin.com'
+preserve_hierarchy: 1
+commit_message: '[ci skip]'
+pull_request_labels:
+  - l10n
+files:
+  - source: /src/main/resources/assets/neoforge/lang/en_us.json
+    translation: /src/main/resources/assets/neoforge/lang/%locale_with_underscore%.%file_extension%
+    dest: /messages.%file_extension%

@@ -17,16 +17,20 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.HorseArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
@@ -34,6 +38,7 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -145,33 +150,38 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Gets the level of the enchantment currently present on the stack. By default, returns the enchantment level present in NBT.
+     * Gets the gameplay level of the target enchantment on this stack.
+     * <p>
+     * Equivalent to calling {@link EnchantmentHelper#getItemEnchantmentLevel(Enchantment, ItemStack)}.
+     * <p>
+     * Use in place of {@link EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)} for gameplay logic.
+     * <p>
+     * Use {@link EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)} instead when modifying the item's enchantments.
      *
-     * Equivalent to calling {@link net.minecraft.world.item.enchantment.EnchantmentHelper#getItemEnchantmentLevel(Enchantment, ItemStack)}
-     * Use in place of {@link net.minecraft.world.item.enchantment.EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)} for checking presence of an enchantment in logic implementing the enchantment behavior.
-     * Use {@link net.minecraft.world.item.enchantment.EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)} instead when modifying an item's enchantments.
-     *
-     * @param enchantment the enchantment being checked for
-     * @return Level of the enchantment, or 0 if not present
+     * @param enchantment The enchantment being checked for.
+     * @return The level of the enchantment, or 0 if not present.
      * @see #getAllEnchantments()
-     * @see net.minecraft.world.item.enchantment.EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)
+     * @see EnchantmentHelper#getTagEnchantmentLevel(Enchantment, ItemStack)
      */
     default int getEnchantmentLevel(Enchantment enchantment) {
-        return self().getItem().getEnchantmentLevel(self(), enchantment);
+        int level = self().getItem().getEnchantmentLevel(self(), enchantment);
+        return EventHooks.getEnchantmentLevelSpecific(level, self(), enchantment);
     }
 
     /**
-     * Gets a map of all enchantments present on the stack. By default, returns the enchantments present in NBT, ignoring book enchantments.
+     * Gets the gameplay level of all enchantments on this stack.
+     * <p>
+     * Use in place of {@link EnchantmentHelper#getEnchantments(ItemStack)} for gameplay logic.
+     * <p>
+     * Use {@link EnchantmentHelper#getEnchantments(ItemStack)} instead when modifying the item's enchantments.
      *
-     * Use in place of {@link net.minecraft.world.item.enchantment.EnchantmentHelper#getEnchantments(ItemStack)} for checking presence of an enchantment in logic implementing the enchantment behavior.
-     * Use {@link net.minecraft.world.item.enchantment.EnchantmentHelper#getEnchantments(ItemStack)} instead when modifying an item's enchantments.
-     *
-     * @return Map of all enchantments on the stack, empty if no enchantments are present
+     * @return Map of all enchantments on the stack, or an empty empty if no enchantments are present.
      * @see #getEnchantmentLevel(Enchantment)
-     * @see net.minecraft.world.item.enchantment.EnchantmentHelper#getEnchantments(ItemStack)
+     * @see EnchantmentHelper#getEnchantments(ItemStack)
      */
     default Map<Enchantment, Integer> getAllEnchantments() {
-        return self().getItem().getAllEnchantments(self());
+        Map<Enchantment, Integer> map = self().getItem().getAllEnchantments(self());
+        return EventHooks.getEnchantmentLevel(map, self());
     }
 
     /**
@@ -268,11 +278,12 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Called every tick from {@code Horse#playGallopSound(SoundEvent)} on the item in the
-     * armor slot.
+     * Called every tick when this item is equipped {@linkplain AbstractHorse#isArmor(ItemStack) as an armor item} by a horse {@linkplain AbstractHorse#canWearArmor() that can wear armor}.
+     * <p>
+     * In vanilla, only {@linkplain Horse horses} can wear armor, and they can only equip items that extend {@link HorseArmorItem}.
      *
-     * @param level the level the horse is in
-     * @param horse the horse wearing this armor
+     * @param level The level the horse is in
+     * @param horse The horse wearing this item
      */
     default void onHorseArmorTick(Level level, Mob horse) {
         self().getItem().onHorseArmorTick(self(), level, horse);

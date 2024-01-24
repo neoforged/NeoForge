@@ -25,7 +25,6 @@ import net.minecraft.world.level.ForcedChunksSavedData;
  */
 @ParametersAreNonnullByDefault
 public record TicketController(ResourceLocation id, @Nullable LoadingValidationCallback callback) {
-
     public TicketController {
         Objects.requireNonNull(id, "id must not be null");
     }

@@ -8,7 +8,6 @@ package net.neoforged.neoforge.common.brewing;
 import net.minecraft.world.item.ItemStack;
 
 public interface IBrewingRecipe {
-
     /**
      * Returns true is the passed ItemStack is an input for this recipe. "Input"
      * being the item that goes in one of the three bottom slots of the brewing

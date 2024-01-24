@@ -15,7 +15,14 @@
      private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
          .maximumSize(512L)
          .weakKeys()
-@@ -193,6 +_,7 @@
+@@ -187,12 +_,13 @@
+         this.createBlockStateDefinition(builder);
+         this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
+         this.registerDefaultState(this.stateDefinition.any());
+-        if (SharedConstants.IS_RUNNING_IN_IDE) {
++        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
+             String s = this.getClass().getSimpleName();
+             if (!s.endsWith("Block")) {
                  LOGGER.error("Block classes should end with Block and {} doesn't.", s);
              }
          }
@@ -150,7 +157,7 @@
 +            return true;
 +
 +        if (net.neoforged.neoforge.common.PlantType.DESERT.equals(type)) {
-+            return state.is(BlockTags.SAND) || this == Blocks.TERRACOTTA || this instanceof GlazedTerracottaBlock;
++            return state.is(BlockTags.SAND) || state.is(BlockTags.TERRACOTTA);
 +        } else if (net.neoforged.neoforge.common.PlantType.NETHER.equals(type)) {
 +            return this == Blocks.SOUL_SAND;
 +        } else if (net.neoforged.neoforge.common.PlantType.CROP.equals(type)) {

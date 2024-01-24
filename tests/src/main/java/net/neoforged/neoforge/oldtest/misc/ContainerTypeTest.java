@@ -6,13 +6,11 @@
 package net.neoforged.neoforge.oldtest.misc;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -26,11 +24,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.network.NetworkHooks;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -77,23 +74,23 @@ public class ContainerTypeTest {
 
     public ContainerTypeTest(IEventBus modEventBus) {
         modEventBus.addListener(this::registerContainers);
-        modEventBus.addListener(this::setup);
+        modEventBus.addListener(this::registerMenuScreens);
         NeoForge.EVENT_BUS.addListener(this::onRightClick);
     }
 
     private void registerContainers(final RegisterEvent event) {
-        event.register(Registries.MENU, helper -> helper.register("container", IMenuTypeExtension.create(TestContainer::new)));
+        event.register(Registries.MENU, helper -> helper.register(new ResourceLocation("containertypetest", "container"), IMenuTypeExtension.create(TestContainer::new)));
     }
 
-    private void setup(FMLClientSetupEvent event) {
-        MenuScreens.register(TYPE.get(), TestGui::new);
+    private void registerMenuScreens(RegisterMenuScreensEvent event) {
+        event.register(TYPE.get(), TestGui::new);
     }
 
     private void onRightClick(PlayerInteractEvent.RightClickBlock event) {
         if (!event.getLevel().isClientSide && event.getHand() == InteractionHand.MAIN_HAND) {
             if (event.getLevel().getBlockState(event.getPos()).getBlock() == Blocks.SPONGE) {
                 String text = "Hello World!";
-                NetworkHooks.openScreen((ServerPlayer) event.getEntity(), new MenuProvider() {
+                event.getEntity().openMenu(new MenuProvider() {
                     @Override
                     public AbstractContainerMenu createMenu(int p_createMenu_1_, Inventory p_createMenu_2_, Player p_createMenu_3_) {
                         SimpleContainer inv = new SimpleContainer(9);

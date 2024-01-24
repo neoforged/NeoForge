@@ -104,7 +104,7 @@
              for(flag = false; iterator.hasNext(); flag = true) {
 -                this.onEffectRemoved(iterator.next());
 +                MobEffectInstance effect = iterator.next();
-+                if(net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Remove(this, effect)).isCanceled()) continue;
++                if(net.neoforged.neoforge.event.EventHooks.onEffectRemoved(this, effect, null)) continue;
 +                this.onEffectRemoved(effect);
                  iterator.remove();
              }
@@ -131,7 +131,7 @@
      }
  
      public boolean removeEffect(MobEffect p_21196_) {
-+        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Remove(this, p_21196_)).isCanceled()) return false;
++        if (net.neoforged.neoforge.event.EventHooks.onEffectRemoved(this, p_21196_, null)) return false;
          MobEffectInstance mobeffectinstance = this.removeEffectNoUpdate(p_21196_);
          if (mobeffectinstance != null) {
              this.onEffectRemoved(mobeffectinstance);
@@ -212,7 +212,7 @@
                      itemstack = itemstack1.copy();
                      itemstack1.shrink(1);
                      break;
-@@ -1254,7 +_,7 @@
+@@ -1254,13 +_,13 @@
  
              if (itemstack != null) {
                  if (this instanceof ServerPlayer serverplayer) {
@@ -221,6 +221,13 @@
                      CriteriaTriggers.USED_TOTEM.trigger(serverplayer, itemstack);
                      this.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
                  }
+ 
+                 this.setHealth(1.0F);
+-                this.removeAllEffects();
++                this.removeEffectsCuredBy(net.neoforged.neoforge.common.EffectCures.PROTECTED_BY_TOTEM);
+                 this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
+                 this.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
+                 this.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
 @@ -1328,6 +_,7 @@
      }
  
@@ -556,7 +563,7 @@
          ItemStack itemstack = this.getItemInHand(p_21159_);
          if (!itemstack.isEmpty() && !this.isUsingItem()) {
 +            int duration = net.neoforged.neoforge.event.EventHooks.onItemUseStart(this, itemstack, itemstack.getUseDuration());
-+            if (duration <= 0) return;
++            if (duration < 0) return; // Neo: Early return for negative values, as that indicates event cancellation.
              this.useItem = itemstack;
 -            this.useItemRemaining = itemstack.getUseDuration();
 +            this.useItemRemaining = duration;
@@ -669,17 +676,17 @@
  
 +    /* ==== FORGE START ==== */
 +    /***
-+     * Removes all potion effects that have curativeItem as a curative item for its effect
-+     * @param curativeItem The itemstack we are using to cure potion effects
++     * Removes all potion effects that have the given {@link net.neoforged.neoforge.common.EffectCure} in their set of cures
++     * @param cure the EffectCure being used
 +     */
-+    public boolean curePotionEffects(ItemStack curativeItem) {
++    public boolean removeEffectsCuredBy(net.neoforged.neoforge.common.EffectCure cure) {
 +        if (this.level().isClientSide)
 +            return false;
 +        boolean ret = false;
 +        Iterator<MobEffectInstance> itr = this.activeEffects.values().iterator();
 +        while (itr.hasNext()) {
 +            MobEffectInstance effect = itr.next();
-+            if (effect.isCurativeItem(curativeItem) && !net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Remove(this, effect)).isCanceled()) {
++            if (effect.getCures().contains(cure) && !net.neoforged.neoforge.event.EventHooks.onEffectRemoved(this, effect, cure)) {
 +                this.onEffectRemoved(effect);
 +                itr.remove();
 +                ret = true;

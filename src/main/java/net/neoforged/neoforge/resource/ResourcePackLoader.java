@@ -6,8 +6,11 @@
 package net.neoforged.neoforge.resource;
 
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -20,14 +23,22 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.server.packs.FeatureFlagsMetadataSection;
+import net.minecraft.server.packs.OverlayMetadataSection;
+import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.RepositorySource;
-import net.neoforged.fml.Logging;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.InclusiveRange;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingStage;
@@ -76,28 +87,94 @@ public class ResourcePackLoader {
             if ("minecraft".equals(mod.getModId())) continue; // skip the minecraft "mod"
             final String name = "mod:" + mod.getModId();
             final String packName = mod.getOwningFile().getFile().getFileName();
-            Pack modPack = Pack.readMetaAndCreate(
-                    name,
-                    Component.literal(packName.isEmpty() ? "[unnamed]" : packName),
-                    false,
-                    e.getValue(),
-                    packType,
-                    Pack.Position.BOTTOM,
-                    PackSource.DEFAULT);
-            if (modPack == null) {
-                // Vanilla only logs an error, instead of propagating, so handle null and warn that something went wrong
+
+            try {
+                final boolean isRequired = (packType == PackType.CLIENT_RESOURCES && mod.getOwningFile().showAsResourcePack()) || (packType == PackType.SERVER_DATA && mod.getOwningFile().showAsDataPack());
+                final Pack modPack;
+                // Packs displayed separately must be valid
+                if (isRequired) {
+                    modPack = Pack.readMetaAndCreate(
+                            name,
+                            Component.literal(packName.isEmpty() ? "[unnamed]" : packName),
+                            false,
+                            e.getValue(),
+                            packType,
+                            Pack.Position.BOTTOM,
+                            PackSource.DEFAULT);
+
+                    if (modPack == null) {
+                        ModLoader.get().addWarning(new ModLoadingWarning(mod, ModLoadingStage.ERROR, "fml.modloading.brokenresources", e.getKey()));
+                        continue;
+                    }
+                } else {
+                    modPack = readWithOptionalMeta(
+                            name,
+                            Component.literal(packName.isEmpty() ? "[unnamed]" : packName),
+                            false,
+                            e.getValue(),
+                            packType,
+                            Pack.Position.BOTTOM,
+                            PackSource.DEFAULT);
+                }
+
+                if (isRequired) {
+                    packAcceptor.accept(modPack);
+                } else {
+                    hiddenPacks.add(modPack.hidden());
+                }
+            } catch (IOException exception) {
+                LOGGER.error("Failed to read pack.mcmeta file of mod {}", mod.getModId(), exception);
                 ModLoader.get().addWarning(new ModLoadingWarning(mod, ModLoadingStage.ERROR, "fml.modloading.brokenresources", e.getKey()));
-                continue;
-            }
-            LOGGER.debug(Logging.CORE, "Generating PackInfo named {} for mod file {}", name, e.getKey().getFilePath());
-            if ((packType == PackType.CLIENT_RESOURCES && mod.getOwningFile().showAsResourcePack()) || (packType == PackType.SERVER_DATA && mod.getOwningFile().showAsDataPack())) {
-                packAcceptor.accept(modPack);
-            } else {
-                hiddenPacks.add(modPack.hidden());
             }
         }
 
         packAcceptor.accept(makePack(packType, hiddenPacks));
+    }
+
+    public static final MetadataSectionType<PackMetadataSection> OPTIONAL_FORMAT = MetadataSectionType.fromCodec("pack", RecordCodecBuilder.create(
+            in -> in.group(
+                    ExtraCodecs.strictOptionalField(ComponentSerialization.CODEC, "description", Component.empty()).forGetter(PackMetadataSection::description),
+                    ExtraCodecs.strictOptionalField(Codec.INT, "pack_format", -1).forGetter(PackMetadataSection::packFormat),
+                    ExtraCodecs.strictOptionalField(InclusiveRange.codec(Codec.INT), "supported_formats").forGetter(PackMetadataSection::supportedFormats))
+                    .apply(in, PackMetadataSection::new)));
+
+    public static Pack readWithOptionalMeta(
+            String id,
+            Component title,
+            boolean required,
+            Pack.ResourcesSupplier resources,
+            PackType type,
+            Pack.Position position,
+            PackSource source) throws IOException {
+        final Pack.Info packInfo = readInfo(type, resources, id, title);
+        return Pack.create(id, title, required, resources, packInfo, position, false, source);
+    }
+
+    private static Pack.Info readInfo(PackType type, Pack.ResourcesSupplier resources, String id, Component title) throws IOException {
+        final int currentVersion = SharedConstants.getCurrentVersion().getPackVersion(type);
+        try (final PackResources primaryResources = resources.openPrimary(id)) {
+            final PackMetadataSection metadata = primaryResources.getMetadataSection(OPTIONAL_FORMAT);
+
+            final FeatureFlagSet flags = Optional.ofNullable(primaryResources.getMetadataSection(FeatureFlagsMetadataSection.TYPE))
+                    .map(FeatureFlagsMetadataSection::flags)
+                    .orElse(FeatureFlagSet.of());
+
+            final List<String> overlays = Optional.ofNullable(primaryResources.getMetadataSection(OverlayMetadataSection.TYPE))
+                    .map(section -> section.overlaysForVersion(currentVersion))
+                    .orElse(List.of());
+
+            if (metadata == null) {
+                return new Pack.Info(title, PackCompatibility.COMPATIBLE, flags, overlays, primaryResources.isHidden());
+            }
+
+            final PackCompatibility compatibility;
+            if (metadata.packFormat() == -1 && metadata.supportedFormats().isEmpty()) {
+                compatibility = PackCompatibility.COMPATIBLE;
+            } else {
+                compatibility = PackCompatibility.forVersion(Pack.getDeclaredPackVersions(id, metadata), currentVersion);
+            }
+            return new Pack.Info(metadata.description(), compatibility, flags, overlays, primaryResources.isHidden());
+        }
     }
 
     private static Pack makePack(PackType packType, ArrayList<Pack> hiddenPacks) {
@@ -156,5 +233,4 @@ public class ResourcePackLoader {
             return i2 - i1;
         };
     }
-
 }

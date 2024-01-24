@@ -11,17 +11,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestServer;
-import net.minecraft.network.Connection;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.protocol.handshake.ClientIntent;
-import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
-import net.minecraft.network.protocol.login.ClientboundLoginDisconnectPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.fml.config.ConfigTracker;
@@ -38,10 +31,6 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.gametest.GameTestHooks;
-import net.neoforged.neoforge.network.ConnectionType;
-import net.neoforged.neoforge.network.NetworkConstants;
-import net.neoforged.neoforge.network.NetworkHooks;
-import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistries.Keys;
 import net.neoforged.neoforge.registries.RegistryManager;
@@ -104,11 +93,9 @@ public class ServerLifecycleHooks {
 
     public static void handleServerStarted(final MinecraftServer server) {
         NeoForge.EVENT_BUS.post(new ServerStartedEvent(server));
-        allowLogins.set(true);
     }
 
     public static void handleServerStopping(final MinecraftServer server) {
-        allowLogins.set(false);
         NeoForge.EVENT_BUS.post(new ServerStoppingEvent(server));
     }
 
@@ -132,50 +119,6 @@ public class ServerLifecycleHooks {
 
     public static MinecraftServer getCurrentServer() {
         return currentServer;
-    }
-
-    private static AtomicBoolean allowLogins = new AtomicBoolean(false);
-
-    public static boolean handleServerLogin(final ClientIntentionPacket packet, final Connection manager) {
-        if (!allowLogins.get()) {
-            MutableComponent text = Component.literal("Server is still starting! Please wait before reconnecting.");
-            LOGGER.info(SERVERHOOKS, "Disconnecting Player (server is still starting): {}", text.getContents());
-            manager.send(new ClientboundLoginDisconnectPacket(text));
-            manager.disconnect(text);
-            return false;
-        }
-
-        if (packet.intention() == ClientIntent.LOGIN) {
-            final ConnectionType connectionType = ConnectionType.forVersionFlag(packet.getFMLVersion());
-            final int versionNumber = connectionType.getFMLVersionNumber(packet.getFMLVersion());
-
-            if (connectionType == ConnectionType.MODDED && versionNumber != NetworkConstants.FMLNETVERSION) {
-                rejectConnection(manager, connectionType, "This modded server is not impl compatible with your modded client. Please verify your NeoForge version closely matches the server. Got net version " + versionNumber + " this server is net version " + NetworkConstants.FMLNETVERSION);
-                return false;
-            }
-
-            if (connectionType == ConnectionType.VANILLA && !NetworkRegistry.acceptsVanillaClientConnections()) {
-                rejectConnection(manager, connectionType, "This server has mods that require NeoForge to be installed on the client. Contact your server admin for more details.");
-                return false;
-            }
-        }
-
-        if (packet.intention() == ClientIntent.STATUS) return true;
-
-        NetworkHooks.registerServerLoginChannel(manager, packet);
-        return true;
-
-    }
-
-    private static void rejectConnection(final Connection manager, ConnectionType type, String message) {
-        manager.setClientboundProtocolAfterHandshake(ClientIntent.LOGIN);
-        String ip = "local";
-        if (manager.getRemoteAddress() != null)
-            ip = manager.getRemoteAddress().toString();
-        LOGGER.info(SERVERHOOKS, "[{}] Disconnecting {} connection attempt: {}", ip, type, message);
-        MutableComponent text = Component.literal(message);
-        manager.send(new ClientboundLoginDisconnectPacket(text));
-        manager.disconnect(text);
     }
 
     public static void handleExit(int retVal) {

@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/multiplayer/CommonListenerCookie.java
++++ b/net/minecraft/client/multiplayer/CommonListenerCookie.java
+@@ -17,6 +_,15 @@
+     FeatureFlagSet enabledFeatures,
+     @Nullable String serverBrand,
+     @Nullable ServerData serverData,
+-    @Nullable Screen postDisconnectScreen
++    @Nullable Screen postDisconnectScreen,
++    boolean isModdedConnection
+ ) {
++
++    /**
++     * @deprecated Use {@link #CommonListenerCookie(GameProfile, WorldSessionTelemetryManager, RegistryAccess.Frozen, FeatureFlagSet, String, ServerData, Screen, boolean)} instead, to indicate whether the connection is modded.
++     */
++    @Deprecated
++    public CommonListenerCookie(GameProfile localGameProfile, WorldSessionTelemetryManager telemetryManager, RegistryAccess.Frozen receivedRegistries, FeatureFlagSet enabledFeatures, @Nullable String serverBrand, @Nullable ServerData serverData, @Nullable Screen postDisconnectScreen) {
++        this(localGameProfile, telemetryManager, receivedRegistries, enabledFeatures, serverBrand, serverData, postDisconnectScreen, false);
++    }
+ }

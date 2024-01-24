@@ -5,11 +5,9 @@
 
 package net.neoforged.neoforge.oldtest.recipebook;
 
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -22,12 +20,11 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterRecipeBookCategoriesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.network.NetworkHooks;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -61,8 +58,9 @@ public class RecipeBookExtensionTest {
     private void onRightClick(PlayerInteractEvent.RightClickBlock event) {
         if (event.getLevel().isClientSide)
             return;
-        if (event.getLevel().getBlockState(event.getPos()).getBlock() == Blocks.GRASS_BLOCK)
-            NetworkHooks.openScreen((ServerPlayer) event.getEntity(), new SimpleMenuProvider((id, inv, p) -> new RecipeBookTestMenu(id, inv, ContainerLevelAccess.create(event.getLevel(), event.getPos())), Component.literal("Test")));
+        if (event.getLevel().getBlockState(event.getPos()).getBlock() == Blocks.GRASS_BLOCK) {
+            event.getEntity().openMenu(new SimpleMenuProvider((id, inv, p) -> new RecipeBookTestMenu(id, inv, ContainerLevelAccess.create(event.getLevel(), event.getPos())), Component.literal("Test")));
+        }
     }
 
     public static ResourceLocation getId(String name) {
@@ -72,12 +70,10 @@ public class RecipeBookExtensionTest {
     @Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class ClientHandler {
         @SubscribeEvent
-        public static void clientSetup(FMLClientSetupEvent event) {
+        public static void clientSetup(RegisterMenuScreensEvent event) {
             if (!ENABLED)
                 return;
-            event.enqueueWork(() -> {
-                MenuScreens.register(RECIPE_BOOK_TEST_MENU_TYPE.get(), RecipeBookTestScreen::new);
-            });
+            event.register(RECIPE_BOOK_TEST_MENU_TYPE.get(), RecipeBookTestScreen::new);
         }
 
         @SubscribeEvent

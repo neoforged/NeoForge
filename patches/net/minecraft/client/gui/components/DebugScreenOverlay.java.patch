@@ -10,7 +10,7 @@
 +            final List<String> systemInformation = new java.util.ArrayList<>();
 +            var event = new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.DebugText(minecraft.getWindow(), p_281427_, minecraft.getFrameTime(), gameInformation, systemInformation);
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
-+            
++
 +            this.drawGameInformation(p_281427_, gameInformation);
 +            this.drawSystemInformation(p_281427_, systemInformation);
              if (this.renderFpsCharts) {
@@ -40,6 +40,20 @@
          this.renderLines(p_281261_, list, false);
      }
  
+@@ -508,6 +_,13 @@
+             GlUtil.getRenderer(),
+             GlUtil.getOpenGLVersion()
+         );
++        if (this.minecraft.isDemo()) {
++            if (this.minecraft.level.getGameTime() >= 120500L) {
++                list.add(0, net.minecraft.network.chat.Component.translatable("demo.demoExpired").getString());
++            } else {
++                list.add(0, net.minecraft.network.chat.Component.translatable("demo.remainingTime", net.minecraft.util.StringUtil.formatTickDuration((int)(120500L - this.minecraft.level.getGameTime()), this.minecraft.level.tickRateManager().tickrate())).getString());
++            }
++        }
+         if (this.minecraft.showOnlyReducedInfo()) {
+             return list;
+         } else {
 @@ -544,6 +_,7 @@
                  list.add("");
                  list.add(ChatFormatting.UNDERLINE + "Targeted Entity");

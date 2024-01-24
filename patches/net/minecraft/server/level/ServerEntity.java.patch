@@ -12,7 +12,7 @@
                  if (mapitemsaveddata != null) {
                      for(ServerPlayer serverplayer : this.level.players()) {
                          mapitemsaveddata.tickCarriedBy(serverplayer, itemstack);
-@@ -219,6 +_,7 @@
+@@ -219,16 +_,18 @@
      public void removePairing(ServerPlayer p_8535_) {
          this.entity.stopSeenByPlayer(p_8535_);
          p_8535_.connection.send(new ClientboundRemoveEntitiesPacket(this.entity.getId()));
@@ -20,11 +20,25 @@
      }
  
      public void addPairing(ServerPlayer p_8542_) {
-@@ -226,6 +_,7 @@
-         this.sendPairingData(p_8542_, list::add);
+-        List<Packet<ClientGamePacketListener>> list = new ArrayList<>();
+-        this.sendPairingData(p_8542_, list::add);
++        List<Packet<? super ClientGamePacketListener>> list = new ArrayList<>();
++        this.sendPairingData(p_8542_, new net.neoforged.neoforge.network.bundle.PacketAndPayloadAcceptor<>(list::add));
          p_8542_.connection.send(new ClientboundBundlePacket(list));
          this.entity.startSeenByPlayer(p_8542_);
 +        net.neoforged.neoforge.event.EventHooks.onStartEntityTracking(this.entity, p_8542_);
      }
  
-     public void sendPairingData(ServerPlayer p_289562_, Consumer<Packet<ClientGamePacketListener>> p_289563_) {
+-    public void sendPairingData(ServerPlayer p_289562_, Consumer<Packet<ClientGamePacketListener>> p_289563_) {
++    public void sendPairingData(ServerPlayer p_289562_, net.neoforged.neoforge.network.bundle.PacketAndPayloadAcceptor<net.minecraft.network.protocol.game.ClientGamePacketListener> p_289563_) {
+         if (this.entity.isRemoved()) {
+             LOGGER.warn("Fetching packet for removed entity {}", this.entity);
+         }
+@@ -236,6 +_,7 @@
+         Packet<ClientGamePacketListener> packet = this.entity.getAddEntityPacket();
+         this.yHeadRotp = Mth.floor(this.entity.getYHeadRot() * 256.0F / 360.0F);
+         p_289563_.accept(packet);
++        this.entity.sendPairingData(p_289562_, p_289563_::accept);
+         if (this.trackedDataValues != null) {
+             p_289563_.accept(new ClientboundSetEntityDataPacket(this.entity.getId(), this.trackedDataValues));
+         }

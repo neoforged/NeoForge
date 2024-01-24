@@ -147,5 +147,4 @@ public abstract class NoteBlockEvent extends BlockEvent {
             return id < 12 ? LOW : id == 24 ? HIGH : MID;
         }
     }
-
 }

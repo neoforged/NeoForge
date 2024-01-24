@@ -64,7 +64,6 @@ import org.jetbrains.annotations.VisibleForTesting;
  * blockstates and their referenced models can be provided in tandem.
  */
 public abstract class BlockStateProvider implements DataProvider {
-
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
 

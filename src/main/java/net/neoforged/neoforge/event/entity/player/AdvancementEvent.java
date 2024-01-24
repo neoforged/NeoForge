@@ -43,7 +43,6 @@ public abstract class AdvancementEvent extends PlayerEvent {
      * @see AdvancementProgress#isDone()
      */
     public static class AdvancementEarnEvent extends AdvancementEvent {
-
         public AdvancementEarnEvent(Player player, AdvancementHolder earned) {
             super(player, earned);
         }

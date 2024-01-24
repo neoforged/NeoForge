@@ -22,7 +22,6 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public final class GameTestRegistration {
-
     public static final Method REGISTER_METHOD = LamdbaExceptionUtils.uncheck(() -> GameTestRegistration.class.getDeclaredMethod("register"));
 
     @GameTestGenerator
@@ -43,9 +42,7 @@ public final class GameTestRegistration {
                             rethrow(helper -> {
                                 ReflectionUtils.addListener(helper, new GameTestListener() {
                                     @Override
-                                    public void testStructureLoaded(GameTestInfo info) {
-
-                                    }
+                                    public void testStructureLoaded(GameTestInfo info) {}
 
                                     @Override
                                     public void testPassed(GameTestInfo info) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/rcon/thread/RconClient.java
 +++ b/net/minecraft/server/rcon/thread/RconClient.java
-@@ -123,16 +_,17 @@
+@@ -123,13 +_,14 @@
      }
  
      private void sendCmdResponse(int p_11595_, String p_11596_) throws IOException {
@@ -19,8 +19,4 @@
 +            start += j;
          } while(0 != i);
      }
--
-+    
-     @Override
-     public void stop() {
-         this.running = false;
+ 

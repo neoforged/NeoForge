@@ -1,5 +1,25 @@
 --- a/net/minecraft/world/entity/ai/goal/RangedCrossbowAttackGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/RangedCrossbowAttackGoal.java
+@@ -12,7 +_,7 @@
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.item.Items;
+ 
+-public class RangedCrossbowAttackGoal<T extends Monster & RangedAttackMob & CrossbowAttackMob> extends Goal {
++public class RangedCrossbowAttackGoal<T extends net.minecraft.world.entity.Mob & CrossbowAttackMob> extends Goal {
+     public static final UniformInt PATHFINDING_DELAY_RANGE = TimeUtil.rangeOfSeconds(1, 2);
+     private final T mob;
+     private RangedCrossbowAttackGoal.CrossbowState crossbowState = RangedCrossbowAttackGoal.CrossbowState.UNCHARGED;
+@@ -22,6 +_,10 @@
+     private int attackDelay;
+     private int updatePathDelay;
+ 
++    public <M extends Monster & CrossbowAttackMob> RangedCrossbowAttackGoal(M p_25814_, double p_25815_, float p_25816_) {
++        this((T) p_25814_, p_25815_, p_25816_);
++    }
++
+     public RangedCrossbowAttackGoal(T p_25814_, double p_25815_, float p_25816_) {
+         this.mob = p_25814_;
+         this.speedModifier = p_25815_;
 @@ -35,7 +_,7 @@
      }
  

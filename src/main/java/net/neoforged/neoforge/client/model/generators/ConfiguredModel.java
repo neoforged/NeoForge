@@ -25,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
  * {@link #builder()}.
  */
 public final class ConfiguredModel {
-
     /**
      * The default random weight of configured models, used by convenience
      * overloads.
@@ -171,7 +170,6 @@ public final class ConfiguredModel {
      *            will be returned upon completion.
      */
     public static class Builder<T> {
-
         private ModelFile model;
         @Nullable
         private final Function<ConfiguredModel[], T> callback;

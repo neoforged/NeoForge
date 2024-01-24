@@ -5,50 +5,69 @@
 
 package net.neoforged.neoforge.network;
 
-import java.util.Arrays;
-import java.util.List;
-import net.neoforged.neoforge.network.event.EventNetworkChannel;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
-import net.neoforged.neoforge.registries.RegistryManager;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.handlers.ClientPayloadHandler;
+import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
+import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
+import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
+import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
+import net.neoforged.neoforge.network.payload.ConfigFilePayload;
+import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
+import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
+import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
+import net.neoforged.neoforge.network.payload.TierSortingRegistryPayload;
+import net.neoforged.neoforge.network.payload.TierSortingRegistrySyncCompletePayload;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import org.jetbrains.annotations.ApiStatus;
 
-class NetworkInitialization {
-
-    public static SimpleChannel getHandshakeChannel() {
-        SimpleChannel handshakeChannel = NetworkRegistry.ChannelBuilder.named(NetworkConstants.FML_HANDSHAKE_RESOURCE).clientAcceptedVersions(a -> true).serverAcceptedVersions(a -> true).networkProtocolVersion(() -> NetworkConstants.NETVERSION).simpleChannel();
-
-        handshakeChannel.simpleLoginMessageBuilder(HandshakeMessages.C2SAcknowledge.class, 99, LoginNetworkDirection.LOGIN_TO_SERVER).decoder(HandshakeMessages.C2SAcknowledge::decode).consumerNetworkThread(HandshakeHandler.indexFirst(HandshakeHandler::handleClientAck)).add();
-
-        handshakeChannel.simpleLoginMessageBuilder(HandshakeMessages.S2CModData.class, 5, LoginNetworkDirection.LOGIN_TO_CLIENT).decoder(HandshakeMessages.S2CModData::decode).markAsLoginPacket().noResponse().consumerNetworkThread(HandshakeHandler.consumerFor(HandshakeHandler::handleModData)).add();
-
-        handshakeChannel.simpleLoginMessageBuilder(HandshakeMessages.S2CModList.class, 1, LoginNetworkDirection.LOGIN_TO_CLIENT).decoder(HandshakeMessages.S2CModList::decode).markAsLoginPacket().consumerNetworkThread(HandshakeHandler.consumerFor(HandshakeHandler::handleServerModListOnClient)).add();
-
-        handshakeChannel.simpleLoginMessageBuilder(HandshakeMessages.C2SModListReply.class, 2, LoginNetworkDirection.LOGIN_TO_SERVER).decoder(HandshakeMessages.C2SModListReply::decode).consumerNetworkThread(HandshakeHandler.indexFirst(HandshakeHandler::handleClientModListOnServer)).add();
-
-        handshakeChannel.simpleLoginMessageBuilder(HandshakeMessages.S2CRegistry.class, 3, LoginNetworkDirection.LOGIN_TO_CLIENT).decoder(HandshakeMessages.S2CRegistry::decode).buildLoginPacketList(RegistryManager::generateRegistryPackets). //TODO: Make this non-static, and store a cache on the client.
-                consumerNetworkThread(HandshakeHandler.consumerFor(HandshakeHandler::handleRegistryMessage)).add();
-
-        handshakeChannel.simpleLoginMessageBuilder(HandshakeMessages.S2CConfigData.class, 4, LoginNetworkDirection.LOGIN_TO_CLIENT).decoder(HandshakeMessages.S2CConfigData::decode).buildLoginPacketList(ConfigSync.INSTANCE::syncConfigs).consumerNetworkThread(HandshakeHandler.consumerFor(HandshakeHandler::handleConfigSync)).add();
-
-        handshakeChannel.simpleLoginMessageBuilder(HandshakeMessages.S2CChannelMismatchData.class, 6, LoginNetworkDirection.LOGIN_TO_CLIENT).decoder(HandshakeMessages.S2CChannelMismatchData::decode).consumerNetworkThread(HandshakeHandler.consumerFor(HandshakeHandler::handleModMismatchData)).add();
-
-        return handshakeChannel;
-    }
-
-    public static SimpleChannel getPlayChannel() {
-        SimpleChannel playChannel = NetworkRegistry.ChannelBuilder.named(NetworkConstants.FML_PLAY_RESOURCE).clientAcceptedVersions(a -> true).serverAcceptedVersions(a -> true).networkProtocolVersion(() -> NetworkConstants.NETVERSION).simpleChannel();
-
-        playChannel.messageBuilder(PlayMessages.SpawnEntity.class, 0).decoder(PlayMessages.SpawnEntity::decode).encoder(PlayMessages.SpawnEntity::encode).consumerMainThread(PlayMessages.SpawnEntity::handle).add();
-
-        playChannel.messageBuilder(PlayMessages.OpenContainer.class, 1).decoder(PlayMessages.OpenContainer::decode).encoder(PlayMessages.OpenContainer::encode).consumerMainThread(PlayMessages.OpenContainer::handle).add();
-
-        return playChannel;
-    }
-
-    public static List<EventNetworkChannel> buildMCRegistrationChannels() {
-        final EventNetworkChannel mcRegChannel = NetworkRegistry.ChannelBuilder.named(NetworkConstants.MC_REGISTER_RESOURCE).clientAcceptedVersions(a -> true).serverAcceptedVersions(a -> true).networkProtocolVersion(() -> NetworkConstants.NETVERSION).eventNetworkChannel();
-        mcRegChannel.addListener(MCRegisterPacketHandler.INSTANCE::registerListener);
-        final EventNetworkChannel mcUnregChannel = NetworkRegistry.ChannelBuilder.named(NetworkConstants.MC_UNREGISTER_RESOURCE).clientAcceptedVersions(a -> true).serverAcceptedVersions(a -> true).networkProtocolVersion(() -> NetworkConstants.NETVERSION).eventNetworkChannel();
-        mcUnregChannel.addListener(MCRegisterPacketHandler.INSTANCE::unregisterListener);
-        return Arrays.asList(mcRegChannel, mcUnregChannel);
+@Mod.EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@ApiStatus.Internal
+public class NetworkInitialization {
+    @SubscribeEvent
+    private static void register(final RegisterPayloadHandlerEvent event) {
+        final IPayloadRegistrar registrar = event.registrar(NeoForgeVersion.MOD_ID)
+                .versioned(NeoForgeVersion.getSpec())
+                .optional();
+        registrar
+                .configuration(
+                        FrozenRegistrySyncStartPayload.ID,
+                        FrozenRegistrySyncStartPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
+                .configuration(
+                        FrozenRegistryPayload.ID,
+                        FrozenRegistryPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
+                .configuration(
+                        FrozenRegistrySyncCompletedPayload.ID,
+                        FrozenRegistrySyncCompletedPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle)
+                                .server(ServerPayloadHandler.getInstance()::handle))
+                .configuration(
+                        TierSortingRegistryPayload.ID,
+                        TierSortingRegistryPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
+                .configuration(
+                        TierSortingRegistrySyncCompletePayload.ID,
+                        TierSortingRegistrySyncCompletePayload::new,
+                        handlers -> handlers.server(ServerPayloadHandler.getInstance()::handle))
+                .configuration(
+                        ConfigFilePayload.ID,
+                        ConfigFilePayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
+                .play(
+                        AdvancedAddEntityPayload.ID,
+                        AdvancedAddEntityPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
+                .play(
+                        AdvancedOpenScreenPayload.ID,
+                        AdvancedOpenScreenPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
+                .play(
+                        AuxiliaryLightDataPayload.ID,
+                        AuxiliaryLightDataPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle));
     }
 }

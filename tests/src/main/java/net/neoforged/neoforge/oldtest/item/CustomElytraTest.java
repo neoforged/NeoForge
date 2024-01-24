@@ -62,7 +62,6 @@ public class CustomElytraTest {
     }
 
     public static class CustomElytra extends Item {
-
         public CustomElytra(Properties properties) {
             super(properties);
             DispenserBlock.registerBehavior(this, ArmorItem.DISPENSE_ITEM_BEHAVIOR);

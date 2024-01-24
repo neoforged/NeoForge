@@ -139,6 +139,9 @@ public final class BlockCapability<T, C> extends BaseCapability<T, C> {
     @ApiStatus.Internal
     @Nullable
     public T getCapability(Level level, BlockPos pos, @Nullable BlockState state, @Nullable BlockEntity blockEntity, C context) {
+        // Convert pos to immutable, it's easy to forget otherwise
+        pos = pos.immutable();
+
         // Get block state and block entity if they were not provided
         if (blockEntity == null) {
             if (state == null)

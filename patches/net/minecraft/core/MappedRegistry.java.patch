@@ -9,20 +9,7 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      final ResourceKey<? extends Registry<T>> key;
      private final ObjectList<Holder.Reference<T>> byId = new ObjectArrayList<>(256);
-@@ -123,10 +_,22 @@
-         }
-     }
- 
-+    private static final Set<ResourceLocation> KNOWN = new java.util.LinkedHashSet<>();
-+    public static Set<ResourceLocation> getKnownRegistries() {
-+        return java.util.Collections.unmodifiableSet(KNOWN);
-+    }
-+    protected final void markKnown() {
-+        KNOWN.add(key().location());
-+    }
-+
-     public Holder.Reference<T> registerMapping(int p_256563_, ResourceKey<T> p_256594_, T p_256374_, Lifecycle p_256469_) {
-+        markKnown();
+@@ -127,6 +_,9 @@
          this.validateWrite(p_256594_);
          Validate.notNull(p_256594_);
          Validate.notNull(p_256374_);
@@ -83,6 +70,15 @@
              if (this.unregisteredIntrusiveHolders != null) {
                  throw new IllegalStateException("This registry can't create new holders without value");
              } else {
+@@ -247,7 +_,7 @@
+     @Nullable
+     @Override
+     public T get(@Nullable ResourceLocation p_122739_) {
+-        Holder.Reference<T> reference = this.byLocation.get(p_122739_);
++        Holder.Reference<T> reference = this.byLocation.get(resolve(p_122739_));
+         return getValueFromNullable(reference);
+     }
+ 
 @@ -323,13 +_,18 @@
          return this.byKey.containsKey(p_175392_);
      }
@@ -162,12 +158,12 @@
 +
 +    @Override
 +    public int getId(ResourceLocation name) {
-+        return toId.getOrDefault(get(name), -1);
++        return getId(get(name));
 +    }
 +
 +    @Override
 +    public int getId(ResourceKey<T> key) {
-+        return toId.getOrDefault(get(key), -1);
++        return getId(get(key));
 +    }
 +
 +    @Override

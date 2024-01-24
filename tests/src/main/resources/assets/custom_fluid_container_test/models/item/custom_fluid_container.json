@@ -1,6 +1,11 @@
 {
-  "parent": "item/generated",
+  "parent": "neoforge:item/default",
+  "loader": "neoforge:fluid_container",
+  "fluid": "minecraft:empty",
+  "cover_is_mask": true,
   "textures": {
-    "layer0": "item/bucket"
+    "base": "item/bucket",
+    "fluid": "neoforge:item/mask/bucket_fluid_drip",
+    "cover": "neoforge:item/mask/bucket_fluid_cover_drip"
   }
 }

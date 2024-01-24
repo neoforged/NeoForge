@@ -10,7 +10,9 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
@@ -18,6 +20,9 @@ import net.minecraft.gametest.framework.GameTestListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerLevel;
@@ -32,6 +37,14 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     public GameTestPlayer(MinecraftServer server, ServerLevel level, GameProfile profile, ClientInformation information, GameTestHelper helper) {
         super(server, level, profile, information);
         this.helper = helper;
+    }
+
+    @Override
+    public void moveTo(double x, double y, double z) {
+        super.moveTo(x, y, z);
+        this.serverLevel().getChunkSource().move(this); //We need to move the player to the correct chunk
+        this.connection.chunkSender.sendNextChunks(this); //And send the chunks to the player
+        this.connection.chunkSender.onChunkBatchReceivedByClient(64f); //Also mark them as received.
     }
 
     public GameTestPlayer moveToCorner() {
@@ -52,9 +65,7 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     }
 
     @Override
-    public void testStructureLoaded(GameTestInfo i) {
-
-    }
+    public void testStructureLoaded(GameTestInfo i) {}
 
     @Override
     public void testPassed(GameTestInfo i) {
@@ -79,8 +90,26 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
         this.listeners.clear();
     }
 
-    public <T extends Packet<? extends ClientCommonPacketListener>> Stream<T> getOutboundPackets(Class<T> type) {
+    @SuppressWarnings("unchecked")
+    private Stream<Packet<? extends ClientCommonPacketListener>> outboundPackets() {
         return ((EmbeddedChannel) connection.connection.channel()).outboundMessages().stream()
-                .filter(type::isInstance).map(type::cast);
+                .filter(Packet.class::isInstance).map(obj -> (Packet<? extends ClientCommonPacketListener>) obj)
+                .flatMap((Function<Packet<? extends ClientCommonPacketListener>, Stream<? extends Packet<? extends ClientCommonPacketListener>>>) packet -> {
+                    if (!(packet instanceof ClientboundBundlePacket clientboundBundlePacket)) return Stream.of(packet);
+
+                    return StreamSupport.stream(clientboundBundlePacket.subPackets().spliterator(), false)
+                            .map(obj -> (Packet<? extends ClientCommonPacketListener>) obj);
+                });
+    }
+
+    public <T extends Packet<? extends ClientCommonPacketListener>> Stream<T> getOutboundPackets(Class<T> type) {
+        return outboundPackets().filter(type::isInstance).map(type::cast);
+    }
+
+    public <T extends CustomPacketPayload> Stream<T> getOutboundPayloads(Class<T> type) {
+        return getOutboundPackets(ClientboundCustomPayloadPacket.class)
+                .map(ClientboundCustomPayloadPacket::payload)
+                .filter(type::isInstance)
+                .map(type::cast);
     }
 }

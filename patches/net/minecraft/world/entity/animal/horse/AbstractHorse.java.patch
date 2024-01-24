@@ -12,6 +12,19 @@
              }
  
              if (this.isVehicle() && this.canGallop) {
+@@ -669,6 +_,12 @@
+                 this.mouthAnim = 0.0F;
+             }
+         }
++
++        // Neo: Horse armor tick patch
++        if (this.canWearArmor()) {
++            ItemStack stack = this.inventory.getItem(1);
++            if (isArmor(stack)) stack.onHorseArmorTick(level(), this);
++        }
+     }
+ 
+     @Override
 @@ -802,6 +_,7 @@
          this.setDeltaMovement(vec3.x, d1, vec3.z);
          this.setIsJumping(true);

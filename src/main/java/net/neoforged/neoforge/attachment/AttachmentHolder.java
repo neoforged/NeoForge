@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.attachment;
 
+import com.mojang.logging.LogUtils;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -15,6 +16,7 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * Implementation class for objects that can hold data attachments.
@@ -23,28 +25,54 @@ import org.jetbrains.annotations.Nullable;
 public abstract class AttachmentHolder implements IAttachmentHolder {
     public static final String ATTACHMENTS_NBT_KEY = "neoforge:attachments";
     private static final boolean IN_DEV = !FMLLoader.isProduction();
+    private static final Logger LOGGER = LogUtils.getLogger();
 
-    private static void validateAttachmentType(AttachmentType<?> type) {
+    private void validateAttachmentType(AttachmentType<?> type) {
         Objects.requireNonNull(type);
         if (!IN_DEV) return;
 
         if (!NeoForgeRegistries.ATTACHMENT_TYPES.containsValue(type)) {
-            throw new IllegalArgumentException("Data attachment type with default value " + type.defaultValueSupplier.get() + " must be registered!");
+            throw new IllegalArgumentException("Data attachment type with default value " + type.defaultValueSupplier.apply(getExposedHolder()) + " must be registered!");
         }
     }
 
-    final Map<AttachmentType<?>, Object> attachments = new IdentityHashMap<>();
+    @Nullable
+    Map<AttachmentType<?>, Object> attachments = null;
+
+    /**
+     * Create the attachment map if it does not yet exist, or return the current map.
+     */
+    final Map<AttachmentType<?>, Object> getAttachmentMap() {
+        if (attachments == null) {
+            attachments = new IdentityHashMap<>(4);
+        }
+        return attachments;
+    }
+
+    /**
+     * Returns the attachment holder that is exposed to the user.
+     * This is the same as {@code this} for most cases,
+     * but when using {@link AsField} it is the field holder.
+     */
+    IAttachmentHolder getExposedHolder() {
+        return this;
+    }
 
     @Override
     public final boolean hasData(AttachmentType<?> type) {
         validateAttachmentType(type);
-        return attachments.containsKey(type);
+        return attachments != null && attachments.containsKey(type);
     }
 
     @Override
     public final <T> T getData(AttachmentType<T> type) {
         validateAttachmentType(type);
-        return (T) attachments.computeIfAbsent(type, t -> Objects.requireNonNull(t.defaultValueSupplier.get()));
+        T ret = (T) getAttachmentMap().get(type);
+        if (ret == null) {
+            ret = type.defaultValueSupplier.apply(getExposedHolder());
+            attachments.put(type, ret);
+        }
+        return ret;
     }
 
     @Override
@@ -52,7 +80,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     public <T> @Nullable T setData(AttachmentType<T> type, T data) {
         validateAttachmentType(type);
         Objects.requireNonNull(data);
-        return (T) attachments.put(type, data);
+        return (T) getAttachmentMap().put(type, data);
     }
 
     /**
@@ -61,6 +89,9 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      */
     @Nullable
     public final CompoundTag serializeAttachments() {
+        if (attachments == null) {
+            return null;
+        }
         CompoundTag tag = null;
         for (var entry : attachments.entrySet()) {
             var type = entry.getKey();
@@ -80,11 +111,20 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         for (var key : tag.getAllKeys()) {
             // Use tryParse to not discard valid attachment type keys, even if there is a malformed key.
             ResourceLocation keyLocation = ResourceLocation.tryParse(key);
-            if (keyLocation != null) {
-                var type = NeoForgeRegistries.ATTACHMENT_TYPES.get(keyLocation);
-                if (type != null && type.serializer != null) {
-                    attachments.put(type, ((IAttachmentSerializer<Tag, ?>) type.serializer).read(tag.get(key)));
-                }
+            if (keyLocation == null) {
+                LOGGER.error("Encountered invalid data attachment key {}. Skipping.", key);
+                continue;
+            }
+
+            var type = NeoForgeRegistries.ATTACHMENT_TYPES.get(keyLocation);
+            if (type == null || type.serializer == null) {
+                LOGGER.error("Encountered unknown or non-serializable data attachment {}. Skipping.", key);
+            }
+
+            try {
+                getAttachmentMap().put(type, ((IAttachmentSerializer<Tag, ?>) type.serializer).read(getExposedHolder(), tag.get(key)));
+            } catch (Exception exception) {
+                LOGGER.error("Failed to deserialize data attachment {}. Skipping.", key, exception);
             }
         }
     }
@@ -99,24 +139,27 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      * @return {@code true} if the attachments are compatible, {@code false} otherwise
      */
     public static <H extends AttachmentHolder> boolean areAttachmentsCompatible(H first, H second) {
-        for (var entry : first.attachments.entrySet()) {
+        Map<AttachmentType<?>, Object> firstAttachments = first.attachments != null ? first.attachments : Map.of();
+        Map<AttachmentType<?>, Object> secondAttachments = second.attachments != null ? second.attachments : Map.of();
+
+        for (var entry : firstAttachments.entrySet()) {
             AttachmentType<Object> type = (AttachmentType<Object>) entry.getKey();
             if (type.serializer != null) {
-                var otherData = second.attachments.get(type);
+                var otherData = secondAttachments.get(type);
                 if (otherData == null)
                     // TODO: cache serialization of default value?
-                    otherData = type.defaultValueSupplier.get();
+                    otherData = type.defaultValueSupplier.apply(second.getExposedHolder());
                 if (!type.comparator.areCompatible(entry.getValue(), otherData))
                     return false;
             }
         }
-        for (var entry : second.attachments.entrySet()) {
+        for (var entry : secondAttachments.entrySet()) {
             AttachmentType<Object> type = (AttachmentType<Object>) entry.getKey();
             if (type.serializer != null) {
-                var data = first.attachments.get(type);
+                var data = firstAttachments.get(type);
                 if (data != null)
                     continue; // already checked in the first loop
-                data = type.defaultValueSupplier.get();
+                data = type.defaultValueSupplier.apply(first.getExposedHolder());
                 if (!type.comparator.areCompatible(entry.getValue(), data))
                     return false;
             }
@@ -130,6 +173,17 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      * for example because the class already has a supertype.
      */
     public static class AsField extends AttachmentHolder {
+        private final IAttachmentHolder exposedHolder;
+
+        public AsField(IAttachmentHolder exposedHolder) {
+            this.exposedHolder = exposedHolder;
+        }
+
+        @Override
+        IAttachmentHolder getExposedHolder() {
+            return exposedHolder;
+        }
+
         public void deserializeInternal(CompoundTag tag) {
             deserializeAttachments(tag);
         }

@@ -18,7 +18,6 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
-
     public NeoForgeBiomeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, "neoforge", existingFileHelper);
     }
