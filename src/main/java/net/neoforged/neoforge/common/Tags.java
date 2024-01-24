@@ -106,9 +106,9 @@ public class Tags {
 
         public static final TagKey<Block> GRAVELS = tag("gravel");
         /**
-         * Tag that holds all head based blocks such as Skeleton Skull or Player Head.
+         * Tag that holds all head based blocks such as Skeleton Skull or Player Head. (Named skulls to match minecraft:skulls item tag)
          */
-        public static final TagKey<Block> HEADS = tag("heads");
+        public static final TagKey<Block> SKULLS = tag("skulls");
         /**
          * Tag that holds all blocks that recipe viewers should not show to users.
          */
@@ -404,14 +404,6 @@ public class Tags {
 
         public static final TagKey<Item> GRAVELS = tag("gravel");
         public static final TagKey<Item> GUNPOWDERS = tag("gunpowder");
-        /**
-         * Tag that holds all head based blocks such as Skeleton Skull or Player Head.
-         * <p></p>
-         * Note: If you don't want Player Head in recipe, use custom ingredients to do tag exclusions to exclude Player Head.
-         * See {@link net.neoforged.neoforge.common.crafting.DifferenceIngredient} and {@link net.neoforged.neoforge.common.crafting.CompoundIngredient}
-         * for various custom ingredients available that can also be used in data generation.
-         */
-        public static final TagKey<Item> HEADS = tag("heads");
         /**
          * Tag that holds all items that recipe viewers should not show to users.
          */
