@@ -54,9 +54,9 @@ dependencies {
     implementation neoforgeProject
     implementation testframeworkProject
 
-    implementation "org.junit.jupiter:junit-jupiter-api:${project.jupiter_api_version}"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${project.jupiter_api_version}"
-    implementation "org.junit.vintage:junit-vintage-engine:${project.vintage_engine_version}"
+    testImplementation(platform("org.junit:junit-bom:${project.jupiter_api_version}"))
+    testImplementation "org.junit.jupiter:junit-jupiter-params"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
 
     testImplementation("org.assertj:assertj-core:${project.assertj_core}")
     testImplementation(project(':neoforge-junit-utils'))

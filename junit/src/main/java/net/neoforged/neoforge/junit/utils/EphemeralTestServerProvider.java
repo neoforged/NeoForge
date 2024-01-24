@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.junit.utils;
 
 import com.google.common.base.Stopwatch;
@@ -5,15 +10,22 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.yggdrasil.ServicesKeySet;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
+import java.io.IOException;
+import java.net.Proxy;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BooleanSupplier;
 import net.minecraft.SystemReport;
 import net.minecraft.Util;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.Services;
 import net.minecraft.server.WorldLoader;
@@ -45,17 +57,6 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.slf4j.Logger;
 
-import java.io.IOException;
-import java.net.Proxy;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BooleanSupplier;
-
 public class EphemeralTestServerProvider implements ParameterResolver, Extension {
     public static final AtomicReference<MinecraftServer> SERVER = new AtomicReference<>();
     public static final AtomicBoolean IN_CONSTRUCTION = new AtomicBoolean();
@@ -83,8 +84,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
                 LevelStorageSource.LevelStorageAccess storageAccess = storage.validateAndCreateAccess("main");
                 PackRepository packrepository = ServerPacksSource.createPackRepository(storageAccess);
                 final MinecraftServer server = MinecraftServer.spin(
-                        thread -> JUnitServer.create(thread, tempDir, storageAccess, packrepository)
-                );
+                        thread -> JUnitServer.create(thread, tempDir, storageAccess, packrepository));
 
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     server.stopServer();
@@ -117,15 +117,12 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
         private static final WorldOptions WORLD_OPTIONS = new WorldOptions(0L, false, false);
 
         public static JUnitServer create(
-                Thread thread, Path tempDir, LevelStorageSource.LevelStorageAccess access, PackRepository resources
-        ) {
+                Thread thread, Path tempDir, LevelStorageSource.LevelStorageAccess access, PackRepository resources) {
             resources.reload();
             WorldDataConfiguration config = new WorldDataConfiguration(
-                    new DataPackConfig(new ArrayList<>(resources.getAvailableIds()), List.of()), FeatureFlags.REGISTRY.allFlags()
-            );
+                    new DataPackConfig(new ArrayList<>(resources.getAvailableIds()), List.of()), FeatureFlags.REGISTRY.allFlags());
             LevelSettings levelsettings = new LevelSettings(
-                    "Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, TEST_GAME_RULES, config
-            );
+                    "Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, TEST_GAME_RULES, config);
             WorldLoader.PackConfig worldloader$packconfig = new WorldLoader.PackConfig(resources, config, false, true);
             WorldLoader.InitConfig worldloader$initconfig = new WorldLoader.InitConfig(worldloader$packconfig, Commands.CommandSelection.DEDICATED, 4);
 
@@ -133,28 +130,24 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
                 LOGGER.debug("Starting resource loading");
                 Stopwatch stopwatch = Stopwatch.createStarted();
                 WorldStem worldstem = Util.blockUntilDone(
-                                exec -> WorldLoader.load(
-                                        worldloader$initconfig,
-                                        ctx -> {
-                                            Registry<LevelStem> registry = new MappedRegistry<>(Registries.LEVEL_STEM, Lifecycle.stable()).freeze();
-                                            WorldDimensions.Complete worlddimensions$complete = ctx.datapackWorldgen()
-                                                    .registryOrThrow(Registries.WORLD_PRESET)
-                                                    .getHolderOrThrow(WorldPresets.FLAT)
-                                                    .value()
-                                                    .createWorldDimensions()
-                                                    .bake(registry);
-                                            return new WorldLoader.DataLoadOutput<>(
-                                                    new PrimaryLevelData(
-                                                            levelsettings, WORLD_OPTIONS, worlddimensions$complete.specialWorldProperty(), worlddimensions$complete.lifecycle()
-                                                    ),
-                                                    worlddimensions$complete.dimensionsRegistryAccess()
-                                            );
-                                        },
-                                        WorldStem::new,
-                                        Util.backgroundExecutor(),
-                                        exec
-                                )
-                        )
+                        exec -> WorldLoader.load(
+                                worldloader$initconfig,
+                                ctx -> {
+                                    Registry<LevelStem> registry = new MappedRegistry<>(Registries.LEVEL_STEM, Lifecycle.stable()).freeze();
+                                    WorldDimensions.Complete worlddimensions$complete = ctx.datapackWorldgen()
+                                            .registryOrThrow(Registries.WORLD_PRESET)
+                                            .getHolderOrThrow(WorldPresets.FLAT)
+                                            .value()
+                                            .createWorldDimensions()
+                                            .bake(registry);
+                                    return new WorldLoader.DataLoadOutput<>(
+                                            new PrimaryLevelData(
+                                                    levelsettings, WORLD_OPTIONS, worlddimensions$complete.specialWorldProperty(), worlddimensions$complete.lifecycle()),
+                                            worlddimensions$complete.dimensionsRegistryAccess());
+                                },
+                                WorldStem::new,
+                                Util.backgroundExecutor(),
+                                exec))
                         .get();
                 stopwatch.stop();
                 LOGGER.debug("Finished resource loading after {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
@@ -167,6 +160,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
         }
 
         private final Path tempDir;
+
         public JUnitServer(
                 Thread thread,
                 LevelStorageSource.LevelStorageAccess access,
