@@ -1,0 +1,13 @@
+--- a/net/minecraft/core/registries/BuiltInRegistries.java
++++ b/net/minecraft/core/registries/BuiltInRegistries.java
+@@ -346,6 +_,10 @@
+         });
+     }
+ 
++    public static java.util.Set<ResourceLocation> getVanillaRegistrationOrder() {
++        return java.util.Collections.unmodifiableSet(LOADERS.keySet());
++    }
++
+     @FunctionalInterface
+     interface RegistryBootstrap<T> {
+         T run(Registry<T> p_260128_);
