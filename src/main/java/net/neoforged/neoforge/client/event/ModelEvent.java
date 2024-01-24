@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client.event;
 import com.google.common.base.Preconditions;
 import java.util.Map;
 import java.util.Set;
+import net.minecraft.client.resources.model.AtlasSet;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
@@ -44,11 +45,13 @@ public abstract class ModelEvent extends Event {
      */
     public static class ModifyBakingResult extends ModelEvent implements IModBusEvent {
         private final Map<ResourceLocation, BakedModel> models;
+        private final Map<ResourceLocation, AtlasSet.StitchResult> stitchResults;
         private final ModelBakery modelBakery;
 
         @ApiStatus.Internal
-        public ModifyBakingResult(Map<ResourceLocation, BakedModel> models, ModelBakery modelBakery) {
+        public ModifyBakingResult(Map<ResourceLocation, BakedModel> models, Map<ResourceLocation, AtlasSet.StitchResult> stitchResults, ModelBakery modelBakery) {
             this.models = models;
+            this.stitchResults = stitchResults;
             this.modelBakery = modelBakery;
         }
 
@@ -57,6 +60,15 @@ public abstract class ModelEvent extends Event {
          */
         public Map<ResourceLocation, BakedModel> getModels() {
             return models;
+        }
+
+        /**
+         * {@return an unmodifiable view of the preliminary atlas stitch results}
+         * @apiNote Looking up sprites from an {@link AtlasSet.StitchResult} does not handle missing sprites automatically,
+         * the fallback to the missing sprite must be implemented manually
+         */
+        public Map<ResourceLocation, AtlasSet.StitchResult> getAtlasStitchResults() {
+            return stitchResults;
         }
 
         /**

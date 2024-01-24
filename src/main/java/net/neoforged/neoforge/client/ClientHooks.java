@@ -79,6 +79,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.client.resources.model.AtlasSet;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
@@ -425,8 +426,8 @@ public class ClientHooks {
         return event;
     }
 
-    public static void onModifyBakingResult(Map<ResourceLocation, BakedModel> models, ModelBakery modelBakery) {
-        ModLoader.get().postEvent(new ModelEvent.ModifyBakingResult(models, modelBakery));
+    public static void onModifyBakingResult(Map<ResourceLocation, BakedModel> models, Map<ResourceLocation, AtlasSet.StitchResult> stitchResults, ModelBakery modelBakery) {
+        ModLoader.get().postEvent(new ModelEvent.ModifyBakingResult(models, Collections.unmodifiableMap(stitchResults), modelBakery));
     }
 
     public static void onModelBake(ModelManager modelManager, Map<ResourceLocation, BakedModel> models, ModelBakery modelBakery) {
