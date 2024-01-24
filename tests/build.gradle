@@ -1,7 +1,14 @@
+import net.neoforged.gradle.dsl.common.runs.task.extensions.TestTaskExtension
+
+plugins {
+    id 'net.neoforged.gradle.junit' version '7.0.124-junit' apply false
+}
+
 apply plugin: 'net.neoforged.gradle.platform'
 apply plugin: 'java'
 apply plugin: 'com.diffplug.spotless'
 apply plugin: 'net.neoforged.licenser'
+apply plugin: 'net.neoforged.gradle.junit'
 
 def neoforgeProject = project(':neoforge')
 def testframeworkProject = project(':testframework')
@@ -28,14 +35,32 @@ sourceSets {
     }
 }
 
+runTypes {
+    junit {
+        from neoforgeProject.runTypes.junit
+        runAdapter = neoforgeProject.runTypes.junit.runAdapter
+    }
+}
+
+test {
+    useJUnitPlatform()
+    extensions.configure(TestTaskExtension) {
+        // We need the classes of Neo to be available
+        it.testSource neoforgeProject.sourceSets.main
+    }
+}
+
 dependencies {
     implementation neoforgeProject
     implementation testframeworkProject
 
     implementation "org.junit.jupiter:junit-jupiter-api:${project.jupiter_api_version}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${project.jupiter_api_version}"
     implementation "org.junit.vintage:junit-vintage-engine:${project.vintage_engine_version}"
-    implementation "org.opentest4j:opentest4j:${project.opentest4j_version}"
-    implementation "org.hamcrest:hamcrest-all:${project.hamcrest_version}"
+
+    testImplementation("org.assertj:assertj-core:${project.assertj_core}")
+    testImplementation(project(':neoforge-junit-utils'))
+    testImplementation "net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}"
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
 }

@@ -52,11 +52,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 
 public class EphemeralTestServerProvider implements ParameterResolver, Extension {
     public static final AtomicReference<MinecraftServer> SERVER = new AtomicReference<>();
+    public static final AtomicBoolean IN_CONSTRUCTION = new AtomicBoolean();
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
@@ -73,22 +75,25 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
             return ServerLifecycleHooks.getCurrentServer();
         }
 
-        try {
-            final var tempDir = Files.createTempDirectory("test-mc-server-");
-            LevelStorageSource storage = LevelStorageSource.createDefault(tempDir.resolve("world"));
-            LevelStorageSource.LevelStorageAccess storageAccess = storage.validateAndCreateAccess("main");
-            PackRepository packrepository = ServerPacksSource.createPackRepository(storageAccess);
-            final MinecraftServer server = MinecraftServer.spin(
-                    thread -> JUnitServer.create(thread, tempDir, storageAccess, packrepository)
-            );
+        if (!IN_CONSTRUCTION.get()) {
+            IN_CONSTRUCTION.set(true);
+            try {
+                final var tempDir = Files.createTempDirectory("test-mc-server-");
+                LevelStorageSource storage = LevelStorageSource.createDefault(tempDir.resolve("world"));
+                LevelStorageSource.LevelStorageAccess storageAccess = storage.validateAndCreateAccess("main");
+                PackRepository packrepository = ServerPacksSource.createPackRepository(storageAccess);
+                final MinecraftServer server = MinecraftServer.spin(
+                        thread -> JUnitServer.create(thread, tempDir, storageAccess, packrepository)
+                );
 
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                server.stopServer();
-                LogManager.shutdown();
-            }));
-        } catch (Exception exception1) {
-            LogUtils.getLogger().error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", exception1);
-            throw new RuntimeException(exception1);
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    server.stopServer();
+                    LogManager.shutdown();
+                }));
+            } catch (Exception ex) {
+                LogUtils.getLogger().error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", ex);
+                throw new RuntimeException(ex);
+            }
         }
 
         while (SERVER.get() == null) {
