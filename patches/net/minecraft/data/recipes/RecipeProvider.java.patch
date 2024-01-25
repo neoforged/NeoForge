@@ -1,28 +1,16 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
-@@ -46,6 +_,8 @@
- public abstract class RecipeProvider implements DataProvider {
-     protected final PackOutput.PathProvider recipePathProvider;
-     protected final PackOutput.PathProvider advancementPathProvider;
-+    @Deprecated(forRemoval = true, since = "1.20.4") // TODO: remove in 1.20.5
-+    protected final CompletableFuture<net.minecraft.core.HolderLookup.Provider> lookupProvider;
-     private static final Map<BlockFamily.Variant, BiFunction<ItemLike, ItemLike, RecipeBuilder>> SHAPE_BUILDERS = ImmutableMap.<BlockFamily.Variant, BiFunction<ItemLike, ItemLike, RecipeBuilder>>builder(
-             
-         )
-@@ -67,8 +_,13 @@
+@@ -66,6 +_,10 @@
+         .put(BlockFamily.Variant.WALL, (p_248024_, p_248025_) -> wallBuilder(RecipeCategory.DECORATIONS, p_248024_, Ingredient.of(p_248025_)))
          .build();
  
-     public RecipeProvider(PackOutput p_248933_) {
-+        this(p_248933_, CompletableFuture.completedFuture(net.minecraft.core.RegistryAccess.EMPTY));
-+    }
 +    @Deprecated(forRemoval = true, since = "1.20.4") // TODO: remove in 1.20.5
 +    public RecipeProvider(PackOutput p_248933_, CompletableFuture<net.minecraft.core.HolderLookup.Provider> lookupProvider) {
++        this(p_248933_);
++    }
+     public RecipeProvider(PackOutput p_248933_) {
          this.recipePathProvider = p_248933_.createPathProvider(PackOutput.Target.DATA_PACK, "recipes");
          this.advancementPathProvider = p_248933_.createPathProvider(PackOutput.Target.DATA_PACK, "advancements");
-+        this.lookupProvider = lookupProvider;
-     }
- 
-     @Override
 @@ -78,15 +_,15 @@
          this.buildRecipes(
              new RecipeOutput() {
