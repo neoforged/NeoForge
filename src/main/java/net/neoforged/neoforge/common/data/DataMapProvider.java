@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.common.data;
 
-import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
@@ -13,7 +12,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -61,19 +60,16 @@ public abstract class DataMapProvider implements DataProvider {
 
     @Override
     public CompletableFuture<?> run(CachedOutput cache) {
-        ImmutableList.Builder<CompletableFuture<?>> futuresBuilder = new ImmutableList.Builder<>();
-
         gather();
 
         return lookupProvider.thenCompose(provider -> {
             final DynamicOps<JsonElement> dynamicOps = ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, provider), ICondition.IContext.EMPTY);
 
-            this.builders.forEach((type, builder) -> {
-                final Path path = this.pathProvider.json(new ResourceLocation(type.id().getNamespace(), DataMapLoader.getFolderLocation(type.registryKey().location()) + "/" + type.id().getPath()));
-                futuresBuilder.add(generate(path, cache, builder, dynamicOps));
-            });
-
-            return CompletableFuture.allOf(futuresBuilder.build().toArray(CompletableFuture[]::new));
+            return CompletableFuture.allOf(this.builders.entrySet().stream().map(entry -> {
+                DataMapType<?, ?> type = entry.getKey();
+                final Path path = this.pathProvider.json(type.id().withPrefix(DataMapLoader.getFolderLocation(type.registryKey().location()) + "/"));
+                return generate(path, cache, entry.getValue(), dynamicOps);
+            }).toArray(CompletableFuture[]::new));
         });
     }
 
@@ -92,8 +88,8 @@ public abstract class DataMapProvider implements DataProvider {
     @SuppressWarnings("unchecked")
     public <T, R> Builder<T, R> builder(DataMapType<T, R> type) {
         // Avoid any weird classcastexceptions at runtime if a builder was previously created with this method
-        if (type instanceof AdvancedDataMapType<?, ?, ?> advanced) {
-            return (Builder<T, R>) builder(advanced);
+        if (type instanceof AdvancedDataMapType<T, R, ?> advanced) {
+            return builder(advanced);
         }
         return (Builder<T, R>) builders.computeIfAbsent(type, k -> new Builder<>(type));
     }
@@ -109,12 +105,13 @@ public abstract class DataMapProvider implements DataProvider {
     }
 
     public static class Builder<T, R> {
-        private boolean replace;
         private final Map<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapEntry<T>>>> values = new LinkedHashMap<>();
         protected final List<DataMapEntry.Removal<T, R>> removals = new ArrayList<>();
         protected final ResourceKey<Registry<R>> registryKey;
         private final DataMapType<T, R> type;
         private final List<ICondition> conditions = new ArrayList<>();
+
+        private boolean replace;
 
         public Builder(DataMapType<T, R> type) {
             this.type = type;
@@ -131,8 +128,7 @@ public abstract class DataMapProvider implements DataProvider {
         }
 
         public Builder<T, R> add(Holder<R> object, T value, boolean replace, ICondition... conditions) {
-            this.values.put(Either.right(object.unwrapKey().orElseThrow()), Optional.of(new WithConditions<>(new DataMapEntry<>(value, replace), conditions)));
-            return this;
+            return add(object.unwrapKey().orElseThrow(), value, replace, conditions);
         }
 
         public Builder<T, R> add(TagKey<R> tag, T value, boolean replace, ICondition... conditions) {
@@ -161,7 +157,7 @@ public abstract class DataMapProvider implements DataProvider {
         }
 
         public Builder<T, R> conditions(ICondition... conditions) {
-            this.conditions.addAll(Arrays.asList(conditions));
+            Collections.addAll(this.conditions, conditions);
             return this;
         }
 

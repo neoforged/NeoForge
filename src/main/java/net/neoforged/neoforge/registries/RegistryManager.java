@@ -67,9 +67,9 @@ public class RegistryManager {
     }
 
     @Nullable
-    public static <T> DataMapType<?, T> getDataMap(ResourceKey<? extends Registry<T>> registry, ResourceLocation key) {
+    public static <R> DataMapType<?, R> getDataMap(ResourceKey<? extends Registry<R>> registry, ResourceLocation key) {
         final var map = dataMaps.get(registry);
-        return map == null ? null : (DataMapType<?, T>) map.get(key);
+        return map == null ? null : (DataMapType<?, R>) map.get(key);
     }
 
     /**

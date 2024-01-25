@@ -64,6 +64,10 @@ public sealed class DataMapType<T, R> permits AdvancedDataMapType {
 
     DataMapType(ResourceKey<Registry<R>> registryKey, ResourceLocation id, Codec<T> codec, @Nullable Codec<T> networkCodec, boolean mandatorySync) {
         Preconditions.checkArgument(networkCodec != null || !mandatorySync, "Mandatory sync cannot be enabled when the attachment isn't synchronized");
+        Preconditions.checkArgument(registryKey != null, "registryKey must not be null");
+        Preconditions.checkArgument(codec != null, "codec must not be null");
+        Preconditions.checkArgument(id != null, "id must not be null");
+
         this.registryKey = registryKey;
         this.id = id;
         this.codec = codec;

@@ -34,18 +34,15 @@ public record RegistryDataMapNegotiation(ServerConfigurationPacketListener liste
     @Override
     public void run(Consumer<CustomPacketPayload> sender) {
         if (listener.isVanillaConnection()) {
-            final var anyMandatory = RegistryManager.getDataMaps().values()
-                    .stream().anyMatch(map -> map.values().stream().anyMatch(DataMapType::mandatorySync));
-            if (anyMandatory) {
-                final List<String> text = new ArrayList<>();
-                RegistryManager.getDataMaps().forEach((registry, maps) -> maps.forEach((id, map) -> {
-                    if (map.mandatorySync()) {
-                        text.add(id + " ( " + registry.location() + ")");
-                    }
-                }));
-
+            final var mandatory = RegistryManager.getDataMaps().values()
+                    .stream()
+                    .flatMap(map -> map.values().stream())
+                    .filter(DataMapType::mandatorySync)
+                    .map(type -> type.id() + " (" + type.registryKey().location() + ")")
+                    .toList();
+            if (!mandatory.isEmpty()) {
                 // Use plain components as vanilla connections will be missing our translation keys
-                listener.disconnect(Component.literal("This server does not support vanilla clients as it has mandatory registry data maps: " + String.join(", ", text)));
+                listener.disconnect(Component.literal("This server does not support vanilla clients as it has mandatory registry data maps: " + String.join(", ", mandatory)));
                 return;
             }
         }

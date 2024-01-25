@@ -29,7 +29,7 @@ public record DataMapFile<T, R>(
                 e -> e.map(t -> new ExtraCodecs.TagOrElementLocation(t.location(), true), r -> new ExtraCodecs.TagOrElementLocation(r.location(), false)));
 
         final Codec<List<DataMapEntry.Removal<T, R>>> removalsCodec;
-        if (dataMap instanceof AdvancedDataMapType<?, ?, ?>) {
+        if (dataMap instanceof AdvancedDataMapType<T, R, ?>) {
             final var removalCodec = DataMapEntry.Removal.codec(tagOrValue, dataMap);
             final AdvancedDataMapType<T, R, DataMapValueRemover<T, R>> advanced = (AdvancedDataMapType<T, R, DataMapValueRemover<T, R>>) dataMap;
             removalsCodec = NeoForgeExtraCodecs.withAlternative(

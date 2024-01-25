@@ -54,10 +54,10 @@ public class DataMapLoader implements PreparableReloadListener {
     }
 
     @Override
-    public CompletableFuture<Void> reload(PreparationBarrier pPreparationBarrier, ResourceManager pResourceManager, ProfilerFiller pPreparationsProfiler, ProfilerFiller pReloadProfiler, Executor pBackgroundExecutor, Executor pGameExecutor) {
-        return this.load(pResourceManager, pBackgroundExecutor, pPreparationsProfiler)
-                .thenCompose(pPreparationBarrier::wait)
-                .thenAcceptAsync(values -> this.results = values, pGameExecutor);
+    public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
+        return this.load(resourceManager, backgroundExecutor, preparationsProfiler)
+                .thenCompose(preparationBarrier::wait)
+                .thenAcceptAsync(values -> this.results = values, gameExecutor);
     }
 
     public void apply() {
@@ -78,7 +78,7 @@ public class DataMapLoader implements PreparableReloadListener {
         record WithSource<T, R>(T attachment, Either<TagKey<R>, ResourceKey<R>> source) {}
         final Map<ResourceKey<R>, WithSource<T, R>> result = new IdentityHashMap<>();
         final BiConsumer<Either<TagKey<R>, ResourceKey<R>>, Consumer<Holder<R>>> valueResolver = (key, cons) -> key.ifLeft(tag -> registry.getTagOrEmpty(tag).forEach(cons)).ifRight(k -> cons.accept(registry.getHolderOrThrow(k)));
-        final DataMapValueMerger<T, R> merger = attachment instanceof AdvancedDataMapType adv ? adv.merger() : DataMapValueMerger.defaultMerger();
+        final DataMapValueMerger<T, R> merger = attachment instanceof AdvancedDataMapType<T, R, ?> adv ? adv.merger() : DataMapValueMerger.defaultMerger();
         entries.forEach(entry -> {
             if (entry.replace()) {
                 result.clear();
@@ -89,7 +89,7 @@ public class DataMapLoader implements PreparableReloadListener {
 
                 valueResolver.accept(tKey, holder -> {
                     final var newValue = value.get().carrier();
-                    final var key = holder.unwrapKey().get();
+                    final var key = holder.unwrapKey().orElseThrow();
                     final var oldValue = result.get(key);
                     if (oldValue == null || newValue.replace()) {
                         result.put(key, new WithSource<>(newValue.value(), tKey));
@@ -101,7 +101,7 @@ public class DataMapLoader implements PreparableReloadListener {
 
             entry.removals().forEach(trRemoval -> valueResolver.accept(trRemoval.key(), holder -> {
                 if (trRemoval.remover().isPresent()) {
-                    final var key = holder.unwrapKey().get();
+                    final var key = holder.unwrapKey().orElseThrow();
                     final var oldValue = result.get(key);
                     if (oldValue != null) {
                         final var newValue = trRemoval.remover().get().remove(oldValue.attachment(), registry, oldValue.source(), holder.value());
@@ -144,7 +144,7 @@ public class DataMapLoader implements PreparableReloadListener {
                 }
                 profiler.popPush("registry_data_maps/" + registryKey.location() + "/" + attachmentId + "/loading");
                 values.computeIfAbsent(registryKey, k -> new LoadResult<>(new HashMap<>())).results.put(attachment, readData(
-                        ops, attachment, (ResourceKey) registryKey, entry.getValue(), context));
+                        ops, attachment, (ResourceKey) registryKey, entry.getValue()));
             }
             profiler.pop();
         });
@@ -156,16 +156,14 @@ public class DataMapLoader implements PreparableReloadListener {
         return (registryId.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE) ? "" : registryId.getNamespace() + "/") + registryId.getPath();
     }
 
-    private static <A, T> List<DataMapFile<A, T>> readData(RegistryOps<JsonElement> ops, DataMapType<A, T> attachmentType, ResourceKey<Registry<T>> registryKey, List<Resource> resources, ICondition.IContext context) {
+    private static <A, T> List<DataMapFile<A, T>> readData(RegistryOps<JsonElement> ops, DataMapType<A, T> attachmentType, ResourceKey<Registry<T>> registryKey, List<Resource> resources) {
         final var codec = DataMapFile.codec(registryKey, attachmentType);
         final List<DataMapFile<A, T>> entries = new LinkedList<>();
         for (final Resource resource : resources) {
-            try {
-                try (Reader reader = resource.openAsReader()) {
-                    JsonElement jsonelement = JsonParser.parseReader(reader);
-                    entries.add(codec.decode(ops, jsonelement)
-                            .getOrThrow(false, LOGGER::error).getFirst());
-                }
+            try (Reader reader = resource.openAsReader()) {
+                JsonElement jsonelement = JsonParser.parseReader(reader);
+                entries.add(codec.decode(ops, jsonelement)
+                        .getOrThrow(false, LOGGER::error).getFirst());
             } catch (Exception exception) {
                 LOGGER.error("Could not read data map of type {} for registry {}", attachmentType.id(), registryKey, exception);
             }

@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.registries.datamaps;
 
+import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import java.util.Map;
 import net.minecraft.core.Registry;
@@ -60,6 +61,9 @@ public final class AdvancedDataMapType<T, R, VR extends DataMapValueRemover<T, R
         super(registryKey, id, codec, networkCodec, mandatorySync);
         this.remover = remover;
         this.merger = merger;
+
+        Preconditions.checkArgument(remover != null, "remover must not be null");
+        Preconditions.checkArgument(merger != null, "merger must not be null");
     }
 
     /**
@@ -97,6 +101,7 @@ public final class AdvancedDataMapType<T, R, VR extends DataMapValueRemover<T, R
      * @param <VR> the type of the remover
      */
     public static final class Builder<T, R, VR extends DataMapValueRemover<T, R>> extends DataMapType.Builder<T, R> {
+        // The remover will be set in the default builder factory, as otherwise it's not generically safe
         private Codec<VR> remover;
         private DataMapValueMerger<T, R> merger = DataMapValueMerger.defaultMerger();
 
@@ -137,9 +142,9 @@ public final class AdvancedDataMapType<T, R, VR extends DataMapValueRemover<T, R
          * @return the builder instance
          */
         @Override
-        @SuppressWarnings({ "unchecked", "rawtypes" })
         public AdvancedDataMapType.Builder<T, R, VR> synced(Codec<T> networkCodec, boolean mandatory) {
-            return (AdvancedDataMapType.Builder) super.synced(networkCodec, mandatory);
+            super.synced(networkCodec, mandatory);
+            return this;
         }
 
         /**

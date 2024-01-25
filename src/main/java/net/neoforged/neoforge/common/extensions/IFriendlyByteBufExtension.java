@@ -148,6 +148,10 @@ public interface IFriendlyByteBufExtension {
         return self().writeByte((int) value);
     }
 
+    /**
+     * Variant of {@link FriendlyByteBuf#readMap(FriendlyByteBuf.Reader, FriendlyByteBuf.Reader)} that allows reading values
+     * that depend on the key.
+     */
     default <K, V> Map<K, V> readMap(FriendlyByteBuf.Reader<K> keyReader, BiFunction<FriendlyByteBuf, K, V> valueReader) {
         final int size = self().readVarInt();
         final Map<K, V> map = Maps.newHashMapWithExpectedSize(size);
@@ -160,6 +164,10 @@ public interface IFriendlyByteBufExtension {
         return map;
     }
 
+    /**
+     * Variant of {@link FriendlyByteBuf#writeMap(Map, FriendlyByteBuf.Writer, FriendlyByteBuf.Writer)} that allows writing values
+     * that depend on the key.
+     */
     default <K, V> void writeMap(Map<K, V> map, FriendlyByteBuf.Writer<K> keyWriter, TriConsumer<FriendlyByteBuf, K, V> valueWriter) {
         self().writeVarInt(map.size());
         map.forEach((key, value) -> {

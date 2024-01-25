@@ -121,13 +121,13 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     protected abstract void unfreeze();
 
     @Override
-    public <A> @Nullable A getData(DataMapType<A, T> attachment, ResourceKey<T> key) {
-        final var innerMap = dataMaps.get(attachment);
+    public <A> @Nullable A getData(DataMapType<A, T> type, ResourceKey<T> key) {
+        final var innerMap = dataMaps.get(type);
         return innerMap == null ? null : (A) innerMap.get(key);
     }
 
     @Override
-    public <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<A, T> attachment) {
-        return (Map<ResourceKey<T>, A>) dataMaps.getOrDefault(attachment, Map.of());
+    public <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<A, T> type) {
+        return (Map<ResourceKey<T>, A>) dataMaps.getOrDefault(type, Map.of());
     }
 }

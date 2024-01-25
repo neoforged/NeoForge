@@ -119,8 +119,20 @@ public interface IRegistryExtension<T> {
      */
     boolean containsValue(T value);
 
+    /**
+     * {@return the data map value attached with the object with the key, or {@code null} if there's no attached value}
+     *
+     * @param type the type of the data map
+     * @param key  the object to get the value for
+     * @param <A>  the data type
+     */
     @Nullable
-    <A> A getData(DataMapType<A, T> attachment, ResourceKey<T> key);
+    <A> A getData(DataMapType<A, T> type, ResourceKey<T> key);
 
-    <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<A, T> attachment);
+    /**
+     * {@return the data map of the given {@code type}}
+     *
+     * @param <A> the data type
+     */
+    <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<A, T> type);
 }

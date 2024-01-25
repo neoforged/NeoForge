@@ -18,6 +18,7 @@ public record KnownRegistryDataMapsReplyPayload(
     public static final ResourceLocation ID = new ResourceLocation("neoforge:known_registry_data_maps_reply");
 
     public KnownRegistryDataMapsReplyPayload(FriendlyByteBuf buf) {
+        //noinspection RedundantCast javac complains about this cast
         this(buf.readMap(b1 -> (ResourceKey<Registry<?>>) (Object) b1.readRegistryKey(), b1 -> b1.readList(FriendlyByteBuf::readResourceLocation)));
     }
 
