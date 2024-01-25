@@ -65,6 +65,21 @@
                      if (this.minecraft.player.isSpectator()) {
                          if (this.minecraft.gui.getSpectatorGui().isMenuActive()) {
                              this.minecraft.gui.getSpectatorGui().onMouseScrolled(-k);
+@@ -209,9 +_,11 @@
+                     double d3 = (p_91564_ - this.ypos)
+                         * (double)this.minecraft.getWindow().getGuiScaledHeight()
+                         / (double)this.minecraft.getWindow().getScreenHeight();
+-                    Screen.wrapScreenError(
+-                        () -> screen.mouseDragged(d0, d1, this.activeButton, d2, d3), "mouseDragged event handler", screen.getClass().getCanonicalName()
+-                    );
++                    Screen.wrapScreenError(() -> {
++                        if (net.neoforged.neoforge.client.ClientHooks.onScreenMouseDragPre(screen, d0, d1, this.activeButton, d2, d3)) return;
++                        if (screen.mouseDragged(d0, d1, this.activeButton, d2, d3)) return;
++                        net.neoforged.neoforge.client.ClientHooks.onScreenMouseDragPost(screen, d0, d1, this.activeButton, d2, d3);
++                    }, "mouseDragged event handler", screen.getClass().getCanonicalName());
+                 }
+ 
+                 screen.afterMouseMove();
 @@ -235,12 +_,13 @@
          double d1 = d0 - this.lastMouseEventTime;
          this.lastMouseEventTime = d0;
