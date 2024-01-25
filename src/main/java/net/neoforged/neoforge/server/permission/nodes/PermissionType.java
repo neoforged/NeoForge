@@ -48,5 +48,4 @@ public final class PermissionType<T> {
                 "typeToken=" + typeToken + ", " +
                 "typeName=" + typeName + ']';
     }
-
 }

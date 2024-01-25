@@ -26,7 +26,6 @@ import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
  * To add trades to the merchant, simply add new trades to the list. {@link BasicItemListing} provides a default implementation.
  */
 public class VillagerTradesEvent extends Event {
-
     protected Int2ObjectMap<List<ItemListing>> trades;
     protected VillagerProfession type;
 
@@ -42,5 +41,4 @@ public class VillagerTradesEvent extends Event {
     public VillagerProfession getType() {
         return type;
     }
-
 }

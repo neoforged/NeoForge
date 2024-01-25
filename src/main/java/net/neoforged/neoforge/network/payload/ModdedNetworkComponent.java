@@ -19,7 +19,6 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record ModdedNetworkComponent(ResourceLocation id, Optional<String> version) {
-
     public ModdedNetworkComponent(FriendlyByteBuf buf) {
         this(buf.readResourceLocation(), buf.readOptional(FriendlyByteBuf::readUtf));
     }

@@ -22,7 +22,6 @@ import net.neoforged.testframework.TestListener;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ForEachTest {
     ForEachTest DEFAULT = new ForEachTest() {
-
         @Override
         public Class<? extends Annotation> annotationType() {
             return ForEachTest.class;

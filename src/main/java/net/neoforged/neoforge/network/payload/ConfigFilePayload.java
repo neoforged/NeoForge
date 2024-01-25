@@ -24,7 +24,6 @@ import org.jetbrains.annotations.ApiStatus;
 public record ConfigFilePayload(byte[] contents, String fileName) implements CustomPacketPayload {
 
     public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "config_file");
-
     public ConfigFilePayload(FriendlyByteBuf buf) {
         this(buf.readByteArray(), buf.readUtf());
     }

@@ -88,7 +88,7 @@
              .getResourceKey(this)
              .orElseThrow(() -> new IllegalStateException("Unregistered creative tab: " + this));
 -        this.displayItemsGenerator.accept(p_270156_, creativemodetab$itemdisplaybuilder);
-+        net.neoforged.neoforge.client.ClientHooks.onCreativeModeTabBuildContents(this, resourcekey, this.displayItemsGenerator, p_270156_, creativemodetab$itemdisplaybuilder);
++        net.neoforged.neoforge.event.EventHooks.onCreativeModeTabBuildContents(this, resourcekey, this.displayItemsGenerator, p_270156_, creativemodetab$itemdisplaybuilder);
          this.displayItems = creativemodetab$itemdisplaybuilder.tabContents;
          this.displayItemsSearchTab = creativemodetab$itemdisplaybuilder.searchTabContents;
          this.rebuildSearchTree();

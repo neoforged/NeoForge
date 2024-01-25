@@ -52,7 +52,6 @@ import net.neoforged.testframework.registration.DeferredItems;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 public class RegistrationHelperImpl implements RegistrationHelper {
-
     private final ModContainer owner;
 
     public RegistrationHelperImpl(String modId, ModContainer owner) {

@@ -563,7 +563,7 @@
          ItemStack itemstack = this.getItemInHand(p_21159_);
          if (!itemstack.isEmpty() && !this.isUsingItem()) {
 +            int duration = net.neoforged.neoforge.event.EventHooks.onItemUseStart(this, itemstack, itemstack.getUseDuration());
-+            if (duration <= 0) return;
++            if (duration < 0) return; // Neo: Early return for negative values, as that indicates event cancellation.
              this.useItem = itemstack;
 -            this.useItemRemaining = itemstack.getUseDuration();
 +            this.useItemRemaining = duration;

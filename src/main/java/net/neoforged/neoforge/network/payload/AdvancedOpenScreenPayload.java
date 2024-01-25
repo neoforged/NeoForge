@@ -33,7 +33,6 @@ public record AdvancedOpenScreenPayload(
         byte[] additionalData) implements CustomPacketPayload {
 
     public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_open_screen");
-
     public AdvancedOpenScreenPayload(int windowId, MenuType<?> menuType, Component name, Consumer<FriendlyByteBuf> dataWriter) {
         this(windowId, menuType, name, FriendlyByteBufUtil.writeCustomData(dataWriter));
     }

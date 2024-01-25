@@ -93,5 +93,4 @@ public class BlockEntityTests {
                 .thenExecuteAfter(5, () -> helper.assertTrue(((TestBlockEntity) helper.getBlockEntity(new BlockPos(1, 2, 1))).loaded, "BE wasn't loaded!"))
                 .thenSucceed());
     }
-
 }

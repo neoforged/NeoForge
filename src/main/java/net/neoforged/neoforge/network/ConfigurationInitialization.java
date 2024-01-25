@@ -17,7 +17,6 @@ import org.jetbrains.annotations.ApiStatus;
 @Mod.EventBusSubscriber(modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
 @ApiStatus.Internal
 public class ConfigurationInitialization {
-
     @SubscribeEvent
     private static void configureModdedClient(OnGameConfigurationEvent event) {
         if (!event.getListener().isVanillaConnection()) {

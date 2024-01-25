@@ -14,7 +14,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * Allows for the handling of full packets from custom payloads
  */
 public interface IPacketHandler {
-
     /**
      * Invoked to handle the given packet.
      *

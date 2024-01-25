@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
  * It is not fired for interactions with NBT, which means these changes will not reflect in the item tooltip.
  */
 public class GetEnchantmentLevelEvent extends Event {
-
     protected final ItemStack stack;
     protected final Map<Enchantment, Integer> enchantments;
     @Nullable

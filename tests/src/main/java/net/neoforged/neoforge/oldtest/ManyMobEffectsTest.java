@@ -44,7 +44,6 @@ import org.apache.logging.log4j.Logger;
  */
 @Mod(ManyMobEffectsTest.MODID)
 public class ManyMobEffectsTest {
-
     static final String MODID = "many_mob_effects_test";
 
     private static final boolean ENABLED = true;
@@ -110,5 +109,4 @@ public class ManyMobEffectsTest {
             }
         }
     }
-
 }

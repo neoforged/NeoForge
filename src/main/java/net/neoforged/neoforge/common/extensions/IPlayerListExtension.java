@@ -19,7 +19,6 @@ import net.minecraft.world.level.Level;
  * </p>
  */
 public interface IPlayerListExtension {
-
     /**
      * {@return the PlayerList instance that this extension is attached to}
      */
