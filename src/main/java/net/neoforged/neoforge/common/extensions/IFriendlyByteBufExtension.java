@@ -167,5 +167,4 @@ public interface IFriendlyByteBufExtension {
             valueWriter.accept(self(), key, value);
         });
     }
-
 }

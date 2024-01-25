@@ -171,7 +171,6 @@ public abstract class DataMapProvider implements DataProvider {
     }
 
     public static class AdvancedBuilder<T, R, VR extends DataMapValueRemover<T, R>> extends Builder<T, R> {
-
         public AdvancedBuilder(AdvancedDataMapType<T, R, VR> type) {
             super(type);
         }

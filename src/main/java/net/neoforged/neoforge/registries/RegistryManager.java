@@ -334,5 +334,4 @@ public class RegistryManager {
         context.channelHandlerContext().attr(ATTRIBUTE_KNOWN_DATA_MAPS).set(payload.dataMaps());
         context.taskCompletedHandler().onTaskCompleted(RegistryDataMapNegotiation.TYPE);
     }
-
 }

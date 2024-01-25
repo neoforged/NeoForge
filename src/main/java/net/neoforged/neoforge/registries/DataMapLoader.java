@@ -174,5 +174,4 @@ public class DataMapLoader implements PreparableReloadListener {
     }
 
     private record LoadResult<T>(Map<DataMapType<?, T>, List<DataMapFile<?, T>>> results) {}
-
 }

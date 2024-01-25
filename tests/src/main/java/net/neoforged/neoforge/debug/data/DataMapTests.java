@@ -45,7 +45,6 @@ import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = "data.data_map")
 public class DataMapTests {
-
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests if data map mergers function properly")

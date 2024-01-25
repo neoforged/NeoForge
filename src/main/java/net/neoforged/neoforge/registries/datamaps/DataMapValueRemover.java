@@ -21,7 +21,6 @@ import net.minecraft.tags.TagKey;
  */
 @FunctionalInterface
 public interface DataMapValueRemover<T, R> {
-
     /**
      * Remove the entry specified in this remover from the {@code value}.
      *
