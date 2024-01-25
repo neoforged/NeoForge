@@ -8,8 +8,10 @@ package net.neoforged.neoforge.client.event;
 import com.google.common.base.Preconditions;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.client.resources.model.AtlasSet;
+import java.util.function.Function;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.resources.ResourceLocation;
@@ -45,13 +47,13 @@ public abstract class ModelEvent extends Event {
      */
     public static class ModifyBakingResult extends ModelEvent implements IModBusEvent {
         private final Map<ResourceLocation, BakedModel> models;
-        private final Map<ResourceLocation, AtlasSet.StitchResult> stitchResults;
+        private final Function<Material, TextureAtlasSprite> textureGetter;
         private final ModelBakery modelBakery;
 
         @ApiStatus.Internal
-        public ModifyBakingResult(Map<ResourceLocation, BakedModel> models, Map<ResourceLocation, AtlasSet.StitchResult> stitchResults, ModelBakery modelBakery) {
+        public ModifyBakingResult(Map<ResourceLocation, BakedModel> models, Function<Material, TextureAtlasSprite> textureGetter, ModelBakery modelBakery) {
             this.models = models;
-            this.stitchResults = stitchResults;
+            this.textureGetter = textureGetter;
             this.modelBakery = modelBakery;
         }
 
@@ -63,13 +65,14 @@ public abstract class ModelEvent extends Event {
         }
 
         /**
-         * {@return an unmodifiable view of the preliminary atlas stitch results}
-         * 
-         * @apiNote Looking up sprites from an {@link AtlasSet.StitchResult} does not handle missing sprites automatically,
-         *          the fallback to the missing sprite must be implemented manually
+         * Returns a lookup function to retrieve {@link TextureAtlasSprite}s by name from any of the atlases handled by
+         * the {@link ModelManager}. See {@link ModelManager#VANILLA_ATLASES} for the atlases accessible through the
+         * returned function
+         *
+         * @return a function to lookup sprites from an atlas by name
          */
-        public Map<ResourceLocation, AtlasSet.StitchResult> getPreliminaryStitchResults() {
-            return stitchResults;
+        public Function<Material, TextureAtlasSprite> getTextureGetter() {
+            return textureGetter;
         }
 
         /**

@@ -427,7 +427,16 @@ public class ClientHooks {
     }
 
     public static void onModifyBakingResult(Map<ResourceLocation, BakedModel> models, Map<ResourceLocation, AtlasSet.StitchResult> stitchResults, ModelBakery modelBakery) {
-        ModLoader.get().postEvent(new ModelEvent.ModifyBakingResult(models, Collections.unmodifiableMap(stitchResults), modelBakery));
+        Function<Material, TextureAtlasSprite> textureGetter = material -> {
+            AtlasSet.StitchResult stitchResult = stitchResults.get(material.atlasLocation());
+            TextureAtlasSprite sprite = stitchResult.getSprite(material.texture());
+            if (sprite != null) {
+                return sprite;
+            }
+            LOGGER.warn("Failed to retrieve texture '{}' from atlas '{}'", material.texture(), material.atlasLocation(), new Throwable());
+            return stitchResult.missing();
+        };
+        ModLoader.get().postEvent(new ModelEvent.ModifyBakingResult(models, textureGetter, modelBakery));
     }
 
     public static void onModelBake(ModelManager modelManager, Map<ResourceLocation, BakedModel> models, ModelBakery modelBakery) {
