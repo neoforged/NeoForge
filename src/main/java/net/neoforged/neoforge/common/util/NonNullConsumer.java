@@ -13,6 +13,7 @@ import java.util.function.Consumer;
  * @see Consumer
  * @deprecated Use {@link Consumer}
  */
+@Deprecated
 @FunctionalInterface
 public interface NonNullConsumer<T> {
     void accept(T t);

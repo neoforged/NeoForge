@@ -13,8 +13,8 @@ import java.util.function.Supplier;
  * @see Supplier
  * @deprecated Use {@link Supplier}
  */
-@FunctionalInterface
 @Deprecated
+@FunctionalInterface
 public interface NonNullSupplier<T> {
     T get();
 }

@@ -13,8 +13,8 @@ import java.util.function.Predicate;
  * @see Predicate
  * @deprecated Use {@link Predicate}
  */
-@FunctionalInterface
 @Deprecated
+@FunctionalInterface
 public interface NonNullPredicate<T> {
     boolean test(T t);
 }
