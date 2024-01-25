@@ -5,9 +5,9 @@
 
 package net.neoforged.neoforge.registries.datamaps;
 
-import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import java.util.Map;
+import java.util.Objects;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -59,11 +59,8 @@ public final class AdvancedDataMapType<T, R, VR extends DataMapValueRemover<T, R
 
     private AdvancedDataMapType(ResourceKey<Registry<R>> registryKey, ResourceLocation id, Codec<T> codec, @Nullable Codec<T> networkCodec, boolean mandatorySync, Codec<VR> remover, DataMapValueMerger<T, R> merger) {
         super(registryKey, id, codec, networkCodec, mandatorySync);
-        this.remover = remover;
-        this.merger = merger;
-
-        Preconditions.checkArgument(remover != null, "remover must not be null");
-        Preconditions.checkArgument(merger != null, "merger must not be null");
+        this.remover = Objects.requireNonNull(remover, "remover must not be null");
+        this.merger = Objects.requireNonNull(merger, "merger must not be null");
     }
 
     /**

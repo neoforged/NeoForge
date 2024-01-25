@@ -7,6 +7,7 @@ package net.neoforged.neoforge.registries.datamaps;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
+import java.util.Objects;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -64,13 +65,10 @@ public sealed class DataMapType<T, R> permits AdvancedDataMapType {
 
     DataMapType(ResourceKey<Registry<R>> registryKey, ResourceLocation id, Codec<T> codec, @Nullable Codec<T> networkCodec, boolean mandatorySync) {
         Preconditions.checkArgument(networkCodec != null || !mandatorySync, "Mandatory sync cannot be enabled when the attachment isn't synchronized");
-        Preconditions.checkArgument(registryKey != null, "registryKey must not be null");
-        Preconditions.checkArgument(codec != null, "codec must not be null");
-        Preconditions.checkArgument(id != null, "id must not be null");
 
-        this.registryKey = registryKey;
-        this.id = id;
-        this.codec = codec;
+        this.registryKey = Objects.requireNonNull(registryKey, "registryKey must not be null");
+        this.id = Objects.requireNonNull(id, "id must not be null");
+        this.codec = Objects.requireNonNull(codec, "codec must not be null");
         this.networkCodec = networkCodec;
         this.mandatorySync = mandatorySync;
     }
