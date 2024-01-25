@@ -194,7 +194,7 @@
                  } else if (this.minecraft.options.prioritizeChunkUpdates().get() == PrioritizeChunkUpdates.PLAYER_AFFECTED) {
                      flag = sectionrenderdispatcher$rendersection.isDirtyFromPlayer();
                  }
-@@ -2585,7 +_,30 @@
+@@ -2585,7 +_,32 @@
          this.viewArea.setDirty(p_109502_, p_109503_, p_109504_, p_109505_);
      }
  
@@ -210,7 +210,9 @@
 +        for (var chunkInfo : this.visibleSections) {
 +            chunkInfo.getCompiled().getRenderableBlockEntities().forEach(blockEntityConsumer);
 +        }
-+        this.globalBlockEntities.forEach(blockEntityConsumer);
++        synchronized (this.globalBlockEntities) {
++            this.globalBlockEntities.forEach(blockEntityConsumer);
++        }
 +    }
 +
 +    /**
