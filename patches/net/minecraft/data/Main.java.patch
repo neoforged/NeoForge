@@ -44,30 +44,3 @@
          } else {
              optionparser.printHelpOn(System.out);
          }
-@@ -132,7 +_,7 @@
-         datagenerator$packgenerator2.addProvider(bindRegistries(RegistriesDatapackGenerator::new, completablefuture2));
-         datagenerator$packgenerator2.addProvider(bindRegistries(VanillaAdvancementProvider::create, completablefuture2));
-         datagenerator$packgenerator2.addProvider(VanillaLootTableProvider::create);
--        datagenerator$packgenerator2.addProvider(VanillaRecipeProvider::new);
-+        datagenerator$packgenerator2.addProvider(bindRegistries(VanillaRecipeProvider::new, completablefuture2));
-         TagsProvider<Block> tagsprovider3 = datagenerator$packgenerator2.addProvider(bindRegistries(VanillaBlockTagsProvider::new, completablefuture2));
-         TagsProvider<Item> tagsprovider = datagenerator$packgenerator2.addProvider(
-             p_274753_ -> new VanillaItemTagsProvider(p_274753_, completablefuture2, tagsprovider3.contentsGetter())
-@@ -158,7 +_,7 @@
-         datagenerator$packgenerator2.addProvider(bindRegistries(CommandsReport::new, completablefuture2));
-         datagenerator$packgenerator2.addProvider(RegistryDumpReport::new);
-         datagenerator$packgenerator2 = datagenerator.getBuiltinDatapack(p_236683_, "bundle");
--        datagenerator$packgenerator2.addProvider(BundleRecipeProvider::new);
-+        datagenerator$packgenerator2.addProvider(bindRegistries(BundleRecipeProvider::new, completablefuture2));
-         datagenerator$packgenerator2.addProvider(
-             p_253392_ -> PackMetadataGenerator.forFeaturePack(
-                     p_253392_, Component.translatable("dataPack.bundle.description"), FeatureFlagSet.of(FeatureFlags.BUNDLE)
-@@ -176,7 +_,7 @@
-         CompletableFuture<HolderLookup.Provider> completablefuture = completablefuture3.thenApply(RegistrySetBuilder.PatchedRegistries::full);
-         CompletableFuture<HolderLookup.Provider> completablefuture1 = completablefuture3.thenApply(RegistrySetBuilder.PatchedRegistries::patches);
-         DataGenerator.PackGenerator datagenerator$packgenerator3 = datagenerator.getBuiltinDatapack(p_236683_, "update_1_21");
--        datagenerator$packgenerator3.addProvider(UpdateOneTwentyOneRecipeProvider::new);
-+        datagenerator$packgenerator3.addProvider(bindRegistries(UpdateOneTwentyOneRecipeProvider::new, completablefuture2));
-         TagsProvider<Block> tagsprovider2 = datagenerator$packgenerator3.addProvider(
-             p_307133_ -> new UpdateOneTwentyOneBlockTagsProvider(p_307133_, completablefuture1, tagsprovider3.contentsGetter())
-         );

@@ -9,20 +9,7 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      final ResourceKey<? extends Registry<T>> key;
      private final ObjectList<Holder.Reference<T>> byId = new ObjectArrayList<>(256);
-@@ -123,10 +_,22 @@
-         }
-     }
- 
-+    private static final Set<ResourceLocation> KNOWN = new java.util.LinkedHashSet<>();
-+    public static Set<ResourceLocation> getKnownRegistries() {
-+        return java.util.Collections.unmodifiableSet(KNOWN);
-+    }
-+    protected final void markKnown() {
-+        KNOWN.add(key().location());
-+    }
-+
-     public Holder.Reference<T> registerMapping(int p_256563_, ResourceKey<T> p_256594_, T p_256374_, Lifecycle p_256469_) {
-+        markKnown();
+@@ -127,6 +_,9 @@
          this.validateWrite(p_256594_);
          Validate.notNull(p_256594_);
          Validate.notNull(p_256374_);

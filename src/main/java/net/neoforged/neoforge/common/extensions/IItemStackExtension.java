@@ -17,11 +17,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.HorseArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -274,11 +277,12 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Called every tick from {@code Horse#playGallopSound(SoundEvent)} on the item in the
-     * armor slot.
+     * Called every tick when this item is equipped {@linkplain AbstractHorse#isArmor(ItemStack) as an armor item} by a horse {@linkplain AbstractHorse#canWearArmor() that can wear armor}.
+     * <p>
+     * In vanilla, only {@linkplain Horse horses} can wear armor, and they can only equip items that extend {@link HorseArmorItem}.
      *
-     * @param level the level the horse is in
-     * @param horse the horse wearing this armor
+     * @param level The level the horse is in
+     * @param horse The horse wearing this item
      */
     default void onHorseArmorTick(Level level, Mob horse) {
         self().getItem().onHorseArmorTick(self(), level, horse);

@@ -78,7 +78,7 @@ public class GameData {
     }
 
     public static void postRegisterEvents() {
-        Set<ResourceLocation> ordered = new LinkedHashSet<>(MappedRegistry.getKnownRegistries());
+        Set<ResourceLocation> ordered = new LinkedHashSet<>(BuiltInRegistries.getVanillaRegistrationOrder());
         ordered.retainAll(RegistryManager.getVanillaRegistryKeys());
         ordered.addAll(BuiltInRegistries.REGISTRY.keySet().stream().sorted(ResourceLocation::compareNamespaced).toList());
 

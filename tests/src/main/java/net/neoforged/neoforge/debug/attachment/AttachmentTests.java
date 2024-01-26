@@ -187,7 +187,7 @@ public class AttachmentTests {
         var shapedId = new ResourceLocation(reg.modId(), "test_shaped");
         var blastingId = new ResourceLocation(reg.modId(), "test_blasting");
 
-        reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput()) {
             @Override
             protected void buildRecipes(RecipeOutput recipeOutput) {
                 ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, outputStack.get())

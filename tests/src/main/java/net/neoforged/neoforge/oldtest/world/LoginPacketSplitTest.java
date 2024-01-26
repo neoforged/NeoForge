@@ -51,7 +51,6 @@ import net.minecraft.util.GsonHelper;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
@@ -130,9 +129,6 @@ public class LoginPacketSplitTest {
 
         final int size = buf.writerIndex();
         LOG.warn("Dummy big registry size: " + size + ", or " + ((double) size / CompressionDecoder.MAXIMUM_UNCOMPRESSED_LENGTH * 100) + "% of the maximum packet size.");
-
-        final Set<ResourceLocation> known = ObfuscationReflectionHelper.getPrivateValue(MappedRegistry.class, null, "KNOWN");
-        known.remove(dummyRegistry.key().location());
     }
 
     private String randomString(Random random, int length) {

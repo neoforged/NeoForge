@@ -22,6 +22,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
@@ -31,6 +33,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.HorseArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -594,13 +597,16 @@ public interface IItemExtension {
     }
 
     /**
-     * Called every tick from {@code Horse#playGallopSound(SoundEvent)} on the item in the
-     * armor slot.
+     * Called every tick when this item is equipped {@linkplain AbstractHorse#isArmor(ItemStack) as an armor item} by a horse {@linkplain AbstractHorse#canWearArmor() that can wear armor}.
+     * <p>
+     * In vanilla, only {@linkplain Horse horses} can wear armor, and they can only equip items that extend {@link HorseArmorItem}.
      *
-     * @param stack the armor itemstack
-     * @param level the level the horse is in
-     * @param horse the horse wearing this armor
+     * @param stack The armor stack
+     * @param level The level the horse is in
+     * @param horse The horse wearing this item
+     * @apiNote Call from {@link IItemStackExtension#onHorseArmorTick(Level, Mob)}.
      */
+    @ApiStatus.OverrideOnly
     default void onHorseArmorTick(ItemStack stack, Level level, Mob horse) {}
 
     /**
