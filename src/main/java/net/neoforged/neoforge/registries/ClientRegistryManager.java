@@ -60,19 +60,19 @@ public class ClientRegistryManager {
             }
         }));
 
-        if (ourMandatory.size() != theirMandatory.size()) {
-            final var missingOur = Sets.difference(ourMandatory, theirMandatory);
-            final Set<MandatoryEntry> missing;
-            final String key;
-            if (!missingOur.isEmpty()) {
-                missing = missingOur;
-                key = "neoforge.network.data_maps.missing_our";
-            } else {
-                missing = Sets.difference(theirMandatory, ourMandatory);
-                key = "neoforge.network.data_maps.missing_their";
-            }
+        final var missingOur = Sets.difference(ourMandatory, theirMandatory);
+        final Set<MandatoryEntry> missing;
+        final String errorKey;
+        if (!missingOur.isEmpty()) {
+            missing = missingOur;
+            errorKey = "neoforge.network.data_maps.missing_our";
+        } else {
+            missing = Sets.difference(theirMandatory, ourMandatory);
+            errorKey = "neoforge.network.data_maps.missing_their";
+        }
 
-            context.packetHandler().disconnect(Component.translatable(key, Component.literal(missing.stream()
+        if (!missing.isEmpty()) {
+            context.packetHandler().disconnect(Component.translatable(errorKey, Component.literal(missing.stream()
                     .map(e -> e.id() + " (" + e.registry().location() + ")")
                     .collect(Collectors.joining(", "))).withStyle(ChatFormatting.GOLD)));
 
