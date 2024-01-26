@@ -63,7 +63,7 @@ public abstract class DataMapProvider implements DataProvider {
         gather();
 
         return lookupProvider.thenCompose(provider -> {
-            final DynamicOps<JsonElement> dynamicOps = ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, provider), ICondition.IContext.EMPTY);
+            final DynamicOps<JsonElement> dynamicOps = RegistryOps.create(JsonOps.INSTANCE, provider);
 
             return CompletableFuture.allOf(this.builders.entrySet().stream().map(entry -> {
                 DataMapType<?, ?> type = entry.getKey();
@@ -101,7 +101,7 @@ public abstract class DataMapProvider implements DataProvider {
 
     @Override
     public String getName() {
-        return "Data map";
+        return "Data Maps";
     }
 
     public static class Builder<T, R> {

@@ -86,18 +86,21 @@ public class RegistryManager {
 
         ModLoader.get().postEvent(new ModifyRegistriesEvent());
 
-        final Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?>>> dataMapTypes = new HashMap<>();
-        ModLoader.get().postEvent(new RegisterDataMapTypesEvent(dataMapTypes));
-        dataMaps = new IdentityHashMap<>();
-        dataMapTypes.forEach((key, values) -> dataMaps.put(key, Collections.unmodifiableMap(values)));
-        dataMaps = Collections.unmodifiableMap(dataMapTypes);
-
         pendingModdedRegistries.removeIf(BuiltInRegistries.REGISTRY::containsKey);
         if (!pendingModdedRegistries.isEmpty()) {
             throw new IllegalStateException("The following registries were created but not registered to NewRegistryEvent:"
                     + pendingModdedRegistries.stream().map(ResourceLocation::toString).collect(Collectors.joining("\n\t - ", "\n\t - ", "")));
         }
         pendingModdedRegistries = null;
+    }
+
+    @ApiStatus.Internal
+    public static void initDataMaps() {
+        final Map<ResourceKey<Registry<?>>, Map<ResourceLocation, DataMapType<?, ?>>> dataMapTypes = new HashMap<>();
+        ModLoader.get().postEvent(new RegisterDataMapTypesEvent(dataMapTypes));
+        dataMaps = new IdentityHashMap<>();
+        dataMapTypes.forEach((key, values) -> dataMaps.put(key, Collections.unmodifiableMap(values)));
+        dataMaps = Collections.unmodifiableMap(dataMapTypes);
     }
 
     static void takeVanillaSnapshot() {

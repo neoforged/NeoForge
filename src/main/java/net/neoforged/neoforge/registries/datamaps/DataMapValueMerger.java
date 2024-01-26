@@ -23,6 +23,7 @@ import net.minecraft.tags.TagKey;
  *
  * @param <T> the data type
  * @param <R> the type of the registry this merger is for
+ * @apiNote This is only useful for {@link AdvancedDataMapType}.
  */
 @FunctionalInterface
 public interface DataMapValueMerger<R, T> {

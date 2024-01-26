@@ -72,7 +72,7 @@ public class ClientRegistryManager {
         }
 
         final var missingTheir = Sets.difference(theirMandatory, ourMandatory);
-        if (!missingOur.isEmpty()) {
+        if (!missingTheir.isEmpty()) {
             messages.add(Component.translatable("neoforge.network.data_maps.missing_their", Component.literal(missingTheir.stream()
                     .map(e -> e.id() + " (" + e.registry().location() + ")")
                     .collect(Collectors.joining(", "))).withStyle(ChatFormatting.GOLD)));

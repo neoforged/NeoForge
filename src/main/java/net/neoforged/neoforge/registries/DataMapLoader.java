@@ -65,7 +65,6 @@ public class DataMapLoader implements PreparableReloadListener {
 
         // Clear the intermediary maps and objects
         results = null;
-        System.gc();
     }
 
     private <T> void apply(BaseMappedRegistry<T> registry, LoadResult<T> result) {

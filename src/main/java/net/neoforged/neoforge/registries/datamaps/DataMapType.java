@@ -19,12 +19,12 @@ import org.jetbrains.annotations.Nullable;
  * Data maps are registered to the {@link RegisterDataMapTypesEvent}. <p>
  * They are loaded from JSON files located at:
  *
- * <pre>
- * <code>:mapNamespace/data_maps/:registryNamespace/:registryPath/:mapPath.json</code>
- * </pre>
+ * <pre>{@code
+ * <map namespace>/data_maps/<registry namespace>/<registry path>/<map path>.json
+ * }</pre>
  * 
  * <p>
- * The {@code registryNamespace} is omitted if it is {@value ResourceLocation#DEFAULT_NAMESPACE}. <br>
+ * The {@code registry namespace} is omitted if it is {@value ResourceLocation#DEFAULT_NAMESPACE}. <br>
  * The structure of the json file is as follows:
  *
  * <pre>
