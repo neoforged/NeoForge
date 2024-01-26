@@ -33,7 +33,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.apache.logging.log4j.LogManager;
@@ -60,11 +60,11 @@ public class GravityAttributeTest {
     }
 
     @SubscribeEvent
-    public void worldTick(TickEvent.LevelTickEvent event) {
-        if (!event.level.isClientSide) {
+    public void worldTick(LevelTickEvent.Post event) {
+        if (!event.getLevel().isClientSide()) {
             if (ticks++ > 60) {
                 ticks = 0;
-                Level w = event.level;
+                Level w = event.getLevel();
                 List<LivingEntity> list;
                 if (w.isClientSide) {
                     ClientLevel cw = (ClientLevel) w;
