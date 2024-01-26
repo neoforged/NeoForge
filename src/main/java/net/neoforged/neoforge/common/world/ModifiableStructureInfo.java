@@ -11,7 +11,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.Structure.StructureSettings;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -20,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
  * without evaluating the structure info if it's accessed outside of a server context.
  */
 public class ModifiableStructureInfo {
-    @NotNull
     private final StructureInfo originalStructureInfo;
     @Nullable
     private StructureInfo modifiedStructureInfo = null;
@@ -28,14 +26,13 @@ public class ModifiableStructureInfo {
     /**
      * @param originalStructureInfo StructureInfo representing the original state of a structure when the structure was constructed.
      */
-    public ModifiableStructureInfo(@NotNull final StructureInfo originalStructureInfo) {
+    public ModifiableStructureInfo(final StructureInfo originalStructureInfo) {
         this.originalStructureInfo = originalStructureInfo;
     }
 
     /**
      * {@return The modified structure info if modified structure info has been generated, otherwise gets original structure info}
      */
-    @NotNull
     public StructureInfo get() {
         return this.modifiedStructureInfo == null
                 ? originalStructureInfo
@@ -45,7 +42,6 @@ public class ModifiableStructureInfo {
     /**
      * {@return The original structure info that the associated structure was created with}
      */
-    @NotNull
     public StructureInfo getOriginalStructureInfo() {
         return this.originalStructureInfo;
     }

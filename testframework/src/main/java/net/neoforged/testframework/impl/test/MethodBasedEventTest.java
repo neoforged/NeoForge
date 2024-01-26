@@ -7,7 +7,6 @@ package net.neoforged.testframework.impl.test;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
-import javax.annotation.Nonnull;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -51,7 +50,7 @@ public class MethodBasedEventTest extends AbstractTest.Dynamic {
     }
 
     @Override
-    public void onEnabled(@Nonnull Test.EventListenerGroup buses) {
+    public void onEnabled(Test.EventListenerGroup buses) {
         super.onEnabled(buses);
         buses.getFor(bus).addListener(priority, receiveCancelled, eventClass, event -> {
             try {

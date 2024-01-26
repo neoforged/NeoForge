@@ -63,7 +63,6 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.condition.TestEnabledLootCondition;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.registration.RegistrationHelper;
-import org.jetbrains.annotations.NotNull;
 
 @ForEachTest(groups = "loot", idPrefix = "glm_")
 public class GlobalLootModifiersTest {
@@ -99,7 +98,6 @@ public class GlobalLootModifiersTest {
             super(conditionsIn);
         }
 
-        @NotNull
         @Override
         public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
             ObjectArrayList<ItemStack> ret = new ObjectArrayList<ItemStack>();
@@ -131,7 +129,6 @@ public class GlobalLootModifiersTest {
             super(conditionsIn);
         }
 
-        @NotNull
         @Override
         public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
             ItemStack ctxTool = context.getParamOrNull(LootContextParams.TOOL);
@@ -175,7 +172,6 @@ public class GlobalLootModifiersTest {
             itemReward = reward;
         }
 
-        @NotNull
         @Override
         public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
             //

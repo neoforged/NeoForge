@@ -14,7 +14,6 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.impl.MutableTestFramework;
-import org.jetbrains.annotations.NotNull;
 
 public record ChangeEnabledPayload(MutableTestFramework framework, String testId, boolean enabled) implements CustomPacketPayload {
 
@@ -45,7 +44,7 @@ public record ChangeEnabledPayload(MutableTestFramework framework, String testId
     }
 
     @Override
-    public @NotNull ResourceLocation id() {
+    public ResourceLocation id() {
         return ID;
     }
 }

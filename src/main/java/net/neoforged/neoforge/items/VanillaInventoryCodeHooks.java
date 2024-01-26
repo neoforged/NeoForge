@@ -24,7 +24,6 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class VanillaInventoryCodeHooks {
@@ -67,7 +66,7 @@ public class VanillaInventoryCodeHooks {
     /**
      * Copied from BlockDropper#dispense and added capability support
      */
-    public static boolean dropperInsertHook(Level level, BlockPos pos, DispenserBlockEntity dropper, int slot, @NotNull ItemStack stack) {
+    public static boolean dropperInsertHook(Level level, BlockPos pos, DispenserBlockEntity dropper, int slot, ItemStack stack) {
         Direction facing = level.getBlockState(pos).getValue(DropperBlock.FACING);
         return getAttachedItemHandler(level, pos, facing)
                 .map(destinationResult -> {

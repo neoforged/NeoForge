@@ -68,7 +68,6 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(FullPotsAccessorDemo.MOD_ID)
@@ -258,9 +257,8 @@ public class FullPotsAccessorDemo {
                 super(wrappedModel);
             }
 
-            @NotNull
             @Override
-            public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
+            public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand, ModelData extraData, @Nullable RenderType renderType) {
                 List<List<BakedQuad>> quads = new ArrayList<>();
                 quads.add(originalModel.getQuads(state, side, rand, extraData, renderType));
 
@@ -284,7 +282,7 @@ public class FullPotsAccessorDemo {
             }
 
             @Override
-            public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
+            public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData data) {
                 return CUTOUT;
             }
         }

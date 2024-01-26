@@ -6,14 +6,15 @@
 package net.neoforged.neoforge.common.util;
 
 import java.util.function.Predicate;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Equivalent to {@link Predicate}, except with nonnull contract.
  *
  * @see Predicate
+ * @deprecated Use {@link Predicate}
  */
+@Deprecated
 @FunctionalInterface
 public interface NonNullPredicate<T> {
-    boolean test(@NotNull T t);
+    boolean test(T t);
 }

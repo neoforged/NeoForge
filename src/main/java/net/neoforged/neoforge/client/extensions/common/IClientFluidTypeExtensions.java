@@ -24,7 +24,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -171,7 +170,6 @@ public interface IClientFluidTypeExtensions {
      * @param fluidFogColor     the current color of the fog
      * @return the color of the fog
      */
-    @NotNull
     default Vector3f modifyFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, Vector3f fluidFogColor) {
         return fluidFogColor;
     }

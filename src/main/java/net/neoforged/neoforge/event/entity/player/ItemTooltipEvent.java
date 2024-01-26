@@ -11,12 +11,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemTooltipEvent extends PlayerEvent {
     private final TooltipFlag flags;
-    @NotNull
     private final ItemStack itemStack;
     private final List<Component> toolTip;
 
@@ -24,7 +22,7 @@ public class ItemTooltipEvent extends PlayerEvent {
      * This event is fired in {@link ItemStack#getTooltipLines(Player, TooltipFlag)}, which in turn is called from its respective GUIContainer.
      * Tooltips are also gathered with a null player during startup by {@link Minecraft#createSearchTrees()}.
      */
-    public ItemTooltipEvent(@NotNull ItemStack itemStack, @Nullable Player player, List<Component> list, TooltipFlag flags) {
+    public ItemTooltipEvent(ItemStack itemStack, @Nullable Player player, List<Component> list, TooltipFlag flags) {
         super(player);
         this.itemStack = itemStack;
         this.toolTip = list;
@@ -41,7 +39,6 @@ public class ItemTooltipEvent extends PlayerEvent {
     /**
      * The {@link ItemStack} with the tooltip.
      */
-    @NotNull
     public ItemStack getItemStack() {
         return itemStack;
     }

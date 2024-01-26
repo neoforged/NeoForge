@@ -42,7 +42,6 @@ import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface IBlockStateExtension {
@@ -445,7 +444,7 @@ public interface IBlockStateExtension {
      * @param other Other block
      * @return True to link blocks
      */
-    default boolean canStickTo(@NotNull BlockState other) {
+    default boolean canStickTo(BlockState other) {
         return self().getBlock().canStickTo(self(), other);
     }
 

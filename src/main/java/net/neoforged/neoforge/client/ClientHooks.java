@@ -176,7 +176,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -510,7 +509,7 @@ public class ClientHooks {
 
     private static int slotMainHand = 0;
 
-    public static boolean shouldCauseReequipAnimation(@NotNull ItemStack from, @NotNull ItemStack to, int slot) {
+    public static boolean shouldCauseReequipAnimation(ItemStack from, ItemStack to, int slot) {
         boolean fromInvalid = from.isEmpty();
         boolean toInvalid = to.isEmpty();
 
@@ -735,7 +734,6 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
     }
 
-    @NotNull
     public static String onClientSendMessage(String message) {
         ClientChatEvent event = new ClientChatEvent(message);
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? "" : event.getMessage();
@@ -745,7 +743,6 @@ public class ClientHooks {
      * Mimics the behavior of {@link net.minecraft.client.renderer.ItemBlockRenderTypes#getRenderType(BlockState, boolean)}
      * for the input {@link RenderType}.
      */
-    @NotNull
     public static RenderType getEntityRenderType(RenderType chunkRenderType, boolean cull) {
         return RenderTypeHelper.getEntityRenderType(chunkRenderType, cull);
     }
@@ -767,18 +764,18 @@ public class ClientHooks {
         }
     }
 
-    public static Font getTooltipFont(@NotNull ItemStack stack, Font fallbackFont) {
+    public static Font getTooltipFont(ItemStack stack, Font fallbackFont) {
         Font stackFont = IClientItemExtensions.of(stack).getFont(stack, IClientItemExtensions.FontContext.TOOLTIP);
         return stackFont == null ? fallbackFont : stackFont;
     }
 
-    public static RenderTooltipEvent.Pre onRenderTooltipPre(@NotNull ItemStack stack, GuiGraphics graphics, int x, int y, int screenWidth, int screenHeight, @NotNull List<ClientTooltipComponent> components, @NotNull Font fallbackFont, @NotNull ClientTooltipPositioner positioner) {
+    public static RenderTooltipEvent.Pre onRenderTooltipPre(ItemStack stack, GuiGraphics graphics, int x, int y, int screenWidth, int screenHeight, List<ClientTooltipComponent> components, Font fallbackFont, ClientTooltipPositioner positioner) {
         var preEvent = new RenderTooltipEvent.Pre(stack, graphics, x, y, screenWidth, screenHeight, getTooltipFont(stack, fallbackFont), components, positioner);
         NeoForge.EVENT_BUS.post(preEvent);
         return preEvent;
     }
 
-    public static RenderTooltipEvent.Color onRenderTooltipColor(@NotNull ItemStack stack, GuiGraphics graphics, int x, int y, @NotNull Font font, @NotNull List<ClientTooltipComponent> components) {
+    public static RenderTooltipEvent.Color onRenderTooltipColor(ItemStack stack, GuiGraphics graphics, int x, int y, Font font, List<ClientTooltipComponent> components) {
         var colorEvent = new RenderTooltipEvent.Color(stack, graphics, x, y, font, 0xf0100010, 0x505000FF, 0x5028007f, components);
         NeoForge.EVENT_BUS.post(colorEvent);
         return colorEvent;

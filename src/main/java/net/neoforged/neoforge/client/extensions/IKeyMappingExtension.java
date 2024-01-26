@@ -9,7 +9,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.neoforged.neoforge.client.settings.IKeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Extension interface for {@link KeyMapping}.
@@ -19,7 +18,6 @@ public interface IKeyMappingExtension {
         return (KeyMapping) this;
     }
 
-    @NotNull
     InputConstants.Key getKey();
 
     /**

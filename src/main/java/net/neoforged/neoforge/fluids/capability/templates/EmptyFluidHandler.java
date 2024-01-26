@@ -7,7 +7,6 @@ package net.neoforged.neoforge.fluids.capability.templates;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import org.jetbrains.annotations.NotNull;
 
 public class EmptyFluidHandler implements IFluidHandler {
     public static final EmptyFluidHandler INSTANCE = new EmptyFluidHandler();
@@ -19,7 +18,6 @@ public class EmptyFluidHandler implements IFluidHandler {
         return 1;
     }
 
-    @NotNull
     @Override
     public FluidStack getFluidInTank(int tank) {
         return FluidStack.EMPTY;
@@ -31,7 +29,7 @@ public class EmptyFluidHandler implements IFluidHandler {
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+    public boolean isFluidValid(int tank, FluidStack stack) {
         return true;
     }
 
@@ -40,13 +38,11 @@ public class EmptyFluidHandler implements IFluidHandler {
         return 0;
     }
 
-    @NotNull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
         return FluidStack.EMPTY;
     }
 
-    @NotNull
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         return FluidStack.EMPTY;

@@ -7,14 +7,10 @@ package net.neoforged.neoforge.common.brewing;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import org.jetbrains.annotations.NotNull;
 
 public class BrewingRecipe implements IBrewingRecipe {
-    @NotNull
     private final Ingredient input;
-    @NotNull
     private final Ingredient ingredient;
-    @NotNull
     private final ItemStack output;
 
     public BrewingRecipe(Ingredient input, Ingredient ingredient, ItemStack output) {
@@ -24,7 +20,7 @@ public class BrewingRecipe implements IBrewingRecipe {
     }
 
     @Override
-    public boolean isInput(@NotNull ItemStack stack) {
+    public boolean isInput(ItemStack stack) {
         return this.input.test(stack);
     }
 

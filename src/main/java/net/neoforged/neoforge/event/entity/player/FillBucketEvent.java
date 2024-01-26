@@ -11,7 +11,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -32,14 +31,13 @@ public class FillBucketEvent extends PlayerEvent implements ICancellableEvent {
 
     private ItemStack result;
 
-    public FillBucketEvent(Player player, @NotNull ItemStack current, Level level, @Nullable HitResult target) {
+    public FillBucketEvent(Player player, ItemStack current, Level level, @Nullable HitResult target) {
         super(player);
         this.current = current;
         this.level = level;
         this.target = target;
     }
 
-    @NotNull
     public ItemStack getEmptyBucket() {
         return this.current;
     }
@@ -53,12 +51,11 @@ public class FillBucketEvent extends PlayerEvent implements ICancellableEvent {
         return this.target;
     }
 
-    @NotNull
     public ItemStack getFilledBucket() {
         return this.result;
     }
 
-    public void setFilledBucket(@NotNull ItemStack bucket) {
+    public void setFilledBucket(ItemStack bucket) {
         this.result = bucket;
     }
 }

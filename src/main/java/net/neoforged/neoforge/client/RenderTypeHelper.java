@@ -16,7 +16,6 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Provides helper functions replacing those in {@link ItemBlockRenderTypes}.
@@ -28,7 +27,6 @@ public final class RenderTypeHelper {
      * <p>
      * Mimics the behavior of vanilla's {@link ItemBlockRenderTypes#getRenderType(BlockState, boolean)}.
      */
-    @NotNull
     public static RenderType getEntityRenderType(RenderType chunkRenderType, boolean cull) {
         if (chunkRenderType != RenderType.translucent())
             return Sheets.cutoutBlockSheet();
@@ -41,7 +39,6 @@ public final class RenderTypeHelper {
      * <p>
      * Mimics the behavior of vanilla's {@link ItemBlockRenderTypes#getMovingBlockRenderType(BlockState)}.
      */
-    @NotNull
     public static RenderType getMovingBlockRenderType(RenderType renderType) {
         if (renderType == RenderType.translucent())
             return RenderType.translucentMovingBlock();
@@ -54,7 +51,6 @@ public final class RenderTypeHelper {
      * Mimics the behavior of vanilla's {@link ItemBlockRenderTypes#getRenderType(ItemStack, boolean)}
      * but removes the need to query the model again if the item is a {@link BlockItem}.
      */
-    @NotNull
     public static RenderType getFallbackItemRenderType(ItemStack stack, BakedModel model, boolean cull) {
         if (stack.getItem() instanceof BlockItem blockItem) {
             var renderTypes = model.getRenderTypes(blockItem.getBlock().defaultBlockState(), RandomSource.create(42), ModelData.EMPTY);

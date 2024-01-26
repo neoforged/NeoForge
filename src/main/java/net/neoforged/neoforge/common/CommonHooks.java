@@ -191,7 +191,6 @@ import org.apache.logging.log4j.MarkerManager;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -201,14 +200,14 @@ public class CommonHooks {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker WORLDPERSISTENCE = MarkerManager.getMarker("WP");
 
-    public static boolean canContinueUsing(@NotNull ItemStack from, @NotNull ItemStack to) {
+    public static boolean canContinueUsing(ItemStack from, ItemStack to) {
         if (!from.isEmpty() && !to.isEmpty()) {
             return from.getItem().canContinueUsing(from, to);
         }
         return false;
     }
 
-    public static boolean isCorrectToolForDrops(@NotNull BlockState state, @NotNull Player player) {
+    public static boolean isCorrectToolForDrops(BlockState state, Player player) {
         if (!state.requiresCorrectToolForDrops())
             return EventHooks.doPlayerHarvestCheck(player, state, true);
 
@@ -297,7 +296,7 @@ public class CommonHooks {
         return Math.max(0, event.getVisibilityModifier());
     }
 
-    public static Optional<BlockPos> isLivingOnLadder(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull LivingEntity entity) {
+    public static Optional<BlockPos> isLivingOnLadder(BlockState state, Level level, BlockPos pos, LivingEntity entity) {
         boolean isSpectator = (entity instanceof Player && entity.isSpectator());
         if (isSpectator)
             return Optional.empty();
@@ -328,7 +327,7 @@ public class CommonHooks {
     }
 
     @Nullable
-    public static ItemEntity onPlayerTossEvent(@NotNull Player player, @NotNull ItemStack item, boolean includeName) {
+    public static ItemEntity onPlayerTossEvent(Player player, ItemStack item, boolean includeName) {
         player.captureDrops(Lists.newArrayList());
         ItemEntity ret = player.drop(item, false, includeName);
         player.captureDrops(null);
@@ -359,7 +358,6 @@ public class CommonHooks {
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
     }
 
-    @NotNull
     public static ChatDecorator getServerChatSubmittedDecorator() {
         return (sender, message) -> {
             if (sender == null)
@@ -496,7 +494,7 @@ public class CommonHooks {
         return event.isCanceled() ? -1 : event.getExpToDrop();
     }
 
-    public static InteractionResult onPlaceItemIntoWorld(@NotNull UseOnContext context) {
+    public static InteractionResult onPlaceItemIntoWorld(UseOnContext context) {
         ItemStack itemstack = context.getItemInHand();
         Level level = context.getLevel();
 
@@ -575,7 +573,7 @@ public class CommonHooks {
         return ret;
     }
 
-    public static boolean onAnvilChange(AnvilMenu container, @NotNull ItemStack left, @NotNull ItemStack right, Container outputSlot, String name, int baseCost, Player player) {
+    public static boolean onAnvilChange(AnvilMenu container, ItemStack left, ItemStack right, Container outputSlot, String name, int baseCost, Player player) {
         AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost, player);
         if (NeoForge.EVENT_BUS.post(e).isCanceled())
             return false;
@@ -588,13 +586,13 @@ public class CommonHooks {
         return false;
     }
 
-    public static float onAnvilRepair(Player player, @NotNull ItemStack output, @NotNull ItemStack left, @NotNull ItemStack right) {
+    public static float onAnvilRepair(Player player, ItemStack output, ItemStack left, ItemStack right) {
         AnvilRepairEvent e = new AnvilRepairEvent(player, left, right, output);
         NeoForge.EVENT_BUS.post(e);
         return e.getBreakChance();
     }
 
-    public static int onGrindstoneChange(@NotNull ItemStack top, @NotNull ItemStack bottom, Container outputSlot, int xp) {
+    public static int onGrindstoneChange(ItemStack top, ItemStack bottom, Container outputSlot, int xp) {
         GrindstoneEvent.OnPlaceItem e = new GrindstoneEvent.OnPlaceItem(top, bottom, xp);
         if (NeoForge.EVENT_BUS.post(e).isCanceled()) {
             outputSlot.setItem(0, ItemStack.EMPTY);
@@ -635,8 +633,7 @@ public class CommonHooks {
         return craftingPlayer.get();
     }
 
-    @NotNull
-    public static ItemStack getCraftingRemainingItem(@NotNull ItemStack stack) {
+    public static ItemStack getCraftingRemainingItem(ItemStack stack) {
         if (stack.getItem().hasCraftingRemainingItem(stack)) {
             stack = stack.getItem().getCraftingRemainingItem(stack);
             if (!stack.isEmpty() && stack.isDamageableItem() && stack.getDamageValue() > stack.getMaxDamage()) {
@@ -834,7 +831,7 @@ public class CommonHooks {
      * Used as the default implementation of {@link Item#getCreatorModId}. Call that method instead.
      */
     @Nullable
-    public static String getDefaultCreatorModId(@NotNull ItemStack itemStack) {
+    public static String getDefaultCreatorModId(ItemStack itemStack) {
         Item item = itemStack.getItem();
         ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(item);
         String modId = registryName == null ? null : registryName.getNamespace();

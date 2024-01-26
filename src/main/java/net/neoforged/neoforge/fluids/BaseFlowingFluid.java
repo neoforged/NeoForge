@@ -26,7 +26,6 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.common.SoundActions;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -134,7 +133,6 @@ public abstract class BaseFlowingFluid extends FlowingFluid {
         return fluidIn == still.get() || fluidIn == flowing.get();
     }
 
-    @NotNull
     @Override
     public Optional<SoundEvent> getPickupSound() {
         return Optional.ofNullable(getFluidType().getSound(SoundActions.BUCKET_FILL));
