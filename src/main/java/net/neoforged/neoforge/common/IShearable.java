@@ -49,9 +49,7 @@ public interface IShearable {
      * The object should perform all actions related to being sheared,
      * except for dropping of the items, and removal of the block.
      * As those are handled by ItemShears itself.
-     *
-     * Returns a list of items that resulted from the shearing process.
-     *
+     * <p>
      * For entities, they should trust there internal location information
      * over the values passed into this function.
      *
@@ -59,7 +57,7 @@ public interface IShearable {
      * @param level   The current level.
      * @param pos     If this is a block, the block's position in level.
      * @param fortune The fortune level of the shears being used.
-     * @return A List containing all items from this shearing. May be empty.
+     * @return A List containing all items that resulted from the shearing process. May be empty.
      */
     default List<ItemStack> onSheared(@Nullable Player player, ItemStack item, Level level, BlockPos pos, int fortune) {
         if (this instanceof LivingEntity entity && this instanceof Shearable shearable) {
@@ -75,10 +73,14 @@ public interface IShearable {
 
     /**
      * Performs the logic used to drop a shear result into the world at the correct position and with the proper movement.
+     * <br>
+     * For entities, they should trust there internal location information over the values passed into this function.
      *
-     * @param drop The ItemStack to drop
+     * @param level The current level.
+     * @param pos   If this is a block, the block's position in level.
+     * @param drop  The ItemStack to drop.
      */
-    default void spawnShearedDrop(ItemStack drop) {
+    default void spawnShearedDrop(Level level, BlockPos pos, ItemStack drop) {
         if (this instanceof SnowGolem golem) {
             golem.spawnAtLocation(drop, 1.7F);
         } else if (this instanceof MushroomCow cow) {
@@ -94,6 +96,8 @@ public interface IShearable {
                         (entity.getRandom().nextFloat() * 0.05F),
                         ((entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.1F)));
             }
+        } else {
+            level.addFreshEntity(new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), drop));
         }
     }
 }
