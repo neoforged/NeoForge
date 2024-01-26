@@ -4,8 +4,9 @@
  
  import net.minecraft.sounds.SoundSource;
  
+-public interface Shearable {
 +@Deprecated // Forge: Use IShearable
- public interface Shearable {
++public interface Shearable extends net.neoforged.neoforge.common.IShearable {
 +    @Deprecated // Forge: Use IShearable
      void shear(SoundSource p_21749_);
  
