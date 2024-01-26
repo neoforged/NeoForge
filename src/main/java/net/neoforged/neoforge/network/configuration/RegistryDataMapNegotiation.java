@@ -33,7 +33,7 @@ public record RegistryDataMapNegotiation(ServerConfigurationPacketListener liste
 
     @Override
     public void run(Consumer<CustomPacketPayload> sender) {
-        if (listener.isVanillaConnection()) {
+        if (!listener.isConnected(KnownRegistryDataMapsPayload.ID)) {
             final var mandatory = RegistryManager.getDataMaps().values()
                     .stream()
                     .flatMap(map -> map.values().stream())
@@ -43,8 +43,11 @@ public record RegistryDataMapNegotiation(ServerConfigurationPacketListener liste
             if (!mandatory.isEmpty()) {
                 // Use plain components as vanilla connections will be missing our translation keys
                 listener.disconnect(Component.literal("This server does not support vanilla clients as it has mandatory registry data maps: " + String.join(", ", mandatory)));
-                return;
+            } else {
+                listener.finishCurrentTask(TYPE);
             }
+
+            return;
         }
 
         final Map<ResourceKey<Registry<?>>, List<KnownRegistryDataMapsPayload.KnownDataMap>> dataMaps = new HashMap<>();

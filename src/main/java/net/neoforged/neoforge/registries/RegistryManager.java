@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.registries;
 
-import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
 import io.netty.util.AttributeKey;
 import java.util.ArrayList;
@@ -19,21 +18,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
 import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
-import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
-import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 import org.jetbrains.annotations.ApiStatus;
@@ -269,62 +263,6 @@ public class RegistryManager {
          * never sent to the client or saved to disk.
          */
         FULL
-    }
-
-    @ApiStatus.Internal
-    public static <R> void handleDataMapSync(final RegistryDataMapSyncPayload<R> payload, final PlayPayloadContext context) {
-        context.workHandler().submitAsync(() -> {
-            final BaseMappedRegistry<R> registry = (BaseMappedRegistry<R>) context.level().orElseThrow().registryAccess()
-                    .registryOrThrow(payload.registryKey());
-            registry.dataMaps.clear();
-            payload.dataMaps().forEach((attachKey, maps) -> registry.dataMaps.put(getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(maps)));
-        }).exceptionally(ex -> {
-            context.packetHandler().disconnect(Component.translatable("neoforge.network.data_maps.failed", payload.registryKey().location(), ex.getMessage()));
-            LOGGER.error("Failed to handle registry data map sync: ", ex);
-            return null;
-        });
-    }
-
-    @ApiStatus.Internal
-    public static void handleKnownDataMaps(final KnownRegistryDataMapsPayload payload, final ConfigurationPayloadContext context) {
-        record MandatoryEntry(ResourceKey<Registry<?>> registry, ResourceLocation id) {}
-        final Set<MandatoryEntry> ourMandatory = new HashSet<>();
-        getDataMaps().forEach((reg, values) -> values.values().forEach(attach -> {
-            if (attach.mandatorySync()) {
-                ourMandatory.add(new MandatoryEntry(reg, attach.id()));
-            }
-        }));
-
-        final Set<MandatoryEntry> theirMandatory = new HashSet<>();
-        payload.dataMaps().forEach((reg, values) -> values.forEach(attach -> {
-            if (attach.mandatory()) {
-                theirMandatory.add(new MandatoryEntry(reg, attach.id()));
-            }
-        }));
-
-        final var common = Sets.intersection(ourMandatory, theirMandatory);
-        if (common.size() != ourMandatory.size() || common.size() != theirMandatory.size()) {
-            final var missingOur = Sets.difference(common, ourMandatory);
-            final Set<MandatoryEntry> missing;
-            final String key;
-            if (!missingOur.isEmpty()) {
-                missing = missingOur;
-                key = "neoforge.network.data_maps.missing_our";
-            } else {
-                missing = Sets.difference(common, theirMandatory);
-                key = "neoforge.network.data_maps.missing_their";
-            }
-
-            context.packetHandler().disconnect(Component.translatable(key, Component.literal(missing.stream()
-                    .map(e -> e.id() + " (" + e.registry() + ")")
-                    .collect(Collectors.joining(", "))).withStyle(ChatFormatting.GOLD)));
-
-            return;
-        }
-
-        final var known = new HashMap<ResourceKey<Registry<?>>, Collection<ResourceLocation>>();
-        getDataMaps().forEach((key, vals) -> known.put(key, vals.keySet()));
-        context.replyHandler().send(new KnownRegistryDataMapsReplyPayload(known));
     }
 
     public static final AttributeKey<Map<ResourceKey<Registry<?>>, Collection<ResourceLocation>>> ATTRIBUTE_KNOWN_DATA_MAPS = AttributeKey.valueOf("neoforge:known_data_maps");

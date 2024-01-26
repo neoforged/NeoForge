@@ -24,6 +24,7 @@ import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.network.payload.TierSortingRegistryPayload;
 import net.neoforged.neoforge.network.payload.TierSortingRegistrySyncCompletePayload;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.registries.ClientRegistryManager;
 import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -64,7 +65,7 @@ public class NetworkInitialization {
                 .configuration(
                         KnownRegistryDataMapsPayload.ID,
                         KnownRegistryDataMapsPayload::new,
-                        handlers -> handlers.client(RegistryManager::handleKnownDataMaps))
+                        handlers -> handlers.client(ClientRegistryManager::handleKnownDataMaps))
                 .configuration(
                         KnownRegistryDataMapsReplyPayload.ID,
                         KnownRegistryDataMapsReplyPayload::new,
@@ -83,6 +84,6 @@ public class NetworkInitialization {
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
                 .play(RegistryDataMapSyncPayload.ID,
                         RegistryDataMapSyncPayload::decode,
-                        handlers -> handlers.client(RegistryManager::handleDataMapSync));
+                        handlers -> handlers.client(ClientRegistryManager::handleDataMapSync));
     }
 }
