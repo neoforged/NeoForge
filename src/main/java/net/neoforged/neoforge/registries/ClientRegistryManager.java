@@ -73,7 +73,7 @@ public class ClientRegistryManager {
             }
 
             context.packetHandler().disconnect(Component.translatable(key, Component.literal(missing.stream()
-                    .map(e -> e.id() + " (" + e.registry() + ")")
+                    .map(e -> e.id() + " (" + e.registry().location() + ")")
                     .collect(Collectors.joining(", "))).withStyle(ChatFormatting.GOLD)));
 
             return;
