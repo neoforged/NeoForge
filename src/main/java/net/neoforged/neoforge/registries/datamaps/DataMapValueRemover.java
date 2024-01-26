@@ -20,7 +20,7 @@ import net.minecraft.tags.TagKey;
  * @param <R> the type of the registry this remover is for
  */
 @FunctionalInterface
-public interface DataMapValueRemover<T, R> {
+public interface DataMapValueRemover<R, T> {
     /**
      * Remove the entry specified in this remover from the {@code value}.
      *
@@ -40,7 +40,7 @@ public interface DataMapValueRemover<T, R> {
      * @param <T> the type of the data
      * @param <R> the registry type
      */
-    class Default<T, R> implements DataMapValueRemover<T, R> {
+    class Default<T, R> implements DataMapValueRemover<R, T> {
         public static final Default<?, ?> INSTANCE = new Default<>();
 
         public static <T, R> Default<T, R> defaultRemover() {

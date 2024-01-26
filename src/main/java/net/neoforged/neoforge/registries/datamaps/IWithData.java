@@ -20,7 +20,7 @@ public interface IWithData<R> {
      * @param <T>  the type of the data
      */
     @Nullable
-    default <T> T getData(DataMapType<T, R> type) {
+    default <T> T getData(DataMapType<R, T> type) {
         return null;
     }
 }

@@ -33,7 +33,7 @@ public class RegisterDataMapTypesEvent extends Event implements IModBusEvent {
      * @param <R>  the type of the registry
      * @throws IllegalArgumentException if a type with the same ID has already been registered for that registry
      */
-    public <T, R> void register(DataMapType<T, R> type) {
+    public <T, R> void register(DataMapType<R, T> type) {
         final var registry = type.registryKey();
         final var map = attachments.computeIfAbsent((ResourceKey) registry, k -> new HashMap<>());
         if (map.containsKey(type.id())) {

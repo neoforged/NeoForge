@@ -86,16 +86,16 @@ public abstract class DataMapProvider implements DataProvider {
     protected abstract void gather();
 
     @SuppressWarnings("unchecked")
-    public <T, R> Builder<T, R> builder(DataMapType<T, R> type) {
+    public <T, R> Builder<T, R> builder(DataMapType<R, T> type) {
         // Avoid any weird classcastexceptions at runtime if a builder was previously created with this method
-        if (type instanceof AdvancedDataMapType<T, R, ?> advanced) {
+        if (type instanceof AdvancedDataMapType<R, T, ?> advanced) {
             return builder(advanced);
         }
         return (Builder<T, R>) builders.computeIfAbsent(type, k -> new Builder<>(type));
     }
 
     @SuppressWarnings("unchecked")
-    public <T, R, VR extends DataMapValueRemover<T, R>> AdvancedBuilder<T, R, VR> builder(AdvancedDataMapType<T, R, VR> type) {
+    public <T, R, VR extends DataMapValueRemover<R, T>> AdvancedBuilder<T, R, VR> builder(AdvancedDataMapType<R, T, VR> type) {
         return (AdvancedBuilder<T, R, VR>) builders.computeIfAbsent(type, k -> new AdvancedBuilder<>(type));
     }
 
@@ -108,12 +108,12 @@ public abstract class DataMapProvider implements DataProvider {
         private final Map<Either<TagKey<R>, ResourceKey<R>>, Optional<WithConditions<DataMapEntry<T>>>> values = new LinkedHashMap<>();
         protected final List<DataMapEntry.Removal<T, R>> removals = new ArrayList<>();
         protected final ResourceKey<Registry<R>> registryKey;
-        private final DataMapType<T, R> type;
+        private final DataMapType<R, T> type;
         private final List<ICondition> conditions = new ArrayList<>();
 
         private boolean replace;
 
-        public Builder(DataMapType<T, R> type) {
+        public Builder(DataMapType<R, T> type) {
             this.type = type;
             this.registryKey = type.registryKey();
         }
@@ -166,8 +166,8 @@ public abstract class DataMapProvider implements DataProvider {
         }
     }
 
-    public static class AdvancedBuilder<T, R, VR extends DataMapValueRemover<T, R>> extends Builder<T, R> {
-        public AdvancedBuilder(AdvancedDataMapType<T, R, VR> type) {
+    public static class AdvancedBuilder<T, R, VR extends DataMapValueRemover<R, T>> extends Builder<T, R> {
+        public AdvancedBuilder(AdvancedDataMapType<R, T, VR> type) {
             super(type);
         }
 

@@ -127,12 +127,12 @@ public interface IRegistryExtension<T> {
      * @param <A>  the data type
      */
     @Nullable
-    <A> A getData(DataMapType<A, T> type, ResourceKey<T> key);
+    <A> A getData(DataMapType<T, A> type, ResourceKey<T> key);
 
     /**
      * {@return the data map of the given {@code type}}
      *
      * @param <A> the data type
      */
-    <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<A, T> type);
+    <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<T, A> type);
 }

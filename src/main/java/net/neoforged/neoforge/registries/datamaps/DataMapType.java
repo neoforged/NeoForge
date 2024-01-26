@@ -56,7 +56,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @see AdvancedDataMapType for more functionality
  */
-public sealed class DataMapType<T, R> permits AdvancedDataMapType {
+public sealed class DataMapType<R, T> permits AdvancedDataMapType {
     private final ResourceKey<Registry<R>> registryKey;
     private final ResourceLocation id;
     private final Codec<T> codec;
@@ -158,7 +158,7 @@ public sealed class DataMapType<T, R> permits AdvancedDataMapType {
         /**
          * {@return a built data map type}
          */
-        public DataMapType<T, R> build() {
+        public DataMapType<R, T> build() {
             return new DataMapType<>(registryKey, id, codec, networkCodec, mandatorySync);
         }
     }

@@ -25,7 +25,7 @@ import net.minecraft.tags.TagKey;
  * @param <R> the type of the registry this merger is for
  */
 @FunctionalInterface
-public interface DataMapValueMerger<T, R> {
+public interface DataMapValueMerger<R, T> {
     /**
      * Merge two conflicting data map values.
      *
@@ -41,14 +41,14 @@ public interface DataMapValueMerger<T, R> {
     /**
      * {@return a default merger that overrides the old value with the new one}
      */
-    static <T, R> DataMapValueMerger<T, R> defaultMerger() {
+    static <T, R> DataMapValueMerger<R, T> defaultMerger() {
         return (registry, first, firstValue, second, secondValue) -> secondValue;
     }
 
     /**
      * {@return a default merger that merges list data}
      */
-    static <T, R> DataMapValueMerger<List<T>, R> listMerger() {
+    static <T, R> DataMapValueMerger<R, List<T>> listMerger() {
         return (registry, first, firstValue, second, secondValue) -> {
             final List<T> list = new ArrayList<>(firstValue);
             list.addAll(secondValue);
@@ -59,7 +59,7 @@ public interface DataMapValueMerger<T, R> {
     /**
      * {@return a default merger that merges set data}
      */
-    static <T, R> DataMapValueMerger<Set<T>, R> setMerger() {
+    static <T, R> DataMapValueMerger<R, Set<T>> setMerger() {
         return (registry, first, firstValue, second, secondValue) -> {
             final Set<T> set = new HashSet<>(firstValue);
             set.addAll(secondValue);
@@ -70,7 +70,7 @@ public interface DataMapValueMerger<T, R> {
     /**
      * {@return a default merger that merges map data}
      */
-    static <K, V, R> DataMapValueMerger<Map<K, V>, R> mapMerger() {
+    static <K, V, R> DataMapValueMerger<R, Map<K, V>> mapMerger() {
         return (registry, first, firstValue, second, secondValue) -> {
             final Map<K, V> map = new HashMap<>(firstValue);
             map.putAll(secondValue);

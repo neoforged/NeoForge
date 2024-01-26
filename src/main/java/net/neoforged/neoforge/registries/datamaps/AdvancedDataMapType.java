@@ -53,11 +53,11 @@ import org.jetbrains.annotations.Nullable;
  * @param <R>  the type of the attached data
  * @param <VR> the type of the remover
  */
-public final class AdvancedDataMapType<T, R, VR extends DataMapValueRemover<T, R>> extends DataMapType<T, R> {
+public final class AdvancedDataMapType<R, T, VR extends DataMapValueRemover<R, T>> extends DataMapType<R, T> {
     private final Codec<VR> remover;
-    private final DataMapValueMerger<T, R> merger;
+    private final DataMapValueMerger<R, T> merger;
 
-    private AdvancedDataMapType(ResourceKey<Registry<R>> registryKey, ResourceLocation id, Codec<T> codec, @Nullable Codec<T> networkCodec, boolean mandatorySync, Codec<VR> remover, DataMapValueMerger<T, R> merger) {
+    private AdvancedDataMapType(ResourceKey<Registry<R>> registryKey, ResourceLocation id, Codec<T> codec, @Nullable Codec<T> networkCodec, boolean mandatorySync, Codec<VR> remover, DataMapValueMerger<R, T> merger) {
         super(registryKey, id, codec, networkCodec, mandatorySync);
         this.remover = Objects.requireNonNull(remover, "remover must not be null");
         this.merger = Objects.requireNonNull(merger, "merger must not be null");
@@ -73,7 +73,7 @@ public final class AdvancedDataMapType<T, R, VR extends DataMapValueRemover<T, R
     /**
      * {@return the merger that handles data map conflicts}
      */
-    public DataMapValueMerger<T, R> merger() {
+    public DataMapValueMerger<R, T> merger() {
         return merger;
     }
 
@@ -97,10 +97,10 @@ public final class AdvancedDataMapType<T, R, VR extends DataMapValueRemover<T, R
      * @param <R>  the registry the data is for
      * @param <VR> the type of the remover
      */
-    public static final class Builder<T, R, VR extends DataMapValueRemover<T, R>> extends DataMapType.Builder<T, R> {
+    public static final class Builder<T, R, VR extends DataMapValueRemover<R, T>> extends DataMapType.Builder<T, R> {
         // The remover will be set in the default builder factory, as otherwise it's not generically safe
         private Codec<VR> remover;
-        private DataMapValueMerger<T, R> merger = DataMapValueMerger.defaultMerger();
+        private DataMapValueMerger<R, T> merger = DataMapValueMerger.defaultMerger();
 
         Builder(ResourceKey<Registry<R>> registryKey, ResourceLocation id, Codec<T> codec) {
             super(registryKey, id, codec);
@@ -114,7 +114,7 @@ public final class AdvancedDataMapType<T, R, VR extends DataMapValueRemover<T, R
          * @return the builder instance
          * @see DataMapValueRemover
          */
-        public <VR1 extends DataMapValueRemover<T, R>> AdvancedDataMapType.Builder<T, R, VR1> remover(Codec<VR1> remover) {
+        public <VR1 extends DataMapValueRemover<R, T>> AdvancedDataMapType.Builder<T, R, VR1> remover(Codec<VR1> remover) {
             this.remover = (Codec) remover;
             return (Builder<T, R, VR1>) this;
         }
@@ -125,7 +125,7 @@ public final class AdvancedDataMapType<T, R, VR extends DataMapValueRemover<T, R
          * @param merger a merger that handles conflicting values
          * @return the builder instance
          */
-        public AdvancedDataMapType.Builder<T, R, VR> merger(DataMapValueMerger<T, R> merger) {
+        public AdvancedDataMapType.Builder<T, R, VR> merger(DataMapValueMerger<R, T> merger) {
             this.merger = merger;
             return this;
         }
@@ -148,7 +148,7 @@ public final class AdvancedDataMapType<T, R, VR extends DataMapValueRemover<T, R
          * {@return a built advanced data map type}
          */
         @Override
-        public AdvancedDataMapType<T, R, VR> build() {
+        public AdvancedDataMapType<R, T, VR> build() {
             return new AdvancedDataMapType<>(registryKey, id, codec, networkCodec, mandatorySync, remover, merger);
         }
     }

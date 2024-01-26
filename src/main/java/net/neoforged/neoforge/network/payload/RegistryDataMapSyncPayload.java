@@ -24,7 +24,7 @@ public record RegistryDataMapSyncPayload<T>(ResourceKey<? extends Registry<T>> r
         //noinspection RedundantCast javac complains about this cast
         final ResourceKey<Registry<T>> registryKey = (ResourceKey<Registry<T>>) (Object) buf.readRegistryKey();
         final Map<ResourceLocation, Map<ResourceKey<T>, ?>> attach = buf.readMap(FriendlyByteBuf::readResourceLocation, (b1, key) -> {
-            final DataMapType<?, T> dataMap = RegistryManager.getDataMap(registryKey, key);
+            final DataMapType<T, ?> dataMap = RegistryManager.getDataMap(registryKey, key);
             return b1.readMap(bf -> bf.readResourceKey(registryKey), bf -> bf.readJsonWithCodec(dataMap.networkCodec()));
         });
         return new RegistryDataMapSyncPayload<>(registryKey, attach);
@@ -34,7 +34,7 @@ public record RegistryDataMapSyncPayload<T>(ResourceKey<? extends Registry<T>> r
     public void write(FriendlyByteBuf buf) {
         buf.writeResourceKey(registryKey);
         buf.writeMap(dataMaps, FriendlyByteBuf::writeResourceLocation, (b1, key, attach) -> {
-            final DataMapType<?, T> dataMap = RegistryManager.getDataMap(registryKey, key);
+            final DataMapType<T, ?> dataMap = RegistryManager.getDataMap(registryKey, key);
             b1.writeMap(attach, FriendlyByteBuf::writeResourceKey, (bf, value) -> bf.writeJsonWithCodec((Codec) dataMap.networkCodec(), value));
         });
     }

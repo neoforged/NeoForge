@@ -74,11 +74,11 @@ public class DataMapLoader implements PreparableReloadListener {
                 key, this.buildDataMap(registry, key, (List) entries)));
     }
 
-    private <T, R> Map<ResourceKey<R>, T> buildDataMap(Registry<R> registry, DataMapType<T, R> attachment, List<DataMapFile<T, R>> entries) {
+    private <T, R> Map<ResourceKey<R>, T> buildDataMap(Registry<R> registry, DataMapType<R, T> attachment, List<DataMapFile<T, R>> entries) {
         record WithSource<T, R>(T attachment, Either<TagKey<R>, ResourceKey<R>> source) {}
         final Map<ResourceKey<R>, WithSource<T, R>> result = new IdentityHashMap<>();
         final BiConsumer<Either<TagKey<R>, ResourceKey<R>>, Consumer<Holder<R>>> valueResolver = (key, cons) -> key.ifLeft(tag -> registry.getTagOrEmpty(tag).forEach(cons)).ifRight(k -> cons.accept(registry.getHolderOrThrow(k)));
-        final DataMapValueMerger<T, R> merger = attachment instanceof AdvancedDataMapType<T, R, ?> adv ? adv.merger() : DataMapValueMerger.defaultMerger();
+        final DataMapValueMerger<R, T> merger = attachment instanceof AdvancedDataMapType<R, T, ?> adv ? adv.merger() : DataMapValueMerger.defaultMerger();
         entries.forEach(entry -> {
             if (entry.replace()) {
                 result.clear();
@@ -156,7 +156,7 @@ public class DataMapLoader implements PreparableReloadListener {
         return (registryId.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE) ? "" : registryId.getNamespace() + "/") + registryId.getPath();
     }
 
-    private static <A, T> List<DataMapFile<A, T>> readData(RegistryOps<JsonElement> ops, DataMapType<A, T> attachmentType, ResourceKey<Registry<T>> registryKey, List<Resource> resources) {
+    private static <A, T> List<DataMapFile<A, T>> readData(RegistryOps<JsonElement> ops, DataMapType<T, A> attachmentType, ResourceKey<Registry<T>> registryKey, List<Resource> resources) {
         final var codec = DataMapFile.codec(registryKey, attachmentType);
         final List<DataMapFile<A, T>> entries = new LinkedList<>();
         for (final Resource resource : resources) {
@@ -171,5 +171,5 @@ public class DataMapLoader implements PreparableReloadListener {
         return entries;
     }
 
-    private record LoadResult<T>(Map<DataMapType<?, T>, List<DataMapFile<?, T>>> results) {}
+    private record LoadResult<T>(Map<DataMapType<T, ?>, List<DataMapFile<?, T>>> results) {}
 }

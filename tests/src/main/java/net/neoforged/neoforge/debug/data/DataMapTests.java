@@ -49,7 +49,7 @@ public class DataMapTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if data map mergers function properly")
     static void dataMapMerger(final DynamicTest test, final RegistrationHelper reg) {
-        final AdvancedDataMapType<List<SomeObject>, Item, Default<List<SomeObject>, Item>> someData = AdvancedDataMapType.builder(
+        final AdvancedDataMapType<Item, List<SomeObject>, Default<List<SomeObject>, Item>> someData = AdvancedDataMapType.builder(
                 new ResourceLocation(reg.modId(), "some_list"),
                 Registries.ITEM, SomeObject.CODEC.listOf())
                 .merger(DataMapValueMerger.listMerger())
@@ -119,7 +119,7 @@ public class DataMapTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if data map removers function properly")
     static void dataMapRemover(final DynamicTest test, final RegistrationHelper reg) {
-        record CustomRemover(List<String> keys) implements DataMapValueRemover<Map<String, SomeObject>, Item> {
+        record CustomRemover(List<String> keys) implements DataMapValueRemover<Item, Map<String, SomeObject>> {
             @Override
             public Optional<Map<String, SomeObject>> remove(Map<String, SomeObject> value, Registry<Item> registry, Either<TagKey<Item>, ResourceKey<Item>> source, Item object) {
                 final var newMap = new HashMap<>(value);
@@ -128,7 +128,7 @@ public class DataMapTests {
             }
         }
 
-        final AdvancedDataMapType<Map<String, SomeObject>, Item, CustomRemover> someData = AdvancedDataMapType.builder(
+        final AdvancedDataMapType<Item, Map<String, SomeObject>, CustomRemover> someData = AdvancedDataMapType.builder(
                 new ResourceLocation(reg.modId(), "some_map"),
                 Registries.ITEM, ExtraCodecs.strictUnboundedMap(Codec.STRING, SomeObject.CODEC))
                 .merger(DataMapValueMerger.mapMerger())
@@ -195,7 +195,7 @@ public class DataMapTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if registry data maps work")
     static void dataMapTest(final DynamicTest test, final RegistrationHelper reg) {
-        final DataMapType<SomeObject, Item> someData = DataMapType.builder(
+        final DataMapType<Item, SomeObject> someData = DataMapType.builder(
                 new ResourceLocation(reg.modId(), "some_data"),
                 Registries.ITEM, SomeObject.CODEC)
                 .synced(SomeObject.CODEC, true)
@@ -251,7 +251,7 @@ public class DataMapTests {
             static final Codec<ExperienceGrant> CODEC = Codec.INT.xmap(ExperienceGrant::new, ExperienceGrant::amount);
         }
 
-        final DataMapType<ExperienceGrant, DamageType> xpGrant = DataMapType.builder(
+        final DataMapType<DamageType, ExperienceGrant> xpGrant = DataMapType.builder(
                 new ResourceLocation(reg.modId(), "xp_grant"),
                 Registries.DAMAGE_TYPE, ExperienceGrant.CODEC)
                 .build();
