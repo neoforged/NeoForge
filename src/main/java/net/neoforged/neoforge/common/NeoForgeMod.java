@@ -639,7 +639,7 @@ public class NeoForgeMod {
         gen.addProvider(event.includeServer(), new NeoForgeItemTagsProvider(packOutput, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
         gen.addProvider(event.includeServer(), new NeoForgeEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new NeoForgeFluidTagsProvider(packOutput, lookupProvider, existingFileHelper));
-        gen.addProvider(event.includeServer(), new NeoForgeRecipeProvider(packOutput, lookupProvider));
+        gen.addProvider(event.includeServer(), new NeoForgeRecipeProvider(packOutput));
         gen.addProvider(event.includeServer(), new NeoForgeLootTableProvider(packOutput));
         gen.addProvider(event.includeServer(), new NeoForgeBiomeTagsProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeServer(), new NeoForgeDamageTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
