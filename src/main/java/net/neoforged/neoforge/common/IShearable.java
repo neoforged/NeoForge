@@ -50,8 +50,7 @@ public interface IShearable {
      * except for dropping of the items, and removal of the block.
      * As those are handled by ItemShears itself.
      * <p>
-     * For entities, they should trust there internal location information
-     * over the values passed into this function.
+     * For entities, they should trust their internal location information over the values passed into this function.
      *
      * @param item    The ItemStack that is being used, may be empty.
      * @param level   The current level.
@@ -74,7 +73,7 @@ public interface IShearable {
     /**
      * Performs the logic used to drop a shear result into the world at the correct position and with the proper movement.
      * <br>
-     * For entities, they should trust there internal location information over the values passed into this function.
+     * For entities, they should trust their internal location information over the values passed into this function.
      *
      * @param level The current level.
      * @param pos   If this is a block, the block's position in level.
@@ -84,7 +83,7 @@ public interface IShearable {
         if (this instanceof SnowGolem golem) {
             golem.spawnAtLocation(drop, 1.7F);
         } else if (this instanceof MushroomCow cow) {
-            //Note: Vanilla uses addFreshEntity instead of spawnAtLocation for spawning mooshrooms drops
+            // Note: Vanilla uses addFreshEntity instead of spawnAtLocation for spawning mooshrooms drops
             // In case a mod is capturing drops for the entity we instead do it the same way we patch in MushroomCow#shear
             ItemEntity itemEntity = cow.spawnAtLocation(drop, cow.getBbHeight());
             if (itemEntity != null) itemEntity.setNoPickUpDelay();

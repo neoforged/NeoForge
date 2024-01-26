@@ -9,9 +9,9 @@
 +            if (entity.level().isClientSide) return InteractionResult.CONSUME;
 +            BlockPos pos = entity.blockPosition();
 +            if (target.isShearable(stack, entity.level(), pos)) {
-+                java.util.List<ItemStack> drops = target.onSheared(player, stack, entity.level(), pos, stack.getEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.BLOCK_FORTUNE));
++                target.onSheared(player, stack, entity.level(), pos, stack.getEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.BLOCK_FORTUNE))
++                      .forEach(drop -> target.spawnShearedDrop(entity.level(), pos, drop));
 +                entity.gameEvent(GameEvent.SHEAR, player);
-+                drops.forEach(drop -> target.spawnShearedDrop(entity.level(), pos, drop));
 +                stack.hurtAndBreak(1, player, e -> e.broadcastBreakEvent(hand));
 +            }
 +            return InteractionResult.SUCCESS;
