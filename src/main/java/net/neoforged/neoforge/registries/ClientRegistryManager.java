@@ -7,16 +7,19 @@ package net.neoforged.neoforge.registries;
 
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
@@ -60,22 +63,32 @@ public class ClientRegistryManager {
             }
         }));
 
+        final List<Component> messages = new ArrayList<>();
         final var missingOur = Sets.difference(ourMandatory, theirMandatory);
-        final Set<MandatoryEntry> missing;
-        final String errorKey;
         if (!missingOur.isEmpty()) {
-            missing = missingOur;
-            errorKey = "neoforge.network.data_maps.missing_our";
-        } else {
-            missing = Sets.difference(theirMandatory, ourMandatory);
-            errorKey = "neoforge.network.data_maps.missing_their";
-        }
-
-        if (!missing.isEmpty()) {
-            context.packetHandler().disconnect(Component.translatable(errorKey, Component.literal(missing.stream()
+            messages.add(Component.translatable("neoforge.network.data_maps.missing_our", Component.literal(missingOur.stream()
                     .map(e -> e.id() + " (" + e.registry().location() + ")")
                     .collect(Collectors.joining(", "))).withStyle(ChatFormatting.GOLD)));
+        }
 
+        final var missingTheir = Sets.difference(theirMandatory, ourMandatory);
+        if (!missingOur.isEmpty()) {
+            messages.add(Component.translatable("neoforge.network.data_maps.missing_their", Component.literal(missingTheir.stream()
+                    .map(e -> e.id() + " (" + e.registry().location() + ")")
+                    .collect(Collectors.joining(", "))).withStyle(ChatFormatting.GOLD)));
+        }
+
+        if (!messages.isEmpty()) {
+            MutableComponent message = Component.empty();
+            final var itr = messages.iterator();
+            while (itr.hasNext()) {
+                message = message.append(itr.next());
+                if (itr.hasNext()) {
+                    message = message.append("\n");
+                }
+            }
+
+            context.packetHandler().disconnect(message);
             return;
         }
 
