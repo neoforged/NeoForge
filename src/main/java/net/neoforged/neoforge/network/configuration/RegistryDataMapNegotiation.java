@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -42,7 +43,8 @@ public record RegistryDataMapNegotiation(ServerConfigurationPacketListener liste
                     .toList();
             if (!mandatory.isEmpty()) {
                 // Use plain components as vanilla connections will be missing our translation keys
-                listener.disconnect(Component.literal("This server does not support vanilla clients as it has mandatory registry data maps: " + String.join(", ", mandatory)));
+                listener.disconnect(Component.literal("This server does not support vanilla clients as it has mandatory registry data maps: ")
+                        .append(Component.literal(String.join(", ", mandatory)).withStyle(ChatFormatting.GOLD)));
             } else {
                 listener.finishCurrentTask(TYPE);
             }
