@@ -8,7 +8,6 @@ package net.neoforged.neoforge.event.enchanting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Fired when the enchantment level is set for each of the three potential enchantments in the enchanting table.
@@ -23,12 +22,11 @@ public class EnchantmentLevelSetEvent extends net.neoforged.bus.api.Event {
     private final BlockPos pos;
     private final int enchantRow;
     private final int power;
-    @NotNull
     private final ItemStack itemStack;
     private final int originalLevel;
     private int enchantLevel;
 
-    public EnchantmentLevelSetEvent(Level level, BlockPos pos, int enchantRow, int power, @NotNull ItemStack itemStack, int enchantLevel) {
+    public EnchantmentLevelSetEvent(Level level, BlockPos pos, int enchantRow, int power, ItemStack itemStack, int enchantLevel) {
         this.level = level;
         this.pos = pos;
         this.enchantRow = enchantRow;
@@ -79,7 +77,6 @@ public class EnchantmentLevelSetEvent extends net.neoforged.bus.api.Event {
      *
      * @return the item being enchanted
      */
-    @NotNull
     public ItemStack getItem() {
         return itemStack;
     }

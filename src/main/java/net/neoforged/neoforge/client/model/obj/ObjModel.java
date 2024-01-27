@@ -42,7 +42,6 @@ import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
 import net.neoforged.neoforge.client.model.renderable.CompositeRenderable;
 import net.neoforged.neoforge.client.textures.UnitTextureAtlasSprite;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -579,7 +578,7 @@ public class ObjModel extends SimpleUnbakedGeometry<ObjModel> {
         }
     }
 
-    public record ModelSettings(@NotNull ResourceLocation modelLocation,
+    public record ModelSettings(ResourceLocation modelLocation,
             boolean automaticCulling, boolean shadeQuads, boolean flipV,
             boolean emissiveAmbient, @Nullable String mtlOverride) {}
 }

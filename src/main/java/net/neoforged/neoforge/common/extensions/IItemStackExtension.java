@@ -39,7 +39,6 @@ import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -432,8 +431,8 @@ public interface IItemStackExtension {
      * @param target the entity targeted by the attack.
      * @return the bounding box.
      */
-    @NotNull
-    default AABB getSweepHitBox(@NotNull Player player, @NotNull Entity target) {
+
+    default AABB getSweepHitBox(Player player, Entity target) {
         return self().getItem().getSweepHitBox(self(), player, target);
     }
 

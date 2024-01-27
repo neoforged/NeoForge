@@ -8,7 +8,6 @@ package net.neoforged.neoforge.event.brewing;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * This event is called when a player picks up a potion from a brewing stand.
@@ -16,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 public class PlayerBrewedPotionEvent extends PlayerEvent {
     private final ItemStack stack;
 
-    public PlayerBrewedPotionEvent(Player player, @NotNull ItemStack stack) {
+    public PlayerBrewedPotionEvent(Player player, ItemStack stack) {
         super(player);
         this.stack = stack;
     }
@@ -24,7 +23,6 @@ public class PlayerBrewedPotionEvent extends PlayerEvent {
     /**
      * The ItemStack of the potion.
      */
-    @NotNull
     public ItemStack getStack() {
         return stack;
     }

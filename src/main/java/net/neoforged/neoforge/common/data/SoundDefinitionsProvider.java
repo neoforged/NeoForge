@@ -207,7 +207,7 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
         // Differently from all the other errors, this is not a 'missing sound' but rather something completely different
         // that has broken the invariants of this sound definition's provider. In fact, a sound may only be either of
         // SOUND or EVENT type. Any other values is somebody messing with the internals, reflectively adding something
-        // to an enum or passing `null` to a parameter annotated with `@NotNull`.
+        // to an enum or passing `null` to a parameter that isn't annotated with `@Nullable`.
         throw new IllegalArgumentException("The given sound '" + sound.name() + "' does not have a valid type: expected either SOUND or EVENT, but found " + sound.type());
     }
 

@@ -17,7 +17,6 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 public interface IBlockEntityExtension extends INBTSerializable<CompoundTag> {
     private BlockEntity self() {
@@ -103,7 +102,7 @@ public interface IBlockEntityExtension extends INBTSerializable<CompoundTag> {
      * 
      * @return Your model data
      */
-    default @NotNull ModelData getModelData() {
+    default ModelData getModelData() {
         return ModelData.EMPTY;
     }
 

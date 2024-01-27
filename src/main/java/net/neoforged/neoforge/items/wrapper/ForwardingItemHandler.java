@@ -9,7 +9,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * An {@link IItemHandler} that delegates each method to another {@link IItemHandler}.
@@ -33,17 +32,17 @@ public class ForwardingItemHandler implements IItemHandler {
     }
 
     @Override
-    public @NotNull ItemStack getStackInSlot(int slot) {
+    public ItemStack getStackInSlot(int slot) {
         return delegate.get().getStackInSlot(slot);
     }
 
     @Override
-    public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         return delegate.get().insertItem(slot, stack, simulate);
     }
 
     @Override
-    public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
+    public ItemStack extractItem(int slot, int amount, boolean simulate) {
         return delegate.get().extractItem(slot, amount, simulate);
     }
 
@@ -53,7 +52,7 @@ public class ForwardingItemHandler implements IItemHandler {
     }
 
     @Override
-    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+    public boolean isItemValid(int slot, ItemStack stack) {
         return delegate.get().isItemValid(slot, stack);
     }
 }

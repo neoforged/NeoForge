@@ -8,7 +8,6 @@ package net.neoforged.neoforge.items;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
-import org.jetbrains.annotations.NotNull;
 
 public class VanillaHopperItemHandler extends InvWrapper {
     private final HopperBlockEntity hopper;
@@ -19,8 +18,7 @@ public class VanillaHopperItemHandler extends InvWrapper {
     }
 
     @Override
-    @NotNull
-    public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         if (simulate) {
             return super.insertItem(slot, stack, simulate);
         } else {

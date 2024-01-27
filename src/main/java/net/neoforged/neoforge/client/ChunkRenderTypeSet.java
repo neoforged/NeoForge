@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderType;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * An immutable ordered set (not implementing {@link java.util.Set}) of chunk {@linkplain RenderType render types}.
@@ -108,7 +107,6 @@ public sealed class ChunkRenderTypeSet implements Iterable<RenderType> {
         return id >= 0 && bits.get(id);
     }
 
-    @NotNull
     @Override
     public Iterator<RenderType> iterator() {
         return new IteratorImpl();
@@ -149,7 +147,6 @@ public sealed class ChunkRenderTypeSet implements Iterable<RenderType> {
             return false;
         }
 
-        @NotNull
         @Override
         public Iterator<RenderType> iterator() {
             return Collections.emptyIterator();
@@ -176,7 +173,6 @@ public sealed class ChunkRenderTypeSet implements Iterable<RenderType> {
             return renderType.getChunkLayerId() >= 0; // Could just return true for efficiency purposes, but checking is near-free
         }
 
-        @NotNull
         @Override
         public Iterator<RenderType> iterator() {
             return CHUNK_RENDER_TYPES_LIST.iterator();

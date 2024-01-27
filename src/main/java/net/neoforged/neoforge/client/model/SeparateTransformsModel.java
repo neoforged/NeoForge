@@ -36,7 +36,6 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -87,9 +86,8 @@ public class SeparateTransformsModel implements IUnbakedGeometry<SeparateTransfo
             this.perspectives = perspectives;
         }
 
-        @NotNull
         @Override
-        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData data, @Nullable RenderType renderType) {
+        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand, ModelData data, @Nullable RenderType renderType) {
             return baseModel.getQuads(state, side, rand, data, renderType);
         }
 
@@ -138,7 +136,7 @@ public class SeparateTransformsModel implements IUnbakedGeometry<SeparateTransfo
         }
 
         @Override
-        public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
+        public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData data) {
             return baseModel.getRenderTypes(state, rand, data);
         }
     }

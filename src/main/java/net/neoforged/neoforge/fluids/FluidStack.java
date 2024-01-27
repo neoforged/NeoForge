@@ -20,7 +20,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -231,7 +230,7 @@ public class FluidStack {
      *              The FluidStack for comparison
      * @return true if the Fluids (IDs and NBT Tags) are the same
      */
-    public boolean isFluidEqual(@NotNull FluidStack other) {
+    public boolean isFluidEqual(FluidStack other) {
         return getFluid() == other.getFluid() && isFluidStackTagEqual(other);
     }
 
@@ -242,7 +241,7 @@ public class FluidStack {
     /**
      * Determines if the NBT Tags are equal. Useful if the FluidIDs are known to be equal.
      */
-    public static boolean areFluidStackTagsEqual(@NotNull FluidStack stack1, @NotNull FluidStack stack2) {
+    public static boolean areFluidStackTagsEqual(FluidStack stack1, FluidStack stack2) {
         return stack1.isFluidStackTagEqual(stack2);
     }
 
@@ -251,7 +250,7 @@ public class FluidStack {
      *
      * @return true if this FluidStack contains the other FluidStack (same fluid and >= amount)
      */
-    public boolean containsFluid(@NotNull FluidStack other) {
+    public boolean containsFluid(FluidStack other) {
         return isFluidEqual(other) && amount >= other.amount;
     }
 
@@ -274,7 +273,7 @@ public class FluidStack {
      *              The ItemStack for comparison
      * @return true if the Fluids (IDs and NBT Tags) are the same
      */
-    public boolean isFluidEqual(@NotNull ItemStack other) {
+    public boolean isFluidEqual(ItemStack other) {
         return FluidUtil.getFluidContained(other).map(this::isFluidEqual).orElse(false);
     }
 

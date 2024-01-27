@@ -13,7 +13,6 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -96,12 +95,11 @@ public abstract class MobEffectEvent extends LivingEvent {
     @HasResult
     public static class Applicable extends MobEffectEvent {
         @ApiStatus.Internal
-        public Applicable(LivingEntity living, @NotNull MobEffectInstance effectInstance) {
+        public Applicable(LivingEntity living, MobEffectInstance effectInstance) {
             super(living, effectInstance);
         }
 
         @Override
-        @NotNull
         public MobEffectInstance getEffectInstance() {
             return super.getEffectInstance();
         }
@@ -128,7 +126,6 @@ public abstract class MobEffectEvent extends LivingEvent {
          * @return the added {@link MobEffectInstance}. This is the unmerged MobEffectInstance if the old MobEffectInstance is not null.
          */
         @Override
-        @NotNull
         public MobEffectInstance getEffectInstance() {
             return super.getEffectInstance();
         }
