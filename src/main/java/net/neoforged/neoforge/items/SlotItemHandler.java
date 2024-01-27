@@ -10,7 +10,6 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 public class SlotItemHandler extends Slot {
     private static Container emptyInventory = new SimpleContainer(0);
@@ -24,21 +23,20 @@ public class SlotItemHandler extends Slot {
     }
 
     @Override
-    public boolean mayPlace(@NotNull ItemStack stack) {
+    public boolean mayPlace(ItemStack stack) {
         if (stack.isEmpty())
             return false;
         return itemHandler.isItemValid(index, stack);
     }
 
     @Override
-    @NotNull
     public ItemStack getItem() {
         return this.getItemHandler().getStackInSlot(index);
     }
 
     // Override if your IItemHandler does not implement IItemHandlerModifiable
     @Override
-    public void set(@NotNull ItemStack stack) {
+    public void set(ItemStack stack) {
         ((IItemHandlerModifiable) this.getItemHandler()).setStackInSlot(index, stack);
         this.setChanged();
     }
@@ -51,9 +49,7 @@ public class SlotItemHandler extends Slot {
     }
 
     @Override
-    public void onQuickCraft(@NotNull ItemStack oldStackIn, @NotNull ItemStack newStackIn) {
-
-    }
+    public void onQuickCraft(ItemStack oldStackIn, ItemStack newStackIn) {}
 
     @Override
     public int getMaxStackSize() {
@@ -61,7 +57,7 @@ public class SlotItemHandler extends Slot {
     }
 
     @Override
-    public int getMaxStackSize(@NotNull ItemStack stack) {
+    public int getMaxStackSize(ItemStack stack) {
         ItemStack maxAdd = stack.copy();
         int maxInput = stack.getMaxStackSize();
         maxAdd.setCount(maxInput);
@@ -93,7 +89,6 @@ public class SlotItemHandler extends Slot {
     }
 
     @Override
-    @NotNull
     public ItemStack remove(int amount) {
         return this.getItemHandler().extractItem(index, amount, false);
     }

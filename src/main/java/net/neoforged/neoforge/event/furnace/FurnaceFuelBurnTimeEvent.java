@@ -12,7 +12,6 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.EventHooks;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -29,13 +28,12 @@ import org.jetbrains.annotations.Nullable;
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
 public class FurnaceFuelBurnTimeEvent extends Event implements ICancellableEvent {
-    @NotNull
     private final ItemStack itemStack;
     @Nullable
     private final RecipeType<?> recipeType;
     private int burnTime;
 
-    public FurnaceFuelBurnTimeEvent(@NotNull ItemStack itemStack, int burnTime, @Nullable RecipeType<?> recipeType) {
+    public FurnaceFuelBurnTimeEvent(ItemStack itemStack, int burnTime, @Nullable RecipeType<?> recipeType) {
         this.itemStack = itemStack;
         this.burnTime = burnTime;
         this.recipeType = recipeType;
@@ -44,7 +42,6 @@ public class FurnaceFuelBurnTimeEvent extends Event implements ICancellableEvent
     /**
      * Get the ItemStack "fuel" in question.
      */
-    @NotNull
     public ItemStack getItemStack() {
         return itemStack;
     }

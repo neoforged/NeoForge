@@ -7,7 +7,6 @@ package net.neoforged.neoforge.client.model.generators;
 
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Stub class to extend for block model data providers, eliminates some
@@ -19,7 +18,6 @@ public abstract class BlockModelProvider extends ModelProvider<BlockModelBuilder
         super(output, modid, BLOCK_FOLDER, BlockModelBuilder::new, existingFileHelper);
     }
 
-    @NotNull
     @Override
     public String getName() {
         return "Block Models: " + modid;

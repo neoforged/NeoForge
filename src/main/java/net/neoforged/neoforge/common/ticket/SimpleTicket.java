@@ -8,7 +8,6 @@ package net.neoforged.neoforge.common.ticket;
 import com.google.common.base.Preconditions;
 import java.util.function.Consumer;
 import net.neoforged.neoforge.common.FarmlandWaterManager;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -28,7 +27,7 @@ public abstract class SimpleTicket<T> {
      * Should <b>not</b> be called if you just want to register a ticket to a system like the {@link FarmlandWaterManager}
      */
     @SafeVarargs
-    public final void setManager(@NotNull ITicketManager<T> masterManager, @NotNull ITicketManager<T>... dummyManagers) {
+    public final void setManager(ITicketManager<T> masterManager, ITicketManager<T>... dummyManagers) {
         Preconditions.checkState(this.masterManager == null, "Ticket is already registered to a managing system");
         this.masterManager = masterManager;
         this.dummyManagers = dummyManagers;

@@ -27,7 +27,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourceTypesEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 /**
@@ -83,7 +82,7 @@ public class CustomSpriteSourceTest {
             }
 
             @Override
-            public @NotNull SpriteTicker createTicker() {
+            public SpriteTicker createTicker() {
                 return new Ticker();
             }
 

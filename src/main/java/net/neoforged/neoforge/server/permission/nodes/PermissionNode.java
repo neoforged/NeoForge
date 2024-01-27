@@ -14,7 +14,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.handler.IPermissionHandler;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -97,7 +96,7 @@ public final class PermissionNode<T> {
      *                     when using TranslatableComponent, key should be of format {@code "permission.desc.<nodename>"}
      * @return itself with the new information set.
      */
-    public PermissionNode setInformation(@NotNull Component readableName, @NotNull Component description) {
+    public PermissionNode setInformation(Component readableName, Component description) {
         Preconditions.checkNotNull(readableName, "Readable name for PermissionNodes must not be null %s", this.nodeName);
         Preconditions.checkNotNull(description, "Description for PermissionNodes must not be null %s", this.nodeName);
 

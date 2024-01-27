@@ -16,7 +16,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.neoforged.neoforge.common.ToolAction;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * This LootItemCondition "neoforge:can_tool_perform_action" can be used to check if a tool can perform a given ToolAction.
@@ -37,12 +36,10 @@ public class CanToolPerformAction implements LootItemCondition {
         this.action = action;
     }
 
-    @NotNull
     public LootItemConditionType getType() {
         return LOOT_CONDITION_TYPE;
     }
 
-    @NotNull
     public Set<LootContextParam<?>> getReferencedContextParams() {
         return ImmutableSet.of(LootContextParams.TOOL);
     }

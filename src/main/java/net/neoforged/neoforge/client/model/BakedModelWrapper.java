@@ -22,7 +22,6 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -93,24 +92,22 @@ public abstract class BakedModelWrapper<T extends BakedModel> implements BakedMo
     }
 
     @Override
-    public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
+    public TextureAtlasSprite getParticleIcon(ModelData data) {
         return originalModel.getParticleIcon(data);
     }
 
-    @NotNull
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand, ModelData extraData, @Nullable RenderType renderType) {
         return originalModel.getQuads(state, side, rand, extraData, renderType);
     }
 
-    @NotNull
     @Override
-    public ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData) {
+    public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
         return originalModel.getModelData(level, pos, state, modelData);
     }
 
     @Override
-    public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
+    public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData data) {
         return originalModel.getRenderTypes(state, rand, data);
     }
 

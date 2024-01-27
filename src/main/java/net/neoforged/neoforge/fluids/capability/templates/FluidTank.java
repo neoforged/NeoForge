@@ -10,7 +10,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Flexible implementation of a Fluid Storage object. NOT REQUIRED.
@@ -18,9 +17,7 @@ import org.jetbrains.annotations.NotNull;
  * @author King Lemming
  */
 public class FluidTank implements IFluidHandler, IFluidTank {
-
     protected Predicate<FluidStack> validator;
-    @NotNull
     protected FluidStack fluid = FluidStack.EMPTY;
     protected int capacity;
 
@@ -53,7 +50,6 @@ public class FluidTank implements IFluidHandler, IFluidTank {
         return capacity;
     }
 
-    @NotNull
     public FluidStack getFluid() {
         return fluid;
     }
@@ -63,14 +59,12 @@ public class FluidTank implements IFluidHandler, IFluidTank {
     }
 
     public FluidTank readFromNBT(CompoundTag nbt) {
-
         FluidStack fluid = FluidStack.loadFluidStackFromNBT(nbt);
         setFluid(fluid);
         return this;
     }
 
     public CompoundTag writeToNBT(CompoundTag nbt) {
-
         fluid.writeToNBT(nbt);
 
         return nbt;
@@ -78,26 +72,21 @@ public class FluidTank implements IFluidHandler, IFluidTank {
 
     @Override
     public int getTanks() {
-
         return 1;
     }
 
-    @NotNull
     @Override
     public FluidStack getFluidInTank(int tank) {
-
         return getFluid();
     }
 
     @Override
     public int getTankCapacity(int tank) {
-
         return getCapacity();
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-
+    public boolean isFluidValid(int tank, FluidStack stack) {
         return isFluidValid(stack);
     }
 
@@ -136,7 +125,6 @@ public class FluidTank implements IFluidHandler, IFluidTank {
         return filled;
     }
 
-    @NotNull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
         if (resource.isEmpty() || !resource.isFluidEqual(fluid)) {
@@ -145,7 +133,6 @@ public class FluidTank implements IFluidHandler, IFluidTank {
         return drain(resource.getAmount(), action);
     }
 
-    @NotNull
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         int drained = maxDrain;
@@ -160,9 +147,7 @@ public class FluidTank implements IFluidHandler, IFluidTank {
         return stack;
     }
 
-    protected void onContentsChanged() {
-
-    }
+    protected void onContentsChanged() {}
 
     public void setFluid(FluidStack stack) {
         this.fluid = stack;
@@ -175,5 +160,4 @@ public class FluidTank implements IFluidHandler, IFluidTank {
     public int getSpace() {
         return Math.max(0, capacity - fluid.getAmount());
     }
-
 }

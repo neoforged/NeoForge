@@ -8,7 +8,6 @@ package net.neoforged.neoforge.items.wrapper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Exposes the player inventory WITHOUT the armor inventory as IItemHandler.
@@ -23,8 +22,7 @@ public class PlayerMainInvWrapper extends RangedWrapper {
     }
 
     @Override
-    @NotNull
-    public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         ItemStack rest = super.insertItem(slot, stack, simulate);
         if (rest.getCount() != stack.getCount()) {
             // the stack in the slot changed, animate it

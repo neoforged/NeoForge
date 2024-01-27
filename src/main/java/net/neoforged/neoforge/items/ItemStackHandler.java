@@ -11,7 +11,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-import org.jetbrains.annotations.NotNull;
 
 public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<CompoundTag> {
     protected NonNullList<ItemStack> stacks;
@@ -33,7 +32,7 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
     }
 
     @Override
-    public void setStackInSlot(int slot, @NotNull ItemStack stack) {
+    public void setStackInSlot(int slot, ItemStack stack) {
         validateSlotIndex(slot);
         this.stacks.set(slot, stack);
         onContentsChanged(slot);
@@ -45,15 +44,13 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
     }
 
     @Override
-    @NotNull
     public ItemStack getStackInSlot(int slot) {
         validateSlotIndex(slot);
         return this.stacks.get(slot);
     }
 
     @Override
-    @NotNull
-    public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         if (stack.isEmpty())
             return ItemStack.EMPTY;
 
@@ -91,7 +88,6 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
     }
 
     @Override
-    @NotNull
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (amount == 0)
             return ItemStack.EMPTY;
@@ -128,12 +124,12 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
         return 64;
     }
 
-    protected int getStackLimit(int slot, @NotNull ItemStack stack) {
+    protected int getStackLimit(int slot, ItemStack stack) {
         return Math.min(getSlotLimit(slot), stack.getMaxStackSize());
     }
 
     @Override
-    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+    public boolean isItemValid(int slot, ItemStack stack) {
         return true;
     }
 

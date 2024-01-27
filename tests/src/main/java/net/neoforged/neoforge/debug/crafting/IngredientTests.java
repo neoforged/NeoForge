@@ -35,7 +35,7 @@ public class IngredientTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if partial NBT ingredients match the correct stacks")
     static void partialNBTIngredient(final DynamicTest test, final RegistrationHelper reg) {
-        reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput()) {
             @Override
             protected void buildRecipes(RecipeOutput output) {
                 ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.ALLIUM)
@@ -81,7 +81,7 @@ public class IngredientTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if strict NBT ingredients match the correct stacks")
     static void strictNBTIngredient(final DynamicTest test, final RegistrationHelper reg) {
-        reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput()) {
             @Override
             protected void buildRecipes(RecipeOutput output) {
                 ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.ACACIA_BOAT)

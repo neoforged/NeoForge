@@ -20,7 +20,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.NotNull;
 
 @Mod(HiddenTooltipPartsTest.MOD_ID)
 public class HiddenTooltipPartsTest {
@@ -54,7 +53,7 @@ public class HiddenTooltipPartsTest {
         }
 
         @Override
-        public int getDefaultTooltipHideFlags(@NotNull ItemStack stack) {
+        public int getDefaultTooltipHideFlags(ItemStack stack) {
             return ItemStack.TooltipPart.MODIFIERS.getMask();
         }
     }

@@ -9,7 +9,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * FluidHandlerItemStack is a template capability provider for ItemStacks.
@@ -23,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 public class FluidHandlerItemStack implements IFluidHandlerItem {
     public static final String FLUID_NBT_KEY = "Fluid";
 
-    @NotNull
     protected ItemStack container;
     protected int capacity;
 
@@ -31,18 +29,16 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
      * @param container The container itemStack, data is stored on it directly as NBT.
      * @param capacity  The maximum capacity of this fluid tank.
      */
-    public FluidHandlerItemStack(@NotNull ItemStack container, int capacity) {
+    public FluidHandlerItemStack(ItemStack container, int capacity) {
         this.container = container;
         this.capacity = capacity;
     }
 
-    @NotNull
     @Override
     public ItemStack getContainer() {
         return container;
     }
 
-    @NotNull
     public FluidStack getFluid() {
         CompoundTag tagCompound = container.getTag();
         if (tagCompound == null || !tagCompound.contains(FLUID_NBT_KEY)) {
@@ -63,26 +59,21 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
 
     @Override
     public int getTanks() {
-
         return 1;
     }
 
-    @NotNull
     @Override
     public FluidStack getFluidInTank(int tank) {
-
         return getFluid();
     }
 
     @Override
     public int getTankCapacity(int tank) {
-
         return capacity;
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-
+    public boolean isFluidValid(int tank, FluidStack stack) {
         return true;
     }
 
@@ -119,7 +110,6 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
         }
     }
 
-    @NotNull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
         if (container.getCount() != 1 || resource.isEmpty() || !resource.isFluidEqual(getFluid())) {
@@ -128,7 +118,6 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
         return drain(resource.getAmount(), action);
     }
 
-    @NotNull
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         if (container.getCount() != 1 || maxDrain <= 0) {

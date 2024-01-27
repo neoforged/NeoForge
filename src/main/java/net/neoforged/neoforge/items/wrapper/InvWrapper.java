@@ -9,7 +9,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
-import org.jetbrains.annotations.NotNull;
 
 public class InvWrapper implements IItemHandlerModifiable {
     private final Container inv;
@@ -42,14 +41,12 @@ public class InvWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    @NotNull
     public ItemStack getStackInSlot(int slot) {
         return getInv().getItem(slot);
     }
 
     @Override
-    @NotNull
-    public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         if (stack.isEmpty())
             return ItemStack.EMPTY;
 
@@ -119,7 +116,6 @@ public class InvWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    @NotNull
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (amount == 0)
             return ItemStack.EMPTY;
@@ -147,7 +143,7 @@ public class InvWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    public void setStackInSlot(int slot, @NotNull ItemStack stack) {
+    public void setStackInSlot(int slot, ItemStack stack) {
         getInv().setItem(slot, stack);
     }
 
@@ -157,7 +153,7 @@ public class InvWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+    public boolean isItemValid(int slot, ItemStack stack) {
         return getInv().canPlaceItem(slot, stack);
     }
 
