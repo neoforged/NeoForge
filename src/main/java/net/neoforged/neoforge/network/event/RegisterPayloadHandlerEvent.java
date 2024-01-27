@@ -19,6 +19,7 @@ import org.jetbrains.annotations.ApiStatus;
  * </p>
  */
 public class RegisterPayloadHandlerEvent extends Event implements IModBusEvent {
+
     private final Function<String, IPayloadRegistrar> registrarFactory;
 
     @ApiStatus.Internal

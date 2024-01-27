@@ -18,6 +18,7 @@ import net.neoforged.neoforge.common.NeoForge;
  * All children of this event are fired on the {@link NeoForge#EVENT_BUS}.
  */
 public abstract class PlayerXpEvent extends PlayerEvent {
+
     public PlayerXpEvent(Player player) {
         super(player);
     }
@@ -27,6 +28,7 @@ public abstract class PlayerXpEvent extends PlayerEvent {
      * It can be cancelled, and no further processing will be done.
      */
     public static class PickupXp extends PlayerXpEvent implements ICancellableEvent {
+
         private final ExperienceOrb orb;
 
         public PickupXp(Player player, ExperienceOrb orb) {
@@ -37,6 +39,7 @@ public abstract class PlayerXpEvent extends PlayerEvent {
         public ExperienceOrb getOrb() {
             return orb;
         }
+
     }
 
     /**
@@ -44,6 +47,7 @@ public abstract class PlayerXpEvent extends PlayerEvent {
      * It can be cancelled, and no further processing will be done.
      */
     public static class XpChange extends PlayerXpEvent implements ICancellableEvent {
+
         private int amount;
 
         public XpChange(Player player, int amount) {
@@ -58,6 +62,7 @@ public abstract class PlayerXpEvent extends PlayerEvent {
         public void setAmount(int amount) {
             this.amount = amount;
         }
+
     }
 
     /**
@@ -65,6 +70,7 @@ public abstract class PlayerXpEvent extends PlayerEvent {
      * It can be cancelled, and no further processing will be done.
      */
     public static class LevelChange extends PlayerXpEvent implements ICancellableEvent {
+
         private int levels;
 
         public LevelChange(Player player, int levels) {
@@ -79,5 +85,7 @@ public abstract class PlayerXpEvent extends PlayerEvent {
         public void setLevels(int levels) {
             this.levels = levels;
         }
+
     }
+
 }

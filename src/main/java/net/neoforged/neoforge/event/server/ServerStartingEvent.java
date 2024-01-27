@@ -20,4 +20,5 @@ public class ServerStartingEvent extends ServerLifecycleEvent {
     public ServerStartingEvent(final MinecraftServer server) {
         super(server);
     }
+
 }

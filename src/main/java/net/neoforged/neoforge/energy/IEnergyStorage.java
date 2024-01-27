@@ -58,4 +58,5 @@ public interface IEnergyStorage {
      * If this is false, then any calls to receiveEnergy will return 0.
      */
     boolean canReceive();
+
 }

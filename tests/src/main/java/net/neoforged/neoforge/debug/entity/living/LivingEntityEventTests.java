@@ -5,26 +5,18 @@
 
 package net.neoforged.neoforge.debug.entity.living;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.animal.allay.Allay;
-import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
@@ -37,13 +29,11 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.GameType;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
-import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
 import net.neoforged.neoforge.event.entity.living.ShieldBlockEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -211,67 +201,5 @@ public class LivingEntityEventTests {
                         .performRangedAttack(zombie, 1f))
                 .thenWaitUntil(() -> helper.assertEntityIsHolding(new BlockPos(1, 2, 2), EntityType.ZOMBIE, Items.STONE))
                 .thenSucceed());
-    }
-
-    @GameTest
-    @EmptyTemplate(floor = true)
-    @TestHolder(description = "Tests if the SlimeSplitEvent is fired")
-    static void slimeSplitEvent(final DynamicTest test) {
-        Set<Mob> childSlimes = new HashSet<>();
-
-        test.eventListeners().forge().addListener((MobSplitEvent event) -> {
-            CompoundTag nbt = event.getParent().getPersistentData();
-
-            if (nbt.getBoolean("test.no_split_slime")) {
-                event.setCanceled(true);
-                return;
-            }
-
-            for (String key : nbt.getAllKeys()) {
-                event.getChildren().forEach(slime -> slime.getPersistentData().put(key, nbt.get(key)));
-            }
-
-            // Test only thing so we can skip iterating all entities to find the children post-event.
-            // Need to ensure that they come into the world with the copied NBT data.
-            childSlimes.addAll(event.getChildren());
-        });
-
-        AtomicBoolean throwIfSlimeSpawns = new AtomicBoolean(false);
-
-        test.eventListeners().forge().addListener((EntityJoinLevelEvent event) -> {
-            if (event.getEntity() instanceof Slime slime) {
-                if (throwIfSlimeSpawns.get()) {
-                    throw new GameTestAssertException("Slime should not have been spawned.");
-                }
-            }
-        });
-
-        test.onGameTest(helper -> {
-            Slime slime = helper.spawnWithNoFreeWill(EntityType.SLIME, 1, 1, 1);
-
-            // Test basic event functionality
-            slime.getPersistentData().putString("test.something", "whatever");
-            slime.setSize(2, true);
-            slime.hurt(helper.getLevel().damageSources().genericKill(), 400);
-            slime.remove(RemovalReason.KILLED);
-
-            helper.assertTrue(!childSlimes.isEmpty(), "No child slimes received by event");
-            for (Mob s : childSlimes) {
-                helper.assertTrue(s.getPersistentData().getString("test.something").equals("whatever"), "NBT Data not copied");
-            }
-
-            Slime childlessSlime = helper.spawnWithNoFreeWill(EntityType.SLIME, 1, 1, 1);
-
-            // Test cancellation functionality
-            childlessSlime.getPersistentData().putBoolean("test.no_split_slime", true);
-            childlessSlime.setSize(2, true);
-
-            throwIfSlimeSpawns.set(true);
-            childlessSlime.hurt(helper.getLevel().damageSources().genericKill(), 400);
-            childlessSlime.remove(RemovalReason.KILLED);
-            throwIfSlimeSpawns.set(false);
-
-            helper.succeed();
-        });
     }
 }

@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
  * Swaps between empty bucket and filled bucket of the correct type.
  */
 public class FluidBucketWrapper implements IFluidHandlerItem {
+
     @NotNull
     protected ItemStack container;
 
@@ -64,22 +65,26 @@ public class FluidBucketWrapper implements IFluidHandlerItem {
 
     @Override
     public int getTanks() {
+
         return 1;
     }
 
     @NotNull
     @Override
     public FluidStack getFluidInTank(int tank) {
+
         return getFluid();
     }
 
     @Override
     public int getTankCapacity(int tank) {
+
         return FluidType.BUCKET_VOLUME;
     }
 
     @Override
     public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+
         return true;
     }
 

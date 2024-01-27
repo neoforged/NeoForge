@@ -23,6 +23,7 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
  * {@link #override()}.
  */
 public class ItemModelBuilder extends ModelBuilder<ItemModelBuilder> {
+
     private static final List<ResourceKey<TrimMaterial>> VANILLA_TRIM_MATERIALS = List.of(TrimMaterials.QUARTZ, TrimMaterials.IRON, TrimMaterials.NETHERITE, TrimMaterials.REDSTONE, TrimMaterials.COPPER, TrimMaterials.GOLD, TrimMaterials.EMERALD, TrimMaterials.DIAMOND, TrimMaterials.LAPIS, TrimMaterials.AMETHYST);
     protected List<OverrideBuilder> overrides = new ArrayList<>();
 
@@ -67,6 +68,7 @@ public class ItemModelBuilder extends ModelBuilder<ItemModelBuilder> {
     }
 
     public class OverrideBuilder {
+
         private ModelFile model;
         private final Map<ResourceLocation, Float> predicates = new LinkedHashMap<>();
 
@@ -94,4 +96,5 @@ public class ItemModelBuilder extends ModelBuilder<ItemModelBuilder> {
             return ret;
         }
     }
+
 }

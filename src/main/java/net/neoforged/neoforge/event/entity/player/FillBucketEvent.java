@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
  */
 @Event.HasResult
 public class FillBucketEvent extends PlayerEvent implements ICancellableEvent {
+
     private final ItemStack current;
     private final Level level;
     @Nullable

@@ -12,6 +12,7 @@ import net.neoforged.fml.LogicalSide;
  * Extension for {@link PacketFlow} to add some utility methods.
  */
 public interface IPacketFlowExtension {
+
     /**
      * {@return the {@link PacketFlow} this extension is applied to}
      */

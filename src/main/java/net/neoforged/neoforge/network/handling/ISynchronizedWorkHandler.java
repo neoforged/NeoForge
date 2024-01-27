@@ -13,6 +13,7 @@ import java.util.function.Supplier;
  * Defines a replyHandler which can accept work that needs to be run synchronously, on the main thread of the game.
  */
 public interface ISynchronizedWorkHandler {
+
     /**
      * Executes a task on the main thread of the game.
      * <p>

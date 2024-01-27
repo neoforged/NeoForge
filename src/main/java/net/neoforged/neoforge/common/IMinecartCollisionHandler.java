@@ -17,6 +17,7 @@ import net.minecraft.world.phys.AABB;
  * @author CovertJaguar
  */
 public interface IMinecartCollisionHandler {
+
     /**
      * This basically replaces the function of the same name in EntityMinecart.
      * Code in IMinecartHooks.applyEntityCollisionHook is still run.

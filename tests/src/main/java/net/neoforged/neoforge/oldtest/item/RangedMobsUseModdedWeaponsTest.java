@@ -26,6 +26,7 @@ public class RangedMobsUseModdedWeaponsTest {
     // as well as replacing their usages of LivingEntity#isHolding(Item) with LivingEntity#isHolding(Predicate<ItemStack>)
     // Skeletons and Illusioners should be able to use the modded bow.
     // Piglins and Pillagers should be able to use the modded crossbow.
+
     public static final boolean ENABLE = true;
 
     public static final String MOD_ID = "ranged_mobs_use_modded_weapons_test";

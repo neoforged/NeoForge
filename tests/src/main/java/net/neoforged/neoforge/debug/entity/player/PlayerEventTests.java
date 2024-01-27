@@ -96,6 +96,7 @@ public class PlayerEventTests {
                         Direction.UP))
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DIRT, 1, 2, 1))
                 .thenSucceed());
+
     }
 
     @GameTest

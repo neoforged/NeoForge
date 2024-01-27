@@ -63,6 +63,7 @@ public class ScaffoldingTest {
     }
 
     static class ScaffoldingMethodTestBlock extends ScaffoldingBlock {
+
         public ScaffoldingMethodTestBlock(Properties properties) {
             super(properties);
         }

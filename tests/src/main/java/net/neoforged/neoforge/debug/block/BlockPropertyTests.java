@@ -41,6 +41,7 @@ import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = BlockTests.GROUP + ".properties")
 public class BlockPropertyTests {
+
     @GameTest
     @TestHolder(description = "Adds a toggleable light source to test if level-sensitive light emission works")
     static void levelSensitiveLight(final DynamicTest test, final RegistrationHelper reg) {

@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
  */
 @ApiStatus.Internal
 public final class ConfigurationPayloadHandler<T extends CustomPacketPayload> implements IConfigurationPayloadHandler<T> {
+
     @Nullable
     private final IConfigurationPayloadHandler<T> clientSide;
     @Nullable

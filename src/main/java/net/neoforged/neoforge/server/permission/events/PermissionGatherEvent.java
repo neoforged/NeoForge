@@ -29,6 +29,7 @@ import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
  * <p><strong>Note:</strong> All PermissionNodes that you want to use, <strong>must</strong> be registered!</p>
  */
 public abstract class PermissionGatherEvent extends Event {
+
     /**
      * Used to register a new PermissionHandler, a server config value exists to choose which one to use.
      * <p>Note: Create a new instance when registering a PermissionHandler.

@@ -15,6 +15,7 @@ public record ClientConfiguration(int toggleOverlayKey, int openManagerKey) {
     public static Builder builder() {
         return new Builder();
     }
+
     public static final class Builder {
         private int toggleOverlayKey;
         private int openManagerKey;

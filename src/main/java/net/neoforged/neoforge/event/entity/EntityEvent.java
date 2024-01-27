@@ -61,6 +61,7 @@ public abstract class EntityEvent extends Event {
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
     public static class EnteringSection extends EntityEvent {
+
         private final long packedOldPos;
         private final long packedNewPos;
 
@@ -111,6 +112,7 @@ public abstract class EntityEvent extends Event {
         public boolean didChunkChange() {
             return SectionPos.x(packedOldPos) != SectionPos.x(packedNewPos) || SectionPos.z(packedOldPos) != SectionPos.z(packedNewPos);
         }
+
     }
 
     /**

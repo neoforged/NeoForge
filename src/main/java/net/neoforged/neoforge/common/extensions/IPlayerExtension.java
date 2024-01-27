@@ -20,6 +20,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.network.IContainerFactory;
 
 public interface IPlayerExtension {
+
     private Player self() {
         return (Player) this;
     }

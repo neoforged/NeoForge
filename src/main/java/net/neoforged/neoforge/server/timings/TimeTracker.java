@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
  * @param <T>
  */
 public class TimeTracker<T> {
+
     /**
      * A tracker for timing tile entity update
      */

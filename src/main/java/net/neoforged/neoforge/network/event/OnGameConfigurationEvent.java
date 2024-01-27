@@ -18,6 +18,7 @@ import org.jetbrains.annotations.ApiStatus;
  * that should be run on the server to configure the client.
  */
 public class OnGameConfigurationEvent extends Event implements IModBusEvent {
+
     private final ServerConfigurationPacketListener listener;
 
     private final Queue<ICustomConfigurationTask> configurationTasks = new LinkedList<>();

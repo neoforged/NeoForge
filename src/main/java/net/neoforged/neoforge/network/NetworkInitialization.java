@@ -26,6 +26,7 @@ import org.jetbrains.annotations.ApiStatus;
 @Mod.EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @ApiStatus.Internal
 public class NetworkInitialization {
+
     @SubscribeEvent
     private static void register(final RegisterPayloadHandlerEvent event) {
         final IPayloadRegistrar registrar = event.registrar(NeoForgeVersion.MOD_ID)

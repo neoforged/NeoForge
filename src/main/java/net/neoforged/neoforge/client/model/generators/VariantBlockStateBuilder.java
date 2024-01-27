@@ -50,6 +50,7 @@ import org.jetbrains.annotations.Nullable;
  * @see BlockStateProvider
  */
 public class VariantBlockStateBuilder implements IGeneratedBlockState {
+
     private final Block owner;
     private final Map<PartialBlockstate, ConfiguredModelList> models = new LinkedHashMap<>();
     private final Set<BlockState> coveredStates = new HashSet<>();

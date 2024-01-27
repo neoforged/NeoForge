@@ -125,6 +125,7 @@ public class ItemTests {
                 }).withRenderer(() -> PigRenderer::new).withLang("Test Pig spawn egg");
 
         final var egg = reg.items().register("test_spawn_egg", () -> new DeferredSpawnEggItem(testEntity, 0x0000FF, 0xFF0000, new Item.Properties()) {
+
             @Override
             public InteractionResult useOn(UseOnContext ctx) {
                 final var result = super.useOn(ctx);

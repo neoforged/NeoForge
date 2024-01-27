@@ -10,6 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class LootingLevelEvent extends LivingEvent {
+
     @Nullable
     private final DamageSource damageSource;
 

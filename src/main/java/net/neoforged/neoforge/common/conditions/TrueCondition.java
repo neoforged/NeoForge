@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
 public final class TrueCondition implements ICondition {
+
     public static final TrueCondition INSTANCE = new TrueCondition();
 
     public static Codec<TrueCondition> CODEC = MapCodec.unit(INSTANCE).stable().codec();

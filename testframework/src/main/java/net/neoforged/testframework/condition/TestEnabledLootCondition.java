@@ -20,6 +20,7 @@ public record TestEnabledLootCondition(TestFramework framework, String testId) i
     public static final Codec<TestEnabledLootCondition> CODEC = RecordCodecBuilder.create(in -> in.group(
             MutableTestFramework.REFERENCE_CODEC.fieldOf("framework").forGetter(TestEnabledLootCondition::framework),
             Codec.STRING.fieldOf("test").forGetter(TestEnabledLootCondition::testId)).apply(in, TestEnabledLootCondition::new));
+
     public TestEnabledLootCondition(DynamicTest test) {
         this(test.framework(), test.id());
     }

@@ -29,6 +29,7 @@ public record AdvancedAddEntityPayload(
      * The id of this payload.
      */
     public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_add_entity");
+
     public AdvancedAddEntityPayload(FriendlyByteBuf buf) {
         this(
                 buf.readVarInt(),

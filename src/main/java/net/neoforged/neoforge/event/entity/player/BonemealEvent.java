@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
  */
 @Event.HasResult
 public class BonemealEvent extends PlayerEvent implements ICancellableEvent {
+
     private final Level level;
     private final BlockPos pos;
     private final BlockState block;

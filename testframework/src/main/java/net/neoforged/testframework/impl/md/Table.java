@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class Table {
+
     public static final String SEPARATOR = "|";
     public static final String WHITESPACE = " ";
     public static final String DEFAULT_TRIMMING_INDICATOR = "~";
@@ -30,6 +31,7 @@ public final class Table {
     }
 
     public static final class Builder {
+
         private List<TableRow<?>> rows = new ArrayList<>();
         private List<Alignment> alignments = new ArrayList<>();
         private boolean firstRowIsHeader = true;
@@ -248,4 +250,5 @@ public final class Table {
     public static String surroundWith(String value, String surrounding) {
         return surrounding + value + surrounding;
     }
+
 }

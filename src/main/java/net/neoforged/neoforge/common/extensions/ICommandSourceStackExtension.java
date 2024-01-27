@@ -16,6 +16,7 @@ import net.minecraft.world.scores.Scoreboard;
  * Additional methods for {@link CommandSourceStack} so that commands and arguments can access various things without directly referencing using server specific classes
  */
 public interface ICommandSourceStackExtension {
+
     private CommandSourceStack self() {
         return (CommandSourceStack) this;
     }
@@ -47,4 +48,5 @@ public interface ICommandSourceStackExtension {
     default Level getUnsidedLevel() {
         return self().getLevel();
     }
+
 }

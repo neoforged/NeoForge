@@ -92,11 +92,13 @@ public class MegaModelTest {
 
     @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class ClientEvents {
+
         @SubscribeEvent
         public static void onModelBakingCompleted(ModelEvent.ModifyBakingResult event) {
             var name = new ModelResourceLocation(MOD_ID, REG_NAME, "");
             event.getModels().computeIfPresent(name, (n, m) -> new TransformingModelWrapper(m));
         }
+
     }
 
     private static class TestBlock extends Block implements EntityBlock {

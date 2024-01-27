@@ -17,6 +17,7 @@ import net.minecraft.world.item.trading.MerchantOffer;
  * This class contains everything needed to make a MerchantOffer, the actual "trade" object shown in trading guis.
  */
 public class BasicItemListing implements ItemListing {
+
     protected final ItemStack price;
     protected final ItemStack price2;
     protected final ItemStack forSale;

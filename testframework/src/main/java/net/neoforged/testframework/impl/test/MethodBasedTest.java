@@ -41,4 +41,5 @@ public class MethodBasedTest extends AbstractTest.Dynamic {
             throw new RuntimeException("Encountered exception initiating method-based test: " + method, e);
         }
     }
+
 }

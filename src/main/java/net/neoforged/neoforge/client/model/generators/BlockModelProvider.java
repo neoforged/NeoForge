@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
  * boilerplate constructor parameters.
  */
 public abstract class BlockModelProvider extends ModelProvider<BlockModelBuilder> {
+
     public BlockModelProvider(PackOutput output, String modid, ExistingFileHelper existingFileHelper) {
         super(output, modid, BLOCK_FOLDER, BlockModelBuilder::new, existingFileHelper);
     }

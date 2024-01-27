@@ -14,6 +14,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  */
 @FunctionalInterface
 public interface IPlayPayloadHandler<T extends CustomPacketPayload> {
+
     /**
      * Invoked to handle the given payload in the given context.
      *

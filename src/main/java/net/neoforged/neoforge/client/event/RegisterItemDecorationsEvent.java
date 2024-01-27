@@ -25,6 +25,7 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class RegisterItemDecorationsEvent extends Event implements IModBusEvent {
+
     private final Map<Item, List<IItemDecorator>> decorators;
 
     @ApiStatus.Internal

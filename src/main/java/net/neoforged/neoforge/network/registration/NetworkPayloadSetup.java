@@ -24,6 +24,7 @@ public record NetworkPayloadSetup(
         Map<ResourceLocation, NetworkChannel> configuration,
         Map<ResourceLocation, NetworkChannel> play,
         boolean vanilla) {
+
     /**
      * {@return An empty modded network.}
      */

@@ -78,6 +78,7 @@ import net.neoforged.neoforge.network.handling.PlayPayloadContext;
  * </p>
  */
 public interface IPayloadRegistrar {
+
     /**
      * Registers a new payload type for the play phase.
      *

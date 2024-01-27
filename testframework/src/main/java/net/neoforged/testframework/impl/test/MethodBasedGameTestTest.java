@@ -41,4 +41,5 @@ public class MethodBasedGameTestTest extends AbstractTest.Dynamic {
             }
         });
     }
+
 }

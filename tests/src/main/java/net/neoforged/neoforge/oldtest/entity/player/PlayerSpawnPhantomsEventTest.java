@@ -19,6 +19,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
 @Mod("player_spawn_phantoms_event_test")
 @Mod.EventBusSubscriber()
 public class PlayerSpawnPhantomsEventTest {
+
     private static final boolean ENABLE = false;
 
     @SubscribeEvent
@@ -27,4 +28,5 @@ public class PlayerSpawnPhantomsEventTest {
         event.setPhantomsToSpawn(20);
         event.setResult(Event.Result.ALLOW);
     }
+
 }

@@ -21,6 +21,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record ModdedNetworkQueryComponent(ResourceLocation id, Optional<String> version, Optional<PacketFlow> flow, boolean optional) {
+
     public ModdedNetworkQueryComponent(FriendlyByteBuf buf) {
         this(
                 buf.readResourceLocation(),

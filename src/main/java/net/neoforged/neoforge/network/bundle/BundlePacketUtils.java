@@ -17,6 +17,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public class BundlePacketUtils {
+
     private BundlePacketUtils() {
         throw new IllegalStateException("Tried to create utility class!");
     }

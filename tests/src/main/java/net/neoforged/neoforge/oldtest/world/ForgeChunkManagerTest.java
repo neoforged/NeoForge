@@ -75,6 +75,7 @@ public class ForgeChunkManagerTest {
     }
 
     private static class ChunkLoaderBlock extends Block {
+
         public ChunkLoaderBlock(Properties properties) {
             super(properties);
         }

@@ -121,4 +121,5 @@ class EntityCommand {
             }
         }
     }
+
 }

@@ -73,4 +73,5 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
 
         ((WritableRegistry) BuiltInRegistries.REGISTRY).register(registry.key(), registry, Lifecycle.stable());
     }
+
 }

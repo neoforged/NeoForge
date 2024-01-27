@@ -386,4 +386,5 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
     public void setCancellationResult(InteractionResult result) {
         this.cancellationResult = result;
     }
+
 }

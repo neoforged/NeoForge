@@ -12,14 +12,7 @@
      protected static final UUID BASE_ATTACK_DAMAGE_UUID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
      protected static final UUID BASE_ATTACK_SPEED_UUID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
      public static final int MAX_STACK_SIZE = 64;
-@@ -92,12 +_,14 @@
-         this.foodProperties = p_41383_.foodProperties;
-         this.isFireResistant = p_41383_.isFireResistant;
-         this.requiredFeatures = p_41383_.requiredFeatures;
--        if (SharedConstants.IS_RUNNING_IN_IDE) {
-+        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
-             String s = this.getClass().getSimpleName();
-             if (!s.endsWith("Item")) {
+@@ -98,6 +_,8 @@
                  LOGGER.error("Item classes should end with Item and {} doesn't.", s);
              }
          }

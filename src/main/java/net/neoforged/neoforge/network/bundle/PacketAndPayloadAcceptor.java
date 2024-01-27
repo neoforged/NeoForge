@@ -12,6 +12,7 @@ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public class PacketAndPayloadAcceptor<L extends ClientCommonPacketListener> {
+
     private final Consumer<Packet<? super L>> consumer;
 
     public PacketAndPayloadAcceptor(Consumer<Packet<? super L>> consumer) {

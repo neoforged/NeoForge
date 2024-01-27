@@ -14,6 +14,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public class ServerPayloadHandler {
+
     private static final ServerPayloadHandler INSTANCE = new ServerPayloadHandler();
 
     public static ServerPayloadHandler getInstance() {

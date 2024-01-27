@@ -17,6 +17,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public class NetworkFilters {
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final Map<String, Function<Connection, DynamicChannelHandler>> instances = ImmutableMap.of(
@@ -56,4 +57,5 @@ public class NetworkFilters {
     }
 
     private NetworkFilters() {}
+
 }

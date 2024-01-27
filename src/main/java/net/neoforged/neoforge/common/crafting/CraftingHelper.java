@@ -18,10 +18,18 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public class CraftingHelper {
+    @SuppressWarnings("unused")
+    private static final Logger LOGGER = LogManager.getLogger();
+    @SuppressWarnings("unused")
+    private static final Marker CRAFTHELPER = MarkerManager.getMarker("CRAFTHELPER");
     public static final Codec<CompoundTag> TAG_CODEC = ExtraCodecs.withAlternative(TagParser.AS_CODEC, net.minecraft.nbt.CompoundTag.CODEC);
 
     @ApiStatus.Internal
@@ -38,8 +46,7 @@ public class CraftingHelper {
                             }
 
                             var tagForWriting = getTagForWriting(stack);
-                            var attachments = stack.serializeAttachments();
-                            return tagForWriting == null && attachments == null ? Either.left(stack.getItem()) : Either.right(stack);
+                            return tagForWriting == null ? Either.left(stack.getItem()) : Either.right(stack);
                         });
     }
 
@@ -48,7 +55,7 @@ public class CraftingHelper {
         // Check if not writing the NBT would still give the correct item.
         // Just checking for tag != null is not enough: damageable items get a tag set in the stack constructor,
         // but we don't want to write it to the recipe file.
-        if (stack.getTag() == null || stack.getTag().equals(new ItemStack(stack.getItem(), stack.getCount()).getTag())) {
+        if (ItemStack.matches(stack, new ItemStack(stack.getItem(), stack.getCount()))) {
             return null;
         } else {
             return stack.getTag();

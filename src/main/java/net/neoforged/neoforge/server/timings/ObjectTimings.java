@@ -14,6 +14,7 @@ import java.lang.ref.WeakReference;
  * @param <T>
  */
 public class ObjectTimings<T> {
+
     private WeakReference<T> object;
 
     private int[] rawTimingData;

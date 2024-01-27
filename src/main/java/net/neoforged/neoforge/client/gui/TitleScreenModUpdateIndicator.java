@@ -20,6 +20,7 @@ import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
 @OnlyIn(Dist.CLIENT)
 public class TitleScreenModUpdateIndicator extends Screen {
+
     private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation(NeoForgeVersion.MOD_ID, "textures/gui/version_check_icons.png");
 
     private final Button modButton;
@@ -61,4 +62,5 @@ public class TitleScreenModUpdateIndicator extends Screen {
         titleScreenModUpdateIndicator.init();
         return titleScreenModUpdateIndicator;
     }
+
 }

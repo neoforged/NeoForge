@@ -130,5 +130,7 @@ public abstract class RegisterColorHandlersEvent extends Event implements IModBu
         public void register(ColorResolver resolver) {
             this.builder.add(resolver);
         }
+
     }
+
 }

@@ -125,6 +125,7 @@ public class PartEntityTest {
             for (int i = 0; i < parts.length; ++i) {
                 parts[i].setId(i + packet.getId());
             }
+
         }
     }
 

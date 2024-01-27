@@ -129,6 +129,7 @@ public class BiomeModifierTest {
     }
 
     private static class BiomeModifiers extends DatapackBuiltinEntriesProvider {
+
         public BiomeModifiers(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
             super(output, registries, BUILDER, Set.of(MODID));
         }

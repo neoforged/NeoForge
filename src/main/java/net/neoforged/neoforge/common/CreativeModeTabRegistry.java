@@ -231,4 +231,5 @@ public final class CreativeModeTabRegistry {
             edges.put(before, name);
         }
     }
+
 }

@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
  * </p>
  */
 public interface ICustomConfigurationTask extends ConfigurationTask {
+
     /**
      * Invoked when it is time for this configuration to run.
      *

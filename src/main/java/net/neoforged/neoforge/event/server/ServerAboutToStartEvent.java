@@ -17,6 +17,7 @@ import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
  * @author cpw
  */
 public class ServerAboutToStartEvent extends ServerLifecycleEvent {
+
     public ServerAboutToStartEvent(MinecraftServer server) {
         super(server);
     }

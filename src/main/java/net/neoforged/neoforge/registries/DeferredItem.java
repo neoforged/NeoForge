@@ -17,6 +17,7 @@ import net.minecraft.world.level.ItemLike;
  * @param <T> The specific {@link Item} type.
  */
 public class DeferredItem<T extends Item> extends DeferredHolder<Item, T> implements ItemLike {
+
     /**
      * Creates a new {@link DeferredHolder} targeting the {@link Item} with the specified name.
      *

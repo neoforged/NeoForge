@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 class CommandTreeCleaner {
+
     /**
      * Cleans the command tree starting at the given root node from any argument types that do not match the given predicate.
      * Any {@code ArgumentCommandNode}s that have an unmatched argument type will be stripped from the tree.
@@ -56,4 +57,5 @@ class CommandTreeCleaner {
             return builder.build();
         }
     }
+
 }

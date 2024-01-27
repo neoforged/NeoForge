@@ -37,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
  * the caches underlying map.
  */
 public final class UsernameCache {
+
     private static Map<UUID, String> map = new HashMap<>();
 
     private static final Path saveFile = FMLLoader.getGamePath().resolve("usernamecache.json");
@@ -157,6 +158,7 @@ public final class UsernameCache {
      * representation of the cache to disk
      */
     private static class SaveThread extends Thread {
+
         /** The data that will be saved to disk */
         private final String data;
 

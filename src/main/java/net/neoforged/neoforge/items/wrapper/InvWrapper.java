@@ -28,6 +28,7 @@ public class InvWrapper implements IItemHandlerModifiable {
         InvWrapper that = (InvWrapper) o;
 
         return getInv().equals(that.getInv());
+
     }
 
     @Override
@@ -114,6 +115,7 @@ public class InvWrapper implements IItemHandlerModifiable {
                 return ItemStack.EMPTY;
             }
         }
+
     }
 
     @Override

@@ -173,4 +173,5 @@ public class SpawnPlacementRegisterEvent extends Event implements IModBusEvent {
             return compiledAndPredicate;
         }
     }
+
 }

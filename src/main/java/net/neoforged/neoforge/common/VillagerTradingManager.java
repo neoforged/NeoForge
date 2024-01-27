@@ -21,6 +21,7 @@ import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 import net.neoforged.neoforge.event.village.WandererTradesEvent;
 
 public class VillagerTradingManager {
+
     private static final Map<VillagerProfession, Int2ObjectMap<ItemListing[]>> VANILLA_TRADES = new HashMap<>();
     private static final Int2ObjectMap<ItemListing[]> WANDERER_TRADES = new Int2ObjectOpenHashMap<>();
 
@@ -70,4 +71,5 @@ public class VillagerTradingManager {
             VillagerTrades.TRADES.put(prof, newTrades);
         }
     }
+
 }

@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 /** Ingredient that matches everything from the first ingredient that is not included in the second ingredient */
 public class DifferenceIngredient extends Ingredient {
+
     public static final Codec<DifferenceIngredient> CODEC = RecordCodecBuilder.create(
             builder -> builder
                     .group(
@@ -98,6 +99,7 @@ public class DifferenceIngredient extends Ingredient {
     }
 
     private record SubtractingValue(Value inner, Ingredient subtracted) implements Ingredient.Value {
+
         @Override
         public Collection<ItemStack> getItems() {
             final Collection<ItemStack> innerItems = new ArrayList<>(inner().getItems());

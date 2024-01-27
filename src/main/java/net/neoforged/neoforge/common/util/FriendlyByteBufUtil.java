@@ -13,6 +13,7 @@ import net.minecraft.network.FriendlyByteBuf;
  * Utility class for working with {@link FriendlyByteBuf}s.
  */
 public class FriendlyByteBufUtil {
+
     private FriendlyByteBufUtil() {
         throw new IllegalStateException("Tried to create utility class!");
     }

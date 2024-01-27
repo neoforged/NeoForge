@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
  * This LootItemCondition "neoforge:can_tool_perform_action" can be used to check if a tool can perform a given ToolAction.
  */
 public class CanToolPerformAction implements LootItemCondition {
+
     public static Codec<CanToolPerformAction> CODEC = RecordCodecBuilder.create(
             builder -> builder
                     .group(

@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 public record ChangeStatusPayload(MutableTestFramework framework, String testId, Test.Status status) implements CustomPacketPayload {
 
     public static final ResourceLocation ID = new ResourceLocation("neoforge", "tf_change_status");
+
     @Override
     public void write(FriendlyByteBuf buf) {
         buf.writeUtf(testId);

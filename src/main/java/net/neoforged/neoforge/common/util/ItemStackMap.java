@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackLinkedSet;
 
 public class ItemStackMap {
+
     public static <V> Map<ItemStack, V> createTypeAndTagLinkedMap() {
         return new Object2ObjectLinkedOpenCustomHashMap<>(ItemStackLinkedSet.TYPE_AND_TAG);
     }

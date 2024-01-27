@@ -61,6 +61,7 @@ public class CustomFluidContainerTest {
      * A custom fluid container item with a capacity of a vanilla bucket which uses the FluidUtil functionalities to pickup and place fluids.
      */
     private static class CustomFluidContainer extends Item {
+
         public CustomFluidContainer(Properties properties) {
             super(properties);
         }

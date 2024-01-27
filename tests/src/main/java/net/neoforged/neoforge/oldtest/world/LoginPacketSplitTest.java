@@ -229,7 +229,9 @@ public class LoginPacketSplitTest {
         }
 
         @Override
-        public void close() {}
+        public void close() {
+
+        }
 
         public void putRoot(String path, JsonObject json) {
             final byte[] bytes = fromJson(json);

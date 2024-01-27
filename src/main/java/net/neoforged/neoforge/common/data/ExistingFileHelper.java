@@ -43,7 +43,9 @@ import org.jetbrains.annotations.VisibleForTesting;
  * or mod resources via the {@code --existing-mod} argument.
  */
 public class ExistingFileHelper {
+
     public interface IResourceType {
+
         PackType getPackType();
 
         String getSuffix();
@@ -52,6 +54,7 @@ public class ExistingFileHelper {
     }
 
     public static class ResourceType implements IResourceType {
+
         final PackType packType;
         final String suffix, prefix;
 

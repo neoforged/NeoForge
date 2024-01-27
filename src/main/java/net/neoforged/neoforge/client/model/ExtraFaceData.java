@@ -42,6 +42,7 @@ public record ExtraFaceData(int color, int blockLight, int skyLight, boolean amb
                             Codec.intRange(0, 15).optionalFieldOf("sky_light", 0).forGetter(ExtraFaceData::skyLight),
                             Codec.BOOL.optionalFieldOf("ambient_occlusion", true).forGetter(ExtraFaceData::ambientOcclusion))
                     .apply(builder, ExtraFaceData::new));
+
     /**
      * Parses an ExtraFaceData from JSON
      * 

@@ -92,6 +92,7 @@ public class CustomSignsTest {
     }
 
     public static class CustomStandingSignBlock extends StandingSignBlock {
+
         public CustomStandingSignBlock(Properties propertiesIn, WoodType woodTypeIn) {
             super(woodTypeIn, propertiesIn);
         }
@@ -103,6 +104,7 @@ public class CustomSignsTest {
     }
 
     public static class CustomWallSignBlock extends WallSignBlock {
+
         public CustomWallSignBlock(Properties propertiesIn, WoodType woodTypeIn) {
             super(woodTypeIn, propertiesIn);
         }
@@ -125,6 +127,7 @@ public class CustomSignsTest {
     }
 
     public static class CustomCeilingHangingSignBlock extends CeilingHangingSignBlock {
+
         public CustomCeilingHangingSignBlock(Properties propertiesIn, WoodType woodTypeIn) {
             super(woodTypeIn, propertiesIn);
         }
@@ -136,6 +139,7 @@ public class CustomSignsTest {
     }
 
     public static class CustomWallHangingSignBlock extends WallHangingSignBlock {
+
         public CustomWallHangingSignBlock(Properties propertiesIn, WoodType woodTypeIn) {
             super(woodTypeIn, propertiesIn);
         }
@@ -147,6 +151,7 @@ public class CustomSignsTest {
     }
 
     public static class CustomHangingSignBlockEntity extends HangingSignBlockEntity {
+
         public CustomHangingSignBlockEntity(BlockPos pos, BlockState state) {
             super(pos, state);
         }

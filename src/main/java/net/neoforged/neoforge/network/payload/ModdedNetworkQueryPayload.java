@@ -24,6 +24,7 @@ public record ModdedNetworkQueryPayload(Set<ModdedNetworkQueryComponent> configu
 
     public static final ResourceLocation ID = new ResourceLocation("register");
     public static final FriendlyByteBuf.Reader<? extends CustomPacketPayload> READER = ModdedNetworkQueryPayload::new;
+
     public ModdedNetworkQueryPayload() {
         this(Set.of(), Set.of());
     }

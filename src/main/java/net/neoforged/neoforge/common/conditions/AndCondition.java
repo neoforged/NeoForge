@@ -11,6 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 
 public record AndCondition(List<ICondition> children) implements ICondition {
+
     public static final Codec<AndCondition> CODEC = RecordCodecBuilder.create(
             builder -> builder
                     .group(

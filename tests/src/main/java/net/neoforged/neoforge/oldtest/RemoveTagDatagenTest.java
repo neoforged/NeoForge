@@ -25,6 +25,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 @Mod(RemoveTagDatagenTest.MODID)
 public class RemoveTagDatagenTest {
+
     public static final String MODID = "remove_tag_datagen_test";
     public static final TagKey<Block> TEST_TAG = BlockTags.create(new ResourceLocation("test_tag"));
 

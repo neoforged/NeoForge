@@ -77,6 +77,7 @@ public class CustomSpriteSourceTest {
         }
 
         static final class CustomSpriteContents extends SpriteContents {
+
             public CustomSpriteContents(ResourceLocation name, FrameSize size, NativeImage image, ResourceMetadata metadata) {
                 super(name, size, image, metadata);
             }

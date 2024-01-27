@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.state.BlockState;
 
 public interface IBucketPickupExtension {
+
     private BucketPickup self() {
         return (BucketPickup) this;
     }

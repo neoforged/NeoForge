@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.properties.RailShape;
 import org.jetbrains.annotations.Nullable;
 
 public interface IBaseRailBlockExtension {
+
     /**
      * Return true if the rail can make corners.
      * Used by placement logic.

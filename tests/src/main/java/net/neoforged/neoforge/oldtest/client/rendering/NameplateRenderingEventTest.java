@@ -23,6 +23,7 @@ public class NameplateRenderingEventTest {
 
     @SubscribeEvent
     public static void onNameplateRender(RenderNameTagEvent event) {
+
         if (!ENABLED) {
             return;
         }

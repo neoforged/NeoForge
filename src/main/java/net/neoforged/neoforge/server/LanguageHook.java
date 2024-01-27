@@ -80,6 +80,7 @@ public class LanguageHook {
                 LOGGER.warn("Skipped language file: {}:{}", namespace, langFile, exception);
             }
         });
+
     }
 
     public static void loadForgeAndMCLangs() {

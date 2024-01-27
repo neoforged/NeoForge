@@ -41,6 +41,7 @@ public class HiddenTooltipPartsTest {
     }
 
     static class TestItem extends Item {
+
         public TestItem(Properties properties) {
             super(properties);
         }

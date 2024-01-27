@@ -12,6 +12,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 public abstract class LivingSwapItemsEvent extends LivingEvent {
+
     @ApiStatus.Internal
     public LivingSwapItemsEvent(LivingEntity entity) {
         super(entity);

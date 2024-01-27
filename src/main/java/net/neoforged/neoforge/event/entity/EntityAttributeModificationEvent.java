@@ -57,4 +57,5 @@ public class EntityAttributeModificationEvent extends Event implements IModBusEv
     public List<EntityType<? extends LivingEntity>> getTypes() {
         return entityTypes;
     }
+
 }

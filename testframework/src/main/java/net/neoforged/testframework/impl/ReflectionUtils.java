@@ -21,6 +21,7 @@ import net.minecraft.gametest.framework.GameTestListener;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public final class ReflectionUtils {
+
     public static <T> T getInstanceField(Object instance, String name) {
         try {
             final Field field = instance.getClass().getDeclaredField(name);

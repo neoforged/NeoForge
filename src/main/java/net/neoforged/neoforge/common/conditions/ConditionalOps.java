@@ -23,6 +23,7 @@ import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
  * This allows getting the {@link ICondition.IContext} while decoding an entry from within a codec.
  */
 public class ConditionalOps<T> extends RegistryOps<T> {
+
     public static <T> ConditionalOps<T> create(RegistryOps<T> ops, ICondition.IContext context) {
         return new ConditionalOps<T>(ops, context);
     }

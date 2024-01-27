@@ -30,6 +30,7 @@ import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 
 @ForEachTest(groups = { BlockTests.GROUP + ".event", "event" })
 public class BlockEventTests {
+
     @GameTest(template = TestsMod.TEMPLATE_3x3)
     @TestHolder(description = "Tests if the entity place event is fired")
     public static void entityPlacedEvent(final DynamicTest test) {

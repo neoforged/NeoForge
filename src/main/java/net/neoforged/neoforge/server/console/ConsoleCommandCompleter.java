@@ -63,4 +63,5 @@ final class ConsoleCommandCompleter implements Completer {
             logger.error("Failed to tab complete", e);
         }
     }
+
 }

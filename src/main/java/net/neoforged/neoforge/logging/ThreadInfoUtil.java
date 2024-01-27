@@ -10,6 +10,7 @@ import java.lang.management.MonitorInfo;
 import java.lang.management.ThreadInfo;
 
 public class ThreadInfoUtil {
+
     public static String getEntireStacktrace(ThreadInfo threadInfo) {
         StringBuilder sb = new StringBuilder("\"" + threadInfo.getThreadName() + "\"" +
                 (threadInfo.isDaemon() ? " daemon" : "") +

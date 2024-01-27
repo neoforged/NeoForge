@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
  * Shifting of slot indices is handled automatically for you.
  */
 public class RangedWrapper implements IItemHandlerModifiable {
+
     private final IItemHandlerModifiable compose;
     private final int minSlot;
     private final int maxSlot;
@@ -89,4 +90,5 @@ public class RangedWrapper implements IItemHandlerModifiable {
     private boolean checkSlot(int localSlot) {
         return localSlot + minSlot < maxSlot;
     }
+
 }

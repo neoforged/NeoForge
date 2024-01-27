@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
  * @author King Lemming
  */
 public class FluidTank implements IFluidHandler, IFluidTank {
+
     protected Predicate<FluidStack> validator;
     @NotNull
     protected FluidStack fluid = FluidStack.EMPTY;
@@ -62,12 +63,14 @@ public class FluidTank implements IFluidHandler, IFluidTank {
     }
 
     public FluidTank readFromNBT(CompoundTag nbt) {
+
         FluidStack fluid = FluidStack.loadFluidStackFromNBT(nbt);
         setFluid(fluid);
         return this;
     }
 
     public CompoundTag writeToNBT(CompoundTag nbt) {
+
         fluid.writeToNBT(nbt);
 
         return nbt;
@@ -75,22 +78,26 @@ public class FluidTank implements IFluidHandler, IFluidTank {
 
     @Override
     public int getTanks() {
+
         return 1;
     }
 
     @NotNull
     @Override
     public FluidStack getFluidInTank(int tank) {
+
         return getFluid();
     }
 
     @Override
     public int getTankCapacity(int tank) {
+
         return getCapacity();
     }
 
     @Override
     public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+
         return isFluidValid(stack);
     }
 
@@ -153,7 +160,9 @@ public class FluidTank implements IFluidHandler, IFluidTank {
         return stack;
     }
 
-    protected void onContentsChanged() {}
+    protected void onContentsChanged() {
+
+    }
 
     public void setFluid(FluidStack stack) {
         this.fluid = stack;
@@ -166,4 +175,5 @@ public class FluidTank implements IFluidHandler, IFluidTank {
     public int getSpace() {
         return Math.max(0, capacity - fluid.getAmount());
     }
+
 }

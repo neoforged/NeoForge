@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
  * A filter for vanilla impl packets.
  */
 public abstract class VanillaPacketFilter extends MessageToMessageEncoder<Packet<?>> implements DynamicChannelHandler {
+
     protected final Map<Class<? extends Packet<?>>, BiConsumer<Packet<?>, List<? super Packet<?>>>> handlers;
 
     protected VanillaPacketFilter(Map<Class<? extends Packet<?>>, BiConsumer<Packet<?>, List<? super Packet<?>>>> handlers) {
@@ -52,4 +53,5 @@ public abstract class VanillaPacketFilter extends MessageToMessageEncoder<Packet
         BiConsumer<Packet<?>, List<? super Packet<?>>> consumer = handlers.getOrDefault(msg.getClass(), (pkt, list) -> list.add(pkt));
         consumer.accept(msg, out);
     }
+
 }

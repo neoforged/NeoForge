@@ -38,6 +38,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Mod("registry_codec_test")
 public class RegistryCodecTest {
+
     private static final Logger LOGGER = LogManager.getLogger("Codec Registry Test");
 
     /**

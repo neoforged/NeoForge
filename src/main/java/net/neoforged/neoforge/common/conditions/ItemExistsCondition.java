@@ -11,6 +11,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 
 public class ItemExistsCondition implements ICondition {
+
     public static Codec<ItemExistsCondition> CODEC = RecordCodecBuilder.create(
             builder -> builder
                     .group(

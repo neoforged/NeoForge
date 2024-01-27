@@ -1,43 +1,30 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -81,12 +_,13 @@
+@@ -81,7 +_,8 @@
  import net.minecraft.world.level.block.state.pattern.BlockInWorld;
  import org.slf4j.Logger;
  
 -public final class ItemStack {
 +public final class ItemStack extends net.neoforged.neoforge.attachment.AttachmentHolder implements net.neoforged.neoforge.common.extensions.IItemStackExtension {
++    // TODO: add attachment support here
      public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
          p_311716_ -> p_311716_.group(
                      BuiltInRegistries.ITEM.holderByNameCodec().fieldOf("id").forGetter(ItemStack::getItemHolder),
-                     Codec.INT.fieldOf("Count").forGetter(ItemStack::getCount),
--                    CompoundTag.CODEC.optionalFieldOf("tag").forGetter(p_281115_ -> Optional.ofNullable(p_281115_.getTag()))
-+                    CompoundTag.CODEC.optionalFieldOf("tag").forGetter(p_281115_ -> Optional.ofNullable(p_281115_.getTag())),
-+                    ExtraCodecs.strictOptionalField(CompoundTag.CODEC, ATTACHMENTS_NBT_KEY).forGetter(s -> Optional.ofNullable(s.serializeAttachments()))
+@@ -101,10 +_,12 @@
                  )
-                 .apply(p_311716_, ItemStack::new)
+                 .apply(p_311717_, (p_311722_, p_311723_) -> new ItemStack(p_311722_, 1, p_311723_))
      );
-@@ -97,14 +_,17 @@
-     public static final Codec<ItemStack> ADVANCEMENT_ICON_CODEC = RecordCodecBuilder.create(
-         p_311717_ -> p_311717_.group(
-                     BuiltInRegistries.ITEM.holderByNameCodec().fieldOf("item").forGetter(ItemStack::getItemHolder),
--                    ExtraCodecs.strictOptionalField(TagParser.AS_CODEC, "nbt").forGetter(p_311718_ -> Optional.ofNullable(p_311718_.getTag()))
-+                    ExtraCodecs.strictOptionalField(TagParser.AS_CODEC, "nbt").forGetter(p_311718_ -> Optional.ofNullable(p_311718_.getTag())),
-+                    ExtraCodecs.strictOptionalField(TagParser.AS_CODEC, ATTACHMENTS_NBT_KEY).forGetter(s -> Optional.ofNullable(s.serializeAttachments()))
-                 )
--                .apply(p_311717_, (p_311722_, p_311723_) -> new ItemStack(p_311722_, 1, p_311723_))
-+                .apply(p_311717_, (p_311722_, p_311723_, attachments) -> new ItemStack(p_311722_, 1, p_311723_, attachments))
-     );
++    // TODO: add attachment support here
      public static final Codec<ItemStack> ITEM_WITH_COUNT_CODEC = RecordCodecBuilder.create(
          p_311720_ -> p_311720_.group(
                      ITEM_NON_AIR_CODEC.fieldOf("item").forGetter(ItemStack::getItem),
 -                    ExtraCodecs.strictOptionalField(ExtraCodecs.POSITIVE_INT, "count", 1).forGetter(ItemStack::getCount)
 +                    ExtraCodecs.strictOptionalField(ExtraCodecs.POSITIVE_INT, "count", 1).forGetter(ItemStack::getCount),
-+                    ExtraCodecs.strictOptionalField(net.neoforged.neoforge.common.crafting.CraftingHelper.TAG_CODEC, "nbt").forGetter(stack -> java.util.Optional.ofNullable(net.neoforged.neoforge.common.crafting.CraftingHelper.getTagForWriting(stack))),
-+                    ExtraCodecs.strictOptionalField(net.neoforged.neoforge.common.crafting.CraftingHelper.TAG_CODEC, ATTACHMENTS_NBT_KEY).forGetter(s -> Optional.ofNullable(s.serializeAttachments()))
++                    ExtraCodecs.strictOptionalField(net.neoforged.neoforge.common.crafting.CraftingHelper.TAG_CODEC, "nbt").forGetter(stack -> java.util.Optional.ofNullable(net.neoforged.neoforge.common.crafting.CraftingHelper.getTagForWriting(stack)))
                  )
                  .apply(p_311720_, ItemStack::new)
      );
-@@ -162,18 +_,30 @@
+@@ -162,6 +_,9 @@
      }
  
      public ItemStack(Holder<Item> p_312081_, int p_41605_, Optional<CompoundTag> p_41606_) {
@@ -47,15 +34,7 @@
          this(p_312081_, p_41605_);
          p_41606_.ifPresent(this::setTag);
      }
-+    private ItemStack(Holder<Item> p_312081_, int p_41605_, Optional<CompoundTag> p_41606_, Optional<CompoundTag> attachmentsNbt) {
-+        this(p_312081_.value(), p_41605_, p_41606_, attachmentsNbt);
-+    }
-+    private ItemStack(ItemLike p_312081_, int p_41605_, Optional<CompoundTag> p_41606_, Optional<CompoundTag> attachmentsNbt) {
-+        this(p_312081_, p_41605_, attachmentsNbt.orElse(null));
-+        p_41606_.ifPresent(this::setTag);
-+    }
- 
-     public ItemStack(Holder<Item> p_220155_, int p_220156_) {
+@@ -170,10 +_,12 @@
          this(p_220155_.value(), p_220156_);
      }
  

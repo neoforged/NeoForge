@@ -23,6 +23,7 @@ import org.jetbrains.annotations.ApiStatus;
  * </p>
  */
 public class RegistrationFailedException extends RuntimeException {
+
     private final ResourceLocation id;
     private final String namespace;
     private final Reason reason;
@@ -134,6 +135,7 @@ public class RegistrationFailedException extends RuntimeException {
      */
     @FunctionalInterface
     private interface ReasonFormatter {
+
         /**
          * Creates a nice error message for the given parameters.
          *

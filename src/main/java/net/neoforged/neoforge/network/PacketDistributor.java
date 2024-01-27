@@ -83,6 +83,7 @@ public class PacketDistributor<T> {
     public static final PacketDistributor<LevelChunk> TRACKING_CHUNK = new PacketDistributor<>(PacketDistributor::trackingChunk, PacketFlow.CLIENTBOUND);
 
     public static final class TargetPoint {
+
         private final ServerPlayer excluded;
         private final double x;
         private final double y;
@@ -141,6 +142,7 @@ public class PacketDistributor<T> {
             TargetPoint tp = new TargetPoint(x, y, z, r2, dim);
             return () -> tp;
         }
+
     }
 
     /**
@@ -181,6 +183,7 @@ public class PacketDistributor<T> {
         public PacketFlow flow() {
             return distributor.flow;
         }
+
     }
 
     private final BiFunction<PacketDistributor<T>, T, Consumer<Packet<?>>> functor;

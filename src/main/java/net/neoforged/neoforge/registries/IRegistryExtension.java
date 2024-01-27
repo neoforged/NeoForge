@@ -115,4 +115,5 @@ public interface IRegistryExtension<T> {
      * @param value the object whose existence to check for
      */
     boolean containsValue(T value);
+
 }

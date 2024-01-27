@@ -47,4 +47,5 @@ public class PlayerSleepInBedEvent extends PlayerEvent {
     public Optional<BlockPos> getOptionalPos() {
         return pos;
     }
+
 }

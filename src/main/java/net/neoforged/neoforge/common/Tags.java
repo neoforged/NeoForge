@@ -545,6 +545,7 @@ public class Tags {
     }
 
     public static class DamageTypes {
+
         /**
          * Damage types representing magic damage.
          */

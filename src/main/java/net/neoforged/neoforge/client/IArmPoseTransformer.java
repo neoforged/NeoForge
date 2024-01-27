@@ -19,6 +19,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
  */
 @FunctionalInterface
 public interface IArmPoseTransformer {
+
     /**
      * This method should be used to apply all wanted transformations to the player when the ArmPose is active.
      * You can use {@link LivingEntity#getTicksUsingItem()} and {@link LivingEntity#getUseItemRemainingTicks()} for moving animations.
@@ -28,4 +29,5 @@ public interface IArmPoseTransformer {
      * @param arm    Arm to pose
      */
     void applyTransform(HumanoidModel<?> model, LivingEntity entity, HumanoidArm arm);
+
 }

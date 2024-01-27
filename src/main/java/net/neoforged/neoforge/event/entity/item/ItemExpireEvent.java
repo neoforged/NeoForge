@@ -15,6 +15,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * it will add more time to the entities life equal to extraLife.
  */
 public class ItemExpireEvent extends ItemEvent implements ICancellableEvent {
+
     private int extraLife;
 
     /**
