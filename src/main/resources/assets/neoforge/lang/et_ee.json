@@ -235,5 +235,8 @@
   "neoforge.network.registries.sync.missing": "Kõiki oodatud registreid serverist ei saadud! (puudub: %s)",
   "neoforge.network.registries.sync.server-with-unknown-keys": "Server saatis tundmatute võtmetega registreid: %s",
   "neoforge.network.registries.sync.failed": "Registrite sünkroonimine serveriga ebaõnnestus: %s",
-  "neoforge.network.aux_light_data.failed": "Failed to handle auxiliary light data for chunk %s: %s"
+  "neoforge.network.aux_light_data.failed": "Failed to handle auxiliary light data for chunk %s: %s",
+  "neoforge.network.data_maps.failed": "Failed to handle registry data map sync for registry %s: %s",
+  "neoforge.network.data_maps.missing_our": "Cannot connect to server as it is missing mandatory registry data maps present on the client: %s",
+  "neoforge.network.data_maps.missing_their": "Cannot connect to server as it has mandatory registry data maps not present on the client: %s"
 }
