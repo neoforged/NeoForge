@@ -306,7 +306,8 @@ public class DataMapTests {
                 // Activator rail gives 6 level so it should be impossible to insert it in a composter with 2 filled already
                 .thenExecute(player -> helper.useBlock(
                         new BlockPos(1, 1, 1), player, Items.ACTIVATOR_RAIL.getDefaultInstance()))
-                .thenExecute(() -> helper.assertBlockProperty(new BlockPos(1, 1, 1), ComposterBlock.LEVEL, 2)));
+                .thenExecute(() -> helper.assertBlockProperty(new BlockPos(1, 1, 1), ComposterBlock.LEVEL, 2))
+                .thenSucceed());
     }
 
     public record SomeObject(
