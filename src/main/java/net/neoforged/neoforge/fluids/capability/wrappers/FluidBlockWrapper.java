@@ -47,7 +47,7 @@ public class FluidBlockWrapper implements IFluidHandler {
 
     @Override
     public boolean isFluidValid(int tank, FluidStack stack) {
-        return stack.getFluid() == fluidBlock.getFluid();
+        return stack.is(fluidBlock.getFluid());
     }
 
     @Override
@@ -57,7 +57,7 @@ public class FluidBlockWrapper implements IFluidHandler {
 
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
-        if (!resource.isEmpty() && fluidBlock.canDrain(world, blockPos) && resource.getFluid() == fluidBlock.getFluid()) {
+        if (!resource.isEmpty() && fluidBlock.canDrain(world, blockPos) && resource.is(fluidBlock.getFluid())) {
             FluidStack simulatedDrained = fluidBlock.drain(world, blockPos, FluidAction.SIMULATE);
             if (simulatedDrained.getAmount() <= resource.getAmount() && resource.isFluidEqual(simulatedDrained)) {
                 if (action.execute()) {

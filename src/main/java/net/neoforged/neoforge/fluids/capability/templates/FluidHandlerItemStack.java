@@ -88,9 +88,7 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
             int fillAmount = Math.min(capacity, resource.getAmount());
 
             if (doFill.execute()) {
-                FluidStack filled = resource.copy();
-                filled.setAmount(fillAmount);
-                setFluid(filled);
+                setFluid(resource.copyWithAmount(fillAmount));
             }
 
             return fillAmount;
@@ -131,8 +129,7 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
 
         final int drainAmount = Math.min(contained.getAmount(), maxDrain);
 
-        FluidStack drained = contained.copy();
-        drained.setAmount(drainAmount);
+        FluidStack drained = contained.copyWithAmount(drainAmount);
 
         if (action.execute()) {
             contained.shrink(drainAmount);
