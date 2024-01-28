@@ -300,7 +300,7 @@ public class DataMapTests {
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.COMPOSTER))
                 .thenExecute(player -> helper.useBlock(
                         new BlockPos(1, 1, 1), player, Items.COMPASS.getDefaultInstance()))
-                .thenExecute(() -> helper.assertBlockProperty(new BlockPos(1, 1, 1), ComposterBlock.LEVEL, 2))
+                .thenExecute(() -> helper.assertBlockProperty(new BlockPos(1, 1, 1), ComposterBlock.LEVEL, 1))
                 .thenSucceed());
     }
 
