@@ -9,6 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 
@@ -18,6 +19,25 @@ import net.minecraft.world.level.block.Block;
  * @param <T> The specific {@link Block} type.
  */
 public class DeferredBlock<T extends Block> extends DeferredHolder<Block, T> implements ItemLike {
+
+    /**
+     * Creates a new {@link ItemStack} with a default size of 1 from this {@link Item}
+     */
+    public ItemStack asItemStack() {
+        return asItemStack(1);
+    }
+
+    /**
+     * Creates a new {@link ItemStack} with the given size from this {@link Item}
+     *
+     * @param count The size of the stack to create
+     */
+    public ItemStack asItemStack(int count) {
+        ItemStack stack = asItem().getDefaultInstance();
+        stack.setCount(count);
+        return stack;
+    }
+
     /**
      * Creates a new {@link DeferredHolder} targeting the {@link Block} with the specified name.
      *
