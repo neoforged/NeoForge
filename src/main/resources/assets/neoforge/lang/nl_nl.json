@@ -235,5 +235,8 @@
   "neoforge.network.registries.sync.missing": "Niet alle verwachte registers werden ontvangen van de server! (ontbreekt: %s)",
   "neoforge.network.registries.sync.server-with-unknown-keys": "The server send registries with unknown keys: %s",
   "neoforge.network.registries.sync.failed": "Registraties van de server konden niet gesynchroniseerd worden: %s",
-  "neoforge.network.aux_light_data.failed": "Fout bij verwerking van hulplichtgegevens voor chunk %s: %s"
+  "neoforge.network.aux_light_data.failed": "Fout bij verwerking van hulplichtgegevens voor chunk %s: %s",
+  "neoforge.network.data_maps.failed": "Failed to handle registry data map sync for registry %s: %s",
+  "neoforge.network.data_maps.missing_our": "Cannot connect to server as it is missing mandatory registry data maps present on the client: %s",
+  "neoforge.network.data_maps.missing_their": "Cannot connect to server as it has mandatory registry data maps not present on the client: %s"
 }
