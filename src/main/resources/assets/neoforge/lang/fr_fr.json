@@ -235,5 +235,8 @@
   "neoforge.network.registries.sync.missing": "Tous les registres attendus n'ont pas été reçus de la part du serveur ! (manquants : %s)",
   "neoforge.network.registries.sync.server-with-unknown-keys": "Le serveur a renvoyé des registres avec des clés inconnues : %s",
   "neoforge.network.registries.sync.failed": "Impossible de synchroniser les registres depuis le serveur: %s",
-  "neoforge.network.aux_light_data.failed": "Échec de la gestion des données de lumière auxiliaire pour le chunk %s: %s"
+  "neoforge.network.aux_light_data.failed": "Échec de la gestion des données de lumière auxiliaire pour le chunk %s: %s",
+  "neoforge.network.data_maps.failed": "Failed to handle registry data map sync for registry %s: %s",
+  "neoforge.network.data_maps.missing_our": "Cannot connect to server as it is missing mandatory registry data maps present on the client: %s",
+  "neoforge.network.data_maps.missing_their": "Cannot connect to server as it has mandatory registry data maps not present on the client: %s"
 }
