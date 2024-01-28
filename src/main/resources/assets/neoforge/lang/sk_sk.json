@@ -235,5 +235,8 @@
   "neoforge.network.registries.sync.missing": "Neboli doručené všetky očakávané registre zo serveru! (chýbajúce: %s)",
   "neoforge.network.registries.sync.server-with-unknown-keys": "Server poslal registre s neznámymi kľúčmi: %s",
   "neoforge.network.registries.sync.failed": "Zlyhanie zosúladenia registrov zo serveru: %s",
-  "neoforge.network.aux_light_data.failed": "Zlyhali spracovanie údajov pomocných dát svetla pre chunk %s: %s"
+  "neoforge.network.aux_light_data.failed": "Zlyhali spracovanie údajov pomocných dát svetla pre chunk %s: %s",
+  "neoforge.network.data_maps.failed": "Failed to handle registry data map sync for registry %s: %s",
+  "neoforge.network.data_maps.missing_our": "Cannot connect to server as it is missing mandatory registry data maps present on the client: %s",
+  "neoforge.network.data_maps.missing_their": "Cannot connect to server as it has mandatory registry data maps not present on the client: %s"
 }
