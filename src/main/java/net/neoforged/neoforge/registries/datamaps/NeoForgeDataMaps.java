@@ -25,25 +25,28 @@ public class NeoForgeDataMaps {
     /**
      * The {@linkplain Item} data map that replaces {@link ComposterBlock#COMPOSTABLES}.
      * <p>
-     * The location of this data map is {@code neoforge/data_maps/item/compostables.json}, and the values are objects with 2 fields:
+     * The location of this data map is {@code neoforge/data_maps/item/compostables.json}, and the values are objects with 1 field:
      * <ul>
      * <li>{@code chance}, a float between 0 and 1 (inclusive) - the chance that the item will add levels to the composter when composted</li>
-     * <li>{@code amount}, an optional integer between 1 and 7 (inclusive) - how many levels a successful compost should add to the composter</li>
      * </ul>
+     *
+     * The use of a float as the value is also possible, though discouraged in case more options are added in the future.
      */
     public static final DataMapType<Item, Compostable> COMPOSTABLES = DataMapType.builder(
-            id("compostables"), Registries.ITEM, Compostable.CODEC).synced(Compostable.CODEC, false).build();
+            id("compostables"), Registries.ITEM, Compostable.CODEC).synced(Compostable.CHANCE_CODEC, false).build();
 
     /**
      * Data map value for {@linkplain #COMPOSTABLES compostables}.
      *
      * @param chance the chance that a compost is successful
-     * @param amount the levels to add to the composter
      */
-    public record Compostable(float chance, int amount) {
-        public static final Codec<Compostable> CODEC = RecordCodecBuilder.create(in -> in.group(
-                Codec.floatRange(0f, 1f).fieldOf("chance").forGetter(Compostable::chance),
-                ExtraCodecs.strictOptionalField(ExtraCodecs.intRange(1, 7), "amount", 1).forGetter(Compostable::amount)).apply(in, Compostable::new));
+    public record Compostable(float chance) {
+        public static final Codec<Compostable> CHANCE_CODEC = Codec.floatRange(0f, 1f)
+                .xmap(Compostable::new, Compostable::chance);
+        public static final Codec<Compostable> CODEC = ExtraCodecs.withAlternative(
+                RecordCodecBuilder.create(in -> in.group(
+                        Codec.floatRange(0f, 1f).fieldOf("chance").forGetter(Compostable::chance)).apply(in, Compostable::new)),
+                CHANCE_CODEC);
     }
 
     private static ResourceLocation id(final String name) {

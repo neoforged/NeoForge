@@ -293,19 +293,13 @@ public class DataMapTests {
             @Override
             protected void gather() {
                 builder(NeoForgeDataMaps.COMPOSTABLES)
-                        .add(ItemTags.COMPASSES, new NeoForgeDataMaps.Compostable(1f, 2), false)
-                        .add(Items.ACTIVATOR_RAIL.builtInRegistryHolder(), new NeoForgeDataMaps.Compostable(1f, 6), false);
+                        .add(ItemTags.COMPASSES, new NeoForgeDataMaps.Compostable(1f), false);
             }
         });
         test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.COMPOSTER))
                 .thenExecute(player -> helper.useBlock(
                         new BlockPos(1, 1, 1), player, Items.COMPASS.getDefaultInstance()))
-                .thenExecute(() -> helper.assertBlockProperty(new BlockPos(1, 1, 1), ComposterBlock.LEVEL, 2))
-
-                // Activator rail gives 6 level so it should be impossible to insert it in a composter with 2 filled already
-                .thenExecute(player -> helper.useBlock(
-                        new BlockPos(1, 1, 1), player, Items.ACTIVATOR_RAIL.getDefaultInstance()))
                 .thenExecute(() -> helper.assertBlockProperty(new BlockPos(1, 1, 1), ComposterBlock.LEVEL, 2))
                 .thenSucceed());
     }

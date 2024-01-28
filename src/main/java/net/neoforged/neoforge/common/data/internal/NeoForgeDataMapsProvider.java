@@ -20,6 +20,6 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
     @Override
     protected void gather() {
         final var compostables = builder(NeoForgeDataMaps.COMPOSTABLES);
-        ComposterBlock.COMPOSTABLES.forEach((item, chance) -> compostables.add(item.asItem().builtInRegistryHolder(), new NeoForgeDataMaps.Compostable(chance, 1), false));
+        ComposterBlock.COMPOSTABLES.forEach((item, chance) -> compostables.add(item.asItem().builtInRegistryHolder(), new NeoForgeDataMaps.Compostable(chance), false));
     }
 }

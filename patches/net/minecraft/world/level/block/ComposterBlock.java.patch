@@ -9,7 +9,7 @@
      public static final Object2FloatMap<ItemLike> COMPOSTABLES = new Object2FloatOpenHashMap<>();
      private static final int AABB_SIDE_THICKNESS = 2;
      private static final VoxelShape OUTER_SHAPE = Shapes.block();
-@@ -226,14 +_,24 @@
+@@ -226,13 +_,22 @@
          if (p_51978_.getValue(LEVEL) == 7) {
              p_51979_.scheduleTick(p_51980_, p_51978_.getBlock(), 20);
          }
@@ -29,59 +29,46 @@
          int i = p_51949_.getValue(LEVEL);
          ItemStack itemstack = p_51952_.getItemInHand(p_51953_);
 -        if (i < 8 && COMPOSTABLES.containsKey(itemstack.getItem())) {
--            if (i < 7 && !p_51950_.isClientSide) {
-+        var compostable = getValue(itemstack);
-+        if (i < 8 && compostable != null) {
-+            if (i <= MAX_LEVEL - compostable.amount() && !p_51950_.isClientSide) {
++        if (i < 8 && getValue(itemstack) > 0) {
+             if (i < 7 && !p_51950_.isClientSide) {
                  BlockState blockstate = addItem(p_51952_, p_51949_, p_51950_, p_51951_, itemstack);
                  p_51950_.levelEvent(1500, p_51951_, p_51949_ != blockstate ? 1 : 0);
-                 p_51952_.awardStat(Stats.ITEM_USED.get(itemstack.getItem()));
-@@ -253,7 +_,8 @@
+@@ -253,7 +_,7 @@
  
      public static BlockState insertItem(Entity p_270919_, BlockState p_270087_, ServerLevel p_270284_, ItemStack p_270253_, BlockPos p_270678_) {
          int i = p_270087_.getValue(LEVEL);
 -        if (i < 7 && COMPOSTABLES.containsKey(p_270253_.getItem())) {
-+        var compostable = getValue(p_270253_);
-+        if (compostable != null && i <= MAX_LEVEL - compostable.amount()) {
++        if (i < 7 && getValue(p_270253_) > 0) {
              BlockState blockstate = addItem(p_270919_, p_270087_, p_270284_, p_270678_, p_270253_);
              p_270253_.shrink(1);
              return blockstate;
-@@ -284,11 +_,12 @@
+@@ -284,7 +_,7 @@
  
      static BlockState addItem(@Nullable Entity p_270464_, BlockState p_270603_, LevelAccessor p_270151_, BlockPos p_270547_, ItemStack p_270354_) {
          int i = p_270603_.getValue(LEVEL);
 -        float f = COMPOSTABLES.getFloat(p_270354_.getItem());
-+        var compostable = getValue(p_270354_);
-+        float f = compostable == null ? 0f : compostable.chance();
++        float f = getValue(p_270354_);
          if ((i != 0 || !(f > 0.0F)) && !(p_270151_.getRandom().nextDouble() < (double)f)) {
              return p_270603_;
          } else {
--            int j = i + 1;
-+            int j = i + compostable.amount();
-             BlockState blockstate = p_270603_.setValue(LEVEL, Integer.valueOf(j));
-             p_270151_.setBlock(p_270547_, blockstate, 3);
-             p_270151_.gameEvent(GameEvent.BLOCK_CHANGE, p_270547_, GameEvent.Context.of(p_270464_, blockstate));
-@@ -384,7 +_,8 @@
+@@ -384,7 +_,7 @@
  
          @Override
          public boolean canPlaceItemThroughFace(int p_52028_, ItemStack p_52029_, @Nullable Direction p_52030_) {
 -            return !this.changed && p_52030_ == Direction.UP && ComposterBlock.COMPOSTABLES.containsKey(p_52029_.getItem());
-+            var value = getValue(p_52029_);
-+            return !this.changed && p_52030_ == Direction.UP && value != null && value.amount() <= MAX_LEVEL - state.getValue(LEVEL);
++            return !this.changed && p_52030_ == Direction.UP && getValue(p_52029_) > 0f;
          }
  
          @Override
-@@ -442,5 +_,13 @@
+@@ -442,5 +_,11 @@
              ComposterBlock.empty(null, this.state, this.level, this.pos);
              this.changed = true;
          }
 +    }
 +
-+    @org.jetbrains.annotations.Nullable
-+    public static net.neoforged.neoforge.registries.datamaps.NeoForgeDataMaps.Compostable getValue(ItemStack item) {
++    public static float getValue(ItemStack item) {
 +        var value = item.getItemHolder().getData(net.neoforged.neoforge.registries.datamaps.NeoForgeDataMaps.COMPOSTABLES);
-+        if (value != null) return value;
-+        float chance = COMPOSTABLES.getFloat(item.getItem());
-+        return chance > 0 ? new net.neoforged.neoforge.registries.datamaps.NeoForgeDataMaps.Compostable(chance, 1) : null;
++        if (value != null) return value.chance();
++        return COMPOSTABLES.getFloat(item.getItem());
      }
  }
