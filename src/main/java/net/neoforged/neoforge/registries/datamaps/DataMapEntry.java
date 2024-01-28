@@ -29,13 +29,20 @@ public record DataMapEntry<T>(T value, boolean replace) {
 
     public record Removal<T, R>(Either<TagKey<R>, ResourceKey<R>> key,
             Optional<DataMapValueRemover<R, T>> remover) {
+        private Removal(Either<TagKey<R>, ResourceKey<R>> key) {
+            this(key, Optional.empty());
+        }
+
+        @SuppressWarnings("unchecked")
         public static <T, R> Codec<Removal<T, R>> codec(Codec<Either<TagKey<R>, ResourceKey<R>>> tagOrValue, DataMapType<R, T> attachment) {
             if (attachment instanceof AdvancedDataMapType<R, T, ?> advanced) {
                 return RecordCodecBuilder.create(in -> in.group(
                         tagOrValue.fieldOf("key").forGetter(Removal::key),
                         ExtraCodecs.strictOptionalField((Codec<DataMapValueRemover<R, T>>) advanced.remover(), "remover").forGetter(Removal::remover)).apply(in, Removal::new));
             }
-            return RecordCodecBuilder.create(in -> in.group(tagOrValue.fieldOf("key").forGetter(Removal::key)).apply(in, o -> new DataMapEntry.Removal<>(o, Optional.empty())));
+            return RecordCodecBuilder.create(inst -> inst
+                    .group(tagOrValue.fieldOf("key").forGetter(Removal::key))
+                    .apply(inst, Removal::new));
         }
     }
 }
