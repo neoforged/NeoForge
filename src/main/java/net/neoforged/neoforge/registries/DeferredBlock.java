@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.Block;
  * @param <T> The specific {@link Block} type.
  */
 public class DeferredBlock<T extends Block> extends DeferredHolder<Block, T> implements ItemLike {
-
     /**
      * Creates a new {@link ItemStack} with a default size of 1 from this {@link Item}
      */
