@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.oldtest.block;
 
-import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
 import net.minecraft.client.renderer.blockentity.SignRenderer;
@@ -33,6 +32,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterWoodTypeEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -82,9 +82,10 @@ public class CustomSignsTest {
     private void clientSetup(final FMLClientSetupEvent event) {
         BlockEntityRenderers.register(CUSTOM_SIGN.get(), SignRenderer::new);
         BlockEntityRenderers.register(CUSTOM_HANGING_SIGN.get(), HangingSignRenderer::new);
-        event.enqueueWork(() -> {
-            Sheets.addWoodType(TEST_WOOD_TYPE);
-        });
+    }
+
+    private void addWoodType(RegisterWoodTypeEvent event) {
+        event.register(TEST_WOOD_TYPE);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

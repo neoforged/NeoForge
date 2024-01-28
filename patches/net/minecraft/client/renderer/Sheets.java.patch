@@ -16,11 +16,17 @@
      }
  
      public static Material getSignMaterial(WoodType p_173382_) {
-@@ -237,6 +_,24 @@
+@@ -237,6 +_,30 @@
              case SINGLE:
              default:
                  return p_110773_;
 +        }
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public static void init() {
++        var event = new net.neoforged.neoforge.client.event.RegisterWoodTypeEvent(SIGN_MATERIALS, HANGING_SIGN_MATERIALS);
++        net.neoforged.fml.ModLoader.get().postEvent(event);
 +    }
 +
 +    /**
