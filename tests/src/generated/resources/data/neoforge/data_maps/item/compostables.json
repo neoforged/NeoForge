@@ -1,0 +1,12 @@
+{
+  "values": {
+    "#minecraft:compasses": {
+      "amount": 2,
+      "chance": 1.0
+    },
+    "minecraft:activator_rail": {
+      "amount": 6,
+      "chance": 1.0
+    }
+  }
+}

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
@@ -28,6 +29,8 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ComposterBlock;
 import net.neoforged.neoforge.common.data.DataMapProvider;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
@@ -36,6 +39,7 @@ import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover.Default;
+import net.neoforged.neoforge.registries.datamaps.NeoForgeDataMaps;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -279,6 +283,30 @@ public class DataMapTests {
             helper.assertTrue(player.totalExperience == 130, "Player didn't receive experience");
             helper.succeed();
         });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if custom compostables work")
+    static void compostablesMapTest(final DynamicTest test, final RegistrationHelper reg) {
+        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+            @Override
+            protected void gather() {
+                builder(NeoForgeDataMaps.COMPOSTABLES)
+                        .add(ItemTags.COMPASSES, new NeoForgeDataMaps.Compostable(1f, 2), false)
+                        .add(Items.ACTIVATOR_RAIL.builtInRegistryHolder(), new NeoForgeDataMaps.Compostable(1f, 6), false);
+            }
+        });
+        test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
+                .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.COMPOSTER))
+                .thenExecute(player -> helper.useBlock(
+                        new BlockPos(1, 1, 1), player, Items.COMPASS.getDefaultInstance()))
+                .thenExecute(() -> helper.assertBlockProperty(new BlockPos(1, 1, 1), ComposterBlock.LEVEL, 2))
+
+                // Activator rail gives 6 level so it should be impossible to insert it in a composter with 2 filled already
+                .thenExecute(player -> helper.useBlock(
+                        new BlockPos(1, 1, 1), player, Items.ACTIVATOR_RAIL.getDefaultInstance()))
+                .thenExecute(() -> helper.assertBlockProperty(new BlockPos(1, 1, 1), ComposterBlock.LEVEL, 2)));
     }
 
     public record SomeObject(
