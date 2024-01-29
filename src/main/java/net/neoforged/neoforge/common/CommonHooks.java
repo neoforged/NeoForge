@@ -210,8 +210,8 @@ public class CommonHooks {
     }
 
     public static boolean isCorrectToolForDrops(BlockGetter level, BlockPos pos, BlockState state, Player player) {
-        PlayerEvent.HarvestCheck event = NeoForge.EVENT_BUS.post(new PlayerEvent.HarvestCheck(player, level, pos, state));
-        return event.getResult() == Event.Result.DEFAULT ? player.hasCorrectToolForDrops(state) : event.getResult() == Event.Result.ALLOW;
+        PlayerEvent.HarvestCheck event = NeoForge.EVENT_BUS.post(new PlayerEvent.HarvestCheck(player, level, pos, state, player.hasCorrectToolForDrops(state)));
+        return !event.isCanceled() && event.canHarvest();
     }
 
     public static boolean onItemStackedOn(ItemStack carriedItem, ItemStack stackedOnItem, Slot slot, ClickAction action, Player player, SlotAccess carriedSlotAccess) {

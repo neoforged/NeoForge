@@ -58,26 +58,25 @@ public abstract class PlayerEvent extends LivingEvent {
      * {@link #pos} contains the {@link BlockPos} the check occurs at.<br>
      * {@link #state} contains the {@link BlockState} that is being checked for harvesting.<br>
      * <br>
-     * This event is not {@link net.neoforged.bus.api.ICancellableEvent}.<br>
+     * This event is {@link net.neoforged.bus.api.ICancellableEvent}.<br>
+     * If cancelled, the player is considered to have failed the harvest check.<br>
      * <br>
-     * This event has a {@link Result}.
-     * If the result is {@link Result#ALLOW}, the player is considered to be able to break the block.
-     * If the result is {@link Result#DENY}, the player is considered to be unable to break the block.
-     * If the result is {@link Result#DEFAULT}, further vanilla behavior will run.<br>
+     * This event does not have a result. {@link Event.HasResult}<br>
      * <br>
      * This event is fired on the {@link NeoForge#EVENT_BUS}.
      **/
-    @HasResult
-    public static class HarvestCheck extends PlayerEvent {
+    public static class HarvestCheck extends PlayerEvent implements ICancellableEvent {
         private final BlockGetter level;
         private final BlockPos pos;
         private final BlockState state;
+        private boolean success;
 
-        public HarvestCheck(Player player, BlockGetter level, BlockPos pos, BlockState state) {
+        public HarvestCheck(Player player, BlockGetter level, BlockPos pos, BlockState state, boolean success) {
             super(player);
             this.level = level;
             this.pos = pos;
             this.state = state;
+            this.success = success;
         }
 
         public BlockGetter getLevel() {
@@ -93,11 +92,11 @@ public abstract class PlayerEvent extends LivingEvent {
         }
 
         public boolean canHarvest() {
-            return getResult() == Result.ALLOW;
+            return this.success;
         }
 
         public void setCanHarvest(boolean success) {
-            setResult(success ? Result.ALLOW : Result.DENY);
+            this.success = success;
         }
     }
 
