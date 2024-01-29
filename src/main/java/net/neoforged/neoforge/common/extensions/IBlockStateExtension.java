@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -103,9 +104,9 @@ public interface IBlockStateExtension {
      * actually destroying the block, and the block is intact at time of call.
      * This is called regardless of whether the player can harvest the block or
      * not.
-     *
+     * <p>
      * Return true if the block is actually destroyed.
-     *
+     * <p>
      * Note: When used in multiplayer, this is called on both client and
      * server sides!
      *
@@ -119,6 +120,25 @@ public interface IBlockStateExtension {
      */
     default boolean onDestroyedByPlayer(Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
         return self().getBlock().onDestroyedByPlayer(self(), level, pos, player, willHarvest, fluid);
+    }
+
+    /**
+     * Called when a block is removed by {@link PushReaction#DESTROY}. This is responsible for
+     * actually destroying the block, and the block is intact at time of call.
+     * <p>
+     * Will only be called if {@link BlockState#getPistonPushReaction} returns {@link PushReaction#DESTROY}.
+     * <p>
+     * Note: When used in multiplayer, this is called on both client and
+     * server sides!
+     *
+     * @param state         The current state.
+     * @param level         The current level
+     * @param pos           Block position in level
+     * @param pushDirection The direction of block movement
+     * @param fluid         The current fluid state at current position
+     */
+    default void onDestroyedByPushReaction(BlockState state, Level level, BlockPos pos, Direction pushDirection, FluidState fluid) {
+        self().getBlock().onDestroyedByPushReaction(self(), level, pos, pushDirection, fluid);
     }
 
     /**
@@ -200,7 +220,6 @@ public interface IBlockStateExtension {
     }
 
     /**
-     *
      * Called when A user uses the creative pick block button on this block
      *
      * @param target The full target the player is looking at
@@ -268,7 +287,7 @@ public interface IBlockStateExtension {
      * to ensure it turns into the corresponding modded dirt instead of regular dirt when a tree grows on it.
      * For modded grass blocks, returning true from this method is NOT a substitute for adding your block
      * to the #minecraft:dirt tag, rather for changing the behaviour to something other than setting to dirt.
-     *
+     * <p>
      * NOTE: This happens DURING world generation, the generation may be incomplete when this is called.
      * Use the placeFunction when modifying the level.
      *
@@ -339,7 +358,7 @@ public interface IBlockStateExtension {
 
     /**
      * Determines the amount of enchanting power this block can provide to an enchanting table.
-     * 
+     *
      * @param level The level
      * @param pos   Block position in level
      * @return The amount of enchanting power this block produces.
@@ -353,7 +372,7 @@ public interface IBlockStateExtension {
      *
      * <p>This method is not suitable for listening to capability invalidations.
      * For capability invalidations specifically, use {@link BlockCapabilityCache} instead.
-     * 
+     *
      * @param level    The level
      * @param pos      Block position in level
      * @param neighbor Block position of neighbor
@@ -364,7 +383,7 @@ public interface IBlockStateExtension {
 
     /**
      * Called to determine whether to allow the block to handle its own indirect power rather than using the default rules.
-     * 
+     *
      * @param level The level
      * @param pos   Block position in level
      * @param side  The INPUT side of the block to be powered - ie the opposite of this block's output side
@@ -389,7 +408,7 @@ public interface IBlockStateExtension {
 
     /**
      * Sensitive version of getSoundType
-     * 
+     *
      * @param level  The level
      * @param pos    The position. Note that the level may not necessarily have {@code state} here!
      * @param entity The entity that is breaking/stepping on/placing/hitting/falling on this block, or null if no entity is in this context
@@ -440,7 +459,7 @@ public interface IBlockStateExtension {
 
     /**
      * Determines if this block can stick to another block when pushed by a piston.
-     * 
+     *
      * @param other Other block
      * @return True to link blocks
      */

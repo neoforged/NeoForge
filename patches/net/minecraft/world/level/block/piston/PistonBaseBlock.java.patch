@@ -24,6 +24,16 @@
          return true;
      }
  
+@@ -317,8 +_,7 @@
+                 BlockState blockstate1 = p_60182_.getBlockState(blockpos2);
+                 BlockEntity blockentity = blockstate1.hasBlockEntity() ? p_60182_.getBlockEntity(blockpos2) : null;
+                 dropResources(blockstate1, p_60182_, blockpos2, blockentity);
+-                p_60182_.setBlock(blockpos2, Blocks.AIR.defaultBlockState(), 18);
+-                p_60182_.gameEvent(GameEvent.BLOCK_DESTROY, blockpos2, GameEvent.Context.of(blockstate1));
++                blockstate1.onDestroyedByPushReaction(blockstate1, p_60182_, blockpos2, direction, p_60182_.getFluidState(blockpos2));
+                 if (!blockstate1.is(BlockTags.FIRE)) {
+                     p_60182_.addDestroyBlockEffect(blockpos2, blockstate1);
+                 }
 @@ -390,6 +_,10 @@
      @Override
      public BlockState rotate(BlockState p_60215_, Rotation p_60216_) {
