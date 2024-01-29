@@ -1,3 +1,5 @@
+import org.gradle.api.plugins.jvm.JvmTestSuite
+
 plugins {
     id 'java-library'
     id 'maven-publish'
@@ -38,16 +40,19 @@ sourceSets {
     }
 }
 
-dependencies {
-    pluginLayerLibrary "net.neoforged.fancymodloader:core:${project.fancy_mod_loader_version}"
-    pluginLayerLibrary "net.neoforged.fancymodloader:language-java:${project.fancy_mod_loader_version}"
-    pluginLayerLibrary "net.neoforged.fancymodloader:language-lowcode:${project.fancy_mod_loader_version}"
-    pluginLayerLibrary "net.neoforged.fancymodloader:language-minecraft:${project.fancy_mod_loader_version}"
-
-    gameLayerLibrary ("net.neoforged.fancymodloader:events:${project.fancy_mod_loader_version}") {
-        exclude group: 'org.slf4j'
+configurations {
+    junit {
+        transitive = true
+        canBeConsumed = true
+        canBeResolved = true
     }
+    moduleOnly
+    runtimeClasspath {
+        exclude module: 'junit'
+    }
+}
 
+dependencies {
     runtimeOnly "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
 
     moduleOnly "cpw.mods:securejarhandler:${project.securejarhandler_version}"
@@ -58,6 +63,8 @@ dependencies {
     moduleOnly "org.ow2.asm:asm-analysis:${project.asm_version}"
     moduleOnly "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
     moduleOnly "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
+    userdevTestImplementation "net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}"
+    userdevTestImplementation(project(':neoforge-junit-utils'))
 
     installer ("net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}") {
         exclude group: 'org.slf4j'
@@ -141,6 +148,15 @@ runTypes {
         arguments.addAll '--fml.mcVersion', project.minecraft_version
         arguments.addAll '--fml.neoFormVersion', project.neoform_version
     }
+
+    junit {
+        junit true
+
+        arguments.addAll '--fml.neoForgeVersion', project.version
+        arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
+        arguments.addAll '--fml.mcVersion', project.minecraft_version
+        arguments.addAll '--fml.neoFormVersion', project.neoform_version
+    }
 }
 
 runs {
@@ -154,6 +170,7 @@ runs {
         programArguments.addAll '--mod', 'neoforge'
 
         modSources.add project.sourceSets.main
+        modSources.add project.sourceSets.test
 
         idea {
             primarySourceSet project.sourceSets.main

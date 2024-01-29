@@ -4,10 +4,11 @@ pluginManagement {
         mavenLocal()
         maven { url = 'https://maven.neoforged.net/releases' }
     }
+    includeBuild '../NeoGradle'
 }
 
 plugins {
-    id 'net.neoforged.gradle.platform' version '7.0.81'
+    id 'net.neoforged.gradle.platform' version '7.0.124-junit'
 }
 
 rootProject.name = rootDir.name
@@ -24,3 +25,5 @@ include ':tests'
 project(":tests").projectDir = file("tests")
 
 include ':testframework'
+include ':junit'
+project(':junit').name = 'neoforge-junit-utils'

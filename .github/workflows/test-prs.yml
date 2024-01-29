@@ -40,8 +40,14 @@ jobs:
           arguments: setup
           cache-read-only: false
 
-      - name: Build with Gradle
+      - name: Run JUnit tests with Gradle
         uses: gradle/gradle-build-action@v2
         with:
           arguments: :tests:runGameTestServer
+          cache-read-only: false
+
+      - name: Run game tests with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: :tests:test
           cache-read-only: false
