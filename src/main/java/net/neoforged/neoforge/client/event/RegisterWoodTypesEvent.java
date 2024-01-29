@@ -6,8 +6,6 @@
 package net.neoforged.neoforge.client.event;
 
 import java.util.Map;
-
-import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.world.level.block.state.properties.WoodType;
