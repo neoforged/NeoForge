@@ -1,0 +1,181 @@
+{
+  "values": {
+    "#minecraft:bamboo_blocks": {
+      "burn_time": 300
+    },
+    "#minecraft:banners": {
+      "burn_time": 300
+    },
+    "#minecraft:boats": {
+      "burn_time": 1200
+    },
+    "#minecraft:fence_gates": {
+      "burn_time": 300
+    },
+    "#minecraft:hanging_signs": {
+      "burn_time": 800
+    },
+    "#minecraft:logs": {
+      "burn_time": 300
+    },
+    "#minecraft:planks": {
+      "burn_time": 300
+    },
+    "#minecraft:saplings": {
+      "burn_time": 100
+    },
+    "#minecraft:signs": {
+      "burn_time": 200
+    },
+    "#minecraft:wooden_buttons": {
+      "burn_time": 100
+    },
+    "#minecraft:wooden_doors": {
+      "burn_time": 200
+    },
+    "#minecraft:wooden_fences": {
+      "burn_time": 300
+    },
+    "#minecraft:wooden_pressure_plates": {
+      "burn_time": 300
+    },
+    "#minecraft:wooden_slabs": {
+      "burn_time": 150
+    },
+    "#minecraft:wooden_stairs": {
+      "burn_time": 300
+    },
+    "#minecraft:wooden_trapdoors": {
+      "burn_time": 300
+    },
+    "#minecraft:wool": {
+      "burn_time": 100
+    },
+    "#minecraft:wool_carpets": {
+      "burn_time": 67
+    },
+    "minecraft:azalea": {
+      "burn_time": 100
+    },
+    "minecraft:bamboo": {
+      "burn_time": 50
+    },
+    "minecraft:bamboo_mosaic": {
+      "burn_time": 300
+    },
+    "minecraft:bamboo_mosaic_slab": {
+      "burn_time": 150
+    },
+    "minecraft:bamboo_mosaic_stairs": {
+      "burn_time": 300
+    },
+    "minecraft:barrel": {
+      "burn_time": 300
+    },
+    "minecraft:blaze_rod": {
+      "burn_time": 2400
+    },
+    "minecraft:bookshelf": {
+      "burn_time": 300
+    },
+    "minecraft:bow": {
+      "burn_time": 300
+    },
+    "minecraft:bowl": {
+      "burn_time": 100
+    },
+    "minecraft:cartography_table": {
+      "burn_time": 300
+    },
+    "minecraft:charcoal": {
+      "burn_time": 1600
+    },
+    "minecraft:chest": {
+      "burn_time": 300
+    },
+    "minecraft:chiseled_bookshelf": {
+      "burn_time": 300
+    },
+    "minecraft:coal": {
+      "burn_time": 1600
+    },
+    "minecraft:coal_block": {
+      "burn_time": 16000
+    },
+    "minecraft:composter": {
+      "burn_time": 300
+    },
+    "minecraft:crafting_table": {
+      "burn_time": 300
+    },
+    "minecraft:crossbow": {
+      "burn_time": 300
+    },
+    "minecraft:daylight_detector": {
+      "burn_time": 300
+    },
+    "minecraft:dead_bush": {
+      "burn_time": 100
+    },
+    "minecraft:dried_kelp_block": {
+      "burn_time": 4001
+    },
+    "minecraft:fishing_rod": {
+      "burn_time": 300
+    },
+    "minecraft:fletching_table": {
+      "burn_time": 300
+    },
+    "minecraft:flowering_azalea": {
+      "burn_time": 100
+    },
+    "minecraft:jukebox": {
+      "burn_time": 300
+    },
+    "minecraft:ladder": {
+      "burn_time": 300
+    },
+    "minecraft:lava_bucket": {
+      "burn_time": 20000
+    },
+    "minecraft:lectern": {
+      "burn_time": 300
+    },
+    "minecraft:loom": {
+      "burn_time": 300
+    },
+    "minecraft:mangrove_roots": {
+      "burn_time": 300
+    },
+    "minecraft:note_block": {
+      "burn_time": 300
+    },
+    "minecraft:scaffolding": {
+      "burn_time": 50
+    },
+    "minecraft:smithing_table": {
+      "burn_time": 300
+    },
+    "minecraft:stick": {
+      "burn_time": 100
+    },
+    "minecraft:trapped_chest": {
+      "burn_time": 300
+    },
+    "minecraft:wooden_axe": {
+      "burn_time": 200
+    },
+    "minecraft:wooden_hoe": {
+      "burn_time": 200
+    },
+    "minecraft:wooden_pickaxe": {
+      "burn_time": 200
+    },
+    "minecraft:wooden_shovel": {
+      "burn_time": 200
+    },
+    "minecraft:wooden_sword": {
+      "burn_time": 200
+    }
+  }
+}
