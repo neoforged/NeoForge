@@ -32,7 +32,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.client.event.RegisterWoodTypeEvent;
+import net.neoforged.neoforge.client.event.RegisterWoodTypesEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -84,7 +84,7 @@ public class CustomSignsTest {
         BlockEntityRenderers.register(CUSTOM_HANGING_SIGN.get(), HangingSignRenderer::new);
     }
 
-    private void addWoodType(RegisterWoodTypeEvent event) {
+    private void addWoodType(RegisterWoodTypesEvent event) {
         event.register(TEST_WOOD_TYPE);
     }
 
