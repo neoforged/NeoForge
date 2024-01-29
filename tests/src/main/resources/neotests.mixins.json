@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.neoforged.neoforge.debug.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "TestTargetMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
