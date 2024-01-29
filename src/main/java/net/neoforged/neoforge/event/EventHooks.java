@@ -78,6 +78,7 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.SpawnData;
 import net.minecraft.world.level.biome.MobSpawnSettings;
@@ -93,7 +94,7 @@ import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.Event.Result;
+import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.NeoForge;
@@ -119,12 +120,12 @@ import net.neoforged.neoforge.event.entity.living.LivingDestroyBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
-import net.neoforged.neoforge.event.entity.living.LivingPackSizeEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.AllowDespawn;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
 import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
+import net.neoforged.neoforge.event.entity.living.SpawnClusterSizeEvent;
 import net.neoforged.neoforge.event.entity.living.ZombieEvent.SummonAidEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
@@ -369,10 +370,19 @@ public class EventHooks {
         return event.getDroppedExperience();
     }
 
-    public static int getMaxSpawnPackSize(Mob entity) {
-        LivingPackSizeEvent maxCanSpawnEvent = new LivingPackSizeEvent(entity);
-        NeoForge.EVENT_BUS.post(maxCanSpawnEvent);
-        return maxCanSpawnEvent.getResult() == Result.ALLOW ? maxCanSpawnEvent.getMaxPackSize() : entity.getMaxSpawnClusterSize();
+    /**
+     * Fires {@link SpawnClusterSizeEvent} and returns the size as a result of the event.
+     * <p>
+     * Called in {@link NaturalSpawner#spawnCategoryForPosition} where {@link Mob#getMaxSpawnClusterSize()} would normally be called.
+     * 
+     * @param entity The entity whose max spawn cluster size is being queried.
+     * 
+     * @return The new spawn cluster size.
+     */
+    public static int getMaxSpawnClusterSize(Mob entity) {
+        var event = new SpawnClusterSizeEvent(entity);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getSize();
     }
 
     public static Component getPlayerDisplayName(Player player, Component username) {
