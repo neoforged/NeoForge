@@ -22,7 +22,7 @@
                                      p_47040_.addFreshEntityWithPassengers(mob);
                                      p_47044_.run(mob, p_47041_);
 -                                    if (j >= mob.getMaxSpawnClusterSize()) {
-+                                    if (j >= net.neoforged.neoforge.event.EventHooks.getMaxSpawnPackSize(mob)) {
++                                    if (j >= net.neoforged.neoforge.event.EventHooks.getMaxSpawnClusterSize(mob)) {
                                          return;
                                      }
  
