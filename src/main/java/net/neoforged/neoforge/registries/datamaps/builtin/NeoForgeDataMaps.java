@@ -3,17 +3,16 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.registries.datamaps;
+package net.neoforged.neoforge.registries.datamaps.builtin;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.registries.datamaps.DataMapType;
+import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 
 /**
  * Holds all {@link DataMapType data maps} provided by NeoForge.
@@ -34,20 +33,6 @@ public class NeoForgeDataMaps {
      */
     public static final DataMapType<Item, Compostable> COMPOSTABLES = DataMapType.builder(
             id("compostables"), Registries.ITEM, Compostable.CODEC).synced(Compostable.CHANCE_CODEC, false).build();
-
-    /**
-     * Data map value for {@linkplain #COMPOSTABLES compostables}.
-     *
-     * @param chance the chance that a compost is successful
-     */
-    public record Compostable(float chance) {
-        public static final Codec<Compostable> CHANCE_CODEC = Codec.floatRange(0f, 1f)
-                .xmap(Compostable::new, Compostable::chance);
-        public static final Codec<Compostable> CODEC = ExtraCodecs.withAlternative(
-                RecordCodecBuilder.create(in -> in.group(
-                        Codec.floatRange(0f, 1f).fieldOf("chance").forGetter(Compostable::chance)).apply(in, Compostable::new)),
-                CHANCE_CODEC);
-    }
 
     private static ResourceLocation id(final String name) {
         return new ResourceLocation(NeoForgeVersion.MOD_ID, name);

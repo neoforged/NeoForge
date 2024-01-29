@@ -39,8 +39,9 @@ import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover.Default;
-import net.neoforged.neoforge.registries.datamaps.NeoForgeDataMaps;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
+import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -293,7 +294,7 @@ public class DataMapTests {
             @Override
             protected void gather() {
                 builder(NeoForgeDataMaps.COMPOSTABLES)
-                        .add(ItemTags.COMPASSES, new NeoForgeDataMaps.Compostable(1f), false);
+                        .add(ItemTags.COMPASSES, new Compostable(1f), false);
             }
         });
         test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
