@@ -115,6 +115,7 @@ import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
@@ -930,7 +931,7 @@ public class CommonHooks {
             int ret = stack.getBurnTime(recipeType);
             if (ret == -1) {
                 var fuel = stack.getItemHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
-                ret = fuel == null ? 0 : fuel.burnTime();
+                ret = fuel == null || AbstractFurnaceBlockEntity.isNeverAFurnaceFuel(stack.getItem()) ? 0 : fuel.burnTime();
             }
             return EventHooks.getItemBurnTime(stack, ret, recipeType);
         }

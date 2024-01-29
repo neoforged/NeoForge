@@ -42,7 +42,7 @@
 -        return map;
      }
  
-     private static boolean isNeverAFurnaceFuel(Item p_58398_) {
+     public static boolean isNeverAFurnaceFuel(Item p_58398_) {
 @@ -213,9 +_,9 @@
          super.load(p_155025_);
          this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
