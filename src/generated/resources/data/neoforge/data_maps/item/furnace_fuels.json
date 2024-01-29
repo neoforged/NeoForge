@@ -1,4 +1,7 @@
 {
+  "remove": [
+    "#minecraft:non_flammable_wood"
+  ],
   "values": {
     "#minecraft:bamboo_blocks": {
       "burn_time": 300

@@ -8,6 +8,7 @@ package net.neoforged.neoforge.common.data.internal;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.neoforged.neoforge.common.data.DataMapProvider;
@@ -28,5 +29,7 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         final var fuels = builder(NeoForgeDataMaps.FURNACE_FUELS);
         AbstractFurnaceBlockEntity.buildFuels((value, time) -> value.ifLeft(item -> fuels.add(item.builtInRegistryHolder(), new FurnaceFuel(time), false))
                 .ifRight(tag -> fuels.add(tag, new FurnaceFuel(time), false)));
+        // Mojang decided to use an exclusion tag for nether wood
+        fuels.remove(ItemTags.NON_FLAMMABLE_WOOD);
     }
 }
