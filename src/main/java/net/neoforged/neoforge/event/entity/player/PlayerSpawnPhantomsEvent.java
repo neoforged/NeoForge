@@ -9,7 +9,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.levelgen.PhantomSpawner;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * This event is fired from {@link PhantomSpawner#tick}, once per player, when phantoms would attempt to be spawned.<br>
@@ -57,7 +56,7 @@ public class PlayerSpawnPhantomsEvent extends PlayerEvent {
      * </ul>
      */
     @Override
-    public void setResult(@NotNull Event.Result result) {
+    public void setResult(Event.Result result) {
         super.setResult(result);
     }
 }

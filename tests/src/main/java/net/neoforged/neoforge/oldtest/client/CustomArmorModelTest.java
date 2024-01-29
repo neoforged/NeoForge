@@ -32,7 +32,6 @@ import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(CustomArmorModelTest.MOD_ID)
@@ -67,7 +66,6 @@ public class CustomArmorModelTest {
         public void initializeClient(Consumer<IClientItemExtensions> consumer) {
             consumer.accept(new IClientItemExtensions() {
                 @Override
-                @NotNull
                 public Model getGenericArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, HumanoidModel<?> _default) {
                     TintedArmorModel.INSTANCE.base = _default;
                     return TintedArmorModel.INSTANCE;
@@ -109,7 +107,7 @@ public class CustomArmorModelTest {
         }
 
         @Override
-        public void renderToBuffer(@NotNull PoseStack poseStack, @NotNull VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha) {
+        public void renderToBuffer(PoseStack poseStack, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha) {
             if (base != null) {
                 base.renderToBuffer(poseStack, consumer, light, overlay, red, 0, 0, alpha);
             }

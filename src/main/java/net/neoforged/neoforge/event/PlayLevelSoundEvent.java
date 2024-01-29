@@ -16,7 +16,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -46,7 +45,7 @@ public class PlayLevelSoundEvent extends Event implements ICancellableEvent {
     private float newVolume;
     private float newPitch;
 
-    public PlayLevelSoundEvent(@NotNull Level level, @NotNull Holder<SoundEvent> sound, @NotNull SoundSource source, float volume, float pitch) {
+    public PlayLevelSoundEvent(Level level, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch) {
         this.level = level;
         this.sound = sound;
         this.source = source;
@@ -59,7 +58,6 @@ public class PlayLevelSoundEvent extends Event implements ICancellableEvent {
     /**
      * {@return the level the sound is being played in}
      */
-    @NotNull
     public Level getLevel() {
         return this.level;
     }
@@ -82,7 +80,6 @@ public class PlayLevelSoundEvent extends Event implements ICancellableEvent {
     /**
      * {@return the sound source}
      */
-    @NotNull
     public SoundSource getSource() {
         return this.source;
     }
@@ -90,7 +87,7 @@ public class PlayLevelSoundEvent extends Event implements ICancellableEvent {
     /**
      * Sets the sound source.
      */
-    public void setSource(@NotNull SoundSource source) {
+    public void setSource(SoundSource source) {
         Objects.requireNonNull(source, "Sound source cannot be null");
         this.source = source;
     }

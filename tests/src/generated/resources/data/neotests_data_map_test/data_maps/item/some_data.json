@@ -1,0 +1,15 @@
+{
+  "remove": [
+    "minecraft:birch_log"
+  ],
+  "values": {
+    "#minecraft:logs": {
+      "intValue": 156,
+      "stringValue": "some other string"
+    },
+    "minecraft:carrot": {
+      "intValue": 14,
+      "stringValue": "some_string"
+    }
+  }
+}

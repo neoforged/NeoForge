@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.fluids;
 
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Holds the result of a fluid action from {@link FluidUtil}.
@@ -21,14 +20,13 @@ public class FluidActionResult {
     public static final FluidActionResult FAILURE = new FluidActionResult(false, ItemStack.EMPTY);
 
     public final boolean success;
-    @NotNull
     public final ItemStack result;
 
-    public FluidActionResult(@NotNull ItemStack result) {
+    public FluidActionResult(ItemStack result) {
         this(true, result);
     }
 
-    private FluidActionResult(boolean success, @NotNull ItemStack result) {
+    private FluidActionResult(boolean success, ItemStack result) {
         this.success = success;
         this.result = result;
     }
@@ -37,7 +35,6 @@ public class FluidActionResult {
         return success;
     }
 
-    @NotNull
     public ItemStack getResult() {
         return result;
     }

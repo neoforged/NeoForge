@@ -15,7 +15,6 @@ import java.util.Optional;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -123,7 +122,6 @@ public class NetworkComponentNegotiator {
      * @param otherSide   The other side to check for missing components.
      * @return The list of disabled optional components.
      */
-    @NotNull
     private static List<NegotiableNetworkComponent> buildDisabledOptionalComponents(List<NegotiableNetworkComponent> currentSide, List<NegotiableNetworkComponent> otherSide) {
         return currentSide.stream()
                 .filter(NegotiableNetworkComponent::optional)

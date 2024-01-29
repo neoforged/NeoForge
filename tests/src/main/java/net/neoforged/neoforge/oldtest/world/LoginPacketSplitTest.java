@@ -51,12 +51,10 @@ import net.minecraft.util.GsonHelper;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -131,9 +129,6 @@ public class LoginPacketSplitTest {
 
         final int size = buf.writerIndex();
         LOG.warn("Dummy big registry size: " + size + ", or " + ((double) size / CompressionDecoder.MAXIMUM_UNCOMPRESSED_LENGTH * 100) + "% of the maximum packet size.");
-
-        final Set<ResourceLocation> known = ObfuscationReflectionHelper.getPrivateValue(MappedRegistry.class, null, "KNOWN");
-        known.remove(dummyRegistry.key().location());
     }
 
     private String randomString(Random random, int length) {
@@ -180,7 +175,7 @@ public class LoginPacketSplitTest {
             return openResource(data, loc);
         }
 
-        private <T> @Nullable IoSupplier<InputStream> openResource(Map<T, Supplier<byte[]>> map, @NotNull T key) {
+        private <T> @Nullable IoSupplier<InputStream> openResource(Map<T, Supplier<byte[]>> map, T key) {
             final Supplier<byte[]> supplier = map.get(key);
             if (supplier == null) {
                 return null;

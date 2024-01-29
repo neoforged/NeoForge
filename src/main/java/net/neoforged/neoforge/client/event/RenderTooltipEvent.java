@@ -21,7 +21,6 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Fired during tooltip rendering.
@@ -32,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
  * @see RenderTooltipEvent.Color
  */
 public abstract class RenderTooltipEvent extends Event {
-    @NotNull
     protected final ItemStack itemStack;
     protected final GuiGraphics graphics;
     protected int x;
@@ -41,7 +39,7 @@ public abstract class RenderTooltipEvent extends Event {
     protected final List<ClientTooltipComponent> components;
 
     @ApiStatus.Internal
-    protected RenderTooltipEvent(@NotNull ItemStack itemStack, GuiGraphics graphics, int x, int y, @NotNull Font font, @NotNull List<ClientTooltipComponent> components) {
+    protected RenderTooltipEvent(ItemStack itemStack, GuiGraphics graphics, int x, int y, Font font, List<ClientTooltipComponent> components) {
         this.itemStack = itemStack;
         this.graphics = graphics;
         this.components = Collections.unmodifiableList(components);
@@ -54,7 +52,6 @@ public abstract class RenderTooltipEvent extends Event {
      * {@return the item stack which the tooltip is being rendered for, or an {@linkplain ItemStack#isEmpty() empty
      * item stack} if there is no associated item stack}
      */
-    @NotNull
     public ItemStack getItemStack() {
         return itemStack;
     }
@@ -71,7 +68,6 @@ public abstract class RenderTooltipEvent extends Event {
      *
      * <p>Use {@link ItemTooltipEvent} or {@link GatherComponents} to modify tooltip contents or components.</p>
      */
-    @NotNull
     public List<ClientTooltipComponent> getComponents() {
         return components;
     }
@@ -93,7 +89,6 @@ public abstract class RenderTooltipEvent extends Event {
     /**
      * {@return The font used to render the text}
      */
-    @NotNull
     public Font getFont() {
         return font;
     }
@@ -195,7 +190,7 @@ public abstract class RenderTooltipEvent extends Event {
         private final ClientTooltipPositioner positioner;
 
         @ApiStatus.Internal
-        public Pre(@NotNull ItemStack stack, GuiGraphics graphics, int x, int y, int screenWidth, int screenHeight, @NotNull Font font, @NotNull List<ClientTooltipComponent> components, @NotNull ClientTooltipPositioner positioner) {
+        public Pre(ItemStack stack, GuiGraphics graphics, int x, int y, int screenWidth, int screenHeight, Font font, List<ClientTooltipComponent> components, ClientTooltipPositioner positioner) {
             super(stack, graphics, x, y, font, components);
             this.screenWidth = screenWidth;
             this.screenHeight = screenHeight;
@@ -228,7 +223,7 @@ public abstract class RenderTooltipEvent extends Event {
          *
          * @param fr the new font
          */
-        public void setFont(@NotNull Font fr) {
+        public void setFont(Font fr) {
             this.font = fr;
         }
 
@@ -270,7 +265,7 @@ public abstract class RenderTooltipEvent extends Event {
         private int borderEnd;
 
         @ApiStatus.Internal
-        public Color(@NotNull ItemStack stack, GuiGraphics graphics, int x, int y, @NotNull Font fr, int background, int borderStart, int borderEnd, @NotNull List<ClientTooltipComponent> components) {
+        public Color(ItemStack stack, GuiGraphics graphics, int x, int y, Font fr, int background, int borderStart, int borderEnd, List<ClientTooltipComponent> components) {
             super(stack, graphics, x, y, fr, components);
             this.originalBackground = background;
             this.originalBorderStart = borderStart;

@@ -1,0 +1,23 @@
+{
+  "values": {
+    "minecraft:blue_orchid": [
+      {
+        "intValue": 2,
+        "stringValue": "b"
+      },
+      {
+        "intValue": 3,
+        "stringValue": "c"
+      }
+    ],
+    "minecraft:dandelion": {
+      "replace": true,
+      "value": [
+        {
+          "intValue": 99,
+          "stringValue": "override"
+        }
+      ]
+    }
+  }
+}

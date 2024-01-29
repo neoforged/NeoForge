@@ -15,7 +15,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Fills or drains a fluid container item using a Dispenser.
@@ -32,8 +31,7 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
     private final DefaultDispenseItemBehavior dispenseBehavior = new DefaultDispenseItemBehavior();
 
     @Override
-    @NotNull
-    public ItemStack execute(@NotNull BlockSource source, @NotNull ItemStack stack) {
+    public ItemStack execute(BlockSource source, ItemStack stack) {
         if (FluidUtil.getFluidContained(stack).isPresent()) {
             return dumpContainer(source, stack);
         } else {
@@ -44,8 +42,7 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
     /**
      * Picks up fluid in front of a Dispenser and fills a container with it.
      */
-    @NotNull
-    private ItemStack fillContainer(@NotNull BlockSource source, @NotNull ItemStack stack) {
+    private ItemStack fillContainer(BlockSource source, ItemStack stack) {
         Level level = source.level();
         Direction dispenserFacing = source.state().getValue(DispenserBlock.FACING);
         BlockPos blockpos = source.pos().relative(dispenserFacing);
@@ -71,8 +68,7 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
     /**
      * Drains a filled container and places the fluid in front of the Dispenser.
      */
-    @NotNull
-    private ItemStack dumpContainer(BlockSource source, @NotNull ItemStack stack) {
+    private ItemStack dumpContainer(BlockSource source, ItemStack stack) {
         ItemStack singleStack = stack.copy();
         singleStack.setCount(1);
         IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(singleStack).orElse(null);

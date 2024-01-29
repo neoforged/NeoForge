@@ -8,19 +8,17 @@ package net.neoforged.neoforge.event.entity.living;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.ICancellableEvent;
-import org.jetbrains.annotations.NotNull;
 
 public class LivingEntityUseItemEvent extends LivingEvent {
     private final ItemStack item;
     private int duration;
 
-    private LivingEntityUseItemEvent(LivingEntity entity, @NotNull ItemStack item, int duration) {
+    private LivingEntityUseItemEvent(LivingEntity entity, ItemStack item, int duration) {
         super(entity);
         this.item = item;
         this.setDuration(duration);
     }
 
-    @NotNull
     public ItemStack getItem() {
         return item;
     }
@@ -45,7 +43,7 @@ public class LivingEntityUseItemEvent extends LivingEvent {
      *
      */
     public static class Start extends LivingEntityUseItemEvent implements ICancellableEvent {
-        public Start(LivingEntity entity, @NotNull ItemStack item, int duration) {
+        public Start(LivingEntity entity, ItemStack item, int duration) {
             super(entity, item, duration);
         }
     }
@@ -57,7 +55,7 @@ public class LivingEntityUseItemEvent extends LivingEvent {
      *
      */
     public static class Tick extends LivingEntityUseItemEvent implements ICancellableEvent {
-        public Tick(LivingEntity entity, @NotNull ItemStack item, int duration) {
+        public Tick(LivingEntity entity, ItemStack item, int duration) {
             super(entity, item, duration);
         }
     }
@@ -75,7 +73,7 @@ public class LivingEntityUseItemEvent extends LivingEvent {
      * The only vanilla item this would effect are bows, and it would cause them NOT to fire there arrow.
      */
     public static class Stop extends LivingEntityUseItemEvent implements ICancellableEvent {
-        public Stop(LivingEntity entity, @NotNull ItemStack item, int duration) {
+        public Stop(LivingEntity entity, ItemStack item, int duration) {
             super(entity, item, duration);
         }
     }
@@ -95,17 +93,16 @@ public class LivingEntityUseItemEvent extends LivingEvent {
     public static class Finish extends LivingEntityUseItemEvent {
         private ItemStack result;
 
-        public Finish(LivingEntity entity, @NotNull ItemStack item, int duration, @NotNull ItemStack result) {
+        public Finish(LivingEntity entity, ItemStack item, int duration, ItemStack result) {
             super(entity, item, duration);
             this.setResultStack(result);
         }
 
-        @NotNull
         public ItemStack getResultStack() {
             return result;
         }
 
-        public void setResultStack(@NotNull ItemStack result) {
+        public void setResultStack(ItemStack result) {
             this.result = result;
         }
     }

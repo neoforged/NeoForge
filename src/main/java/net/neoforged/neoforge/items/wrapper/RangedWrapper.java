@@ -8,7 +8,6 @@ package net.neoforged.neoforge.items.wrapper;
 import com.google.common.base.Preconditions;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * A wrapper that composes another IItemHandlerModifiable, exposing only a range of the composed slots.
@@ -32,7 +31,6 @@ public class RangedWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    @NotNull
     public ItemStack getStackInSlot(int slot) {
         if (checkSlot(slot)) {
             return compose.getStackInSlot(slot + minSlot);
@@ -42,8 +40,7 @@ public class RangedWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    @NotNull
-    public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         if (checkSlot(slot)) {
             return compose.insertItem(slot + minSlot, stack, simulate);
         }
@@ -52,7 +49,6 @@ public class RangedWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    @NotNull
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (checkSlot(slot)) {
             return compose.extractItem(slot + minSlot, amount, simulate);
@@ -62,7 +58,7 @@ public class RangedWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    public void setStackInSlot(int slot, @NotNull ItemStack stack) {
+    public void setStackInSlot(int slot, ItemStack stack) {
         if (checkSlot(slot)) {
             compose.setStackInSlot(slot + minSlot, stack);
         }
@@ -78,7 +74,7 @@ public class RangedWrapper implements IItemHandlerModifiable {
     }
 
     @Override
-    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+    public boolean isItemValid(int slot, ItemStack stack) {
         if (checkSlot(slot)) {
             return compose.isItemValid(slot + minSlot, stack);
         }

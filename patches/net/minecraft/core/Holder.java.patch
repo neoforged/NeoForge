@@ -1,0 +1,26 @@
+--- a/net/minecraft/core/Holder.java
++++ b/net/minecraft/core/Holder.java
+@@ -11,7 +_,7 @@
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.tags.TagKey;
+ 
+-public interface Holder<T> {
++public interface Holder<T> extends net.neoforged.neoforge.registries.datamaps.IWithData<T> {
+     T value();
+ 
+     boolean isBound();
+@@ -201,6 +_,14 @@
+             } else {
+                 this.value = p_249418_;
+             }
++        }
++
++        @org.jetbrains.annotations.Nullable
++        public <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<T, A> type) {
++            if (owner instanceof HolderLookup.RegistryLookup<T> lookup) {
++                return lookup.getData(type, key());
++            }
++            return null;
+         }
+ 
+         public void bindTags(Collection<TagKey<T>> p_205770_) {

@@ -18,7 +18,6 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 public class BucketPickupHandlerWrapper implements IFluidHandler {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -40,7 +39,6 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
         return 1;
     }
 
-    @NotNull
     @Override
     public FluidStack getFluidInTank(int tank) {
         if (tank == 0) {
@@ -59,7 +57,7 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+    public boolean isFluidValid(int tank, FluidStack stack) {
         return true;
     }
 
@@ -68,7 +66,6 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
         return 0;
     }
 
-    @NotNull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
         if (!resource.isEmpty() && FluidType.BUCKET_VOLUME <= resource.getAmount()) {
@@ -98,7 +95,6 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
         return FluidStack.EMPTY;
     }
 
-    @NotNull
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         if (FluidType.BUCKET_VOLUME <= maxDrain) {

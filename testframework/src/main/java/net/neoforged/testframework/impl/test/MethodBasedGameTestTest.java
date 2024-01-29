@@ -7,7 +7,6 @@ package net.neoforged.testframework.impl.test;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
-import javax.annotation.Nonnull;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.neoforged.testframework.TestFramework;
@@ -28,7 +27,7 @@ public class MethodBasedGameTestTest extends AbstractTest.Dynamic {
     }
 
     @Override
-    public void init(@Nonnull TestFramework framework) {
+    public void init(TestFramework framework) {
         super.init(framework);
 
         configureGameTest(method.getAnnotation(GameTest.class), method.getAnnotation(EmptyTemplate.class));

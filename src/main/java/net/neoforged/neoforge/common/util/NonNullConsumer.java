@@ -6,14 +6,15 @@
 package net.neoforged.neoforge.common.util;
 
 import java.util.function.Consumer;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Equivalent to {@link Consumer}, except with nonnull contract.
  *
  * @see Consumer
+ * @deprecated Use {@link Consumer}
  */
+@Deprecated
 @FunctionalInterface
 public interface NonNullConsumer<T> {
-    void accept(@NotNull T t);
+    void accept(T t);
 }

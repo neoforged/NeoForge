@@ -34,7 +34,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagNetworkSerialization;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.registries.RegistryManager;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 /**
@@ -63,7 +62,6 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
      * Filter for SEntityPropertiesPacket. Filters out any entity attributes that are not in the "minecraft" namespace.
      * A vanilla client would ignore these with an error log.
      */
-    @NotNull
     private static ClientboundUpdateAttributesPacket filterEntityProperties(ClientboundUpdateAttributesPacket msg) {
         ClientboundUpdateAttributesPacket newPacket = new ClientboundUpdateAttributesPacket(msg.getEntityId(), Collections.emptyList());
         msg.getValues().stream()
@@ -79,7 +77,6 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
      * Filter for SCommandListPacket. Uses {@link CommandTreeCleaner} to filter out any ArgumentTypes that are not in the "minecraft" or "brigadier" namespace.
      * A vanilla client would fail to deserialize the packet and disconnect with an error message if these were sent.
      */
-    @NotNull
     private static ClientboundCommandsPacket filterCommandList(ClientboundCommandsPacket packet) {
         CommandBuildContext commandBuildContext = Commands.createValidationContext(VanillaRegistries.createLookup());
         RootCommandNode<SharedSuggestionProvider> root = packet.getRoot(commandBuildContext);

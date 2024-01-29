@@ -16,21 +16,18 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Wrapper for vanilla and forge buckets.
  * Swaps between empty bucket and filled bucket of the correct type.
  */
 public class FluidBucketWrapper implements IFluidHandlerItem {
-    @NotNull
     protected ItemStack container;
 
-    public FluidBucketWrapper(@NotNull ItemStack container) {
+    public FluidBucketWrapper(ItemStack container) {
         this.container = container;
     }
 
-    @NotNull
     @Override
     public ItemStack getContainer() {
         return container;
@@ -43,7 +40,6 @@ public class FluidBucketWrapper implements IFluidHandlerItem {
         return !fluid.getFluid().getFluidType().getBucket(fluid).isEmpty();
     }
 
-    @NotNull
     public FluidStack getFluid() {
         Item item = container.getItem();
         if (item instanceof BucketItem) {
@@ -55,7 +51,7 @@ public class FluidBucketWrapper implements IFluidHandlerItem {
         }
     }
 
-    protected void setFluid(@NotNull FluidStack fluidStack) {
+    protected void setFluid(FluidStack fluidStack) {
         if (fluidStack.isEmpty())
             container = new ItemStack(Items.BUCKET);
         else
@@ -67,7 +63,6 @@ public class FluidBucketWrapper implements IFluidHandlerItem {
         return 1;
     }
 
-    @NotNull
     @Override
     public FluidStack getFluidInTank(int tank) {
         return getFluid();
@@ -79,7 +74,7 @@ public class FluidBucketWrapper implements IFluidHandlerItem {
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+    public boolean isFluidValid(int tank, FluidStack stack) {
         return true;
     }
 
@@ -96,7 +91,6 @@ public class FluidBucketWrapper implements IFluidHandlerItem {
         return FluidType.BUCKET_VOLUME;
     }
 
-    @NotNull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
         if (container.getCount() != 1 || resource.getAmount() < FluidType.BUCKET_VOLUME) {
@@ -114,7 +108,6 @@ public class FluidBucketWrapper implements IFluidHandlerItem {
         return FluidStack.EMPTY;
     }
 
-    @NotNull
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         if (container.getCount() != 1 || maxDrain < FluidType.BUCKET_VOLUME) {

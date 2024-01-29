@@ -56,7 +56,6 @@ import net.neoforged.neoforge.network.payload.TierSortingRegistrySyncCompletePay
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class TierSortingRegistry {
@@ -228,9 +227,8 @@ public class TierSortingRegistry {
         return new SimplePreparableReloadListener<JsonObject>() {
             final Gson gson = (new GsonBuilder()).create();
 
-            @NotNull
             @Override
-            protected JsonObject prepare(@NotNull ResourceManager resourceManager, ProfilerFiller p) {
+            protected JsonObject prepare(ResourceManager resourceManager, ProfilerFiller p) {
                 Optional<Resource> res = resourceManager.getResource(ITEM_TIER_ORDERING_JSON);
                 if (res.isEmpty())
                     return new JsonObject();
@@ -244,7 +242,7 @@ public class TierSortingRegistry {
             }
 
             @Override
-            protected void apply(@NotNull JsonObject data, @NotNull ResourceManager resourceManager, ProfilerFiller p) {
+            protected void apply(JsonObject data, ResourceManager resourceManager, ProfilerFiller p) {
                 try {
                     if (data.size() > 0) {
                         JsonArray order = GsonHelper.getAsJsonArray(data, "order");

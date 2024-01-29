@@ -17,7 +17,6 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemConditions;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Implementation that defines what a global loot modifier must implement in order to be functional.
@@ -40,7 +39,7 @@ public interface IGlobalLootModifier {
      * @param context       the LootContext, identical to what is passed to loot tables
      * @return modified loot drops
      */
-    @NotNull
+
     ObjectArrayList<ItemStack> apply(ObjectArrayList<ItemStack> generatedLoot, LootContext context);
 
     /**

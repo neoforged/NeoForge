@@ -124,6 +124,7 @@ import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.AllowDespawn;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
+import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
 import net.neoforged.neoforge.event.entity.living.ZombieEvent.SummonAidEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
@@ -161,7 +162,6 @@ import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.level.SaplingGrowTreeEvent;
 import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class EventHooks {
@@ -172,7 +172,7 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
-    public static boolean onBlockPlace(@Nullable Entity entity, @NotNull BlockSnapshot blockSnapshot, @NotNull Direction direction) {
+    public static boolean onBlockPlace(@Nullable Entity entity, BlockSnapshot blockSnapshot, Direction direction) {
         BlockState placedAgainst = blockSnapshot.getLevel().getBlockState(blockSnapshot.getPos().relative(direction.getOpposite()));
         EntityPlaceEvent event = new BlockEvent.EntityPlaceEvent(blockSnapshot, placedAgainst, entity);
         return NeoForge.EVENT_BUS.post(event).isCanceled();
@@ -195,7 +195,7 @@ public class EventHooks {
         return (NeoForge.EVENT_BUS.post(event).isCanceled() ? -1 : event.getNewSpeed());
     }
 
-    public static void onPlayerDestroyItem(Player player, @NotNull ItemStack stack, @Nullable InteractionHand hand) {
+    public static void onPlayerDestroyItem(Player player, ItemStack stack, @Nullable InteractionHand hand) {
         NeoForge.EVENT_BUS.post(new PlayerDestroyItemEvent(player, stack, hand));
     }
 
@@ -324,7 +324,7 @@ public class EventHooks {
         return event.getResult();
     }
 
-    public static int getItemBurnTime(@NotNull ItemStack itemStack, int burnTime, @Nullable RecipeType<?> recipeType) {
+    public static int getItemBurnTime(ItemStack itemStack, int burnTime, @Nullable RecipeType<?> recipeType) {
         FurnaceFuelBurnTimeEvent event = new FurnaceFuelBurnTimeEvent(itemStack, burnTime, recipeType);
         NeoForge.EVENT_BUS.post(event);
         return event.getBurnTime();
@@ -424,7 +424,7 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getFinalState();
     }
 
-    public static int onApplyBonemeal(@NotNull Player player, @NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ItemStack stack) {
+    public static int onApplyBonemeal(Player player, Level level, BlockPos pos, BlockState state, ItemStack stack) {
         BonemealEvent event = new BonemealEvent(player, level, pos, state, stack);
         if (NeoForge.EVENT_BUS.post(event).isCanceled()) return -1;
         if (event.getResult() == Result.ALLOW) {
@@ -436,7 +436,7 @@ public class EventHooks {
     }
 
     @Nullable
-    public static InteractionResultHolder<ItemStack> onBucketUse(@NotNull Player player, @NotNull Level level, @NotNull ItemStack stack, @Nullable HitResult target) {
+    public static InteractionResultHolder<ItemStack> onBucketUse(Player player, Level level, ItemStack stack, @Nullable HitResult target) {
         FillBucketEvent event = new FillBucketEvent(player, stack, level, target);
         if (NeoForge.EVENT_BUS.post(event).isCanceled()) return new InteractionResultHolder<ItemStack>(InteractionResult.FAIL, stack);
 
@@ -468,7 +468,7 @@ public class EventHooks {
         return event;
     }
 
-    public static int onItemExpire(ItemEntity entity, @NotNull ItemStack item) {
+    public static int onItemExpire(ItemEntity entity, ItemStack item) {
         if (item.isEmpty()) return -1;
         ItemExpireEvent event = new ItemExpireEvent(entity, (item.isEmpty() ? 6000 : item.getItem().getEntityLifespan(item, entity.level())));
         if (!NeoForge.EVENT_BUS.post(event).isCanceled()) return -1;
@@ -941,5 +941,18 @@ public class EventHooks {
 
         for (var entry : entries)
             output.accept(entry.getKey(), entry.getValue());
+    }
+
+    /**
+     * Fires the mob split event. Returns the event for cancellation checking.
+     * 
+     * @param parent   The parent mob, which is in the process of being removed.
+     * @param children All child mobs that would have normally spawned.
+     * @return The event object.
+     */
+    public static MobSplitEvent onMobSplit(Mob parent, List<Mob> children) {
+        var event = new MobSplitEvent(parent, children);
+        NeoForge.EVENT_BUS.post(event);
+        return event;
     }
 }

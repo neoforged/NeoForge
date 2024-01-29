@@ -234,9 +234,11 @@ public class TestFrameworkImpl implements MutableTestFramework {
     }
 
     private IEventBus modBus;
+    private ModContainer container;
 
     @Override
     public void init(final IEventBus modBus, final ModContainer container) {
+        this.container = container;
         final var byStage = FrameworkCollectors
                 .onInitMethodsWithAnnotation(container);
 
@@ -293,6 +295,11 @@ public class TestFrameworkImpl implements MutableTestFramework {
     @Override
     public IEventBus modEventBus() {
         return modBus;
+    }
+
+    @Override
+    public ModContainer container() {
+        return container;
     }
 
     @Override

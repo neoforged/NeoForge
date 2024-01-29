@@ -7,13 +7,11 @@ package net.neoforged.neoforge.common.ticket;
 
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 
 public class AABBTicket extends SimpleTicket<Vec3> {
-    @NotNull
     public final AABB axisAlignedBB;
 
-    public AABBTicket(@NotNull AABB axisAlignedBB) {
+    public AABBTicket(AABB axisAlignedBB) {
         this.axisAlignedBB = axisAlignedBB;
     }
 
