@@ -6,10 +6,12 @@
 package net.neoforged.neoforge.network.registration;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,6 +22,8 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl;
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
@@ -54,11 +58,7 @@ import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.neoforge.network.negotiation.NegotiableNetworkComponent;
 import net.neoforged.neoforge.network.negotiation.NegotiationResult;
 import net.neoforged.neoforge.network.negotiation.NetworkComponentNegotiator;
-import net.neoforged.neoforge.network.payload.ModdedNetworkComponent;
-import net.neoforged.neoforge.network.payload.ModdedNetworkPayload;
-import net.neoforged.neoforge.network.payload.ModdedNetworkQueryComponent;
-import net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload;
-import net.neoforged.neoforge.network.payload.ModdedNetworkSetupFailedPayload;
+import net.neoforged.neoforge.network.payload.*;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
@@ -79,6 +79,7 @@ public class NetworkRegistry {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private static final AttributeKey<NetworkPayloadSetup> ATTRIBUTE_PAYLOAD_SETUP = AttributeKey.valueOf("neoforge:payload_setup");
+    private static final AttributeKey<Set<ResourceLocation>> ATTRIBUTE_ADHOC_CHANNELS = AttributeKey.valueOf("neoforge:adhoc_channels");
     private static final AttributeKey<Boolean> ATTRIBUTE_IS_MODDED_CONNECTION = AttributeKey.valueOf("neoforge:is_modded_connection");
     private static final AttributeKey<PacketFlow> ATTRIBUTE_FLOW = AttributeKey.valueOf("neoforge:flow");
 
@@ -92,7 +93,8 @@ public class NetworkRegistry {
     private final Map<ResourceLocation, ConfigurationRegistration<?>> knownConfigurationRegistrations = new HashMap<>();
     private final Map<ResourceLocation, PlayRegistration<?>> knownPlayRegistrations = new HashMap<>();
 
-    private NetworkRegistry() {}
+    private NetworkRegistry() {
+    }
 
     /**
      * Invoked to initially set up the registry.
@@ -161,6 +163,14 @@ public class NetworkRegistry {
 
         //These are our own custom modded packets which can be sent before a payload setup is negotiated.
         //Special case them
+        if (id.equals(MinecraftRegisterPayload.ID)) {
+            return MinecraftRegisterPayload.READER;
+        }
+
+        if (id.equals(MinecraftUnregisterPayload.ID)) {
+            return MinecraftUnregisterPayload.READER;
+        }
+
         if (id.equals(ModdedNetworkQueryPayload.ID)) {
             return ModdedNetworkQueryPayload.READER;
         }
@@ -494,6 +504,10 @@ public class NetworkRegistry {
         sender.send(new ModdedNetworkPayload(
                 setup.configuration().values().stream().map(channel -> new ModdedNetworkComponent(channel.id(), channel.chosenVersion())).collect(Collectors.toSet()),
                 setup.play().values().stream().map(channel -> new ModdedNetworkComponent(channel.id(), channel.chosenVersion())).collect(Collectors.toSet())));
+        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        nowListeningOn.addAll(getInitialServerListeningChannels());
+        nowListeningOn.addAll(setup.configuration().keySet());
+        sender.send(new MinecraftRegisterPayload(nowListeningOn.build()));
     }
 
     /**
@@ -535,6 +549,14 @@ public class NetworkRegistry {
         }
 
         NetworkFilters.injectIfNecessary(sender.getConnection());
+
+        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        nowListeningOn.addAll(getInitialClientListeningChannels());
+        knownConfigurationRegistrations.entrySet().stream()
+                .filter(registration -> registration.getValue().flow().isEmpty() || registration.getValue().flow().get() == PacketFlow.SERVERBOUND)
+                .filter(registration -> registration.getValue().optional())
+                .forEach(registration -> nowListeningOn.add(registration.getKey()));
+        sender.send(new MinecraftRegisterPayload(nowListeningOn.build()));
 
         return true;
     }
@@ -578,6 +600,14 @@ public class NetworkRegistry {
         }
 
         if (customPayloadPacket.payload() instanceof ModdedNetworkPayload) {
+            return true;
+        }
+
+        if (customPayloadPacket.payload() instanceof MinecraftRegisterPayload) {
+            return true;
+        }
+
+        if (customPayloadPacket.payload() instanceof MinecraftUnregisterPayload) {
             return true;
         }
 
@@ -656,6 +686,11 @@ public class NetworkRegistry {
         listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(setup);
         listener.getConnection().channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).set(true);
         listener.getConnection().channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.CLIENTBOUND);
+
+        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        nowListeningOn.addAll(getInitialClientListeningChannels());
+        nowListeningOn.addAll(setup.configuration().keySet());
+        listener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
     }
 
     /**
@@ -707,6 +742,14 @@ public class NetworkRegistry {
 
         NetworkFilters.injectIfNecessary(sender.getConnection());
 
+        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        nowListeningOn.addAll(getInitialClientListeningChannels());
+        knownConfigurationRegistrations.entrySet().stream()
+                .filter(registration -> registration.getValue().flow().isEmpty() || registration.getValue().flow().get() == PacketFlow.CLIENTBOUND)
+                .filter(registration -> registration.getValue().optional())
+                .forEach(registration -> nowListeningOn.add(registration.getKey()));
+        sender.send(new MinecraftRegisterPayload(nowListeningOn.build()));
+
         return true;
     }
 
@@ -730,6 +773,11 @@ public class NetworkRegistry {
     public boolean isConnected(ServerCommonPacketListener listener, ResourceLocation payloadId) {
         final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         if (payloadSetup == null) {
+            final Set<ResourceLocation> fallbackProtocolConnections = listener.getConnection().channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
+            if (fallbackProtocolConnections != null) {
+                return fallbackProtocolConnections.contains(payloadId);
+            }
+
             LOGGER.warn("Somebody tried to send: {} to a client that has not negotiated with the client. Not sending packet.", payloadId);
             return false;
         }
@@ -738,6 +786,13 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.configuration().get(payloadId);
 
             if (channel == null) {
+                final Set<ResourceLocation> fallbackProtocolConnections = listener.getConnection().channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
+                if (fallbackProtocolConnections != null) {
+                    if (fallbackProtocolConnections.contains(payloadId)) {
+                        return true;
+                    }
+                }
+
                 LOGGER.trace("Somebody tried to send: {} to a client which cannot accept it. Not sending packet.", payloadId);
                 return false;
             }
@@ -747,6 +802,13 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.play().get(payloadId);
 
             if (channel == null) {
+                final Set<ResourceLocation> fallbackProtocolConnections = listener.getConnection().channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
+                if (fallbackProtocolConnections != null) {
+                    if (fallbackProtocolConnections.contains(payloadId)) {
+                        return true;
+                    }
+                }
+
                 LOGGER.trace("Somebody tried to send: {} to a client which cannot accept it. Not sending packet.", payloadId);
                 return false;
             }
@@ -768,6 +830,11 @@ public class NetworkRegistry {
     public boolean isConnected(ClientCommonPacketListener listener, ResourceLocation payloadId) {
         final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         if (payloadSetup == null) {
+            final Set<ResourceLocation> fallbackProtocolConnections = listener.getConnection().channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
+            if (fallbackProtocolConnections != null) {
+                return fallbackProtocolConnections.contains(payloadId);
+            }
+
             LOGGER.warn("Somebody tried to send: {} to a server that has not negotiated with the client. Not sending packet.", payloadId);
             return false;
         }
@@ -776,6 +843,13 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.configuration().get(payloadId);
 
             if (channel == null) {
+                final Set<ResourceLocation> fallbackProtocolConnections = listener.getConnection().channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
+                if (fallbackProtocolConnections != null) {
+                    if (fallbackProtocolConnections.contains(payloadId)) {
+                        return true;
+                    }
+                }
+
                 LOGGER.trace("Somebody tried to send: {} to a server which cannot accept it. Not sending packet.", payloadId);
                 return false;
             }
@@ -785,6 +859,13 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.play().get(payloadId);
 
             if (channel == null) {
+                final Set<ResourceLocation> fallbackProtocolConnections = listener.getConnection().channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
+                if (fallbackProtocolConnections != null) {
+                    if (fallbackProtocolConnections.contains(payloadId)) {
+                        return true;
+                    }
+                }
+
                 LOGGER.trace("Somebody tried to send: {} to a server which cannot accept it. Not sending packet.", payloadId);
                 return false;
             }
@@ -857,6 +938,164 @@ public class NetworkRegistry {
         connection.channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(setup);
 
         NetworkFilters.injectIfNecessary(connection);
+    }
+
+    /**
+     * Invoked by the {@link ClientCommonPacketListener} when a dinnerbone protocol registration payload is received.
+     *
+     * @param listener          The listener which received the payload.
+     * @param resourceLocations The resource locations that were registered.
+     */
+    public void onMinecraftRegister(ClientCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
+        onMinecraftRegister(resourceLocations, listener.getConnection());
+    }
+
+    /**
+     * Invoked by the {@link ServerCommonPacketListener} when a dinnerbone protocol registration payload is received.
+     *
+     * @param listener          The listener which received the payload.
+     * @param resourceLocations The resource locations that were registered.
+     */
+    public void onMinecraftRegister(ServerCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
+        onMinecraftRegister(resourceLocations, listener.getConnection());
+    }
+
+    /**
+     * Invoked to add to the known ad-hoc channels on a connection.
+     *
+     * @param resourceLocations The resource locations to add.
+     * @param connection        The connection to add the channels to.
+     */
+    private void onMinecraftRegister(Set<ResourceLocation> resourceLocations, Connection connection) {
+        final Set<ResourceLocation> payloadSetup = connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
+        if (payloadSetup == null) {
+            connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).set(resourceLocations);
+            return;
+        }
+
+        payloadSetup.addAll(resourceLocations);
+        connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).set(payloadSetup);
+    }
+
+    /**
+     * Invoked by the {@link ClientCommonPacketListener} when a dinnerbone protocol unregistration payload is received.
+     *
+     * @param listener          The listener which received the payload.
+     * @param resourceLocations The resource locations that were unregistered.
+     */
+    public void onMinecraftUnregister(ClientCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
+        onMinecraftUnregister(resourceLocations, listener.getConnection());
+    }
+
+    /**
+     * Invoked by the {@link ServerCommonPacketListener} when a dinnerbone protocol unregistration payload is received.
+     *
+     * @param listener          The listener which received the payload.
+     * @param resourceLocations The resource locations that were unregistered.
+     */
+    public void onMinecraftUnregister(ServerCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
+        onMinecraftUnregister(resourceLocations, listener.getConnection());
+    }
+
+    /**
+     * Invoked to remove from the known ad-hoc channels on a connection.
+     *
+     * @param resourceLocations The resource locations to remove.
+     * @param connection        The connection to remove the channels from.
+     */
+    private void onMinecraftUnregister(Set<ResourceLocation> resourceLocations, Connection connection) {
+        final Set<ResourceLocation> payloadSetup = connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
+        if (payloadSetup == null) {
+            connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).set(resourceLocations);
+            return;
+        }
+
+        payloadSetup.removeAll(resourceLocations);
+        connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).set(payloadSetup);
+    }
+
+    /**
+     * {@return the initial channels that the server listens on during the configuration phase.}
+     */
+    public Set<ResourceLocation> getInitialServerListeningChannels() {
+        return Set.of(
+                MinecraftRegisterPayload.ID,
+                MinecraftUnregisterPayload.ID,
+                ModdedNetworkQueryPayload.ID
+        );
+    }
+
+    public Set<ResourceLocation> getInitialServerUnregisterChannels() {
+        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        nowListeningOn.add(MinecraftRegisterPayload.ID);
+        nowListeningOn.add(MinecraftUnregisterPayload.ID);
+        knownPlayRegistrations.entrySet().stream()
+                .filter(registration -> registration.getValue().flow().isEmpty() || registration.getValue().flow().get() == PacketFlow.SERVERBOUND)
+                .filter(registration -> registration.getValue().optional())
+                .forEach(registration -> nowListeningOn.add(registration.getKey()));
+        return nowListeningOn.build();
+    }
+
+    private static Set<ResourceLocation> getInitialClientListeningChannels() {
+        return Set.of(
+                MinecraftRegisterPayload.ID,
+                MinecraftUnregisterPayload.ID,
+                ModdedNetworkQueryPayload.ID,
+                ModdedNetworkSetupFailedPayload.ID,
+                ModdedNetworkPayload.ID
+        );
+    }
+
+    public void onConfigurationFinished(ServerConfigurationPacketListener serverConfigurationPacketListener) {
+        final NetworkPayloadSetup setup = serverConfigurationPacketListener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
+        if (setup == null) {
+            LOGGER.error("Somebody tried to finish the configuration phase of a connection that has not negotiated with the client. Not finishing configuration.");
+            return;
+        }
+
+        final ImmutableSet.Builder<ResourceLocation> notListeningAnymoreOn = ImmutableSet.builder();
+        notListeningAnymoreOn.addAll(getInitialServerListeningChannels());
+        notListeningAnymoreOn.addAll(setup.configuration().keySet());
+        serverConfigurationPacketListener.send(new MinecraftUnregisterPayload(notListeningAnymoreOn.build()));
+
+        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        nowListeningOn.add(MinecraftRegisterPayload.ID);
+        nowListeningOn.add(MinecraftUnregisterPayload.ID);
+        if (!setup.vanilla()) {
+            nowListeningOn.add(ModdedNetworkQueryPayload.ID);
+        } else {
+            knownPlayRegistrations.entrySet().stream()
+                    .filter(registration -> registration.getValue().flow().isEmpty() || registration.getValue().flow().get() == PacketFlow.SERVERBOUND)
+                    .filter(registration -> registration.getValue().optional())
+                    .forEach(registration -> nowListeningOn.add(registration.getKey()));
+        }
+        serverConfigurationPacketListener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
+    }
+
+    public void onConfigurationFinished(ClientConfigurationPacketListener listener) {
+        final NetworkPayloadSetup setup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
+        if (setup == null) {
+            LOGGER.error("Somebody tried to finish the configuration phase of a connection that has not negotiated with the server. Not finishing configuration.");
+            return;
+        }
+
+        final ImmutableSet.Builder<ResourceLocation> notListeningAnymoreOn = ImmutableSet.builder();
+        notListeningAnymoreOn.addAll(getInitialClientListeningChannels());
+        notListeningAnymoreOn.addAll(setup.configuration().keySet());
+        listener.send(new MinecraftUnregisterPayload(notListeningAnymoreOn.build()));
+
+        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        nowListeningOn.add(MinecraftRegisterPayload.ID);
+        nowListeningOn.add(MinecraftUnregisterPayload.ID);
+        if (!setup.vanilla()) {
+            nowListeningOn.add(ModdedNetworkQueryPayload.ID);
+        } else {
+            knownPlayRegistrations.entrySet().stream()
+                    .filter(registration -> registration.getValue().flow().isEmpty() || registration.getValue().flow().get() == PacketFlow.CLIENTBOUND)
+                    .filter(registration -> registration.getValue().optional())
+                    .forEach(registration -> nowListeningOn.add(registration.getKey()));
+        }
+        listener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
     }
 
     /**

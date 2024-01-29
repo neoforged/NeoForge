@@ -9,10 +9,13 @@
  
      public ServerConfigurationPacketListenerImpl(MinecraftServer p_294645_, Connection p_295787_, CommonListenerCookie p_302003_) {
          super(p_294645_, p_295787_, p_302003_);
-@@ -65,6 +_,11 @@
+@@ -65,6 +_,14 @@
      }
  
      public void startConfiguration() {
++        //Unregister all known play channels, and register all known configuration channels, then run negotiation.
++        this.send(new net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload(net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().getInitialServerUnregisterChannels()));
++        this.send(new net.neoforged.neoforge.network.payload.MinecraftRegisterPayload(net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().getInitialServerListeningChannels()));
 +        this.send(new net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload());
 +        this.send(new net.minecraft.network.protocol.common.ClientboundPingPacket(0));
 +    }
@@ -21,7 +24,7 @@
          this.send(new ClientboundCustomPayloadPacket(new BrandPayload(this.server.getServerModName())));
          LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = this.server.registries();
          this.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(this.server.getWorldData().enabledFeatures())));
-@@ -86,6 +_,43 @@
+@@ -86,6 +_,52 @@
  
      private void addOptionalTasks() {
          this.server.getServerResourcePack().ifPresent(p_296496_ -> this.configurationTasks.add(new ServerResourcePackConfigurationTask(p_296496_)));
@@ -33,6 +36,15 @@
 +
 +    @Override
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket p_294276_) {
++        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
++            this.isModdedConnection = true;
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
++            return;
++        }
++        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
++            return;
++        }
 +        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload moddedEnvironmentPayload) {
 +            this.isModdedConnection = true;
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance()
@@ -65,6 +77,14 @@
      }
  
      @Override
+@@ -103,6 +_,7 @@
+ 
+     @Override
+     public void handleConfigurationFinished(ServerboundFinishConfigurationPacket p_294283_) {
++        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onConfigurationFinished(this);
+         this.connection.suspendInboundAfterProtocolChange();
+         PacketUtils.ensureRunningOnSameThread(p_294283_, this, this.server);
+         this.finishCurrentTask(JoinWorldTask.TYPE);
 @@ -121,7 +_,7 @@
              }
  

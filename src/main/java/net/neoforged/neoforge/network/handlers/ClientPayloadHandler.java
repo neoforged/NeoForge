@@ -29,6 +29,7 @@ import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
@@ -89,11 +90,11 @@ public class ClientPayloadHandler {
         });
     }
 
-    public void handle(ConfigFilePayload payload, ConfigurationPayloadContext context) {
+    public void handle(ConfigFilePayload payload, IPayloadContext context) {
         ConfigSync.INSTANCE.receiveSyncedConfig(payload.contents(), payload.fileName());
     }
 
-    public void handle(TierSortingRegistryPayload payload, ConfigurationPayloadContext context) {
+    public void handle(TierSortingRegistryPayload payload, IPayloadContext context) {
         TierSortingRegistry.handleSync(payload, context);
     }
 

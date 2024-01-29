@@ -11,12 +11,15 @@ import static net.neoforged.neoforge.attachment.AttachmentInternals.reconstructI
 import com.google.common.collect.Maps;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.IntFunction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -174,5 +177,20 @@ public interface IFriendlyByteBufExtension {
             keyWriter.accept(self(), key);
             valueWriter.accept(self(), key, value);
         });
+    }
+
+    default <T> void writeSplit(Set<T> newChannels, Function<T, String> writer, String separator) {
+        final String payload = String.join(separator, newChannels.stream().map(writer).toArray(String[]::new));
+        self().writeUtf(payload);
+    }
+
+    default <T, C extends Collection<T>> C readSplit(IntFunction<C> collectionBuilder, Function<String, T> reader, String separator) {
+        final String payload = self().readUtf();
+        final String[] split = payload.split(separator);
+        final C collection = collectionBuilder.apply(split.length);
+        for (String s : split) {
+            collection.add(reader.apply(s));
+        }
+        return collection;
     }
 }

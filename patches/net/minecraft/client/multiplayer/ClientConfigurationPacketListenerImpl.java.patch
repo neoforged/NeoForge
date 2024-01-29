@@ -10,12 +10,22 @@
  
      public ClientConfigurationPacketListenerImpl(Minecraft p_295262_, Connection p_296339_, CommonListenerCookie p_294706_) {
          super(p_295262_, p_296339_, p_294706_);
-@@ -45,7 +_,30 @@
+@@ -45,7 +_,40 @@
      }
  
      @Override
 -    protected void handleCustomPayload(CustomPacketPayload p_295411_) {
 +    protected void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295411_) {
++        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
++            this.isModdedConnection = true;
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
++            return;
++        }
++        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
++            this.isModdedConnection = true;
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
++            return;
++        }
 +        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload) {
 +            this.isModdedConnection = true;
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onNetworkQuery(this);
@@ -54,7 +64,7 @@
      }
  
      @Override
-@@ -87,7 +_,8 @@
+@@ -87,11 +_,13 @@
                          this.enabledFeatures,
                          this.serverBrand,
                          this.serverData,
@@ -64,6 +74,11 @@
                      )
                  )
              );
+         this.connection.resumeInboundAfterProtocolChange();
++        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onConfigurationFinished(this);
+         this.connection.send(new ServerboundFinishConfigurationPacket());
+     }
+ 
 @@ -104,5 +_,14 @@
      public void onDisconnect(Component p_314649_) {
          super.onDisconnect(p_314649_);

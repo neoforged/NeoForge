@@ -1,5 +1,37 @@
 --- a/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/net/minecraft/client/multiplayer/ClientPacketListener.java
+@@ -6,7 +_,6 @@
+ import com.mojang.authlib.GameProfile;
+ import com.mojang.brigadier.CommandDispatcher;
+ import com.mojang.brigadier.ParseResults;
+-import com.mojang.datafixers.util.Pair;
+ import com.mojang.logging.LogUtils;
+ import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+ import java.time.Instant;
+@@ -43,7 +_,6 @@
+ import net.minecraft.client.gui.screens.inventory.HorseInventoryScreen;
+ import net.minecraft.client.gui.screens.multiplayer.ServerReconfigScreen;
+ import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
+-import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
+ import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
+ import net.minecraft.client.particle.ItemPickupParticle;
+ import net.minecraft.client.player.KeyboardInput;
+@@ -70,7 +_,6 @@
+ import net.minecraft.core.particles.ParticleTypes;
+ import net.minecraft.core.registries.BuiltInRegistries;
+ import net.minecraft.core.registries.Registries;
+-import net.minecraft.nbt.CompoundTag;
+ import net.minecraft.network.Connection;
+ import net.minecraft.network.TickablePacketListener;
+ import net.minecraft.network.chat.ChatType;
+@@ -276,7 +_,6 @@
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.item.Items;
+ import net.minecraft.world.item.MapItem;
+-import net.minecraft.world.item.crafting.RecipeHolder;
+ import net.minecraft.world.item.crafting.RecipeManager;
+ import net.minecraft.world.level.ChunkPos;
+ import net.minecraft.world.level.Explosion;
 @@ -340,6 +_,7 @@
      private MessageSignatureCache messageSignatureCache = MessageSignatureCache.createDefault();
      private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
@@ -83,12 +115,20 @@
      }
  
      @Override
-@@ -1916,7 +_,11 @@
+@@ -1916,7 +_,19 @@
      }
  
      @Override
 -    public void handleCustomPayload(CustomPacketPayload p_295851_) {
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295851_) {
++        if (this.isModdedConnection && p_295851_ instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
++            return;
++        }
++        if (this.isModdedConnection && p_295851_  instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
++            return;
++        }
 +        if (this.isModdedConnection && net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtClient(this, p_295727_)) {
 +            return;
 +        }
