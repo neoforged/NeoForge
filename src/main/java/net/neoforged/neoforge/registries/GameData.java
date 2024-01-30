@@ -16,6 +16,7 @@ import net.minecraft.core.IdMapper;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.SpawnPlacements;
@@ -78,8 +79,9 @@ public class GameData {
     }
 
     public static void postRegisterEvents() {
-        Set<ResourceLocation> ordered = new LinkedHashSet<>(BuiltInRegistries.getVanillaRegistrationOrder());
-        ordered.retainAll(RegistryManager.getVanillaRegistryKeys());
+        Set<ResourceLocation> ordered = new LinkedHashSet<>();
+        ordered.add(Registries.ATTRIBUTE.location()); // Vanilla order is incorrect, both Item and MobEffect depend on Attribute at construction time.
+        ordered.addAll(BuiltInRegistries.getVanillaRegistrationOrder());
         ordered.addAll(BuiltInRegistries.REGISTRY.keySet().stream().sorted(ResourceLocation::compareNamespaced).toList());
 
         RuntimeException aggregate = new RuntimeException();
