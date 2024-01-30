@@ -8,6 +8,22 @@
      protected NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
      int litTime;
      int litDuration;
+@@ -69,9 +_,14 @@
+         public int get(int p_58431_) {
+             switch(p_58431_) {
+                 case 0:
++                    if (litDuration > Short.MAX_VALUE) {
++                        // Neo: preserve litTime / litDuration ratio on the client as data slots are synced as shorts.
++                        return net.minecraft.util.Mth.floor(((double) litTime / litDuration) * Short.MAX_VALUE);
++                    }
++
+                     return AbstractFurnaceBlockEntity.this.litTime;
+                 case 1:
+-                    return AbstractFurnaceBlockEntity.this.litDuration;
++                    return Math.min(AbstractFurnaceBlockEntity.this.litDuration, Short.MAX_VALUE);
+                 case 2:
+                     return AbstractFurnaceBlockEntity.this.cookingProgress;
+                 case 3:
 @@ -111,10 +_,26 @@
      ) {
          super(p_154991_, p_154992_, p_154993_);

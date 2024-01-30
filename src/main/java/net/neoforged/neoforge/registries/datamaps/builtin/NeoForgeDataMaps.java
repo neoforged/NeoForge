@@ -55,5 +55,6 @@ public class NeoForgeDataMaps {
     @SubscribeEvent
     private static void register(final RegisterDataMapTypesEvent event) {
         event.register(COMPOSTABLES);
+        event.register(FURNACE_FUELS);
     }
 }
