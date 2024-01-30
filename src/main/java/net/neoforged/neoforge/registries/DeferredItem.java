@@ -21,8 +21,8 @@ public class DeferredItem<T extends Item> extends DeferredHolder<Item, T> implem
     /**
      * Creates a new {@link ItemStack} with a default size of 1 from this {@link Item}
      */
-    public ItemStack asItemStack() {
-        return asItemStack(1);
+    public ItemStack toStack() {
+        return toStack(1);
     }
 
     /**
@@ -30,7 +30,7 @@ public class DeferredItem<T extends Item> extends DeferredHolder<Item, T> implem
      *
      * @param count The size of the stack to create
      */
-    public ItemStack asItemStack(int count) {
+    public ItemStack toStack(int count) {
         ItemStack stack = asItem().getDefaultInstance();
         stack.setCount(count);
         return stack;
