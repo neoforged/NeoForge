@@ -257,6 +257,7 @@ public class FluidStack {
      * @return A copy of this FluidStack
      */
     public FluidStack copy() {
+        //TODO - 1.20.5: Mirror vanilla's ItemStack#copy method and return the empty instance if this is empty
         return new FluidStack(getFluid(), amount, tag);
     }
 
@@ -264,6 +265,9 @@ public class FluidStack {
      * @return A copy of this FluidStack
      */
     public FluidStack copyWithAmount(int amount) {
+        if (isEmpty() || amount <= 0) {
+            return EMPTY;
+        }
         return new FluidStack(getFluid(), amount, tag);
     }
 
