@@ -22,18 +22,20 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
-public class RegisterWoodTypesEvent extends Event implements IModBusEvent {
+public class RegisterClientWoodTypeMaterialsEvent extends Event implements IModBusEvent {
     private final Map<WoodType, Material> signMaterials;
     private final Map<WoodType, Material> hangingSignMaterials;
 
     @ApiStatus.Internal
-    public RegisterWoodTypesEvent(Map<WoodType, Material> signMaterials, Map<WoodType, Material> hangingSignMaterials) {
+    public RegisterClientWoodTypeMaterialsEvent(Map<WoodType, Material> signMaterials, Map<WoodType, Material> hangingSignMaterials) {
         this.signMaterials = signMaterials;
         this.hangingSignMaterials = hangingSignMaterials;
     }
 
-    public void register(WoodType woodType) {
-        signMaterials.put(woodType, Sheets.createSignMaterial(woodType));
-        hangingSignMaterials.put(woodType, Sheets.createHangingSignMaterial(woodType));
+    public void register(WoodType... woodTypes) {
+        for (var woodType : woodTypes) {
+            signMaterials.put(woodType, Sheets.createSignMaterial(woodType));
+            hangingSignMaterials.put(woodType, Sheets.createHangingSignMaterial(woodType));
+        }
     }
 }
