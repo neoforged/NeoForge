@@ -8,6 +8,8 @@ package net.neoforged.neoforge.registries.datamaps.builtin;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -44,6 +46,8 @@ public class NeoForgeDataMaps {
      * </ul>
      *
      * The use of a integer as the value is also possible, though discouraged in case more options are added in the future.
+     *
+     * @apiNote Use {@link net.neoforged.neoforge.common.extensions.IItemExtension#getBurnTime(ItemStack, RecipeType)} for NBT-sensitive burn times. That method takes precedence over the data map.
      */
     public static final DataMapType<Item, FurnaceFuel> FURNACE_FUELS = DataMapType.builder(
             id("furnace_fuels"), Registries.ITEM, FurnaceFuel.CODEC).synced(FurnaceFuel.BURN_TIME_CODEC, false).build();
