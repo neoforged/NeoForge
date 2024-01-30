@@ -1,0 +1,21 @@
+--- a/net/minecraft/world/level/gameevent/vibrations/VibrationSystem.java
++++ b/net/minecraft/world/level/gameevent/vibrations/VibrationSystem.java
+@@ -48,6 +_,8 @@
+         GameEvent.RESONATE_14,
+         GameEvent.RESONATE_15
+     };
++    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#VIBRATION_FREQUENCIES data map} instead. */
++    @Deprecated
+     ToIntFunction<GameEvent> VIBRATION_FREQUENCY_FOR_EVENT = Util.make(new Object2IntOpenHashMap<>(), p_297981_ -> {
+         p_297981_.defaultReturnValue(0);
+         p_297981_.put(GameEvent.STEP, 1);
+@@ -101,7 +_,8 @@
+     VibrationSystem.User getVibrationUser();
+ 
+     static int getGameEventFrequency(GameEvent p_281355_) {
+-        return VIBRATION_FREQUENCY_FOR_EVENT.applyAsInt(p_281355_);
++        var data = p_281355_.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.VIBRATION_FREQUENCIES);
++        return data == null ? 0 : data.frequency();
+     }
+ 
+     static GameEvent getResonanceEventByFrequency(int p_282105_) {
