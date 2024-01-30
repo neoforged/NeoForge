@@ -34,10 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-/**
- * INTERNAL ONLY
- * MODDERS SHOULD HAVE NO REASON TO USE THIS CLASS
- */
 @ApiStatus.Internal
 public class GameData {
     private static final Logger LOGGER = LogUtils.getLogger();
