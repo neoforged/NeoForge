@@ -48,7 +48,6 @@ import net.neoforged.neoforgespi.language.IModInfo;
 import net.neoforged.neoforgespi.locating.IModFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 public class ResourcePackLoader {
     public static final String MOD_DATA_ID = "mod_data";
@@ -187,7 +186,6 @@ public class ResourcePackLoader {
                 packType, Pack.Position.BOTTOM, PackSource.DEFAULT).withChildren(hiddenPacks);
     }
 
-    @NotNull
     public static Pack.ResourcesSupplier createPackForMod(IModFileInfo mf) {
         return new PathPackResources.PathResourcesSupplier(mf.getFile().getSecureJar().getRootPath(), true);
     }
@@ -233,5 +231,4 @@ public class ResourcePackLoader {
             return i2 - i1;
         };
     }
-
 }

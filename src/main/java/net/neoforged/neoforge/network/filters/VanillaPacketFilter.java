@@ -14,13 +14,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * A filter for vanilla impl packets.
  */
 public abstract class VanillaPacketFilter extends MessageToMessageEncoder<Packet<?>> implements DynamicChannelHandler {
-
     protected final Map<Class<? extends Packet<?>>, BiConsumer<Packet<?>, List<? super Packet<?>>>> handlers;
 
     protected VanillaPacketFilter(Map<Class<? extends Packet<?>>, BiConsumer<Packet<?>, List<? super Packet<?>>>> handlers) {
@@ -30,7 +28,6 @@ public abstract class VanillaPacketFilter extends MessageToMessageEncoder<Packet
     /**
      * Helper function for building the handler map.
      */
-    @NotNull
     protected static <T extends Packet<?>> Map.Entry<Class<? extends Packet<?>>, BiConsumer<Packet<?>, List<? super Packet<?>>>> handler(Class<T> cls, Function<T, ? extends Packet<?>> function) {
         return handler(cls, (pkt, list) -> list.add(function.apply(cls.cast(pkt))));
     }
@@ -38,7 +35,6 @@ public abstract class VanillaPacketFilter extends MessageToMessageEncoder<Packet
     /**
      * Helper function for building the handler map.
      */
-    @NotNull
     protected static <T extends Packet<?>> Map.Entry<Class<? extends Packet<?>>, BiConsumer<Packet<?>, List<? super Packet<?>>>> handler(Class<T> cls, BiConsumer<Packet<?>, List<? super Packet<?>>> consumer) {
         return new AbstractMap.SimpleEntry<>(cls, consumer);
     }
@@ -53,5 +49,4 @@ public abstract class VanillaPacketFilter extends MessageToMessageEncoder<Packet
         BiConsumer<Packet<?>, List<? super Packet<?>>> consumer = handlers.getOrDefault(msg.getClass(), (pkt, list) -> list.add(pkt));
         consumer.accept(msg, out);
     }
-
 }

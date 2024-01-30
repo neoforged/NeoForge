@@ -63,7 +63,6 @@ public class FrameworkClientImpl implements FrameworkClient {
     }
 
     public static final class Factory implements FrameworkClient.Factory {
-
         @Override
         public FrameworkClient create(MutableTestFramework impl, ClientConfiguration clientConfiguration) {
             return new FrameworkClientImpl(impl, clientConfiguration);

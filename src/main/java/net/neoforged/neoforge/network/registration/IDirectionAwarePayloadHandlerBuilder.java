@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.network.registration;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Defines a builder for a direction aware payload handler.
@@ -15,14 +14,13 @@ import org.jetbrains.annotations.NotNull;
  * @param <T> The type of handler.
  */
 public interface IDirectionAwarePayloadHandlerBuilder<P extends CustomPacketPayload, T> {
-
     /**
      * Sets the client side handler.
      *
      * @param clientSide The client side handler.
      * @return This builder.
      */
-    IDirectionAwarePayloadHandlerBuilder<P, T> client(@NotNull T clientSide);
+    IDirectionAwarePayloadHandlerBuilder<P, T> client(T clientSide);
 
     /**
      * Sets the server side handler.
@@ -30,5 +28,5 @@ public interface IDirectionAwarePayloadHandlerBuilder<P extends CustomPacketPayl
      * @param serverSide The server side handler.
      * @return This builder.
      */
-    IDirectionAwarePayloadHandlerBuilder<P, T> server(@NotNull T serverSide);
+    IDirectionAwarePayloadHandlerBuilder<P, T> server(T serverSide);
 }

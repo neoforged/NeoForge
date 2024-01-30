@@ -8,8 +8,11 @@ package net.neoforged.neoforge.common.extensions;
 import static net.neoforged.neoforge.attachment.AttachmentInternals.addAttachmentsToTag;
 import static net.neoforged.neoforge.attachment.AttachmentInternals.reconstructItemStack;
 
+import com.google.common.collect.Maps;
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.IntFunction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -17,6 +20,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.apache.commons.lang3.function.TriConsumer;
 
 /**
  * Additional helper methods for {@link FriendlyByteBuf}.
@@ -132,5 +136,43 @@ public interface IFriendlyByteBufExtension {
             writer.accept(self(), t);
         }
         return self();
+    }
+
+    /**
+     * Writes a byte to the buffer
+     *
+     * @param value The value to be written
+     * @return The buffer
+     */
+    default FriendlyByteBuf writeByte(byte value) {
+        return self().writeByte((int) value);
+    }
+
+    /**
+     * Variant of {@link FriendlyByteBuf#readMap(FriendlyByteBuf.Reader, FriendlyByteBuf.Reader)} that allows reading values
+     * that depend on the key.
+     */
+    default <K, V> Map<K, V> readMap(FriendlyByteBuf.Reader<K> keyReader, BiFunction<FriendlyByteBuf, K, V> valueReader) {
+        final int size = self().readVarInt();
+        final Map<K, V> map = Maps.newHashMapWithExpectedSize(size);
+
+        for (int i = 0; i < size; ++i) {
+            final K k = keyReader.apply(self());
+            map.put(k, valueReader.apply(self(), k));
+        }
+
+        return map;
+    }
+
+    /**
+     * Variant of {@link FriendlyByteBuf#writeMap(Map, FriendlyByteBuf.Writer, FriendlyByteBuf.Writer)} that allows writing values
+     * that depend on the key.
+     */
+    default <K, V> void writeMap(Map<K, V> map, FriendlyByteBuf.Writer<K> keyWriter, TriConsumer<FriendlyByteBuf, K, V> valueWriter) {
+        self().writeVarInt(map.size());
+        map.forEach((key, value) -> {
+            keyWriter.accept(self(), key);
+            valueWriter.accept(self(), key, value);
+        });
     }
 }

@@ -9,20 +9,20 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      final ResourceKey<? extends Registry<T>> key;
      private final ObjectList<Holder.Reference<T>> byId = new ObjectArrayList<>(256);
-@@ -123,10 +_,22 @@
+@@ -79,6 +_,12 @@
+         public Stream<HolderSet.Named<T>> listTags() {
+             return MappedRegistry.this.getTags().map(Pair::getSecond);
          }
-     }
- 
-+    private static final Set<ResourceLocation> KNOWN = new java.util.LinkedHashSet<>();
-+    public static Set<ResourceLocation> getKnownRegistries() {
-+        return java.util.Collections.unmodifiableSet(KNOWN);
-+    }
-+    protected final void markKnown() {
-+        KNOWN.add(key().location());
-+    }
 +
-     public Holder.Reference<T> registerMapping(int p_256563_, ResourceKey<T> p_256594_, T p_256374_, Lifecycle p_256469_) {
-+        markKnown();
++        @Override
++        @org.jetbrains.annotations.Nullable
++        public <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<T, A> type, ResourceKey<T> key) {
++            return MappedRegistry.this.getData(type, key);
++        }
+     };
+ 
+     public MappedRegistry(ResourceKey<? extends Registry<T>> p_249899_, Lifecycle p_252249_) {
+@@ -127,6 +_,9 @@
          this.validateWrite(p_256594_);
          Validate.notNull(p_256594_);
          Validate.notNull(p_256374_);

@@ -14,12 +14,10 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.impl.MutableTestFramework;
-import org.jetbrains.annotations.NotNull;
 
 public record ChangeEnabledPayload(MutableTestFramework framework, String testId, boolean enabled) implements CustomPacketPayload {
 
     public static final ResourceLocation ID = new ResourceLocation("neoforge", "tf_change_enabled");
-
     public void handle(PlayPayloadContext context) {
         switch (context.flow().getReceptionSide()) {
             case CLIENT -> {
@@ -46,7 +44,7 @@ public record ChangeEnabledPayload(MutableTestFramework framework, String testId
     }
 
     @Override
-    public @NotNull ResourceLocation id() {
+    public ResourceLocation id() {
         return ID;
     }
 }

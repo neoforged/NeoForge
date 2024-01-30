@@ -13,19 +13,24 @@ import net.neoforged.neoforge.network.handlers.ClientPayloadHandler;
 import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
+import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
+import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
+import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
+import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.network.payload.TierSortingRegistryPayload;
 import net.neoforged.neoforge.network.payload.TierSortingRegistrySyncCompletePayload;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.registries.ClientRegistryManager;
+import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.ApiStatus;
 
 @Mod.EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @ApiStatus.Internal
 public class NetworkInitialization {
-
     @SubscribeEvent
     private static void register(final RegisterPayloadHandlerEvent event) {
         final IPayloadRegistrar registrar = event.registrar(NeoForgeVersion.MOD_ID)
@@ -57,6 +62,14 @@ public class NetworkInitialization {
                         ConfigFilePayload.ID,
                         ConfigFilePayload::new,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
+                .configuration(
+                        KnownRegistryDataMapsPayload.ID,
+                        KnownRegistryDataMapsPayload::new,
+                        handlers -> handlers.client(ClientRegistryManager::handleKnownDataMaps))
+                .configuration(
+                        KnownRegistryDataMapsReplyPayload.ID,
+                        KnownRegistryDataMapsReplyPayload::new,
+                        handlers -> handlers.server(RegistryManager::handleKnownDataMapsReply))
                 .play(
                         AdvancedAddEntityPayload.ID,
                         AdvancedAddEntityPayload::new,
@@ -64,6 +77,13 @@ public class NetworkInitialization {
                 .play(
                         AdvancedOpenScreenPayload.ID,
                         AdvancedOpenScreenPayload::new,
-                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle));
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
+                .play(
+                        AuxiliaryLightDataPayload.ID,
+                        AuxiliaryLightDataPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
+                .play(RegistryDataMapSyncPayload.ID,
+                        RegistryDataMapSyncPayload::decode,
+                        handlers -> handlers.client(ClientRegistryManager::handleDataMapSync));
     }
 }

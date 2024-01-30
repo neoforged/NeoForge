@@ -1,0 +1,11 @@
+--- a/net/minecraft/network/PacketEncoder.java
++++ b/net/minecraft/network/PacketEncoder.java
+@@ -46,7 +_,7 @@
+ 
+                     JvmProfiler.INSTANCE.onPacketSent(codecdata.protocol(), i, p_130545_.channel().remoteAddress(), k);
+                 } catch (Throwable throwable) {
+-                    LOGGER.error("Error receiving packet {}", i, throwable);
++                    LOGGER.error("Error sending packet {}", i, throwable); // Neo: fix flipped log message
+                     if (p_130546_.isSkippable()) {
+                         throw new SkipPacketException(throwable);
+                     }

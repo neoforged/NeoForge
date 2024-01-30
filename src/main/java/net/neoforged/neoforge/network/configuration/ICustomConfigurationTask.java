@@ -11,7 +11,6 @@ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.network.ConfigurationTask;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Defines a custom configuration task that should be run when a client connects.
@@ -25,7 +24,6 @@ import org.jetbrains.annotations.NotNull;
  * </p>
  */
 public interface ICustomConfigurationTask extends ConfigurationTask {
-
     /**
      * Invoked when it is time for this configuration to run.
      *
@@ -42,7 +40,7 @@ public interface ICustomConfigurationTask extends ConfigurationTask {
     @Override
     @ApiStatus.Internal
     @ApiStatus.NonExtendable
-    default void start(@NotNull Consumer<Packet<?>> sender) {
+    default void start(Consumer<Packet<?>> sender) {
         run((payload) -> sender.accept(new ClientboundCustomPayloadPacket(payload)));
     }
 }

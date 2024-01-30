@@ -31,7 +31,6 @@ import net.minecraft.world.scores.Scoreboard;
  * overrides for {@link CommandSourceStack} so that the methods will run successfully client side
  */
 public class ClientCommandSourceStack extends CommandSourceStack {
-
     public ClientCommandSourceStack(CommandSource source, Vec3 position, Vec2 rotation, int permission, String plainTextName, Component displayName,
             Entity executing) {
         super(source, position, rotation, null, permission, plainTextName, displayName, null, executing);
@@ -134,5 +133,4 @@ public class ClientCommandSourceStack extends CommandSourceStack {
     public ServerLevel getLevel() {
         throw new UnsupportedOperationException("Attempted to get server level in client command");
     }
-
 }

@@ -18,11 +18,9 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.apache.logging.log4j.core.util.Builder;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 @ApiStatus.Internal
 public record LoggerSetup(MutableTestFramework framework) {
-
     /**
      * Set the {@link TestFramework#logger()} to only write to logs/tests/{@code id}.log, and to console.
      */
@@ -71,7 +69,7 @@ public record LoggerSetup(MutableTestFramework framework) {
         return app;
     }
 
-    private static LoggerConfig getLoggerConfiguration(@NotNull final Configuration configuration, @NotNull final String loggerName) {
+    private static LoggerConfig getLoggerConfiguration(final Configuration configuration, final String loggerName) {
         final LoggerConfig lc = configuration.getLoggerConfig(loggerName);
         if (lc.getName().equals(loggerName)) {
             return lc;

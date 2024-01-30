@@ -46,6 +46,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -78,6 +79,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.client.resources.model.AtlasSet;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
@@ -95,7 +97,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.util.Mth;
@@ -109,10 +110,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.GameType;
@@ -130,6 +129,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
 import net.neoforged.neoforge.client.event.ClientPauseUpdatedEvent;
@@ -168,8 +168,6 @@ import net.neoforged.neoforge.client.gui.overlay.GuiOverlayManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.util.MutableHashedLinkedMap;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.gametest.GameTestHooks;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
@@ -178,7 +176,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -233,10 +230,10 @@ public class ClientHooks {
     }
 
     public static float getGuiFarPlane() {
-        // 1000 units for the overlay background,
+        // 11000 units for the overlay background,
         // and 10000 units for each layered Screen,
 
-        return 1000.0F + 10000.0F * (1 + guiLayers.size());
+        return 11000.0F + 10000.0F * (1 + guiLayers.size());
     }
 
     public static String getArmorTexture(Entity entity, ItemStack armor, String _default, EquipmentSlot slot, String type) {
@@ -342,6 +339,12 @@ public class ClientHooks {
         return event.getFOV();
     }
 
+    public static CalculatePlayerTurnEvent getTurnPlayerValues(double mouseSensitivity, boolean cinematicCameraEnabled) {
+        var event = new CalculatePlayerTurnEvent(mouseSensitivity, cinematicCameraEnabled);
+        NeoForge.EVENT_BUS.post(event);
+        return event;
+    }
+
     /**
      * Initialization of Forge Renderers.
      */
@@ -376,7 +379,7 @@ public class ClientHooks {
         guiLayers.forEach(layer -> {
             // Prevent the background layers from thinking the mouse is over their controls and showing them as highlighted.
             drawScreenInternal(layer, guiGraphics, Integer.MAX_VALUE, Integer.MAX_VALUE, partialTick);
-            guiGraphics.pose().translate(0, 0, 2000);
+            guiGraphics.pose().translate(0, 0, 10000);
         });
         drawScreenInternal(screen, guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.pose().popPose();
@@ -422,8 +425,17 @@ public class ClientHooks {
         return event;
     }
 
-    public static void onModifyBakingResult(Map<ResourceLocation, BakedModel> models, ModelBakery modelBakery) {
-        ModLoader.get().postEvent(new ModelEvent.ModifyBakingResult(models, modelBakery));
+    public static void onModifyBakingResult(Map<ResourceLocation, BakedModel> models, Map<ResourceLocation, AtlasSet.StitchResult> stitchResults, ModelBakery modelBakery) {
+        Function<Material, TextureAtlasSprite> textureGetter = material -> {
+            AtlasSet.StitchResult stitchResult = stitchResults.get(material.atlasLocation());
+            TextureAtlasSprite sprite = stitchResult.getSprite(material.texture());
+            if (sprite != null) {
+                return sprite;
+            }
+            LOGGER.warn("Failed to retrieve texture '{}' from atlas '{}'", material.texture(), material.atlasLocation(), new Throwable());
+            return stitchResult.missing();
+        };
+        ModLoader.get().postEvent(new ModelEvent.ModifyBakingResult(models, textureGetter, modelBakery));
     }
 
     public static void onModelBake(ModelManager modelManager, Map<ResourceLocation, BakedModel> models, ModelBakery modelBakery) {
@@ -497,7 +509,7 @@ public class ClientHooks {
 
     private static int slotMainHand = 0;
 
-    public static boolean shouldCauseReequipAnimation(@NotNull ItemStack from, @NotNull ItemStack to, int slot) {
+    public static boolean shouldCauseReequipAnimation(ItemStack from, ItemStack to, int slot) {
         boolean fromInvalid = from.isEmpty();
         boolean toInvalid = to.isEmpty();
 
@@ -722,7 +734,6 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? null : event.getMessage();
     }
 
-    @NotNull
     public static String onClientSendMessage(String message) {
         ClientChatEvent event = new ClientChatEvent(message);
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? "" : event.getMessage();
@@ -732,7 +743,6 @@ public class ClientHooks {
      * Mimics the behavior of {@link net.minecraft.client.renderer.ItemBlockRenderTypes#getRenderType(BlockState, boolean)}
      * for the input {@link RenderType}.
      */
-    @NotNull
     public static RenderType getEntityRenderType(RenderType chunkRenderType, boolean cull) {
         return RenderTypeHelper.getEntityRenderType(chunkRenderType, cull);
     }
@@ -754,18 +764,18 @@ public class ClientHooks {
         }
     }
 
-    public static Font getTooltipFont(@NotNull ItemStack stack, Font fallbackFont) {
+    public static Font getTooltipFont(ItemStack stack, Font fallbackFont) {
         Font stackFont = IClientItemExtensions.of(stack).getFont(stack, IClientItemExtensions.FontContext.TOOLTIP);
         return stackFont == null ? fallbackFont : stackFont;
     }
 
-    public static RenderTooltipEvent.Pre onRenderTooltipPre(@NotNull ItemStack stack, GuiGraphics graphics, int x, int y, int screenWidth, int screenHeight, @NotNull List<ClientTooltipComponent> components, @NotNull Font fallbackFont, @NotNull ClientTooltipPositioner positioner) {
+    public static RenderTooltipEvent.Pre onRenderTooltipPre(ItemStack stack, GuiGraphics graphics, int x, int y, int screenWidth, int screenHeight, List<ClientTooltipComponent> components, Font fallbackFont, ClientTooltipPositioner positioner) {
         var preEvent = new RenderTooltipEvent.Pre(stack, graphics, x, y, screenWidth, screenHeight, getTooltipFont(stack, fallbackFont), components, positioner);
         NeoForge.EVENT_BUS.post(preEvent);
         return preEvent;
     }
 
-    public static RenderTooltipEvent.Color onRenderTooltipColor(@NotNull ItemStack stack, GuiGraphics graphics, int x, int y, @NotNull Font font, @NotNull List<ClientTooltipComponent> components) {
+    public static RenderTooltipEvent.Color onRenderTooltipColor(ItemStack stack, GuiGraphics graphics, int x, int y, Font font, List<ClientTooltipComponent> components) {
         var colorEvent = new RenderTooltipEvent.Color(stack, graphics, x, y, font, 0xf0100010, 0x505000FF, 0x5028007f, components);
         NeoForge.EVENT_BUS.post(colorEvent);
         return colorEvent;
@@ -907,27 +917,6 @@ public class ClientHooks {
         return new ResourceLocation(loc.getNamespace(), normalised);
     }
 
-    public static void onCreativeModeTabBuildContents(CreativeModeTab tab, ResourceKey<CreativeModeTab> tabKey, CreativeModeTab.DisplayItemsGenerator originalGenerator, CreativeModeTab.ItemDisplayParameters params, CreativeModeTab.Output output) {
-        final var entries = new MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility>(ItemStackLinkedSet.TYPE_AND_TAG,
-                (key, left, right) -> {
-                    //throw new IllegalStateException("Accidentally adding the same item stack twice " + key.getDisplayName().getString() + " to a Creative Mode Tab: " + tab.getDisplayName().getString());
-                    // Vanilla adds enchanting books twice in both visibilities.
-                    // This is just code cleanliness for them. For us lets just increase the visibility and merge the entries.
-                    return CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
-                });
-
-        originalGenerator.accept(params, (stack, vis) -> {
-            if (stack.getCount() != 1)
-                throw new IllegalArgumentException("The stack count must be 1");
-            entries.put(stack, vis);
-        });
-
-        ModLoader.get().postEvent(new BuildCreativeModeTabContentsEvent(tab, tabKey, params, entries));
-
-        for (var entry : entries)
-            output.accept(entry.getKey(), entry.getValue());
-    }
-
     private static final BiMap<ResourceLocation, SpriteSourceType> SPRITE_SOURCE_TYPES_MAP = HashBiMap.create();
 
     public static BiMap<ResourceLocation, SpriteSourceType> makeSpriteSourceTypesMap() {
@@ -997,6 +986,7 @@ public class ClientHooks {
 
         GameTestHooks.registerGametests();
         registerSpriteSourceTypes();
+        MenuScreens.init();
         ModLoader.get().postEvent(new RegisterClientReloadListenersEvent(resourceManager));
         ModLoader.get().postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
         ModLoader.get().postEvent(new EntityRenderersEvent.RegisterRenderers());

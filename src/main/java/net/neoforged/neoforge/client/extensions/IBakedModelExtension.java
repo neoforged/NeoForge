@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
 import net.neoforged.neoforge.client.RenderTypeHelper;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -37,8 +36,7 @@ public interface IBakedModelExtension {
     /**
      * A null {@link RenderType} is used for the breaking overlay as well as non-standard rendering, so models should return all their quads.
      */
-    @NotNull
-    default List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData data, @Nullable RenderType renderType) {
+    default List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand, ModelData data, @Nullable RenderType renderType) {
         return self().getQuads(state, side, rand);
     }
 
@@ -59,11 +57,11 @@ public interface IBakedModelExtension {
         return self();
     }
 
-    default @NotNull ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData) {
+    default ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
         return modelData;
     }
 
-    default TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
+    default TextureAtlasSprite getParticleIcon(ModelData data) {
         return self().getParticleIcon();
     }
 
@@ -73,7 +71,7 @@ public interface IBakedModelExtension {
      * <p>
      * By default, defers query to {@link ItemBlockRenderTypes}.
      */
-    default ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
+    default ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData data) {
         return ItemBlockRenderTypes.getRenderLayers(state);
     }
 

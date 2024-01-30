@@ -11,7 +11,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Payload for the modded network query request
@@ -24,7 +23,6 @@ public record ModdedNetworkQueryPayload(Set<ModdedNetworkQueryComponent> configu
 
     public static final ResourceLocation ID = new ResourceLocation("register");
     public static final FriendlyByteBuf.Reader<? extends CustomPacketPayload> READER = ModdedNetworkQueryPayload::new;
-
     public ModdedNetworkQueryPayload() {
         this(Set.of(), Set.of());
     }
@@ -40,7 +38,7 @@ public record ModdedNetworkQueryPayload(Set<ModdedNetworkQueryComponent> configu
     }
 
     @Override
-    public @NotNull ResourceLocation id() {
+    public ResourceLocation id() {
         return ID;
     }
 }

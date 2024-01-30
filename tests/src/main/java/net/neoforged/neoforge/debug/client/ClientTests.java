@@ -30,7 +30,6 @@ import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
-import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
 
 @ForEachTest(side = Dist.CLIENT, groups = "client")
@@ -91,9 +90,8 @@ public class ClientTests {
             z = position.z;
         }
 
-        @NotNull
         @Override
-        public CompletableFuture<AudioStream> getStream(@NotNull SoundBufferLibrary soundBuffers, @NotNull Sound sound, boolean looping) {
+        public CompletableFuture<AudioStream> getStream(SoundBufferLibrary soundBuffers, Sound sound, boolean looping) {
             return CompletableFuture.completedFuture(new SineStream());
         }
     }
@@ -104,13 +102,11 @@ public class ClientTests {
 
         private static double value = 0;
 
-        @NotNull
         @Override
         public AudioFormat getFormat() {
             return FORMAT;
         }
 
-        @NotNull
         @Override
         public ByteBuffer read(int capacity) {
             ByteBuffer buffer = BufferUtils.createByteBuffer(capacity);

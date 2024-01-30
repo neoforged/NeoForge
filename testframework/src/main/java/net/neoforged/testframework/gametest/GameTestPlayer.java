@@ -65,9 +65,7 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     }
 
     @Override
-    public void testStructureLoaded(GameTestInfo i) {
-
-    }
+    public void testStructureLoaded(GameTestInfo i) {}
 
     @Override
     public void testPassed(GameTestInfo i) {

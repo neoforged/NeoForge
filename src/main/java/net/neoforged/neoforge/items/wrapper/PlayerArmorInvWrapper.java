@@ -8,7 +8,6 @@ package net.neoforged.neoforge.items.wrapper;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 public class PlayerArmorInvWrapper extends RangedWrapper {
     private final Inventory inventoryPlayer;
@@ -19,8 +18,7 @@ public class PlayerArmorInvWrapper extends RangedWrapper {
     }
 
     @Override
-    @NotNull
-    public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         EquipmentSlot equ = null;
         for (EquipmentSlot s : EquipmentSlot.values()) {
             if (s.getType() == EquipmentSlot.Type.ARMOR && s.getIndex() == slot) {

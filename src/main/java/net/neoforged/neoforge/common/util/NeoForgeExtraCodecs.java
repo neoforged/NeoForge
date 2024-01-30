@@ -29,7 +29,6 @@ import net.minecraft.util.ExtraCodecs;
  * @see ExtraCodecs
  */
 public class NeoForgeExtraCodecs {
-
     public static <T> MapCodec<T> aliasedFieldOf(final Codec<T> codec, final String... names) {
         if (names.length == 0)
             throw new IllegalArgumentException("Must have at least one name!");
@@ -155,7 +154,6 @@ public class NeoForgeExtraCodecs {
     }
 
     private static class AlternativeMapCodec<T> extends MapCodec<T> {
-
         private final MapCodec<T> codec;
         private final MapCodec<T> alternative;
 

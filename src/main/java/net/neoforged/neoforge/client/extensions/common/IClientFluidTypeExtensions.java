@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.extensions.common;
 
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import java.util.function.Consumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -16,13 +17,13 @@ import net.minecraft.client.renderer.ScreenEffectRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -169,7 +170,6 @@ public interface IClientFluidTypeExtensions {
      * @param fluidFogColor     the current color of the fog
      * @return the color of the fog
      */
-    @NotNull
     default Vector3f modifyFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, Vector3f fluidFogColor) {
         return fluidFogColor;
     }
@@ -328,5 +328,23 @@ public interface IClientFluidTypeExtensions {
      */
     default ResourceLocation getOverlayTexture(FluidStack stack) {
         return this.getOverlayTexture();
+    }
+
+    /**
+     * Called to allow rendering custom quads for a fluid during chunk meshing. You may replace the fluid
+     * rendering entirely, or return false to allow vanilla's fluid rendering to also run.
+     *
+     * <p>Note: this method will be called once for every fluid block during chunk meshing, so any logic
+     * here needs to be performant.
+     *
+     * @param fluidState     the state of the fluid
+     * @param getter         the getter the fluid can be obtained from
+     * @param pos            the position of the fluid
+     * @param vertexConsumer the vertex consumer to emit quads to
+     * @param blockState     the blockstate at the position of the fluid
+     * @return true if vanilla fluid rendering should be skipped
+     */
+    default boolean renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState) {
+        return false;
     }
 }

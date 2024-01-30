@@ -7,7 +7,6 @@ package net.neoforged.neoforge.oldtest.item;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -61,14 +60,12 @@ public class CustomFluidContainerTest {
      * A custom fluid container item with a capacity of a vanilla bucket which uses the FluidUtil functionalities to pickup and place fluids.
      */
     private static class CustomFluidContainer extends Item {
-
         public CustomFluidContainer(Properties properties) {
             super(properties);
         }
 
         @Override
-        @Nonnull
-        public Component getName(@Nonnull ItemStack itemStack) {
+        public Component getName(ItemStack itemStack) {
             AtomicReference<String> name = new AtomicReference<>("Custom Fluid Container");
             FluidUtil.getFluidHandler(itemStack).ifPresent(fluidHandler -> {
                 FluidStack fluidStack = fluidHandler.getFluidInTank(0);

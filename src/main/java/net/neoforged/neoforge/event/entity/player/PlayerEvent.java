@@ -24,7 +24,6 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -248,7 +247,6 @@ public abstract class PlayerEvent extends LivingEvent {
      *
      */
     public static class StartTracking extends PlayerEvent {
-
         private final Entity target;
 
         public StartTracking(Player player, Entity target) {
@@ -269,7 +267,6 @@ public abstract class PlayerEvent extends LivingEvent {
      *
      */
     public static class StopTracking extends PlayerEvent {
-
         private final Entity target;
 
         public StopTracking(Player player, Entity target) {
@@ -404,17 +401,15 @@ public abstract class PlayerEvent extends LivingEvent {
     }
 
     public static class ItemCraftedEvent extends PlayerEvent {
-        @NotNull
         private final ItemStack crafting;
         private final Container craftMatrix;
 
-        public ItemCraftedEvent(Player player, @NotNull ItemStack crafting, Container craftMatrix) {
+        public ItemCraftedEvent(Player player, ItemStack crafting, Container craftMatrix) {
             super(player);
             this.crafting = crafting;
             this.craftMatrix = craftMatrix;
         }
 
-        @NotNull
         public ItemStack getCrafting() {
             return this.crafting;
         }
@@ -425,15 +420,13 @@ public abstract class PlayerEvent extends LivingEvent {
     }
 
     public static class ItemSmeltedEvent extends PlayerEvent {
-        @NotNull
         private final ItemStack smelting;
 
-        public ItemSmeltedEvent(Player player, @NotNull ItemStack crafting) {
+        public ItemSmeltedEvent(Player player, ItemStack crafting) {
             super(player);
             this.smelting = crafting;
         }
 
-        @NotNull
         public ItemStack getSmelting() {
             return this.smelting;
         }
@@ -467,7 +460,6 @@ public abstract class PlayerEvent extends LivingEvent {
         public boolean isEndConquered() {
             return this.endConquered;
         }
-
     }
 
     public static class PlayerChangedDimensionEvent extends PlayerEvent {

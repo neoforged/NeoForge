@@ -83,5 +83,4 @@ public interface ITeleporter {
     default boolean playTeleportSound(ServerPlayer player, ServerLevel sourceWorld, ServerLevel destWorld) {
         return true;
     }
-
 }

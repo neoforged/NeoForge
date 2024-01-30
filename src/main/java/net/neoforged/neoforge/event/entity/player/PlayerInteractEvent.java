@@ -27,7 +27,6 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -255,7 +254,6 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
         /**
          * @return The action type for this interaction. Will never be null.
          */
-        @NotNull
         public Action getAction() {
             return this.action;
         }
@@ -321,7 +319,6 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
     /**
      * @return The hand involved in this interaction. Will never be null.
      */
-    @NotNull
     public InteractionHand getHand() {
         return hand;
     }
@@ -329,7 +326,6 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
     /**
      * @return The itemstack involved in this interaction, {@code ItemStack.EMPTY} if the hand was empty.
      */
-    @NotNull
     public ItemStack getItemStack() {
         return getEntity().getItemInHand(hand);
     }
@@ -342,7 +338,6 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
      * 
      * @return The position involved in this interaction.
      */
-    @NotNull
     public BlockPos getPos() {
         return pos;
     }
@@ -386,5 +381,4 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
     public void setCancellationResult(InteractionResult result) {
         this.cancellationResult = result;
     }
-
 }

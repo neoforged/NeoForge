@@ -23,3 +23,28 @@
      }
  
      @Nullable
+@@ -58,6 +_,11 @@
+         return (MenuScreens.ScreenConstructor<T, ?>)SCREENS.get(p_96200_);
+     }
+ 
++    /**
++     @deprecated Use {@link net.neoforged.neoforge.client.event.RegisterMenuScreensEvent} to register menu screens
++     + TODO 1.20.5: remove AT related to this
++     */
++    @Deprecated
+     public static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(
+         MenuType<? extends M> p_96207_, MenuScreens.ScreenConstructor<M, U> p_96208_
+     ) {
+@@ -65,6 +_,12 @@
+         if (screenconstructor != null) {
+             throw new IllegalStateException("Duplicate registration for " + BuiltInRegistries.MENU.getKey(p_96207_));
+         }
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public static void init() {
++        var event = new net.neoforged.neoforge.client.event.RegisterMenuScreensEvent(SCREENS);
++        net.neoforged.fml.ModLoader.get().postEvent(event);
+     }
+ 
+     public static boolean selfTest() {

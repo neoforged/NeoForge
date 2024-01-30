@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 1.0,
+  "ingredient": {
+    "type": "testframework:test_enabled",
+    "base": {
+      "item": "minecraft:golden_shovel"
+    },
+    "framework": "neotests:tests",
+    "testId": "itemAttachmentRecipeOutput"
+  },
+  "result": {
+    "item": "minecraft:golden_shovel",
+    "neoforge:attachments": "{\"neotests_item_attachment_recipe_output:test_int\":1}"
+  }
+}

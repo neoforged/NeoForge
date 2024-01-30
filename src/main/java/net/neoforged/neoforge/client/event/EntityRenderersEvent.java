@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.SkullModelBase;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -26,7 +25,6 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.SkullBlock.Type;
@@ -155,12 +153,20 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          */
         @Nullable
         @SuppressWarnings("unchecked")
-        public <R extends LivingEntityRenderer<? extends Player, ? extends EntityModel<? extends Player>>> R getSkin(PlayerSkin.Model skinModel) {
+        public <R extends EntityRenderer<? extends Player>> R getSkin(PlayerSkin.Model skinModel) {
             return (R) skinMap.get(skinModel);
         }
 
         /**
-         * Returns an entity renderer for the given entity type.
+         * {@return the set of entity types which have a renderer}
+         */
+        public Set<EntityType<?>> getEntityTypes() {
+            return renderers.keySet();
+        }
+
+        /**
+         * Returns an entity renderer for the given entity type. Note that the returned renderer may not be a
+         * {@link LivingEntityRenderer}.
          *
          * @param entityType the entity type to return a renderer for
          * @param <T>        the type of entity the renderer is for
@@ -169,7 +175,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          */
         @Nullable
         @SuppressWarnings("unchecked")
-        public <T extends LivingEntity, R extends LivingEntityRenderer<T, ? extends EntityModel<T>>> R getRenderer(EntityType<? extends T> entityType) {
+        public <T extends Entity, R extends EntityRenderer<T>> R getRenderer(EntityType<? extends T> entityType) {
             return (R) renderers.get(entityType);
         }
 

@@ -97,5 +97,4 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener {
     public Collection<IGlobalLootModifier> getAllLootMods() {
         return registeredLootModifiers.values();
     }
-
 }

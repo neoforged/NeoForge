@@ -11,7 +11,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.IFluidBlock;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import org.jetbrains.annotations.NotNull;
 
 public class FluidBlockWrapper implements IFluidHandler {
     protected final IFluidBlock fluidBlock;
@@ -29,7 +28,6 @@ public class FluidBlockWrapper implements IFluidHandler {
         return 1;
     }
 
-    @NotNull
     @Override
     public FluidStack getFluidInTank(int tank) {
         return tank == 0 ? fluidBlock.drain(world, blockPos, FluidAction.SIMULATE) : FluidStack.EMPTY;
@@ -48,7 +46,7 @@ public class FluidBlockWrapper implements IFluidHandler {
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+    public boolean isFluidValid(int tank, FluidStack stack) {
         return stack.getFluid() == fluidBlock.getFluid();
     }
 
@@ -57,7 +55,6 @@ public class FluidBlockWrapper implements IFluidHandler {
         return fluidBlock.place(world, blockPos, resource, action);
     }
 
-    @NotNull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
         if (!resource.isEmpty() && fluidBlock.canDrain(world, blockPos) && resource.getFluid() == fluidBlock.getFluid()) {
@@ -72,7 +69,6 @@ public class FluidBlockWrapper implements IFluidHandler {
         return FluidStack.EMPTY;
     }
 
-    @NotNull
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         if (maxDrain > 0 && fluidBlock.canDrain(world, blockPos)) {

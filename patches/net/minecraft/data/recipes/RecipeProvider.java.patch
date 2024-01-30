@@ -1,29 +1,17 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
-@@ -46,6 +_,7 @@
- public abstract class RecipeProvider implements DataProvider {
-     protected final PackOutput.PathProvider recipePathProvider;
-     protected final PackOutput.PathProvider advancementPathProvider;
-+    protected final CompletableFuture<net.minecraft.core.HolderLookup.Provider> lookupProvider;
-     private static final Map<BlockFamily.Variant, BiFunction<ItemLike, ItemLike, RecipeBuilder>> SHAPE_BUILDERS = ImmutableMap.<BlockFamily.Variant, BiFunction<ItemLike, ItemLike, RecipeBuilder>>builder(
-             
-         )
-@@ -66,27 +_,29 @@
+@@ -66,6 +_,10 @@
          .put(BlockFamily.Variant.WALL, (p_248024_, p_248025_) -> wallBuilder(RecipeCategory.DECORATIONS, p_248024_, Ingredient.of(p_248025_)))
          .build();
  
--    public RecipeProvider(PackOutput p_248933_) {
++    @Deprecated(forRemoval = true, since = "1.20.4") // TODO: remove in 1.20.5
 +    public RecipeProvider(PackOutput p_248933_, CompletableFuture<net.minecraft.core.HolderLookup.Provider> lookupProvider) {
++        this(p_248933_);
++    }
+     public RecipeProvider(PackOutput p_248933_) {
          this.recipePathProvider = p_248933_.createPathProvider(PackOutput.Target.DATA_PACK, "recipes");
          this.advancementPathProvider = p_248933_.createPathProvider(PackOutput.Target.DATA_PACK, "advancements");
-+        this.lookupProvider = lookupProvider;
-     }
- 
-     @Override
-     public CompletableFuture<?> run(final CachedOutput p_254020_) {
-+        return this.lookupProvider.thenCompose(provider -> {
-         final Set<ResourceLocation> set = Sets.newHashSet();
-         final List<CompletableFuture<?>> list = new ArrayList<>();
+@@ -78,15 +_,15 @@
          this.buildRecipes(
              new RecipeOutput() {
                  @Override
@@ -42,12 +30,7 @@
                                  )
                              );
                          }
-@@ -99,16 +_,20 @@
-                 }
-             }
-         );
--        return CompletableFuture.allOf(list.toArray(p_253414_ -> new CompletableFuture[p_253414_]));
-+        return CompletableFuture.allOf(list.toArray(p_253414_ -> new CompletableFuture[p_253414_])); });
+@@ -103,12 +_,16 @@
      }
  
      protected CompletableFuture<?> buildAdvancement(CachedOutput p_253674_, AdvancementHolder p_301116_) {

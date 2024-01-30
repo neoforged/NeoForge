@@ -56,7 +56,6 @@ import net.minecraft.world.level.block.state.properties.WallSide;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 
 /**
@@ -64,7 +63,6 @@ import org.jetbrains.annotations.VisibleForTesting;
  * blockstates and their referenced models can be provided in tandem.
  */
 public abstract class BlockStateProvider implements DataProvider {
-
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
 
@@ -871,7 +869,6 @@ public abstract class BlockStateProvider implements DataProvider {
         return DataProvider.saveStable(cache, stateJson, outputPath);
     }
 
-    @NotNull
     @Override
     public String getName() {
         return "Block States: " + modid;

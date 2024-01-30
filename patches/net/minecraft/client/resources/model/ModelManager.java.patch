@@ -40,7 +40,7 @@
                      )
              );
 +        p_252136_.popPush("forge_modify_baking_result");
-+        net.neoforged.neoforge.client.ClientHooks.onModifyBakingResult(p_248945_.getBakedTopLevelModels(), p_248945_);
++        net.neoforged.neoforge.client.ClientHooks.onModifyBakingResult(p_248945_.getBakedTopLevelModels(), p_250646_, p_248945_);
          p_252136_.popPush("dispatch");
          Map<ResourceLocation, BakedModel> map = p_248945_.getBakedTopLevelModels();
          BakedModel bakedmodel = map.get(ModelBakery.MISSING_MODEL_LOCATION);

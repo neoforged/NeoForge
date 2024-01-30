@@ -13,7 +13,6 @@ import net.neoforged.neoforge.network.handling.IConfigurationPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPlayPayloadHandler;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -26,12 +25,12 @@ class PayloadHandlerBuilder<T extends CustomPacketPayload> implements IDirection
     private @Nullable IPayloadHandler<T> clientSide;
     private @Nullable IPayloadHandler<T> serverSide;
 
-    public PayloadHandlerBuilder<T> client(@NotNull IPayloadHandler<T> clientSide) {
+    public PayloadHandlerBuilder<T> client(IPayloadHandler<T> clientSide) {
         this.clientSide = clientSide;
         return this;
     }
 
-    public PayloadHandlerBuilder<T> server(@NotNull IPayloadHandler<T> serverSide) {
+    public PayloadHandlerBuilder<T> server(IPayloadHandler<T> serverSide) {
         this.serverSide = serverSide;
         return this;
     }

@@ -6,15 +6,15 @@
 package net.neoforged.neoforge.common.util;
 
 import java.util.function.Function;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Equivalent to {@link Function}, except with nonnull contract.
  *
  * @see Function
+ * @deprecated Use {@link Function}
  */
+@Deprecated
 @FunctionalInterface
 public interface NonNullFunction<T, R> {
-    @NotNull
-    R apply(@NotNull T t);
+    R apply(T t);
 }

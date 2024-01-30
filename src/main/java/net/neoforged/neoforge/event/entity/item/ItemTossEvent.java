@@ -16,7 +16,6 @@ import net.neoforged.bus.api.ICancellableEvent;
  * removed from the inventory - and thus removed from the system.
  */
 public class ItemTossEvent extends ItemEvent implements ICancellableEvent {
-
     private final Player player;
 
     /**

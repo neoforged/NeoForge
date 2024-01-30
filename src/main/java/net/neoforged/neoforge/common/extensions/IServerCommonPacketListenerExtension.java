@@ -24,7 +24,6 @@ import net.neoforged.neoforge.network.registration.NetworkRegistry;
  * </p>
  */
 public interface IServerCommonPacketListenerExtension {
-
     /**
      * {@return the {@link ServerCommonPacketListener} that the extensions is attached to}
      */

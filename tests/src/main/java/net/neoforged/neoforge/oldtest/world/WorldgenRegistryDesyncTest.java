@@ -16,7 +16,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 @Mod("worldgen_registry_desync_test")
 public class WorldgenRegistryDesyncTest {
-
     public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(Registries.FEATURE, "worldgen_registry_desync_test");
     public static final Holder<Feature<?>> dungeon = FEATURES.register("dungeon", () -> new MonsterRoomFeature(NoneFeatureConfiguration.CODEC));
 

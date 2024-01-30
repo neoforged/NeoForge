@@ -37,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
 
 @ForEachTest(groups = "chat.command")
 public class CommandTests {
-
     @GameTest
     @EmptyTemplate
     @TestHolder(description = { "Tests if the command event works", "Redirects /attribute with no arguments to effect" })
@@ -113,7 +112,6 @@ public class CommandTests {
     }
 
     public final static class ErrorCatchingStack extends CommandSourceStack {
-
         public static ErrorCatchingStack createCommandSourceStack(Player player, int perm) {
             return new ErrorCatchingStack(
                     player,

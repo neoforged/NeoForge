@@ -14,9 +14,6 @@ import net.minecraft.client.renderer.RenderType;
  * be the same as {@code entity}.
  */
 public record RenderTypeGroup(RenderType block, RenderType entity, RenderType entityFabulous) {
-
-    public static RenderTypeGroup EMPTY = new RenderTypeGroup(null, null, null);
-
     public RenderTypeGroup {
         if ((block == null) != (entity == null) || (block == null) != (entityFabulous == null))
             throw new IllegalArgumentException("The render types in a group must either be all null, or all non-null.");
@@ -25,6 +22,8 @@ public record RenderTypeGroup(RenderType block, RenderType entity, RenderType en
     public RenderTypeGroup(RenderType block, RenderType entity) {
         this(block, entity, entity);
     }
+
+    public static RenderTypeGroup EMPTY = new RenderTypeGroup(null, null, null);
 
     /**
      * {@return true if this group has render types or not. It either has all, or none}

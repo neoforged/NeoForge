@@ -17,7 +17,6 @@ import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
-import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -203,7 +202,6 @@ public enum VanillaGuiOverlay {
         this.overlay = overlay;
     }
 
-    @NotNull
     public ResourceLocation id() {
         return id;
     }

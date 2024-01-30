@@ -11,7 +11,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import net.neoforged.neoforge.network.handling.IConfigurationPayloadHandler;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -21,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
  */
 @ApiStatus.Internal
 public final class ConfigurationPayloadHandler<T extends CustomPacketPayload> implements IConfigurationPayloadHandler<T> {
-
     @Nullable
     private final IConfigurationPayloadHandler<T> clientSide;
     @Nullable
@@ -70,12 +68,12 @@ public final class ConfigurationPayloadHandler<T extends CustomPacketPayload> im
         private @Nullable IConfigurationPayloadHandler<T> clientSide;
         private @Nullable IConfigurationPayloadHandler<T> serverSide;
 
-        public Builder<T> client(@NotNull IConfigurationPayloadHandler<T> clientSide) {
+        public Builder<T> client(IConfigurationPayloadHandler<T> clientSide) {
             this.clientSide = clientSide;
             return this;
         }
 
-        public Builder<T> server(@NotNull IConfigurationPayloadHandler<T> serverSide) {
+        public Builder<T> server(IConfigurationPayloadHandler<T> serverSide) {
             this.serverSide = serverSide;
             return this;
         }

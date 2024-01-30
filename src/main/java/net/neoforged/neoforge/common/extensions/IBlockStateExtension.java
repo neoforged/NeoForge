@@ -42,7 +42,6 @@ import net.neoforged.neoforge.common.IPlantable;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface IBlockStateExtension {
@@ -445,7 +444,7 @@ public interface IBlockStateExtension {
      * @param other Other block
      * @return True to link blocks
      */
-    default boolean canStickTo(@NotNull BlockState other) {
+    default boolean canStickTo(BlockState other) {
         return self().getBlock().canStickTo(self(), other);
     }
 
@@ -720,5 +719,14 @@ public interface IBlockStateExtension {
      */
     default BlockState getAppearance(BlockAndTintGetter level, BlockPos pos, Direction side, @Nullable BlockState queryState, @Nullable BlockPos queryPos) {
         return self().getBlock().getAppearance(self(), level, pos, side, queryState, queryPos);
+    }
+
+    /**
+     * Return true if the state is able to be replaced with Blocks.AIR in chunk sections that is entirely made of blocks that return true for isEmpty
+     *
+     * @return True if the block should be allowed to be optimized away into Blocks.AIR
+     */
+    default boolean isEmpty() {
+        return self().getBlock().isEmpty(self());
     }
 }

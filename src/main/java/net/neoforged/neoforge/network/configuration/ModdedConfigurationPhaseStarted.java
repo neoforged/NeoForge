@@ -11,7 +11,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Custom configuration task that is run to indicate that the modded configuration phase has started.
@@ -29,7 +28,7 @@ public record ModdedConfigurationPhaseStarted(ServerConfigurationPacketListenerI
     }
 
     @Override
-    public @NotNull Type type() {
+    public Type type() {
         return TYPE;
     }
 }

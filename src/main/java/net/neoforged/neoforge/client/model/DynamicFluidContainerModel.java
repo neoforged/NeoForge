@@ -38,7 +38,6 @@ import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 import net.neoforged.neoforge.client.model.geometry.StandaloneGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.UnbakedGeometryHelper;
 import net.neoforged.neoforge.fluids.FluidUtil;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -213,7 +212,7 @@ public class DynamicFluidContainerModel implements IUnbakedGeometry<DynamicFluid
 
     public static class Colors implements ItemColor {
         @Override
-        public int getColor(@NotNull ItemStack stack, int tintIndex) {
+        public int getColor(ItemStack stack, int tintIndex) {
             if (tintIndex != 1) return 0xFFFFFFFF;
             return FluidUtil.getFluidContained(stack)
                     .map(fluidStack -> IClientFluidTypeExtensions.of(fluidStack.getFluid()).getTintColor(fluidStack))

@@ -11,14 +11,12 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Stub class to extend for item model data providers, eliminates some
  * boilerplate constructor parameters.
  */
 public abstract class ItemModelProvider extends ModelProvider<ItemModelBuilder> {
-
     public ItemModelProvider(PackOutput output, String modid, ExistingFileHelper existingFileHelper) {
         super(output, modid, ITEM_FOLDER, ItemModelBuilder::new, existingFileHelper);
     }
@@ -33,7 +31,6 @@ public abstract class ItemModelProvider extends ModelProvider<ItemModelBuilder> 
                 .texture("layer0", new ResourceLocation(item.getNamespace(), "item/" + item.getPath()));
     }
 
-    @NotNull
     @Override
     public String getName() {
         return "Item Models: " + modid;

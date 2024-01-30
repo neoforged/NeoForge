@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.Property;
 
 public final class MultiPartBlockStateBuilder implements IGeneratedBlockState {
-
     private final List<PartBuilder> parts = new ArrayList<>();
     private final Block owner;
 

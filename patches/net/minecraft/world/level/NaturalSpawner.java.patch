@@ -35,7 +35,7 @@
          }
      }
  
-@@ -310,9 +_,10 @@
+@@ -310,9 +_,14 @@
          BlockPos p_220448_,
          @Nullable Holder<Biome> p_220449_
      ) {
@@ -43,9 +43,13 @@
 -            ? NetherFortressStructure.FORTRESS_ENEMIES
 -            : p_220446_.getMobsAt(p_220449_ != null ? p_220449_ : p_220444_.getBiome(p_220448_), p_220445_, p_220447_, p_220448_);
 +        // Forge: Add in potential spawns, and replace hardcoded nether fortress mob list
-+        return net.neoforged.neoforge.event.EventHooks.getPotentialSpawns(p_220444_, p_220447_, p_220448_, isInNetherFortressBounds(p_220448_, p_220444_, p_220447_, p_220445_)
-+            ? p_220445_.registryAccess().registryOrThrow(Registries.STRUCTURE).getOrThrow(BuiltinStructures.FORTRESS).spawnOverrides().get(MobCategory.MONSTER).spawns()
-+            : p_220446_.getMobsAt(p_220449_ != null ? p_220449_ : p_220444_.getBiome(p_220448_), p_220445_, p_220447_, p_220448_));
++        if (isInNetherFortressBounds(p_220448_, p_220444_, p_220447_, p_220445_)) {
++            var monsterSpawns = p_220445_.registryAccess().registryOrThrow(Registries.STRUCTURE).getOrThrow(BuiltinStructures.FORTRESS).spawnOverrides().get(MobCategory.MONSTER);
++            if (monsterSpawns != null) { // structure modifiers can clear the spawn overrides
++                return net.neoforged.neoforge.event.EventHooks.getPotentialSpawns(p_220444_, p_220447_, p_220448_, monsterSpawns.spawns());
++            }
++        }
++        return net.neoforged.neoforge.event.EventHooks.getPotentialSpawns(p_220444_, p_220447_, p_220448_, p_220446_.getMobsAt(p_220449_ != null ? p_220449_ : p_220444_.getBiome(p_220448_), p_220445_, p_220447_, p_220448_));
      }
  
      public static boolean isInNetherFortressBounds(BlockPos p_220456_, ServerLevel p_220457_, MobCategory p_220458_, StructureManager p_220459_) {

@@ -26,7 +26,6 @@ import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BlockEvent extends Event {
@@ -111,7 +110,7 @@ public abstract class BlockEvent extends Event {
         private final BlockState placedBlock;
         private final BlockState placedAgainst;
 
-        public EntityPlaceEvent(@NotNull BlockSnapshot blockSnapshot, @NotNull BlockState placedAgainst, @Nullable Entity entity) {
+        public EntityPlaceEvent(BlockSnapshot blockSnapshot, BlockState placedAgainst, @Nullable Entity entity) {
             super(blockSnapshot.getLevel(), blockSnapshot.getPos(), !(entity instanceof Player) ? blockSnapshot.getReplacedBlock() : blockSnapshot.getCurrentBlock());
             this.entity = entity;
             this.blockSnapshot = blockSnapshot;
@@ -151,7 +150,7 @@ public abstract class BlockEvent extends Event {
     public static class EntityMultiPlaceEvent extends EntityPlaceEvent implements ICancellableEvent {
         private final List<BlockSnapshot> blockSnapshots;
 
-        public EntityMultiPlaceEvent(@NotNull List<BlockSnapshot> blockSnapshots, @NotNull BlockState placedAgainst, @Nullable Entity entity) {
+        public EntityMultiPlaceEvent(List<BlockSnapshot> blockSnapshots, BlockState placedAgainst, @Nullable Entity entity) {
             super(blockSnapshots.get(0), placedAgainst, entity);
             this.blockSnapshots = ImmutableList.copyOf(blockSnapshots);
             if (DEBUG) {
@@ -336,7 +335,6 @@ public abstract class BlockEvent extends Event {
      * This event is {@link ICancellableEvent}
      */
     public static class FarmlandTrampleEvent extends BlockEvent implements ICancellableEvent {
-
         private final Entity entity;
         private final float fallDistance;
 
@@ -353,7 +351,6 @@ public abstract class BlockEvent extends Event {
         public float getFallDistance() {
             return fallDistance;
         }
-
     }
 
     /**
@@ -391,7 +388,7 @@ public abstract class BlockEvent extends Event {
         private final boolean simulate;
         private BlockState state;
 
-        public BlockToolModificationEvent(BlockState originalState, @NotNull UseOnContext context, ToolAction toolAction, boolean simulate) {
+        public BlockToolModificationEvent(BlockState originalState, UseOnContext context, ToolAction toolAction, boolean simulate) {
             super(context.getLevel(), context.getClickedPos(), originalState);
             this.context = context;
             this.state = originalState;
@@ -438,7 +435,6 @@ public abstract class BlockEvent extends Event {
          *
          * @return the nonnull use on context that this event was performed in
          */
-        @NotNull
         public UseOnContext getContext() {
             return context;
         }

@@ -7,6 +7,7 @@ package net.neoforged.neoforge.network;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
 import net.neoforged.neoforge.network.configuration.SyncConfig;
 import net.neoforged.neoforge.network.configuration.SyncRegistries;
 import net.neoforged.neoforge.network.configuration.SyncTierSortingRegistry;
@@ -16,7 +17,6 @@ import org.jetbrains.annotations.ApiStatus;
 @Mod.EventBusSubscriber(modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
 @ApiStatus.Internal
 public class ConfigurationInitialization {
-
     @SubscribeEvent
     private static void configureModdedClient(OnGameConfigurationEvent event) {
         if (!event.getListener().isVanillaConnection()) {
@@ -25,5 +25,6 @@ public class ConfigurationInitialization {
         }
 
         event.register(new SyncTierSortingRegistry(event.getListener()));
+        event.register(new RegistryDataMapNegotiation(event.getListener()));
     }
 }

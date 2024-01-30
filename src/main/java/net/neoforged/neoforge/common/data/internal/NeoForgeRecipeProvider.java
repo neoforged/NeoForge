@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
@@ -44,8 +43,8 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     private final Map<Item, TagKey<Item>> replacements = new HashMap<>();
     private final Set<ResourceLocation> excludes = new HashSet<>();
 
-    public NeoForgeRecipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
-        super(packOutput, lookupProvider);
+    public NeoForgeRecipeProvider(PackOutput packOutput) {
+        super(packOutput);
     }
 
     private void exclude(ItemLike item) {

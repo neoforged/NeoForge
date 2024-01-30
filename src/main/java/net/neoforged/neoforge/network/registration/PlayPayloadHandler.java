@@ -11,7 +11,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPlayPayloadHandler;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -21,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
  */
 @ApiStatus.Internal
 final class PlayPayloadHandler<T extends CustomPacketPayload> implements IPlayPayloadHandler<T> {
-
     @Nullable
     private final IPlayPayloadHandler<T> clientSide;
     @Nullable
@@ -70,12 +68,12 @@ final class PlayPayloadHandler<T extends CustomPacketPayload> implements IPlayPa
         private @Nullable IPlayPayloadHandler<T> clientSide;
         private @Nullable IPlayPayloadHandler<T> serverSide;
 
-        public Builder<T> client(@NotNull IPlayPayloadHandler<T> clientSide) {
+        public Builder<T> client(IPlayPayloadHandler<T> clientSide) {
             this.clientSide = clientSide;
             return this;
         }
 
-        public Builder<T> server(@NotNull IPlayPayloadHandler<T> serverSide) {
+        public Builder<T> server(IPlayPayloadHandler<T> serverSide) {
             this.serverSide = serverSide;
             return this;
         }

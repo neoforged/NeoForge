@@ -1,0 +1,14 @@
+{
+  "remove": [
+    {
+      "key": "minecraft:potato",
+      "remover": [
+        "value2"
+      ]
+    },
+    {
+      "key": "minecraft:shears"
+    }
+  ],
+  "values": {}
+}

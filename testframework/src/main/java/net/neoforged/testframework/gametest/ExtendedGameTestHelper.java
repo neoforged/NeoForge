@@ -262,9 +262,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
     public void addEndListener(Consumer<Boolean> listener) {
         testInfo.addListener(new GameTestListener() {
             @Override
-            public void testStructureLoaded(GameTestInfo info) {
-
-            }
+            public void testStructureLoaded(GameTestInfo info) {}
 
             @Override
             public void testPassed(GameTestInfo info) {

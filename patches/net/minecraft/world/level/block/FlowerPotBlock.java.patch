@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/level/block/FlowerPotBlock.java
 +++ b/net/minecraft/world/level/block/FlowerPotBlock.java
+@@ -35,6 +_,7 @@
+     private static final Map<Block, Block> POTTED_BY_CONTENT = Maps.newHashMap();
+     public static final float AABB_SIZE = 3.0F;
+     protected static final VoxelShape SHAPE = Block.box(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
++    /** Neo: Field accesses are redirected to {@link #getPotted()} with a coremod. */
+     private final Block potted;
+ 
+     @Override
 @@ -42,10 +_,31 @@
          return CODEC;
      }

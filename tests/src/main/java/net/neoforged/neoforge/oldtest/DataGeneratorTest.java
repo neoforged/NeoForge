@@ -179,7 +179,7 @@ public class DataGeneratorTest {
         gen.addProvider(event.includeClient(), new SoundDefinitions(packOutput, event.getExistingFileHelper()));
         gen.addProvider(event.includeClient(), new ParticleDescriptions(packOutput, event.getExistingFileHelper()));
 
-        gen.addProvider(event.includeServer(), new Recipes(packOutput, event.getLookupProvider()));
+        gen.addProvider(event.includeServer(), new Recipes(packOutput));
         gen.addProvider(event.includeServer(), new Tags(packOutput, lookupProvider, event.getExistingFileHelper()));
         gen.addProvider(event.includeServer(), new AdvancementProvider(packOutput, lookupProvider, event.getExistingFileHelper(), List.of(new Advancements())));
         gen.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, BUILDER, Set.of(MODID)));
@@ -196,8 +196,8 @@ public class DataGeneratorTest {
     }
 
     public static class Recipes extends RecipeProvider implements IConditionBuilder {
-        public Recipes(PackOutput gen, CompletableFuture<HolderLookup.Provider> lookupProvider) {
-            super(gen, lookupProvider);
+        public Recipes(PackOutput gen) {
+            super(gen);
         }
 
         @Override
@@ -940,7 +940,6 @@ public class DataGeneratorTest {
     }
 
     private static class Advancements implements AdvancementProvider.AdvancementGenerator {
-
         @Override
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
             var obtainDirt = Advancement.Builder.advancement()
@@ -1008,7 +1007,6 @@ public class DataGeneratorTest {
     }
 
     private static class ParticleDescriptions extends ParticleDescriptionProvider {
-
         public ParticleDescriptions(PackOutput output, ExistingFileHelper fileHelper) {
             super(output, fileHelper);
         }
@@ -1026,7 +1024,6 @@ public class DataGeneratorTest {
                     new ResourceLocation("splash_3"));
 
             this.spriteSet(ParticleTypes.ENCHANT, () -> new Iterator<>() {
-
                 private final ResourceLocation base = new ResourceLocation("sga");
                 private char suffix = 'a';
 

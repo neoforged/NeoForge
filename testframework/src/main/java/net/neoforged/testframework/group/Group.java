@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 import net.minecraft.network.chat.Component;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class Group implements Groupable {
@@ -54,7 +53,7 @@ public final class Group implements Groupable {
     }
 
     @Override
-    public @NotNull Stream<Test> resolveAsStream() {
+    public Stream<Test> resolveAsStream() {
         return entries.stream().flatMap(gr -> gr.resolveAll().stream());
     }
 

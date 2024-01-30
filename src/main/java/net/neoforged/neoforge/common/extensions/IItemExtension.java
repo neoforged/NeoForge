@@ -22,6 +22,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
@@ -31,6 +33,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.HorseArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -45,7 +48,7 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 // TODO systemic review of all extension functions. lots of unused -C
@@ -276,7 +279,10 @@ public interface IItemExtension {
 
     /**
      * Called to tick armor in the armor slot. Override to do something
+     * 
+     * @deprecated Use {@link Item#inventoryTick(ItemStack, Level, Entity, int, boolean)} by checking that the slot argument is an armor slot. Armor slots are 36, 37, 38 and 39.
      */
+    @Deprecated(forRemoval = true, since = "1.20.4")
     default void onArmorTick(ItemStack stack, Level level, Player player) {}
 
     /**
@@ -456,13 +462,15 @@ public interface IItemExtension {
     /**
      * Gets the level of the enchantment currently present on the stack. By default, returns the enchantment level present in NBT.
      * Most enchantment implementations rely upon this method.
-     * For consistency, results of this method should be the same as getting the enchantment from {@link #getAllEnchantments(ItemStack)}
+     * The returned value must be the same as getting the enchantment from {@link #getAllEnchantments(ItemStack)}
      *
-     * @param stack       the item stack being checked
-     * @param enchantment the enchantment being checked for
+     * @param stack       The item stack being checked
+     * @param enchantment The enchantment being checked for
      * @return Level of the enchantment, or 0 if not present
      * @see #getAllEnchantments(ItemStack)
+     * @apiNote Call via {@link IItemStackExtension#getEnchantmentLevel(Enchantment)}.
      */
+    @ApiStatus.OverrideOnly
     default int getEnchantmentLevel(ItemStack stack, Enchantment enchantment) {
         return EnchantmentHelper.getTagEnchantmentLevel(enchantment, stack);
     }
@@ -470,12 +478,14 @@ public interface IItemExtension {
     /**
      * Gets a map of all enchantments present on the stack. By default, returns the enchantments present in NBT.
      * Used in several places in code including armor enchantment hooks.
-     * For consistency, any enchantments in the returned map should include the same level in {@link #getEnchantmentLevel(ItemStack, Enchantment)}
+     * The returned value(s) must have the same level as {@link #getEnchantmentLevel(ItemStack, Enchantment)}.
      *
-     * @param stack the item stack being checked
+     * @param stack The item stack being checked
      * @return Map of all enchantments on the stack, empty if no enchantments are present
      * @see #getEnchantmentLevel(ItemStack, Enchantment)
+     * @apiNote Call via {@link IItemStackExtension#getAllEnchantments()}.
      */
+    @ApiStatus.OverrideOnly
     default Map<Enchantment, Integer> getAllEnchantments(ItemStack stack) {
         return EnchantmentHelper.deserializeEnchantments(stack.getEnchantmentTags());
     }
@@ -590,13 +600,16 @@ public interface IItemExtension {
     }
 
     /**
-     * Called every tick from {@code Horse#playGallopSound(SoundEvent)} on the item in the
-     * armor slot.
+     * Called every tick when this item is equipped {@linkplain AbstractHorse#isArmor(ItemStack) as an armor item} by a horse {@linkplain AbstractHorse#canWearArmor() that can wear armor}.
+     * <p>
+     * In vanilla, only {@linkplain Horse horses} can wear armor, and they can only equip items that extend {@link HorseArmorItem}.
      *
-     * @param stack the armor itemstack
-     * @param level the level the horse is in
-     * @param horse the horse wearing this armor
+     * @param stack The armor stack
+     * @param level The level the horse is in
+     * @param horse The horse wearing this item
+     * @apiNote Call from {@link IItemStackExtension#onHorseArmorTick(Level, Mob)}.
      */
+    @ApiStatus.OverrideOnly
     default void onHorseArmorTick(ItemStack stack, Level level, Mob horse) {}
 
     /**
@@ -694,8 +707,8 @@ public interface IItemExtension {
      * @param target the entity targeted by the attack.
      * @return the bounding box.
      */
-    @NotNull
-    default AABB getSweepHitBox(@NotNull ItemStack stack, @NotNull Player player, @NotNull Entity target) {
+
+    default AABB getSweepHitBox(ItemStack stack, Player player, Entity target) {
         return target.getBoundingBox().inflate(1.0D, 0.25D, 1.0D);
     }
 
@@ -706,7 +719,7 @@ public interface IItemExtension {
      * @param stack the stack
      * @return the default hide flags
      */
-    default int getDefaultTooltipHideFlags(@NotNull ItemStack stack) {
+    default int getDefaultTooltipHideFlags(ItemStack stack) {
         return 0;
     }
 
