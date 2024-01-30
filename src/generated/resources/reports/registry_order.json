@@ -1,5 +1,6 @@
 {
   "order": [
+    "minecraft:attribute",
     "minecraft:game_event",
     "minecraft:sound_event",
     "minecraft:fluid",
@@ -20,7 +21,6 @@
     "minecraft:menu",
     "minecraft:recipe_type",
     "minecraft:recipe_serializer",
-    "minecraft:attribute",
     "minecraft:position_source_type",
     "minecraft:command_argument_type",
     "minecraft:stat_type",
@@ -69,6 +69,17 @@
     "minecraft:decorated_pot_patterns",
     "minecraft:creative_mode_tab",
     "minecraft:trigger_type",
-    "minecraft:number_format_type"
+    "minecraft:number_format_type",
+    "neoforge:attachment_types",
+    "neoforge:biome_modifier_serializers",
+    "neoforge:condition_codecs",
+    "neoforge:display_contexts",
+    "neoforge:entity_data_serializers",
+    "neoforge:fluid_type",
+    "neoforge:global_loot_modifier_serializers",
+    "neoforge:holder_set_type",
+    "neoforge:ingredient_serializer",
+    "neoforge:item_predicates",
+    "neoforge:structure_modifier_serializers"
   ]
 }
