@@ -79,10 +79,7 @@ public class GameData {
     }
 
     public static void postRegisterEvents() {
-        Set<ResourceLocation> ordered = new LinkedHashSet<>();
-        ordered.add(Registries.ATTRIBUTE.location()); // Vanilla order is incorrect, both Item and MobEffect depend on Attribute at construction time.
-        ordered.addAll(BuiltInRegistries.getVanillaRegistrationOrder());
-        ordered.addAll(BuiltInRegistries.REGISTRY.keySet().stream().sorted(ResourceLocation::compareNamespaced).toList());
+        Set<ResourceLocation> ordered = GameData.getRegistrationOrder();
 
         RuntimeException aggregate = new RuntimeException();
         for (ResourceLocation rootRegistryName : ordered) {
@@ -112,5 +109,22 @@ public class GameData {
 
     static void fireRemapEvent(final Map<ResourceLocation, Map<ResourceLocation, IdMappingEvent.IdRemapping>> remaps, final boolean isFreezing) {
         NeoForge.EVENT_BUS.post(new IdMappingEvent(remaps, isFreezing));
+    }
+
+    /**
+     * Creates a {@link LinkedHashSet} containing the ordered list of registry names in the registration order.
+     * <p>
+     * The order is Attributes, then the remaining vanilla registries in vanilla order, then modded registries in alphabetical order.
+     * <p>
+     * Due to static init issues, this is not necessarily the order that vanilla objects are bootstrapped in.
+     * 
+     * @return A {@link LinkedHashSet} containing the registration order.
+     */
+    public static Set<ResourceLocation> getRegistrationOrder() {
+        Set<ResourceLocation> ordered = new LinkedHashSet<>();
+        ordered.add(Registries.ATTRIBUTE.location()); // Vanilla order is incorrect, both Item and MobEffect depend on Attribute at construction time.
+        ordered.addAll(BuiltInRegistries.getVanillaRegistrationOrder());
+        ordered.addAll(BuiltInRegistries.REGISTRY.keySet().stream().sorted(ResourceLocation::compareNamespaced).toList());
+        return ordered;
     }
 }
