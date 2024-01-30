@@ -1,16 +1,19 @@
 --- a/net/minecraft/client/renderer/Sheets.java
 +++ b/net/minecraft/client/renderer/Sheets.java
-@@ -172,11 +_,13 @@
+@@ -171,12 +_,14 @@
+         p_110781_.accept(ENDER_CHEST_LOCATION);
      }
  
-     public static Material createSignMaterial(WoodType p_173386_) {
+-    public static Material createSignMaterial(WoodType p_173386_) {
 -        return new Material(SIGN_SHEET, new ResourceLocation("entity/signs/" + p_173386_.name()));
++    private static Material createSignMaterial(WoodType p_173386_) {
 +        ResourceLocation location = new ResourceLocation(p_173386_.name());
 +        return new Material(SIGN_SHEET, new ResourceLocation(location.getNamespace(), "entity/signs/" + location.getPath()));
      }
  
-     public static Material createHangingSignMaterial(WoodType p_251735_) {
+-    public static Material createHangingSignMaterial(WoodType p_251735_) {
 -        return new Material(SIGN_SHEET, new ResourceLocation("entity/signs/hanging/" + p_251735_.name()));
++    private static Material createHangingSignMaterial(WoodType p_251735_) {
 +        ResourceLocation location = new ResourceLocation(p_251735_.name());
 +        return new Material(SIGN_SHEET, new ResourceLocation(location.getNamespace(), "entity/signs/hanging/" + location.getPath()));
      }

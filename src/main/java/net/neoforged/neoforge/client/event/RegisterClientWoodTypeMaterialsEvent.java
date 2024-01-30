@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.event;
 
 import java.util.Map;
-import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.neoforged.bus.api.Event;
@@ -34,8 +33,8 @@ public class RegisterClientWoodTypeMaterialsEvent extends Event implements IModB
 
     public void register(WoodType... woodTypes) {
         for (var woodType : woodTypes) {
-            signMaterials.put(woodType, Sheets.createSignMaterial(woodType));
-            hangingSignMaterials.put(woodType, Sheets.createHangingSignMaterial(woodType));
+//            signMaterials.put(woodType, Sheets.createSignMaterial(woodType));
+//            hangingSignMaterials.put(woodType, Sheets.createHangingSignMaterial(woodType));
         }
     }
 }
