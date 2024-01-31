@@ -8,6 +8,7 @@ package net.neoforged.neoforge.network.registration;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
 import java.util.ArrayList;
@@ -717,7 +718,16 @@ public class NetworkRegistry {
      * @return True if the connection is a vanilla connection, false otherwise.
      */
     public boolean isVanillaConnection(Connection connection) {
-        return connection.channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).get() == Boolean.FALSE;
+        return isVanillaConnection(connection.channel());
+    }
+    /**
+     * Indicates if the given connection is a vanilla connection.
+     *
+     * @param channel The channel to check.
+     * @return True if the connection is a vanilla connection, false otherwise.
+     */
+    public boolean isVanillaConnection(Channel channel) {
+        return channel.attr(ATTRIBUTE_IS_MODDED_CONNECTION).get() == Boolean.FALSE;
     }
 
     /**
