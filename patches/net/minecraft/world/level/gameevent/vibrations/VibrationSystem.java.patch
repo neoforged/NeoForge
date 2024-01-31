@@ -9,13 +9,14 @@
      ToIntFunction<GameEvent> VIBRATION_FREQUENCY_FOR_EVENT = Util.make(new Object2IntOpenHashMap<>(), p_297981_ -> {
          p_297981_.defaultReturnValue(0);
          p_297981_.put(GameEvent.STEP, 1);
-@@ -101,7 +_,8 @@
+@@ -101,7 +_,9 @@
      VibrationSystem.User getVibrationUser();
  
      static int getGameEventFrequency(GameEvent p_281355_) {
 -        return VIBRATION_FREQUENCY_FOR_EVENT.applyAsInt(p_281355_);
 +        var data = p_281355_.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.VIBRATION_FREQUENCIES);
-+        return data == null ? 0 : data.frequency();
++        // TODO 1.20.5 - remove fallback
++        return data == null ? VIBRATION_FREQUENCY_FOR_EVENT.applyAsInt(p_281355_) : data.frequency();
      }
  
      static GameEvent getResonanceEventByFrequency(int p_282105_) {
