@@ -67,4 +67,4 @@ jobs:
           # Run server
           bash run.sh -Dneoforge.autoTestServer=true
           # Check that it succeeded
-          grep -q "Server auto-test successful" prod-server/logs/latest.log
+          grep -q "Server auto-test successful" logs/latest.log
