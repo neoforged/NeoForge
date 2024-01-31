@@ -66,3 +66,5 @@ jobs:
           echo "eula=true" >> eula.txt
           # Run server
           bash run.sh -Dneoforge.autoTestServer=true
+          # Check that it succeeded
+          grep -q "Server auto-test successful" prod-server/server/logs/latest.log

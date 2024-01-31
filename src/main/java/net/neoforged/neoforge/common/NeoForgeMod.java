@@ -627,6 +627,7 @@ public class NeoForgeMod {
                     if (serverTicks.incrementAndGet() == 50) {
                         MixinEnvironment.getCurrentEnvironment().audit();
                         event.getServer().halt(false);
+                        LOGGER.info("Server auto-test successful");
                     }
                 }
             });
