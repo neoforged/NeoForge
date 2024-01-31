@@ -51,3 +51,18 @@ jobs:
 
       - name: Publish artifacts
         uses: neoforged/action-pr-publishing/upload@v1
+
+      - name: Install production server
+        run: |
+          # Find installer jar
+          INSTALLER_JAR=$(find projects/neoforge/build/libs -type f -iname "neoforge-*-installer.jar" | tail -n 1)
+          # Run installer
+          java -jar $INSTALLER_JAR --install-server prod-server/
+
+      - name: Run production server
+        run: |
+          cd prod-server/
+          # Accept EULA
+          echo "eula=true" >> eula.txt
+          # Run server
+          bash run.sh -Dneoforge.autoTestServer=true
