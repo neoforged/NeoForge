@@ -27,6 +27,7 @@ import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent.VanillaReloadListenerTarget;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
@@ -152,7 +153,7 @@ public class NeoForgeEventHandler {
     public void onResourceReload(AddReloadListenerEvent event) {
         INSTANCE = new LootModifierManager();
         event.addListener(INSTANCE);
-        event.addListener(DATA_MAPS = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
+        event.addListenerBefore(VanillaReloadListenerTarget.RECIPES, DATA_MAPS = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
     }
 
     static LootModifierManager getLootModifierManager() {
