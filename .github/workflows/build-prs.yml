@@ -64,7 +64,9 @@ jobs:
           cd prod-server/
           # Accept EULA
           echo "eula=true" >> eula.txt
+          # Add autotest VM arg
+          echo -e "\n-Dneoforge.autoTestServer=true" >> user_jvm_args.txt
           # Run server
-          bash run.sh -Dneoforge.autoTestServer=true
+          bash run.sh
           # Check that it succeeded
           grep -q "Server auto-test successful" logs/latest.log
