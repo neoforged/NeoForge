@@ -8,13 +8,16 @@ package net.neoforged.neoforge.fluids;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
+import java.util.stream.Stream;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -49,6 +52,7 @@ public class FluidStack {
 
     private boolean isEmpty;
     private int amount;
+    @Nullable
     private CompoundTag tag;
     private final Fluid fluid;
 
@@ -143,6 +147,38 @@ public class FluidStack {
         return fluid;
     }
 
+    public final FluidType getFluidType() {
+        return getFluid().getFluidType();
+    }
+
+    public final Holder<Fluid> getFluidHolder() {
+        return getFluid().builtInRegistryHolder();
+    }
+
+    public final boolean is(TagKey<Fluid> tag) {
+        return getFluidHolder().is(tag);
+    }
+
+    public final boolean is(Fluid fluid) {
+        return getFluid() == fluid;
+    }
+
+    public final boolean is(FluidType fluidType) {
+        return getFluidType() == fluidType;
+    }
+
+    public final boolean is(Holder<Fluid> holder) {
+        return is(holder.value());
+    }
+
+    public final boolean is(HolderSet<Fluid> holderSet) {
+        return holderSet.contains(getFluidHolder());
+    }
+
+    public final Stream<TagKey<Fluid>> getTags() {
+        return getFluidHolder().tags();
+    }
+
     public boolean isEmpty() {
         return isEmpty;
     }
@@ -173,6 +209,7 @@ public class FluidStack {
         return tag != null;
     }
 
+    @Nullable
     public CompoundTag getTag() {
         return tag;
     }
@@ -209,17 +246,28 @@ public class FluidStack {
     }
 
     public Component getDisplayName() {
-        return this.getFluid().getFluidType().getDescription(this);
+        return getFluidType().getDescription(this);
     }
 
     public String getTranslationKey() {
-        return this.getFluid().getFluidType().getDescriptionId(this);
+        return getFluidType().getDescriptionId(this);
     }
 
     /**
      * @return A copy of this FluidStack
      */
     public FluidStack copy() {
+        //TODO - 1.20.5: Mirror vanilla's ItemStack#copy method and return the empty instance if this is empty
+        return new FluidStack(getFluid(), amount, tag);
+    }
+
+    /**
+     * @return A copy of this FluidStack
+     */
+    public FluidStack copyWithAmount(int amount) {
+        if (isEmpty() || amount <= 0) {
+            return EMPTY;
+        }
         return new FluidStack(getFluid(), amount, tag);
     }
 
@@ -231,7 +279,7 @@ public class FluidStack {
      * @return true if the Fluids (IDs and NBT Tags) are the same
      */
     public boolean isFluidEqual(FluidStack other) {
-        return getFluid() == other.getFluid() && isFluidStackTagEqual(other);
+        return is(other.getFluid()) && isFluidStackTagEqual(other);
     }
 
     private boolean isFluidStackTagEqual(FluidStack other) {

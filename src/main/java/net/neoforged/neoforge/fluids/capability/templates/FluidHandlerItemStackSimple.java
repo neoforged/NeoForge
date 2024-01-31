@@ -85,9 +85,7 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
             int fillAmount = Math.min(capacity, resource.getAmount());
             if (fillAmount == capacity) {
                 if (action.execute()) {
-                    FluidStack filled = resource.copy();
-                    filled.setAmount(fillAmount);
-                    setFluid(filled);
+                    setFluid(resource.copyWithAmount(fillAmount));
                 }
 
                 return fillAmount;

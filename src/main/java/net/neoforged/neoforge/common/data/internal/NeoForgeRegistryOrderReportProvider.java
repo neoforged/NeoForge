@@ -9,10 +9,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.neoforged.neoforge.registries.GameData;
 
 public final class NeoForgeRegistryOrderReportProvider implements DataProvider {
     private final PackOutput output;
@@ -26,7 +26,7 @@ public final class NeoForgeRegistryOrderReportProvider implements DataProvider {
         JsonObject json = new JsonObject();
 
         JsonArray array = new JsonArray();
-        BuiltInRegistries.getVanillaRegistrationOrder().forEach(name -> array.add(name.toString()));
+        GameData.getRegistrationOrder().forEach(name -> array.add(name.toString()));
         json.add("order", array);
 
         Path path = this.output.getOutputFolder(PackOutput.Target.REPORTS).resolve("registry_order.json");
