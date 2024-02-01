@@ -230,26 +230,26 @@ public class EventHooks {
     public static boolean checkSpawnPosition(Mob mob, ServerLevelAccessor level, MobSpawnType spawnType) {
         var event = new PositionCheck(mob, level, spawnType, null);
         NeoForge.EVENT_BUS.post(event);
-        if (event.getResult() == Result.DEFAULT) {
+        if (event.getResult() == PositionCheck.Result.DEFAULT) {
             return mob.checkSpawnRules(level, spawnType) && mob.checkSpawnObstruction(level);
         }
-        return event.getResult() == Result.ALLOW;
+        return event.getResult() == PositionCheck.Result.SUCCEED;
     }
 
     /**
-     * Specialized variant of {@link #checkSpawnPosition} for spawners, as they have slightly different checks.
+     * Specialized variant of {@link #checkSpawnPosition} for spawners, as they have slightly different checks, and pass through the {@link BaseSpawner} to the event.
      * 
-     * @see #CheckSpawnPosition
+     * @see #checkSpawnPosition(Mob, ServerLevelAccessor, MobSpawnType)
      * @implNote See in-line comments about custom spawn rules.
      */
     public static boolean checkSpawnPositionSpawner(Mob mob, ServerLevelAccessor level, MobSpawnType spawnType, SpawnData spawnData, BaseSpawner spawner) {
-        var event = new PositionCheck(mob, level, spawnType, null);
+        var event = new PositionCheck(mob, level, spawnType, spawner);
         NeoForge.EVENT_BUS.post(event);
-        if (event.getResult() == Result.DEFAULT) {
+        if (event.getResult() == PositionCheck.Result.DEFAULT) {
             // Spawners do not evaluate Mob#checkSpawnRules if any custom rules are present. This is despite the fact that these two methods do not check the same things.
             return (spawnData.getCustomSpawnRules().isPresent() || mob.checkSpawnRules(level, spawnType)) && mob.checkSpawnObstruction(level);
         }
-        return event.getResult() == Result.ALLOW;
+        return event.getResult() == PositionCheck.Result.SUCCEED;
     }
 
     /**

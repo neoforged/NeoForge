@@ -14,6 +14,8 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.SpawnPlacements.SpawnPredicate;
 import net.minecraft.world.level.BaseSpawner;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.SpawnData.CustomSpawnRules;
 import net.neoforged.bus.api.Event;
@@ -229,28 +231,17 @@ public abstract class MobSpawnEvent extends EntityEvent {
      * <li>Spawn Block - Ocelots check if the below block is grass or leaves.</li>
      * </ul>
      * <p>
-     * These checks are performed by the vanilla methods {@link Mob#checkSpawnRules} and {@link Mob#checkSpawnObstruction}.<br>
-     * The logical-and of both methods forms the default result of this event.
-     * <p>
-     * This event {@linkplain HasResult has a result}.<br>
-     * To change the result of this event, use {@link #setResult}. Results are interpreted in the following manner:
-     * <ul>
-     * <li>Allow - The position will be accepted, and the spawn process will continue.</li>
-     * <li>Default - The position will be accepted if {@link Mob#checkSpawnRules} and {@link Mob#checkSpawnObstruction} are both true.</li>
-     * <li>Deny - The position will not be accepted. The spawn process will abort, and further events will not be called.</li>
-     * </ul>
-     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
-     * only on the {@linkplain LogicalSide#SERVER logical server}.
+     * This event is only fired on the {@linkplain LogicalSide#SERVER logical server}.
      *
      * @apiNote This event fires after Spawn Placement checks, which are the primary set of spawn checks.
      * @see {@link SpawnPlacementRegisterEvent} To modify spawn placements statically at startup.
      * @see {@link SpawnPlacementCheck} To modify the result of spawn placements at runtime.
      */
-    @HasResult
     public static class PositionCheck extends MobSpawnEvent {
         @Nullable
         private final BaseSpawner spawner;
         private final MobSpawnType spawnType;
+        private Result result;
 
         public PositionCheck(Mob mob, ServerLevelAccessor level, MobSpawnType spawnType, @Nullable BaseSpawner spawner) {
             super(mob, level, mob.getX(), mob.getY(), mob.getZ());
@@ -277,6 +268,41 @@ public abstract class MobSpawnEvent extends EntityEvent {
          */
         public MobSpawnType getSpawnType() {
             return this.spawnType;
+        }
+
+        /**
+         * Changes the result of this event.
+         * 
+         * @see {@link Result} for the possible states.
+         */
+        public void setResult(Result result) {
+            this.result = result;
+        }
+
+        /**
+         * {@return the result of this event, which controls if the position check will succeed}
+         */
+        public Result getResult() {
+            return this.result;
+        }
+
+        public static enum Result {
+            /**
+             * Forces the event to cause the position check to succeed.
+             */
+            SUCCEED,
+
+            /**
+             * The results of {@link Mob#checkSpawnRules(LevelAccessor, MobSpawnType)} and {@link Mob#checkSpawnObstruction(LevelReader)} will be used to determine if the check will succeed.
+             * <p>
+             * If this is being called from a spawner, the {@link Mob#checkSpawnRules(LevelAccessor, MobSpawnType)} call will be skipped if any {@link CustomSpawnRules} are present.
+             */
+            DEFAULT,
+
+            /**
+             * Forces the event to cause the position check to fail.
+             */
+            FAIL;
         }
     }
 
