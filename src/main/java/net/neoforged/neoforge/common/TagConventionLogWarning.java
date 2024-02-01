@@ -472,7 +472,7 @@ public final class TagConventionLogWarning {
                     if (!legacyTags.isEmpty()) {
                         StringBuilder stringBuilder = new StringBuilder();
                         stringBuilder.append("""
-                                \n   Dev warning - Legacy Tags detected. Please migrate your 'forge' namespace tags to 'c' namespace! See net.minecraftforge.common.Tags.java for all tags.
+                                \n   Dev warning - Legacy Tags detected. Please migrate your 'forge' namespace tags to 'c' namespace! See net.neoforged.neoforge.common.Tags.java for all tags.
                                    NOTE: Many tags have been moved around or renamed. Some new ones were added so please review the new tags.
                                     And make sure you follow tag conventions for new tags! The convention is `c` with nouns generally being plural and adjectives being singular.
                                    You can disable this message in Neoforge's common config by setting logLegacyTagWarnings to "SILENCED" or see individual tags with "DEV_VERBOSE".
