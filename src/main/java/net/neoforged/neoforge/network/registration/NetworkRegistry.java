@@ -12,13 +12,7 @@ import com.mojang.logging.LogUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -969,7 +963,6 @@ public class NetworkRegistry {
     private void onMinecraftRegister(Set<ResourceLocation> resourceLocations, Connection connection) {
         final Set<ResourceLocation> payloadSetup = connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
         if (payloadSetup == null) {
-            connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).set(resourceLocations);
             return;
         }
 
