@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/animal/Parrot.java
 +++ b/net/minecraft/world/entity/animal/Parrot.java
+@@ -76,7 +_,7 @@
+     private static final EntityDataAccessor<Integer> DATA_VARIANT_ID = SynchedEntityData.defineId(Parrot.class, EntityDataSerializers.INT);
+     private static final Predicate<Mob> NOT_PARROT_PREDICATE = new Predicate<Mob>() {
+         public boolean test(@Nullable Mob p_29453_) {
+-            return p_29453_ != null && Parrot.MOB_SOUND_MAP.containsKey(p_29453_.getType());
++            return p_29453_ != null && (Parrot.MOB_SOUND_MAP.containsKey(p_29453_.getType()) || p_29453_.getType().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATION) != null);
+         }
+     };
+     private static final Item POISONOUS_FOOD = Items.COOKIE;
 @@ -272,7 +_,7 @@
              }
  
@@ -9,3 +18,27 @@
                      this.tame(p_29414_);
                      this.level().broadcastEntityEvent(this, (byte)7);
                  } else {
+@@ -343,6 +_,14 @@
+     public static SoundEvent getAmbient(Level p_218239_, RandomSource p_218240_) {
+         if (p_218239_.getDifficulty() != Difficulty.PEACEFUL && p_218240_.nextInt(1000) == 0) {
+             List<EntityType<?>> list = Lists.newArrayList(MOB_SOUND_MAP.keySet());
++            p_218239_.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENTITY_TYPE)
++                    .getDataMap(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATION)
++                    .keySet().forEach(key -> {
++                        final var entity = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.get(key);
++                        if (!list.contains(entity)) {
++                            list.add(entity);
++                        }
++                    });
+             return getImitatedSound(list.get(p_218240_.nextInt(list.size())));
+         } else {
+             return SoundEvents.PARROT_AMBIENT;
+@@ -350,6 +_,8 @@
+     }
+ 
+     private static SoundEvent getImitatedSound(EntityType<?> p_29409_) {
++        var imitation = p_29409_.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATION);
++        if (imitation != null) return imitation.sound();
+         return MOB_SOUND_MAP.getOrDefault(p_29409_, SoundEvents.PARROT_AMBIENT);
+     }
+ 

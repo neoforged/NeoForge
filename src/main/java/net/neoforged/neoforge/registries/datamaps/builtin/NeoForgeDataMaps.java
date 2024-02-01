@@ -7,9 +7,11 @@ package net.neoforged.neoforge.registries.datamaps.builtin;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.sound.SoundEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
@@ -34,6 +36,10 @@ public class NeoForgeDataMaps {
     public static final DataMapType<Item, Compostable> COMPOSTABLES = DataMapType.builder(
             id("compostables"), Registries.ITEM, Compostable.CODEC).synced(Compostable.CHANCE_CODEC, false).build();
 
+    public static final DataMapType<EntityType<?>, ParrotImitation> PARROT_IMITATION = DataMapType.builder(
+            id("parrot_imitation"), Registries.ENTITY_TYPE, ParrotImitation.CODEC
+    ).synced(ParrotImitation.CODEC, false).build();
+
     private static ResourceLocation id(final String name) {
         return new ResourceLocation(NeoForgeVersion.MOD_ID, name);
     }
@@ -41,5 +47,6 @@ public class NeoForgeDataMaps {
     @SubscribeEvent
     private static void register(final RegisterDataMapTypesEvent event) {
         event.register(COMPOSTABLES);
+        event.register(PARROT_IMITATION);
     }
 }
