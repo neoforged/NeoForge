@@ -306,7 +306,7 @@ public class TierSortingRegistry {
     }
 
     public static void sync(ServerConfigurationPacketListener listener, Consumer<CustomPacketPayload> sender) {
-        if (listener.isVanillaConnection()) {
+        if (!listener.isConnected(TierSortingRegistryPayload.ID)) {
             if (allowVanilla()) {
                 listener.finishCurrentTask(SyncTierSortingRegistry.TYPE);
             } else {
