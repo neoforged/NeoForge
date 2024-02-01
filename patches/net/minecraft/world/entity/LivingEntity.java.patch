@@ -109,7 +109,13 @@
                  iterator.remove();
              }
  
-@@ -951,6 +_,7 @@
+@@ -946,11 +_,12 @@
+     }
+ 
+     public boolean addEffect(MobEffectInstance p_147208_, @Nullable Entity p_147209_) {
+-        if (!this.canBeAffected(p_147208_)) {
++        if (!net.neoforged.neoforge.common.CommonHooks.canMobEffectBeApplied(this, p_147208_)) {
+             return false;
          } else {
              MobEffectInstance mobeffectinstance = this.activeEffects.get(p_147208_.getEffect());
              boolean flag = false;
@@ -117,16 +123,30 @@
              if (mobeffectinstance == null) {
                  this.activeEffects.put(p_147208_.getEffect(), p_147208_);
                  this.onEffectAdded(p_147208_, p_147209_);
-@@ -966,6 +_,9 @@
+@@ -965,6 +_,14 @@
+         }
      }
  
++    /**
++     * Neo: Override-Only.
++     * <p>
++     * If you would externally call this method, instead invoke {@link net.neoforged.neoforge.common.CommonHooks#canMobEffectBeApplied(LivingEntity, MobEffectInstance)}.
++     * <p>
++     * Do not wrap super calls, as that will cause infinite recursion.
++     */
++    @org.jetbrains.annotations.ApiStatus.OverrideOnly
      public boolean canBeAffected(MobEffectInstance p_21197_) {
-+        net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable event = new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable(this, p_21197_);
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
-+        if (event.getResult() != net.neoforged.bus.api.Event.Result.DEFAULT) return event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW;
          if (this.getMobType() == MobType.UNDEAD) {
              MobEffect mobeffect = p_21197_.getEffect();
-             if (mobeffect == MobEffects.REGENERATION || mobeffect == MobEffects.POISON) {
+@@ -977,7 +_,7 @@
+     }
+ 
+     public void forceAddEffect(MobEffectInstance p_147216_, @Nullable Entity p_147217_) {
+-        if (this.canBeAffected(p_147216_)) {
++        if (net.neoforged.neoforge.common.CommonHooks.canMobEffectBeApplied(this, p_147216_)) {
+             MobEffectInstance mobeffectinstance = this.activeEffects.put(p_147216_.getEffect(), p_147216_);
+             if (mobeffectinstance == null) {
+                 this.onEffectAdded(p_147216_, p_147217_);
 @@ -997,6 +_,7 @@
      }
  
