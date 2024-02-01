@@ -72,7 +72,7 @@ public class CustomFluidContainerTest {
                 if (fluidStack.isEmpty()) {
                     name.set(name.get() + " (empty)");
                 } else {
-                    name.set(name.get() + " (" + fluidStack.getFluid().getFluidType().getDescription().getString() + ")");
+                    name.set(name.get() + " (" + fluidStack.getFluidType().getDescription().getString() + ")");
                 }
             });
             return Component.literal(name.get());

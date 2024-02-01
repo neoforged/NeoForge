@@ -23,10 +23,18 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackCompatibility;
+import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.world.flag.FeatureFlags;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
@@ -35,6 +43,7 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.testframework.registration.DeferredAttachmentTypes;
 import net.neoforged.testframework.registration.DeferredBlocks;
@@ -43,8 +52,15 @@ import net.neoforged.testframework.registration.DeferredItems;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 public class RegistrationHelperImpl implements RegistrationHelper {
-    public RegistrationHelperImpl(String modId) {
+    private final ModContainer owner;
+
+    public RegistrationHelperImpl(String modId, ModContainer owner) {
         this.modId = modId;
+        this.owner = owner;
+    }
+
+    public RegistrationHelperImpl(String modId) {
+        this(modId, null);
     }
 
     private interface DataGenProvider<T extends DataProvider> {
@@ -150,6 +166,34 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     @Override
     public String modId() {
         return modId;
+    }
+
+    @Override
+    public String registerSubpack(String name) {
+        final String newName = modId + "_" + name;
+        eventListeners().accept((final AddPackFindersEvent event) -> {
+            if (event.getPackType() == PackType.SERVER_DATA) {
+                event.addRepositorySource(acceptor -> acceptor.accept(
+                        Pack.create(
+                                newName,
+                                Component.literal(newName),
+                                true,
+                                new PathPackResources.PathResourcesSupplier(
+                                        owner.getModInfo().getOwningFile()
+                                                .getFile().findResource(newName),
+                                        true),
+                                new Pack.Info(
+                                        Component.empty(),
+                                        PackCompatibility.COMPATIBLE,
+                                        FeatureFlags.DEFAULT_FLAGS,
+                                        List.of(),
+                                        true),
+                                Pack.Position.BOTTOM,
+                                true,
+                                PackSource.SERVER)));
+            }
+        });
+        return newName;
     }
 
     @Override

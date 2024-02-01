@@ -7,6 +7,7 @@ package net.neoforged.neoforge.registries;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.core.Registry;
@@ -16,7 +17,9 @@ import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 import net.neoforged.neoforge.registries.callback.ClearCallback;
 import net.neoforged.neoforge.registries.callback.RegistryCallback;
+import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
 public abstract class BaseMappedRegistry<T> implements Registry<T> {
@@ -24,6 +27,8 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     protected final List<BakeCallback<T>> bakeCallbacks = new ArrayList<>();
     protected final List<ClearCallback<T>> clearCallbacks = new ArrayList<>();
     final Map<ResourceLocation, ResourceLocation> aliases = new HashMap<>();
+    final Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>> dataMaps = new IdentityHashMap<>();
+
     private int maxId = Integer.MAX_VALUE - 1;
     private boolean sync;
 
@@ -102,6 +107,9 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
 
     protected void clear(boolean full) {
         this.aliases.clear();
+        if (full) {
+            this.dataMaps.clear();
+        }
     }
 
     /**
@@ -111,4 +119,15 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     protected abstract void registerIdMapping(ResourceKey<T> key, int id);
 
     protected abstract void unfreeze();
+
+    @Override
+    public <A> @Nullable A getData(DataMapType<T, A> type, ResourceKey<T> key) {
+        final var innerMap = dataMaps.get(type);
+        return innerMap == null ? null : (A) innerMap.get(key);
+    }
+
+    @Override
+    public <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<T, A> type) {
+        return (Map<ResourceKey<T>, A>) dataMaps.getOrDefault(type, Map.of());
+    }
 }
