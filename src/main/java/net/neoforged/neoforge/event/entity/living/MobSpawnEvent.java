@@ -12,14 +12,18 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.SpawnPlacements.SpawnPredicate;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.SpawnData.CustomSpawnRules;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable.Result;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,22 +91,13 @@ public abstract class MobSpawnEvent extends EntityEvent {
      * Spawn Placement checks include light levels, slime chunks, grass blocks for animals, and others in the same vein.<br>
      * The purpose of this event is to permit runtime changes to any or all spawn placement logic without having to wrap the placement for each entity.
      * <p>
-     * This event {@linkplain HasResult has a result}.<br>
-     * To change the result of this event, use {@link #setResult}. Results are interpreted in the following manner:
-     * <ul>
-     * <li>Allow - The check will succeed, and the spawn process will continue.</li>
-     * <li>Default - The value of the vanilla check will be used to determine success.</li>
-     * <li>Deny - The check will fail, and the spawn process will abort.</li>
-     * </ul>
-     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
-     * only on the {@linkplain LogicalSide#SERVER logical server}.
+     * This event is only fired on the {@linkplain LogicalSide#SERVER logical server}.
      * <p>
      * This event is not fired for mob spawners which utilize {@link CustomSpawnRules}, as they do not check spawn placements.
      * 
      * @apiNote If your modifications are for a single entity, and do not vary at runtime, use {@link SpawnPlacementRegisterEvent}.
      * @see SpawnPlacementRegisterEvent
      */
-    @HasResult
     public static class SpawnPlacementCheck extends Event {
         private final EntityType<?> entityType;
         private final ServerLevelAccessor level;
@@ -110,6 +105,7 @@ public abstract class MobSpawnEvent extends EntityEvent {
         private final BlockPos pos;
         private final RandomSource random;
         private final boolean defaultResult;
+        private Result result;
 
         /**
          * Internal.
@@ -173,6 +169,53 @@ public abstract class MobSpawnEvent extends EntityEvent {
          */
         public boolean getDefaultResult() {
             return this.defaultResult;
+        }
+
+        /**
+         * Changes the result of this event.
+         * 
+         * @see {@link Result} for the possible states.
+         */
+        public void setResult(Result result) {
+            this.result = result;
+        }
+
+        /**
+         * {@return the result of this event, which controls if the placement check will succeed}
+         */
+        public Result getResult() {
+            return this.result;
+        }
+
+        /**
+         * {@return If the placement check will succeed or not, based on the current event result}
+         */
+        public boolean getPlacementCheckResult() {
+            if (this.result == Result.SUCCEED) {
+                return true;
+            }
+            return this.result == Result.DEFAULT && this.getDefaultResult();
+        }
+
+        public static enum Result {
+            /**
+             * Forces the event to cause the placement check to succeed.
+             */
+            SUCCEED,
+
+            /**
+             * The result of {@link SpawnPredicate#test(EntityType, ServerLevelAccessor, MobSpawnType, BlockPos, RandomSource)} will be used to determine if the check will succeed.
+             * <p>
+             * If the mob does not have a spawn predicate, the check will always succeed.
+             * 
+             * @see {@link SpawnPlacementCheck#getDefaultResult()}
+             */
+            DEFAULT,
+
+            /**
+             * Forces the event to cause the placement check to fail.
+             */
+            FAIL;
         }
     }
 

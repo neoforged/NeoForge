@@ -214,8 +214,7 @@ public class EventHooks {
     @ApiStatus.Internal
     public static boolean checkSpawnPlacements(EntityType<?> entityType, ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random, boolean defaultResult) {
         var event = new SpawnPlacementCheck(entityType, level, spawnType, pos, random, defaultResult);
-        NeoForge.EVENT_BUS.post(event);
-        return event.getResult() == Result.DEFAULT ? defaultResult : event.getResult() == Result.ALLOW;
+        return NeoForge.EVENT_BUS.post(event).getPlacementCheckResult();
     }
 
     /**
