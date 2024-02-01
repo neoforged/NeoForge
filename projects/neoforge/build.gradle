@@ -197,10 +197,10 @@ tasks.withType(Javadoc.class).configureEach {
 
 tasks.withType(GenerateModuleMetadata).configureEach { enabled = false }
 
-// Raise patcher fuzziness quality to 80% (50% default is too low)
+// Raise patcher fuzziness quality to 95% (50% default is too low)
 import net.neoforged.gradle.platform.runtime.runtime.tasks.ApplyPatches
 tasks.withType(ApplyPatches).configureEach {
-    minimalFuzzingQuality = 0.8F
+    minimalFuzzingQuality = 0.95F
 }
 
 configurations {
