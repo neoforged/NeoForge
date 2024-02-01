@@ -20,6 +20,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.apache.commons.lang3.function.TriConsumer;
 
 /**
  * Additional helper methods for {@link FriendlyByteBuf}.
@@ -167,16 +168,11 @@ public interface IFriendlyByteBufExtension {
      * Variant of {@link FriendlyByteBuf#writeMap(Map, FriendlyByteBuf.Writer, FriendlyByteBuf.Writer)} that allows writing values
      * that depend on the key.
      */
-    default <K, V> void writeMap(Map<K, V> map, FriendlyByteBuf.Writer<K> keyWriter, MapValueWriter<K, V> valueWriter) {
+    default <K, V> void writeMap(Map<K, V> map, FriendlyByteBuf.Writer<K> keyWriter, TriConsumer<FriendlyByteBuf, K, V> valueWriter) {
         self().writeVarInt(map.size());
         map.forEach((key, value) -> {
             keyWriter.accept(self(), key);
-            valueWriter.write(self(), key, value);
+            valueWriter.accept(self(), key, value);
         });
-    }
-
-    @FunctionalInterface
-    interface MapValueWriter<K, V> {
-        void write(FriendlyByteBuf buf, K key, V value);
     }
 }
