@@ -720,6 +720,7 @@ public class NetworkRegistry {
     public boolean isVanillaConnection(Connection connection) {
         return isVanillaConnection(connection.channel());
     }
+
     /**
      * Indicates if the given connection is a vanilla connection.
      *

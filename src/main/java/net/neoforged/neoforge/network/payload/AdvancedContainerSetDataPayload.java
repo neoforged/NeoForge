@@ -15,15 +15,14 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * A custom payload that updates the full dataslot value instead of just the short value
  *
- * @param containerId  The containerId for the container.
- * @param dataId       The id for the dataslot.
- * @param value        The value for the dataslot.
+ * @param containerId The containerId for the container.
+ * @param dataId      The id for the dataslot.
+ * @param value       The value for the dataslot.
  */
 @ApiStatus.Internal
 public record AdvancedContainerSetDataPayload(int containerId, int dataId, int value) implements CustomPacketPayload {
 
     public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_set_data");
-
     public AdvancedContainerSetDataPayload(FriendlyByteBuf buffer) {
         this(buffer.readByte(), buffer.readShort(), buffer.readVarInt());
     }
