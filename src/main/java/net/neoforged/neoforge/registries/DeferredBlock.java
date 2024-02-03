@@ -33,7 +33,7 @@ public class DeferredBlock<T extends Block> extends DeferredHolder<Block, T> imp
      */
     public ItemStack toStack(int count) {
         ItemStack stack = asItem().getDefaultInstance();
-        if (stack.isEmpty()) throw new IllegalStateException("Item stack can't be null!");
+        if (stack.isEmpty()) throw new IllegalStateException("Block does not have a corresponding item: " + this.key);
         stack.setCount(count);
         return stack;
     }

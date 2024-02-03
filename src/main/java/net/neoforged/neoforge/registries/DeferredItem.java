@@ -32,7 +32,7 @@ public class DeferredItem<T extends Item> extends DeferredHolder<Item, T> implem
      */
     public ItemStack toStack(int count) {
         ItemStack stack = asItem().getDefaultInstance();
-        if (stack.isEmpty()) throw new IllegalStateException("Item stack can't be null!");
+        if (stack.isEmpty()) throw new IllegalStateException("Obtained empty item stack; incorrect getDefaultInstance() call?");
         stack.setCount(count);
         return stack;
     }
