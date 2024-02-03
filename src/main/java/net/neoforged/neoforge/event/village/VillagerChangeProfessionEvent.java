@@ -41,7 +41,7 @@ public class VillagerChangeProfessionEvent extends EntityEvent implements ICance
 
     @Override
     public Villager getEntity() {
-        return ((Villager) super.getEntity());
+        return (Villager) super.getEntity();
     }
 
     /**
