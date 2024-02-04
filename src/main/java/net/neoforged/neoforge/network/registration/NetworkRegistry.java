@@ -8,7 +8,6 @@ package net.neoforged.neoforge.network.registration;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
 import java.util.ArrayList;
