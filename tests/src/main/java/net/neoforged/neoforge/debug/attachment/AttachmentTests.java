@@ -264,4 +264,59 @@ public class AttachmentTests {
             helper.succeed();
         });
     }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Ensures that attachments can opt-out of serializing default values")
+    static void itemAttachmentSkipSerialization(final DynamicTest test, final RegistrationHelper reg) {
+        var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
+                .register("test_int", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).skipDefaultSerialization().build());
+
+        test.onGameTest(helper -> {
+            ItemStack stack = Items.APPLE.getDefaultInstance();
+            stack.setData(attachmentType, 1);
+            helper.assertTrue(stack.serializeAttachments() != null, "Stack should have serialized attachments");
+            stack.setData(attachmentType, 0);
+            helper.assertTrue(stack.serializeAttachments() == null, "None of the stack's attachments should be serialized");
+            helper.assertTrue(stack.hasData(attachmentType), "Stack should have attached data");
+
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Ensures that removing attachments works")
+    static void itemAttachmentRemoval(final DynamicTest test, final RegistrationHelper reg) {
+        var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
+                .register("test_int", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).build());
+
+        test.onGameTest(helper -> {
+            ItemStack stack = Items.APPLE.getDefaultInstance();
+            stack.setData(attachmentType, 1);
+            helper.assertTrue(stack.hasData(attachmentType), "Stack should have attached data");
+            stack.removeData(attachmentType);
+            helper.assertFalse(stack.hasData(attachmentType), "Stack should not have attached data");
+
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Ensures that the presence of non-serializable attachments can be checked")
+    static void itemAttachmentPresence(final DynamicTest test, final RegistrationHelper reg) {
+        var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
+              .register("test_int", () -> AttachmentType.builder(() -> 0).build());
+
+        test.onGameTest(helper -> {
+            ItemStack stack = Items.APPLE.getDefaultInstance();
+            stack.setData(attachmentType, 1);
+            helper.assertTrue(stack.hasData(attachmentType), "Stack should have attached data");
+            //Also check we can detect the presence if we don't know what types are attached
+            helper.assertTrue(stack.hasData(), "Stack should have attached data");
+
+            helper.succeed();
+        });
+    }
 }

@@ -39,7 +39,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     @Nullable
     Map<AttachmentType<?>, Object> attachments = null;
     @Nullable
-    Map<AttachmentType<?>, Tag> defaultSerializations = null;
+    private Map<AttachmentType<?>, Tag> defaultSerializations = null;
 
     /**
      * Create the attachment map if it does not yet exist, or return the current map.
