@@ -27,7 +27,11 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -577,6 +581,38 @@ public class DeferredRegister<T> {
         @Override
         protected <I extends Item> DeferredItem<I> createHolder(ResourceKey<? extends Registry<Item>> registryKey, ResourceLocation key) {
             return DeferredItem.createItem(ResourceKey.create(registryKey, key));
+        }
+    }
+
+    public static class Fluids extends DeferredRegister<Fluid> {
+
+        protected Fluids(String namespace) {
+            super(Registries.FLUID, namespace);
+        }
+
+        @Override
+        public <I extends Fluid> DeferredFluid<I> register(String name, Function<ResourceLocation, ? extends I> func) {
+            return (DeferredFluid<I>)super.register(name, func);
+        }
+
+        @Override
+        public <I extends Fluid> DeferredFluid<I> register(String name, Supplier<? extends I> sup) {
+            return register(name, key -> sup.get());
+        }
+
+        // @todo add more overloads to this
+        <T extends FlowingFluid> DeferredFluid<T> registerFluid(String name,
+                                                                Function<BaseFlowingFluid.Properties, T> source,
+                                                                Function<BaseFlowingFluid.Properties, Fluid> flowing,
+                                                                Supplier<FluidType> type,
+                                                                Consumer<BaseFlowingFluid.Properties> propBuilder) {
+            // @todo add functionality
+            return null;
+        }
+
+        DeferredFluid<BaseFlowingFluid.Source> registerBaseFluid(String name, Supplier<FluidType> type,
+                                                                         Consumer<BaseFlowingFluid.Properties> propBuilder) {
+            return registerFluid(name, BaseFlowingFluid.Source::new, BaseFlowingFluid.Flowing::new, type, propBuilder);
         }
     }
 
