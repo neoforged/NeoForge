@@ -718,17 +718,7 @@ public class NetworkRegistry {
      * @return True if the connection is a vanilla connection, false otherwise.
      */
     public boolean isVanillaConnection(Connection connection) {
-        return isVanillaConnection(connection.channel());
-    }
-
-    /**
-     * Indicates if the given connection is a vanilla connection.
-     *
-     * @param channel The channel to check.
-     * @return True if the connection is a vanilla connection, false otherwise.
-     */
-    public boolean isVanillaConnection(Channel channel) {
-        return channel.attr(ATTRIBUTE_IS_MODDED_CONNECTION).get() == Boolean.FALSE;
+        return connection.channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).get() == Boolean.FALSE;
     }
 
     /**
