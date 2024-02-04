@@ -307,7 +307,7 @@ public class AttachmentTests {
     @TestHolder(description = "Ensures that the presence of non-serializable attachments can be checked")
     static void itemAttachmentPresence(final DynamicTest test, final RegistrationHelper reg) {
         var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
-              .register("test_int", () -> AttachmentType.builder(() -> 0).build());
+                .register("test_int", () -> AttachmentType.builder(() -> 0).build());
 
         test.onGameTest(helper -> {
             ItemStack stack = Items.APPLE.getDefaultInstance();
