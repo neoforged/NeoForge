@@ -1,0 +1,109 @@
+{
+  "values": {
+    "minecraft:blaze": {
+      "sound": "minecraft:entity.parrot.imitate.blaze"
+    },
+    "minecraft:breeze": {
+      "sound": "minecraft:entity.parrot.imitate.breeze"
+    },
+    "minecraft:cave_spider": {
+      "sound": "minecraft:entity.parrot.imitate.spider"
+    },
+    "minecraft:creeper": {
+      "sound": "minecraft:entity.parrot.imitate.creeper"
+    },
+    "minecraft:drowned": {
+      "sound": "minecraft:entity.parrot.imitate.drowned"
+    },
+    "minecraft:elder_guardian": {
+      "sound": "minecraft:entity.parrot.imitate.elder_guardian"
+    },
+    "minecraft:ender_dragon": {
+      "sound": "minecraft:entity.parrot.imitate.ender_dragon"
+    },
+    "minecraft:endermite": {
+      "sound": "minecraft:entity.parrot.imitate.endermite"
+    },
+    "minecraft:evoker": {
+      "sound": "minecraft:entity.parrot.imitate.evoker"
+    },
+    "minecraft:ghast": {
+      "sound": "minecraft:entity.parrot.imitate.ghast"
+    },
+    "minecraft:guardian": {
+      "sound": "minecraft:entity.parrot.imitate.guardian"
+    },
+    "minecraft:hoglin": {
+      "sound": "minecraft:entity.parrot.imitate.hoglin"
+    },
+    "minecraft:husk": {
+      "sound": "minecraft:entity.parrot.imitate.husk"
+    },
+    "minecraft:illusioner": {
+      "sound": "minecraft:entity.parrot.imitate.illusioner"
+    },
+    "minecraft:magma_cube": {
+      "sound": "minecraft:entity.parrot.imitate.magma_cube"
+    },
+    "minecraft:phantom": {
+      "sound": "minecraft:entity.parrot.imitate.phantom"
+    },
+    "minecraft:piglin": {
+      "sound": "minecraft:entity.parrot.imitate.piglin"
+    },
+    "minecraft:piglin_brute": {
+      "sound": "minecraft:entity.parrot.imitate.piglin_brute"
+    },
+    "minecraft:pillager": {
+      "sound": "minecraft:entity.parrot.imitate.pillager"
+    },
+    "minecraft:ravager": {
+      "sound": "minecraft:entity.parrot.imitate.ravager"
+    },
+    "minecraft:shulker": {
+      "sound": "minecraft:entity.parrot.imitate.shulker"
+    },
+    "minecraft:silverfish": {
+      "sound": "minecraft:entity.parrot.imitate.silverfish"
+    },
+    "minecraft:skeleton": {
+      "sound": "minecraft:entity.parrot.imitate.skeleton"
+    },
+    "minecraft:slime": {
+      "sound": "minecraft:entity.parrot.imitate.slime"
+    },
+    "minecraft:spider": {
+      "sound": "minecraft:entity.parrot.imitate.spider"
+    },
+    "minecraft:stray": {
+      "sound": "minecraft:entity.parrot.imitate.stray"
+    },
+    "minecraft:vex": {
+      "sound": "minecraft:entity.parrot.imitate.vex"
+    },
+    "minecraft:vindicator": {
+      "sound": "minecraft:entity.parrot.imitate.vindicator"
+    },
+    "minecraft:warden": {
+      "sound": "minecraft:entity.parrot.imitate.warden"
+    },
+    "minecraft:witch": {
+      "sound": "minecraft:entity.parrot.imitate.witch"
+    },
+    "minecraft:wither": {
+      "sound": "minecraft:entity.parrot.imitate.wither"
+    },
+    "minecraft:wither_skeleton": {
+      "sound": "minecraft:entity.parrot.imitate.wither_skeleton"
+    },
+    "minecraft:zoglin": {
+      "sound": "minecraft:entity.parrot.imitate.zoglin"
+    },
+    "minecraft:zombie": {
+      "sound": "minecraft:entity.parrot.imitate.zombie"
+    },
+    "minecraft:zombie_villager": {
+      "sound": "minecraft:entity.parrot.imitate.zombie_villager"
+    }
+  }
+}
