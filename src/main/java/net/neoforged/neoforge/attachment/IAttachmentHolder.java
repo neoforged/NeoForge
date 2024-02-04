@@ -13,6 +13,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface IAttachmentHolder {
     /**
+     * Returns {@code true} if there is any data attachments, {@code false} otherwise.
+     */
+    boolean hasData();
+
+    /**
      * Returns {@code true} if there is a data attachment of the give type, {@code false} otherwise.
      */
     boolean hasData(AttachmentType<?> type);
@@ -55,5 +60,21 @@ public interface IAttachmentHolder {
      */
     default <T> @Nullable T setData(Supplier<AttachmentType<T>> type, T data) {
         return setData(type.get(), data);
+    }
+
+    /**
+     * Removes the data attachment of the given type.
+     *
+     * @return the previous value for that attachment type, if any, or {@code null} if there was none
+     */
+    <T> @Nullable T removeData(AttachmentType<T> type);
+
+    /**
+     * Removes the data attachment of the given type.
+     *
+     * @return the previous value for that attachment type, if any, or {@code null} if there was none
+     */
+    default <T> @Nullable T removeData(Supplier<AttachmentType<T>> type) {
+        return removeData(type.get());
     }
 }

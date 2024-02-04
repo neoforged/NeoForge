@@ -54,12 +54,14 @@ public final class AttachmentType<T> {
     final Function<IAttachmentHolder, T> defaultValueSupplier;
     @Nullable
     final IAttachmentSerializer<?, T> serializer;
+    final boolean skipDefaultSerialization;
     final boolean copyOnDeath;
     final IAttachmentComparator<T> comparator;
 
     private AttachmentType(Builder<T> builder) {
         this.defaultValueSupplier = builder.defaultValueSupplier;
         this.serializer = builder.serializer;
+        this.skipDefaultSerialization = builder.skipDefaultSerialization;
         this.copyOnDeath = builder.copyOnDeath;
         this.comparator = builder.comparator != null ? builder.comparator : defaultComparator(serializer);
     }
@@ -137,6 +139,7 @@ public final class AttachmentType<T> {
         private final Function<IAttachmentHolder, T> defaultValueSupplier;
         @Nullable
         private IAttachmentSerializer<?, T> serializer;
+        private boolean skipDefaultSerialization;
         private boolean copyOnDeath;
         @Nullable
         private IAttachmentComparator<T> comparator;
@@ -183,6 +186,16 @@ public final class AttachmentType<T> {
                     return codec.encodeStart(NbtOps.INSTANCE, attachment).result().get();
                 }
             });
+        }
+
+        /**
+         * Requests that this attachment is not serialized when it would have default serialization.
+         */
+        public Builder<T> skipDefaultSerialization() {
+            if (this.serializer == null)
+                throw new IllegalStateException("skipDefaultSerialization requires a serializer");
+            this.skipDefaultSerialization = true;
+            return this;
         }
 
         /**

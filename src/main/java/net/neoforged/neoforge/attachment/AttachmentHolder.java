@@ -38,6 +38,8 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
 
     @Nullable
     Map<AttachmentType<?>, Object> attachments = null;
+    @Nullable
+    Map<AttachmentType<?>, Tag> defaultSerializations = null;
 
     /**
      * Create the attachment map if it does not yet exist, or return the current map.
@@ -56,6 +58,11 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      */
     IAttachmentHolder getExposedHolder() {
         return this;
+    }
+
+    @Override
+    public final boolean hasData() {
+        return attachments != null && !attachments.isEmpty();
     }
 
     @Override
@@ -83,6 +90,32 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         return (T) getAttachmentMap().put(type, data);
     }
 
+    @Override
+    @MustBeInvokedByOverriders
+    public <T> @Nullable T removeData(AttachmentType<T> type) {
+        validateAttachmentType(type);
+        if (attachments == null) {
+            return null;
+        }
+        return (T) attachments.remove(type);
+    }
+
+    @Nullable
+    private Tag getDefaultSerialization(AttachmentType<?> type) {
+        if (type.serializer == null) {
+            return null;
+        }
+        if (defaultSerializations == null) {
+            defaultSerializations = new IdentityHashMap<>(4);
+        }
+        Tag serialization = defaultSerializations.get(type);
+        if (serialization == null) {
+            serialization = ((IAttachmentSerializer<?, Object>) type.serializer).write(type.defaultValueSupplier.apply(getExposedHolder()));
+            defaultSerializations.put(type, serialization);
+        }
+        return serialization;
+    }
+
     /**
      * Writes the serializable attachments to a tag.
      * Returns {@code null} if there are no serializable attachments.
@@ -96,9 +129,14 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         for (var entry : attachments.entrySet()) {
             var type = entry.getKey();
             if (type.serializer != null) {
+                Tag serialized = ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue());
+                if (type.skipDefaultSerialization && serialized.equals(getDefaultSerialization(type))) {
+                    //Do not serialize attachments with the default value
+                    continue;
+                }
                 if (tag == null)
                     tag = new CompoundTag();
-                tag.put(NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type).toString(), ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue()));
+                tag.put(NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type).toString(), serialized);
             }
         }
         return tag;
@@ -119,6 +157,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             var type = NeoForgeRegistries.ATTACHMENT_TYPES.get(keyLocation);
             if (type == null || type.serializer == null) {
                 LOGGER.error("Encountered unknown or non-serializable data attachment {}. Skipping.", key);
+                continue;
             }
 
             try {
