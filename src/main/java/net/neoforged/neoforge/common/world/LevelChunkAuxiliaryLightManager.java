@@ -22,6 +22,7 @@ import net.minecraft.world.level.lighting.LightEngine;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
 public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightManager, INBTSerializable<ListTag> {
@@ -56,13 +57,13 @@ public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightMana
         return lights.getOrDefault(pos, (byte) 0);
     }
 
-    @Override
-    public boolean canSerialize() {
-        return !lights.isEmpty();
-    }
-
+    @Nullable
     @Override
     public ListTag serializeNBT() {
+        if (lights.isEmpty()) {
+            return null;
+        }
+
         ListTag list = new ListTag();
         lights.forEach((pos, light) -> {
             CompoundTag tag = new CompoundTag();

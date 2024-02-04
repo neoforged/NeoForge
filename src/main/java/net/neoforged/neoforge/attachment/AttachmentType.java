@@ -131,7 +131,7 @@ public final class AttachmentType<T> {
             @Nullable
             @Override
             public S write(T attachment) {
-                return attachment.canSerialize() ? attachment.serializeNBT() : null;
+                return attachment.serializeNBT();
             }
         });
     }
