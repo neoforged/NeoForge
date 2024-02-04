@@ -585,14 +585,13 @@ public class DeferredRegister<T> {
     }
 
     public static class Fluids extends DeferredRegister<Fluid> {
-
         protected Fluids(String namespace) {
             super(Registries.FLUID, namespace);
         }
 
         @Override
         public <I extends Fluid> DeferredFluid<I> register(String name, Function<ResourceLocation, ? extends I> func) {
-            return (DeferredFluid<I>)super.register(name, func);
+            return (DeferredFluid<I>) super.register(name, func);
         }
 
         @Override
@@ -602,16 +601,16 @@ public class DeferredRegister<T> {
 
         // @todo add more overloads to this
         <T extends FlowingFluid> DeferredFluid<T> registerFluid(String name,
-                                                                Function<BaseFlowingFluid.Properties, T> source,
-                                                                Function<BaseFlowingFluid.Properties, Fluid> flowing,
-                                                                Supplier<FluidType> type,
-                                                                Consumer<BaseFlowingFluid.Properties> propBuilder) {
+                Function<BaseFlowingFluid.Properties, T> source,
+                Function<BaseFlowingFluid.Properties, Fluid> flowing,
+                Supplier<FluidType> type,
+                Consumer<BaseFlowingFluid.Properties> propBuilder) {
             // @todo add functionality
             return null;
         }
 
         DeferredFluid<BaseFlowingFluid.Source> registerBaseFluid(String name, Supplier<FluidType> type,
-                                                                         Consumer<BaseFlowingFluid.Properties> propBuilder) {
+                Consumer<BaseFlowingFluid.Properties> propBuilder) {
             return registerFluid(name, BaseFlowingFluid.Source::new, BaseFlowingFluid.Flowing::new, type, propBuilder);
         }
     }
