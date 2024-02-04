@@ -120,8 +120,8 @@
 +    private final net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager auxLightManager = new net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager(this);
 +
 +    @Override
-+    public boolean hasData() {
-+        return attachmentHolder.hasData();
++    public boolean hasAttachments() {
++        return attachmentHolder.hasAttachments();
 +    }
 +
 +    @Override

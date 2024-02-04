@@ -270,7 +270,7 @@ public class AttachmentTests {
     @TestHolder(description = "Ensures that attachments can opt-out of serializing default values")
     static void itemAttachmentSkipSerialization(final DynamicTest test, final RegistrationHelper reg) {
         var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
-                .register("test_int", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).skipSerialization(i -> i == 0).build());
+                .register("test_int", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT, i -> i != 0).build());
 
         test.onGameTest(helper -> {
             ItemStack stack = Items.APPLE.getDefaultInstance();
@@ -314,7 +314,7 @@ public class AttachmentTests {
             stack.setData(attachmentType, 1);
             helper.assertTrue(stack.hasData(attachmentType), "Stack should have attached data");
             //Also check we can detect the presence if we don't know what types are attached
-            helper.assertTrue(stack.hasData(), "Stack should have attached data");
+            helper.assertTrue(stack.hasAttachments(), "Stack should have attached data");
 
             helper.succeed();
         });

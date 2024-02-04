@@ -56,14 +56,12 @@ public final class AttachmentType<T> {
     final Function<IAttachmentHolder, T> defaultValueSupplier;
     @Nullable
     final IAttachmentSerializer<?, T> serializer;
-    final Predicate<? super T> skipSerialization;
     final boolean copyOnDeath;
     final IAttachmentComparator<T> comparator;
 
     private AttachmentType(Builder<T> builder) {
         this.defaultValueSupplier = builder.defaultValueSupplier;
         this.serializer = builder.serializer;
-        this.skipSerialization = builder.skipSerialization;
         this.copyOnDeath = builder.copyOnDeath;
         this.comparator = builder.comparator != null ? builder.comparator : defaultComparator(serializer);
     }
@@ -130,9 +128,10 @@ public final class AttachmentType<T> {
                 return ret;
             }
 
+            @Nullable
             @Override
             public S write(T attachment) {
-                return attachment.serializeNBT();
+                return attachment.canSerialize() ? attachment.serializeNBT() : null;
             }
         });
     }
@@ -141,7 +140,6 @@ public final class AttachmentType<T> {
         private final Function<IAttachmentHolder, T> defaultValueSupplier;
         @Nullable
         private IAttachmentSerializer<?, T> serializer;
-        private Predicate<? super T> skipSerialization = Predicates.alwaysFalse();
         private boolean copyOnDeath;
         @Nullable
         private IAttachmentComparator<T> comparator;
@@ -175,6 +173,21 @@ public final class AttachmentType<T> {
          * @param codec The codec to use.
          */
         public Builder<T> serialize(Codec<T> codec) {
+            return serialize(codec, Predicates.alwaysTrue());
+        }
+
+        /**
+         * Requests that this attachment be persisted to disk (on the logical server side), using a {@link Codec}.
+         *
+         * <p>Using a {@link Codec} to serialize attachments is discouraged for item stack attachments,
+         * for performance reasons. Prefer one of the other options.
+         *
+         * <p>Codec-based attachments cannot capture a reference to their holder.
+         *
+         * @param codec           The codec to use.
+         * @param shouldSerialize A check that determines whether serialization of the attachment should occur.
+         */
+        public Builder<T> serialize(Codec<T> codec, Predicate<? super T> shouldSerialize) {
             Objects.requireNonNull(codec);
             // TODO: better error handling
             return serialize(new IAttachmentSerializer<>() {
@@ -183,24 +196,12 @@ public final class AttachmentType<T> {
                     return codec.parse(NbtOps.INSTANCE, tag).result().get();
                 }
 
+                @Nullable
                 @Override
                 public Tag write(T attachment) {
-                    return codec.encodeStart(NbtOps.INSTANCE, attachment).result().get();
+                    return shouldSerialize.test(attachment) ? codec.encodeStart(NbtOps.INSTANCE, attachment).result().get() : null;
                 }
             });
-        }
-
-        /**
-         * Requests that this attachment check if it should be serialized to disk (on the logical server side).
-         * 
-         * @param skipCheck A check that determines whether serialization of the attachment should be skipped.
-         */
-        public Builder<T> skipSerialization(Predicate<? super T> skipCheck) {
-            Objects.requireNonNull(skipCheck);
-            if (this.serializer == null)
-                throw new IllegalStateException("skipSerialization requires a serializer");
-            this.skipSerialization = skipCheck;
-            return this;
         }
 
         /**

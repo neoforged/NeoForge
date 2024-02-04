@@ -40,8 +40,8 @@
 +                  LOGGER.error("Failed to write chunk attachments. An attachment has likely thrown an exception trying to write state. It will not persist. Report this to the mod author", exception);
 +             }
 +
-+             Tag lightTag = levelChunk.getAuxLightManager(chunkpos).serializeNBT();
-+             if (lightTag != null) compoundtag.put(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY, lightTag);
++             net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager auxiliaryLightManager = levelChunk.getAuxLightManager(chunkpos);
++             if (auxiliaryLightManager.canSerialize()) compoundtag.put(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY, auxiliaryLightManager.serializeNBT());
          }
  
          saveTicks(p_63455_, compoundtag, p_63456_.getTicksForSerialization());

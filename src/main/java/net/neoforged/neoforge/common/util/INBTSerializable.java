@@ -15,4 +15,8 @@ public interface INBTSerializable<T extends Tag> {
     T serializeNBT();
 
     void deserializeNBT(T nbt);
+
+    default boolean canSerialize() {
+        return true;
+    }
 }

@@ -9,7 +9,6 @@ import com.mojang.logging.LogUtils;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Predicate;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
@@ -60,7 +59,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     }
 
     @Override
-    public final boolean hasData() {
+    public final boolean hasAttachments() {
         return attachments != null && !attachments.isEmpty();
     }
 
@@ -111,10 +110,13 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         CompoundTag tag = null;
         for (var entry : attachments.entrySet()) {
             var type = entry.getKey();
-            if (type.serializer != null && !(((Predicate<Object>) type.skipSerialization).test(entry.getValue()))) {
-                if (tag == null)
-                    tag = new CompoundTag();
-                tag.put(NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type).toString(), ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue()));
+            if (type.serializer != null) {
+                Tag serialized = ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue());
+                if (serialized != null) {
+                    if (tag == null)
+                        tag = new CompoundTag();
+                    tag.put(NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type).toString(), serialized);
+                }
             }
         }
         return tag;

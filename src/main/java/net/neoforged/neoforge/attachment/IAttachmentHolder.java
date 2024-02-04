@@ -15,7 +15,7 @@ public interface IAttachmentHolder {
     /**
      * Returns {@code true} if there is any data attachments, {@code false} otherwise.
      */
-    boolean hasData();
+    boolean hasAttachments();
 
     /**
      * Returns {@code true} if there is a data attachment of the give type, {@code false} otherwise.

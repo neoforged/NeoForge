@@ -57,11 +57,12 @@ public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightMana
     }
 
     @Override
-    public ListTag serializeNBT() {
-        if (lights.isEmpty()) {
-            return null;
-        }
+    public boolean canSerialize() {
+        return !lights.isEmpty();
+    }
 
+    @Override
+    public ListTag serializeNBT() {
         ListTag list = new ListTag();
         lights.forEach((pos, light) -> {
             CompoundTag tag = new CompoundTag();
