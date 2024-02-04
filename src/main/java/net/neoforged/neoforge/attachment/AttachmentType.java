@@ -5,9 +5,11 @@
 
 package net.neoforged.neoforge.attachment;
 
+import com.google.common.base.Predicates;
 import com.mojang.serialization.Codec;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -54,14 +56,14 @@ public final class AttachmentType<T> {
     final Function<IAttachmentHolder, T> defaultValueSupplier;
     @Nullable
     final IAttachmentSerializer<?, T> serializer;
-    final boolean skipDefaultSerialization;
+    final Predicate<? super T> skipSerialization;
     final boolean copyOnDeath;
     final IAttachmentComparator<T> comparator;
 
     private AttachmentType(Builder<T> builder) {
         this.defaultValueSupplier = builder.defaultValueSupplier;
         this.serializer = builder.serializer;
-        this.skipDefaultSerialization = builder.skipDefaultSerialization;
+        this.skipSerialization = builder.skipSerialization;
         this.copyOnDeath = builder.copyOnDeath;
         this.comparator = builder.comparator != null ? builder.comparator : defaultComparator(serializer);
     }
@@ -139,7 +141,7 @@ public final class AttachmentType<T> {
         private final Function<IAttachmentHolder, T> defaultValueSupplier;
         @Nullable
         private IAttachmentSerializer<?, T> serializer;
-        private boolean skipDefaultSerialization;
+        private Predicate<? super T> skipSerialization = Predicates.alwaysFalse();
         private boolean copyOnDeath;
         @Nullable
         private IAttachmentComparator<T> comparator;
@@ -189,12 +191,15 @@ public final class AttachmentType<T> {
         }
 
         /**
-         * Requests that this attachment is not serialized when it would have default serialization.
+         * Requests that this attachment check if it should be serialized to disk (on the logical server side).
+         * 
+         * @param skipCheck A check that determines whether serialization of the attachment should be skipped.
          */
-        public Builder<T> skipDefaultSerialization() {
+        public Builder<T> skipSerialization(Predicate<? super T> skipCheck) {
+            Objects.requireNonNull(skipCheck);
             if (this.serializer == null)
-                throw new IllegalStateException("skipDefaultSerialization requires a serializer");
-            this.skipDefaultSerialization = true;
+                throw new IllegalStateException("skipSerialization requires a serializer");
+            this.skipSerialization = skipCheck;
             return this;
         }
 
