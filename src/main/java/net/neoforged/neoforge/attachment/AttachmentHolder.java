@@ -39,8 +39,6 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
 
     @Nullable
     Map<AttachmentType<?>, Object> attachments = null;
-    @Nullable
-    private Map<AttachmentType<?>, Tag> defaultSerializations = null;
 
     /**
      * Create the attachment map if it does not yet exist, or return the current map.
@@ -99,22 +97,6 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             return null;
         }
         return (T) attachments.remove(type);
-    }
-
-    @Nullable
-    private Tag getDefaultSerialization(AttachmentType<?> type) {
-        if (type.serializer == null) {
-            return null;
-        }
-        if (defaultSerializations == null) {
-            defaultSerializations = new IdentityHashMap<>(4);
-        }
-        Tag serialization = defaultSerializations.get(type);
-        if (serialization == null) {
-            serialization = ((IAttachmentSerializer<?, Object>) type.serializer).write(type.defaultValueSupplier.apply(getExposedHolder()));
-            defaultSerializations.put(type, serialization);
-        }
-        return serialization;
     }
 
     /**
