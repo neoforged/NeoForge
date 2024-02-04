@@ -31,8 +31,8 @@
 +                    // Neo: Fix the slot param to be the global index instead of the per-compartment index.
 +                    // Neo: Fix the selected param to only be true for hotbar slots.
 +                    nonnulllist.get(i).inventoryTick(this.player.level(), this.player, slot, this.selected == slot);
-+                    slot++;
                  }
++                slot++;
              }
          }
 +        armor.forEach(e -> e.onArmorTick(player.level(), player));
