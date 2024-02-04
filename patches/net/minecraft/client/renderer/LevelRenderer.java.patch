@@ -185,15 +185,6 @@
          float f = this.level.effects().getCloudHeight();
          if (!Float.isNaN(f)) {
              RenderSystem.disableCull();
-@@ -2072,7 +_,7 @@
-                 boolean flag = false;
-                 if (this.minecraft.options.prioritizeChunkUpdates().get() == PrioritizeChunkUpdates.NEARBY) {
-                     BlockPos blockpos1 = sectionrenderdispatcher$rendersection.getOrigin().offset(8, 8, 8);
--                    flag = blockpos1.distSqr(blockpos) < 768.0 || sectionrenderdispatcher$rendersection.isDirtyFromPlayer();
-+                    flag = !net.neoforged.neoforge.common.NeoForgeConfig.CLIENT.alwaysSetupTerrainOffThread.get() && (blockpos1.distSqr(blockpos) < 768.0D || sectionrenderdispatcher$rendersection.isDirtyFromPlayer()); // the target is the else block below, so invert the forge addition to get there early
-                 } else if (this.minecraft.options.prioritizeChunkUpdates().get() == PrioritizeChunkUpdates.PLAYER_AFFECTED) {
-                     flag = sectionrenderdispatcher$rendersection.isDirtyFromPlayer();
-                 }
 @@ -2585,7 +_,32 @@
          this.viewArea.setDirty(p_109502_, p_109503_, p_109504_, p_109505_);
      }
