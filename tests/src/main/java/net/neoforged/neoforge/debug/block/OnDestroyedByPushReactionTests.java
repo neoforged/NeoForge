@@ -1,5 +1,11 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.block;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -20,8 +26,6 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.DeferredBlockBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @ForEachTest(groups = BlockTests.GROUP + ".on_destroyed_by_push_reaction")
 public class OnDestroyedByPushReactionTests {
@@ -82,8 +86,7 @@ public class OnDestroyedByPushReactionTests {
 
                 .thenExecute(() -> helper.assertTrue(
                         blockMethodWasInvoked.get(),
-                        "onDestroyedByPushReaction was not invoked although the piston extended."
-                ))
+                        "onDestroyedByPushReaction was not invoked although the piston extended."))
 
                 .thenSucceed());
     }
@@ -104,8 +107,7 @@ public class OnDestroyedByPushReactionTests {
                 .set(1, 0, 0, Blocks.PISTON.defaultBlockState().setValue(DirectionalBlock.FACING, Direction.UP))
                 .set(1, 1, 0, Blocks.SLIME_BLOCK.defaultBlockState())
                 .set(0, 1, 0, Blocks.COBBLESTONE.defaultBlockState())
-                .set(0, 2, 0, destroyOnPistonMove.get().defaultBlockState())
-        );
+                .set(0, 2, 0, destroyOnPistonMove.get().defaultBlockState()));
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.assertFalse(
@@ -126,8 +128,7 @@ public class OnDestroyedByPushReactionTests {
 
                 .thenExecute(() -> helper.assertTrue(
                         blockMethodWasInvoked.get(),
-                        "onDestroyedByPushReaction was not invoked although the piston extended."
-                ))
+                        "onDestroyedByPushReaction was not invoked although the piston extended."))
 
                 .thenSucceed());
     }
@@ -153,8 +154,7 @@ public class OnDestroyedByPushReactionTests {
                         .setValue(BlockStateProperties.PISTON_TYPE, PistonType.STICKY))
                 .set(1, 2, 0, Blocks.SLIME_BLOCK.defaultBlockState())
                 .set(0, 2, 0, Blocks.COBBLESTONE.defaultBlockState())
-                .set(0, 1, 0, destroyOnPistonMove.get().defaultBlockState())
-        );
+                .set(0, 1, 0, destroyOnPistonMove.get().defaultBlockState()));
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.assertFalse(
@@ -178,8 +178,7 @@ public class OnDestroyedByPushReactionTests {
 
                 .thenExecute(() -> helper.assertTrue(
                         blockMethodWasInvoked.get(),
-                        "onDestroyedByPushReaction was not invoked although the piston retracted."
-                ))
+                        "onDestroyedByPushReaction was not invoked although the piston retracted."))
 
                 .thenSucceed());
     }
@@ -217,8 +216,7 @@ public class OnDestroyedByPushReactionTests {
 
                 .thenExecute(() -> helper.assertFalse(
                         blockMethodWasInvoked.get(),
-                        "onDestroyedByPushReaction was invoked although the block was not destroyed."
-                ))
+                        "onDestroyedByPushReaction was invoked although the block was not destroyed."))
 
                 .thenSucceed());
     }
@@ -249,8 +247,7 @@ public class OnDestroyedByPushReactionTests {
 
                 .thenExecute(() -> helper.assertFalse(
                         blockMethodWasInvoked.get(),
-                        "onDestroyedByPushReaction was invoked although the block was not destroyed by a piston."
-                ))
+                        "onDestroyedByPushReaction was invoked although the block was not destroyed by a piston."))
 
                 .thenSucceed());
     }
