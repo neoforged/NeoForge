@@ -136,7 +136,9 @@ public class NeoForgeEventHandler {
             if (attach == null || attach.networkCodec() == null) return;
             att.put(key, registry.getDataMap(attach));
         });
-        PacketDistributor.PLAYER.with(player).send(new RegistryDataMapSyncPayload<>(registry.key(), att));
+        if (!att.isEmpty()) {
+            PacketDistributor.PLAYER.with(player).send(new RegistryDataMapSyncPayload<>(registry.key(), att));
+        }
     }
 
     @SubscribeEvent
