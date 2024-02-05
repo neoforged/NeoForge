@@ -62,7 +62,7 @@ public class NeoForgeDataMaps {
      * The use of a string as the value is also possible, though discouraged in case more options are added in the future.
      */
     public static final DataMapType<EntityType<?>, ParrotImitation> PARROT_IMITATIONS = DataMapType.builder(
-            id("parrot_imitations"), Registries.ENTITY_TYPE, ParrotImitation.CODEC).synced(ParrotImitation.CODEC, false).build();
+            id("parrot_imitations"), Registries.ENTITY_TYPE, ParrotImitation.CODEC).synced(ParrotImitation.SOUND_CODEC, false).build();
 
     private static ResourceLocation id(final String name) {
         return new ResourceLocation(NeoForgeVersion.MOD_ID, name);
