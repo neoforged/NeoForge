@@ -62,7 +62,7 @@ public class BlockWrapper extends VoidFluidHandler {
                 BlockState state = world.getBlockState(blockPos);
                 if (liquidContainer.canPlaceLiquid(null, world, blockPos, state, resource.getFluid())) {
                     if (action.execute()) {
-                        liquidContainer.placeLiquid(world, blockPos, state, resource.getFluid().getFluidType().getStateForPlacement(world, blockPos, resource));
+                        liquidContainer.placeLiquid(world, blockPos, state, resource.getFluidType().getStateForPlacement(world, blockPos, resource));
                     }
                     return FluidType.BUCKET_VOLUME;
                 }
