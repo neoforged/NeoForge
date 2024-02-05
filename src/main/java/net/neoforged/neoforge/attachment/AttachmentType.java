@@ -5,9 +5,11 @@
 
 package net.neoforged.neoforge.attachment;
 
+import com.google.common.base.Predicates;
 import com.mojang.serialization.Codec;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -126,6 +128,7 @@ public final class AttachmentType<T> {
                 return ret;
             }
 
+            @Nullable
             @Override
             public S write(T attachment) {
                 return attachment.serializeNBT();
@@ -170,6 +173,21 @@ public final class AttachmentType<T> {
          * @param codec The codec to use.
          */
         public Builder<T> serialize(Codec<T> codec) {
+            return serialize(codec, Predicates.alwaysTrue());
+        }
+
+        /**
+         * Requests that this attachment be persisted to disk (on the logical server side), using a {@link Codec}.
+         *
+         * <p>Using a {@link Codec} to serialize attachments is discouraged for item stack attachments,
+         * for performance reasons. Prefer one of the other options.
+         *
+         * <p>Codec-based attachments cannot capture a reference to their holder.
+         *
+         * @param codec           The codec to use.
+         * @param shouldSerialize A check that determines whether serialization of the attachment should occur.
+         */
+        public Builder<T> serialize(Codec<T> codec, Predicate<? super T> shouldSerialize) {
             Objects.requireNonNull(codec);
             // TODO: better error handling
             return serialize(new IAttachmentSerializer<>() {
@@ -178,9 +196,10 @@ public final class AttachmentType<T> {
                     return codec.parse(NbtOps.INSTANCE, tag).result().get();
                 }
 
+                @Nullable
                 @Override
                 public Tag write(T attachment) {
-                    return codec.encodeStart(NbtOps.INSTANCE, attachment).result().get();
+                    return shouldSerialize.test(attachment) ? codec.encodeStart(NbtOps.INSTANCE, attachment).result().get() : null;
                 }
             });
         }

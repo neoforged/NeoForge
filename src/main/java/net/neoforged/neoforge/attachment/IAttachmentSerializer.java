@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.attachment;
 
 import net.minecraft.nbt.Tag;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Serializer for data attachments.
@@ -39,7 +40,8 @@ public interface IAttachmentSerializer<S extends Tag, T> {
     }
 
     /**
-     * Writes the attachment to NBT.
+     * Writes the attachment to NBT, or returns null if it is should not be serialized.
      */
+    @Nullable
     S write(T attachment);
 }
