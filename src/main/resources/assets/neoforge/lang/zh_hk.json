@@ -236,7 +236,7 @@
   "neoforge.network.registries.sync.server-with-unknown-keys": "伺服器發送了帶有未知鍵的登錄：%s",
   "neoforge.network.registries.sync.failed": "從伺服器同步登錄失敗：%s",
   "neoforge.network.aux_light_data.failed": "無法處理區塊 %s 的輔助光線資料：%s",
-  "neoforge.network.data_maps.failed": "Failed to handle registry data map sync for registry %s: %s",
-  "neoforge.network.data_maps.missing_our": "Cannot connect to server as it is missing mandatory registry data maps present on the client: %s",
-  "neoforge.network.data_maps.missing_their": "Cannot connect to server as it has mandatory registry data maps not present on the client: %s"
+  "neoforge.network.data_maps.failed": "註冊表數據映射同步處理失敗 %s: %s",
+  "neoforge.network.data_maps.missing_our": "無法連接服務器，因為缺少用戶端上存在的強制註冊表數據映射: %s",
+  "neoforge.network.data_maps.missing_their": "無法連接服務器，因為服務器上有用戶端不存在的強制註冊表數據映射: %s"
 }
