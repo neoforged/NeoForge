@@ -5,7 +5,7 @@
     "minecraft:grove",
     "minecraft:snowy_taiga",
     {
-      "id": "#forge:is_coniferous",
+      "id": "#forge:is_tree/coniferous",
       "required": false
     }
   ]

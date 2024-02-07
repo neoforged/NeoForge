@@ -762,7 +762,10 @@ public class Tags {
         public static final TagKey<Biome> IS_DRY_NETHER = tag("is_dry/nether");
         public static final TagKey<Biome> IS_DRY_END = tag("is_dry/end");
 
-        public static final TagKey<Biome> IS_CONIFEROUS = tag("is_coniferous");
+        public static final TagKey<Biome> IS_CONIFEROUS_TREE = tag("is_tree/coniferous");
+        public static final TagKey<Biome> IS_SAVANNA_TREE = tag("is_tree/savanna");
+        public static final TagKey<Biome> IS_JUNGLE_TREE = tag("is_tree/jungle");
+        public static final TagKey<Biome> IS_DECIDUOUS_TREE = tag("is_tree/deciduous");
 
         public static final TagKey<Biome> IS_SPOOKY = tag("is_spooky");
         public static final TagKey<Biome> IS_DEAD = tag("is_dead");

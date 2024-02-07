@@ -126,7 +126,7 @@ public abstract class LanguageProvider implements DataProvider {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("tag.");
 
-        ResourceLocation registryIdentifier = tagKey.registry().registry();
+        ResourceLocation registryIdentifier = tagKey.registry().location();
         ResourceLocation tagResourceLocation = tagKey.location();
 
         stringBuilder.append(registryIdentifier.toShortLanguageKey().replace("/", "."))

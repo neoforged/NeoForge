@@ -339,7 +339,10 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Biomes.IS_DRY_NETHER, "Dry Nether");
         add(Tags.Biomes.IS_DRY_END, "Dry End");
 
-        add(Tags.Biomes.IS_CONIFEROUS, "Coniferous");
+        add(Tags.Biomes.IS_CONIFEROUS_TREE, "Coniferous Trees");
+        add(Tags.Biomes.IS_SAVANNA_TREE, "Savanna Trees");
+        add(Tags.Biomes.IS_JUNGLE_TREE, "Jungle Trees");
+        add(Tags.Biomes.IS_DECIDUOUS_TREE, "Deciduous Trees");
         add(Tags.Biomes.IS_SPOOKY, "Spooky");
         add(Tags.Biomes.IS_DEAD, "Dead");
         add(Tags.Biomes.IS_LUSH, "Lush");
