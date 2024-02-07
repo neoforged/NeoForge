@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/effect/PoisonMobEffect.java
 +++ b/net/minecraft/world/effect/PoisonMobEffect.java
-@@ -1,5 +_,6 @@
- package net.minecraft.world.effect;
- 
-+import net.minecraft.world.damagesource.DamageTypes;
- import net.minecraft.world.entity.LivingEntity;
- 
- class PoisonMobEffect extends MobEffect {
 @@ -11,7 +_,12 @@
      public void applyEffectTick(LivingEntity p_296276_, int p_296233_) {
          super.applyEffectTick(p_296276_, p_296233_);
@@ -15,8 +8,8 @@
 +            // Neo: Replace DamageSources#magic() with neoforge:poison to allow differentiating poison damage.
 +            // Fallback to minecraft:magic in client code when connecting to a vanilla server.
 +            // LivingEntity#hurt(DamageSource) will no-op in client code immediately, but the holder is resolved before the no-op.
-+            var srcs = p_296276_.damageSources();
-+            var dType = srcs.damageTypes.getHolder(net.neoforged.neoforge.common.NeoForgeMod.POISON_DAMAGE).orElse(srcs.damageTypes.getHolderOrThrow(DamageTypes.MAGIC));
++            var dTypeReg = p_296276_.damageSources().damageTypes;
++            var dType = dTypeReg.getHolder(net.neoforged.neoforge.common.NeoForgeMod.POISON_DAMAGE).orElse(dTypeReg.getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.MAGIC));
 +            p_296276_.hurt(new net.minecraft.world.damagesource.DamageSource(dType), 1.0F);
          }
      }
