@@ -26,15 +26,14 @@
                      this.tame(p_29414_);
                      this.level().broadcastEntityEvent(this, (byte)7);
                  } else {
-@@ -342,7 +_,11 @@
+@@ -342,7 +_,10 @@
  
      public static SoundEvent getAmbient(Level p_218239_, RandomSource p_218240_) {
          if (p_218239_.getDifficulty() != Difficulty.PEACEFUL && p_218240_.nextInt(1000) == 0) {
 -            List<EntityType<?>> list = Lists.newArrayList(MOB_SOUND_MAP.keySet());
 +            final var entities = new java.util.HashSet<>(MOB_SOUND_MAP.keySet());
-+            p_218239_.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENTITY_TYPE)
-+                    .getDataMap(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS)
-+                    .keySet().forEach(key -> entities.add(net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.get(key)));
++            final var registry = p_218239_.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENTITY_TYPE);
++            registry.getDataMap(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS).keySet().forEach(key -> entities.add(registry.get(key)));
 +            List<EntityType<?>> list = Lists.newArrayList(entities);
              return getImitatedSound(list.get(p_218240_.nextInt(list.size())));
          } else {
