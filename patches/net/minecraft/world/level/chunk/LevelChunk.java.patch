@@ -111,13 +111,18 @@
          this.blockEntities.values().forEach(p_187988_ -> {
              Level level = this.level;
              if (level instanceof ServerLevel serverlevel) {
-@@ -646,6 +_,33 @@
+@@ -646,6 +_,45 @@
          return new LevelChunk.BoundTickingBlockEntity<>(p_156376_, p_156377_);
      }
  
 +    // FORGE START
 +    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
 +    private final net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager auxLightManager = new net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager(this);
++
++    @Override
++    public boolean hasAttachments() {
++        return attachmentHolder.hasAttachments();
++    }
 +
 +    @Override
 +    public boolean hasData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
@@ -134,6 +139,13 @@
 +    public <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
 +        setUnsaved(true);
 +        return attachmentHolder.setData(type, data);
++    }
++
++    @Override
++    @Nullable
++    public <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
++        setUnsaved(true);
++        return attachmentHolder.removeData(type);
 +    }
 +
 +    @Override
