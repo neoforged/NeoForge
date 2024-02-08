@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
-import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -39,7 +38,7 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
                 .forEach((event, frequency) -> vibrationFrequencies.add(event.builtInRegistryHolder(), new VibrationFrequency(frequency), false));
 
         final var imitations = builder(NeoForgeDataMaps.PARROT_IMITATIONS);
-        LamdbaExceptionUtils.uncheck(() -> ObfuscationReflectionHelper.<Map<EntityType<?>, SoundEvent>, Parrot>getPrivateValue(Parrot.class, null, "MOB_SOUND_MAP")
-                .forEach((type, sound) -> imitations.add(type.builtInRegistryHolder(), new ParrotImitation(sound), false)));
+        ObfuscationReflectionHelper.<Map<EntityType<?>, SoundEvent>, Parrot>getPrivateValue(Parrot.class, null, "MOB_SOUND_MAP")
+                .forEach((type, sound) -> imitations.add(type.builtInRegistryHolder(), new ParrotImitation(sound), false));
     }
 }
