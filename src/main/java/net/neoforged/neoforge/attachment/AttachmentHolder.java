@@ -9,6 +9,8 @@ import com.mojang.logging.LogUtils;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
@@ -78,6 +80,15 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             attachments.put(type, ret);
         }
         return ret;
+    }
+
+    @Override
+    public <T> Optional<T> getOptionalData(AttachmentType<T> type) {
+        validateAttachmentType(type);
+        if (attachments == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable((T) this.attachments.get(type));
     }
 
     @Override

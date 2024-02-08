@@ -12,6 +12,8 @@ import com.mojang.brigadier.Command;
 import com.mojang.serialization.Codec;
 import io.netty.buffer.Unpooled;
 import java.util.List;
+import java.util.Optional;
+
 import net.minecraft.Util;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -421,6 +423,24 @@ public class AttachmentTests {
             helper.assertTrue(stack.getData(attachmentType) == 1, "Stack should have attached data");
             stack = stack.copy();
             helper.assertTrue(stack.getData(attachmentType) == 2, "Stack cloner should have cloned and modified the data");
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Ensures that optional data can be queried")
+    static void itemAttachmentOptional(final DynamicTest test, final RegistrationHelper reg) {
+        var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
+                .register("test_int", () -> AttachmentType.builder(() -> 0).build());
+
+        test.onGameTest(helper -> {
+            ItemStack stack = Items.APPLE.getDefaultInstance();
+            Optional<Integer> optional = stack.getOptionalData(attachmentType);
+            helper.assertTrue(optional.isEmpty(), "Optional should be empty");
+            stack.setData(attachmentType, 1);
+            optional = stack.getOptionalData(attachmentType);
+            helper.assertTrue(optional.isPresent(), "Optional should have attached data");
             helper.succeed();
         });
     }
