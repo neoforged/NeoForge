@@ -22,7 +22,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public record AdvancedContainerSetDataPayload(int containerId, int dataId, int value) implements CustomPacketPayload {
 
-    public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_set_data");
+    public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_container_set_data");
     public AdvancedContainerSetDataPayload(FriendlyByteBuf buffer) {
         this(buffer.readByte(), buffer.readShort(), buffer.readVarInt());
     }
