@@ -59,6 +59,11 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     }
 
     @Override
+    public final boolean hasAttachments() {
+        return attachments != null && !attachments.isEmpty();
+    }
+
+    @Override
     public final boolean hasData(AttachmentType<?> type) {
         validateAttachmentType(type);
         return attachments != null && attachments.containsKey(type);
@@ -83,6 +88,16 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         return (T) getAttachmentMap().put(type, data);
     }
 
+    @Override
+    @MustBeInvokedByOverriders
+    public <T> @Nullable T removeData(AttachmentType<T> type) {
+        validateAttachmentType(type);
+        if (attachments == null) {
+            return null;
+        }
+        return (T) attachments.remove(type);
+    }
+
     /**
      * Writes the serializable attachments to a tag.
      * Returns {@code null} if there are no serializable attachments.
@@ -96,9 +111,12 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         for (var entry : attachments.entrySet()) {
             var type = entry.getKey();
             if (type.serializer != null) {
-                if (tag == null)
-                    tag = new CompoundTag();
-                tag.put(NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type).toString(), ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue()));
+                Tag serialized = ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue());
+                if (serialized != null) {
+                    if (tag == null)
+                        tag = new CompoundTag();
+                    tag.put(NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type).toString(), serialized);
+                }
             }
         }
         return tag;
@@ -119,6 +137,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             var type = NeoForgeRegistries.ATTACHMENT_TYPES.get(keyLocation);
             if (type == null || type.serializer == null) {
                 LOGGER.error("Encountered unknown or non-serializable data attachment {}. Skipping.", key);
+                continue;
             }
 
             try {
