@@ -131,7 +131,7 @@ public class FluidUtilTest {
     }
 
     private static void checkFluidStack(FluidStack stack, Fluid fluid, int amount) {
-        if (stack.getFluid() != fluid)
+        if (!stack.is(fluid))
             throw new AssertionError("Expected fluid " + BuiltInRegistries.FLUID.getKey(fluid) + ", got: " + BuiltInRegistries.FLUID.getKey(stack.getFluid()));
         if (stack.getAmount() != amount)
             throw new AssertionError("Expected amount " + amount + ", got: " + stack.getAmount());

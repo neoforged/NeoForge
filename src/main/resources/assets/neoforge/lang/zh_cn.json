@@ -32,10 +32,10 @@
   "fml.menu.multiplayer.unknown": "未知服务器 {0}",
   "fml.menu.multiplayer.serveroutdated": "NeoForge 服务端网络版本已过时",
   "fml.menu.multiplayer.clientoutdated": "NeoForge 客户端网络版本已过时",
-  "fml.menu.multiplayer.extraservermods": "服务器有可能需要在客户端上的其他模组",
+  "fml.menu.multiplayer.extraservermods": "服务器具有客户端可能需要的其他模组",
   "fml.menu.multiplayer.modsincompatible": "服务器模组列表不兼容",
   "fml.menu.multiplayer.networkincompatible": "服务器网络消息列表不兼容",
-  "fml.menu.multiplayer.missingdatapackregistries": "缺少所需数据包注册表：{0}",
+  "fml.menu.multiplayer.missingdatapackregistries": "缺少所需的数据包注册项：{0}",
   "fml.menu.loadingmods": "{0,choice,0#没有模组|1#1 个模组|1<{0} 个模组}已加载",
   "fml.menu.notification.title": "启动提醒",
   "fml.menu.accessdenied.title": "服务器访问被拒绝",
@@ -63,7 +63,7 @@
   "fml.modloading.missingmetadata": "mods.toml 缺少模组 id {3} 的元数据",
   "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} 有类加载错误\n§7{2,exc,msg}",
   "fml.modloading.failedtoloadmod": "{0,modinfo,name}（{0,modinfo,id}）未能正确加载\n§7{2,exc,msg}",
-  "fml.modloading.feature.missing": "{0,modinfo,name}（{0,modinfo,id}）缺少一个运行需要的特性\n§7它需要 {3,featurebound} 但 {4} 可用",
+  "fml.modloading.feature.missing": "{0,modinfo,name}（{0,modinfo,id}）缺少运行所需的一个功能\n§7需要 {3,featurebound} 但 {4} 可用",
   "fml.modloading.uncaughterror": "发生了一个未捕获的并行处理错误。\n§7{2,exc,msg}",
   "fml.modloading.errorduringevent": "{0,modinfo,name}（{0,modinfo,id}）在 {1,lower} 事件阶段发生错误\n§7{2,exc,msg}",
   "fml.modloading.failedtoloadforge": "加载 NeoForge 失败",
@@ -234,5 +234,9 @@
   "neoforge.network.advanced_open_screen.failed": "打开带有高级数据的屏幕失败：%s",
   "neoforge.network.registries.sync.missing": "未从服务器收到所有预期的注册表！（缺失：%s）",
   "neoforge.network.registries.sync.server-with-unknown-keys": "服务器发送含有未知键的注册表：%s",
-  "neoforge.network.registries.sync.failed": "从服务器同步注册表失败：%s"
+  "neoforge.network.registries.sync.failed": "从服务器同步注册表失败：%s",
+  "neoforge.network.aux_light_data.failed": "无法处理区块 %s 的辅助光线数据：%s",
+  "neoforge.network.data_maps.failed": "Failed to handle registry data map sync for registry %s: %s",
+  "neoforge.network.data_maps.missing_our": "Cannot connect to server as it is missing mandatory registry data maps present on the client: %s",
+  "neoforge.network.data_maps.missing_their": "Cannot connect to server as it has mandatory registry data maps not present on the client: %s"
 }

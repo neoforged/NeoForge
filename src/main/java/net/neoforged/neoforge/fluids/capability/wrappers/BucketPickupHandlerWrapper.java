@@ -70,7 +70,7 @@ public class BucketPickupHandlerWrapper implements IFluidHandler {
     public FluidStack drain(FluidStack resource, FluidAction action) {
         if (!resource.isEmpty() && FluidType.BUCKET_VOLUME <= resource.getAmount()) {
             FluidState fluidState = world.getFluidState(blockPos);
-            if (!fluidState.isEmpty() && resource.getFluid() == fluidState.getType()) {
+            if (!fluidState.isEmpty() && resource.is(fluidState.getType())) {
                 if (action.execute()) {
                     ItemStack itemStack = bucketPickupHandler.pickupBlock(player, world, blockPos, world.getBlockState(blockPos));
                     if (itemStack != ItemStack.EMPTY && itemStack.getItem() instanceof BucketItem bucket) {
