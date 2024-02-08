@@ -17,13 +17,17 @@
     }
  
     public Optional<MobEffectInstance.FactorData> m_216881_() {
-@@ -56,7 +_,8 @@
+@@ -56,7 +_,12 @@
           }
        } else if (this == MobEffects.f_19614_) {
           if (p_19467_.m_21223_() > 1.0F) {
 -            p_19467_.m_6469_(p_19467_.m_269291_().m_269425_(), 1.0F);
-+            // Neo: Replace DamageSources#magic() with forge:poison to allow differentiating poison damage.
-+            p_19467_.m_6469_(p_19467_.m_269291_().m_269079_(net.minecraftforge.common.ForgeMod.POISON_DAMAGE), 1.0F);
++            // Neo: Replace DamageSources#magic() with neoforge:poison to allow differentiating poison damage.
++            // Fallback to minecraft:magic in client code when connecting to a vanilla server.
++            // LivingEntity#hurt(DamageSource) will no-op in client code immediately, but the holder is resolved before the no-op.
++            var dTypeReg = p_19467_.m_269291_().f_268645_;
++            var dType = dTypeReg.m_203636_(net.minecraftforge.common.ForgeMod.POISON_DAMAGE).orElse(dTypeReg.m_246971_(net.minecraft.world.damagesource.DamageTypes.f_268515_));
++            p_19467_.m_6469_(new net.minecraft.world.damagesource.DamageSource(dType), 1.0F);
           }
        } else if (this == MobEffects.f_19615_) {
           p_19467_.m_6469_(p_19467_.m_269291_().m_269251_(), 1.0F);
