@@ -13,7 +13,6 @@ import com.mojang.serialization.Codec;
 import io.netty.buffer.Unpooled;
 import java.util.List;
 import java.util.Optional;
-
 import net.minecraft.Util;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
