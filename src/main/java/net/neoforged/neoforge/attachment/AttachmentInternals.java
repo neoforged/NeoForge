@@ -78,7 +78,7 @@ public final class AttachmentInternals {
     /**
      * Copy some attachments to another holder.
      */
-    private static <H extends AttachmentHolder> void copyAttachments(H from, H to, Predicate<AttachmentType<?>> filter) {
+    public static <H extends AttachmentHolder> void copyAttachments(H from, H to, Predicate<AttachmentType<?>> filter) {
         if (from.attachments == null) {
             return;
         }

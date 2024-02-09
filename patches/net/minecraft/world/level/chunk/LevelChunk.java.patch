@@ -9,6 +9,14 @@
      static final Logger LOGGER = LogUtils.getLogger();
      private static final TickingBlockEntity NULL_TICKER = new TickingBlockEntity() {
          @Override
+@@ -137,6 +_,7 @@
+         this.setAllStarts(p_196851_.getAllStarts());
+         this.setAllReferences(p_196851_.getAllReferences());
+ 
++        net.neoforged.neoforge.attachment.AttachmentInternals.copyAttachments(p_196851_.getAttachmentHolder(), this.getAttachmentHolder(), type -> true);
+         for(Entry<Heightmap.Types, Heightmap> entry : p_196851_.getHeightmaps()) {
+             if (ChunkStatus.FULL.heightmapsAfter().contains(entry.getKey())) {
+                 this.setHeightmap(entry.getKey(), entry.getValue().getRawData());
 @@ -270,14 +_,14 @@
                  boolean flag2 = blockstate.hasBlockEntity();
                  if (!this.level.isClientSide) {
@@ -111,42 +119,12 @@
          this.blockEntities.values().forEach(p_187988_ -> {
              Level level = this.level;
              if (level instanceof ServerLevel serverlevel) {
-@@ -646,6 +_,45 @@
+@@ -646,6 +_,15 @@
          return new LevelChunk.BoundTickingBlockEntity<>(p_156376_, p_156377_);
      }
  
 +    // FORGE START
-+    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
 +    private final net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager auxLightManager = new net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager(this);
-+
-+    @Override
-+    public boolean hasAttachments() {
-+        return attachmentHolder.hasAttachments();
-+    }
-+
-+    @Override
-+    public boolean hasData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        return attachmentHolder.hasData(type);
-+    }
-+
-+    @Override
-+    public <T> T getData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        return attachmentHolder.getData(type);
-+    }
-+
-+    @Override
-+    @Nullable
-+    public <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
-+        setUnsaved(true);
-+        return attachmentHolder.setData(type, data);
-+    }
-+
-+    @Override
-+    @Nullable
-+    public <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        setUnsaved(true);
-+        return attachmentHolder.removeData(type);
-+    }
 +
 +    @Override
 +    public net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager getAuxLightManager(ChunkPos pos) {
@@ -178,33 +156,10 @@
                          throw new ReportedException(crashreport);
                      }
                  }
-@@ -715,6 +_,34 @@
+@@ -715,6 +_,11 @@
          IMMEDIATE,
          QUEUED,
          CHECK;
-+    }
-+
-+
-+    /**
-+     * <strong>FOR INTERNAL USE ONLY</strong>
-+     * <p>
-+     * Only public for use in {@link net.minecraft.world.level.chunk.storage.ChunkSerializer}.
-+     */
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    @Nullable
-+    public final CompoundTag writeAttachmentsToNBT() {
-+        return attachmentHolder.serializeAttachments();
-+    }
-+
-+    /**
-+     * <strong>FOR INTERNAL USE ONLY</strong>
-+     * <p>
-+     * Only public for use in {@link net.minecraft.world.level.chunk.storage.ChunkSerializer}.
-+     *
-+     */
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public final void readAttachmentsFromNBT(CompoundTag tag) {
-+        attachmentHolder.deserializeInternal(tag);
 +    }
 +
 +    @Override
