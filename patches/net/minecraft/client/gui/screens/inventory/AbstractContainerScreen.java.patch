@@ -15,11 +15,12 @@
          ItemStack itemstack = this.draggingItem.isEmpty() ? this.menu.getCarried() : this.draggingItem;
          if (!itemstack.isEmpty()) {
              int l1 = 8;
-@@ -153,16 +_,20 @@
+@@ -152,17 +_,21 @@
+     @Override
      public void renderBackground(GuiGraphics p_295206_, int p_295457_, int p_294596_, float p_296351_) {
          super.renderBackground(p_295206_, p_295457_, p_294596_, p_296351_);
-         this.renderBg(p_295206_, p_296351_, p_295457_, p_294596_);
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Background(this, p_295206_, p_295457_, p_295457_));
+         this.renderBg(p_295206_, p_296351_, p_295457_, p_294596_);
      }
  
      public static void renderSlotHighlight(GuiGraphics p_283692_, int p_281453_, int p_281915_, int p_283504_) {
