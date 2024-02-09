@@ -92,7 +92,7 @@
  
      public boolean is(Holder<Item> p_220166_) {
 -        return this.getItem().builtInRegistryHolder() == p_220166_;
-+        return is(p_220166_.value());//Neo: Fix comparing for custom holders such as DeferredHolders
++        return is(p_220166_.value()); // Neo: Fix comparing for custom holders such as DeferredHolders
      }
  
      public boolean is(HolderSet<Item> p_298683_) {
