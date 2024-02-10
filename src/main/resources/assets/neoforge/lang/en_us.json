@@ -238,6 +238,8 @@
   "neoforge.chatType.system": "{0}",
 
   "pack.neoforge.description": "NeoForge data/resource pack",
+  "pack.neoforge.mod_experimental.title": "NeoForge: Experimental Mod Elements",
+  "pack.neoforge.mod_experimental.description": "Enables experimental mod elements",
 
   "neoforge.network.negotiation.failure.missing.client.server": "This channel is missing on the server side, but required on the client!",
   "neoforge.network.negotiation.failure.missing.server.client": "This channel is missing on the client side, but required on the server!",
