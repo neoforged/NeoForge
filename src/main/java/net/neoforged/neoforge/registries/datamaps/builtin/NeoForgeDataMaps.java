@@ -7,6 +7,8 @@ package net.neoforged.neoforge.registries.datamaps.builtin;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -37,6 +39,19 @@ public class NeoForgeDataMaps {
             id("compostables"), Registries.ITEM, Compostable.CODEC).synced(Compostable.CHANCE_CODEC, false).build();
 
     /**
+     * The {@linkplain EntityType} data map that replaces {@link Parrot#MOB_SOUND_MAP}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/entity_type/parrot_imitations.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code sound}, sound event ID - the sound that the parrot will emit when imitating the mob</li>
+     * </ul>
+     *
+     * The use of a string as the value is also possible, though discouraged in case more options are added in the future.
+     */
+    public static final DataMapType<EntityType<?>, ParrotImitation> PARROT_IMITATIONS = DataMapType.builder(
+            id("parrot_imitations"), Registries.ENTITY_TYPE, ParrotImitation.CODEC).synced(ParrotImitation.SOUND_CODEC, false).build();
+
+    /**
      * The {@linkplain GameEvent} data map that replaces {@link VibrationSystem#VIBRATION_FREQUENCY_FOR_EVENT}.
      * <p>
      * The location of this data map is {@code neoforge/data_maps/game_event/vibration_frequencies.json}, and the values are objects with 1 field:
@@ -56,6 +71,7 @@ public class NeoForgeDataMaps {
     @SubscribeEvent
     private static void register(final RegisterDataMapTypesEvent event) {
         event.register(COMPOSTABLES);
+        event.register(PARROT_IMITATIONS);
         event.register(VIBRATION_FREQUENCIES);
     }
 }
