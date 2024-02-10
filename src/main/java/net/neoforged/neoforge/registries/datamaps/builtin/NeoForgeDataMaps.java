@@ -53,7 +53,7 @@ public class NeoForgeDataMaps {
      */
     public static final DataMapType<Item, FurnaceFuel> FURNACE_FUELS = DataMapType.builder(
             id("furnace_fuels"), Registries.ITEM, FurnaceFuel.CODEC).synced(FurnaceFuel.BURN_TIME_CODEC, false).build();
-  
+
     /**
      * The {@linkplain GameEvent} data map that replaces {@link VibrationSystem#VIBRATION_FREQUENCY_FOR_EVENT}.
      * <p>
