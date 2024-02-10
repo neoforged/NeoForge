@@ -700,7 +700,7 @@ public class NeoForgeMod {
         gen.addProvider(event.includeClient(), new VanillaSoundDefinitionsProvider(packOutput, existingFileHelper));
 
         // data pack for experimental features pack
-        // contains nothing but metadata but the required metadata for the feature flag
+        // contains nothing but required metadata for the feature flag
         gen.getVanillaPack(true)
                 .addProvider(pack -> PackMetadataGenerator.forFeaturePack(
                         new PackOutput(pack.getOutputFolder(PackOutput.Target.DATA_PACK)
