@@ -78,7 +78,7 @@ public final class AttachmentInternals {
     /**
      * Copy some attachments to another holder.
      */
-    public static <H extends AttachmentHolder> void copyAttachments(H from, H to, Predicate<AttachmentType<?>> filter) {
+    private static <H extends AttachmentHolder> void copyAttachments(H from, H to, Predicate<AttachmentType<?>> filter) {
         if (from.attachments == null) {
             return;
         }
@@ -96,6 +96,10 @@ public final class AttachmentInternals {
     }
 
     public static void copyStackAttachments(ItemStack from, ItemStack to) {
+        copyAttachments(from, to, type -> true);
+    }
+
+    public static void copyChunkAttachmentsOnPromotion(AttachmentHolder.AsField from, AttachmentHolder.AsField to) {
         copyAttachments(from, to, type -> true);
     }
 
