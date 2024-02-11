@@ -105,7 +105,7 @@ public enum VanillaGuiOverlay {
         }
     }),
     MOUNT_HEALTH("mount_health", (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
-        if (!gui.getMinecraft().options.hideGui && gui.shouldDrawSurvivalElements()) {
+        if (!gui.getMinecraft().options.hideGui) {
             gui.setupOverlayRenderState(true, false);
             gui.renderHealthMount(screenWidth, screenHeight, guiGraphics);
         }
