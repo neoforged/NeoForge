@@ -8,7 +8,9 @@ package net.neoforged.neoforge.registries.datamaps.builtin;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
 import net.minecraft.world.entity.animal.Parrot;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -82,6 +84,19 @@ public class NeoForgeDataMaps {
     public static final DataMapType<GameEvent, VibrationFrequency> VIBRATION_FREQUENCIES = DataMapType.builder(
             id("vibration_frequencies"), Registries.GAME_EVENT, VibrationFrequency.CODEC).synced(VibrationFrequency.FREQUENCY_CODEC, false).build();
 
+    /**
+     * The {@linkplain VillagerProfession} data map that replaces {@link GiveGiftToHero#GIFTS}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/villager_profession/raid_hero_gifts.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code lootTable}, the path to the loot table that the villager gives to the player after a raid finishes</li>
+     * </ul>
+     *
+     * The use of an integer as the value is also possible, though discouraged in case more options are added in the future.
+     */
+    public static final DataMapType<VillagerProfession, RaidHeroGift> RAID_HERO_GIFTS = DataMapType.builder(
+            id("raid_hero_gifts"), Registries.VILLAGER_PROFESSION, RaidHeroGift.CODEC).synced(RaidHeroGift.LOOT_TABLE_CODEC, false).build();
+
     private static ResourceLocation id(final String name) {
         return new ResourceLocation(NeoForgeVersion.MOD_ID, name);
     }
@@ -90,6 +105,7 @@ public class NeoForgeDataMaps {
     private static void register(final RegisterDataMapTypesEvent event) {
         event.register(COMPOSTABLES);
         event.register(FURNACE_FUELS);
+        event.register(RAID_HERO_GIFTS);
         event.register(PARROT_IMITATIONS);
         event.register(VIBRATION_FREQUENCIES);
     }
