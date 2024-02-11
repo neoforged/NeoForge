@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 
 /**
- * Data map value for {@link NeoForgeDataMaps#PARROT_IMITATIONS parrot imitations}.
+ * Data map value for {@link NeoForgeDataMaps#RAID_HERO_GIFTS raid hero gifts}.
  *
  * @param lootTable the loot table that the villager will hand out after a raid
  */

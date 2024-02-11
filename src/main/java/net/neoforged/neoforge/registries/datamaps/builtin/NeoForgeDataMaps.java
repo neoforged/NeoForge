@@ -91,8 +91,6 @@ public class NeoForgeDataMaps {
      * <ul>
      * <li>{@code lootTable}, the path to the loot table that the villager gives to the player after a raid finishes</li>
      * </ul>
-     *
-     * The use of an integer as the value is also possible, though discouraged in case more options are added in the future.
      */
     public static final DataMapType<VillagerProfession, RaidHeroGift> RAID_HERO_GIFTS = DataMapType.builder(
             id("raid_hero_gifts"), Registries.VILLAGER_PROFESSION, RaidHeroGift.CODEC).synced(RaidHeroGift.LOOT_TABLE_CODEC, false).build();
