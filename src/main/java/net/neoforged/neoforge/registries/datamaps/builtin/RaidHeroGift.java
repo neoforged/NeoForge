@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.registries.datamaps.builtin;
 
 import com.mojang.serialization.Codec;
@@ -17,5 +22,6 @@ public record RaidHeroGift(ResourceLocation lootTable) {
     public static final Codec<RaidHeroGift> CODEC = ExtraCodecs.withAlternative(
             RecordCodecBuilder.create(in -> in.group(
                     ResourceLocation.CODEC.fieldOf("loot_table").forGetter(RaidHeroGift::lootTable))
-                    .apply(in, RaidHeroGift::new)), LOOT_TABLE_CODEC);
+                    .apply(in, RaidHeroGift::new)),
+            LOOT_TABLE_CODEC);
 }
