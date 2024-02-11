@@ -103,8 +103,8 @@ public class NeoForgeDataMaps {
     private static void register(final RegisterDataMapTypesEvent event) {
         event.register(COMPOSTABLES);
         event.register(FURNACE_FUELS);
-        event.register(RAID_HERO_GIFTS);
         event.register(PARROT_IMITATIONS);
+        event.register(RAID_HERO_GIFTS);
         event.register(VIBRATION_FREQUENCIES);
     }
 }
