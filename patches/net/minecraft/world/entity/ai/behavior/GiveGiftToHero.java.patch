@@ -1,18 +1,17 @@
 --- a/net/minecraft/world/entity/ai/behavior/GiveGiftToHero.java
 +++ b/net/minecraft/world/entity/ai/behavior/GiveGiftToHero.java
-@@ -121,8 +_,16 @@
+@@ -121,8 +_,14 @@
              return ImmutableList.of(new ItemStack(Items.POPPY));
          } else {
              VillagerProfession villagerprofession = p_23010_.getVillagerData().getProfession();
-+            LootTable loottable = null;
-             if (GIFTS.containsKey(villagerprofession)) {
+-            if (GIFTS.containsKey(villagerprofession)) {
 -                LootTable loottable = p_23010_.level().getServer().getLootData().getLootTable(GIFTS.get(villagerprofession));
++            LootTable loottable = null;
++            var gift = net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.wrapAsHolder(villagerprofession).getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.RAID_HERO_GIFTS);
++            if (gift != null) {
++                loottable = p_23010_.level().getServer().getLootData().getLootTable(gift.lootTable());
++            } else if (GIFTS.containsKey(villagerprofession)) {
 +                loottable = p_23010_.level().getServer().getLootData().getLootTable(GIFTS.get(villagerprofession));
-+            } else {
-+                var gift = net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.wrapAsHolder(villagerprofession).getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.RAID_HERO_GIFTS);
-+                if (gift != null) {
-+                    loottable = p_23010_.level().getServer().getLootData().getLootTable(gift.lootTable());
-+                }
 +            }
 +            if (loottable != null) {
                  LootParams lootparams = new LootParams.Builder((ServerLevel)p_23010_.level())
