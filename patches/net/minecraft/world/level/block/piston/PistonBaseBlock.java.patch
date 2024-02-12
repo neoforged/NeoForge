@@ -30,7 +30,7 @@
                  dropResources(blockstate1, p_60182_, blockpos2, blockentity);
 -                p_60182_.setBlock(blockpos2, Blocks.AIR.defaultBlockState(), 18);
 -                p_60182_.gameEvent(GameEvent.BLOCK_DESTROY, blockpos2, GameEvent.Context.of(blockstate1));
-+                blockstate1.onDestroyedByPushReaction(blockstate1, p_60182_, blockpos2, direction, p_60182_.getFluidState(blockpos2));
++                blockstate1.onDestroyedByPushReaction(p_60182_, blockpos2, direction, p_60182_.getFluidState(blockpos2));
                  if (!blockstate1.is(BlockTags.FIRE)) {
                      p_60182_.addDestroyBlockEffect(blockpos2, blockstate1);
                  }

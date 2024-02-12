@@ -697,8 +697,8 @@ public interface IBlockExtension {
             return !this.self().defaultBlockState().is(BlockTags.DRAGON_IMMUNE);
         } else if ((entity instanceof WitherBoss) ||
                 (entity instanceof WitherSkull)) {
-            return state.isAir() || WitherBoss.canDestroy(state);
-        }
+                    return state.isAir() || WitherBoss.canDestroy(state);
+                }
 
         return true;
     }
@@ -781,8 +781,8 @@ public interface IBlockExtension {
                 return Blocks.DIRT.defaultBlockState();
             } else if ((block == Blocks.GRASS_BLOCK || block == Blocks.DIRT_PATH || block == Blocks.DIRT || block == Blocks.COARSE_DIRT) &&
                     context.getLevel().getBlockState(context.getClickedPos().above()).isAir()) {
-                return block == Blocks.COARSE_DIRT ? Blocks.DIRT.defaultBlockState() : Blocks.FARMLAND.defaultBlockState();
-            }
+                        return block == Blocks.COARSE_DIRT ? Blocks.DIRT.defaultBlockState() : Blocks.FARMLAND.defaultBlockState();
+                    }
         }
 
         return null;
