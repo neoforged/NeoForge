@@ -319,4 +319,21 @@ public class AttachmentTests {
             helper.succeed();
         });
     }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Ensures that custom cloning behaviour works")
+    static void itemAttachmentCloning(final DynamicTest test, final RegistrationHelper reg) {
+        var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
+                .register("test_int", () -> AttachmentType.builder(() -> 0).cloner((holder, i) -> 2 * i).build());
+
+        test.onGameTest(helper -> {
+            ItemStack stack = Items.APPLE.getDefaultInstance();
+            stack.setData(attachmentType, 1);
+            helper.assertTrue(stack.getData(attachmentType) == 1, "Stack should have attached data");
+            stack = stack.copy();
+            helper.assertTrue(stack.getData(attachmentType) == 2, "Stack cloner should have cloned and modified the data");
+            helper.succeed();
+        });
+    }
 }

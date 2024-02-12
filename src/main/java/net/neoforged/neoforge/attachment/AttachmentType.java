@@ -54,28 +54,42 @@ import org.jetbrains.annotations.Nullable;
  * <li>Serializable attachments are copied from a {@link ProtoChunk} to a {@link LevelChunk} on promotion.</li>
  * </ul>
  */
-// TODO Future work: maybe add copy handlers for stacks and entities, to customize copying behavior (instead of serializing, copying the NBT, deserializing).
 public final class AttachmentType<T> {
     final Function<IAttachmentHolder, T> defaultValueSupplier;
     @Nullable
     final IAttachmentSerializer<?, T> serializer;
     final boolean copyOnDeath;
     final IAttachmentComparator<T> comparator;
+    final IAttachmentCloner<T> cloner;
 
     private AttachmentType(Builder<T> builder) {
         this.defaultValueSupplier = builder.defaultValueSupplier;
         this.serializer = builder.serializer;
         this.copyOnDeath = builder.copyOnDeath;
         this.comparator = builder.comparator != null ? builder.comparator : defaultComparator(serializer);
+        this.cloner = builder.cloner != null ? builder.cloner : defaultCloner(serializer);
     }
 
-    private static <T> IAttachmentComparator<T> defaultComparator(IAttachmentSerializer<?, T> serializer) {
+    private static <T> IAttachmentComparator<T> defaultComparator(@Nullable IAttachmentSerializer<?, T> serializer) {
         if (serializer == null) {
             return (first, second) -> {
                 throw new UnsupportedOperationException("Cannot compare non-serializable attachments");
             };
         }
         return (first, second) -> Objects.equals(serializer.write(first), serializer.write(second));
+    }
+
+    private static <T, H extends Tag> IAttachmentCloner<T> defaultCloner(@Nullable IAttachmentSerializer<H, T> serializer) {
+        if (serializer == null) {
+            return (holder, attachment) -> null;
+        }
+        return (holder, attachment) -> {
+            H serialized = serializer.write(attachment);
+            if (serialized != null) {
+                return serializer.read(holder, serialized);
+            }
+            return null;
+        };
     }
 
     /**
@@ -146,6 +160,8 @@ public final class AttachmentType<T> {
         private boolean copyOnDeath;
         @Nullable
         private IAttachmentComparator<T> comparator;
+        @Nullable
+        private IAttachmentCloner<T> cloner;
 
         private Builder(Function<IAttachmentHolder, T> defaultValueSupplier) {
             this.defaultValueSupplier = defaultValueSupplier;
@@ -231,6 +247,17 @@ public final class AttachmentType<T> {
             if (this.serializer == null)
                 throw new IllegalStateException("comparator requires a serializer");
             this.comparator = comparator;
+            return this;
+        }
+
+        /**
+         * Overrides the cloner for this attachment type.
+         *
+         * <p>The default cloner serializes the attachment and deserializes it again
+         */
+        public Builder<T> cloner(IAttachmentCloner<T> cloner) {
+            Objects.requireNonNull(cloner);
+            this.cloner = cloner;
             return this;
         }
 

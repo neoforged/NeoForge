@@ -85,11 +85,11 @@ public final class AttachmentInternals {
         for (var entry : from.attachments.entrySet()) {
             AttachmentType<?> type = entry.getKey();
             @SuppressWarnings("unchecked")
-            var serializer = (IAttachmentSerializer<Tag, Object>) type.serializer;
-            if (serializer != null && filter.test(type)) {
-                Tag serialized = serializer.write(entry.getValue());
-                if (serialized != null) {
-                    to.getAttachmentMap().put(type, serializer.read(to.getExposedHolder(), serialized));
+            var cloner = (IAttachmentCloner<Object>) type.cloner;
+            if (filter.test(type)) {
+                Object copy = cloner.copy(to.getExposedHolder(), entry.getValue());
+                if (copy != null) {
+                    to.getAttachmentMap().put(type, copy);
                 }
             }
         }
