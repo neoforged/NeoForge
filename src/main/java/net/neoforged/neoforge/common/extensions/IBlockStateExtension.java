@@ -131,13 +131,12 @@ public interface IBlockStateExtension {
      * Note: When used in multiplayer, this is called on both client and
      * server sides!
      *
-     * @param state         The current state.
      * @param level         The current level
      * @param pos           Block position in level
      * @param pushDirection The direction of block movement
      * @param fluid         The current fluid state at current position
      */
-    default void onDestroyedByPushReaction(BlockState state, Level level, BlockPos pos, Direction pushDirection, FluidState fluid) {
+    default void onDestroyedByPushReaction(Level level, BlockPos pos, Direction pushDirection, FluidState fluid) {
         self().getBlock().onDestroyedByPushReaction(self(), level, pos, pushDirection, fluid);
     }
 
