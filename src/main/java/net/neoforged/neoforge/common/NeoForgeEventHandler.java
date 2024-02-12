@@ -102,9 +102,6 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void tagsUpdated(TagsUpdatedEvent event) {
-        if (event.shouldUpdateStaticData()) {
-            CommonHooks.updateBurns();
-        }
         if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
             DATA_MAPS.apply();
         }

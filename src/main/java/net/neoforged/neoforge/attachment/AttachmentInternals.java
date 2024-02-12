@@ -99,6 +99,10 @@ public final class AttachmentInternals {
         copyAttachments(from, to, type -> true);
     }
 
+    public static void copyChunkAttachmentsOnPromotion(AttachmentHolder.AsField from, AttachmentHolder.AsField to) {
+        copyAttachments(from, to, type -> true);
+    }
+
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
         copyAttachments(event.getOriginal(), event.getEntity(), event.isWasDeath() ? type -> type.copyOnDeath : type -> true);

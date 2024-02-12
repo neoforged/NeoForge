@@ -1,16 +1,23 @@
 --- a/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
 +++ b/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
-@@ -180,6 +_,10 @@
+@@ -180,6 +_,8 @@
                  postLoadChunk(p_188231_, p_188234_),
                  blendingdata
              );
-+            if (p_188234_.contains(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND))
-+                ((LevelChunk)chunkaccess).readAttachmentsFromNBT(p_188234_.getCompound(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY));
 +            if (p_188234_.contains(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY, net.minecraft.nbt.Tag.TAG_LIST))
 +                Objects.requireNonNull(((LevelChunk)chunkaccess).getAuxLightManager(p_188233_)).deserializeNBT(p_188234_.getList(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND));
          } else {
              ProtoChunkTicks<Block> protochunkticks = ProtoChunkTicks.load(
                  p_188234_.getList("block_ticks", 10), p_258992_ -> BuiltInRegistries.BLOCK.getOptional(ResourceLocation.tryParse(p_258992_)), p_188233_
+@@ -206,6 +_,8 @@
+             }
+         }
+ 
++        if (p_188234_.contains(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND))
++            chunkaccess.readAttachmentsFromNBT(p_188234_.getCompound(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY));
+         chunkaccess.setLightCorrect(flag);
+         CompoundTag compoundtag2 = p_188234_.getCompound("Heightmaps");
+         EnumSet<Heightmap.Types> enumset = EnumSet.noneOf(Heightmap.Types.class);
 @@ -238,6 +_,7 @@
          }
  
@@ -27,21 +34,28 @@
              return protochunk1;
          }
      }
-@@ -372,6 +_,17 @@
-             }
+@@ -373,6 +_,11 @@
  
              compoundtag.put("CarvingMasks", compoundtag4);
-+        }
+         }
 +        else if (p_63456_ instanceof LevelChunk levelChunk){
-+             try {
-+                  final CompoundTag capTag = levelChunk.writeAttachmentsToNBT();
-+                  if (capTag != null) compoundtag.put(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, capTag);
-+             } catch (Exception exception) {
-+                  LOGGER.error("Failed to write chunk attachments. An attachment has likely thrown an exception trying to write state. It will not persist. Report this to the mod author", exception);
-+             }
 +
 +             Tag lightTag = levelChunk.getAuxLightManager(chunkpos).serializeNBT();
 +             if (lightTag != null) compoundtag.put(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY, lightTag);
-         }
++        }
  
          saveTicks(p_63455_, compoundtag, p_63456_.getTicksForSerialization());
+         compoundtag.put("PostProcessing", packOffsets(p_63456_.getPostProcessing()));
+@@ -384,6 +_,12 @@
+             }
+         }
+ 
++        try {
++            final CompoundTag capTag = p_63456_.writeAttachmentsToNBT();
++            if (capTag != null) compoundtag.put(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, capTag);
++        } catch (Exception exception) {
++            LOGGER.error("Failed to write chunk attachments. An attachment has likely thrown an exception trying to write state. It will not persist. Report this to the mod author", exception);
++        }
+         compoundtag.put("Heightmaps", compoundtag2);
+         compoundtag.put(
+             "structures",
