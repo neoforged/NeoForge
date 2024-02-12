@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/item/AxeItem.java
 +++ b/net/minecraft/world/item/AxeItem.java
+@@ -22,6 +_,7 @@
+ import net.minecraft.world.level.gameevent.GameEvent;
+ 
+ public class AxeItem extends DiggerItem {
++    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#STRIPPABLES data map} instead */
+     protected static final Map<Block, Block> STRIPPABLES = new Builder<Block, Block>()
+         .put(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD)
+         .put(Blocks.OAK_LOG, Blocks.STRIPPED_OAK_LOG)
 @@ -55,7 +_,7 @@
          Level level = p_40529_.getLevel();
          BlockPos blockpos = p_40529_.getClickedPos();
@@ -38,14 +46,15 @@
          }
      }
  
-+    @org.jetbrains.annotations.Nullable
 +    public static BlockState getAxeStrippingState(BlockState originalState) {
-+        Block block = STRIPPABLES.get(originalState.getBlock());
-+        return block != null ? block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, originalState.getValue(RotatedPillarBlock.AXIS)) : null;
++        Block block = originalState.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES).strippedBlock();
++        return block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, originalState.getValue(RotatedPillarBlock.AXIS));
 +    }
 +
      private Optional<BlockState> getStripped(BlockState p_150691_) {
-         return Optional.ofNullable(STRIPPABLES.get(p_150691_.getBlock()))
+-        return Optional.ofNullable(STRIPPABLES.get(p_150691_.getBlock()))
++        var strippedBlock = p_150691_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES).strippedBlock();
++        return Optional.of(strippedBlock)
              .map(p_150689_ -> p_150689_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
 +    }
 +

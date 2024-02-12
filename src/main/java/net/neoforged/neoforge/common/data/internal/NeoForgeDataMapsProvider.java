@@ -14,6 +14,8 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Parrot;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -24,6 +26,7 @@ import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
 import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import net.neoforged.neoforge.registries.datamaps.builtin.ParrotImitation;
+import net.neoforged.neoforge.registries.datamaps.builtin.Strippable;
 import net.neoforged.neoforge.registries.datamaps.builtin.VibrationFrequency;
 
 public class NeoForgeDataMapsProvider extends DataMapProvider {
@@ -49,5 +52,9 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         final var imitations = builder(NeoForgeDataMaps.PARROT_IMITATIONS);
         ObfuscationReflectionHelper.<Map<EntityType<?>, SoundEvent>, Parrot>getPrivateValue(Parrot.class, null, "MOB_SOUND_MAP")
                 .forEach((type, sound) -> imitations.add(type.builtInRegistryHolder(), new ParrotImitation(sound), false));
+
+        final var strippables = builder(NeoForgeDataMaps.STRIPPABLES);
+        ObfuscationReflectionHelper.<Map<Block, Block>, AxeItem>getPrivateValue(AxeItem.class, null, "STRIPPABLES")
+                .forEach((block, strippedBlock) -> strippables.add(block.builtInRegistryHolder(), new Strippable(strippedBlock), false));
     }
 }
