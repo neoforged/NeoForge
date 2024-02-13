@@ -1,14 +1,12 @@
 package net.neoforged.neoforge.network.payload;
 
+import java.util.HashSet;
+import java.util.Set;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public record MinecraftRegisterPayload(Set<ResourceLocation> newChannels) implements CustomPacketPayload {
-
     public static final ResourceLocation ID = new ResourceLocation("register");
     public static final FriendlyByteBuf.Reader<? extends CustomPacketPayload> READER = MinecraftRegisterPayload::new;
 

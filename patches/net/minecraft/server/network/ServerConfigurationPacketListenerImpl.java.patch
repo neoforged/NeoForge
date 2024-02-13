@@ -1,18 +1,10 @@
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-@@ -31,6 +_,7 @@
- import net.minecraft.server.players.PlayerList;
- import net.minecraft.tags.TagNetworkSerialization;
- import net.minecraft.world.flag.FeatureFlags;
-+import net.neoforged.neoforge.network.connection.ConnectionType;
- import org.slf4j.Logger;
- 
- public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketListenerImpl implements TickablePacketListener, ServerConfigurationPacketListener {
 @@ -41,6 +_,8 @@
      @Nullable
      private ConfigurationTask currentTask;
      private ClientInformation clientInformation;
-+    private net.neoforged.neoforge.network.connection.ConnectionType connectionType = ConnectionType.VANILLA;
++    private net.neoforged.neoforge.network.connection.ConnectionType connectionType = net.neoforged.neoforge.network.connection.ConnectionType.VANILLA;
 +    private boolean isHandlingModdedConfigurationPhase = false;
  
      public ServerConfigurationPacketListenerImpl(MinecraftServer p_294645_, Connection p_295787_, CommonListenerCookie p_302003_) {

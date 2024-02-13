@@ -24,8 +24,8 @@ public class ConfigurationInitialization {
     @SubscribeEvent
     private static void configureModdedClient(OnGameConfigurationEvent event) {
         if (event.getListener().isConnected(FrozenRegistrySyncStartPayload.ID) &&
-            event.getListener().isConnected(FrozenRegistryPayload.ID) &&
-            event.getListener().isConnected(FrozenRegistrySyncCompletedPayload.ID)) {
+                event.getListener().isConnected(FrozenRegistryPayload.ID) &&
+                event.getListener().isConnected(FrozenRegistrySyncCompletedPayload.ID)) {
             event.register(new SyncRegistries());
         }
 

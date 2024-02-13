@@ -10,7 +10,6 @@ import java.util.Set;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.ApiStatus;
 

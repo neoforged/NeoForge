@@ -50,7 +50,6 @@ import net.neoforged.fml.loading.toposort.TopologicalSort;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.configuration.SyncTierSortingRegistry;
-import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.TierSortingRegistryPayload;
 import net.neoforged.neoforge.network.payload.TierSortingRegistrySyncCompletePayload;
