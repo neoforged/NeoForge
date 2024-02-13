@@ -14,6 +14,7 @@ import io.netty.util.AttributeKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,6 +64,7 @@ import net.neoforged.neoforge.network.payload.ModdedNetworkQueryComponent;
 import net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload;
 import net.neoforged.neoforge.network.payload.ModdedNetworkSetupFailedPayload;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
@@ -157,6 +159,7 @@ public class NetworkRegistry {
      * @param knownTypes The known types of the connection.
      * @return A reader for the payload, or null if the payload should be discarded.
      */
+    @Nullable
     public FriendlyByteBuf.Reader<? extends CustomPacketPayload> getReader(ResourceLocation id, ChannelHandlerContext context, ConnectionProtocol protocol, Map<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>> knownTypes) {
         //Vanilla custom packet, let it deal with it.
         if (knownTypes.containsKey(id)) {
@@ -585,7 +588,12 @@ public class NetworkRegistry {
             return true;
         }
 
-        return isConnected(listener, customPayloadPacket.payload().id());
+        if (isConnected(listener, customPayloadPacket.payload().id())) {
+            return true;
+        }
+
+        LOGGER.warn("Tried to send {} packet to a client that does not support it. Not sending the packet.", customPayloadPacket.payload().id());
+        return false;
     }
 
     public boolean shouldSendPacketRaw(Packet<?> packet) {
@@ -620,7 +628,7 @@ public class NetworkRegistry {
     /**
      * Indicates if the given packet can be sent via the given listener.
      * <p>
-     * This method is invoked by the vanilla code base to check if any packet can be sent to a client. It will always return true for a packet that is not a {@link ServerboundCustomPayloadPacket}. For a custom payload packet, it will check if the packet is known to the server, and if it is not, it will return false.
+     * This method is invoked by the vanilla code base to check if any packet can be sent to a server. It will always return true for a packet that is not a {@link ServerboundCustomPayloadPacket}. For a custom payload packet, it will check if the packet is known to the server, and if it is not, it will return false.
      * </p>
      * <p>
      * If this method is invoked before the negotiation during the configuration phase has completed, and as such no {@link NetworkPayloadSetup} is present then it will only allow {@link ModdedNetworkQueryPayload} packets to be sent.
@@ -644,7 +652,26 @@ public class NetworkRegistry {
             return true;
         }
 
-        return isConnected(listener, customPayloadPacket.payload().id());
+        if (isConnected(listener, customPayloadPacket.payload().id())) {
+            return true;
+        }
+
+        LOGGER.warn("Tried to send {} packet to a server that does not support it. Not sending the packet.", customPayloadPacket.payload().id());
+        return false;
+    }
+
+    /**
+     * Returns a mutable map of the currently known ad-hoc channels.
+     */
+    private Set<ResourceLocation> getAdHocChannels(Connection connection) {
+        var map = connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
+
+        if (map == null) {
+            map = new HashSet<>();
+            connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).set(map);
+        }
+
+        return map;
     }
 
     /**
@@ -775,51 +802,20 @@ public class NetworkRegistry {
     public boolean isConnected(ServerCommonPacketListener listener, ResourceLocation payloadId) {
         final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         if (payloadSetup == null) {
-            final Set<ResourceLocation> fallbackProtocolConnections = listener.getConnection().channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
-            if (fallbackProtocolConnections != null) {
-                return fallbackProtocolConnections.contains(payloadId);
-            }
-
-            LOGGER.warn("Somebody tried to send: {} to a client that has not negotiated with the client. Not sending packet.", payloadId);
-            return false;
+            return getAdHocChannels(listener.getConnection()).contains(payloadId);
         }
 
         if (listener instanceof ServerConfigurationPacketListener) {
-            final NetworkChannel channel = payloadSetup.configuration().get(payloadId);
-
-            if (channel == null) {
-                final Set<ResourceLocation> fallbackProtocolConnections = listener.getConnection().channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
-                if (fallbackProtocolConnections != null) {
-                    if (fallbackProtocolConnections.contains(payloadId)) {
-                        return true;
-                    }
-                }
-
-                LOGGER.trace("Somebody tried to send: {} to a client which cannot accept it. Not sending packet.", payloadId);
-                return false;
+            if (payloadSetup.configuration().get(payloadId) != null) {
+                return true;
             }
-
-            return true;
         } else if (listener instanceof ServerGamePacketListener) {
-            final NetworkChannel channel = payloadSetup.play().get(payloadId);
-
-            if (channel == null) {
-                final Set<ResourceLocation> fallbackProtocolConnections = listener.getConnection().channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
-                if (fallbackProtocolConnections != null) {
-                    if (fallbackProtocolConnections.contains(payloadId)) {
-                        return true;
-                    }
-                }
-
-                LOGGER.trace("Somebody tried to send: {} to a client which cannot accept it. Not sending packet.", payloadId);
-                return false;
+            if (payloadSetup.play().get(payloadId) != null) {
+                return true;
             }
-
-            return true;
-        } else {
-            LOGGER.error("Somebody tried to send: {} to a client that is not in the configuration or play phase. Not sending packet.", payloadId);
-            throw new IllegalStateException("Somebody tried to send a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
         }
+
+        return getAdHocChannels(listener.getConnection()).contains(payloadId);
     }
 
     /**
@@ -832,51 +828,20 @@ public class NetworkRegistry {
     public boolean isConnected(ClientCommonPacketListener listener, ResourceLocation payloadId) {
         final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         if (payloadSetup == null) {
-            final Set<ResourceLocation> fallbackProtocolConnections = listener.getConnection().channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
-            if (fallbackProtocolConnections != null) {
-                return fallbackProtocolConnections.contains(payloadId);
-            }
-
-            LOGGER.warn("Somebody tried to send: {} to a server that has not negotiated with the client. Not sending packet.", payloadId);
-            return false;
+            return getAdHocChannels(listener.getConnection()).contains(payloadId);
         }
 
         if (listener instanceof ClientConfigurationPacketListener) {
-            final NetworkChannel channel = payloadSetup.configuration().get(payloadId);
-
-            if (channel == null) {
-                final Set<ResourceLocation> fallbackProtocolConnections = listener.getConnection().channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
-                if (fallbackProtocolConnections != null) {
-                    if (fallbackProtocolConnections.contains(payloadId)) {
-                        return true;
-                    }
-                }
-
-                LOGGER.trace("Somebody tried to send: {} to a server which cannot accept it. Not sending packet.", payloadId);
-                return false;
+            if (payloadSetup.configuration().get(payloadId) != null) {
+                return true;
             }
-
-            return true;
         } else if (listener instanceof ClientGamePacketListener) {
-            final NetworkChannel channel = payloadSetup.play().get(payloadId);
-
-            if (channel == null) {
-                final Set<ResourceLocation> fallbackProtocolConnections = listener.getConnection().channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
-                if (fallbackProtocolConnections != null) {
-                    if (fallbackProtocolConnections.contains(payloadId)) {
-                        return true;
-                    }
-                }
-
-                LOGGER.trace("Somebody tried to send: {} to a server which cannot accept it. Not sending packet.", payloadId);
-                return false;
+            if (payloadSetup.play().get(payloadId) != null) {
+                return true;
             }
-
-            return true;
-        } else {
-            LOGGER.error("Somebody tried to send: {} to a server that is not in the configuration or play phase. Not sending packet.", payloadId);
-            throw new IllegalStateException("Somebody tried to send a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
         }
+
+        return getAdHocChannels(listener.getConnection()).contains(payloadId);
     }
 
     /**
@@ -969,13 +934,7 @@ public class NetworkRegistry {
      * @param connection        The connection to add the channels to.
      */
     private void onMinecraftRegister(Set<ResourceLocation> resourceLocations, Connection connection) {
-        final Set<ResourceLocation> payloadSetup = connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
-        if (payloadSetup == null) {
-            return;
-        }
-
-        payloadSetup.addAll(resourceLocations);
-        connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).set(payloadSetup);
+        getAdHocChannels(connection).addAll(resourceLocations);
     }
 
     /**
@@ -1005,14 +964,7 @@ public class NetworkRegistry {
      * @param connection        The connection to remove the channels from.
      */
     private void onMinecraftUnregister(Set<ResourceLocation> resourceLocations, Connection connection) {
-        final Set<ResourceLocation> payloadSetup = connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
-        if (payloadSetup == null) {
-            connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).set(resourceLocations);
-            return;
-        }
-
-        payloadSetup.removeAll(resourceLocations);
-        connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).set(payloadSetup);
+        getAdHocChannels(connection).removeAll(resourceLocations);
     }
 
     /**
