@@ -12,10 +12,10 @@ import org.jetbrains.annotations.Nullable;
  * serialize-deserialize-implementation.
  */
 public interface IAttachmentCopyHandler<T> {
-
     /**
      * creates a copy of the attachment. The copy should be equal to serializing and deserializing the attachment.
-     * @param holder the holder the attachment will be part of after copying
+     * 
+     * @param holder     the holder the attachment will be part of after copying
      * @param attachment the attachment to copy
      * @return the copy or null if it shouldn't be copied.
      */
