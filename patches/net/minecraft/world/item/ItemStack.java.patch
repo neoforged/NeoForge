@@ -287,3 +287,16 @@
      public void onDestroyed(ItemEntity p_150925_) {
          this.getItem().onDestroyed(p_150925_);
      }
+@@ -1016,6 +_,12 @@
+ 
+     public SoundEvent getEatingSound() {
+         return this.getItem().getEatingSound();
++    }
++
++    @Override
++    public int getBurnTime(@org.jetbrains.annotations.Nullable net.minecraft.world.item.crafting.RecipeType<?> recipeType) {
++        var fuel = getItemHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.FURNACE_FUELS);
++        return isEmpty() ? 0 : net.neoforged.neoforge.event.EventHooks.getItemBurnTime(this, fuel == null ? 0 : fuel.burnTime(), recipeType);
+     }
+ 
+     public static enum TooltipPart {

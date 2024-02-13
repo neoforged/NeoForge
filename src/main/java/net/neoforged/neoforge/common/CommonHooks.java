@@ -921,22 +921,6 @@ public class CommonHooks {
     }
 
     /**
-     * Gets the burn time of this itemstack.
-     */
-    public static int getBurnTime(ItemStack stack, @Nullable RecipeType<?> recipeType) {
-        if (stack.isEmpty()) {
-            return 0;
-        } else {
-            int ret = stack.getBurnTime(recipeType);
-            if (ret == -1) {
-                var fuel = stack.getItemHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
-                ret = fuel == null ? 0 : fuel.burnTime();
-            }
-            return EventHooks.getItemBurnTime(stack, ret, recipeType);
-        }
-    }
-
-    /**
      * All loot table drops should be passed to this function so that mod added effects (e.g. smelting enchantments) can be processed.
      *
      * @param list    The loot generated
