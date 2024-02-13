@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/item/AxeItem.java
 +++ b/net/minecraft/world/item/AxeItem.java
-@@ -22,6 +_,7 @@
+@@ -22,6 +_,8 @@
  import net.minecraft.world.level.gameevent.GameEvent;
  
  public class AxeItem extends DiggerItem {
 +    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#STRIPPABLES data map} instead */
++    @Deprecated
      protected static final Map<Block, Block> STRIPPABLES = new Builder<Block, Block>()
          .put(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD)
          .put(Blocks.OAK_LOG, Blocks.STRIPPED_OAK_LOG)
@@ -42,20 +43,20 @@
                  if (optional2.isPresent()) {
                      p_308922_.playSound(p_309192_, p_308899_, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
                      p_308922_.levelEvent(p_309192_, 3004, p_308899_, 0);
-@@ -99,8 +_,19 @@
+@@ -99,8 +_,18 @@
          }
      }
  
 +    public static BlockState getAxeStrippingState(BlockState originalState) {
 +        Block block = originalState.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES).strippedBlock();
-+        return block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, originalState.getValue(RotatedPillarBlock.AXIS));
++        return block.defaultBlockState();
 +    }
 +
      private Optional<BlockState> getStripped(BlockState p_150691_) {
 -        return Optional.ofNullable(STRIPPABLES.get(p_150691_.getBlock()))
-+        var strippedBlock = p_150691_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES).strippedBlock();
-+        return Optional.of(strippedBlock)
-             .map(p_150689_ -> p_150689_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
+-            .map(p_150689_ -> p_150689_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
++        var block = p_150691_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
++        return Optional.of(block.strippedBlock().defaultBlockState());
 +    }
 +
 +    @Override
