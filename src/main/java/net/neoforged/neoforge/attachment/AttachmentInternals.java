@@ -84,10 +84,13 @@ public final class AttachmentInternals {
         }
         for (var entry : from.attachments.entrySet()) {
             AttachmentType<?> type = entry.getKey();
+            if (type.serializer == null) {
+                continue;
+            }
             @SuppressWarnings("unchecked")
-            var cloner = (IAttachmentCloner<Object>) type.cloner;
+            var copyHandler = (IAttachmentCopyHandler<Object>) type.copyHandler;
             if (filter.test(type)) {
-                Object copy = cloner.copy(to.getExposedHolder(), entry.getValue());
+                Object copy = copyHandler.copy(to.getExposedHolder(), entry.getValue());
                 if (copy != null) {
                     to.getAttachmentMap().put(type, copy);
                 }

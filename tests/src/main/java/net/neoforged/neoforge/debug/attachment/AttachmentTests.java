@@ -324,8 +324,10 @@ public class AttachmentTests {
     @EmptyTemplate
     @TestHolder(description = "Ensures that custom cloning behaviour works")
     static void itemAttachmentCloning(final DynamicTest test, final RegistrationHelper reg) {
+
+        //Note: Modification of the data to create a copy is not intended and only used to verify that the data is cloned properly
         var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
-                .register("test_int", () -> AttachmentType.builder(() -> 0).cloner((holder, i) -> 2 * i).build());
+                .register("test_int", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).copyHandler((holder, i) -> 2 * i).build());
 
         test.onGameTest(helper -> {
             ItemStack stack = Items.APPLE.getDefaultInstance();

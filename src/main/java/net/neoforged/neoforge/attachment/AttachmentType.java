@@ -60,14 +60,14 @@ public final class AttachmentType<T> {
     final IAttachmentSerializer<?, T> serializer;
     final boolean copyOnDeath;
     final IAttachmentComparator<T> comparator;
-    final IAttachmentCloner<T> cloner;
+    final IAttachmentCopyHandler<T> copyHandler;
 
     private AttachmentType(Builder<T> builder) {
         this.defaultValueSupplier = builder.defaultValueSupplier;
         this.serializer = builder.serializer;
         this.copyOnDeath = builder.copyOnDeath;
         this.comparator = builder.comparator != null ? builder.comparator : defaultComparator(serializer);
-        this.cloner = builder.cloner != null ? builder.cloner : defaultCloner(serializer);
+        this.copyHandler = builder.copyHandler != null ? builder.copyHandler : defaultCopyHandler(serializer);
     }
 
     private static <T> IAttachmentComparator<T> defaultComparator(@Nullable IAttachmentSerializer<?, T> serializer) {
@@ -79,9 +79,11 @@ public final class AttachmentType<T> {
         return (first, second) -> Objects.equals(serializer.write(first), serializer.write(second));
     }
 
-    private static <T, H extends Tag> IAttachmentCloner<T> defaultCloner(@Nullable IAttachmentSerializer<H, T> serializer) {
+    private static <T, H extends Tag> IAttachmentCopyHandler<T> defaultCopyHandler(@Nullable IAttachmentSerializer<H, T> serializer) {
         if (serializer == null) {
-            return (holder, attachment) -> null;
+            return (holder, attachment) -> {
+                throw new UnsupportedOperationException("Cannot copy non-serializable attachments");
+            };
         }
         return (holder, attachment) -> {
             H serialized = serializer.write(attachment);
@@ -161,7 +163,7 @@ public final class AttachmentType<T> {
         @Nullable
         private IAttachmentComparator<T> comparator;
         @Nullable
-        private IAttachmentCloner<T> cloner;
+        private IAttachmentCopyHandler<T> copyHandler;
 
         private Builder(Function<IAttachmentHolder, T> defaultValueSupplier) {
             this.defaultValueSupplier = defaultValueSupplier;
@@ -251,13 +253,18 @@ public final class AttachmentType<T> {
         }
 
         /**
-         * Overrides the cloner for this attachment type.
+         * Overrides the copyHandler for this attachment type.
          *
-         * <p>The default cloner serializes the attachment and deserializes it again
+         * <p>The default copyHandler serializes the attachment and deserializes it again.
+         *
+         * <p>A copyHandler can only be provided for serializable attachments.
          */
-        public Builder<T> cloner(IAttachmentCloner<T> cloner) {
+        public Builder<T> copyHandler(IAttachmentCopyHandler<T> cloner) {
             Objects.requireNonNull(cloner);
-            this.cloner = cloner;
+            // Check for serializer because only serializable attachments can be copied.
+            if (this.serializer == null)
+                throw new IllegalStateException("copyHandler requires a serializer");
+            this.copyHandler = cloner;
             return this;
         }
 
