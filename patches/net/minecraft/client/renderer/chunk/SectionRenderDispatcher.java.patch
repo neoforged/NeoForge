@@ -46,7 +46,7 @@
                      if (blockentityrenderer.shouldRenderOffScreen(p_296214_)) {
                          p_294198_.globalBlockEntities.add(p_296214_);
 +                    } else {
-+                        p_294198_.blockEntities.add(p_296214_);
++                        p_294198_.blockEntities.add(p_296214_); //Neo: Fix MC-112730
                      }
                  }
              }
