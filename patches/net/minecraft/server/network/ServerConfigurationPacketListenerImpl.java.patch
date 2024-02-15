@@ -69,7 +69,7 @@
 +    public void handlePong(net.minecraft.network.protocol.common.ServerboundPongPacket p_295142_) {
 +        super.handlePong(p_295142_);
 +        if (p_295142_.getId() == 0) {
-+            if (this.connectionType.isVanilla() && !net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaConnectionDetectedAtServer(this)) {
++            if (!this.connectionType.isNeoForge() && !net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaConnectionDetectedAtServer(this)) {
 +                return;
 +            }
 +
@@ -78,10 +78,14 @@
      }
  
      @Override
-@@ -103,6 +_,7 @@
+@@ -103,6 +_,11 @@
  
      @Override
      public void handleConfigurationFinished(ServerboundFinishConfigurationPacket p_294283_) {
++        if (this.connectionType == net.neoforged.neoforge.network.connection.ConnectionType.MODDED) {
++            //We need to also initialize this here, as the client may have sent the packet before we have finished our configuration.
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedConnectionDetectedAtServer(this, java.util.Set.of(), java.util.Set.of());
++        }
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onConfigurationFinished(this);
          this.connection.suspendInboundAfterProtocolChange();
          PacketUtils.ensureRunningOnSameThread(p_294283_, this, this.server);
@@ -95,7 +99,7 @@
              this.connection.resumeInboundAfterProtocolChange();
          } catch (Exception exception) {
              LOGGER.error("Couldn't place player in world", (Throwable)exception);
-@@ -155,5 +_,15 @@
+@@ -155,5 +_,19 @@
              this.currentTask = null;
              this.startNextTask();
          }
@@ -109,5 +113,9 @@
 +    public void onModdedConfigurationPhaseEnded() {
 +        isHandlingModdedConfigurationPhase = false;
 +        finishCurrentTask(net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseCompleted.TYPE);
++    }
++
++    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
++        return connectionType;
      }
  }

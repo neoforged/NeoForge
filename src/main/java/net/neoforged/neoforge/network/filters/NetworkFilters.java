@@ -10,7 +10,6 @@ import io.netty.channel.ChannelPipeline;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import net.minecraft.network.Connection;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import org.apache.logging.log4j.LogManager;

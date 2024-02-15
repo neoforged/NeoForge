@@ -50,7 +50,11 @@ import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.connection.ConnectionUtils;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.filters.NetworkFilters;
-import net.neoforged.neoforge.network.handling.*;
+import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
+import net.neoforged.neoforge.network.handling.IPacketHandler;
+import net.neoforged.neoforge.network.handling.IReplyHandler;
+import net.neoforged.neoforge.network.handling.ISynchronizedWorkHandler;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.neoforge.network.negotiation.NegotiableNetworkComponent;
 import net.neoforged.neoforge.network.negotiation.NegotiationResult;
 import net.neoforged.neoforge.network.negotiation.NetworkComponentNegotiator;
@@ -687,7 +691,7 @@ public class NetworkRegistry {
     /**
      * Indicates if the given packet is ad hoc readable for us.
      *
-     * @param id The id of the packet.
+     * @param id   The id of the packet.
      * @param flow The flow of the packet.
      * @return True if the packet is ad hoc readable, false otherwise.
      */
@@ -707,7 +711,7 @@ public class NetworkRegistry {
     /**
      * Indicates if the given packet is ad hoc readable for us.
      *
-     * @param id The id of the packet.
+     * @param id   The id of the packet.
      * @param flow The flow of the packet.
      * @return True if the packet is ad hoc readable, false otherwise.
      */
@@ -1191,7 +1195,6 @@ public class NetworkRegistry {
     }
 
     private record ServerReplyHandler(ServerCommonPacketListener listener) implements IReplyHandler {
-
         @Override
         public void send(CustomPacketPayload payload) {
             listener.send(payload);
@@ -1204,7 +1207,6 @@ public class NetworkRegistry {
     }
 
     private record ClientReplyHandler(ClientCommonPacketListener listener) implements IReplyHandler {
-
         @Override
         public void send(CustomPacketPayload payload) {
             listener.send(payload);

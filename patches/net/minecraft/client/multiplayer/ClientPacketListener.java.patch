@@ -99,7 +99,7 @@
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
 +            return;
 +        }
-+        if (this.connectionType.isModded() && net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtClient(this, p_295727_)) {
++        if (this.connectionType.isNotVanilla() && net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtClient(this, p_295727_)) {
 +            return;
 +        }
 +        PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
@@ -132,3 +132,13 @@
          Instant instant = Instant.now();
          long i = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
+@@ -2463,5 +_,9 @@
+ 
+     public boolean isFeatureEnabled(FeatureFlagSet p_250605_) {
+         return p_250605_.isSubsetOf(this.enabledFeatures());
++    }
++
++    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
++        return connectionType;
+     }
+ }

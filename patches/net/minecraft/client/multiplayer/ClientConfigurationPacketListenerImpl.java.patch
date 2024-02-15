@@ -10,7 +10,7 @@
  
      public ClientConfigurationPacketListenerImpl(Minecraft p_295262_, Connection p_296339_, CommonListenerCookie p_294706_) {
          super(p_295262_, p_296339_, p_294706_);
-@@ -45,7 +_,45 @@
+@@ -45,7 +_,41 @@
      }
  
      @Override
@@ -18,19 +18,16 @@
 +    protected void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295411_) {
 +        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
 +            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            this.initializedConnection = true;
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
 +            return;
 +        }
 +        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
 +            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            this.initializedConnection = true;
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
 +            return;
 +        }
 +        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload) {
 +            this.connectionType = this.connectionType.withNeoForgeQueryPayload();
-+            this.initializedConnection = true;
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onNetworkQuery(this);
 +            return;
 +        }
@@ -40,16 +37,15 @@
 +            return;
 +        }
 +        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkSetupFailedPayload setupFailedPayload) {
-+            this.initializedConnection = true;
 +            failureReasons = setupFailedPayload.failureReasons();
 +        }
-+        if (this.connectionType.isVanilla() && p_295411_ instanceof net.minecraft.network.protocol.common.custom.BrandPayload) {
++        if (!this.connectionType.isNeoForge() && p_295411_ instanceof net.minecraft.network.protocol.common.custom.BrandPayload) {
 +            this.initializedConnection = true;
 +            if (!net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaNetworkConnectionEstablished(this)) {
 +                return;
 +            }
 +        }
-+        if (this.connectionType.isModded()) {
++        if (this.connectionType.isNotVanilla()) {
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtClient(this, p_295727_);
 +            return;
 +        }
@@ -57,12 +53,13 @@
          this.handleUnknownCustomPayload(p_295411_);
      }
  
-@@ -69,12 +_,21 @@
+@@ -69,12 +_,23 @@
      @Override
      public void handleEnabledFeatures(ClientboundUpdateEnabledFeaturesPacket p_294410_) {
          this.enabledFeatures = FeatureFlags.REGISTRY.fromNames(p_294410_.features());
 +        //Fallback detection layer for vanilla servers
-+        if (this.connectionType.isVanilla()) {
++        if (!this.connectionType.isNeoForge()) {
++            this.initializedConnection = true;
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaNetworkConnectionEstablished(this);
 +        }
      }
@@ -72,7 +69,8 @@
          this.connection.suspendInboundAfterProtocolChange();
          PacketUtils.ensureRunningOnSameThread(p_294585_, this, this.minecraft);
 +
-+        if (!this.initializedConnection && this.connectionType.isVanilla()) {
++        if (!this.initializedConnection && !this.connectionType.isNeoForge()) {
++            //Fallback detection for servers with a delayed brand payload (BungeeCord)
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaNetworkConnectionEstablished(this);
 +        }
 +
@@ -94,7 +92,7 @@
          this.connection.send(new ServerboundFinishConfigurationPacket());
      }
  
-@@ -104,5 +_,14 @@
+@@ -104,5 +_,18 @@
      public void onDisconnect(Component p_314649_) {
          super.onDisconnect(p_314649_);
          this.minecraft.clearDownloadedResourcePacks();
@@ -107,5 +105,9 @@
 +            return superScreen;
 +
 +        return new net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen(superScreen, p_296470_, failureReasons);
++    }
++
++    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
++        return connectionType;
      }
  }
