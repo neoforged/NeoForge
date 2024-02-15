@@ -13,6 +13,7 @@ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 
 /**
@@ -90,4 +91,9 @@ public interface IClientCommonPacketListenerExtension {
      * {@return the minecraft instance}
      */
     Minecraft getMinecraft();
+
+    /**
+     * {@return the connection type}
+     */
+    ConnectionType getConnectionType();
 }

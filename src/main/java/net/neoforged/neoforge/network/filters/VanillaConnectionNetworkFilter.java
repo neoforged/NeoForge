@@ -32,6 +32,7 @@ import net.minecraft.network.protocol.game.ClientboundUpdateAttributesPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagNetworkSerialization;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.registries.RegistryManager;
 import org.slf4j.Logger;
@@ -44,18 +45,22 @@ import org.slf4j.Logger;
 public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public VanillaConnectionNetworkFilter() {
+    private final ConnectionType connectionType;
+
+    public VanillaConnectionNetworkFilter(ConnectionType connectionType) {
         super(
                 ImmutableMap.<Class<? extends Packet<?>>, BiConsumer<Packet<?>, List<? super Packet<?>>>>builder()
                         .put(handler(ClientboundUpdateAttributesPacket.class, VanillaConnectionNetworkFilter::filterEntityProperties))
                         .put(handler(ClientboundCommandsPacket.class, VanillaConnectionNetworkFilter::filterCommandList))
                         .put(handler(ClientboundUpdateTagsPacket.class, VanillaConnectionNetworkFilter::filterCustomTagTypes))
                         .build());
+
+        this.connectionType = connectionType;
     }
 
     @Override
     public boolean isNecessary(Connection manager) {
-        return NetworkRegistry.getInstance().isVanillaConnection(manager);
+        return !connectionType.isNeoForge();
     }
 
     /**

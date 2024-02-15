@@ -46,13 +46,11 @@ import net.minecraft.util.thread.ReentrantBlockableEventLoop;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.connection.ConnectionUtils;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.filters.NetworkFilters;
-import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
-import net.neoforged.neoforge.network.handling.IPacketHandler;
-import net.neoforged.neoforge.network.handling.ISynchronizedWorkHandler;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.*;
 import net.neoforged.neoforge.network.negotiation.NegotiableNetworkComponent;
 import net.neoforged.neoforge.network.negotiation.NegotiationResult;
 import net.neoforged.neoforge.network.negotiation.NetworkComponentNegotiator;
@@ -202,12 +200,12 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.play().get(id);
 
             //Validate that everything is okey and then return a reader.
-            if (channel == null) {
+            if (channel == null && !isAdhocPlayReadable(id, flow)) {
                 LOGGER.warn("Received a modded custom payload packet {} with an unknown or not accepted channel. Not parsing packet.", id);
                 return null;
             }
 
-            final PlayRegistration<?> registration = knownPlayRegistrations.get(channel.id());
+            final PlayRegistration<?> registration = knownPlayRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet {} with an unknown or not accepted channel. Not parsing packet.", channel.id());
                 throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -234,12 +232,12 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.configuration().get(id);
 
             //Also validate that everything is key and then return a reader.
-            if (channel == null) {
+            if (channel == null && !isAdhocConfigurationChannelReadable(id, flow)) {
                 LOGGER.warn("Received a modded custom payload packet {} with an unknown or not accepted channel. Not parsing packet.", id);
                 return null;
             }
 
-            final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(channel.id());
+            final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet {} with an unknown or not accepted channel. Not parsing packet.", channel.id());
                 throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -295,14 +293,15 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.configuration().get(packet.payload().id());
 
             //Check if the channel should even be processed.
-            if (channel == null) {
+            if (channel == null && !isAdhocConfigurationChannelReadable(packet.payload().id(), PacketFlow.SERVERBOUND)) {
                 LOGGER.warn("Received a modded custom payload packet from a client with an unknown or not accepted channel. Disconnecting client.");
                 listener.disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
                 return;
             }
 
+            final ResourceLocation id = channel != null ? channel.id() : packet.payload().id();
             //We are in the configuration phase, so lookup packet listeners for that
-            final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(channel.id());
+            final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a client with an unknown or not accepted channel. Disconnecting client.");
                 throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -311,7 +310,7 @@ public class NetworkRegistry {
             registration.handle(
                     packet.payload(),
                     new ConfigurationPayloadContext(
-                            configurationPacketListener::send,
+                            new ServerReplyHandler(configurationPacketListener),
                             new ServerPacketHandler(configurationPacketListener),
                             configurationPacketListener::finishCurrentTask,
                             new EventLoopSynchronizedWorkHandler<>(configurationPacketListener.getMainThreadEventLoop(), packet.payload()),
@@ -323,14 +322,15 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.play().get(packet.payload().id());
 
             //Check if the channel should even be processed.
-            if (channel == null) {
+            if (channel == null && !isAdhocPlayReadable(packet.payload().id(), PacketFlow.SERVERBOUND)) {
                 LOGGER.warn("Received a modded custom payload packet from a client with an unknown or not accepted channel. Disconnecting client.");
                 listener.disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
                 return;
             }
 
+            final ResourceLocation id = channel != null ? channel.id() : packet.payload().id();
             //We are in the play phase, so lookup packet listeners for that
-            final PlayRegistration<?> registration = knownPlayRegistrations.get(channel.id());
+            final PlayRegistration<?> registration = knownPlayRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a client with an unknown or not accepted channel. Disconnecting client.");
                 throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -339,7 +339,7 @@ public class NetworkRegistry {
             registration.handle(
                     packet.payload(),
                     new PlayPayloadContext(
-                            playPacketListener::send,
+                            new ServerReplyHandler(playPacketListener),
                             new ServerPacketHandler(playPacketListener),
                             new EventLoopSynchronizedWorkHandler<>(playPacketListener.getMainThreadEventLoop(), packet.payload()),
                             PacketFlow.SERVERBOUND,
@@ -381,14 +381,15 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.configuration().get(packet.payload().id());
 
             //Check if the channel should even be processed.
-            if (channel == null) {
+            if (channel == null && !isAdhocConfigurationChannelReadable(packet.payload().id(), PacketFlow.CLIENTBOUND)) {
                 LOGGER.warn("Received a modded custom payload packet from a server with an unknown or not accepted channel. Disconnecting server.");
                 listener.getConnection().disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
                 return false;
             }
 
+            final ResourceLocation id = channel != null ? channel.id() : packet.payload().id();
             //We are in the configuration phase, so lookup packet listeners for that
-            final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(channel.id());
+            final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a server with an unknown or not accepted channel. Disconnecting server.");
                 throw new IllegalStateException("A server sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -397,7 +398,7 @@ public class NetworkRegistry {
             registration.handle(
                     packet.payload(),
                     new ConfigurationPayloadContext(
-                            configurationPacketListener::send,
+                            new ClientReplyHandler(configurationPacketListener),
                             new ClientPacketHandler(configurationPacketListener),
                             (task) -> LOGGER.warn("Tried to finish a task on the client. This should not happen. Ignoring. Task: {}", task),
                             new EventLoopSynchronizedWorkHandler<>(configurationPacketListener.getMainThreadEventLoop(), packet.payload()),
@@ -409,14 +410,15 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.play().get(packet.payload().id());
 
             //Check if the channel should even be processed.
-            if (channel == null) {
+            if (channel == null && !isAdhocPlayReadable(packet.payload().id(), PacketFlow.CLIENTBOUND)) {
                 LOGGER.warn("Received a modded custom payload packet from a server with an unknown or not accepted channel. Disconnecting server.");
                 listener.getConnection().disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
                 return false;
             }
 
+            final ResourceLocation id = channel != null ? channel.id() : packet.payload().id();
             //We are in the play phase, so lookup packet listeners for that
-            final PlayRegistration<?> registration = knownPlayRegistrations.get(channel.id());
+            final PlayRegistration<?> registration = knownPlayRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a server with an unknown or not accepted channel. Disconnecting server.");
                 throw new IllegalStateException("A server sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -425,7 +427,7 @@ public class NetworkRegistry {
             registration.handle(
                     packet.payload(),
                     new PlayPayloadContext(
-                            playPacketListener::send,
+                            new ClientReplyHandler(playPacketListener),
                             new ClientPacketHandler(playPacketListener),
                             new EventLoopSynchronizedWorkHandler<>(playPacketListener.getMainThreadEventLoop(), packet.payload()),
                             PacketFlow.CLIENTBOUND,
@@ -504,7 +506,7 @@ public class NetworkRegistry {
 
         sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(setup);
 
-        NetworkFilters.injectIfNecessary(sender.getConnection());
+        NetworkFilters.injectIfNecessary(sender.getConnection(), sender.getConnectionType());
 
         sender.send(new ModdedNetworkPayload(
                 setup.configuration().values().stream().map(channel -> new ModdedNetworkComponent(channel.id(), channel.chosenVersion())).collect(Collectors.toSet()),
@@ -553,7 +555,7 @@ public class NetworkRegistry {
             return false;
         }
 
-        NetworkFilters.injectIfNecessary(sender.getConnection());
+        NetworkFilters.injectIfNecessary(sender.getConnection(), sender.getConnectionType());
 
         final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
         nowListeningOn.addAll(getInitialClientListeningChannels());
@@ -671,7 +673,7 @@ public class NetworkRegistry {
     /**
      * Returns a mutable map of the currently known ad-hoc channels.
      */
-    private Set<ResourceLocation> getAdHocChannels(Connection connection) {
+    private Set<ResourceLocation> getKnownAdHocChannelsOfOtherEnd(Connection connection) {
         var map = connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
 
         if (map == null) {
@@ -680,6 +682,46 @@ public class NetworkRegistry {
         }
 
         return map;
+    }
+
+    /**
+     * Indicates if the given packet is ad hoc readable for us.
+     *
+     * @param id The id of the packet.
+     * @param flow The flow of the packet.
+     * @return True if the packet is ad hoc readable, false otherwise.
+     */
+    private boolean isAdhocConfigurationChannelReadable(ResourceLocation id, PacketFlow flow) {
+        final ConfigurationRegistration<?> known = knownConfigurationRegistrations.get(id);
+        if (known == null) {
+            return false;
+        }
+
+        if (!known.optional()) {
+            return false;
+        }
+
+        return known.flow().isEmpty() || known.flow().get() == flow;
+    }
+
+    /**
+     * Indicates if the given packet is ad hoc readable for us.
+     *
+     * @param id The id of the packet.
+     * @param flow The flow of the packet.
+     * @return True if the packet is ad hoc readable, false otherwise.
+     */
+    private boolean isAdhocPlayReadable(ResourceLocation id, PacketFlow flow) {
+        final PlayRegistration<?> known = knownPlayRegistrations.get(id);
+        if (known == null) {
+            return false;
+        }
+
+        if (!known.optional()) {
+            return false;
+        }
+
+        return known.flow().isEmpty() || known.flow().get() == flow;
     }
 
     /**
@@ -718,7 +760,7 @@ public class NetworkRegistry {
                         .map(entry -> new NetworkChannel(entry.id(), entry.version()))
                         .collect(Collectors.toSet()));
 
-        NetworkFilters.injectIfNecessary(listener.getConnection());
+        NetworkFilters.injectIfNecessary(listener.getConnection(), listener.getConnectionType());
 
         listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(setup);
         listener.getConnection().channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).set(true);
@@ -777,7 +819,7 @@ public class NetworkRegistry {
         //We are on the client, connected to a vanilla server, We have to load the default configs.
         ConfigTracker.INSTANCE.loadDefaultServerConfigs();
 
-        NetworkFilters.injectIfNecessary(sender.getConnection());
+        NetworkFilters.injectIfNecessary(sender.getConnection(), sender.getConnectionType());
 
         final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
         nowListeningOn.addAll(getInitialClientListeningChannels());
@@ -810,7 +852,7 @@ public class NetworkRegistry {
     public boolean isConnected(ServerCommonPacketListener listener, ResourceLocation payloadId) {
         final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         if (payloadSetup == null) {
-            return getAdHocChannels(listener.getConnection()).contains(payloadId);
+            return getKnownAdHocChannelsOfOtherEnd(listener.getConnection()).contains(payloadId);
         }
 
         if (listener instanceof ServerConfigurationPacketListener) {
@@ -823,7 +865,7 @@ public class NetworkRegistry {
             }
         }
 
-        return getAdHocChannels(listener.getConnection()).contains(payloadId);
+        return getKnownAdHocChannelsOfOtherEnd(listener.getConnection()).contains(payloadId);
     }
 
     /**
@@ -836,7 +878,7 @@ public class NetworkRegistry {
     public boolean isConnected(ClientCommonPacketListener listener, ResourceLocation payloadId) {
         final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         if (payloadSetup == null) {
-            return getAdHocChannels(listener.getConnection()).contains(payloadId);
+            return getKnownAdHocChannelsOfOtherEnd(listener.getConnection()).contains(payloadId);
         }
 
         if (listener instanceof ClientConfigurationPacketListener) {
@@ -849,7 +891,7 @@ public class NetworkRegistry {
             }
         }
 
-        return getAdHocChannels(listener.getConnection()).contains(payloadId);
+        return getKnownAdHocChannelsOfOtherEnd(listener.getConnection()).contains(payloadId);
     }
 
     /**
@@ -912,7 +954,7 @@ public class NetworkRegistry {
 
         connection.channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(setup);
 
-        NetworkFilters.injectIfNecessary(connection);
+        NetworkFilters.injectIfNecessary(connection, ConnectionType.NEOFORGE);
     }
 
     /**
@@ -942,7 +984,7 @@ public class NetworkRegistry {
      * @param connection        The connection to add the channels to.
      */
     private void onMinecraftRegister(Set<ResourceLocation> resourceLocations, Connection connection) {
-        getAdHocChannels(connection).addAll(resourceLocations);
+        getKnownAdHocChannelsOfOtherEnd(connection).addAll(resourceLocations);
     }
 
     /**
@@ -972,7 +1014,7 @@ public class NetworkRegistry {
      * @param connection        The connection to remove the channels from.
      */
     private void onMinecraftUnregister(Set<ResourceLocation> resourceLocations, Connection connection) {
-        getAdHocChannels(connection).removeAll(resourceLocations);
+        getKnownAdHocChannelsOfOtherEnd(connection).removeAll(resourceLocations);
     }
 
     /**
@@ -1145,6 +1187,32 @@ public class NetworkRegistry {
             } catch (ClassCastException exception) {
                 throw new IllegalStateException("Somebody tried to handle a packet in a listener that does not support it.", exception);
             }
+        }
+    }
+
+    private record ServerReplyHandler(ServerCommonPacketListener listener) implements IReplyHandler {
+
+        @Override
+        public void send(CustomPacketPayload payload) {
+            listener.send(payload);
+        }
+
+        @Override
+        public void disconnect(Component reason) {
+            listener.disconnect(reason);
+        }
+    }
+
+    private record ClientReplyHandler(ClientCommonPacketListener listener) implements IReplyHandler {
+
+        @Override
+        public void send(CustomPacketPayload payload) {
+            listener.send(payload);
+        }
+
+        @Override
+        public void disconnect(Component reason) {
+            listener.getConnection().disconnect(reason);
         }
     }
 }

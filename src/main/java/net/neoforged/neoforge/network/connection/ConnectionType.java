@@ -17,7 +17,15 @@ public enum ConnectionType {
         return this == VANILLA;
     }
 
-    public boolean isModded() {
+    public boolean isNotVanilla() {
         return !isVanilla();
+    }
+
+    public boolean isModded() {
+        return this == MODDED;
+    }
+
+    public boolean isNeoForge() {
+        return this == NEOFORGE;
     }
 }

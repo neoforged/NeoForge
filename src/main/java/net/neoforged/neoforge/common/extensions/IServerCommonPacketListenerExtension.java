@@ -15,6 +15,7 @@ import net.minecraft.network.protocol.common.ServerCommonPacketListener;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 
 /**
@@ -106,4 +107,9 @@ public interface IServerCommonPacketListenerExtension {
     default boolean isConnected(final CustomPacketPayload payload) {
         return isConnected(payload.id());
     }
+
+    /**
+     * {@return the connection type of the connection}
+     */
+    ConnectionType getConnectionType();
 }

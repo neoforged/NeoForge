@@ -5,12 +5,12 @@
 
 package net.neoforged.neoforge.network.handling;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
  * Interface for handling replies on custom packets.
  */
-@FunctionalInterface
 public interface IReplyHandler {
     /**
      * Sends the given payload back to the player.
@@ -18,4 +18,9 @@ public interface IReplyHandler {
      * @param payload The payload to send back.
      */
     void send(CustomPacketPayload payload);
+
+    /**
+     * Disconnects the player from the network.
+     */
+    void disconnect(Component reason);
 }
