@@ -27,7 +27,7 @@ import java.util.function.Supplier;
  * This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
  * <p>
  * This event is fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
- * only on the {@linkplain LogicalSide#CLIENT logical client}.
+ * on both clients and servers.
  */
 public final class BuildCreativeModeTabContentsEvent extends Event implements IModBusEvent, CreativeModeTab.Output {
     private final CreativeModeTab tab;
