@@ -39,15 +39,6 @@ sourceSets {
 }
 
 dependencies {
-    pluginLayerLibrary "net.neoforged.fancymodloader:core:${project.fancy_mod_loader_version}"
-    pluginLayerLibrary "net.neoforged.fancymodloader:language-java:${project.fancy_mod_loader_version}"
-    pluginLayerLibrary "net.neoforged.fancymodloader:language-lowcode:${project.fancy_mod_loader_version}"
-    pluginLayerLibrary "net.neoforged.fancymodloader:language-minecraft:${project.fancy_mod_loader_version}"
-
-    gameLayerLibrary ("net.neoforged.fancymodloader:events:${project.fancy_mod_loader_version}") {
-        exclude group: 'org.slf4j'
-    }
-
     runtimeOnly "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
 
     moduleOnly "cpw.mods:securejarhandler:${project.securejarhandler_version}"
@@ -89,6 +80,8 @@ dependencies {
     installer ("net.neoforged:JarJarSelector:${project.jarjar_version}") {
         exclude group: 'org.slf4j'
     }
+    // We depend on apache commons directly as there is a difference between the version the server uses and the one the client does
+    installer "org.apache.commons:commons-lang3:${project.apache_commons_lang3_version}"
     installer ("net.neoforged:JarJarMetadata:${project.jarjar_version}") {
         exclude group: 'org.slf4j'
     }

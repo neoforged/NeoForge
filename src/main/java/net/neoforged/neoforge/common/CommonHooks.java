@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -117,7 +116,6 @@ import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -182,6 +180,7 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.LogManager;
@@ -921,8 +920,6 @@ public class CommonHooks {
         return EventHooks.getMobGriefingEvent(level, entity) && state.canEntityDestroy(level, pos, entity) && EventHooks.onEntityDestroyBlock(entity, pos, state);
     }
 
-    private static final Map<Item, Integer> VANILLA_BURNS = new IdentityHashMap<>();
-
     /**
      * Gets the burn time of this itemstack.
      */
@@ -930,16 +927,13 @@ public class CommonHooks {
         if (stack.isEmpty()) {
             return 0;
         } else {
-            Item item = stack.getItem();
             int ret = stack.getBurnTime(recipeType);
-            return EventHooks.getItemBurnTime(stack, ret == -1 ? VANILLA_BURNS.getOrDefault(item, 0) : ret, recipeType);
+            if (ret == -1) {
+                var fuel = stack.getItemHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
+                ret = fuel == null ? 0 : fuel.burnTime();
+            }
+            return EventHooks.getItemBurnTime(stack, ret, recipeType);
         }
-    }
-
-    @SuppressWarnings("deprecation")
-    public static synchronized void updateBurns() {
-        VANILLA_BURNS.clear();
-        VANILLA_BURNS.putAll(FurnaceBlockEntity.getFuel());
     }
 
     /**

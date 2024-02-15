@@ -279,7 +279,10 @@ public interface IItemExtension {
 
     /**
      * Called to tick armor in the armor slot. Override to do something
+     * 
+     * @deprecated Use {@link Item#inventoryTick(ItemStack, Level, Entity, int, boolean)} by checking that the slot argument is an armor slot. Armor slots are 36, 37, 38 and 39.
      */
+    @Deprecated(forRemoval = true, since = "1.20.4")
     default void onArmorTick(ItemStack stack, Level level, Player player) {}
 
     /**
@@ -591,7 +594,10 @@ public interface IItemExtension {
      * @return the fuel burn time for this itemStack in a furnace. Return 0 to make
      *         it not act as a fuel. Return -1 to let the default vanilla logic
      *         decide.
+     * @apiNote This method takes precedence over the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FURNACE_FUELS data map}.
+     *          However, you should use the datamap unless necessary (i.e. NBT-based burn times) so that users can configure burn times.
      */
+    @ApiStatus.OverrideOnly
     default int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
         return -1;
     }

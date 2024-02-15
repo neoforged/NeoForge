@@ -34,10 +34,10 @@ public class FluidBucketWrapper implements IFluidHandlerItem {
     }
 
     public boolean canFillFluidType(FluidStack fluid) {
-        if (fluid.getFluid() == Fluids.WATER || fluid.getFluid() == Fluids.LAVA) {
+        if (fluid.is(Fluids.WATER) || fluid.is(Fluids.LAVA)) {
             return true;
         }
-        return !fluid.getFluid().getFluidType().getBucket(fluid).isEmpty();
+        return !fluid.getFluidType().getBucket(fluid).isEmpty();
     }
 
     public FluidStack getFluid() {

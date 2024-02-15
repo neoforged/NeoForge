@@ -12,6 +12,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.handlers.ClientPayloadHandler;
 import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
+import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
@@ -85,6 +86,9 @@ public class NetworkInitialization {
                 .play(
                         RegistryDataMapSyncPayload.ID,
                         RegistryDataMapSyncPayload::decode,
-                        handlers -> handlers.client(ClientRegistryManager::handleDataMapSync));
+                        handlers -> handlers.client(ClientRegistryManager::handleDataMapSync))
+                .play(AdvancedContainerSetDataPayload.ID,
+                        AdvancedContainerSetDataPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle));
     }
 }

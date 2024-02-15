@@ -84,15 +84,25 @@ public final class AttachmentInternals {
         }
         for (var entry : from.attachments.entrySet()) {
             AttachmentType<?> type = entry.getKey();
+            if (type.serializer == null) {
+                continue;
+            }
             @SuppressWarnings("unchecked")
-            var serializer = (IAttachmentSerializer<Tag, Object>) type.serializer;
-            if (serializer != null && filter.test(type)) {
-                to.getAttachmentMap().put(type, serializer.read(to.getExposedHolder(), serializer.write(entry.getValue())));
+            var copyHandler = (IAttachmentCopyHandler<Object>) type.copyHandler;
+            if (filter.test(type)) {
+                Object copy = copyHandler.copy(to.getExposedHolder(), entry.getValue());
+                if (copy != null) {
+                    to.getAttachmentMap().put(type, copy);
+                }
             }
         }
     }
 
     public static void copyStackAttachments(ItemStack from, ItemStack to) {
+        copyAttachments(from, to, type -> true);
+    }
+
+    public static void copyChunkAttachmentsOnPromotion(AttachmentHolder.AsField from, AttachmentHolder.AsField to) {
         copyAttachments(from, to, type -> true);
     }
 

@@ -119,7 +119,7 @@ public class FluidUtil {
                         if (doFill) {
                             tryFluidTransfer(containerFluidHandler, fluidSource, maxAmount, true);
                             if (player != null) {
-                                SoundEvent soundevent = simulatedTransfer.getFluid().getFluidType().getSound(simulatedTransfer, SoundActions.BUCKET_FILL);
+                                SoundEvent soundevent = simulatedTransfer.getFluidType().getSound(simulatedTransfer, SoundActions.BUCKET_FILL);
 
                                 if (soundevent != null) {
                                     player.level().playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -166,7 +166,7 @@ public class FluidUtil {
                     }
 
                     if (doDrain && player != null) {
-                        SoundEvent soundevent = transfer.getFluid().getFluidType().getSound(transfer, SoundActions.BUCKET_EMPTY);
+                        SoundEvent soundevent = transfer.getFluidType().getSound(transfer, SoundActions.BUCKET_EMPTY);
 
                         if (soundevent != null) {
                             player.level().playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -490,7 +490,7 @@ public class FluidUtil {
         if (fluid.getFluidType().isVaporizedOnPlacement(level, pos, resource)) {
             FluidStack result = fluidSource.drain(resource, IFluidHandler.FluidAction.EXECUTE);
             if (!result.isEmpty()) {
-                result.getFluid().getFluidType().onVaporize(player, level, pos, result);
+                result.getFluidType().onVaporize(player, level, pos, result);
                 return true;
             }
         } else {
@@ -503,7 +503,7 @@ public class FluidUtil {
             }
             FluidStack result = tryFluidTransfer(handler, fluidSource, resource, true);
             if (!result.isEmpty()) {
-                SoundEvent soundevent = resource.getFluid().getFluidType().getSound(resource, SoundActions.BUCKET_EMPTY);
+                SoundEvent soundevent = resource.getFluidType().getSound(resource, SoundActions.BUCKET_EMPTY);
 
                 if (soundevent != null) {
                     level.playSound(player, pos, soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -553,16 +553,13 @@ public class FluidUtil {
      *         Returns empty itemStack if none of the enabled buckets can hold the fluid.
      */
     public static ItemStack getFilledBucket(FluidStack fluidStack) {
-        Fluid fluid = fluidStack.getFluid();
-
         if (!fluidStack.hasTag() || fluidStack.getTag().isEmpty()) {
-            if (fluid == Fluids.WATER) {
+            if (fluidStack.is(Fluids.WATER)) {
                 return new ItemStack(Items.WATER_BUCKET);
-            } else if (fluid == Fluids.LAVA) {
+            } else if (fluidStack.is(Fluids.LAVA)) {
                 return new ItemStack(Items.LAVA_BUCKET);
             }
         }
-
-        return fluid.getFluidType().getBucket(fluidStack);
+        return fluidStack.getFluidType().getBucket(fluidStack);
     }
 }

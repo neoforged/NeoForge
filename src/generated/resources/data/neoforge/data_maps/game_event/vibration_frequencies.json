@@ -1,0 +1,169 @@
+{
+  "values": {
+    "minecraft:block_activate": {
+      "frequency": 10
+    },
+    "minecraft:block_attach": {
+      "frequency": 10
+    },
+    "minecraft:block_change": {
+      "frequency": 11
+    },
+    "minecraft:block_close": {
+      "frequency": 9
+    },
+    "minecraft:block_deactivate": {
+      "frequency": 9
+    },
+    "minecraft:block_destroy": {
+      "frequency": 12
+    },
+    "minecraft:block_detach": {
+      "frequency": 9
+    },
+    "minecraft:block_open": {
+      "frequency": 10
+    },
+    "minecraft:block_place": {
+      "frequency": 13
+    },
+    "minecraft:container_close": {
+      "frequency": 9
+    },
+    "minecraft:container_open": {
+      "frequency": 10
+    },
+    "minecraft:drink": {
+      "frequency": 8
+    },
+    "minecraft:eat": {
+      "frequency": 8
+    },
+    "minecraft:elytra_glide": {
+      "frequency": 4
+    },
+    "minecraft:entity_action": {
+      "frequency": 4
+    },
+    "minecraft:entity_damage": {
+      "frequency": 7
+    },
+    "minecraft:entity_die": {
+      "frequency": 15
+    },
+    "minecraft:entity_dismount": {
+      "frequency": 5
+    },
+    "minecraft:entity_interact": {
+      "frequency": 6
+    },
+    "minecraft:entity_mount": {
+      "frequency": 6
+    },
+    "minecraft:entity_place": {
+      "frequency": 14
+    },
+    "minecraft:equip": {
+      "frequency": 5
+    },
+    "minecraft:explode": {
+      "frequency": 15
+    },
+    "minecraft:flap": {
+      "frequency": 1
+    },
+    "minecraft:fluid_pickup": {
+      "frequency": 12
+    },
+    "minecraft:fluid_place": {
+      "frequency": 13
+    },
+    "minecraft:hit_ground": {
+      "frequency": 2
+    },
+    "minecraft:instrument_play": {
+      "frequency": 3
+    },
+    "minecraft:item_interact_finish": {
+      "frequency": 3
+    },
+    "minecraft:lightning_strike": {
+      "frequency": 14
+    },
+    "minecraft:note_block_play": {
+      "frequency": 10
+    },
+    "minecraft:prime_fuse": {
+      "frequency": 10
+    },
+    "minecraft:projectile_land": {
+      "frequency": 2
+    },
+    "minecraft:projectile_shoot": {
+      "frequency": 3
+    },
+    "minecraft:resonate_1": {
+      "frequency": 1
+    },
+    "minecraft:resonate_10": {
+      "frequency": 10
+    },
+    "minecraft:resonate_11": {
+      "frequency": 11
+    },
+    "minecraft:resonate_12": {
+      "frequency": 12
+    },
+    "minecraft:resonate_13": {
+      "frequency": 13
+    },
+    "minecraft:resonate_14": {
+      "frequency": 14
+    },
+    "minecraft:resonate_15": {
+      "frequency": 15
+    },
+    "minecraft:resonate_2": {
+      "frequency": 2
+    },
+    "minecraft:resonate_3": {
+      "frequency": 3
+    },
+    "minecraft:resonate_4": {
+      "frequency": 4
+    },
+    "minecraft:resonate_5": {
+      "frequency": 5
+    },
+    "minecraft:resonate_6": {
+      "frequency": 6
+    },
+    "minecraft:resonate_7": {
+      "frequency": 7
+    },
+    "minecraft:resonate_8": {
+      "frequency": 8
+    },
+    "minecraft:resonate_9": {
+      "frequency": 9
+    },
+    "minecraft:shear": {
+      "frequency": 6
+    },
+    "minecraft:splash": {
+      "frequency": 2
+    },
+    "minecraft:step": {
+      "frequency": 1
+    },
+    "minecraft:swim": {
+      "frequency": 1
+    },
+    "minecraft:teleport": {
+      "frequency": 14
+    },
+    "minecraft:unequip": {
+      "frequency": 4
+    }
+  }
+}

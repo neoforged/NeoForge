@@ -32,6 +32,7 @@ import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
+import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
@@ -153,5 +154,9 @@ public class ClientPayloadHandler {
             context.packetHandler().disconnect(Component.translatable("neoforge.network.aux_light_data.failed", msg.pos(), e.getMessage()));
             return null;
         });
+    }
+
+    public void handle(AdvancedContainerSetDataPayload msg, PlayPayloadContext context) {
+        context.packetHandler().handle(msg.toVanillaPacket());
     }
 }
