@@ -219,9 +219,9 @@ public class NetworkRegistry {
                     final Connection connection = ConnectionUtils.getConnection(context);
                     final PacketListener listener = connection.getPacketListener();
                     if (listener instanceof ServerGamePacketListener serverListener) {
-                        serverListener.disconnect(Component.translatable("neoforge.network.invalid_flow", flow));
+                        serverListener.disconnect(Component.translatableWithFallback("neoforge.network.invalid_flow", "Failed to process a payload that was send with an invalid flow: %s", flow));
                     } else if (listener instanceof ClientGamePacketListener clientListener) {
-                        clientListener.getConnection().disconnect(Component.translatable("neoforge.network.invalid_flow", flow));
+                        clientListener.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.invalid_flow", "Failed to process a payload that was send with an invalid flow: %s", flow));
                     } else {
                         LOGGER.error("Received a modded custom payload packet {} that is not supposed to be sent to the server. Disconnecting client, but the listener is not a game listener. This should not happen.", channel.id());
                         throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -251,9 +251,9 @@ public class NetworkRegistry {
                     final Connection connection = ConnectionUtils.getConnection(context);
                     final PacketListener listener = connection.getPacketListener();
                     if (listener instanceof ServerGamePacketListener serverListener) {
-                        serverListener.disconnect(Component.translatable("neoforge.network.invalid_flow", flow));
+                        serverListener.disconnect(Component.translatableWithFallback("neoforge.network.invalid_flow", "Failed to process a payload that was send with an invalid flow: %s", flow));
                     } else if (listener instanceof ClientGamePacketListener clientListener) {
-                        clientListener.getConnection().disconnect(Component.translatable("neoforge.network.invalid_flow", flow));
+                        clientListener.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.invalid_flow", "Failed to process a payload that was send with an invalid flow: %s", flow));
                     } else {
                         LOGGER.error("Received a modded custom payload packet {} that is not supposed to be sent to the server. Disconnecting client, but the listener is not a game listener. This should not happen.", channel.id());
                         throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -537,7 +537,7 @@ public class NetworkRegistry {
 
         //Negotiation failed. Disconnect the client.
         if (!configurationNegotiationResult.success()) {
-            sender.disconnect(Component.translatable("neoforge.network.negotiation.failure.vanilla.client.not_supported", NeoForgeVersion.getVersion()));
+            sender.disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.client.not_supported", "You are trying to connect to a server that is running NeoForge, but you are not. Please install NeoForge Version: %s to connect to this server.", NeoForgeVersion.getVersion()));
             return false;
         }
 
@@ -549,7 +549,7 @@ public class NetworkRegistry {
 
         //Negotiation failed. Disconnect the client.
         if (!playNegotiationResult.success()) {
-            sender.disconnect(Component.translatable("neoforge.network.negotiation.failure.vanilla.client.not_supported", NeoForgeVersion.getVersion()));
+            sender.disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.client.not_supported", "You are trying to connect to a server that is running NeoForge, but you are not. Please install NeoForge Version: %s to connect to this server.", NeoForgeVersion.getVersion()));
             return false;
         }
 
@@ -644,6 +644,14 @@ public class NetworkRegistry {
         }
 
         if (customPayloadPacket.payload() instanceof ModdedNetworkQueryPayload) {
+            return true;
+        }
+
+        if (customPayloadPacket.payload() instanceof MinecraftRegisterPayload) {
+            return true;
+        }
+
+        if (customPayloadPacket.payload() instanceof MinecraftUnregisterPayload) {
             return true;
         }
 
@@ -750,7 +758,7 @@ public class NetworkRegistry {
 
         //Negotiation failed. Disconnect the client.
         if (!configurationNegotiationResult.success()) {
-            sender.getConnection().disconnect(Component.translatable("neoforge.network.negotiation.failure.vanilla.client.not_supported", NeoForgeVersion.getVersion()));
+            sender.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.client.not_supported", "You are trying to connect to a server that is running NeoForge, but you are not. Please install NeoForge Version: %s to connect to this server.", NeoForgeVersion.getVersion()));
             return false;
         }
 
@@ -762,7 +770,7 @@ public class NetworkRegistry {
 
         //Negotiation failed. Disconnect the client.
         if (!playNegotiationResult.success()) {
-            sender.getConnection().disconnect(Component.translatable("neoforge.network.negotiation.failure.vanilla.client.not_supported", NeoForgeVersion.getVersion()));
+            sender.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.client.not_supported", "You are trying to connect to a server that is running NeoForge, but you are not. Please install NeoForge Version: %s to connect to this server.", NeoForgeVersion.getVersion()));
             return false;
         }
 
@@ -978,14 +986,14 @@ public class NetworkRegistry {
     }
 
     public Set<ResourceLocation> getInitialServerUnregisterChannels() {
-        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
-        nowListeningOn.add(MinecraftRegisterPayload.ID);
-        nowListeningOn.add(MinecraftUnregisterPayload.ID);
+        final ImmutableSet.Builder<ResourceLocation> nowForgottenChannels = ImmutableSet.builder();
+        nowForgottenChannels.add(MinecraftRegisterPayload.ID);
+        nowForgottenChannels.add(MinecraftUnregisterPayload.ID);
         knownPlayRegistrations.entrySet().stream()
                 .filter(registration -> registration.getValue().flow().isEmpty() || registration.getValue().flow().get() == PacketFlow.SERVERBOUND)
                 .filter(registration -> registration.getValue().optional())
-                .forEach(registration -> nowListeningOn.add(registration.getKey()));
-        return nowListeningOn.build();
+                .forEach(registration -> nowForgottenChannels.add(registration.getKey()));
+        return nowForgottenChannels.build();
     }
 
     private static Set<ResourceLocation> getInitialClientListeningChannels() {

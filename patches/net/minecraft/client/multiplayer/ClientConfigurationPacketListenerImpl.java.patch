@@ -1,15 +1,16 @@
 --- a/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
-@@ -26,6 +_,8 @@
+@@ -26,6 +_,9 @@
      private final GameProfile localGameProfile;
      private RegistryAccess.Frozen receivedRegistries;
      private FeatureFlagSet enabledFeatures;
 +    private net.neoforged.neoforge.network.connection.ConnectionType connectionType = net.neoforged.neoforge.network.connection.ConnectionType.VANILLA;
++    private boolean initializedConnection = false;
 +    private java.util.Map<net.minecraft.resources.ResourceLocation, net.minecraft.network.chat.Component> failureReasons = new java.util.HashMap<>();
  
      public ClientConfigurationPacketListenerImpl(Minecraft p_295262_, Connection p_296339_, CommonListenerCookie p_294706_) {
          super(p_295262_, p_296339_, p_294706_);
-@@ -45,7 +_,39 @@
+@@ -45,7 +_,45 @@
      }
  
      @Override
@@ -17,27 +18,33 @@
 +    protected void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295411_) {
 +        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
 +            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
++            this.initializedConnection = true;
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
 +            return;
 +        }
 +        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
 +            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
++            this.initializedConnection = true;
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
 +            return;
 +        }
 +        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload) {
 +            this.connectionType = this.connectionType.withNeoForgeQueryPayload();
++            this.initializedConnection = true;
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onNetworkQuery(this);
 +            return;
 +        }
 +        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkPayload moddedNetworkPayload) {
++            this.initializedConnection = true;
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedNetworkConnectionEstablished(this, moddedNetworkPayload.configuration(), moddedNetworkPayload.play());
 +            return;
 +        }
 +        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkSetupFailedPayload setupFailedPayload) {
++            this.initializedConnection = true;
 +            failureReasons = setupFailedPayload.failureReasons();
 +        }
 +        if (this.connectionType.isVanilla() && p_295411_ instanceof net.minecraft.network.protocol.common.custom.BrandPayload) {
++            this.initializedConnection = true;
 +            if (!net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaNetworkConnectionEstablished(this)) {
 +                return;
 +            }
@@ -50,7 +57,7 @@
          this.handleUnknownCustomPayload(p_295411_);
      }
  
-@@ -69,6 +_,10 @@
+@@ -69,12 +_,21 @@
      @Override
      public void handleEnabledFeatures(ClientboundUpdateEnabledFeaturesPacket p_294410_) {
          this.enabledFeatures = FeatureFlags.REGISTRY.fromNames(p_294410_.features());
@@ -61,6 +68,17 @@
      }
  
      @Override
+     public void handleConfigurationFinished(ClientboundFinishConfigurationPacket p_294585_) {
+         this.connection.suspendInboundAfterProtocolChange();
+         PacketUtils.ensureRunningOnSameThread(p_294585_, this, this.minecraft);
++
++        if (!this.initializedConnection && this.connectionType.isVanilla()) {
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaNetworkConnectionEstablished(this);
++        }
++
+         this.connection
+             .setListener(
+                 new ClientPacketListener(
 @@ -87,11 +_,13 @@
                          this.enabledFeatures,
                          this.serverBrand,

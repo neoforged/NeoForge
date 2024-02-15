@@ -1,6 +1,5 @@
 package net.neoforged.neoforge.network.payload;
 
-import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -11,12 +10,12 @@ public record MinecraftUnregisterPayload(Set<ResourceLocation> forgottenChannels
     public static final FriendlyByteBuf.Reader<? extends CustomPacketPayload> READER = MinecraftUnregisterPayload::new;
 
     public MinecraftUnregisterPayload(FriendlyByteBuf buf) {
-        this(buf.<ResourceLocation, Set<ResourceLocation>>readSplit(HashSet::new, ResourceLocation::new, "\0"));
+        this(DinnerboneProtocolUtils.readChannels(buf));
     }
 
     @Override
     public void write(FriendlyByteBuf buf) {
-        buf.writeSplit(forgottenChannels, ResourceLocation::toString, "\0");
+        DinnerboneProtocolUtils.writeChannels(buf, forgottenChannels);
     }
 
     @Override
