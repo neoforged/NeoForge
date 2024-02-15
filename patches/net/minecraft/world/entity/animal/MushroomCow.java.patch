@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/entity/animal/MushroomCow.java
 +++ b/net/minecraft/world/entity/animal/MushroomCow.java
-@@ -42,7 +_,7 @@
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.gameevent.GameEvent;
- 
--public class MushroomCow extends Cow implements Shearable, VariantHolder<MushroomCow.MushroomType> {
-+public class MushroomCow extends Cow implements Shearable, net.neoforged.neoforge.common.IShearable {
-     private static final EntityDataAccessor<String> DATA_TYPE = SynchedEntityData.defineId(MushroomCow.class, EntityDataSerializers.STRING);
-     private static final int MUTATE_CHANCE = 1024;
-     private static final String TAG_STEW_EFFECTS = "stew_effects";
 @@ -108,7 +_,7 @@
  
              this.playSound(soundevent, 1.0F, 1.0F);
@@ -18,57 +9,28 @@
              this.shear(SoundSource.PLAYERS);
              this.gameEvent(GameEvent.SHEAR, p_28941_);
              if (!this.level().isClientSide) {
-@@ -164,11 +_,22 @@
-     }
- 
-     @Override
-+    public java.util.List<ItemStack> onSheared(@org.jetbrains.annotations.Nullable Player player, @org.jetbrains.annotations.NotNull ItemStack item, Level world, BlockPos pos, int fortune) {
-+        this.gameEvent(GameEvent.SHEAR, player);
-+        return shearInternal(player == null ? SoundSource.BLOCKS : SoundSource.PLAYERS);
-+    }
-+
+@@ -167,8 +_,10 @@
      public void shear(SoundSource p_28924_) {
-+        shearInternal(p_28924_).forEach(s -> this.level().addFreshEntity(new ItemEntity(this.level(), this.getX(), this.getY(1.0D), this.getZ(), s)));
-+    }
-+
-+    private java.util.List<ItemStack> shearInternal(SoundSource p_28924_) {
          this.level().playSound(null, this, SoundEvents.MOOSHROOM_SHEAR, p_28924_, 1.0F, 1.0F);
          if (!this.level().isClientSide()) {
-+            if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.COW, (timer) -> {})) return java.util.Collections.emptyList();
++            if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.COW, (timer) -> {})) return;
              Cow cow = EntityType.COW.create(this.level());
              if (cow != null) {
 +                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, cow);
                  ((ServerLevel)this.level()).sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
                  this.discard();
                  cow.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
-@@ -186,14 +_,14 @@
-                 cow.setInvulnerable(this.isInvulnerable());
+@@ -187,10 +_,9 @@
                  this.level().addFreshEntity(cow);
  
-+                java.util.List<ItemStack> items = new java.util.ArrayList<>();
                  for(int i = 0; i < 5; ++i) {
 -                    this.level()
 -                        .addFreshEntity(
 -                            new ItemEntity(this.level(), this.getX(), this.getY(1.0), this.getZ(), new ItemStack(this.getVariant().blockState.getBlock()))
 -                        );
-+                    items.add(new ItemStack(this.getVariant().blockState.getBlock()));
++                    //Neo: Change from addFreshEntity to spawnAtLocation to ensure captureDrops can capture this, we also need to unset the default pickup delay from the item
++                    ItemEntity item = spawnAtLocation(new ItemStack(this.getVariant().blockState.getBlock()), getBbHeight());
++                    if (item != null) item.setNoPickUpDelay();
                  }
-+                return items;
              }
          }
-+        return java.util.Collections.emptyList();
-     }
- 
-     @Override
-@@ -261,6 +_,11 @@
-         }
- 
-         return mushroomcow$mushroomtype2;
-+    }
-+
-+    @Override
-+    public boolean isShearable(@org.jetbrains.annotations.NotNull ItemStack item, Level world, BlockPos pos) {
-+        return readyForShearing();
-     }
- 
-     public static enum MushroomType implements StringRepresentable {

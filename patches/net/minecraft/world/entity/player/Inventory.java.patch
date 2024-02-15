@@ -19,8 +19,20 @@
              if (p_36049_.hasTag()) {
                  itemstack.setTag(p_36049_.getTag().copy());
              }
-@@ -237,6 +_,7 @@
+@@ -230,13 +_,18 @@
+     }
+ 
+     public void tick() {
++        int slot = 0;
+         for(NonNullList<ItemStack> nonnulllist : this.compartments) {
+             for(int i = 0; i < nonnulllist.size(); ++i) {
+                 if (!nonnulllist.get(i).isEmpty()) {
+-                    nonnulllist.get(i).inventoryTick(this.player.level(), this.player, i, this.selected == i);
++                    // Neo: Fix the slot param to be the global index instead of the per-compartment index.
++                    // Neo: Fix the selected param to only be true for hotbar slots.
++                    nonnulllist.get(i).inventoryTick(this.player.level(), this.player, slot, this.selected == slot);
                  }
++                slot++;
              }
          }
 +        armor.forEach(e -> e.onArmorTick(player.level(), player));

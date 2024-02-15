@@ -5,9 +5,11 @@
 
 package net.neoforged.neoforge.attachment;
 
+import com.google.common.base.Predicates;
 import com.mojang.serialization.Codec;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -15,7 +17,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.ProtoChunk;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.Nullable;
@@ -44,33 +48,50 @@ import org.jetbrains.annotations.Nullable;
  * <ul>
  * <li>(nothing)</li>
  * </ul>
- * <h3>{@link LevelChunk}-exclusive behavior:</h3>
+ * <h3>{@link ChunkAccess}-exclusive behavior:</h3>
  * <ul>
- * <li>Modifications to attachments should be followed by a call to {@link LevelChunk#setUnsaved(boolean)}.</li>
+ * <li>Modifications to attachments should be followed by a call to {@link ChunkAccess#setUnsaved(boolean)}.</li>
+ * <li>Serializable attachments are copied from a {@link ProtoChunk} to a {@link LevelChunk} on promotion.</li>
  * </ul>
  */
-// TODO Future work: maybe add copy handlers for stacks and entities, to customize copying behavior (instead of serializing, copying the NBT, deserializing).
 public final class AttachmentType<T> {
     final Function<IAttachmentHolder, T> defaultValueSupplier;
     @Nullable
     final IAttachmentSerializer<?, T> serializer;
     final boolean copyOnDeath;
     final IAttachmentComparator<T> comparator;
+    final IAttachmentCopyHandler<T> copyHandler;
 
     private AttachmentType(Builder<T> builder) {
         this.defaultValueSupplier = builder.defaultValueSupplier;
         this.serializer = builder.serializer;
         this.copyOnDeath = builder.copyOnDeath;
         this.comparator = builder.comparator != null ? builder.comparator : defaultComparator(serializer);
+        this.copyHandler = builder.copyHandler != null ? builder.copyHandler : defaultCopyHandler(serializer);
     }
 
-    private static <T> IAttachmentComparator<T> defaultComparator(IAttachmentSerializer<?, T> serializer) {
+    private static <T> IAttachmentComparator<T> defaultComparator(@Nullable IAttachmentSerializer<?, T> serializer) {
         if (serializer == null) {
             return (first, second) -> {
                 throw new UnsupportedOperationException("Cannot compare non-serializable attachments");
             };
         }
         return (first, second) -> Objects.equals(serializer.write(first), serializer.write(second));
+    }
+
+    private static <T, H extends Tag> IAttachmentCopyHandler<T> defaultCopyHandler(@Nullable IAttachmentSerializer<H, T> serializer) {
+        if (serializer == null) {
+            return (holder, attachment) -> {
+                throw new UnsupportedOperationException("Cannot copy non-serializable attachments");
+            };
+        }
+        return (holder, attachment) -> {
+            H serialized = serializer.write(attachment);
+            if (serialized != null) {
+                return serializer.read(holder, serialized);
+            }
+            return null;
+        };
     }
 
     /**
@@ -126,6 +147,7 @@ public final class AttachmentType<T> {
                 return ret;
             }
 
+            @Nullable
             @Override
             public S write(T attachment) {
                 return attachment.serializeNBT();
@@ -140,6 +162,8 @@ public final class AttachmentType<T> {
         private boolean copyOnDeath;
         @Nullable
         private IAttachmentComparator<T> comparator;
+        @Nullable
+        private IAttachmentCopyHandler<T> copyHandler;
 
         private Builder(Function<IAttachmentHolder, T> defaultValueSupplier) {
             this.defaultValueSupplier = defaultValueSupplier;
@@ -170,6 +194,21 @@ public final class AttachmentType<T> {
          * @param codec The codec to use.
          */
         public Builder<T> serialize(Codec<T> codec) {
+            return serialize(codec, Predicates.alwaysTrue());
+        }
+
+        /**
+         * Requests that this attachment be persisted to disk (on the logical server side), using a {@link Codec}.
+         *
+         * <p>Using a {@link Codec} to serialize attachments is discouraged for item stack attachments,
+         * for performance reasons. Prefer one of the other options.
+         *
+         * <p>Codec-based attachments cannot capture a reference to their holder.
+         *
+         * @param codec           The codec to use.
+         * @param shouldSerialize A check that determines whether serialization of the attachment should occur.
+         */
+        public Builder<T> serialize(Codec<T> codec, Predicate<? super T> shouldSerialize) {
             Objects.requireNonNull(codec);
             // TODO: better error handling
             return serialize(new IAttachmentSerializer<>() {
@@ -178,9 +217,10 @@ public final class AttachmentType<T> {
                     return codec.parse(NbtOps.INSTANCE, tag).result().get();
                 }
 
+                @Nullable
                 @Override
                 public Tag write(T attachment) {
-                    return codec.encodeStart(NbtOps.INSTANCE, attachment).result().get();
+                    return shouldSerialize.test(attachment) ? codec.encodeStart(NbtOps.INSTANCE, attachment).result().get() : null;
                 }
             });
         }
@@ -209,6 +249,22 @@ public final class AttachmentType<T> {
             if (this.serializer == null)
                 throw new IllegalStateException("comparator requires a serializer");
             this.comparator = comparator;
+            return this;
+        }
+
+        /**
+         * Overrides the copyHandler for this attachment type.
+         *
+         * <p>The default copyHandler serializes the attachment and deserializes it again.
+         *
+         * <p>A copyHandler can only be provided for serializable attachments.
+         */
+        public Builder<T> copyHandler(IAttachmentCopyHandler<T> cloner) {
+            Objects.requireNonNull(cloner);
+            // Check for serializer because only serializable attachments can be copied.
+            if (this.serializer == null)
+                throw new IllegalStateException("copyHandler requires a serializer");
+            this.copyHandler = cloner;
             return this;
         }
 

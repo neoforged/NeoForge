@@ -69,6 +69,9 @@ public class FurnaceFuelBurnTimeEvent extends Event implements ICancellableEvent
     /**
      * The resulting value of this event, the burn time for the ItemStack.
      * A value of 0 will prevent the item from being used as fuel, overriding vanilla's decision.
+     * <p>
+     * The initial burn time can come from either the {@link net.neoforged.neoforge.common.extensions.IItemExtension#getBurnTime(ItemStack, RecipeType) extension method}
+     * or the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FURNACE_FUELS data map}.
      */
     public int getBurnTime() {
         return burnTime;

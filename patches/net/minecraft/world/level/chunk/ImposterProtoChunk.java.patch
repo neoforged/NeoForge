@@ -11,3 +11,14 @@
      public TickContainerAccess<Block> getBlockTicks() {
          return this.allowWrites ? this.wrapped.getBlockTicks() : BlackholeTickAccess.emptyContainer();
      }
+@@ -289,5 +_,10 @@
+     @Override
+     public ChunkSkyLightSources getSkyLightSources() {
+         return this.wrapped.getSkyLightSources();
++    }
++
++    @Override
++    public net.neoforged.neoforge.attachment.AttachmentHolder.AsField getAttachmentHolder() {
++        return wrapped.getAttachmentHolder();
+     }
+ }

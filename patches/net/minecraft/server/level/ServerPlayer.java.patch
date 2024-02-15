@@ -1,5 +1,16 @@
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
+@@ -234,6 +_,10 @@
+         }
+ 
+         private void broadcastDataValue(AbstractContainerMenu p_143455_, int p_143456_, int p_143457_) {
++            if (ServerPlayer.this.connection.isConnected(net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload.ID)) {
++                ServerPlayer.this.connection.send(new net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload(p_143455_.containerId, p_143456_, p_143457_));
++                return;
++            }
+             ServerPlayer.this.connection.send(new ClientboundContainerSetDataPacket(p_143455_.containerId, p_143456_, p_143457_));
+         }
+     };
 @@ -594,6 +_,7 @@
      @Override
      public void die(DamageSource p_9035_) {

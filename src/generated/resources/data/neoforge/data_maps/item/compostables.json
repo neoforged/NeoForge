@@ -1,0 +1,307 @@
+{
+  "values": {
+    "minecraft:acacia_leaves": {
+      "chance": 0.3
+    },
+    "minecraft:acacia_sapling": {
+      "chance": 0.3
+    },
+    "minecraft:allium": {
+      "chance": 0.65
+    },
+    "minecraft:apple": {
+      "chance": 0.65
+    },
+    "minecraft:azalea": {
+      "chance": 0.65
+    },
+    "minecraft:azalea_leaves": {
+      "chance": 0.3
+    },
+    "minecraft:azure_bluet": {
+      "chance": 0.65
+    },
+    "minecraft:baked_potato": {
+      "chance": 0.85
+    },
+    "minecraft:beetroot": {
+      "chance": 0.65
+    },
+    "minecraft:beetroot_seeds": {
+      "chance": 0.3
+    },
+    "minecraft:big_dripleaf": {
+      "chance": 0.65
+    },
+    "minecraft:birch_leaves": {
+      "chance": 0.3
+    },
+    "minecraft:birch_sapling": {
+      "chance": 0.3
+    },
+    "minecraft:blue_orchid": {
+      "chance": 0.65
+    },
+    "minecraft:bread": {
+      "chance": 0.85
+    },
+    "minecraft:brown_mushroom": {
+      "chance": 0.65
+    },
+    "minecraft:brown_mushroom_block": {
+      "chance": 0.85
+    },
+    "minecraft:cactus": {
+      "chance": 0.5
+    },
+    "minecraft:cake": {
+      "chance": 1.0
+    },
+    "minecraft:carrot": {
+      "chance": 0.65
+    },
+    "minecraft:carved_pumpkin": {
+      "chance": 0.65
+    },
+    "minecraft:cherry_leaves": {
+      "chance": 0.3
+    },
+    "minecraft:cherry_sapling": {
+      "chance": 0.3
+    },
+    "minecraft:cocoa_beans": {
+      "chance": 0.65
+    },
+    "minecraft:cookie": {
+      "chance": 0.85
+    },
+    "minecraft:cornflower": {
+      "chance": 0.65
+    },
+    "minecraft:crimson_fungus": {
+      "chance": 0.65
+    },
+    "minecraft:crimson_roots": {
+      "chance": 0.65
+    },
+    "minecraft:dandelion": {
+      "chance": 0.65
+    },
+    "minecraft:dark_oak_leaves": {
+      "chance": 0.3
+    },
+    "minecraft:dark_oak_sapling": {
+      "chance": 0.3
+    },
+    "minecraft:dried_kelp": {
+      "chance": 0.3
+    },
+    "minecraft:dried_kelp_block": {
+      "chance": 0.5
+    },
+    "minecraft:fern": {
+      "chance": 0.65
+    },
+    "minecraft:flowering_azalea": {
+      "chance": 0.85
+    },
+    "minecraft:flowering_azalea_leaves": {
+      "chance": 0.5
+    },
+    "minecraft:glow_berries": {
+      "chance": 0.3
+    },
+    "minecraft:glow_lichen": {
+      "chance": 0.5
+    },
+    "minecraft:hanging_roots": {
+      "chance": 0.3
+    },
+    "minecraft:hay_block": {
+      "chance": 0.85
+    },
+    "minecraft:jungle_leaves": {
+      "chance": 0.3
+    },
+    "minecraft:jungle_sapling": {
+      "chance": 0.3
+    },
+    "minecraft:kelp": {
+      "chance": 0.3
+    },
+    "minecraft:large_fern": {
+      "chance": 0.65
+    },
+    "minecraft:lilac": {
+      "chance": 0.65
+    },
+    "minecraft:lily_of_the_valley": {
+      "chance": 0.65
+    },
+    "minecraft:lily_pad": {
+      "chance": 0.65
+    },
+    "minecraft:mangrove_leaves": {
+      "chance": 0.3
+    },
+    "minecraft:mangrove_propagule": {
+      "chance": 0.3
+    },
+    "minecraft:mangrove_roots": {
+      "chance": 0.3
+    },
+    "minecraft:melon": {
+      "chance": 0.65
+    },
+    "minecraft:melon_seeds": {
+      "chance": 0.3
+    },
+    "minecraft:melon_slice": {
+      "chance": 0.5
+    },
+    "minecraft:moss_block": {
+      "chance": 0.65
+    },
+    "minecraft:moss_carpet": {
+      "chance": 0.3
+    },
+    "minecraft:mushroom_stem": {
+      "chance": 0.65
+    },
+    "minecraft:nether_sprouts": {
+      "chance": 0.5
+    },
+    "minecraft:nether_wart": {
+      "chance": 0.65
+    },
+    "minecraft:nether_wart_block": {
+      "chance": 0.85
+    },
+    "minecraft:oak_leaves": {
+      "chance": 0.3
+    },
+    "minecraft:oak_sapling": {
+      "chance": 0.3
+    },
+    "minecraft:orange_tulip": {
+      "chance": 0.65
+    },
+    "minecraft:oxeye_daisy": {
+      "chance": 0.65
+    },
+    "minecraft:peony": {
+      "chance": 0.65
+    },
+    "minecraft:pink_petals": {
+      "chance": 0.3
+    },
+    "minecraft:pink_tulip": {
+      "chance": 0.65
+    },
+    "minecraft:pitcher_plant": {
+      "chance": 0.85
+    },
+    "minecraft:pitcher_pod": {
+      "chance": 0.3
+    },
+    "minecraft:poppy": {
+      "chance": 0.65
+    },
+    "minecraft:potato": {
+      "chance": 0.65
+    },
+    "minecraft:pumpkin": {
+      "chance": 0.65
+    },
+    "minecraft:pumpkin_pie": {
+      "chance": 1.0
+    },
+    "minecraft:pumpkin_seeds": {
+      "chance": 0.3
+    },
+    "minecraft:red_mushroom": {
+      "chance": 0.65
+    },
+    "minecraft:red_mushroom_block": {
+      "chance": 0.85
+    },
+    "minecraft:red_tulip": {
+      "chance": 0.65
+    },
+    "minecraft:rose_bush": {
+      "chance": 0.65
+    },
+    "minecraft:sea_pickle": {
+      "chance": 0.65
+    },
+    "minecraft:seagrass": {
+      "chance": 0.3
+    },
+    "minecraft:short_grass": {
+      "chance": 0.3
+    },
+    "minecraft:shroomlight": {
+      "chance": 0.65
+    },
+    "minecraft:small_dripleaf": {
+      "chance": 0.3
+    },
+    "minecraft:spore_blossom": {
+      "chance": 0.65
+    },
+    "minecraft:spruce_leaves": {
+      "chance": 0.3
+    },
+    "minecraft:spruce_sapling": {
+      "chance": 0.3
+    },
+    "minecraft:sugar_cane": {
+      "chance": 0.5
+    },
+    "minecraft:sunflower": {
+      "chance": 0.65
+    },
+    "minecraft:sweet_berries": {
+      "chance": 0.3
+    },
+    "minecraft:tall_grass": {
+      "chance": 0.5
+    },
+    "minecraft:torchflower": {
+      "chance": 0.85
+    },
+    "minecraft:torchflower_seeds": {
+      "chance": 0.3
+    },
+    "minecraft:twisting_vines": {
+      "chance": 0.5
+    },
+    "minecraft:vine": {
+      "chance": 0.5
+    },
+    "minecraft:warped_fungus": {
+      "chance": 0.65
+    },
+    "minecraft:warped_roots": {
+      "chance": 0.65
+    },
+    "minecraft:warped_wart_block": {
+      "chance": 0.85
+    },
+    "minecraft:weeping_vines": {
+      "chance": 0.5
+    },
+    "minecraft:wheat": {
+      "chance": 0.65
+    },
+    "minecraft:wheat_seeds": {
+      "chance": 0.3
+    },
+    "minecraft:white_tulip": {
+      "chance": 0.65
+    },
+    "minecraft:wither_rose": {
+      "chance": 0.65
+    }
+  }
+}

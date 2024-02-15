@@ -80,8 +80,6 @@ public class NeoForgeConfig {
      * Client specific configuration - only loaded clientside from neoforge-client.toml
      */
     public static class Client {
-        public final BooleanValue alwaysSetupTerrainOffThread;
-
         public final BooleanValue experimentalForgeLightPipelineEnabled;
 
         public final BooleanValue showLoadWarnings;
@@ -94,13 +92,6 @@ public class NeoForgeConfig {
         Client(ModConfigSpec.Builder builder) {
             builder.comment("Client only settings, mostly things related to rendering")
                     .push("client");
-
-            alwaysSetupTerrainOffThread = builder
-                    .comment("Enable NeoForge to queue all chunk updates to the Chunk Update thread.",
-                            "May increase FPS significantly, but may also cause weird rendering lag.",
-                            "Not recommended for computers without a significant number of cores available.")
-                    .translation("neoforge.configgui.alwaysSetupTerrainOffThread")
-                    .define("alwaysSetupTerrainOffThread", false);
 
             experimentalForgeLightPipelineEnabled = builder
                     .comment("EXPERIMENTAL: Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.")
