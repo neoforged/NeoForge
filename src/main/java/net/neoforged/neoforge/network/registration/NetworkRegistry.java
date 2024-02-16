@@ -523,7 +523,7 @@ public class NetworkRegistry {
     }
 
     /**
-     * Invoked by the {@link ServerConfigurationPacketListenerImpl} when a vanilla or other  connection is detected.
+     * Invoked by the {@link ServerConfigurationPacketListenerImpl} when a vanilla or other connection is detected.
      *
      * @param sender The listener which detected the vanilla connection during the configuration phase.
      * @return True if the vanilla connection should be handled by the server, false otherwise.
@@ -856,15 +856,15 @@ public class NetworkRegistry {
      * @return True if the listener has a connection setup that can transmit the given payload id, false otherwise.
      */
     public boolean isConnected(ClientCommonPacketListener listener, ResourceLocation payloadId) {
-        return isConnected(listener.getConnection(), ConnectionPhase.fromPacketListener(listener) , payloadId);
+        return isConnected(listener.getConnection(), ConnectionPhase.fromPacketListener(listener), payloadId);
     }
 
     /**
      * Indicates whether the given connection has a connection setup that can transmit the given payload id.
      *
-     * @param connection The connection to check.
+     * @param connection      The connection to check.
      * @param connectionPhase The phase of the connection to check.
-     * @param payloadId The payload id to check.
+     * @param payloadId       The payload id to check.
      * @return True if the connection has a connection setup that can transmit the given payload id, false otherwise.
      */
     public boolean isConnected(final Connection connection, ConnectionPhase connectionPhase, ResourceLocation payloadId) {

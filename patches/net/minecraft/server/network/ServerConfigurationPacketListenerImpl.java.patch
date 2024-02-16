@@ -69,7 +69,7 @@
 +    public void handlePong(net.minecraft.network.protocol.common.ServerboundPongPacket p_295142_) {
 +        super.handlePong(p_295142_);
 +        if (p_295142_.getId() == 0) {
-+            if (!this.connectionType.isNeoForge() && !net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaConnectionDetectedAtServer(this)) {
++            if (!this.connectionType.isNeoForge() && !net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaOrOtherConnectionDetectedAtServer(this)) {
 +                return;
 +            }
 +
@@ -82,7 +82,7 @@
  
      @Override
      public void handleConfigurationFinished(ServerboundFinishConfigurationPacket p_294283_) {
-+        if (this.connectionType == net.neoforged.neoforge.network.connection.ConnectionType.MODDED) {
++        if (this.connectionType == net.neoforged.neoforge.network.connection.ConnectionType.OTHER) {
 +            //We need to also initialize this here, as the client may have sent the packet before we have finished our configuration.
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedConnectionDetectedAtServer(this, java.util.Set.of(), java.util.Set.of());
 +        }

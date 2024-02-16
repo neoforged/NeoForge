@@ -11,10 +11,8 @@ import static net.neoforged.neoforge.attachment.AttachmentInternals.reconstructI
 import com.google.common.collect.Maps;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.IntFunction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;

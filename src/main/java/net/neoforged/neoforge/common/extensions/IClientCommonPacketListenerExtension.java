@@ -64,6 +64,7 @@ public interface IClientCommonPacketListenerExtension {
 
     /**
      * {@return true if the connection is to a vanilla client}
+     * 
      * @deprecated Use {@link #getConnectionType()} instead
      */
     @Deprecated(forRemoval = true)
