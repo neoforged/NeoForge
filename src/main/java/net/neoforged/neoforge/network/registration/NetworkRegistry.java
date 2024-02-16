@@ -472,7 +472,7 @@ public class NetworkRegistry {
 
         sender.getConnection().channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(sender.getConnectionType());
         sender.getConnection().channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.SERVERBOUND);
-        sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.emptyModded());
+        sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.empty());
 
         //Negotiation failed. Disconnect the client.
         if (!configurationNegotiationResult.success()) {
@@ -538,7 +538,7 @@ public class NetworkRegistry {
                 List.of());
 
         //Because we are in vanilla land, no matter what we are not able to support any custom channels.
-        sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.emptyVanilla());
+        sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.empty());
         sender.getConnection().channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(sender.getConnectionType());
         sender.getConnection().channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.SERVERBOUND);
 
@@ -799,7 +799,7 @@ public class NetworkRegistry {
                         .toList());
 
         //Because we are in vanilla land, no matter what we are not able to support any custom channels.
-        sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.emptyVanilla());
+        sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.empty());
         sender.getConnection().channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(sender.getConnectionType());
         sender.getConnection().channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.CLIENTBOUND);
 
@@ -936,7 +936,7 @@ public class NetworkRegistry {
     public void configureMockConnection(final Connection connection) {
         connection.channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(ConnectionType.NEOFORGE);
         connection.channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.SERVERBOUND);
-        connection.channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.emptyModded());
+        connection.channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.empty());
 
         final NetworkPayloadSetup setup = NetworkPayloadSetup.from(
                 this.knownConfigurationRegistrations.entrySet().stream()
@@ -1056,7 +1056,7 @@ public class NetworkRegistry {
         final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
         nowListeningOn.add(MinecraftRegisterPayload.ID);
         nowListeningOn.add(MinecraftUnregisterPayload.ID);
-        if (!setup.vanilla()) {
+        if (serverConfigurationPacketListener.getConnectionType().isNotVanilla()) {
             nowListeningOn.add(ModdedNetworkQueryPayload.ID);
         } else {
             knownPlayRegistrations.entrySet().stream()
@@ -1082,7 +1082,7 @@ public class NetworkRegistry {
         final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
         nowListeningOn.add(MinecraftRegisterPayload.ID);
         nowListeningOn.add(MinecraftUnregisterPayload.ID);
-        if (!setup.vanilla()) {
+        if (listener.getConnectionType().isNotVanilla()) {
             nowListeningOn.add(ModdedNetworkQueryPayload.ID);
         } else {
             knownPlayRegistrations.entrySet().stream()
