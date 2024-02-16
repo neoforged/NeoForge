@@ -177,19 +177,4 @@ public interface IFriendlyByteBufExtension {
             valueWriter.accept(self(), key, value);
         });
     }
-
-    default <T> void writeSplit(Set<T> newChannels, Function<T, String> writer, String separator) {
-        final String payload = String.join(separator, newChannels.stream().map(writer).toArray(String[]::new));
-        self().writeUtf(payload);
-    }
-
-    default <T, C extends Collection<T>> C readSplit(IntFunction<C> collectionBuilder, Function<String, T> reader, String separator) {
-        final String payload = self().readUtf();
-        final String[] split = payload.split(separator);
-        final C collection = collectionBuilder.apply(split.length);
-        for (String s : split) {
-            collection.add(reader.apply(s));
-        }
-        return collection;
-    }
 }

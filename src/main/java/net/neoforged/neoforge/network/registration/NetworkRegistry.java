@@ -46,6 +46,7 @@ import net.minecraft.util.thread.ReentrantBlockableEventLoop;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.network.connection.ConnectionPhase;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.connection.ConnectionUtils;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
@@ -87,7 +88,7 @@ public class NetworkRegistry {
 
     private static final AttributeKey<NetworkPayloadSetup> ATTRIBUTE_PAYLOAD_SETUP = AttributeKey.valueOf("neoforge:payload_setup");
     private static final AttributeKey<Set<ResourceLocation>> ATTRIBUTE_ADHOC_CHANNELS = AttributeKey.valueOf("neoforge:adhoc_channels");
-    private static final AttributeKey<Boolean> ATTRIBUTE_IS_MODDED_CONNECTION = AttributeKey.valueOf("neoforge:is_modded_connection");
+    private static final AttributeKey<ConnectionType> ATTRIBUTE_CONNECTION_TYPE = AttributeKey.valueOf("neoforge:connection_type");
     private static final AttributeKey<PacketFlow> ATTRIBUTE_FLOW = AttributeKey.valueOf("neoforge:flow");
 
     private static final NetworkRegistry INSTANCE = new NetworkRegistry();
@@ -204,7 +205,7 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.play().get(id);
 
             //Validate that everything is okey and then return a reader.
-            if (channel == null && !isAdhocPlayReadable(id, flow)) {
+            if (channel == null && !isAdhocPlayChannelReadable(id, flow)) {
                 LOGGER.warn("Received a modded custom payload packet {} with an unknown or not accepted channel. Not parsing packet.", id);
                 return null;
             }
@@ -326,7 +327,7 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.play().get(packet.payload().id());
 
             //Check if the channel should even be processed.
-            if (channel == null && !isAdhocPlayReadable(packet.payload().id(), PacketFlow.SERVERBOUND)) {
+            if (channel == null && !isAdhocPlayChannelReadable(packet.payload().id(), PacketFlow.SERVERBOUND)) {
                 LOGGER.warn("Received a modded custom payload packet from a client with an unknown or not accepted channel. Disconnecting client.");
                 listener.disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
                 return;
@@ -414,7 +415,7 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.play().get(packet.payload().id());
 
             //Check if the channel should even be processed.
-            if (channel == null && !isAdhocPlayReadable(packet.payload().id(), PacketFlow.CLIENTBOUND)) {
+            if (channel == null && !isAdhocPlayChannelReadable(packet.payload().id(), PacketFlow.CLIENTBOUND)) {
                 LOGGER.warn("Received a modded custom payload packet from a server with an unknown or not accepted channel. Disconnecting server.");
                 listener.getConnection().disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
                 return false;
@@ -453,7 +454,7 @@ public class NetworkRegistry {
      * If the negotiation fails, a custom packet is send to the client to inform it of the failure, and which will allow the client to disconnect gracefully with an indicative error screen.
      * </p>
      * <p>
-     * This method should only be invoked for modded connections. Use {@link #onVanillaConnectionDetectedAtServer(ServerConfigurationPacketListener)} to indicate that during the configuration phase of the network handshake between a client and the server, a vanilla connection was detected.
+     * This method should only be invoked for modded connections. Use {@link #onVanillaOrOtherConnectionDetectedAtServer(ServerConfigurationPacketListener)} to indicate that during the configuration phase of the network handshake between a client and the server, a vanilla connection was detected.
      * </p>
      *
      * @param sender        The listener which completed the negotiation.
@@ -469,7 +470,7 @@ public class NetworkRegistry {
                         .map(entry -> new NegotiableNetworkComponent(entry.id(), entry.version(), entry.flow(), entry.optional()))
                         .toList());
 
-        sender.getConnection().channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).set(true);
+        sender.getConnection().channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(sender.getConnectionType());
         sender.getConnection().channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.SERVERBOUND);
         sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.emptyModded());
 
@@ -522,12 +523,12 @@ public class NetworkRegistry {
     }
 
     /**
-     * Invoked by the {@link ServerConfigurationPacketListenerImpl} when a vanilla connection is detected.
+     * Invoked by the {@link ServerConfigurationPacketListenerImpl} when a vanilla or other  connection is detected.
      *
      * @param sender The listener which detected the vanilla connection during the configuration phase.
      * @return True if the vanilla connection should be handled by the server, false otherwise.
      */
-    public boolean onVanillaConnectionDetectedAtServer(ServerConfigurationPacketListener sender) {
+    public boolean onVanillaOrOtherConnectionDetectedAtServer(ServerConfigurationPacketListener sender) {
         NetworkFilters.cleanIfNecessary(sender.getConnection());
 
         final NegotiationResult configurationNegotiationResult = NetworkComponentNegotiator.negotiate(
@@ -538,7 +539,7 @@ public class NetworkRegistry {
 
         //Because we are in vanilla land, no matter what we are not able to support any custom channels.
         sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.emptyVanilla());
-        sender.getConnection().channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).set(false);
+        sender.getConnection().channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(sender.getConnectionType());
         sender.getConnection().channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.SERVERBOUND);
 
         //Negotiation failed. Disconnect the client.
@@ -715,7 +716,7 @@ public class NetworkRegistry {
      * @param flow The flow of the packet.
      * @return True if the packet is ad hoc readable, false otherwise.
      */
-    private boolean isAdhocPlayReadable(ResourceLocation id, PacketFlow flow) {
+    private boolean isAdhocPlayChannelReadable(ResourceLocation id, PacketFlow flow) {
         final PlayRegistration<?> known = knownPlayRegistrations.get(id);
         if (known == null) {
             return false;
@@ -767,7 +768,7 @@ public class NetworkRegistry {
         NetworkFilters.injectIfNecessary(listener.getConnection(), listener.getConnectionType());
 
         listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(setup);
-        listener.getConnection().channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).set(true);
+        listener.getConnection().channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(listener.getConnectionType());
         listener.getConnection().channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.CLIENTBOUND);
 
         final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
@@ -799,12 +800,12 @@ public class NetworkRegistry {
 
         //Because we are in vanilla land, no matter what we are not able to support any custom channels.
         sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.emptyVanilla());
-        sender.getConnection().channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).set(false);
+        sender.getConnection().channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(sender.getConnectionType());
         sender.getConnection().channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.CLIENTBOUND);
 
         //Negotiation failed. Disconnect the client.
         if (!configurationNegotiationResult.success()) {
-            sender.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.client.not_supported", "You are trying to connect to a server that is running NeoForge, but you are not. Please install NeoForge Version: %s to connect to this server.", NeoForgeVersion.getVersion()));
+            sender.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.server.not_supported", "You are trying to connect to a server that is not running NeoForge, but you are not. A connection could not be established.", NeoForgeVersion.getVersion()));
             return false;
         }
 
@@ -816,7 +817,7 @@ public class NetworkRegistry {
 
         //Negotiation failed. Disconnect the client.
         if (!playNegotiationResult.success()) {
-            sender.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.client.not_supported", "You are trying to connect to a server that is running NeoForge, but you are not. Please install NeoForge Version: %s to connect to this server.", NeoForgeVersion.getVersion()));
+            sender.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.server.not_supported", "You are trying to connect to a server that is not running NeoForge, but you are not. A connection could not be established.", NeoForgeVersion.getVersion()));
             return false;
         }
 
@@ -837,16 +838,6 @@ public class NetworkRegistry {
     }
 
     /**
-     * Indicates if the given connection is a vanilla connection.
-     *
-     * @param connection The connection to check.
-     * @return True if the connection is a vanilla connection, false otherwise.
-     */
-    public boolean isVanillaConnection(Connection connection) {
-        return connection.channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).get() == Boolean.FALSE;
-    }
-
-    /**
      * Indicates whether the server listener has a connection setup that can transmit the given payload id.
      *
      * @param listener  The listener to check.
@@ -854,22 +845,7 @@ public class NetworkRegistry {
      * @return True if the listener has a connection setup that can transmit the given payload id, false otherwise.
      */
     public boolean isConnected(ServerCommonPacketListener listener, ResourceLocation payloadId) {
-        final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
-        if (payloadSetup == null) {
-            return getKnownAdHocChannelsOfOtherEnd(listener.getConnection()).contains(payloadId);
-        }
-
-        if (listener instanceof ServerConfigurationPacketListener) {
-            if (payloadSetup.configuration().get(payloadId) != null) {
-                return true;
-            }
-        } else if (listener instanceof ServerGamePacketListener) {
-            if (payloadSetup.play().get(payloadId) != null) {
-                return true;
-            }
-        }
-
-        return getKnownAdHocChannelsOfOtherEnd(listener.getConnection()).contains(payloadId);
+        return isConnected(listener.getConnection(), ConnectionPhase.fromPacketListener(listener), payloadId);
     }
 
     /**
@@ -880,22 +856,36 @@ public class NetworkRegistry {
      * @return True if the listener has a connection setup that can transmit the given payload id, false otherwise.
      */
     public boolean isConnected(ClientCommonPacketListener listener, ResourceLocation payloadId) {
-        final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
+        return isConnected(listener.getConnection(), ConnectionPhase.fromPacketListener(listener) , payloadId);
+    }
+
+    /**
+     * Indicates whether the given connection has a connection setup that can transmit the given payload id.
+     *
+     * @param connection The connection to check.
+     * @param connectionPhase The phase of the connection to check.
+     * @param payloadId The payload id to check.
+     * @return True if the connection has a connection setup that can transmit the given payload id, false otherwise.
+     */
+    public boolean isConnected(final Connection connection, ConnectionPhase connectionPhase, ResourceLocation payloadId) {
+        final NetworkPayloadSetup payloadSetup = connection.channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         if (payloadSetup == null) {
-            return getKnownAdHocChannelsOfOtherEnd(listener.getConnection()).contains(payloadId);
+            return getKnownAdHocChannelsOfOtherEnd(connection).contains(payloadId);
         }
 
-        if (listener instanceof ClientConfigurationPacketListener) {
+        if (connectionPhase.isConfiguration()) {
             if (payloadSetup.configuration().get(payloadId) != null) {
                 return true;
             }
-        } else if (listener instanceof ClientGamePacketListener) {
+        }
+
+        if (connectionPhase.isPlay()) {
             if (payloadSetup.play().get(payloadId) != null) {
                 return true;
             }
         }
 
-        return getKnownAdHocChannelsOfOtherEnd(listener.getConnection()).contains(payloadId);
+        return getKnownAdHocChannelsOfOtherEnd(connection).contains(payloadId);
     }
 
     /**
@@ -944,7 +934,7 @@ public class NetworkRegistry {
      * @param connection The connection to configure.
      */
     public void configureMockConnection(final Connection connection) {
-        connection.channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).set(true);
+        connection.channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(ConnectionType.NEOFORGE);
         connection.channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.SERVERBOUND);
         connection.channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.emptyModded());
 

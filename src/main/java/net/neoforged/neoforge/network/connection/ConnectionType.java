@@ -7,11 +7,11 @@ package net.neoforged.neoforge.network.connection;
 
 public enum ConnectionType {
     VANILLA,
-    MODDED,
+    OTHER,
     NEOFORGE;
 
     public ConnectionType withMinecraftRegisterPayload() {
-        return this == VANILLA ? MODDED : this;
+        return this == VANILLA ? OTHER : this;
     }
 
     public ConnectionType withNeoForgeQueryPayload() {
@@ -26,8 +26,8 @@ public enum ConnectionType {
         return !isVanilla();
     }
 
-    public boolean isModded() {
-        return this == MODDED;
+    public boolean isOther() {
+        return this == OTHER;
     }
 
     public boolean isNeoForge() {

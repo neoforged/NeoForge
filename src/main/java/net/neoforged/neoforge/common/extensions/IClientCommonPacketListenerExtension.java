@@ -64,9 +64,11 @@ public interface IClientCommonPacketListenerExtension {
 
     /**
      * {@return true if the connection is to a vanilla client}
+     * @deprecated Use {@link #getConnectionType()} instead
      */
+    @Deprecated(forRemoval = true)
     default boolean isVanillaConnection() {
-        return NetworkRegistry.getInstance().isVanillaConnection(getConnection());
+        return getConnectionType().isVanilla();
     }
 
     /**
