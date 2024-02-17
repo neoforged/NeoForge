@@ -76,7 +76,7 @@ public class NeoForgeDataMaps {
      * <p>
      * The location of this data map is {@code neoforge/data_maps/villager_profession/raid_hero_gifts.json}, and the values are objects with 1 field:
      * <ul>
-     * <li>{@code lootTable}, the path to the loot table that the villager gives to the player after a raid finishes</li>
+     * <li>{@code loot_table}, the path to the loot table that the villager gives to the player after a raid finishes</li>
      * </ul>
      */
     public static final DataMapType<VillagerProfession, RaidHeroGift> RAID_HERO_GIFTS = DataMapType.builder(
