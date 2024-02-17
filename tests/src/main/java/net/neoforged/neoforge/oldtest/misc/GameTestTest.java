@@ -174,8 +174,8 @@ public class GameTestTest {
         energyStorage.receiveEnergy(2000, false);
 
         // Fails test if stored energy is not equal to 1000 FE
-        int energy = energyStorage.getEnergyStored();
-        int target = 1000;
+        long energy = energyStorage.getEnergyStored();
+        long target = 1000;
         if (energy != target) {
             helper.fail("Expected energy=" + target + " but it was energy=" + energy, energyPos);
         }
