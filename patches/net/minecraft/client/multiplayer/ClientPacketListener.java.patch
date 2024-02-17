@@ -122,3 +122,11 @@
          Instant instant = Instant.now();
          long i = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
+@@ -2409,6 +_,7 @@
+     }
+ 
+     public boolean sendUnsignedCommand(String p_251509_) {
++        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(p_251509_)) return true;
+         if (SignableCommand.of(this.parseCommand(p_251509_)).arguments().isEmpty()) {
+             LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
+             this.send(new ServerboundChatCommandPacket(p_251509_, Instant.now(), 0L, ArgumentSignatures.EMPTY, lastseenmessagestracker$update.update()));
