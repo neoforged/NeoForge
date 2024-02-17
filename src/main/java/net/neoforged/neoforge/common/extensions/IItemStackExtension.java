@@ -76,8 +76,16 @@ public interface IItemStackExtension {
      *         decide.
      */
     default int getBurnTime(@Nullable RecipeType<?> recipeType) {
-        var fuel = self().getItemHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
-        return self().isEmpty() ? 0 : EventHooks.getItemBurnTime(self(), fuel == null ? 0 : fuel.burnTime(), recipeType);
+        if (self().isEmpty()) {
+            return 0;
+        } else {
+            int ret = self().getItem().getBurnTime(self(), recipeType);
+            if (ret == -1) {
+                var fuel = self().getItemHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
+                ret = fuel == null ? 0 : fuel.burnTime();
+            }
+            return EventHooks.getItemBurnTime(self(), ret, recipeType);
+        }
     }
 
     default InteractionResult onItemUseFirst(UseOnContext context) {
