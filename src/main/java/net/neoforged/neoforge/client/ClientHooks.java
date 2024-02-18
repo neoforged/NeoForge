@@ -68,12 +68,14 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SectionBufferBuilderPack;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.chunk.RenderChunkRegion;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -129,6 +131,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
@@ -971,6 +974,30 @@ public class ClientHooks {
             }
         }
         return elements;
+    }
+
+    public static List<AddSectionGeometryEvent.AdditionalSectionRenderer> gatherAdditionalRenderers(
+        BlockPos sectionOrigin, Level level
+    ) {
+        final var event = new AddSectionGeometryEvent(sectionOrigin, level);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getAdditionalRenderers();
+    }
+
+    public static void addAdditionalGeometry(
+        List<AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers,
+        Set<RenderType> layers,
+        SectionBufferBuilderPack buffers,
+        RenderChunkRegion region,
+        PoseStack transformation
+    ) {
+        if (additionalRenderers.isEmpty()) {
+            return;
+        }
+        final var context = new AddSectionGeometryEvent.SectionRenderingContext(layers, buffers, region, transformation);
+        for (final var renderer : additionalRenderers) {
+            renderer.render(context);
+        }
     }
 
     // Make sure the below method is only ever called once (by forge).
