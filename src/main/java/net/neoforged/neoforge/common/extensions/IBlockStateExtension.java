@@ -104,9 +104,9 @@ public interface IBlockStateExtension {
      * actually destroying the block, and the block is intact at time of call.
      * This is called regardless of whether the player can harvest the block or
      * not.
-     * <p>
+     *
      * Return true if the block is actually destroyed.
-     * <p>
+     *
      * Note: When used in multiplayer, this is called on both client and
      * server sides!
      *
@@ -219,6 +219,7 @@ public interface IBlockStateExtension {
     }
 
     /**
+     *
      * Called when A user uses the creative pick block button on this block
      *
      * @param target The full target the player is looking at
@@ -286,7 +287,7 @@ public interface IBlockStateExtension {
      * to ensure it turns into the corresponding modded dirt instead of regular dirt when a tree grows on it.
      * For modded grass blocks, returning true from this method is NOT a substitute for adding your block
      * to the #minecraft:dirt tag, rather for changing the behaviour to something other than setting to dirt.
-     * <p>
+     *
      * NOTE: This happens DURING world generation, the generation may be incomplete when this is called.
      * Use the placeFunction when modifying the level.
      *
