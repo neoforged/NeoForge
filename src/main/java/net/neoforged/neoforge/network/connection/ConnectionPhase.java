@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.network.connection;
 
-import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.network.protocol.common.ServerCommonPacketListener;
@@ -13,19 +12,18 @@ import net.minecraft.network.protocol.configuration.ClientConfigurationPacketLis
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
-import net.minecraft.network.protocol.game.ServerPacketListener;
 
 public enum ConnectionPhase {
-    COMMON,
+    ANY,
     CONFIGURATION,
     PLAY;
 
     public boolean isConfiguration() {
-        return this == COMMON || this == CONFIGURATION;
+        return this == ANY || this == CONFIGURATION;
     }
 
     public boolean isPlay() {
-        return this == COMMON || this == PLAY;
+        return this == ANY || this == PLAY;
     }
 
     public static ConnectionPhase fromPacketListener(final PacketListener packetListener) {
@@ -38,7 +36,7 @@ public enum ConnectionPhase {
         }
 
         if (packetListener instanceof ClientCommonPacketListener) {
-            return ConnectionPhase.COMMON;
+            return ConnectionPhase.ANY;
         }
 
         if (packetListener instanceof ServerConfigurationPacketListener) {
@@ -50,9 +48,9 @@ public enum ConnectionPhase {
         }
 
         if (packetListener instanceof ServerCommonPacketListener) {
-            return ConnectionPhase.COMMON;
+            return ConnectionPhase.ANY;
         }
 
-        return COMMON;
+        return ANY;
     }
 }
