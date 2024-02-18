@@ -805,7 +805,7 @@ public class NetworkRegistry {
 
         //Negotiation failed. Disconnect the client.
         if (!configurationNegotiationResult.success()) {
-            sender.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.server.not_supported", "You are trying to connect to a server that is not running NeoForge, but you are not. A connection could not be established.", NeoForgeVersion.getVersion()));
+            sender.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.server.not_supported", "You are trying to connect to a server that is not running NeoForge, but you have mods that require it. A connection could not be established.", NeoForgeVersion.getVersion()));
             return false;
         }
 
@@ -817,7 +817,7 @@ public class NetworkRegistry {
 
         //Negotiation failed. Disconnect the client.
         if (!playNegotiationResult.success()) {
-            sender.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.server.not_supported", "You are trying to connect to a server that is not running NeoForge, but you are not. A connection could not be established.", NeoForgeVersion.getVersion()));
+            sender.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.server.not_supported", "You are trying to connect to a server that is not running NeoForge, but you have mods that require it. A connection could not be established.", NeoForgeVersion.getVersion()));
             return false;
         }
 

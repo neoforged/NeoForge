@@ -7,6 +7,8 @@ package net.neoforged.neoforge.network.connection;
 
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.PacketListener;
+import net.minecraft.network.protocol.common.ClientCommonPacketListener;
+import net.minecraft.network.protocol.common.ServerCommonPacketListener;
 import net.minecraft.network.protocol.configuration.ClientConfigurationPacketListener;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -35,7 +37,7 @@ public enum ConnectionPhase {
             return ConnectionPhase.PLAY;
         }
 
-        if (packetListener instanceof ClientPacketListener) {
+        if (packetListener instanceof ClientCommonPacketListener) {
             return ConnectionPhase.COMMON;
         }
 
@@ -47,7 +49,7 @@ public enum ConnectionPhase {
             return ConnectionPhase.PLAY;
         }
 
-        if (packetListener instanceof ServerPacketListener) {
+        if (packetListener instanceof ServerCommonPacketListener) {
             return ConnectionPhase.COMMON;
         }
 
