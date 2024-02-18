@@ -12,7 +12,9 @@ import net.minecraft.network.protocol.configuration.ClientConfigurationPacketLis
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public enum ConnectionPhase {
     ANY,
     CONFIGURATION,
