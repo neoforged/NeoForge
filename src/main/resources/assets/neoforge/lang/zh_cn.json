@@ -230,6 +230,8 @@
   "neoforge.network.negotiation.failure.version.mismatch": "客户端希望 %s 版本的载荷，但服务器端希望 %s！",
   "neoforge.network.invalid_flow": "无法处理通过无效流 %s 发送的载荷！",
   "neoforge.network.negotiation.failure.vanilla.client.not_supported": "你正在尝试连接一个安装了 NeoForge 的服务器，但是你没有安装。为了连接到此服务器，请安装 NeoForge 版本 %s。",
+  "neoforge.network.negotiation.failure.vanilla.server.not_supported": "You are trying to connect to a server that is not running NeoForge, but you have mods that require it. A connection could not be established.",
+  "neoforge.network.packet_splitter.unknown": "Tried to split a packet without packet splitter!",
   "neoforge.network.advanced_add_entity.failed": "处理高级实体生成数据失败：%s",
   "neoforge.network.advanced_open_screen.failed": "打开带有高级数据的屏幕失败：%s",
   "neoforge.network.registries.sync.missing": "未从服务器收到所有预期的注册表！（缺失：%s）",
