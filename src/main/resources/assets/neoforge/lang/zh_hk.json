@@ -230,6 +230,8 @@
   "neoforge.network.negotiation.failure.version.mismatch": "用戶端希望 %s 版本的承載，但伺服器端希望 %s！",
   "neoforge.network.invalid_flow": "無法處理透過無效串流 %s 傳送的承載",
   "neoforge.network.negotiation.failure.vanilla.client.not_supported": "你正在嘗試連線到一個安裝了 NeoForge 的伺服器，但你尚未安裝。請安裝 NeoForge 版本 %s 以連線到此伺服器。",
+  "neoforge.network.negotiation.failure.vanilla.server.not_supported": "You are trying to connect to a server that is not running NeoForge, but you have mods that require it. A connection could not be established.",
+  "neoforge.network.packet_splitter.unknown": "Tried to split a packet without packet splitter!",
   "neoforge.network.advanced_add_entity.failed": "處裡進階實體生成資料失敗：%s",
   "neoforge.network.advanced_open_screen.failed": "無法開啟含有進階資料的畫面：%s",
   "neoforge.network.registries.sync.missing": "從伺服器接收的並非所有預期的登錄！（缺少：%s）",
