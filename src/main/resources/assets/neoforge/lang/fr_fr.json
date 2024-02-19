@@ -230,6 +230,8 @@
   "neoforge.network.negotiation.failure.version.mismatch": "Le client souhaite que les données aient la version : %s, mais le serveur souhaitent la version : %s !",
   "neoforge.network.invalid_flow": "Échec du traitement des données reçues par un flux invalide : %s",
   "neoforge.network.negotiation.failure.vanilla.client.not_supported": "Vous essayez de vous connecter à un serveur qui utilise NeoForge, mais votre client ne l'utilise pas. Veuillez installer la version %s de NeoForge pour vous connecter à ce serveur.",
+  "neoforge.network.negotiation.failure.vanilla.server.not_supported": "You are trying to connect to a server that is not running NeoForge, but you have mods that require it. A connection could not be established.",
+  "neoforge.network.packet_splitter.unknown": "Tried to split a packet without packet splitter!",
   "neoforge.network.advanced_add_entity.failed": "Échec du traitement des données d'apparition d'entité avancées : %s",
   "neoforge.network.advanced_open_screen.failed": "Échec de l'ouverture de l'interface avec les données : %s",
   "neoforge.network.registries.sync.missing": "Tous les registres attendus n'ont pas été reçus de la part du serveur ! (manquants : %s)",

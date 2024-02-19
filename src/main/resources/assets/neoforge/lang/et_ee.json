@@ -230,6 +230,8 @@
   "neoforge.network.negotiation.failure.version.mismatch": "Klient soovib, et last oleks versioonil: %s, kuid server soovib, et last oleks versioonil: %s!",
   "neoforge.network.invalid_flow": "Lasti, mis saadeti sobimatu vooga, ei saadud töödelda: %s",
   "neoforge.network.negotiation.failure.vanilla.client.not_supported": "Proovid ühenduda serveriga, kus käitatakse NeoForge'i, kuid sa ise seda ei kasuta. Selle serveriga ühendumiseks palun paigalda NeoForge versioon %s.",
+  "neoforge.network.negotiation.failure.vanilla.server.not_supported": "You are trying to connect to a server that is not running NeoForge, but you have mods that require it. A connection could not be established.",
+  "neoforge.network.packet_splitter.unknown": "Tried to split a packet without packet splitter!",
   "neoforge.network.advanced_add_entity.failed": "Täpsemate olemitekke andmete töötlemine ebaõnnestus: %s",
   "neoforge.network.advanced_open_screen.failed": "Täpsemate andmetega kuva avamine ebaõnnestus: %s",
   "neoforge.network.registries.sync.missing": "Kõiki oodatud registreid serverist ei saadud! (puudub: %s)",

@@ -230,6 +230,8 @@
   "neoforge.network.negotiation.failure.version.mismatch": "De cliënt wilt dat de payload de versie: %s is, maar de server wilt dat het de versie: %s is!",
   "neoforge.network.invalid_flow": "Het verwerken van een payload die was verzonden met een ongeldige flow: %s is mislukt",
   "neoforge.network.negotiation.failure.vanilla.client.not_supported": "Je probeert verbinding te maken met een server die NeoForge gebruikt, maar je bent dat ben je niet aan het gebruiken. Installeer de NeoForge versie: %s om verbinding te maken met deze server.",
+  "neoforge.network.negotiation.failure.vanilla.server.not_supported": "You are trying to connect to a server that is not running NeoForge, but you have mods that require it. A connection could not be established.",
+  "neoforge.network.packet_splitter.unknown": "Tried to split a packet without packet splitter!",
   "neoforge.network.advanced_add_entity.failed": "Het verwerken van geavanceerde entiteit spawn gegevens is mislukt: %s",
   "neoforge.network.advanced_open_screen.failed": "Fout bij het openen van een scherm met geavanceerde gegevens: %s",
   "neoforge.network.registries.sync.missing": "Niet alle verwachte registers werden ontvangen van de server! (ontbreekt: %s)",
