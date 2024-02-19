@@ -10,6 +10,7 @@ import java.util.Set;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public record ModdedNetworkPayload(Set<ModdedNetworkComponent> configuration, Set<ModdedNetworkComponent> play) implements CustomPacketPayload {
 
-    public static final ResourceLocation ID = new ResourceLocation("network");
+    public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "network");
     public static final FriendlyByteBuf.Reader<? extends CustomPacketPayload> READER = ModdedNetworkPayload::new;
     public ModdedNetworkPayload(FriendlyByteBuf buf) {
         this(buf.readCollection(HashSet::new, ModdedNetworkComponent::new), buf.readCollection(HashSet::new, ModdedNetworkComponent::new));

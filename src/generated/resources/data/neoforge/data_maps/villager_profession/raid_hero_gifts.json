@@ -1,0 +1,43 @@
+{
+  "values": {
+    "minecraft:armorer": {
+      "loot_table": "minecraft:gameplay/hero_of_the_village/armorer_gift"
+    },
+    "minecraft:butcher": {
+      "loot_table": "minecraft:gameplay/hero_of_the_village/butcher_gift"
+    },
+    "minecraft:cartographer": {
+      "loot_table": "minecraft:gameplay/hero_of_the_village/cartographer_gift"
+    },
+    "minecraft:cleric": {
+      "loot_table": "minecraft:gameplay/hero_of_the_village/cleric_gift"
+    },
+    "minecraft:farmer": {
+      "loot_table": "minecraft:gameplay/hero_of_the_village/farmer_gift"
+    },
+    "minecraft:fisherman": {
+      "loot_table": "minecraft:gameplay/hero_of_the_village/fisherman_gift"
+    },
+    "minecraft:fletcher": {
+      "loot_table": "minecraft:gameplay/hero_of_the_village/fletcher_gift"
+    },
+    "minecraft:leatherworker": {
+      "loot_table": "minecraft:gameplay/hero_of_the_village/leatherworker_gift"
+    },
+    "minecraft:librarian": {
+      "loot_table": "minecraft:gameplay/hero_of_the_village/librarian_gift"
+    },
+    "minecraft:mason": {
+      "loot_table": "minecraft:gameplay/hero_of_the_village/mason_gift"
+    },
+    "minecraft:shepherd": {
+      "loot_table": "minecraft:gameplay/hero_of_the_village/shepherd_gift"
+    },
+    "minecraft:toolsmith": {
+      "loot_table": "minecraft:gameplay/hero_of_the_village/toolsmith_gift"
+    },
+    "minecraft:weaponsmith": {
+      "loot_table": "minecraft:gameplay/hero_of_the_village/weaponsmith_gift"
+    }
+  }
+}

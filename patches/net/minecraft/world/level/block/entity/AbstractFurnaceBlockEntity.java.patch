@@ -8,7 +8,23 @@
      protected NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
      int litTime;
      int litDuration;
-@@ -111,8 +_,10 @@
+@@ -69,9 +_,14 @@
+         public int get(int p_58431_) {
+             switch(p_58431_) {
+                 case 0:
++                    if (litDuration > Short.MAX_VALUE) {
++                        // Neo: preserve litTime / litDuration ratio on the client as data slots are synced as shorts.
++                        return net.minecraft.util.Mth.floor(((double) litTime / litDuration) * Short.MAX_VALUE);
++                    }
++
+                     return AbstractFurnaceBlockEntity.this.litTime;
+                 case 1:
+-                    return AbstractFurnaceBlockEntity.this.litDuration;
++                    return Math.min(AbstractFurnaceBlockEntity.this.litDuration, Short.MAX_VALUE);
+                 case 2:
+                     return AbstractFurnaceBlockEntity.this.cookingProgress;
+                 case 3:
+@@ -111,10 +_,26 @@
      ) {
          super(p_154991_, p_154992_, p_154993_);
          this.quickCheck = RecipeManager.createCheck((RecipeType<AbstractCookingRecipe>)p_154994_);
@@ -18,7 +34,31 @@
 +    /**@deprecated Forge: get burn times by calling CommonHooks#getBurnTime(ItemStack)*/ @Deprecated
      public static Map<Item, Integer> getFuel() {
          Map<Item, Integer> map = Maps.newLinkedHashMap();
++        buildFuels((e, time) -> e.ifRight(tag -> add(map, tag, time)).ifLeft(item -> add(map, item, time)));
++        return map;
++    }
++
++    private static void add(java.util.function.ObjIntConsumer<com.mojang.datafixers.util.Either<Item, TagKey<Item>>> consumer, ItemLike item, int time) {
++        consumer.accept(com.mojang.datafixers.util.Either.left(item.asItem()), time);
++    }
++
++    private static void add(java.util.function.ObjIntConsumer<com.mojang.datafixers.util.Either<Item, TagKey<Item>>> consumer, TagKey<Item> tag, int time) {
++        consumer.accept(com.mojang.datafixers.util.Either.right(tag), time);
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public static void buildFuels(java.util.function.ObjIntConsumer<com.mojang.datafixers.util.Either<Item, TagKey<Item>>> map) {
          add(map, Items.LAVA_BUCKET, 20000);
+         add(map, Blocks.COAL_BLOCK, 16000);
+         add(map, Items.BLAZE_ROD, 2400);
+@@ -174,7 +_,6 @@
+         add(map, Blocks.AZALEA, 100);
+         add(map, Blocks.FLOWERING_AZALEA, 100);
+         add(map, Blocks.MANGROVE_ROOTS, 300);
+-        return map;
+     }
+ 
+     private static boolean isNeverAFurnaceFuel(Item p_58398_) {
 @@ -213,9 +_,9 @@
          super.load(p_155025_);
          this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);

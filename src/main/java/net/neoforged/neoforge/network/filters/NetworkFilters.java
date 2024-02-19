@@ -9,8 +9,9 @@ import com.google.common.collect.ImmutableMap;
 import io.netty.channel.ChannelPipeline;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import net.minecraft.network.Connection;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
@@ -19,11 +20,11 @@ import org.jetbrains.annotations.ApiStatus;
 public class NetworkFilters {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private static final Map<String, Function<Connection, DynamicChannelHandler>> instances = ImmutableMap.of(
-            "neoforge:vanilla_filter", manager -> new VanillaConnectionNetworkFilter(),
-            "neoforge:forge_fixes", GenericPacketSplitter::new);
+    private static final Map<String, BiFunction<Connection, ConnectionType, DynamicChannelHandler>> instances = ImmutableMap.of(
+            "neoforge:vanilla_filter", (manager, connectionType) -> new VanillaConnectionNetworkFilter(connectionType),
+            "neoforge:splitter", GenericPacketSplitter::new);
 
-    public static void injectIfNecessary(Connection manager) {
+    public static void injectIfNecessary(Connection manager, ConnectionType connectionType) {
         cleanIfNecessary(manager);
 
         ChannelPipeline pipeline = manager.channel().pipeline();
@@ -31,7 +32,7 @@ public class NetworkFilters {
             return; // Realistically this can only ever be null if the connection was prematurely closed due to an error. We return early here to reduce further log spam.
 
         instances.forEach((key, filterFactory) -> {
-            DynamicChannelHandler filter = filterFactory.apply(manager);
+            DynamicChannelHandler filter = filterFactory.apply(manager, connectionType);
             if (filter.isNecessary(manager)) {
                 pipeline.addBefore("packet_handler", key, filter);
                 LOGGER.debug("Injected {} into {}", filter, manager);
