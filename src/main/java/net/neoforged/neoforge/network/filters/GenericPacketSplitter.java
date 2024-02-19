@@ -21,6 +21,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.VarInt;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
@@ -28,6 +29,8 @@ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.network.connection.ConnectionPhase;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.SplitPacketPayload;
@@ -53,13 +56,18 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
     private static final byte STATE_LAST = 2;
 
     private final AttributeKey<ConnectionProtocol.CodecData<?>> codecKey;
+    private final ConnectionType connectionType;
+    private static final AttributeKey<GenericPacketSplitter> SPLITTER_ATTRIBUTE = AttributeKey.valueOf("neoforge:splitter");
 
-    public GenericPacketSplitter(Connection connection) {
-        this(getProtocolKey(connection.getDirection().getOpposite()));
+    public GenericPacketSplitter(Connection connection, ConnectionType connectionType) {
+        this(getProtocolKey(connection.getDirection().getOpposite()), connectionType);
+
+        connection.channel().attr(SPLITTER_ATTRIBUTE).set(this);
     }
 
-    public GenericPacketSplitter(AttributeKey<ConnectionProtocol.CodecData<?>> codecKey) {
+    public GenericPacketSplitter(AttributeKey<ConnectionProtocol.CodecData<?>> codecKey, ConnectionType connectionType) {
         this.codecKey = codecKey;
+        this.connectionType = connectionType;
     }
 
     @SubscribeEvent
@@ -70,7 +78,15 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
                 .common(
                         SplitPacketPayload.ID,
                         SplitPacketPayload::new,
-                        GenericPacketSplitter::receivedPacket);
+                        (payload, context) -> {
+                            final GenericPacketSplitter splitter = context.channelHandlerContext().channel().attr(SPLITTER_ATTRIBUTE).get();
+                            if (splitter != null) {
+                                splitter.receivedPacket(payload, context);
+                            } else {
+                                LOGGER.error("Received split packet without a splitter");
+                                context.replyHandler().disconnect(Component.translatable("neoforge.network.packet_splitter.unknown"));
+                            }
+                        });
     }
 
     @Override
@@ -132,9 +148,9 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
         }
     }
 
-    private static final List<byte[]> receivedBuffers = new ArrayList<>();
+    private final List<byte[]> receivedBuffers = new ArrayList<>();
 
-    private static void receivedPacket(SplitPacketPayload payload, IPayloadContext context) {
+    private void receivedPacket(SplitPacketPayload payload, IPayloadContext context) {
         final ConnectionProtocol protocol = context.protocol();
         final PacketFlow flow = context.flow();
         final ChannelHandlerContext channelHandlerContext = context.channelHandlerContext();
@@ -192,7 +208,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
     }
 
     public static RemoteCompatibility getRemoteCompatibility(Connection manager) {
-        return NetworkRegistry.getInstance().isVanillaConnection(manager) ? RemoteCompatibility.ABSENT : RemoteCompatibility.PRESENT;
+        return NetworkRegistry.getInstance().isConnected(manager, ConnectionPhase.ANY, SplitPacketPayload.ID) ? RemoteCompatibility.PRESENT : RemoteCompatibility.ABSENT;
     }
 
     public static boolean isRemoteCompatible(Connection manager) {

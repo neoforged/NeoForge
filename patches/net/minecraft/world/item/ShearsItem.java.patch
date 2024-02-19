@@ -1,26 +1,22 @@
 --- a/net/minecraft/world/item/ShearsItem.java
 +++ b/net/minecraft/world/item/ShearsItem.java
-@@ -59,6 +_,31 @@
+@@ -59,6 +_,27 @@
      }
  
      @Override
-+    public net.minecraft.world.InteractionResult interactLivingEntity(ItemStack stack, net.minecraft.world.entity.player.Player playerIn, LivingEntity entity, net.minecraft.world.InteractionHand hand) {
++    public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity entity, net.minecraft.world.InteractionHand hand) {
 +        if (entity instanceof net.neoforged.neoforge.common.IShearable target) {
-+            if (entity.level().isClientSide) return net.minecraft.world.InteractionResult.SUCCESS;
-+            BlockPos pos = BlockPos.containing(entity.position());
++            if (entity.level().isClientSide) return InteractionResult.CONSUME;
++            BlockPos pos = entity.blockPosition();
 +            if (target.isShearable(stack, entity.level(), pos)) {
-+                java.util.List<ItemStack> drops = target.onSheared(playerIn, stack, entity.level(), pos,
-+                          net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.BLOCK_FORTUNE, stack));
-+                java.util.Random rand = new java.util.Random();
-+                drops.forEach(d -> {
-+                    net.minecraft.world.entity.item.ItemEntity ent = entity.spawnAtLocation(d, 1.0F);
-+                    ent.setDeltaMovement(ent.getDeltaMovement().add((double)((rand.nextFloat() - rand.nextFloat()) * 0.1F), (double)(rand.nextFloat() * 0.05F), (double)((rand.nextFloat() - rand.nextFloat()) * 0.1F)));
-+                });
-+                stack.hurtAndBreak(1, playerIn, e -> e.broadcastBreakEvent(hand));
++                target.onSheared(player, stack, entity.level(), pos, stack.getEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.BLOCK_FORTUNE))
++                      .forEach(drop -> target.spawnShearedDrop(entity.level(), pos, drop));
++                entity.gameEvent(GameEvent.SHEAR, player);
++                stack.hurtAndBreak(1, player, e -> e.broadcastBreakEvent(hand));
 +            }
-+            return net.minecraft.world.InteractionResult.SUCCESS;
++            return InteractionResult.SUCCESS;
 +        }
-+        return net.minecraft.world.InteractionResult.PASS;
++        return InteractionResult.PASS;
 +    }
 +
 +    @Override

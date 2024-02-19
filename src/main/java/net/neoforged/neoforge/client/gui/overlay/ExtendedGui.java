@@ -145,7 +145,7 @@ public class ExtendedGui extends Gui {
     void renderHelmet(float partialTick, GuiGraphics guiGraphics) {
         ItemStack itemstack = this.minecraft.player.getInventory().getArmor(3);
 
-        if (this.minecraft.options.getCameraType().isFirstPerson() && !itemstack.isEmpty()) {
+        if (this.minecraft.options.getCameraType().isFirstPerson() && !itemstack.isEmpty() && !this.minecraft.player.isScoping()) {
             Item item = itemstack.getItem();
             if (item == Blocks.CARVED_PUMPKIN.asItem()) {
                 renderTextureOverlay(guiGraphics, PUMPKIN_BLUR_LOCATION, 1.0F);

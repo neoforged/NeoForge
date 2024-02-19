@@ -532,7 +532,7 @@
      public void setMaxUpStep(float p_275672_) {
          this.maxUpStep = p_275672_;
      }
-@@ -3419,6 +_,119 @@
+@@ -3419,6 +_,120 @@
      public boolean mayInteract(Level p_146843_, BlockPos p_146844_) {
          return true;
      }
@@ -548,13 +548,14 @@
 +    public boolean canUpdate() {
 +        return this.canUpdate;
 +    }
++    @Nullable
 +    private java.util.Collection<ItemEntity> captureDrops = null;
 +    @Override
 +    public java.util.Collection<ItemEntity> captureDrops() {
 +        return captureDrops;
 +    }
 +    @Override
-+    public java.util.Collection<ItemEntity> captureDrops(java.util.Collection<ItemEntity> value) {
++    public java.util.Collection<ItemEntity> captureDrops(@Nullable java.util.Collection<ItemEntity> value) {
 +        java.util.Collection<ItemEntity> ret = captureDrops;
 +        this.captureDrops = value;
 +        return ret;
