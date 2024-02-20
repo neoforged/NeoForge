@@ -7,12 +7,11 @@ package net.neoforged.neoforge.common.crafting;
 
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntComparators;
 import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -20,21 +19,14 @@ import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import org.jetbrains.annotations.Nullable;
 
 /** Ingredient that matches if any of the child ingredients match */
-public class CompoundIngredient extends Ingredient {
-    public static final Codec<CompoundIngredient> CODEC = NeoForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC, "children", "ingredients").xmap(CompoundIngredient::new, CompoundIngredient::getChildren).codec();
-    public static final Codec<CompoundIngredient> DIRECT_CODEC = Ingredient.LIST_CODEC.xmap(CompoundIngredient::new, CompoundIngredient::getChildren);
-    public static final Codec<CompoundIngredient> CODEC_NONEMPTY = NeoForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC_NONEMPTY, "children", "ingredients").xmap(CompoundIngredient::new, CompoundIngredient::getChildren).codec();
-    public static final Codec<CompoundIngredient> DIRECT_CODEC_NONEMPTY = Ingredient.LIST_CODEC_NONEMPTY.xmap(CompoundIngredient::new, CompoundIngredient::getChildren);
-
-    private final List<Ingredient> children;
-    private final boolean isSimple;
-    private final boolean synchronizeWithContents;
+public class CompoundIngredient extends ChildBasedIngredient {
+    public static final Codec<CompoundIngredient> CODEC = NeoForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC, "children", "ingredients").xmap(CompoundIngredient::new, ChildBasedIngredient::getChildren).codec();
+    public static final Codec<CompoundIngredient> DIRECT_CODEC = Ingredient.LIST_CODEC.xmap(CompoundIngredient::new, ChildBasedIngredient::getChildren);
+    public static final Codec<CompoundIngredient> CODEC_NONEMPTY = NeoForgeExtraCodecs.aliasedFieldOf(Ingredient.LIST_CODEC_NONEMPTY, "children", "ingredients").xmap(CompoundIngredient::new, ChildBasedIngredient::getChildren).codec();
+    public static final Codec<CompoundIngredient> DIRECT_CODEC_NONEMPTY = Ingredient.LIST_CODEC_NONEMPTY.xmap(CompoundIngredient::new, ChildBasedIngredient::getChildren);
 
     protected CompoundIngredient(List<Ingredient> children) {
-        super(children.stream().map(Value::new), NeoForgeMod.COMPOUND_INGREDIENT_TYPE);
-        this.children = Collections.unmodifiableList(children);
-        this.isSimple = children.stream().allMatch(Ingredient::isSimple);
-        this.synchronizeWithContents = children.stream().anyMatch(Ingredient::synchronizeWithContents);
+        super(children.stream().map(Value::new), NeoForgeMod.COMPOUND_INGREDIENT_TYPE, children);
     }
 
     /** Creates a compound ingredient from the given list of ingredients */
@@ -48,44 +40,18 @@ public class CompoundIngredient extends Ingredient {
     }
 
     @Override
-    public ItemStack[] getItems() {
-        if (synchronizeWithContents())
-            return super.getItems();
-
-        return children.stream().map(Ingredient::getItems).flatMap(Arrays::stream).toArray(ItemStack[]::new);
+    protected Stream<ItemStack> generateMatchingStacks() {
+        return children.stream().flatMap(child -> Arrays.stream(child.getItems()));
     }
 
     @Override
-    public boolean test(@Nullable ItemStack p_43914_) {
-        if (synchronizeWithContents())
-            return super.test(p_43914_);
-
-        return children.stream().anyMatch(i -> i.test(p_43914_));
+    protected boolean testNonSynchronized(@Nullable ItemStack stack) {
+        return children.stream().anyMatch(i -> i.test(stack));
     }
 
     @Override
-    public IntList getStackingIds() {
-        if (synchronizeWithContents())
-            return super.getStackingIds();
-
-        final var list = new IntArrayList();
-        children.stream().map(Ingredient::getStackingIds).forEach(list::addAll);
-        list.sort(IntComparators.NATURAL_COMPARATOR);
-        return list;
-    }
-
-    @Override
-    public boolean isSimple() {
-        return isSimple;
-    }
-
-    @Override
-    public boolean synchronizeWithContents() {
-        return synchronizeWithContents;
-    }
-
-    public List<Ingredient> getChildren() {
-        return this.children;
+    protected IntList generateStackingIds() {
+        return IntArrayList.toList(children.stream().flatMapToInt(child -> child.getStackingIds().intStream()).distinct());
     }
 
     private record Value(Ingredient inner) implements Ingredient.Value {
