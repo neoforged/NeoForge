@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
@@ -71,15 +73,25 @@ public class LanguageHook {
 
     private static void loadLanguage(String langName, MinecraftServer server) {
         String langFile = String.format(Locale.ROOT, "lang/%s.json", langName);
+        // noinspection resource
         ResourceManager resourceManager = server.getServerResources().resourceManager();
-        resourceManager.getNamespaces().forEach(namespace -> {
+        // We cannot use the resource manager itself, because it is specifically scoped to data packs
+        // (the PackType given to MultiPackResourceManager is SERVER_DATA)
+        // Instead, we create a MultiPackResourceManager configured for PackType.CLIENT_RESOURCES
+        // (We must not close this manager, as closing it would close all of its contained packs)
+        // noinspection resource
+        ResourceManager clientResources = new MultiPackResourceManager(PackType.CLIENT_RESOURCES, resourceManager.listPacks().toList());
+        int loaded = 0;
+        for (String namespace : clientResources.getNamespaces()) {
             try {
                 ResourceLocation langResource = new ResourceLocation(namespace, langFile);
-                loadLocaleData(resourceManager.getResourceStack(langResource));
+                loadLocaleData(clientResources.getResourceStack(langResource));
+                loaded++;
             } catch (Exception exception) {
                 LOGGER.warn("Skipped language file: {}:{}", namespace, langFile, exception);
             }
-        });
+        }
+        LOGGER.debug("Loaded {} language files for {}", loaded, langName);
     }
 
     public static void loadForgeAndMCLangs() {
