@@ -18,7 +18,7 @@
  
          for(int i = 0; i < p_44322_.getContainerSize(); ++i) {
              ItemStack itemstack1 = p_44322_.getItem(i);
-@@ -51,13 +_,14 @@
+@@ -51,16 +_,18 @@
                  Item item = itemstack1.getItem();
                  if (Block.byItem(item) instanceof ShulkerBoxBlock) {
                      itemstack = itemstack1;
@@ -36,3 +36,7 @@
          if (itemstack.hasTag()) {
              itemstack2.setTag(itemstack.getTag().copy());
          }
++        net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(itemstack, itemstack2);
+ 
+         return itemstack2;
+     }
