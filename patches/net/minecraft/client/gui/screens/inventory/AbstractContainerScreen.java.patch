@@ -1,12 +1,16 @@
 --- a/net/minecraft/client/gui/screens/inventory/AbstractContainerScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/AbstractContainerScreen.java
-@@ -91,7 +_,8 @@
+@@ -91,7 +_,12 @@
      public void render(GuiGraphics p_283479_, int p_283661_, int p_281248_, float p_281886_) {
          int i = this.leftPos;
          int j = this.topPos;
 -        super.render(p_283479_, p_283661_, p_281248_, p_281886_);
-+        // Neo: replace the super render call with renderBackground and manually render the widgets in the method below.
++        // Neo: replicate the super method's implementation to insert the event between background and widgets
 +        this.renderBackground(p_283479_, p_283661_, p_281248_, p_281886_);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Background(this, p_283479_, p_283661_, p_281248_));
++        for (net.minecraft.client.gui.components.Renderable renderable : this.renderables) {
++            renderable.render(p_283479_, p_283661_, p_281248_, p_281886_);
++        }
          RenderSystem.disableDepthTest();
          p_283479_.pose().pushPose();
          p_283479_.pose().translate((float)i, (float)j, 0.0F);
@@ -25,14 +29,7 @@
          ItemStack itemstack = this.draggingItem.isEmpty() ? this.menu.getCarried() : this.draggingItem;
          if (!itemstack.isEmpty()) {
              int l1 = 8;
-@@ -153,16 +_,23 @@
-     public void renderBackground(GuiGraphics p_295206_, int p_295457_, int p_294596_, float p_296351_) {
-         super.renderBackground(p_295206_, p_295457_, p_294596_, p_296351_);
-         this.renderBg(p_295206_, p_296351_, p_295457_, p_294596_);
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Background(this, p_295206_, p_295457_, p_294596_));
-+        for (net.minecraft.client.gui.components.Renderable renderable : renderables) {
-+            renderable.render(p_295206_, p_295457_, p_294596_, p_296351_);
-+        }
+@@ -156,13 +_,16 @@
      }
  
      public static void renderSlotHighlight(GuiGraphics p_283692_, int p_281453_, int p_281915_, int p_283504_) {
