@@ -7,8 +7,6 @@ package net.neoforged.neoforge.common.crafting;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -60,13 +58,6 @@ public class DifferenceIngredient extends ChildBasedIngredient {
     @Override
     protected boolean testNonSynchronized(@Nullable ItemStack stack) {
         return base.test(stack) && !subtracted.test(stack);
-    }
-
-    @Override
-    protected IntList generateStackingIds() {
-        final IntList stackingIds = new IntArrayList(base.getStackingIds());
-        stackingIds.removeAll(subtracted.getStackingIds());
-        return stackingIds;
     }
 
     /**

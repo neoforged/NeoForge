@@ -6,8 +6,6 @@
 package net.neoforged.neoforge.common.crafting;
 
 import com.mojang.serialization.Codec;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -47,11 +45,6 @@ public class CompoundIngredient extends ChildBasedIngredient {
     @Override
     protected boolean testNonSynchronized(@Nullable ItemStack stack) {
         return children.stream().anyMatch(i -> i.test(stack));
-    }
-
-    @Override
-    protected IntList generateStackingIds() {
-        return IntArrayList.toList(children.stream().flatMapToInt(child -> child.getStackingIds().intStream()).distinct());
     }
 
     private record Value(Ingredient inner) implements Ingredient.Value {

@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.common.crafting;
 
-import it.unimi.dsi.fastutil.ints.IntComparators;
-import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
@@ -23,8 +21,6 @@ public abstract class ChildBasedIngredient extends Ingredient {
 
     @Nullable
     private ItemStack[] filteredMatchingStacks;
-    @Nullable
-    private IntList packedMatchingStacks;
 
     protected ChildBasedIngredient(Stream<? extends Ingredient.Value> values, Supplier<? extends IngredientType<?>> type, List<Ingredient> children) {
         super(values, type);
@@ -36,8 +32,6 @@ public abstract class ChildBasedIngredient extends Ingredient {
     protected abstract Stream<ItemStack> generateMatchingStacks();
 
     protected abstract boolean testNonSynchronized(@Nullable ItemStack stack);
-
-    protected abstract IntList generateStackingIds();
 
     @Override
     public final ItemStack[] getItems() {
@@ -55,19 +49,6 @@ public abstract class ChildBasedIngredient extends Ingredient {
     @Override
     public final boolean test(@Nullable ItemStack stack) {
         return synchronizeWithContents() ? super.test(stack) : testNonSynchronized(stack);
-    }
-
-    @Override
-    public final IntList getStackingIds() {
-        if (synchronizeWithContents()) {
-            return super.getStackingIds();
-        }
-
-        if (this.packedMatchingStacks == null) {
-            this.packedMatchingStacks = generateStackingIds();
-            this.packedMatchingStacks.sort(IntComparators.NATURAL_COMPARATOR);
-        }
-        return this.packedMatchingStacks;
     }
 
     @Override

@@ -7,13 +7,10 @@ package net.neoforged.neoforge.common.crafting;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -68,18 +65,6 @@ public class IntersectionIngredient extends ChildBasedIngredient {
     @Override
     protected boolean testNonSynchronized(@Nullable ItemStack stack) {
         return children.stream().allMatch(c -> c.test(stack));
-    }
-
-    @Override
-    protected IntList generateStackingIds() {
-        if (children.isEmpty()) {
-            return new IntArrayList();
-        }
-        //Start with the stacking ids of the first listed child
-        final IntList stackingIds = new IntArrayList(children.get(0).getStackingIds());
-        //Remove any ids that aren't also in all the other children
-        stackingIds.removeIf(id -> IntStream.range(1, children.size()).anyMatch(child -> !children.get(child).getStackingIds().contains(id)));
-        return stackingIds;
     }
 
     public record IntersectionValue(Value inner, List<Ingredient> other) implements Ingredient.Value {
