@@ -35,8 +35,9 @@ public abstract class ChildBasedIngredient extends Ingredient {
 
     @Override
     public final ItemStack[] getItems() {
-        if (synchronizeWithContents())
+        if (synchronizeWithContents() && isSimple()) {
             return super.getItems();
+        }
 
         if (this.filteredMatchingStacks == null) {
             this.filteredMatchingStacks = generateMatchingStacks()
@@ -48,7 +49,7 @@ public abstract class ChildBasedIngredient extends Ingredient {
 
     @Override
     public final boolean test(@Nullable ItemStack stack) {
-        return synchronizeWithContents() ? super.test(stack) : testNonSynchronized(stack);
+        return synchronizeWithContents() && isSimple() ? super.test(stack) : testNonSynchronized(stack);
     }
 
     @Override
