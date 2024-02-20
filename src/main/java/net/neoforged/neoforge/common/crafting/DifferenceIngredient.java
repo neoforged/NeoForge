@@ -56,7 +56,7 @@ public class DifferenceIngredient extends ChildBasedIngredient {
     }
 
     @Override
-    protected boolean testNonSynchronized(@Nullable ItemStack stack) {
+    protected boolean testComplex(@Nullable ItemStack stack) {
         return base.test(stack) && !subtracted.test(stack);
     }
 

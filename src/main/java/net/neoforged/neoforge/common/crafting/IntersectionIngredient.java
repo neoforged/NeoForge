@@ -59,11 +59,11 @@ public class IntersectionIngredient extends ChildBasedIngredient {
     protected Stream<ItemStack> generateMatchingStacks() {
         return children.stream()
                 .flatMap(child -> Arrays.stream(child.getItems()))
-                .filter(this::testNonSynchronized);
+                .filter(this::testComplex);
     }
 
     @Override
-    protected boolean testNonSynchronized(@Nullable ItemStack stack) {
+    protected boolean testComplex(@Nullable ItemStack stack) {
         return children.stream().allMatch(c -> c.test(stack));
     }
 

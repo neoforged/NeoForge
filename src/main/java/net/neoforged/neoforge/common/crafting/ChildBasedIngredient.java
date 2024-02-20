@@ -31,7 +31,7 @@ public abstract class ChildBasedIngredient extends Ingredient {
 
     protected abstract Stream<ItemStack> generateMatchingStacks();
 
-    protected abstract boolean testNonSynchronized(@Nullable ItemStack stack);
+    protected abstract boolean testComplex(@Nullable ItemStack stack);
 
     @Override
     public final ItemStack[] getItems() {
@@ -49,7 +49,7 @@ public abstract class ChildBasedIngredient extends Ingredient {
 
     @Override
     public final boolean test(@Nullable ItemStack stack) {
-        return synchronizeWithContents() && isSimple() ? super.test(stack) : testNonSynchronized(stack);
+        return synchronizeWithContents() && isSimple() ? super.test(stack) : testComplex(stack);
     }
 
     @Override

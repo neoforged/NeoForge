@@ -43,7 +43,7 @@ public class CompoundIngredient extends ChildBasedIngredient {
     }
 
     @Override
-    protected boolean testNonSynchronized(@Nullable ItemStack stack) {
+    protected boolean testComplex(@Nullable ItemStack stack) {
         return children.stream().anyMatch(i -> i.test(stack));
     }
 
