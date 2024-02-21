@@ -120,8 +120,10 @@ import net.neoforged.neoforge.event.entity.living.LivingDestroyBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
+import net.neoforged.neoforge.event.entity.living.MobDespawnEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.AllowDespawn;
+import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
 import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
@@ -349,10 +351,23 @@ public class EventHooks {
         return event;
     }
 
-    public static Result canEntityDespawn(Mob entity, ServerLevelAccessor level) {
-        AllowDespawn event = new AllowDespawn(entity, level);
+    /**
+     * Fires {@link MobDespawnEvent} and returns true if the default logic should be ignored.
+     * 
+     * @param entity The entity being despawned.
+     * @return True if the event result is not {@link MobDespawnEvent.Result#DEFAULT}, and the vanilla logic should be ignored.
+     */
+    public static boolean checkMobDespawn(Mob mob) {
+        MobDespawnEvent event = new MobDespawnEvent(mob, (ServerLevel) mob.level());
         NeoForge.EVENT_BUS.post(event);
-        return event.getResult();
+
+        switch (event.getResult()) {
+            case ALLOW -> mob.discard();
+            case DEFAULT -> {}
+            case DENY -> mob.setNoActionTime(0);
+        }
+
+        return event.getResult() != MobDespawnEvent.Result.DEFAULT;
     }
 
     public static int getItemBurnTime(ItemStack itemStack, int burnTime, @Nullable RecipeType<?> recipeType) {
