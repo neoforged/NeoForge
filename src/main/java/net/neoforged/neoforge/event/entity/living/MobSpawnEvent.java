@@ -11,7 +11,6 @@ import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
@@ -31,7 +30,6 @@ import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
-import net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable.Result;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -451,31 +449,6 @@ public abstract class MobSpawnEvent extends EntityEvent {
          */
         public boolean isSpawnCancelled() {
             return this.getEntity().isSpawnCancelled();
-        }
-    }
-
-    /**
-     * This event is fired from {@link Mob#checkDespawn()}.<br>
-     * It fires once per tick per mob that is attempting to despawn.<br>
-     * It is not fired if the mob is persistent (meaning it may not despawn).<br>
-     * <p>
-     * This event is not {@linkplain ICancellableEvent cancellable}, but does {@linkplain HasResult have a result}.
-     * {@link Result#DEFAULT} indicates that default despawn mechanics should be used.
-     * {@link Result#ALLOW} indicates that the mob should forcefully despawn.
-     * {@link Result#DENY} indicates that the mob should forcefully stay spawned.
-     * <p>
-     * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
-     * only on the {@linkplain LogicalSide#SERVER logical server}.
-     *
-     * @see LivingEntity#checkDespawn()
-     * @author cpw
-     */
-    // TODO: 1.20 Move to standalone class, as it is unrelated to the complex mob spawning flow.
-    // Such a refactor will allow the BaseSpawner and MobSpawnType params to be hoisted to MobSpawnEvent.
-    @HasResult
-    public static class AllowDespawn extends MobSpawnEvent {
-        public AllowDespawn(Mob mob, ServerLevelAccessor level) {
-            super(mob, level, mob.getX(), mob.getY(), mob.getZ());
         }
     }
 }
