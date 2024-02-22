@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.server;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,16 +27,16 @@ import org.apache.logging.log4j.Logger;
 
 public class LanguageHook {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static List<Map<String, String>> capturedTables = new ArrayList<>(2);
+    private static Map<String, String> defaultLanguageTable;
     private static Map<String, String> modTable;
 
     /**
      * Loads lang files on the server
      */
     public static void captureLanguageMap(Map<String, String> table) {
-        capturedTables.add(table);
+        defaultLanguageTable = table;
         if (modTable != null) {
-            capturedTables.forEach(t -> t.putAll(modTable));
+            defaultLanguageTable.putAll(modTable);
         }
     }
 
@@ -80,7 +79,7 @@ public class LanguageHook {
         final InputStream forge = Thread.currentThread().getContextClassLoader().getResourceAsStream("assets/neoforge/lang/en_us.json");
         loadLocaleData(mc);
         loadLocaleData(forge);
-        capturedTables.forEach(t -> t.putAll(modTable));
+        defaultLanguageTable.putAll(modTable);
         I18nExtension.loadLanguageData(modTable);
     }
 
@@ -90,7 +89,7 @@ public class LanguageHook {
         for (String lang : Arrays.asList("en_us")) {
             loadLanguage(lang, server);
         }
-        capturedTables.forEach(t -> t.putAll(modTable));
+        defaultLanguageTable.putAll(modTable);
         I18nExtension.loadLanguageData(modTable);
     }
 }
