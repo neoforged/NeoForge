@@ -27,15 +27,15 @@ import org.apache.logging.log4j.Logger;
 
 public class LanguageHook {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static Map<String, String> defaultLanguageTable;
-    private static Map<String, String> modTable;
+    private static Map<String, String> defaultLanguageTable = new HashMap<>();
+    private static Map<String, String> modTable = new HashMap<>();
 
     /**
      * Loads lang files on the server
      */
     public static void captureLanguageMap(Map<String, String> table) {
         defaultLanguageTable = table;
-        if (modTable != null) {
+        if (!modTable.isEmpty()) {
             defaultLanguageTable.putAll(modTable);
         }
     }
