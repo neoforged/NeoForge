@@ -41,14 +41,6 @@ public class LanguageHook {
         }
     }
 
-    private static void loadLocaleData(final List<Resource> allResources) {
-        allResources.forEach(res -> {
-            try {
-                LanguageHook.loadLocaleData(res.open());
-            } catch (IOException ignored) {} // TODO: this should not be ignored -C
-        });
-    }
-
     private static void loadLocaleData(final InputStream inputstream) {
         try {
             Language.loadFromJson(inputstream, (key, value) -> modTable.put(key, value));
@@ -71,7 +63,9 @@ public class LanguageHook {
         for (String namespace : clientResources.getNamespaces()) {
             try {
                 ResourceLocation langResource = new ResourceLocation(namespace, langFile);
-                loadLocaleData(clientResources.getResourceStack(langResource));
+                for (Resource resource : clientResources.getResourceStack(langResource)) {
+                    loadLocaleData(resource.open());
+                }
                 loaded++;
             } catch (Exception exception) {
                 LOGGER.warn("Skipped language file: {}:{}", namespace, langFile, exception);
