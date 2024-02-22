@@ -28,6 +28,16 @@ public final class ColorResolverManager {
     }
 
     /**
+     * Get all registered custom {@link ColorResolver}s. The returned list does not include vanilla resolvers,
+     * since they are not explicitly registered.
+     *
+     * @return a list of all registered color resolvers, not including vanilla color resolvers
+     */
+    public static ImmutableList<ColorResolver> getRegisteredResolvers() {
+        return colorResolvers;
+    }
+
+    /**
      * Register a {@link BlockTintCache} for every registered {@link ColorResolver} into the given target map.
      *
      * @param level  the level to use
