@@ -120,7 +120,7 @@ public class FluidStack {
         nbt.putInt("Amount", amount);
 
         if (tag != null) {
-            nbt.put("Tag", tag);
+            nbt.put("Tag", tag.copy());
         }
         return nbt;
     }
