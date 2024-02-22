@@ -21,14 +21,15 @@ import net.neoforged.neoforge.common.I18nExtension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Loads the built-in language files, and handles loading the default language ({@value Language#DEFAULT}) on the 
+ * dedicated server.
+ */
 public class LanguageHook {
     private static final Logger LOGGER = LogManager.getLogger();
     private static Map<String, String> defaultLanguageTable = new HashMap<>();
     private static Map<String, String> modTable = new HashMap<>();
 
-    /**
-     * Loads lang files on the server
-     */
     public static void captureLanguageMap(Map<String, String> table) {
         defaultLanguageTable = table;
         if (!modTable.isEmpty()) {
