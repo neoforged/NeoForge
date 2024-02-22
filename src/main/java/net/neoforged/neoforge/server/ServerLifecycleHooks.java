@@ -82,7 +82,7 @@ public class ServerLifecycleHooks {
 
     public static void handleServerStarting(final MinecraftServer server) {
         if (FMLEnvironment.dist.isDedicatedServer()) {
-            LanguageHook.loadLanguagesOnServer(server);
+            LanguageHook.loadModLanguages(server);
             // GameTestServer requires the gametests to be registered earlier, so it is done in main and should not be done twice.
             if (!(server instanceof GameTestServer))
                 GameTestHooks.registerGametests();

@@ -6,10 +6,7 @@
 package net.neoforged.neoforge.server;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -21,7 +18,6 @@ import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.neoforge.common.I18nExtension;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,14 +36,6 @@ public class LanguageHook {
         }
     }
 
-    private static void loadLocaleData(final InputStream inputstream) {
-        try {
-            Language.loadFromJson(inputstream, (key, value) -> modTable.put(key, value));
-        } finally {
-            IOUtils.closeQuietly(inputstream);
-        }
-    }
-
     private static void loadLanguage(String langName, MinecraftServer server) {
         String langFile = String.format(Locale.ROOT, "lang/%s.json", langName);
         // noinspection resource
@@ -63,7 +51,9 @@ public class LanguageHook {
             try {
                 ResourceLocation langResource = new ResourceLocation(namespace, langFile);
                 for (Resource resource : clientResources.getResourceStack(langResource)) {
-                    loadLocaleData(resource.open());
+                    try (InputStream stream = resource.open()) {
+                        Language.loadFromJson(stream, (key, value) -> modTable.put(key, value));
+                    }
                 }
                 loaded++;
             } catch (Exception exception) {
@@ -73,22 +63,31 @@ public class LanguageHook {
         LOGGER.debug("Loaded {} language files for {}", loaded, langName);
     }
 
-    public static void loadForgeAndMCLangs() {
+    public static void loadBuiltinLanguages() {
         modTable = new HashMap<>(5000);
-        final InputStream mc = Thread.currentThread().getContextClassLoader().getResourceAsStream("assets/minecraft/lang/en_us.json");
-        final InputStream forge = Thread.currentThread().getContextClassLoader().getResourceAsStream("assets/neoforge/lang/en_us.json");
-        loadLocaleData(mc);
-        loadLocaleData(forge);
+        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        try (InputStream input = classLoader.getResourceAsStream("assets/minecraft/lang/en_us.json")) {
+            assert input != null;
+            Language.loadFromJson(input, (key, value) -> modTable.put(key, value));
+        } catch (Exception exception) {
+            LOGGER.warn("Failed to load built-in language file for Minecraft", exception);
+        }
+
+        try (InputStream input = classLoader.getResourceAsStream("assets/neoforge/lang/en_us.json")) {
+            assert input != null;
+            Language.loadFromJson(input, (key, value) -> modTable.put(key, value));
+        } catch (Exception exception) {
+            LOGGER.warn("Failed to load built-in language file for NeoForge", exception);
+        }
+
         defaultLanguageTable.putAll(modTable);
         I18nExtension.loadLanguageData(modTable);
     }
 
-    static void loadLanguagesOnServer(MinecraftServer server) {
+    static void loadModLanguages(MinecraftServer server) {
         modTable = new HashMap<>(5000);
-        // Possible multi-language server support?
-        for (String lang : Arrays.asList("en_us")) {
-            loadLanguage(lang, server);
-        }
+        loadLanguage("en_us", server);
         defaultLanguageTable.putAll(modTable);
         I18nExtension.loadLanguageData(modTable);
     }
