@@ -59,7 +59,6 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
@@ -128,7 +127,6 @@ import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
 import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
 import net.neoforged.neoforge.event.entity.living.SpawnClusterSizeEvent;
-import net.neoforged.neoforge.event.entity.living.ZombieEvent.SummonAidEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent.ProgressType;
@@ -421,12 +419,6 @@ public class EventHooks {
         ItemTooltipEvent event = new ItemTooltipEvent(itemStack, entityPlayer, list, flags, context);
         NeoForge.EVENT_BUS.post(event);
         return event;
-    }
-
-    public static SummonAidEvent fireZombieSummonAid(Zombie zombie, Level level, int x, int y, int z, LivingEntity attacker, double summonChance) {
-        SummonAidEvent summonEvent = new SummonAidEvent(zombie, level, x, y, z, attacker, summonChance);
-        NeoForge.EVENT_BUS.post(summonEvent);
-        return summonEvent;
     }
 
     public static boolean onEntityStruckByLightning(Entity entity, LightningBolt bolt) {

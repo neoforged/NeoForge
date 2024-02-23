@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Zombie.java
 +++ b/net/minecraft/world/entity/monster/Zombie.java
-@@ -251,6 +_,7 @@
+@@ -254,6 +_,7 @@
      }
  
      protected void doUnderWaterConversion() {
@@ -8,7 +8,7 @@
          this.convertToZombieType(EntityType.DROWNED);
          if (!this.isSilent()) {
              this.level().levelEvent(null, 1040, this.blockPosition(), 0);
-@@ -262,6 +_,7 @@
+@@ -265,6 +_,7 @@
          if (zombie != null) {
              zombie.handleAttributes(zombie.level().getCurrentDifficultyAt(zombie.blockPosition()).getSpecialMultiplier());
              zombie.setCanBreakDoors(zombie.supportsBreakDoorGoal() && this.canBreakDoors());
@@ -16,46 +16,7 @@
          }
      }
  
-@@ -282,14 +_,19 @@
-                 livingentity = (LivingEntity)p_34288_.getEntity();
-             }
- 
--            if (livingentity != null
--                && this.level().getDifficulty() == Difficulty.HARD
--                && (double)this.random.nextFloat() < this.getAttributeValue(Attributes.SPAWN_REINFORCEMENTS_CHANCE)
--                && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
--                int i = Mth.floor(this.getX());
--                int j = Mth.floor(this.getY());
--                int k = Mth.floor(this.getZ());
--                Zombie zombie = new Zombie(this.level());
-+            int i = Mth.floor(this.getX());
-+            int j = Mth.floor(this.getY());
-+            int k = Mth.floor(this.getZ());
-+
-+            net.neoforged.neoforge.event.entity.living.ZombieEvent.SummonAidEvent event = net.neoforged.neoforge.event.EventHooks.fireZombieSummonAid(this, level(), i, j, k, livingentity, this.getAttribute(Attributes.SPAWN_REINFORCEMENTS_CHANCE).getValue());
-+            if (event.getResult() == net.neoforged.bus.api.Event.Result.DENY) return true;
-+            if (event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW  ||
-+                      (livingentity != null
-+                      && this.level().getDifficulty() == Difficulty.HARD
-+                      && (double)this.random.nextFloat() < this.getAttributeValue(Attributes.SPAWN_REINFORCEMENTS_CHANCE)
-+                      && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING))) {
-+
-+                Zombie zombie = event.getCustomSummonedAid() != null && event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW ? event.getCustomSummonedAid() : EntityType.ZOMBIE.create(this.level());
- 
-                 for (int l = 0; l < 50; l++) {
-                     int i1 = i + Mth.nextInt(this.random, 7, 40) * Mth.nextInt(this.random, -1, 1);
-@@ -304,7 +_,9 @@
-                             && this.level().isUnobstructed(zombie)
-                             && this.level().noCollision(zombie)
-                             && !this.level().containsAnyLiquid(zombie.getBoundingBox())) {
--                            zombie.setTarget(livingentity);
-+                            if (livingentity != null) {
-+                                zombie.setTarget(livingentity);
-+                            }
-                             zombie.finalizeSpawn(serverlevel, this.level().getCurrentDifficultyAt(zombie.blockPosition()), MobSpawnType.REINFORCEMENT, null);
-                             serverlevel.addFreshEntityWithPassengers(zombie);
-                             this.getAttribute(Attributes.SPAWN_REINFORCEMENTS_CHANCE)
-@@ -398,7 +_,7 @@
+@@ -405,7 +_,7 @@
      @Override
      public boolean killedEntity(ServerLevel p_219160_, LivingEntity p_219161_) {
          boolean flag = super.killedEntity(p_219160_, p_219161_);
@@ -64,9 +25,9 @@
              if (p_219160_.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
                  return flag;
              }
-@@ -415,6 +_,7 @@
+@@ -423,6 +_,7 @@
                  zombievillager.setGossips(villager.getGossips().store(NbtOps.INSTANCE));
-                 zombievillager.setTradeOffers(villager.getOffers().copy());
+                 zombievillager.setTradeOffers(villager.getOffers().createTag());
                  zombievillager.setVillagerXp(villager.getVillagerXp());
 +                net.neoforged.neoforge.event.EventHooks.onLivingConvert(p_219161_, zombievillager);
                  if (!this.isSilent()) {
