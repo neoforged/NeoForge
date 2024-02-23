@@ -98,16 +98,13 @@ public class NBTIngredient extends Ingredient {
      * Creates a new ingredient matching any item from the list, containing the given NBT
      */
     public static NBTIngredient of(boolean strict, CompoundTag nbt, ItemLike... items) {
-        Objects.requireNonNull(nbt, "NBT Ingredient requires NBT");
-        return new NBTIngredient(Arrays.stream(items).map(ItemLike::asItem).collect(Collectors.toSet()), nbt, null, strict);
+        return of(strict, nbt, null, items);
     }
 
     /**
      * Creates a new ingredient matching any item from the list, containing the given NBT
      */
-    public static NBTIngredient of(boolean strict, CompoundTag nbt, CompoundTag attachmentNbt, ItemLike... items) {
-        Objects.requireNonNull(nbt, "NBT Ingredient requires NBT");
-        Objects.requireNonNull(attachmentNbt, "NBT Ingredient requires attachment NBT");
+    public static NBTIngredient of(boolean strict, @Nullable CompoundTag nbt, @Nullable CompoundTag attachmentNbt, ItemLike... items) {
         return new NBTIngredient(Arrays.stream(items).map(ItemLike::asItem).collect(Collectors.toSet()), nbt, attachmentNbt, strict);
     }
 
@@ -115,8 +112,7 @@ public class NBTIngredient extends Ingredient {
      * Creates a new ingredient matching any item from the list, containing the given NBT
      */
     public static NBTIngredient ofAttachment(boolean strict, CompoundTag attachmentNbt, ItemLike... items) {
-        Objects.requireNonNull(attachmentNbt, "NBT Ingredient requires attachment NBT");
-        return new NBTIngredient(Arrays.stream(items).map(ItemLike::asItem).collect(Collectors.toSet()), null, attachmentNbt, strict);
+        return of(strict, null, attachmentNbt, items);
     }
 
     /**
