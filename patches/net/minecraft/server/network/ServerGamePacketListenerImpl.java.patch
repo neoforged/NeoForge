@@ -65,6 +65,14 @@
      private boolean noBlocksAround(Entity p_9794_) {
          return p_9794_.level()
              .getBlockStates(p_9794_.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
+@@ -770,6 +_,7 @@
+             if (compoundtag != null) {
+                 itemstack1.setTag(compoundtag.copy());
+             }
++            net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(itemstack, itemstack1);
+ 
+             itemstack1.addTagElement("author", StringTag.valueOf(this.player.getName().getString()));
+             if (this.player.isTextFilteringEnabled()) {
 @@ -1028,8 +_,10 @@
              case SWAP_ITEM_WITH_OFFHAND:
                  if (!this.player.isSpectator()) {

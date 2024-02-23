@@ -5,20 +5,19 @@
 
 package net.neoforged.neoforge.common.crafting;
 
-import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.ints.IntList;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Stream;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.Nullable;
 
 /** Ingredient that matches everything from the first ingredient that is not included in the second ingredient */
-public class DifferenceIngredient extends Ingredient {
+public class DifferenceIngredient extends ChildBasedIngredient {
     public static final Codec<DifferenceIngredient> CODEC = RecordCodecBuilder.create(
             builder -> builder
                     .group(
@@ -37,7 +36,7 @@ public class DifferenceIngredient extends Ingredient {
     private final Ingredient subtracted;
 
     protected DifferenceIngredient(Ingredient base, Ingredient subtracted) {
-        super(Arrays.stream(base.getValues()).map(value -> new SubtractingValue(value, subtracted)), NeoForgeMod.DIFFERENCE_INGREDIENT_TYPE);
+        super(Arrays.stream(base.getValues()).map(value -> new SubtractingValue(value, subtracted)), NeoForgeMod.DIFFERENCE_INGREDIENT_TYPE, List.of(base, subtracted));
 
         this.base = base;
         this.subtracted = subtracted;
@@ -52,38 +51,13 @@ public class DifferenceIngredient extends Ingredient {
     }
 
     @Override
-    public boolean isSimple() {
-        return false;
+    protected Stream<ItemStack> generateMatchingStacks() {
+        return Arrays.stream(base.getItems()).filter(subtracted.negate());
     }
 
     @Override
-    public ItemStack[] getItems() {
-        if (synchronizeWithContents())
-            return super.getItems();
-
-        final var list = Lists.newArrayList(base.getItems());
-        for (ItemStack item : subtracted.getItems()) {
-            list.removeIf(i -> areStacksEqual(i, item));
-        }
-        return list.toArray(ItemStack[]::new);
-    }
-
-    @Override
-    public boolean test(@Nullable ItemStack p_43914_) {
-        if (synchronizeWithContents())
-            return super.test(p_43914_);
-
-        return base.test(p_43914_) && !subtracted.test(p_43914_);
-    }
-
-    @Override
-    public IntList getStackingIds() {
-        return super.getStackingIds();
-    }
-
-    @Override
-    public boolean synchronizeWithContents() {
-        return base.synchronizeWithContents() && subtracted.synchronizeWithContents();
+    protected boolean testComplex(@Nullable ItemStack stack) {
+        return base.test(stack) && !subtracted.test(stack);
     }
 
     /**
@@ -100,9 +74,7 @@ public class DifferenceIngredient extends Ingredient {
     private record SubtractingValue(Value inner, Ingredient subtracted) implements Ingredient.Value {
         @Override
         public Collection<ItemStack> getItems() {
-            final Collection<ItemStack> innerItems = new ArrayList<>(inner().getItems());
-            innerItems.removeIf(subtracted);
-            return innerItems;
+            return inner().getItems().stream().filter(subtracted.negate()).toList();
         }
     }
 }
