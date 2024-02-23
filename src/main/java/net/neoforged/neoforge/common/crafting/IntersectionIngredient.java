@@ -5,34 +5,31 @@
 
 package net.neoforged.neoforge.common.crafting;
 
-import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.Nullable;
 
 /** Ingredient that matches if all child ingredients match */
-public class IntersectionIngredient extends Ingredient {
+public class IntersectionIngredient extends ChildBasedIngredient {
     public static final Codec<IntersectionIngredient> CODEC = RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            Ingredient.LIST_CODEC.fieldOf("children").forGetter(IntersectionIngredient::getChildren))
+                            Ingredient.LIST_CODEC.fieldOf("children").forGetter(ChildBasedIngredient::getChildren))
                     .apply(builder, IntersectionIngredient::new));
 
     public static final Codec<IntersectionIngredient> CODEC_NONEMPTY = RecordCodecBuilder.create(
             builder -> builder
                     .group(
-                            Ingredient.LIST_CODEC_NONEMPTY.fieldOf("children").forGetter(IntersectionIngredient::getChildren))
+                            Ingredient.LIST_CODEC_NONEMPTY.fieldOf("children").forGetter(ChildBasedIngredient::getChildren))
                     .apply(builder, IntersectionIngredient::new));
-
-    private final List<Ingredient> children;
 
     protected IntersectionIngredient(List<Ingredient> children) {
         super(children.stream().flatMap(ingredient -> Arrays.stream(ingredient.getValues()).map(value -> {
@@ -40,13 +37,7 @@ public class IntersectionIngredient extends Ingredient {
             matchers.remove(ingredient);
 
             return new IntersectionValue(value, matchers);
-        })), NeoForgeMod.INTERSECTION_INGREDIENT_TYPE);
-
-        this.children = Collections.unmodifiableList(children);
-    }
-
-    public List<Ingredient> getChildren() {
-        return children;
+        })), NeoForgeMod.INTERSECTION_INGREDIENT_TYPE, children);
     }
 
     /**
@@ -65,47 +56,23 @@ public class IntersectionIngredient extends Ingredient {
     }
 
     @Override
-    public ItemStack[] getItems() {
-        if (synchronizeWithContents())
-            return super.getItems();
-
-        final List<ItemStack> list = Lists.newArrayList();
-        for (Ingredient child : children) {
-            final var stacks = child.getItems();
-            Arrays.stream(stacks).filter(this).forEach(list::add);
-        }
-
-        return list.toArray(ItemStack[]::new);
+    protected Stream<ItemStack> generateMatchingStacks() {
+        return children.stream()
+                .flatMap(child -> Arrays.stream(child.getItems()))
+                .filter(this::testComplex);
     }
 
     @Override
-    public boolean test(@Nullable ItemStack p_43914_) {
-        if (synchronizeWithContents())
-            return super.test(p_43914_);
-
-        return children.stream().allMatch(c -> c.test(p_43914_));
-    }
-
-    @Override
-    public boolean synchronizeWithContents() {
-        return children.stream().allMatch(Ingredient::synchronizeWithContents);
-    }
-
-    @Override
-    public boolean isSimple() {
-        return false;
+    protected boolean testComplex(@Nullable ItemStack stack) {
+        return children.stream().allMatch(c -> c.test(stack));
     }
 
     public record IntersectionValue(Value inner, List<Ingredient> other) implements Ingredient.Value {
         @Override
         public Collection<ItemStack> getItems() {
-            final Collection<ItemStack> inner = new ArrayList<>(inner().getItems());
-
-            inner.removeIf(stack -> {
-                return !other().stream().allMatch(ingredient -> ingredient.test(stack));
-            });
-
-            return inner;
+            return inner().getItems().stream()
+                    .filter(stack -> other().stream().allMatch(ingredient -> ingredient.test(stack)))
+                    .toList();
         }
     }
 }

@@ -5,7 +5,7 @@
  import org.joml.Vector3f;
  
 -public class Boat extends VehicleEntity implements VariantHolder<Boat.Type> {
-+public class Boat extends VehicleEntity implements net.neoforged.neoforge.common.extensions.IBoatExtension {
++public class Boat extends VehicleEntity implements VariantHolder<Boat.Type>, net.neoforged.neoforge.common.extensions.IBoatExtension {
      private static final EntityDataAccessor<Integer> DATA_ID_TYPE = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.INT);
      private static final EntityDataAccessor<Boolean> DATA_ID_PADDLE_LEFT = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.BOOLEAN);
      private static final EntityDataAccessor<Boolean> DATA_ID_PADDLE_RIGHT = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.BOOLEAN);

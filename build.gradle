@@ -22,7 +22,7 @@ gradleutils.version {
 }
 
 changelog {
-    from "20.2"
+    from '20.4'
     disableAutomaticPublicationRegistration()
 }
 

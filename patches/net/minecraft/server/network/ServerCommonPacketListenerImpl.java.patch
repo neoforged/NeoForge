@@ -22,7 +22,7 @@
 +     *
 +     * @param p_301973_ The client information.
 +     * @return The cookie.
-+     * @deprecated Use {@link #createCookie(ClientInformation, boolean)} instead, keeping the connection type information available.
++     * @deprecated Use {@link #createCookie(ClientInformation, net.neoforged.neoforge.network.connection.ConnectionType)} instead, keeping the connection type information available.
 +     */
 +    @Deprecated
      protected CommonListenerCookie createCookie(ClientInformation p_301973_) {
@@ -33,11 +33,11 @@
 +     * Creates a new cookie for this connection.
 +     *
 +     * @param p_301973_ The client information.
-+     * @param isModdedConnection Whether the connection is modded.
++     * @param connectionType Whether the connection is modded.
 +     * @return The cookie.
 +     */
-+    protected CommonListenerCookie createCookie(ClientInformation p_301973_, boolean isModdedConnection) {
-+        return new CommonListenerCookie(this.playerProfile(), this.latency, p_301973_, isModdedConnection);
++    protected CommonListenerCookie createCookie(ClientInformation p_301973_, net.neoforged.neoforge.network.connection.ConnectionType connectionType) {
++        return new CommonListenerCookie(this.playerProfile(), this.latency, p_301973_, connectionType);
 +    }
 +
 +    @Override
