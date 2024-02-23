@@ -1,0 +1,51 @@
+{
+  "base": {
+    "parent": "minecraft:item/generated",
+    "textures": {
+      "layer0": "minecraft:item/netherite_helmet"
+    }
+  },
+  "loader": "neoforge:trimmable_armor",
+  "trimmed": {
+    "base_asset": "minecraft:trims/items/helmet_trim",
+    "model": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "minecraft:item/netherite_helmet"
+      }
+    },
+    "overrides": {
+      "amethyst": {
+        "parent": "minecraft:item/netherite_helmet_amethyst_trim"
+      },
+      "copper": {
+        "parent": "minecraft:item/netherite_helmet_copper_trim"
+      },
+      "diamond": {
+        "parent": "minecraft:item/netherite_helmet_diamond_trim"
+      },
+      "emerald": {
+        "parent": "minecraft:item/netherite_helmet_emerald_trim"
+      },
+      "gold": {
+        "parent": "minecraft:item/netherite_helmet_gold_trim"
+      },
+      "iron": {
+        "parent": "minecraft:item/netherite_helmet_iron_trim"
+      },
+      "lapis": {
+        "parent": "minecraft:item/netherite_helmet_lapis_trim"
+      },
+      "netherite": {
+        "parent": "minecraft:item/netherite_helmet_netherite_darker_trim"
+      },
+      "quartz": {
+        "parent": "minecraft:item/netherite_helmet_quartz_trim"
+      },
+      "redstone": {
+        "parent": "minecraft:item/netherite_helmet_redstone_trim"
+      }
+    },
+    "target_texture": "layer1"
+  }
+}

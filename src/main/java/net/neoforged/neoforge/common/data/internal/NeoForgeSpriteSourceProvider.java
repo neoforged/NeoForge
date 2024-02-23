@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.renderer.texture.atlas.sources.SingleFile;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;

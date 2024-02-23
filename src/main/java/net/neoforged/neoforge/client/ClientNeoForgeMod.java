@@ -19,6 +19,7 @@ import net.neoforged.neoforge.client.model.ElementsModel;
 import net.neoforged.neoforge.client.model.EmptyModel;
 import net.neoforged.neoforge.client.model.ItemLayerModel;
 import net.neoforged.neoforge.client.model.SeparateTransformsModel;
+import net.neoforged.neoforge.client.model.TrimmableArmorModel;
 import net.neoforged.neoforge.client.model.obj.ObjLoader;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = "neoforge")
@@ -32,6 +33,7 @@ public class ClientNeoForgeMod {
         event.register(new ResourceLocation("neoforge", "composite"), CompositeModel.Loader.INSTANCE);
         event.register(new ResourceLocation("neoforge", "item_layers"), ItemLayerModel.Loader.INSTANCE);
         event.register(new ResourceLocation("neoforge", "separate_transforms"), SeparateTransformsModel.Loader.INSTANCE);
+        event.register(new ResourceLocation("neoforge", "trimmable_armor"), TrimmableArmorModel.Loader.INSTANCE);
     }
 
     @SubscribeEvent

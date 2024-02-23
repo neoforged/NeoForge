@@ -1,5 +1,12 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.textures.atlas;
 
+import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -7,9 +14,6 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourceTypesEvent;
-
-import javax.annotation.Nullable;
-import java.util.function.Supplier;
 
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = "neoforge")
