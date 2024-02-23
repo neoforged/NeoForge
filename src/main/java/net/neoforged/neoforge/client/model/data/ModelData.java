@@ -80,7 +80,7 @@ public final class ModelData {
 
         @Contract("-> new")
         public ModelData build() {
-            return new ModelData(Collections.unmodifiableMap(properties));
+            return new ModelData(properties.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(properties));
         }
     }
 }
