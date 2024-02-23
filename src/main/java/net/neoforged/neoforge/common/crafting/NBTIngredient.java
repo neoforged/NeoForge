@@ -74,7 +74,9 @@ public class NBTIngredient extends Ingredient {
             return new Ingredient.ItemValue(stack, strict ? ItemStack::matches : NBTIngredient::compareStacksWithNBT);
         }), NeoForgeMod.NBT_INGREDIENT_TYPE);
         Preconditions.checkArgument(!items.isEmpty(), "At least one item needs to be provided for a nbt matching ingredient");
-        Preconditions.checkArgument(tag != null || attachmentTag != null, "Either nbt or attachment nbt needs to be provided for a nbt matching ingredient");
+        if (!strict) {
+            Preconditions.checkArgument(tag != null || attachmentTag != null, "Either nbt or attachment nbt needs to be provided for a non-strict nbt matching ingredient");
+        }
         this.strict = strict;
     }
 
