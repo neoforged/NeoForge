@@ -118,6 +118,7 @@ public class NBTIngredient extends Ingredient {
      * Creates a new ingredient matching the given item, containing the given NBT
      */
     public static NBTIngredient of(boolean strict, ItemStack stack) {
+        //TODO - 1.20.5: return of(strict, stack.getTag(), stack.serializeAttachments(), stack.getItem());
         CompoundTag attachmentNbt = stack.serializeAttachments();
         //Only force create a tag if there is no serializable attachments
         CompoundTag nbt = attachmentNbt == null ? stack.getOrCreateTag() : stack.getTag();
