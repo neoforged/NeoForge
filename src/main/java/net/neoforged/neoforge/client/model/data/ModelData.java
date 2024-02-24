@@ -80,7 +80,8 @@ public final class ModelData {
 
         @Contract("-> new")
         public ModelData build() {
-            return new ModelData(Collections.unmodifiableMap(properties));
+            // IdentityHashMap is slow when calling get() on an empty instance, so use a singleton empty map if possible
+            return new ModelData(properties.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(properties));
         }
     }
 }
