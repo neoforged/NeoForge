@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -22,7 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Loads the built-in language files, and handles loading the default language ({@value Language#DEFAULT}) on the 
+ * Loads the built-in language files, and handles loading the default language ({@value Language#DEFAULT}) on the
  * dedicated server.
  */
 public class LanguageHook {
