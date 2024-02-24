@@ -977,20 +977,18 @@ public class ClientHooks {
     }
 
     public static List<AddSectionGeometryEvent.AdditionalSectionRenderer> gatherAdditionalRenderers(
-        BlockPos sectionOrigin, Level level
-    ) {
+            BlockPos sectionOrigin, Level level) {
         final var event = new AddSectionGeometryEvent(sectionOrigin, level);
         NeoForge.EVENT_BUS.post(event);
         return event.getAdditionalRenderers();
     }
 
     public static void addAdditionalGeometry(
-        List<AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers,
-        Set<RenderType> layers,
-        SectionBufferBuilderPack buffers,
-        RenderChunkRegion region,
-        PoseStack transformation
-    ) {
+            List<AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers,
+            Set<RenderType> layers,
+            SectionBufferBuilderPack buffers,
+            RenderChunkRegion region,
+            PoseStack transformation) {
         if (additionalRenderers.isEmpty()) {
             return;
         }

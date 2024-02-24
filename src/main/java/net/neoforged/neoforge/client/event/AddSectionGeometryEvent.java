@@ -2,6 +2,7 @@
  * Copyright (c) NeoForged and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
+
 package net.neoforged.neoforge.client.event;
 
 import com.google.common.base.Preconditions;
@@ -10,6 +11,9 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.SectionBufferBuilderPack;
@@ -23,10 +27,6 @@ import net.neoforged.neoforge.client.model.lighting.LightPipelineAwareModelBlock
 import net.neoforged.neoforge.client.model.lighting.QuadLighter;
 import net.neoforged.neoforge.common.NeoForge;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 /**
  * This event can be used to add static geometry to chunk sections. The event is fired on the main client thread
  * whenever a section is queued for (re)building. A rebuild can be triggered manually using e.g.
@@ -37,6 +37,7 @@ import java.util.Set;
  * while be executed on the thread performing the rebuild, which will typically <b>not</b> be the main thread.
  * Therefore, any data from non-thread-safe data structures need to be retrieved during the event handler itself rather
  * than the renderer. A typical usage would look like
+ * 
  * <pre>
  * {@code
  * @SubscribeEvent
@@ -48,6 +49,7 @@ import java.util.Set;
  * }
  * }
  * </pre>
+ * 
  * Note that the renderer is only added if something will actually be rendered in this example. This structure should be
  * replicated whenever the event is used, to allow for optimizations related to entirely empty sections.
  *
@@ -68,6 +70,7 @@ public class AddSectionGeometryEvent extends Event {
 
     /**
      * Adds a renderer which will add geometry to the chunk section.
+     * 
      * @param renderer the renderer to add
      */
     public void addRenderer(AdditionalSectionRenderer renderer) {
@@ -83,7 +86,7 @@ public class AddSectionGeometryEvent extends Event {
 
     /**
      * @return the origin of the section to add renderers to, i.e. the block with the smallest coordinates contained in
-     * the section.
+     *         the section.
      */
     public BlockPos getSectionOrigin() {
         return sectionOrigin;
@@ -112,16 +115,15 @@ public class AddSectionGeometryEvent extends Event {
         private final PoseStack poseStack;
 
         /**
-         * @param layers the set of currently present render types in this chunk. This will be modified whenever new
-         *                     types are added!
-         * @param buffers the collection of buffers rendering to the current section
-         * @param region a view of the section and some surrounding blocks
+         * @param layers    the set of currently present render types in this chunk. This will be modified whenever new
+         *                  types are added!
+         * @param buffers   the collection of buffers rendering to the current section
+         * @param region    a view of the section and some surrounding blocks
          * @param poseStack the transformations to use, currently set to the chunk origin at unit scaling and no
-         *                        rotation.
+         *                  rotation.
          */
         public SectionRenderingContext(
-            Set<RenderType> layers, SectionBufferBuilderPack buffers, BlockAndTintGetter region, PoseStack poseStack
-        ) {
+                Set<RenderType> layers, SectionBufferBuilderPack buffers, BlockAndTintGetter region, PoseStack poseStack) {
             this.layers = layers;
             this.buffers = buffers;
             this.region = region;
@@ -131,23 +133,24 @@ public class AddSectionGeometryEvent extends Event {
         /**
          * Returns the builder for the given render type/layer in the chunk section. If the render type is not already
          * present in the section, marks the type as present in the section.
+         * 
          * @param type the render type to retrieve a builder for. This has to be one of the render types listed in
-         * {@link net.minecraft.client.renderer.RenderType#chunkBufferLayers}.
+         *             {@link net.minecraft.client.renderer.RenderType#chunkBufferLayers}.
          * @return a vertex consumer adding geometry of the specified layer
          * @throws IllegalArgumentException if the passed render type is not in
-         * {@link net.minecraft.client.renderer.RenderType#chunkBufferLayers}.
+         *                                  {@link net.minecraft.client.renderer.RenderType#chunkBufferLayers}.
          */
         public VertexConsumer getOrCreateChunkBuffer(RenderType type) {
             Preconditions.checkArgument(RenderType.chunkBufferLayers().contains(type));
             BufferBuilder builder = buffers.builder(type);
-            if(layers.add(type))
+            if (layers.add(type))
                 builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
             return builder;
         }
 
         /**
          * @param smooth whether a lighter for "smooth"/"ambient occlusion" lighting should be returned rather than a
-         *                     "flat" one
+         *               "flat" one
          * @return a quad lighter usable on the current thread
          */
         public QuadLighter getQuadLighter(boolean smooth) {
@@ -161,8 +164,10 @@ public class AddSectionGeometryEvent extends Event {
 
         /**
          * @return the "view" on the client world used in the current chunk meshing thread. This will generally only
-         * contain blocks in a small radius around the section being rendered.
+         *         contain blocks in a small radius around the section being rendered.
          */
-        public BlockAndTintGetter getRegion() { return region; }
+        public BlockAndTintGetter getRegion() {
+            return region;
+        }
     }
 }
