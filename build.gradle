@@ -80,7 +80,7 @@ spotless {
             def interfaceChanges = fileContents.findAll(interfaceChange)
             if (interfaceChanges.isEmpty()) return fileContents
             String removalChange = ""
-            interfaceChanges.eachWithIndex{ String change, int index ->
+            interfaceChanges.each { String change ->
                 if (change.startsWith('-')) {
                     //Skip the - and the ending brace
                     int implementsIndex = change.indexOf("implements")
