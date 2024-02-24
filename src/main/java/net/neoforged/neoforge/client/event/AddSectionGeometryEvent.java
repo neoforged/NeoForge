@@ -134,7 +134,9 @@ public class AddSectionGeometryEvent extends Event {
          *                                  {@link net.minecraft.client.renderer.RenderType#chunkBufferLayers}.
          */
         public VertexConsumer getOrCreateChunkBuffer(RenderType type) {
-            Preconditions.checkArgument(RenderType.chunkBufferLayers().contains(type));
+            Preconditions.checkArgument(
+                    type.getChunkLayerId() != -1,
+                    "Cannot create a chunk render buffer for a non-chunk render type");
             return getOrCreateLayer.apply(type);
         }
 
