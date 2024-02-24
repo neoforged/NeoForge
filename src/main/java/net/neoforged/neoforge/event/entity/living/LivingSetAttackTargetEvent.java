@@ -37,10 +37,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public class LivingSetAttackTargetEvent extends LivingEvent implements ICancellableEvent {
     private final ILivingTargetType targetType;
+    @Nullable
     private final LivingEntity originalTarget;
+    @Nullable
     private LivingEntity newTarget;
 
-    public LivingSetAttackTargetEvent(LivingEntity entity, LivingEntity originalTarget, ILivingTargetType targetType) {
+    public LivingSetAttackTargetEvent(LivingEntity entity, @Nullable LivingEntity originalTarget, ILivingTargetType targetType) {
         super(entity);
         this.originalTarget = originalTarget;
         this.newTarget = originalTarget;
