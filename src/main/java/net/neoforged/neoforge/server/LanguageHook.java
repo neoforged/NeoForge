@@ -19,11 +19,13 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.neoforge.common.I18nExtension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Loads the built-in language files, and handles loading the default language ({@value Language#DEFAULT}) on the
  * dedicated server.
  */
+@ApiStatus.Internal
 public class LanguageHook {
     private static final Logger LOGGER = LogManager.getLogger();
     private static Map<String, String> defaultLanguageTable = new HashMap<>();
