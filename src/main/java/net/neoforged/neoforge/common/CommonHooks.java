@@ -157,7 +157,6 @@ import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.EnderManAngerEvent;
 import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
 import net.neoforged.neoforge.event.entity.living.LivingBreatheEvent;
-import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
@@ -167,6 +166,7 @@ import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
+import net.neoforged.neoforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
 import net.neoforged.neoforge.event.entity.living.LootingLevelEvent;
@@ -221,10 +221,9 @@ public class CommonHooks {
         NeoForge.EVENT_BUS.post(new DifficultyChangeEvent(difficulty, oldDifficulty));
     }
 
-    public static LivingChangeTargetEvent onLivingChangeTarget(LivingEntity entity, LivingEntity originalTarget, LivingChangeTargetEvent.ILivingTargetType targetType) {
-        LivingChangeTargetEvent event = new LivingChangeTargetEvent(entity, originalTarget, targetType);
+    public static LivingSetAttackTargetEvent onLivingSetAttackTarget(LivingEntity entity, @Nullable LivingEntity originalTarget, LivingSetAttackTargetEvent.ILivingTargetType targetType) {
+        LivingSetAttackTargetEvent event = new LivingSetAttackTargetEvent(entity, originalTarget, targetType);
         NeoForge.EVENT_BUS.post(event);
-
         return event;
     }
 

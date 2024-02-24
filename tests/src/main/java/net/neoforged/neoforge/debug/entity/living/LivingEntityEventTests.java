@@ -38,10 +38,10 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.GameType;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
+import net.neoforged.neoforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.MobSplitEvent;
 import net.neoforged.neoforge.event.entity.living.ShieldBlockEvent;
@@ -154,8 +154,8 @@ public class LivingEntityEventTests {
     @TestHolder(description = "Tests if the LivingChangeTargetEvent can be successfully cancelled")
     static void setAttackTargetEvent(final DynamicTest test, final RegistrationHelper reg) {
         final var specialAggro = reg.attachments().registerSimpleAttachment("special_aggro", () -> false);
-        test.eventListeners().forge().addListener((final LivingChangeTargetEvent event) -> {
-            if (event.getTargetType() == LivingChangeTargetEvent.LivingTargetType.MOB_TARGET &&
+        test.eventListeners().forge().addListener((final LivingSetAttackTargetEvent event) -> {
+            if (event.getTargetType() == LivingSetAttackTargetEvent.LivingTargetType.MOB_TARGET &&
                     event.getEntity().getData(specialAggro) && event.getNewTarget() instanceof Player player && player.isHolding(Items.STICK)) {
                 event.setCanceled(true);
             }

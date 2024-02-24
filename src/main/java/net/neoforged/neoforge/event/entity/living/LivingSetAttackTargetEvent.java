@@ -12,12 +12,13 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This event allows you to change the target an entity has. <br>
  * This event is fired before {@link LivingSetAttackTargetEvent}. <br>
  * <br>
- * This event is fired via the {@link CommonHooks#onLivingChangeTarget(LivingEntity, LivingEntity, ILivingTargetType)}<br>
+ * This event is fired via the {@link CommonHooks#onLivingSetAttackTarget(LivingEntity, LivingEntity, ILivingTargetType)}<br>
  * <br>
  * {@link #getOriginalTarget()} returns the target that should originally be set.
  * The return value cannot be affected by calling {@link #setNewTarget(LivingEntity)}.<br>
@@ -34,12 +35,12 @@ import net.neoforged.neoforge.common.NeoForge;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  */
-public class LivingChangeTargetEvent extends LivingEvent implements ICancellableEvent {
+public class LivingSetAttackTargetEvent extends LivingEvent implements ICancellableEvent {
     private final ILivingTargetType targetType;
     private final LivingEntity originalTarget;
     private LivingEntity newTarget;
 
-    public LivingChangeTargetEvent(LivingEntity entity, LivingEntity originalTarget, ILivingTargetType targetType) {
+    public LivingSetAttackTargetEvent(LivingEntity entity, LivingEntity originalTarget, ILivingTargetType targetType) {
         super(entity);
         this.originalTarget = originalTarget;
         this.newTarget = originalTarget;
@@ -49,6 +50,7 @@ public class LivingChangeTargetEvent extends LivingEvent implements ICancellable
     /**
      * {@return the new target of this entity.}
      */
+    @Nullable
     public LivingEntity getNewTarget() {
         return newTarget;
     }
@@ -58,7 +60,7 @@ public class LivingChangeTargetEvent extends LivingEvent implements ICancellable
      * 
      * @param newTarget The new target of this entity.
      */
-    public void setNewTarget(LivingEntity newTarget) {
+    public void setNewTarget(@Nullable LivingEntity newTarget) {
         this.newTarget = newTarget;
     }
 
@@ -81,14 +83,12 @@ public class LivingChangeTargetEvent extends LivingEvent implements ICancellable
      * targets. For a list of default target types, take a look at
      * {@link LivingTargetType}.
      */
-    public static interface ILivingTargetType {
-
-    }
+    public interface ILivingTargetType {}
 
     /**
      * This enum contains two default living target types.
      */
-    public static enum LivingTargetType implements ILivingTargetType {
+    public enum LivingTargetType implements ILivingTargetType {
         /**
          * This target type indicates that the target has been set by calling {@link Mob#setTarget(LivingEntity)}.
          */
