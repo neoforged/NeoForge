@@ -14,6 +14,8 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.SectionBufferBuilderPack;
@@ -109,23 +111,20 @@ public class AddSectionGeometryEvent extends Event {
     }
 
     public static final class SectionRenderingContext {
-        private final Set<RenderType> layers;
-        private final SectionBufferBuilderPack buffers;
+        private final Function<RenderType, VertexConsumer> getOrCreateLayer;
         private final BlockAndTintGetter region;
         private final PoseStack poseStack;
 
         /**
-         * @param layers    the set of currently present render types in this chunk. This will be modified whenever new
-         *                  types are added!
-         * @param buffers   the collection of buffers rendering to the current section
-         * @param region    a view of the section and some surrounding blocks
-         * @param poseStack the transformations to use, currently set to the chunk origin at unit scaling and no
-         *                  rotation.
+         * @param getOrCreateLayer a function that, given a "chunk render type", returns the corresponding buffer and
+		 *                         adds it to the section if it is not already present.
+         * @param region           a view of the section and some surrounding blocks
+         * @param poseStack        the transformations to use, currently set to the chunk origin at unit scaling and no
+         *                         rotation.
          */
         public SectionRenderingContext(
-                Set<RenderType> layers, SectionBufferBuilderPack buffers, BlockAndTintGetter region, PoseStack poseStack) {
-            this.layers = layers;
-            this.buffers = buffers;
+				Function<RenderType, VertexConsumer> getOrCreateLayer, BlockAndTintGetter region, PoseStack poseStack) {
+			this.getOrCreateLayer = getOrCreateLayer;
             this.region = region;
             this.poseStack = poseStack;
         }
@@ -142,10 +141,7 @@ public class AddSectionGeometryEvent extends Event {
          */
         public VertexConsumer getOrCreateChunkBuffer(RenderType type) {
             Preconditions.checkArgument(RenderType.chunkBufferLayers().contains(type));
-            BufferBuilder builder = buffers.builder(type);
-            if (layers.add(type))
-                builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
-            return builder;
+            return getOrCreateLayer.apply(type);
         }
 
         /**

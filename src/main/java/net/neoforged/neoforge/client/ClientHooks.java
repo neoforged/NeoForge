@@ -985,14 +985,13 @@ public class ClientHooks {
 
     public static void addAdditionalGeometry(
             List<AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers,
-            Set<RenderType> layers,
-            SectionBufferBuilderPack buffers,
+            Function<RenderType, VertexConsumer> getOrCreateBuilder,
             RenderChunkRegion region,
             PoseStack transformation) {
         if (additionalRenderers.isEmpty()) {
             return;
         }
-        final var context = new AddSectionGeometryEvent.SectionRenderingContext(layers, buffers, region, transformation);
+        final var context = new AddSectionGeometryEvent.SectionRenderingContext(getOrCreateBuilder, region, transformation);
         for (final var renderer : additionalRenderers) {
             renderer.render(context);
         }
