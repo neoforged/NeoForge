@@ -4,6 +4,7 @@
  */
 package net.neoforged.neoforge.client.event;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -92,6 +93,7 @@ public class AddSectionGeometryEvent extends Event {
      * @return the level to render in. This can differ from the current client level in case of e.g. guidebooks.
      */
     public Level getLevel() {
+        Preconditions.checkState(Minecraft.getInstance().isSameThread());
         return level;
     }
 
@@ -129,10 +131,14 @@ public class AddSectionGeometryEvent extends Event {
         /**
          * Returns the builder for the given render type/layer in the chunk section. If the render type is not already
          * present in the section, marks the type as present in the section.
-         * @param type the render type to retrieve a builder for
+         * @param type the render type to retrieve a builder for. This has to be one of the render types listed in
+         * {@link net.minecraft.client.renderer.RenderType#chunkBufferLayers}.
          * @return a vertex consumer adding geometry of the specified layer
+         * @throws IllegalArgumentException if the passed render type is not in
+         * {@link net.minecraft.client.renderer.RenderType#chunkBufferLayers}.
          */
-        public VertexConsumer getOrCreateBuffer(RenderType type) {
+        public VertexConsumer getOrCreateChunkBuffer(RenderType type) {
+            Preconditions.checkArgument(RenderType.chunkBufferLayers().contains(type));
             BufferBuilder builder = buffers.builder(type);
             if(layers.add(type))
                 builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
