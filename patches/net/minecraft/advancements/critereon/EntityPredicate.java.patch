@@ -17,7 +17,7 @@
                          .apply(p_297890_, EntityPredicate::new)
              )
      );
-+    public static Codec<EntityPredicate> CODEC = ExtraCodecs.<net.neoforged.neoforge.common.advancements.critereon.ICustomEntityPredicate, EntityPredicate>either(
++    public static final Codec<EntityPredicate> CODEC = ExtraCodecs.<net.neoforged.neoforge.common.advancements.critereon.ICustomEntityPredicate, EntityPredicate>either(
 +            net.neoforged.neoforge.registries.NeoForgeRegistries.ENTITY_PREDICATE_SERIALIZERS.byNameCodec()
 +                    .dispatch(
 +                            net.neoforged.neoforge.common.advancements.critereon.ICustomEntityPredicate::codec,
