@@ -75,6 +75,31 @@ spotless {
             return fileContents
         }
 
+        def interfaceChange = Pattern.compile('^[-+].*(implements|(interface.*extends)).*\$', Pattern.UNIX_LINES | Pattern.MULTILINE)
+        custom 'noInterfaceRemoval', { String fileContents ->
+            def interfaceChanges = fileContents.findAll(interfaceChange)
+            if (interfaceChanges.isEmpty()) return fileContents
+            String removalChange = ""
+            interfaceChanges.eachWithIndex{ String change, int index ->
+                if (change.startsWith('-')) {
+                    //Skip the - and the ending brace
+                    int implementsIndex = change.indexOf("implements")
+                    if (implementsIndex == -1) implementsIndex = change.indexOf("extends")
+                    //It should never still be -1 based on our initial matching regex, but if it does fail so we can figure out why
+                    if (implementsIndex == -1) implementsIndex = 1
+                    removalChange = change.substring(implementsIndex, change.length() - 1).trim()
+                } else if (!removalChange.isEmpty() && !change.contains(removalChange)) {
+                    throw new GradleException("Removal of interfaces via patches is not allowed!")
+                } else {
+                    removalChange = ""
+                }
+            }
+            if (!removalChange.isEmpty()) {
+                throw new GradleException("Interfaces cannot be removed in patches!")
+            }
+            return fileContents
+        }
+
         //Trim any trailing whitespace from patch additions
         def trailingWhitespace = Pattern.compile('^\\+.*[ \t]+\$', Pattern.UNIX_LINES | Pattern.MULTILINE)
         custom 'trimTrailingWhitespacePatches', { String fileContents ->
@@ -87,7 +112,7 @@ spotless {
             return sb.toString()
         }
 
-        bumpThisNumberIfACustomStepChanges(2)
+        bumpThisNumberIfACustomStepChanges(3)
     }
 }
 
