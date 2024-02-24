@@ -6,19 +6,13 @@
 package net.neoforged.neoforge.client.event;
 
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.SectionBufferBuilderPack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
@@ -117,14 +111,14 @@ public class AddSectionGeometryEvent extends Event {
 
         /**
          * @param getOrCreateLayer a function that, given a "chunk render type", returns the corresponding buffer and
-		 *                         adds it to the section if it is not already present.
+         *                         adds it to the section if it is not already present.
          * @param region           a view of the section and some surrounding blocks
          * @param poseStack        the transformations to use, currently set to the chunk origin at unit scaling and no
          *                         rotation.
          */
         public SectionRenderingContext(
-				Function<RenderType, VertexConsumer> getOrCreateLayer, BlockAndTintGetter region, PoseStack poseStack) {
-			this.getOrCreateLayer = getOrCreateLayer;
+                Function<RenderType, VertexConsumer> getOrCreateLayer, BlockAndTintGetter region, PoseStack poseStack) {
+            this.getOrCreateLayer = getOrCreateLayer;
             this.region = region;
             this.poseStack = poseStack;
         }
