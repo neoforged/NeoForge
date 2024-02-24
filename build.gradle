@@ -95,7 +95,7 @@ spotless {
                 }
             }
             if (!removalChange.isEmpty()) {
-                throw new GradleException("Interfaces cannot be removed in patches!")
+                throw new GradleException("Removal of interfaces via patches is not allowed!")
             }
             return fileContents
         }
