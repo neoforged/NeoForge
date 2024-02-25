@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/item/crafting/SmithingTransformRecipe.java
 +++ b/net/minecraft/world/item/crafting/SmithingTransformRecipe.java
+@@ -36,6 +_,7 @@
+         if (compoundtag != null) {
+             itemstack.setTag(compoundtag.copy());
+         }
++        net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(p_267036_.getItem(1), itemstack);
+ 
+         return itemstack;
+     }
 @@ -67,7 +_,7 @@
  
      @Override

@@ -22,15 +22,20 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
+import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CrafterBlock;
@@ -222,7 +227,7 @@ public class AttachmentTests {
                     var chest = helper.requireBlockEntity(1, 2, 1, ChestBlockEntity.class);
                     var stack = chest.getItem(0);
 
-                    helper.assertTrue(stack.getItem() == Items.GOLDEN_SHOVEL, "Expected apple");
+                    helper.assertTrue(stack.getItem() == Items.GOLDEN_SHOVEL, "Expected golden shovel");
                     helper.assertTrue(stack.hasData(attachmentType), "Expected attachment");
                     helper.assertTrue(stack.getData(attachmentType) == 1, "Expected attachment value of 1");
                 })
@@ -239,6 +244,88 @@ public class AttachmentTests {
 
                         helper.assertTrue(ItemStack.matches(outputStack.get(), recipe.getResultItem(helper.getLevel().registryAccess())), "Recipe output should match stack.");
                     }
+                })
+
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Ensures that ItemStack attachments can be cloned in certain recipes")
+    static void itemAttachmentRecipeCopying(final DynamicTest test, final RegistrationHelper reg) {
+        var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
+                .register("test_int", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).build());
+
+        var smithingId = new ResourceLocation(reg.modId(), "test_smithing");
+
+        reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput()) {
+            @Override
+            protected void buildRecipes(RecipeOutput recipeOutput) {
+                SmithingTransformRecipeBuilder.smithing(Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), Ingredient.of(Items.STONE_SHOVEL), Ingredient.of(Items.GOLD_INGOT), RecipeCategory.MISC, Items.GOLDEN_SHOVEL)
+                        .unlocks("has_shovel", has(Items.STONE_SHOVEL))
+                        .save(recipeOutput, smithingId);
+            }
+        });
+
+        test.onGameTest(helper -> helper
+                .startSequence()
+                .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.CRAFTER.defaultBlockState().setValue(BlockStateProperties.ORIENTATION, FrontAndTop.UP_NORTH).setValue(CrafterBlock.CRAFTING, true)))
+                .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.CHEST))
+
+                .thenMap(() -> helper.requireBlockEntity(1, 1, 1, CrafterBlockEntity.class))
+                .thenExecute(crafter -> {
+                    ItemStack shulkerBox = Items.SHULKER_BOX.getDefaultInstance();
+                    shulkerBox.setData(attachmentType, 1);
+                    crafter.setItem(0, shulkerBox);
+                })
+                .thenExecute(crafter -> crafter.setItem(1, Items.BLACK_DYE.getDefaultInstance()))
+                .thenIdle(3)
+
+                .thenExecute(() -> helper.pulseRedstone(1, 1, 2, 2))
+                .thenExecuteAfter(7, () -> {
+                    var chest = helper.requireBlockEntity(1, 2, 1, ChestBlockEntity.class);
+                    var stack = chest.getItem(0);
+
+                    helper.assertTrue(stack.getItem() == Items.BLACK_SHULKER_BOX, "Expected black shulker box");
+                    helper.assertTrue(stack.hasData(attachmentType), "Expected attachment");
+                    helper.assertTrue(stack.getData(attachmentType) == 1, "Expected attachment value of 1");
+                })
+
+                .thenIdle(5) // Crafter cooldown
+                .thenExecute(crafter -> {
+                    ItemStack writtenBook = Items.WRITTEN_BOOK.getDefaultInstance();
+                    writtenBook.setData(attachmentType, 1);
+                    writtenBook.addTagElement("author", StringTag.valueOf("NeoForge"));
+                    writtenBook.addTagElement("title", StringTag.valueOf("How to copy attachments"));
+                    crafter.setItem(0, writtenBook);
+                })
+                .thenExecute(crafter -> crafter.setItem(1, Items.WRITABLE_BOOK.getDefaultInstance()))
+                .thenExecute(() -> helper.pulseRedstone(1, 1, 2, 2))
+                .thenExecuteAfter(7, () -> {
+                    var chest = helper.requireBlockEntity(1, 2, 1, ChestBlockEntity.class);
+                    var stack = chest.getItem(1);
+
+                    helper.assertTrue(stack.getItem() == Items.WRITTEN_BOOK, "Expected written book");
+                    helper.assertTrue(stack.hasData(attachmentType), "Expected attachment");
+                    helper.assertTrue(stack.getData(attachmentType) == 1, "Expected attachment value of 1");
+                })
+
+                .thenExecute(() -> {
+                    // Just look at the output via the RecipeManager
+                    var recipeManager = helper.getLevel().getRecipeManager();
+                    Recipe<Container> smithingRecipe = (Recipe<Container>) recipeManager.byKey(smithingId).map(RecipeHolder::value).orElse(null);
+                    if (smithingRecipe == null) {
+                        helper.fail("No recipe " + smithingId);
+                    }
+                    ItemStack smithingInput = new ItemStack(Items.STONE_SHOVEL);
+                    smithingInput.setData(attachmentType, 1);
+                    Container smithingContainer = new SimpleContainer(
+                            new ItemStack(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE),
+                            smithingInput,
+                            new ItemStack(Items.GOLD_INGOT));
+                    var outputStack = new ItemStack(Items.GOLDEN_SHOVEL);
+                    outputStack.setData(attachmentType, 1);
+                    helper.assertTrue(ItemStack.matches(outputStack, smithingRecipe.assemble(smithingContainer, helper.getLevel().registryAccess())), "Recipe output should match stack.");
                 })
 
                 .thenSucceed());

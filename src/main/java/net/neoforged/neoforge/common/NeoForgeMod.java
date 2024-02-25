@@ -95,6 +95,11 @@ import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.capabilities.CapabilityHooks;
 import net.neoforged.neoforge.client.ClientCommandHandler;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.common.advancements.critereon.ICustomEntityPredicate;
+import net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate;
+import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPredicate;
+import net.neoforged.neoforge.common.advancements.critereon.PiglinNeutralArmorEntityPredicate;
+import net.neoforged.neoforge.common.advancements.critereon.ToolActionItemPredicate;
 import net.neoforged.neoforge.common.conditions.AndCondition;
 import net.neoforged.neoforge.common.conditions.FalseCondition;
 import net.neoforged.neoforge.common.conditions.ICondition;
@@ -111,6 +116,7 @@ import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import net.neoforged.neoforge.common.crafting.NBTIngredient;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.NeoForgeDamageTypeTagsProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeAdvancementProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeBiomeTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeBlockTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeDataMapsProvider;
@@ -388,6 +394,13 @@ public class NeoForgeMod {
 
     public static final DeferredHolder<IngredientType<?>, IngredientType<Ingredient>> VANILLA_INGREDIENT_TYPE = VANILLA_INGREDIENT_TYPES.register("item", () -> new IngredientType<>(Ingredient.VANILLA_CODEC, Ingredient.VANILLA_CODEC_NONEMPTY));
 
+    private static final DeferredRegister<Codec<? extends ICustomEntityPredicate>> ENTITY_PREDICATE_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.ENTITY_PREDICATE_SERIALIZERS, NeoForgeVersion.MOD_ID);
+    public static final DeferredHolder<Codec<? extends ICustomEntityPredicate>, Codec<PiglinNeutralArmorEntityPredicate>> PIGLIN_NEUTRAL_ARMOR_PREDICATE = ENTITY_PREDICATE_CODECS.register("piglin_neutral_armor", () -> PiglinNeutralArmorEntityPredicate.CODEC);
+
+    private static final DeferredRegister<Codec<? extends ICustomItemPredicate>> ITEM_PREDICATE_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.ITEM_PREDICATE_SERIALIZERS, NeoForgeVersion.MOD_ID);
+    public static final DeferredHolder<Codec<? extends ICustomItemPredicate>, Codec<ToolActionItemPredicate>> TOOL_ACTION_PREDICATE = ITEM_PREDICATE_CODECS.register("tool_action", () -> ToolActionItemPredicate.CODEC);
+    public static final DeferredHolder<Codec<? extends ICustomItemPredicate>, Codec<PiglinCurrencyItemPredicate>> PIGLIN_CURRENCY_PREDICATE = ITEM_PREDICATE_CODECS.register("piglin_currency", () -> PiglinCurrencyItemPredicate.CODEC);
+
     private static final DeferredRegister<FluidType> VANILLA_FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, "minecraft");
 
     public static final Holder<FluidType> EMPTY_TYPE = VANILLA_FLUID_TYPES.register("empty", () -> new FluidType(FluidType.Properties.create()
@@ -579,6 +592,8 @@ public class NeoForgeMod {
         HOLDER_SET_TYPES.register(modEventBus);
         VANILLA_FLUID_TYPES.register(modEventBus);
         VANILLA_INGREDIENT_TYPES.register(modEventBus);
+        ENTITY_PREDICATE_CODECS.register(modEventBus);
+        ITEM_PREDICATE_CODECS.register(modEventBus);
         INGREDIENT_TYPES.register(modEventBus);
         CONDITION_CODECS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
@@ -638,6 +653,7 @@ public class NeoForgeMod {
                         Component.translatable("pack.neoforge.description"),
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.SERVER_DATA),
                         Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
+        gen.addProvider(event.includeServer(), new NeoForgeAdvancementProvider(packOutput, lookupProvider, existingFileHelper));
         NeoForgeBlockTagsProvider blockTags = new NeoForgeBlockTagsProvider(packOutput, lookupProvider, existingFileHelper);
         gen.addProvider(event.includeServer(), blockTags);
         gen.addProvider(event.includeServer(), new NeoForgeItemTagsProvider(packOutput, lookupProvider, blockTags.contentsGetter(), existingFileHelper));

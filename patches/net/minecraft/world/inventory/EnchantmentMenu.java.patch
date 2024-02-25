@@ -37,6 +37,14 @@
                      }
  
                      for(int l = 0; l < 3; ++l) {
+@@ -164,6 +_,7 @@
+                                     if (compoundtag != null) {
+                                         itemstack2.setTag(compoundtag.copy());
+                                     }
++                                    net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(itemstack, itemstack2);
+         
+                                     this.enchantSlots.setItem(0, itemstack2);
+                                 }
 @@ -250,7 +_,7 @@
                  if (!this.moveItemStackTo(itemstack1, 2, 38, true)) {
                      return ItemStack.EMPTY;
