@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/level/storage/loot/functions/ApplyBonusCount.java
++++ b/net/minecraft/world/level/storage/loot/functions/ApplyBonusCount.java
+@@ -78,7 +_,8 @@
+         if (itemstack != null) {
+             int i = EnchantmentHelper.getItemEnchantmentLevel(this.enchantment.value(), itemstack);
+             int j = this.formula.calculateNewCount(p_79914_.getRandom(), p_79913_.getCount(), i);
+-            p_79913_.setCount(j);
++            int getBonusDropsCount = net.neoforged.neoforge.common.CommonHooks.getBonusLootDropsCount(p_79913_, p_79914_, this.enchantment.value(), this.formula, i, j);
++            p_79913_.setCount(getBonusDropsCount);
+         }
+ 
+         return p_79913_;
