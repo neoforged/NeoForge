@@ -65,6 +65,14 @@ public class LanguageHook {
         LOGGER.debug("Loaded {} language files for {}", loaded, langName);
     }
 
+    /**
+     * @deprecated Renamed to {@link #loadBuiltinLanguages()}.
+     */
+    @Deprecated(forRemoval = true, since = "1.20.4")
+    public static void loadForgeAndMCLangs() {
+        loadBuiltinLanguages();
+    }
+
     public static void loadBuiltinLanguages() {
         modTable = new HashMap<>(5000);
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
