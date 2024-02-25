@@ -87,8 +87,8 @@ public class ModListScreen extends Screen {
 
         @Override
         public int compare(IModInfo o1, IModInfo o2) {
-            String name1 = StringUtils.toLowerCase(stripControlCodes(o1.getDisplayName()));
-            String name2 = StringUtils.toLowerCase(stripControlCodes(o2.getDisplayName()));
+            String name1 = StringUtils.toLowerCase(stripControlCodes(I18nExtension.parseMessageWithFallback("fml.menu.mods.info.displayname." + o1.getModId(), o1::getDisplayName)));
+            String name2 = StringUtils.toLowerCase(stripControlCodes(I18nExtension.parseMessageWithFallback("fml.menu.mods.info.displayname." + o2.getModId(), o2::getDisplayName)));
             return compare(name1, name2);
         }
 
@@ -247,7 +247,7 @@ public class ModListScreen extends Screen {
     @Override
     public void init() {
         for (IModInfo mod : mods) {
-            listWidth = Math.max(listWidth, getFontRenderer().width(mod.getDisplayName()) + 10);
+            listWidth = Math.max(listWidth, getFontRenderer().width(I18nExtension.parseMessageWithFallback("fml.menu.mods.info.displayname." + mod.getModId(), mod::getDisplayName)) + 10);
             listWidth = Math.max(listWidth, getFontRenderer().width(MavenVersionStringHelper.artifactVersionToString(mod.getVersion())) + 5);
         }
         listWidth = Math.max(Math.min(listWidth, width / 3), 100);
@@ -326,7 +326,10 @@ public class ModListScreen extends Screen {
     }
 
     private void reloadMods() {
-        this.mods = this.unsortedMods.stream().filter(mi -> StringUtils.toLowerCase(stripControlCodes(mi.getDisplayName())).contains(StringUtils.toLowerCase(search.getValue()))).collect(Collectors.toList());
+        this.mods = this.unsortedMods.stream().filter(mi -> {
+            String name = I18nExtension.parseMessageWithFallback("fml.menu.mods.info.displayname." + mi.getModId(), mi::getDisplayName);
+            return StringUtils.toLowerCase(stripControlCodes(name)).contains(StringUtils.toLowerCase(search.getValue()));
+        }).collect(Collectors.toList());
         lastFilterText = search.getValue();
     }
 
@@ -403,7 +406,7 @@ public class ModListScreen extends Screen {
             return Pair.<ResourceLocation, Size2i>of(null, new Size2i(0, 0));
         }).orElse(Pair.of(null, new Size2i(0, 0)));
 
-        lines.add(selectedMod.getDisplayName());
+        lines.add(I18nExtension.parseMessageWithFallback("fml.menu.mods.info.displayname." + selectedMod.getModId(), selectedMod::getDisplayName));
         lines.add(I18nExtension.parseMessage("fml.menu.mods.info.version", MavenVersionStringHelper.artifactVersionToString(selectedMod.getVersion())));
         lines.add(I18nExtension.parseMessage("fml.menu.mods.info.idstate", selectedMod.getModId(), ModList.get().getModContainerById(selectedMod.getModId()).map(ModContainer::getCurrentState).map(Object::toString).orElse("NONE")));
 
@@ -413,13 +416,13 @@ public class ModListScreen extends Screen {
         if (selectedMod.getOwningFile() == null || selectedMod.getOwningFile().getMods().size() == 1)
             lines.add(I18nExtension.parseMessage("fml.menu.mods.info.nochildmods"));
         else
-            lines.add(I18nExtension.parseMessage("fml.menu.mods.info.childmods", selectedMod.getOwningFile().getMods().stream().map(IModInfo::getDisplayName).collect(Collectors.joining(","))));
+            lines.add(I18nExtension.parseMessage("fml.menu.mods.info.childmods", selectedMod.getOwningFile().getMods().stream().map(mi -> I18nExtension.parseMessageWithFallback("fml.menu.mods.info.displayname." + mi.getModId(), mi::getDisplayName)).collect(Collectors.joining(","))));
 
         if (vercheck.status() == VersionChecker.Status.OUTDATED || vercheck.status() == VersionChecker.Status.BETA_OUTDATED)
             lines.add(I18nExtension.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()));
         lines.add(I18nExtension.parseMessage("fml.menu.mods.info.license", ((ModFileInfo) selectedMod.getOwningFile()).getLicense()));
         lines.add(null);
-        lines.add(selectedMod.getDescription());
+        lines.add(I18nExtension.parseMessageWithFallback("fml.menu.mods.info.description." + selectedMod.getModId(), selectedMod::getDescription));
 
         /* Removed because people bitched that this information was misleading.
         lines.add(null);

@@ -15,6 +15,7 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.neoforge.client.gui.ModListScreen;
+import net.neoforged.neoforge.common.I18nExtension;
 import net.neoforged.neoforge.common.util.MavenVersionStringHelper;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforgespi.language.IModInfo;
@@ -69,12 +70,12 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
 
         @Override
         public Component getNarration() {
-            return Component.translatable("narrator.select", modInfo.getDisplayName());
+            return Component.translatable("narrator.select", Component.translatableWithFallback("fml.menu.mods.info.displayname." + modInfo.getModId(), modInfo.getDisplayName()));
         }
 
         @Override
         public void render(GuiGraphics guiGraphics, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-            Component name = Component.literal(stripControlCodes(modInfo.getDisplayName()));
+            Component name = Component.literal(stripControlCodes(I18nExtension.parseMessageWithFallback("fml.menu.mods.info.displayname." + modInfo.getModId(), modInfo::getDisplayName)));
             Component version = Component.literal(stripControlCodes(MavenVersionStringHelper.artifactVersionToString(modInfo.getVersion())));
             VersionChecker.CheckResult vercheck = VersionChecker.getResult(modInfo);
             Font font = this.parent.getFontRenderer();
