@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class MultiPartBakedModel implements BakedModel {
-+public class MultiPartBakedModel implements net.neoforged.neoforge.client.model.IDynamicBakedModel {
++public class MultiPartBakedModel implements BakedModel, net.neoforged.neoforge.client.model.IDynamicBakedModel {
      private final List<Pair<Predicate<BlockState>, BakedModel>> selectors;
      protected final boolean hasAmbientOcclusion;
      protected final boolean isGui3d;

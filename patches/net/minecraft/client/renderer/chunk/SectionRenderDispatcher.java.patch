@@ -1,16 +1,43 @@
 --- a/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
-@@ -502,10 +_,13 @@
+@@ -431,8 +_,9 @@
+             boolean flag = this.cancelTasks();
+             BlockPos blockpos = this.origin.immutable();
+             int i = 1;
++            var additionalRenderers = net.neoforged.neoforge.client.ClientHooks.gatherAdditionalRenderers(blockpos, SectionRenderDispatcher.this.level);
+             RenderChunkRegion renderchunkregion = p_295324_.createRegion(
+-                SectionRenderDispatcher.this.level, blockpos.offset(-1, -1, -1), blockpos.offset(16, 16, 16), 1
++                SectionRenderDispatcher.this.level, blockpos.offset(-1, -1, -1), blockpos.offset(16, 16, 16), 1, additionalRenderers.isEmpty()
+             );
+             boolean flag1 = this.compiled.get() == SectionRenderDispatcher.CompiledSection.UNCOMPILED;
+             if (flag1 && flag) {
+@@ -440,7 +_,7 @@
+             }
+ 
+             this.lastRebuildTask = new SectionRenderDispatcher.RenderSection.RebuildTask(
+-                this.getDistToPlayerSqr(), renderchunkregion, !flag1 || this.initialCompilationCancelCount.get() > 2
++                this.getDistToPlayerSqr(), renderchunkregion, !flag1 || this.initialCompilationCancelCount.get() > 2, additionalRenderers
+             );
+             return this.lastRebuildTask;
+         }
+@@ -502,10 +_,20 @@
          class RebuildTask extends SectionRenderDispatcher.RenderSection.CompileTask {
              @Nullable
              protected RenderChunkRegion region;
 +            private final net.neoforged.neoforge.client.model.data.ModelDataManager.Snapshot modelData;
++            private final List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers;
  
++            @Deprecated
              public RebuildTask(double p_294400_, @Nullable RenderChunkRegion p_294382_, boolean p_295207_) {
++                this(p_294400_, p_294382_, p_295207_, List.of());
++            }
++
++            public RebuildTask(double p_294400_, @Nullable RenderChunkRegion p_294382_, boolean p_295207_, List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers) {
                  super(p_294400_, p_295207_);
                  this.region = p_294382_;
 +                var manager = p_294382_ != null ? p_294382_.getModelDataManager() : null;
 +                this.modelData = manager != null ? manager : net.neoforged.neoforge.client.model.data.ModelDataManager.Snapshot.EMPTY;
++                this.additionalRenderers = additionalRenderers;
              }
  
              @Override
@@ -27,7 +54,7 @@
                              BufferBuilder bufferbuilder2 = p_294319_.builder(rendertype2);
                              if (set.add(rendertype2)) {
                                  RenderSection.this.beginLayer(bufferbuilder2);
-@@ -617,8 +_,9 @@
+@@ -617,10 +_,20 @@
  
                              posestack.pushPose();
                              posestack.translate((float)(blockpos2.getX() & 15), (float)(blockpos2.getY() & 15), (float)(blockpos2.getZ() & 15));
@@ -37,7 +64,18 @@
 +                            }
                          }
                      }
++                    net.neoforged.neoforge.client.ClientHooks.addAdditionalGeometry(
++                        additionalRenderers, type -> {
++                            BufferBuilder builder = p_294319_.builder(type);
++                            if (set.add(type)) {
++                                RenderSection.this.beginLayer(builder);
++                            }
++                            return builder;
++                        }, renderchunkregion, posestack
++                    );
  
+                     if (set.contains(RenderType.translucent())) {
+                         BufferBuilder bufferbuilder1 = p_294319_.builder(RenderType.translucent());
 @@ -651,9 +_,10 @@
              private <E extends BlockEntity> void handleBlockEntity(SectionRenderDispatcher.RenderSection.RebuildTask.CompileResults p_294198_, E p_296214_) {
                  BlockEntityRenderer<E> blockentityrenderer = Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(p_296214_);

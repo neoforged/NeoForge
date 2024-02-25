@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/item/FoodOnAStickItem.java
++++ b/net/minecraft/world/item/FoodOnAStickItem.java
+@@ -31,6 +_,7 @@
+                 if (itemstack.isEmpty()) {
+                     ItemStack itemstack1 = new ItemStack(Items.FISHING_ROD);
+                     itemstack1.setTag(itemstack.getTag());
++                    net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(itemstack, itemstack1);
+                     return InteractionResultHolder.success(itemstack1);
+                 }
+ 

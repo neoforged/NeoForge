@@ -1,0 +1,52 @@
+--- a/net/minecraft/advancements/critereon/EntityPredicate.java
++++ b/net/minecraft/advancements/critereon/EntityPredicate.java
+@@ -36,9 +_,10 @@
+     Optional<EntityPredicate> vehicle,
+     Optional<EntityPredicate> passenger,
+     Optional<EntityPredicate> targetedEntity,
+-    Optional<String> team
++    Optional<String> team,
++    Optional<net.neoforged.neoforge.common.advancements.critereon.ICustomEntityPredicate> customLogic
+ ) {
+-    public static final Codec<EntityPredicate> CODEC = ExtraCodecs.recursive(
++    public static final Codec<EntityPredicate> VANILLA_CODEC = ExtraCodecs.recursive(
+         "EntityPredicate",
+         p_297888_ -> RecordCodecBuilder.create(
+                 p_297890_ -> p_297890_.group(
+@@ -59,8 +_,26 @@
+                         .apply(p_297890_, EntityPredicate::new)
+             )
+     );
++    public static final Codec<EntityPredicate> CODEC = ExtraCodecs.<net.neoforged.neoforge.common.advancements.critereon.ICustomEntityPredicate, EntityPredicate>either(
++            net.neoforged.neoforge.registries.NeoForgeRegistries.ENTITY_PREDICATE_SERIALIZERS.byNameCodec()
++                    .dispatch(
++                            net.neoforged.neoforge.common.advancements.critereon.ICustomEntityPredicate::codec,
++                            java.util.function.Function.identity()),
++            VANILLA_CODEC
++        ).xmap(either -> either.map(EntityPredicate::new, p -> p),
++          // Serialize using dispatch codec if custom logic is present, otherwise use vanilla codec
++          predicate -> predicate.customLogic.<com.mojang.datafixers.util.Either<net.neoforged.neoforge.common.advancements.critereon.ICustomEntityPredicate, EntityPredicate>>map(
++                com.mojang.datafixers.util.Either::left).orElseGet(() -> com.mojang.datafixers.util.Either.right(predicate)));
+     public static final Codec<ContextAwarePredicate> ADVANCEMENT_CODEC = ExtraCodecs.withAlternative(ContextAwarePredicate.CODEC, CODEC, EntityPredicate::wrap);
+ 
++    public EntityPredicate(Optional<EntityTypePredicate> entityType, Optional<DistancePredicate> distanceToPlayer, Optional<LocationPredicate> location, Optional<LocationPredicate> steppingOnLocation, Optional<MobEffectsPredicate> effects, Optional<NbtPredicate> nbt, Optional<EntityFlagsPredicate> flags, Optional<EntityEquipmentPredicate> equipment, Optional<EntitySubPredicate> subPredicate, Optional<net.minecraft.advancements.critereon.EntityPredicate> vehicle, Optional<net.minecraft.advancements.critereon.EntityPredicate> passenger, Optional<net.minecraft.advancements.critereon.EntityPredicate> targetedEntity, Optional<String> team) {
++        this(entityType, distanceToPlayer, location, steppingOnLocation, effects, nbt, flags, equipment, subPredicate, vehicle, passenger, targetedEntity, team, Optional.empty());
++    }
++
++    public EntityPredicate(net.neoforged.neoforge.common.advancements.critereon.ICustomEntityPredicate customLogic) {
++        this(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(customLogic));
++    }
++
+     public static ContextAwarePredicate wrap(EntityPredicate.Builder p_298222_) {
+         return wrap(p_298222_.build());
+     }
+@@ -83,6 +_,9 @@
+     }
+ 
+     public boolean matches(ServerLevel p_36608_, @Nullable Vec3 p_36609_, @Nullable Entity p_36610_) {
++        if (p_36610_ != null && this.customLogic.isPresent()) {
++            return this.customLogic.get().test(p_36608_, p_36609_, p_36610_);
++        }
+         if (p_36610_ == null) {
+             return false;
+         } else if (this.entityType.isPresent() && !this.entityType.get().matches(p_36610_.getType())) {
