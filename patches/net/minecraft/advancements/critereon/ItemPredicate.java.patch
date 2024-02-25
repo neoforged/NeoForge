@@ -17,10 +17,11 @@
          p_297904_ -> p_297904_.group(
                      ExtraCodecs.strictOptionalField(TagKey.codec(Registries.ITEM), "tag").forGetter(ItemPredicate::tag),
                      ExtraCodecs.strictOptionalField(ITEMS_CODEC, "items").forGetter(ItemPredicate::items),
-@@ -51,8 +_,33 @@
+@@ -51,8 +_,34 @@
                  )
                  .apply(p_297904_, ItemPredicate::new)
      );
++    //TODO - 1.20.5: Make this final
 +    public static Codec<ItemPredicate> CODEC = ExtraCodecs.<net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate, ItemPredicate>either(
 +            net.neoforged.neoforge.registries.NeoForgeRegistries.ITEM_PREDICATE_SERIALIZERS.byNameCodec()
 +                    .dispatch(

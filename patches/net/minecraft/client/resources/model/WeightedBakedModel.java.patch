@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class WeightedBakedModel implements BakedModel {
-+public class WeightedBakedModel implements net.neoforged.neoforge.client.model.IDynamicBakedModel {
++public class WeightedBakedModel implements BakedModel, net.neoforged.neoforge.client.model.IDynamicBakedModel {
      private final int totalWeight;
      private final List<WeightedEntry.Wrapper<BakedModel>> list;
      private final BakedModel wrapped;
