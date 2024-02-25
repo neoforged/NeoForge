@@ -27,7 +27,7 @@ public class ServerModLoader {
         LogicalSidedProvider.setServer(() -> {
             throw new IllegalStateException("Unable to access server yet");
         });
-        LanguageHook.loadForgeAndMCLangs();
+        LanguageHook.loadBuiltinLanguages();
         try {
             ModLoader.get().gatherAndInitializeMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), () -> {});
             ModLoader.get().loadMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), () -> {});
@@ -35,7 +35,7 @@ public class ServerModLoader {
         } catch (LoadingFailedException error) {
             ServerModLoader.hasErrors = true;
             // In case its not loaded properly
-            LanguageHook.loadForgeAndMCLangs();
+            LanguageHook.loadBuiltinLanguages();
             CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error, new File("."));
             throw error;
         }
