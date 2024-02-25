@@ -6,14 +6,14 @@
      @Nullable ServerData serverData,
 -    @Nullable Screen postDisconnectScreen
 +    @Nullable Screen postDisconnectScreen,
-+    boolean isModdedConnection
++    net.neoforged.neoforge.network.connection.ConnectionType connectionType
  ) {
 +
 +    /**
-+     * @deprecated Use {@link #CommonListenerCookie(GameProfile, WorldSessionTelemetryManager, RegistryAccess.Frozen, FeatureFlagSet, String, ServerData, Screen, boolean)} instead, to indicate whether the connection is modded.
++     * @deprecated Use {@link #CommonListenerCookie(GameProfile, WorldSessionTelemetryManager, RegistryAccess.Frozen, FeatureFlagSet, String, ServerData, Screen, net.neoforged.neoforge.network.connection.ConnectionType)} instead, to indicate whether the connection is modded.
 +     */
 +    @Deprecated
 +    public CommonListenerCookie(GameProfile localGameProfile, WorldSessionTelemetryManager telemetryManager, RegistryAccess.Frozen receivedRegistries, FeatureFlagSet enabledFeatures, @Nullable String serverBrand, @Nullable ServerData serverData, @Nullable Screen postDisconnectScreen) {
-+        this(localGameProfile, telemetryManager, receivedRegistries, enabledFeatures, serverBrand, serverData, postDisconnectScreen, false);
++        this(localGameProfile, telemetryManager, receivedRegistries, enabledFeatures, serverBrand, serverData, postDisconnectScreen, net.neoforged.neoforge.network.connection.ConnectionType.VANILLA);
 +    }
  }

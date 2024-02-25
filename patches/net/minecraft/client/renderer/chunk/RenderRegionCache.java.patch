@@ -1,5 +1,26 @@
 --- a/net/minecraft/client/renderer/chunk/RenderRegionCache.java
 +++ b/net/minecraft/client/renderer/chunk/RenderRegionCache.java
+@@ -17,6 +_,11 @@
+ 
+     @Nullable
+     public RenderChunkRegion createRegion(Level p_200466_, BlockPos p_200467_, BlockPos p_200468_, int p_200469_) {
++        return createRegion(p_200466_, p_200467_, p_200468_, p_200469_, true);
++    }
++
++    @Nullable
++    public RenderChunkRegion createRegion(Level p_200466_, BlockPos p_200467_, BlockPos p_200468_, int p_200469_, boolean nullForEmpty) {
+         int i = SectionPos.blockToSectionCoord(p_200467_.getX() - p_200469_);
+         int j = SectionPos.blockToSectionCoord(p_200467_.getZ() - p_200469_);
+         int k = SectionPos.blockToSectionCoord(p_200468_.getX() + p_200469_);
+@@ -33,7 +_,7 @@
+             }
+         }
+ 
+-        if (isAllEmpty(p_200467_, p_200468_, i, j, arenderregioncache$chunkinfo)) {
++        if (nullForEmpty && isAllEmpty(p_200467_, p_200468_, i, j, arenderregioncache$chunkinfo)) {
+             return null;
+         } else {
+             RenderChunk[][] arenderchunk = new RenderChunk[k - i + 1][l - j + 1];
 @@ -44,7 +_,10 @@
                  }
              }

@@ -53,7 +53,7 @@ public class ClientModLoader {
         loading = true;
         ClientModLoader.mc = minecraft;
         LogicalSidedProvider.setClient(() -> minecraft);
-        LanguageHook.loadForgeAndMCLangs();
+        LanguageHook.loadBuiltinLanguages();
         createRunnableWithCatch(() -> ModLoader.get().gatherAndInitializeMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), ImmediateWindowHandler::renderTick)).run();
         if (error == null) {
             ResourcePackLoader.loadResourcePacks(defaultResourcePacks, map -> ResourcePackLoader.buildPackFinder(map, PackType.CLIENT_RESOURCES));
@@ -123,7 +123,7 @@ public class ClientModLoader {
             NeoForge.EVENT_BUS.start();
         } else {
             // Double check we have the langs loaded for forge
-            LanguageHook.loadForgeAndMCLangs();
+            LanguageHook.loadBuiltinLanguages();
             dumpedLocation = CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error, mc.gameDirectory);
         }
         if (error != null || !warnings.isEmpty()) {

@@ -532,6 +532,7 @@ public class CommonHooks {
             // make sure to set pre-placement item data for event
             itemstack.setCount(size);
             itemstack.setTag(nbt);
+            //TODO: Set pre-placement item attachments?
 
             Direction side = context.getClickedFace();
 

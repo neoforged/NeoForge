@@ -19,6 +19,7 @@ import net.minecraft.core.RegistrySynchronization;
 import net.minecraft.resources.RegistryDataLoader;
 import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
 public final class DataPackRegistriesHooks {
@@ -69,5 +70,12 @@ public final class DataPackRegistriesHooks {
      */
     public static Set<ResourceKey<? extends Registry<?>>> getSyncedCustomRegistries() {
         return SYNCED_CUSTOM_REGISTRIES_VIEW;
+    }
+
+    @Nullable
+    @ApiStatus.Internal
+    @SuppressWarnings("unchecked")
+    public static <T> RegistrySynchronization.NetworkedRegistryData<T> getSyncedRegistry(final ResourceKey<? extends Registry<T>> registry) {
+        return (RegistrySynchronization.NetworkedRegistryData<T>) NETWORKABLE_REGISTRIES.get(registry);
     }
 }

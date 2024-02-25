@@ -75,6 +75,7 @@
     "neoforge:condition_codecs",
     "neoforge:display_contexts",
     "neoforge:entity_data_serializers",
+    "neoforge:entity_predicates",
     "neoforge:fluid_type",
     "neoforge:global_loot_modifier_serializers",
     "neoforge:holder_set_type",

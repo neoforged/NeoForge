@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.network.registration;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import io.netty.channel.ChannelHandlerContext;
@@ -13,6 +14,7 @@ import io.netty.util.AttributeKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -44,22 +46,28 @@ import net.minecraft.util.thread.ReentrantBlockableEventLoop;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.network.connection.ConnectionPhase;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.connection.ConnectionUtils;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.filters.NetworkFilters;
 import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import net.neoforged.neoforge.network.handling.IPacketHandler;
+import net.neoforged.neoforge.network.handling.IReplyHandler;
 import net.neoforged.neoforge.network.handling.ISynchronizedWorkHandler;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.neoforge.network.negotiation.NegotiableNetworkComponent;
 import net.neoforged.neoforge.network.negotiation.NegotiationResult;
 import net.neoforged.neoforge.network.negotiation.NetworkComponentNegotiator;
+import net.neoforged.neoforge.network.payload.MinecraftRegisterPayload;
+import net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload;
 import net.neoforged.neoforge.network.payload.ModdedNetworkComponent;
 import net.neoforged.neoforge.network.payload.ModdedNetworkPayload;
 import net.neoforged.neoforge.network.payload.ModdedNetworkQueryComponent;
 import net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload;
 import net.neoforged.neoforge.network.payload.ModdedNetworkSetupFailedPayload;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
@@ -79,7 +87,8 @@ public class NetworkRegistry {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private static final AttributeKey<NetworkPayloadSetup> ATTRIBUTE_PAYLOAD_SETUP = AttributeKey.valueOf("neoforge:payload_setup");
-    private static final AttributeKey<Boolean> ATTRIBUTE_IS_MODDED_CONNECTION = AttributeKey.valueOf("neoforge:is_modded_connection");
+    private static final AttributeKey<Set<ResourceLocation>> ATTRIBUTE_ADHOC_CHANNELS = AttributeKey.valueOf("neoforge:adhoc_channels");
+    private static final AttributeKey<ConnectionType> ATTRIBUTE_CONNECTION_TYPE = AttributeKey.valueOf("neoforge:connection_type");
     private static final AttributeKey<PacketFlow> ATTRIBUTE_FLOW = AttributeKey.valueOf("neoforge:flow");
 
     private static final NetworkRegistry INSTANCE = new NetworkRegistry();
@@ -153,6 +162,7 @@ public class NetworkRegistry {
      * @param knownTypes The known types of the connection.
      * @return A reader for the payload, or null if the payload should be discarded.
      */
+    @Nullable
     public FriendlyByteBuf.Reader<? extends CustomPacketPayload> getReader(ResourceLocation id, ChannelHandlerContext context, ConnectionProtocol protocol, Map<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>> knownTypes) {
         //Vanilla custom packet, let it deal with it.
         if (knownTypes.containsKey(id)) {
@@ -161,6 +171,14 @@ public class NetworkRegistry {
 
         //These are our own custom modded packets which can be sent before a payload setup is negotiated.
         //Special case them
+        if (id.equals(MinecraftRegisterPayload.ID)) {
+            return MinecraftRegisterPayload.READER;
+        }
+
+        if (id.equals(MinecraftUnregisterPayload.ID)) {
+            return MinecraftUnregisterPayload.READER;
+        }
+
         if (id.equals(ModdedNetworkQueryPayload.ID)) {
             return ModdedNetworkQueryPayload.READER;
         }
@@ -187,12 +205,12 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.play().get(id);
 
             //Validate that everything is okey and then return a reader.
-            if (channel == null) {
+            if (channel == null && !isAdhocPlayChannelReadable(id, flow)) {
                 LOGGER.warn("Received a modded custom payload packet {} with an unknown or not accepted channel. Not parsing packet.", id);
                 return null;
             }
 
-            final PlayRegistration<?> registration = knownPlayRegistrations.get(channel.id());
+            final PlayRegistration<?> registration = knownPlayRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet {} with an unknown or not accepted channel. Not parsing packet.", channel.id());
                 throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -204,9 +222,9 @@ public class NetworkRegistry {
                     final Connection connection = ConnectionUtils.getConnection(context);
                     final PacketListener listener = connection.getPacketListener();
                     if (listener instanceof ServerGamePacketListener serverListener) {
-                        serverListener.disconnect(Component.translatable("neoforge.network.invalid_flow", flow));
+                        serverListener.disconnect(Component.translatableWithFallback("neoforge.network.invalid_flow", "Failed to process a payload that was send with an invalid flow: %s", flow));
                     } else if (listener instanceof ClientGamePacketListener clientListener) {
-                        clientListener.getConnection().disconnect(Component.translatable("neoforge.network.invalid_flow", flow));
+                        clientListener.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.invalid_flow", "Failed to process a payload that was send with an invalid flow: %s", flow));
                     } else {
                         LOGGER.error("Received a modded custom payload packet {} that is not supposed to be sent to the server. Disconnecting client, but the listener is not a game listener. This should not happen.", channel.id());
                         throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -219,12 +237,12 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.configuration().get(id);
 
             //Also validate that everything is key and then return a reader.
-            if (channel == null) {
+            if (channel == null && !isAdhocConfigurationChannelReadable(id, flow)) {
                 LOGGER.warn("Received a modded custom payload packet {} with an unknown or not accepted channel. Not parsing packet.", id);
                 return null;
             }
 
-            final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(channel.id());
+            final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet {} with an unknown or not accepted channel. Not parsing packet.", channel.id());
                 throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -236,9 +254,9 @@ public class NetworkRegistry {
                     final Connection connection = ConnectionUtils.getConnection(context);
                     final PacketListener listener = connection.getPacketListener();
                     if (listener instanceof ServerGamePacketListener serverListener) {
-                        serverListener.disconnect(Component.translatable("neoforge.network.invalid_flow", flow));
+                        serverListener.disconnect(Component.translatableWithFallback("neoforge.network.invalid_flow", "Failed to process a payload that was send with an invalid flow: %s", flow));
                     } else if (listener instanceof ClientGamePacketListener clientListener) {
-                        clientListener.getConnection().disconnect(Component.translatable("neoforge.network.invalid_flow", flow));
+                        clientListener.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.invalid_flow", "Failed to process a payload that was send with an invalid flow: %s", flow));
                     } else {
                         LOGGER.error("Received a modded custom payload packet {} that is not supposed to be sent to the server. Disconnecting client, but the listener is not a game listener. This should not happen.", channel.id());
                         throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -280,14 +298,15 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.configuration().get(packet.payload().id());
 
             //Check if the channel should even be processed.
-            if (channel == null) {
+            if (channel == null && !isAdhocConfigurationChannelReadable(packet.payload().id(), PacketFlow.SERVERBOUND)) {
                 LOGGER.warn("Received a modded custom payload packet from a client with an unknown or not accepted channel. Disconnecting client.");
                 listener.disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
                 return;
             }
 
+            final ResourceLocation id = channel != null ? channel.id() : packet.payload().id();
             //We are in the configuration phase, so lookup packet listeners for that
-            final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(channel.id());
+            final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a client with an unknown or not accepted channel. Disconnecting client.");
                 throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -296,7 +315,7 @@ public class NetworkRegistry {
             registration.handle(
                     packet.payload(),
                     new ConfigurationPayloadContext(
-                            configurationPacketListener::send,
+                            new ServerReplyHandler(configurationPacketListener),
                             new ServerPacketHandler(configurationPacketListener),
                             configurationPacketListener::finishCurrentTask,
                             new EventLoopSynchronizedWorkHandler<>(configurationPacketListener.getMainThreadEventLoop(), packet.payload()),
@@ -308,14 +327,15 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.play().get(packet.payload().id());
 
             //Check if the channel should even be processed.
-            if (channel == null) {
+            if (channel == null && !isAdhocPlayChannelReadable(packet.payload().id(), PacketFlow.SERVERBOUND)) {
                 LOGGER.warn("Received a modded custom payload packet from a client with an unknown or not accepted channel. Disconnecting client.");
                 listener.disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
                 return;
             }
 
+            final ResourceLocation id = channel != null ? channel.id() : packet.payload().id();
             //We are in the play phase, so lookup packet listeners for that
-            final PlayRegistration<?> registration = knownPlayRegistrations.get(channel.id());
+            final PlayRegistration<?> registration = knownPlayRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a client with an unknown or not accepted channel. Disconnecting client.");
                 throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -324,7 +344,7 @@ public class NetworkRegistry {
             registration.handle(
                     packet.payload(),
                     new PlayPayloadContext(
-                            playPacketListener::send,
+                            new ServerReplyHandler(playPacketListener),
                             new ServerPacketHandler(playPacketListener),
                             new EventLoopSynchronizedWorkHandler<>(playPacketListener.getMainThreadEventLoop(), packet.payload()),
                             PacketFlow.SERVERBOUND,
@@ -366,14 +386,15 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.configuration().get(packet.payload().id());
 
             //Check if the channel should even be processed.
-            if (channel == null) {
+            if (channel == null && !isAdhocConfigurationChannelReadable(packet.payload().id(), PacketFlow.CLIENTBOUND)) {
                 LOGGER.warn("Received a modded custom payload packet from a server with an unknown or not accepted channel. Disconnecting server.");
                 listener.getConnection().disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
                 return false;
             }
 
+            final ResourceLocation id = channel != null ? channel.id() : packet.payload().id();
             //We are in the configuration phase, so lookup packet listeners for that
-            final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(channel.id());
+            final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a server with an unknown or not accepted channel. Disconnecting server.");
                 throw new IllegalStateException("A server sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -382,7 +403,7 @@ public class NetworkRegistry {
             registration.handle(
                     packet.payload(),
                     new ConfigurationPayloadContext(
-                            configurationPacketListener::send,
+                            new ClientReplyHandler(configurationPacketListener),
                             new ClientPacketHandler(configurationPacketListener),
                             (task) -> LOGGER.warn("Tried to finish a task on the client. This should not happen. Ignoring. Task: {}", task),
                             new EventLoopSynchronizedWorkHandler<>(configurationPacketListener.getMainThreadEventLoop(), packet.payload()),
@@ -394,14 +415,15 @@ public class NetworkRegistry {
             final NetworkChannel channel = payloadSetup.play().get(packet.payload().id());
 
             //Check if the channel should even be processed.
-            if (channel == null) {
+            if (channel == null && !isAdhocPlayChannelReadable(packet.payload().id(), PacketFlow.CLIENTBOUND)) {
                 LOGGER.warn("Received a modded custom payload packet from a server with an unknown or not accepted channel. Disconnecting server.");
                 listener.getConnection().disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s".formatted(NeoForgeVersion.getVersion())));
                 return false;
             }
 
+            final ResourceLocation id = channel != null ? channel.id() : packet.payload().id();
             //We are in the play phase, so lookup packet listeners for that
-            final PlayRegistration<?> registration = knownPlayRegistrations.get(channel.id());
+            final PlayRegistration<?> registration = knownPlayRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a server with an unknown or not accepted channel. Disconnecting server.");
                 throw new IllegalStateException("A server sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -410,7 +432,7 @@ public class NetworkRegistry {
             registration.handle(
                     packet.payload(),
                     new PlayPayloadContext(
-                            playPacketListener::send,
+                            new ClientReplyHandler(playPacketListener),
                             new ClientPacketHandler(playPacketListener),
                             new EventLoopSynchronizedWorkHandler<>(playPacketListener.getMainThreadEventLoop(), packet.payload()),
                             PacketFlow.CLIENTBOUND,
@@ -432,7 +454,7 @@ public class NetworkRegistry {
      * If the negotiation fails, a custom packet is send to the client to inform it of the failure, and which will allow the client to disconnect gracefully with an indicative error screen.
      * </p>
      * <p>
-     * This method should only be invoked for modded connections. Use {@link #onVanillaConnectionDetectedAtServer(ServerConfigurationPacketListener)} to indicate that during the configuration phase of the network handshake between a client and the server, a vanilla connection was detected.
+     * This method should only be invoked for modded connections. Use {@link #onVanillaOrOtherConnectionDetectedAtServer(ServerConfigurationPacketListener)} to indicate that during the configuration phase of the network handshake between a client and the server, a vanilla connection was detected.
      * </p>
      *
      * @param sender        The listener which completed the negotiation.
@@ -448,9 +470,9 @@ public class NetworkRegistry {
                         .map(entry -> new NegotiableNetworkComponent(entry.id(), entry.version(), entry.flow(), entry.optional()))
                         .toList());
 
-        sender.getConnection().channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).set(true);
+        sender.getConnection().channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(sender.getConnectionType());
         sender.getConnection().channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.SERVERBOUND);
-        sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.emptyModded());
+        sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.empty());
 
         //Negotiation failed. Disconnect the client.
         if (!configurationNegotiationResult.success()) {
@@ -489,20 +511,24 @@ public class NetworkRegistry {
 
         sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(setup);
 
-        NetworkFilters.injectIfNecessary(sender.getConnection());
+        NetworkFilters.injectIfNecessary(sender.getConnection(), sender.getConnectionType());
 
         sender.send(new ModdedNetworkPayload(
                 setup.configuration().values().stream().map(channel -> new ModdedNetworkComponent(channel.id(), channel.chosenVersion())).collect(Collectors.toSet()),
                 setup.play().values().stream().map(channel -> new ModdedNetworkComponent(channel.id(), channel.chosenVersion())).collect(Collectors.toSet())));
+        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        nowListeningOn.addAll(getInitialServerListeningChannels());
+        nowListeningOn.addAll(setup.configuration().keySet());
+        sender.send(new MinecraftRegisterPayload(nowListeningOn.build()));
     }
 
     /**
-     * Invoked by the {@link ServerConfigurationPacketListenerImpl} when a vanilla connection is detected.
+     * Invoked by the {@link ServerConfigurationPacketListenerImpl} when a vanilla or other connection is detected.
      *
      * @param sender The listener which detected the vanilla connection during the configuration phase.
      * @return True if the vanilla connection should be handled by the server, false otherwise.
      */
-    public boolean onVanillaConnectionDetectedAtServer(ServerConfigurationPacketListener sender) {
+    public boolean onVanillaOrOtherConnectionDetectedAtServer(ServerConfigurationPacketListener sender) {
         NetworkFilters.cleanIfNecessary(sender.getConnection());
 
         final NegotiationResult configurationNegotiationResult = NetworkComponentNegotiator.negotiate(
@@ -512,13 +538,13 @@ public class NetworkRegistry {
                 List.of());
 
         //Because we are in vanilla land, no matter what we are not able to support any custom channels.
-        sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.emptyVanilla());
-        sender.getConnection().channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).set(false);
+        sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.empty());
+        sender.getConnection().channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(sender.getConnectionType());
         sender.getConnection().channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.SERVERBOUND);
 
         //Negotiation failed. Disconnect the client.
         if (!configurationNegotiationResult.success()) {
-            sender.disconnect(Component.translatable("neoforge.network.negotiation.failure.vanilla.client.not_supported", NeoForgeVersion.getVersion()));
+            sender.disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.client.not_supported", "You are trying to connect to a server that is running NeoForge, but you are not. Please install NeoForge Version: %s to connect to this server.", NeoForgeVersion.getVersion()));
             return false;
         }
 
@@ -530,11 +556,19 @@ public class NetworkRegistry {
 
         //Negotiation failed. Disconnect the client.
         if (!playNegotiationResult.success()) {
-            sender.disconnect(Component.translatable("neoforge.network.negotiation.failure.vanilla.client.not_supported", NeoForgeVersion.getVersion()));
+            sender.disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.client.not_supported", "You are trying to connect to a server that is running NeoForge, but you are not. Please install NeoForge Version: %s to connect to this server.", NeoForgeVersion.getVersion()));
             return false;
         }
 
-        NetworkFilters.injectIfNecessary(sender.getConnection());
+        NetworkFilters.injectIfNecessary(sender.getConnection(), sender.getConnectionType());
+
+        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        nowListeningOn.addAll(getInitialClientListeningChannels());
+        knownConfigurationRegistrations.entrySet().stream()
+                .filter(registration -> registration.getValue().flow().isEmpty() || registration.getValue().flow().get() == PacketFlow.SERVERBOUND)
+                .filter(registration -> registration.getValue().optional())
+                .forEach(registration -> nowListeningOn.add(registration.getKey()));
+        sender.send(new MinecraftRegisterPayload(nowListeningOn.build()));
 
         return true;
     }
@@ -561,7 +595,12 @@ public class NetworkRegistry {
             return true;
         }
 
-        return isConnected(listener, customPayloadPacket.payload().id());
+        if (isConnected(listener, customPayloadPacket.payload().id())) {
+            return true;
+        }
+
+        LOGGER.warn("Tried to send {} packet to a client that does not support it. Not sending the packet.", customPayloadPacket.payload().id());
+        return false;
     }
 
     public boolean shouldSendPacketRaw(Packet<?> packet) {
@@ -581,6 +620,14 @@ public class NetworkRegistry {
             return true;
         }
 
+        if (customPayloadPacket.payload() instanceof MinecraftRegisterPayload) {
+            return true;
+        }
+
+        if (customPayloadPacket.payload() instanceof MinecraftUnregisterPayload) {
+            return true;
+        }
+
         //Vanilla payloads.
         return ClientboundCustomPayloadPacket.KNOWN_TYPES.containsKey(customPayloadPacket.payload().id());
     }
@@ -588,7 +635,7 @@ public class NetworkRegistry {
     /**
      * Indicates if the given packet can be sent via the given listener.
      * <p>
-     * This method is invoked by the vanilla code base to check if any packet can be sent to a client. It will always return true for a packet that is not a {@link ServerboundCustomPayloadPacket}. For a custom payload packet, it will check if the packet is known to the server, and if it is not, it will return false.
+     * This method is invoked by the vanilla code base to check if any packet can be sent to a server. It will always return true for a packet that is not a {@link ServerboundCustomPayloadPacket}. For a custom payload packet, it will check if the packet is known to the server, and if it is not, it will return false.
      * </p>
      * <p>
      * If this method is invoked before the negotiation during the configuration phase has completed, and as such no {@link NetworkPayloadSetup} is present then it will only allow {@link ModdedNetworkQueryPayload} packets to be sent.
@@ -607,12 +654,79 @@ public class NetworkRegistry {
             return true;
         }
 
+        if (customPayloadPacket.payload() instanceof MinecraftRegisterPayload) {
+            return true;
+        }
+
+        if (customPayloadPacket.payload() instanceof MinecraftUnregisterPayload) {
+            return true;
+        }
+
         //Vanilla payloads.
         if (ServerboundCustomPayloadPacket.KNOWN_TYPES.containsKey(customPayloadPacket.payload().id())) {
             return true;
         }
 
-        return isConnected(listener, customPayloadPacket.payload().id());
+        if (isConnected(listener, customPayloadPacket.payload().id())) {
+            return true;
+        }
+
+        LOGGER.warn("Tried to send {} packet to a server that does not support it. Not sending the packet.", customPayloadPacket.payload().id());
+        return false;
+    }
+
+    /**
+     * Returns a mutable map of the currently known ad-hoc channels.
+     */
+    private Set<ResourceLocation> getKnownAdHocChannelsOfOtherEnd(Connection connection) {
+        var map = connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
+
+        if (map == null) {
+            map = new HashSet<>();
+            connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).set(map);
+        }
+
+        return map;
+    }
+
+    /**
+     * Indicates if the given packet is ad hoc readable for us.
+     *
+     * @param id   The id of the packet.
+     * @param flow The flow of the packet.
+     * @return True if the packet is ad hoc readable, false otherwise.
+     */
+    private boolean isAdhocConfigurationChannelReadable(ResourceLocation id, PacketFlow flow) {
+        final ConfigurationRegistration<?> known = knownConfigurationRegistrations.get(id);
+        if (known == null) {
+            return false;
+        }
+
+        if (!known.optional()) {
+            return false;
+        }
+
+        return known.flow().isEmpty() || known.flow().get() == flow;
+    }
+
+    /**
+     * Indicates if the given packet is ad hoc readable for us.
+     *
+     * @param id   The id of the packet.
+     * @param flow The flow of the packet.
+     * @return True if the packet is ad hoc readable, false otherwise.
+     */
+    private boolean isAdhocPlayChannelReadable(ResourceLocation id, PacketFlow flow) {
+        final PlayRegistration<?> known = knownPlayRegistrations.get(id);
+        if (known == null) {
+            return false;
+        }
+
+        if (!known.optional()) {
+            return false;
+        }
+
+        return known.flow().isEmpty() || known.flow().get() == flow;
     }
 
     /**
@@ -651,11 +765,16 @@ public class NetworkRegistry {
                         .map(entry -> new NetworkChannel(entry.id(), entry.version()))
                         .collect(Collectors.toSet()));
 
-        NetworkFilters.injectIfNecessary(listener.getConnection());
+        NetworkFilters.injectIfNecessary(listener.getConnection(), listener.getConnectionType());
 
         listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(setup);
-        listener.getConnection().channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).set(true);
+        listener.getConnection().channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(listener.getConnectionType());
         listener.getConnection().channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.CLIENTBOUND);
+
+        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        nowListeningOn.addAll(getInitialClientListeningChannels());
+        nowListeningOn.addAll(setup.configuration().keySet());
+        listener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
     }
 
     /**
@@ -680,13 +799,13 @@ public class NetworkRegistry {
                         .toList());
 
         //Because we are in vanilla land, no matter what we are not able to support any custom channels.
-        sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.emptyVanilla());
-        sender.getConnection().channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).set(false);
+        sender.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.empty());
+        sender.getConnection().channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(sender.getConnectionType());
         sender.getConnection().channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.CLIENTBOUND);
 
         //Negotiation failed. Disconnect the client.
         if (!configurationNegotiationResult.success()) {
-            sender.getConnection().disconnect(Component.translatable("neoforge.network.negotiation.failure.vanilla.client.not_supported", NeoForgeVersion.getVersion()));
+            sender.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.server.not_supported", "You are trying to connect to a server that is not running NeoForge, but you have mods that require it. A connection could not be established.", NeoForgeVersion.getVersion()));
             return false;
         }
 
@@ -698,26 +817,24 @@ public class NetworkRegistry {
 
         //Negotiation failed. Disconnect the client.
         if (!playNegotiationResult.success()) {
-            sender.getConnection().disconnect(Component.translatable("neoforge.network.negotiation.failure.vanilla.client.not_supported", NeoForgeVersion.getVersion()));
+            sender.getConnection().disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.server.not_supported", "You are trying to connect to a server that is not running NeoForge, but you have mods that require it. A connection could not be established.", NeoForgeVersion.getVersion()));
             return false;
         }
 
         //We are on the client, connected to a vanilla server, We have to load the default configs.
         ConfigTracker.INSTANCE.loadDefaultServerConfigs();
 
-        NetworkFilters.injectIfNecessary(sender.getConnection());
+        NetworkFilters.injectIfNecessary(sender.getConnection(), sender.getConnectionType());
+
+        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        nowListeningOn.addAll(getInitialClientListeningChannels());
+        knownConfigurationRegistrations.entrySet().stream()
+                .filter(registration -> registration.getValue().flow().isEmpty() || registration.getValue().flow().get() == PacketFlow.CLIENTBOUND)
+                .filter(registration -> registration.getValue().optional())
+                .forEach(registration -> nowListeningOn.add(registration.getKey()));
+        sender.send(new MinecraftRegisterPayload(nowListeningOn.build()));
 
         return true;
-    }
-
-    /**
-     * Indicates if the given connection is a vanilla connection.
-     *
-     * @param connection The connection to check.
-     * @return True if the connection is a vanilla connection, false otherwise.
-     */
-    public boolean isVanillaConnection(Connection connection) {
-        return connection.channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).get() == Boolean.FALSE;
     }
 
     /**
@@ -728,34 +845,7 @@ public class NetworkRegistry {
      * @return True if the listener has a connection setup that can transmit the given payload id, false otherwise.
      */
     public boolean isConnected(ServerCommonPacketListener listener, ResourceLocation payloadId) {
-        final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
-        if (payloadSetup == null) {
-            LOGGER.warn("Somebody tried to send: {} to a client that has not negotiated with the client. Not sending packet.", payloadId);
-            return false;
-        }
-
-        if (listener instanceof ServerConfigurationPacketListener) {
-            final NetworkChannel channel = payloadSetup.configuration().get(payloadId);
-
-            if (channel == null) {
-                LOGGER.trace("Somebody tried to send: {} to a client which cannot accept it. Not sending packet.", payloadId);
-                return false;
-            }
-
-            return true;
-        } else if (listener instanceof ServerGamePacketListener) {
-            final NetworkChannel channel = payloadSetup.play().get(payloadId);
-
-            if (channel == null) {
-                LOGGER.trace("Somebody tried to send: {} to a client which cannot accept it. Not sending packet.", payloadId);
-                return false;
-            }
-
-            return true;
-        } else {
-            LOGGER.error("Somebody tried to send: {} to a client that is not in the configuration or play phase. Not sending packet.", payloadId);
-            throw new IllegalStateException("Somebody tried to send a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
-        }
+        return isConnected(listener.getConnection(), ConnectionPhase.fromPacketListener(listener), payloadId);
     }
 
     /**
@@ -766,34 +856,36 @@ public class NetworkRegistry {
      * @return True if the listener has a connection setup that can transmit the given payload id, false otherwise.
      */
     public boolean isConnected(ClientCommonPacketListener listener, ResourceLocation payloadId) {
-        final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
+        return isConnected(listener.getConnection(), ConnectionPhase.fromPacketListener(listener), payloadId);
+    }
+
+    /**
+     * Indicates whether the given connection has a connection setup that can transmit the given payload id.
+     *
+     * @param connection      The connection to check.
+     * @param connectionPhase The phase of the connection to check.
+     * @param payloadId       The payload id to check.
+     * @return True if the connection has a connection setup that can transmit the given payload id, false otherwise.
+     */
+    public boolean isConnected(final Connection connection, ConnectionPhase connectionPhase, ResourceLocation payloadId) {
+        final NetworkPayloadSetup payloadSetup = connection.channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         if (payloadSetup == null) {
-            LOGGER.warn("Somebody tried to send: {} to a server that has not negotiated with the client. Not sending packet.", payloadId);
-            return false;
+            return getKnownAdHocChannelsOfOtherEnd(connection).contains(payloadId);
         }
 
-        if (listener instanceof ClientConfigurationPacketListener) {
-            final NetworkChannel channel = payloadSetup.configuration().get(payloadId);
-
-            if (channel == null) {
-                LOGGER.trace("Somebody tried to send: {} to a server which cannot accept it. Not sending packet.", payloadId);
-                return false;
+        if (connectionPhase.isConfiguration()) {
+            if (payloadSetup.configuration().get(payloadId) != null) {
+                return true;
             }
-
-            return true;
-        } else if (listener instanceof ClientGamePacketListener) {
-            final NetworkChannel channel = payloadSetup.play().get(payloadId);
-
-            if (channel == null) {
-                LOGGER.trace("Somebody tried to send: {} to a server which cannot accept it. Not sending packet.", payloadId);
-                return false;
-            }
-
-            return true;
-        } else {
-            LOGGER.error("Somebody tried to send: {} to a server that is not in the configuration or play phase. Not sending packet.", payloadId);
-            throw new IllegalStateException("Somebody tried to send a packet while not in the configuration or play phase. Somebody changed the phases known to NeoForge!");
         }
+
+        if (connectionPhase.isPlay()) {
+            if (payloadSetup.play().get(payloadId) != null) {
+                return true;
+            }
+        }
+
+        return getKnownAdHocChannelsOfOtherEnd(connection).contains(payloadId);
     }
 
     /**
@@ -842,9 +934,9 @@ public class NetworkRegistry {
      * @param connection The connection to configure.
      */
     public void configureMockConnection(final Connection connection) {
-        connection.channel().attr(ATTRIBUTE_IS_MODDED_CONNECTION).set(true);
+        connection.channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(ConnectionType.NEOFORGE);
         connection.channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.SERVERBOUND);
-        connection.channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.emptyModded());
+        connection.channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.empty());
 
         final NetworkPayloadSetup setup = NetworkPayloadSetup.from(
                 this.knownConfigurationRegistrations.entrySet().stream()
@@ -856,7 +948,149 @@ public class NetworkRegistry {
 
         connection.channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(setup);
 
-        NetworkFilters.injectIfNecessary(connection);
+        NetworkFilters.injectIfNecessary(connection, ConnectionType.NEOFORGE);
+    }
+
+    /**
+     * Invoked by the {@link ClientCommonPacketListener} when a dinnerbone protocol registration payload is received.
+     *
+     * @param listener          The listener which received the payload.
+     * @param resourceLocations The resource locations that were registered.
+     */
+    public void onMinecraftRegister(ClientCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
+        onMinecraftRegister(resourceLocations, listener.getConnection());
+    }
+
+    /**
+     * Invoked by the {@link ServerCommonPacketListener} when a dinnerbone protocol registration payload is received.
+     *
+     * @param listener          The listener which received the payload.
+     * @param resourceLocations The resource locations that were registered.
+     */
+    public void onMinecraftRegister(ServerCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
+        onMinecraftRegister(resourceLocations, listener.getConnection());
+    }
+
+    /**
+     * Invoked to add to the known ad-hoc channels on a connection.
+     *
+     * @param resourceLocations The resource locations to add.
+     * @param connection        The connection to add the channels to.
+     */
+    private void onMinecraftRegister(Set<ResourceLocation> resourceLocations, Connection connection) {
+        getKnownAdHocChannelsOfOtherEnd(connection).addAll(resourceLocations);
+    }
+
+    /**
+     * Invoked by the {@link ClientCommonPacketListener} when a dinnerbone protocol unregistration payload is received.
+     *
+     * @param listener          The listener which received the payload.
+     * @param resourceLocations The resource locations that were unregistered.
+     */
+    public void onMinecraftUnregister(ClientCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
+        onMinecraftUnregister(resourceLocations, listener.getConnection());
+    }
+
+    /**
+     * Invoked by the {@link ServerCommonPacketListener} when a dinnerbone protocol unregistration payload is received.
+     *
+     * @param listener          The listener which received the payload.
+     * @param resourceLocations The resource locations that were unregistered.
+     */
+    public void onMinecraftUnregister(ServerCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
+        onMinecraftUnregister(resourceLocations, listener.getConnection());
+    }
+
+    /**
+     * Invoked to remove from the known ad-hoc channels on a connection.
+     *
+     * @param resourceLocations The resource locations to remove.
+     * @param connection        The connection to remove the channels from.
+     */
+    private void onMinecraftUnregister(Set<ResourceLocation> resourceLocations, Connection connection) {
+        getKnownAdHocChannelsOfOtherEnd(connection).removeAll(resourceLocations);
+    }
+
+    /**
+     * {@return the initial channels that the server listens on during the configuration phase.}
+     */
+    public Set<ResourceLocation> getInitialServerListeningChannels() {
+        return Set.of(
+                MinecraftRegisterPayload.ID,
+                MinecraftUnregisterPayload.ID,
+                ModdedNetworkQueryPayload.ID);
+    }
+
+    public Set<ResourceLocation> getInitialServerUnregisterChannels() {
+        final ImmutableSet.Builder<ResourceLocation> nowForgottenChannels = ImmutableSet.builder();
+        nowForgottenChannels.add(MinecraftRegisterPayload.ID);
+        nowForgottenChannels.add(MinecraftUnregisterPayload.ID);
+        knownPlayRegistrations.entrySet().stream()
+                .filter(registration -> registration.getValue().flow().isEmpty() || registration.getValue().flow().get() == PacketFlow.SERVERBOUND)
+                .filter(registration -> registration.getValue().optional())
+                .forEach(registration -> nowForgottenChannels.add(registration.getKey()));
+        return nowForgottenChannels.build();
+    }
+
+    private static Set<ResourceLocation> getInitialClientListeningChannels() {
+        return Set.of(
+                MinecraftRegisterPayload.ID,
+                MinecraftUnregisterPayload.ID,
+                ModdedNetworkQueryPayload.ID,
+                ModdedNetworkSetupFailedPayload.ID,
+                ModdedNetworkPayload.ID);
+    }
+
+    public void onConfigurationFinished(ServerConfigurationPacketListener serverConfigurationPacketListener) {
+        final NetworkPayloadSetup setup = serverConfigurationPacketListener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
+        if (setup == null) {
+            LOGGER.error("Somebody tried to finish the configuration phase of a connection that has not negotiated with the client. Not finishing configuration.");
+            return;
+        }
+
+        final ImmutableSet.Builder<ResourceLocation> notListeningAnymoreOn = ImmutableSet.builder();
+        notListeningAnymoreOn.addAll(getInitialServerListeningChannels());
+        notListeningAnymoreOn.addAll(setup.configuration().keySet());
+        serverConfigurationPacketListener.send(new MinecraftUnregisterPayload(notListeningAnymoreOn.build()));
+
+        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        nowListeningOn.add(MinecraftRegisterPayload.ID);
+        nowListeningOn.add(MinecraftUnregisterPayload.ID);
+        if (serverConfigurationPacketListener.getConnectionType().isNotVanilla()) {
+            nowListeningOn.add(ModdedNetworkQueryPayload.ID);
+        } else {
+            knownPlayRegistrations.entrySet().stream()
+                    .filter(registration -> registration.getValue().flow().isEmpty() || registration.getValue().flow().get() == PacketFlow.SERVERBOUND)
+                    .filter(registration -> registration.getValue().optional())
+                    .forEach(registration -> nowListeningOn.add(registration.getKey()));
+        }
+        serverConfigurationPacketListener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
+    }
+
+    public void onConfigurationFinished(ClientConfigurationPacketListener listener) {
+        final NetworkPayloadSetup setup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
+        if (setup == null) {
+            LOGGER.error("Somebody tried to finish the configuration phase of a connection that has not negotiated with the server. Not finishing configuration.");
+            return;
+        }
+
+        final ImmutableSet.Builder<ResourceLocation> notListeningAnymoreOn = ImmutableSet.builder();
+        notListeningAnymoreOn.addAll(getInitialClientListeningChannels());
+        notListeningAnymoreOn.addAll(setup.configuration().keySet());
+        listener.send(new MinecraftUnregisterPayload(notListeningAnymoreOn.build()));
+
+        final ImmutableSet.Builder<ResourceLocation> nowListeningOn = ImmutableSet.builder();
+        nowListeningOn.add(MinecraftRegisterPayload.ID);
+        nowListeningOn.add(MinecraftUnregisterPayload.ID);
+        if (listener.getConnectionType().isNotVanilla()) {
+            nowListeningOn.add(ModdedNetworkQueryPayload.ID);
+        } else {
+            knownPlayRegistrations.entrySet().stream()
+                    .filter(registration -> registration.getValue().flow().isEmpty() || registration.getValue().flow().get() == PacketFlow.CLIENTBOUND)
+                    .filter(registration -> registration.getValue().optional())
+                    .forEach(registration -> nowListeningOn.add(registration.getKey()));
+        }
+        listener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
     }
 
     /**
@@ -947,6 +1181,30 @@ public class NetworkRegistry {
             } catch (ClassCastException exception) {
                 throw new IllegalStateException("Somebody tried to handle a packet in a listener that does not support it.", exception);
             }
+        }
+    }
+
+    private record ServerReplyHandler(ServerCommonPacketListener listener) implements IReplyHandler {
+        @Override
+        public void send(CustomPacketPayload payload) {
+            listener.send(payload);
+        }
+
+        @Override
+        public void disconnect(Component reason) {
+            listener.disconnect(reason);
+        }
+    }
+
+    private record ClientReplyHandler(ClientCommonPacketListener listener) implements IReplyHandler {
+        @Override
+        public void send(CustomPacketPayload payload) {
+            listener.send(payload);
+        }
+
+        @Override
+        public void disconnect(Component reason) {
+            listener.getConnection().disconnect(reason);
         }
     }
 }

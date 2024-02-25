@@ -115,7 +115,7 @@ public class NeoForgeEventHandler {
                     .registry(registry);
             if (regOpt.isEmpty()) return;
             players.forEach(player -> {
-                if (player.connection.isVanillaConnection()) {
+                if (!player.connection.isConnected(RegistryDataMapSyncPayload.ID)) {
                     return;
                 }
                 final var playerMaps = player.connection.connection.channel().attr(RegistryManager.ATTRIBUTE_KNOWN_DATA_MAPS).get();
@@ -133,7 +133,9 @@ public class NeoForgeEventHandler {
             if (attach == null || attach.networkCodec() == null) return;
             att.put(key, registry.getDataMap(attach));
         });
-        PacketDistributor.PLAYER.with(player).send(new RegistryDataMapSyncPayload<>(registry.key(), att));
+        if (!att.isEmpty()) {
+            PacketDistributor.PLAYER.with(player).send(new RegistryDataMapSyncPayload<>(registry.key(), att));
+        }
     }
 
     @SubscribeEvent

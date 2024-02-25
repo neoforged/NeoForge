@@ -17,7 +17,7 @@
      private final MessageSignatureCache messageSignatureCache = MessageSignatureCache.createDefault();
      private final FutureChain chatMessageChain;
      private boolean waitingForSwitchToConfig;
-+    private final boolean isModdedConnection;
++    private net.neoforged.neoforge.network.connection.ConnectionType connectionType;
  
      public ServerGamePacketListenerImpl(MinecraftServer p_9770_, Connection p_9771_, ServerPlayer p_9772_, CommonListenerCookie p_301978_) {
          super(p_9770_, p_9771_, p_301978_);
@@ -25,7 +25,7 @@
          p_9772_.getTextFilter().join();
          this.signedMessageDecoder = SignedMessageChain.Decoder.unsigned(p_9772_.getUUID(), p_9770_::enforceSecureProfile);
          this.chatMessageChain = new FutureChain(p_9770_);
-+        this.isModdedConnection = p_301978_.isModdedConnection();
++        this.connectionType = p_301978_.connectionType();
      }
  
      @Override
@@ -65,6 +65,14 @@
      private boolean noBlocksAround(Entity p_9794_) {
          return p_9794_.level()
              .getBlockStates(p_9794_.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
+@@ -770,6 +_,7 @@
+             if (compoundtag != null) {
+                 itemstack1.setTag(compoundtag.copy());
+             }
++            net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(itemstack, itemstack1);
+ 
+             itemstack1.addTagElement("author", StringTag.valueOf(this.player.getName().getString()));
+             if (this.player.isTextFilteringEnabled()) {
 @@ -1028,8 +_,10 @@
              case SWAP_ITEM_WITH_OFFHAND:
                  if (!this.player.isSpectator()) {
@@ -143,11 +151,11 @@
          } else {
              this.connection
 -                .setListener(new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation())));
-+                .setListener(new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation(), this.isModdedConnection)));
++                .setListener(new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation(), this.connectionType)));
          }
      }
  
-@@ -1779,5 +_,16 @@
+@@ -1779,5 +_,33 @@
      @FunctionalInterface
      interface EntityInteraction {
          InteractionResult run(ServerPlayer p_143695_, Entity p_143696_, InteractionHand p_143697_);
@@ -155,12 +163,29 @@
 +
 +    @Override
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket p_294276_) {
-+        if (!this.isModdedConnection) {
++        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
++            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
++            return;
++        }
++
++        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
++            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
++            return;
++        }
++
++        if (this.connectionType.isVanilla()) {
 +            super.handleCustomPayload(p_294276_);
++            return;
 +        }
 +
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtServer(
 +                this, p_294276_
 +        );
++    }
++
++    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
++        return connectionType;
      }
  }

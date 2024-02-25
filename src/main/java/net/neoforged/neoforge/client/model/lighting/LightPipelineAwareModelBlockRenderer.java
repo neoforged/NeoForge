@@ -111,4 +111,8 @@ public class LightPipelineAwareModelBlockRenderer extends ModelBlockRenderer {
             flatLighter.reset();
         return !empty;
     }
+
+    public QuadLighter getQuadLighter(boolean smooth) {
+        return (smooth ? smoothLighter : flatLighter).get();
+    }
 }

@@ -38,6 +38,14 @@ public class NetworkInitialization {
                 .versioned(NeoForgeVersion.getSpec())
                 .optional();
         registrar
+                .common(
+                        TierSortingRegistryPayload.ID,
+                        TierSortingRegistryPayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
+                .common(
+                        ConfigFilePayload.ID,
+                        ConfigFilePayload::new,
+                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
                 .configuration(
                         FrozenRegistrySyncStartPayload.ID,
                         FrozenRegistrySyncStartPayload::new,
@@ -52,17 +60,9 @@ public class NetworkInitialization {
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle)
                                 .server(ServerPayloadHandler.getInstance()::handle))
                 .configuration(
-                        TierSortingRegistryPayload.ID,
-                        TierSortingRegistryPayload::new,
-                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
-                .configuration(
                         TierSortingRegistrySyncCompletePayload.ID,
                         TierSortingRegistrySyncCompletePayload::new,
                         handlers -> handlers.server(ServerPayloadHandler.getInstance()::handle))
-                .configuration(
-                        ConfigFilePayload.ID,
-                        ConfigFilePayload::new,
-                        handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
                 .configuration(
                         KnownRegistryDataMapsPayload.ID,
                         KnownRegistryDataMapsPayload::new,
@@ -83,7 +83,8 @@ public class NetworkInitialization {
                         AuxiliaryLightDataPayload.ID,
                         AuxiliaryLightDataPayload::new,
                         handlers -> handlers.client(ClientPayloadHandler.getInstance()::handle))
-                .play(RegistryDataMapSyncPayload.ID,
+                .play(
+                        RegistryDataMapSyncPayload.ID,
                         RegistryDataMapSyncPayload::decode,
                         handlers -> handlers.client(ClientRegistryManager::handleDataMapSync))
                 .play(AdvancedContainerSetDataPayload.ID,

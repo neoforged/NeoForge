@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "I": {
+      "type": "testframework:test_enabled",
+      "base": {
+        "type": "neoforge:nbt",
+        "item": "minecraft:netherite_pickaxe",
+        "neoforge:attachments": "{\"neotests_partial_nbt_attachment_ingredient:test_int\":1}",
+        "tag": "{Damage:2}"
+      },
+      "framework": "neotests:tests",
+      "testId": "partialNbtAttachmentIngredient"
+    }
+  },
+  "pattern": [
+    "IDE"
+  ],
+  "result": {
+    "item": "minecraft:azalea"
+  }
+}
