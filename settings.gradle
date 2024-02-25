@@ -1,4 +1,6 @@
 pluginManagement {
+    includeBuild("/var/home/marchermans/IdeaProjects/NeoGradle")
+    includeBuild("/var/home/marchermans/IdeaProjects/GradleUtils")
     repositories {
         gradlePluginPortal()
         mavenLocal()
@@ -7,7 +9,7 @@ pluginManagement {
 }
 
 plugins {
-    id 'net.neoforged.gradle.platform' version '7.0.83'
+    id 'net.neoforged.gradle.platform'
 }
 
 rootProject.name = rootDir.name
