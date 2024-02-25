@@ -1,0 +1,23 @@
+--- a/net/minecraft/world/flag/FeatureElement.java
++++ b/net/minecraft/world/flag/FeatureElement.java
+@@ -5,14 +_,19 @@
+ import net.minecraft.core.registries.Registries;
+ import net.minecraft.resources.ResourceKey;
+ 
+-public interface FeatureElement {
++public interface FeatureElement extends net.neoforged.neoforge.common.extensions.IFeatureElementExtension {
+     Set<ResourceKey<? extends Registry<? extends FeatureElement>>> FILTERED_REGISTRIES = Set.of(
+         Registries.ITEM, Registries.BLOCK, Registries.ENTITY_TYPE, Registries.MENU
+     );
+ 
+     FeatureFlagSet requiredFeatures();
+ 
++    /** @see net.neoforged.neoforge.common.extensions.IFeatureElementExtension#isDisabled() */
+     default boolean isEnabled(FeatureFlagSet p_249172_) {
++        if(isDisabled()) {
++            return false;
++        }
++
+         return this.requiredFeatures().isSubsetOf(p_249172_);
+     }
+ }

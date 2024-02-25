@@ -9,18 +9,52 @@
      public static final MenuType<ChestMenu> GENERIC_9x1 = register("generic_9x1", ChestMenu::oneRow);
      public static final MenuType<ChestMenu> GENERIC_9x2 = register("generic_9x2", ChestMenu::twoRows);
      public static final MenuType<ChestMenu> GENERIC_9x3 = register("generic_9x3", ChestMenu::threeRows);
-@@ -52,6 +_,14 @@
+@@ -36,6 +_,7 @@
+     public static final MenuType<StonecutterMenu> STONECUTTER = register("stonecutter", StonecutterMenu::new);
+     private final FeatureFlagSet requiredFeatures;
+     private final MenuType.MenuSupplier<T> constructor;
++    private final java.util.function.BooleanSupplier isDisabled;
  
-     public T create(int p_39986_, Inventory p_39987_) {
-         return this.constructor.create(p_39986_, p_39987_);
+     private static <T extends AbstractContainerMenu> MenuType<T> register(String p_39989_, MenuType.MenuSupplier<T> p_39990_) {
+         return Registry.register(BuiltInRegistries.MENU, p_39989_, new MenuType<>(p_39990_, FeatureFlags.VANILLA_SET));
+@@ -45,9 +_,18 @@
+         return Registry.register(BuiltInRegistries.MENU, p_267295_, new MenuType<>(p_266945_, FeatureFlags.REGISTRY.subset(p_267055_)));
+     }
+ 
++    /** @deprecated Use {@linkplain #MenuType(MenuSupplier, java.util.function.BooleanSupplier)} */
++    @java.lang.Deprecated
+     public MenuType(MenuType.MenuSupplier<T> p_267054_, FeatureFlagSet p_266909_) {
+         this.constructor = p_267054_;
+         this.requiredFeatures = p_266909_;
++        isDisabled = () -> false;
 +    }
 +
-+    @Override
++    public MenuType(MenuType.MenuSupplier<T> constructor, final java.util.function.BooleanSupplier isDisabled) {
++        this.constructor = constructor;
++        this.isDisabled = isDisabled;
++        requiredFeatures = FeatureFlags.DEFAULT_FLAGS;
+     }
+ 
+     public T create(int p_39986_, Inventory p_39987_) {
+@@ -55,8 +_,21 @@
+     }
+ 
+     @Override
 +    public T create(int windowId, Inventory playerInv, net.minecraft.network.FriendlyByteBuf extraData) {
 +        if (this.constructor instanceof net.neoforged.neoforge.network.IContainerFactory) {
 +            return ((net.neoforged.neoforge.network.IContainerFactory<T>) this.constructor).create(windowId, playerInv, extraData);
 +        }
 +        return create(windowId, playerInv);
++    }
++
++    @Override
+     public FeatureFlagSet requiredFeatures() {
+         return this.requiredFeatures;
++    }
++
++    @Override
++    public boolean isDisabled() {
++        return isDisabled.getAsBoolean();
      }
  
-     @Override
+     public interface MenuSupplier<T extends AbstractContainerMenu> {

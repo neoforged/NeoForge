@@ -1,21 +1,22 @@
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
-@@ -620,6 +_,10 @@
+@@ -620,6 +_,11 @@
      private final EntityDimensions dimensions;
      private final FeatureFlagSet requiredFeatures;
  
 +    private final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier;
++    private final java.util.function.BooleanSupplier isDisabled;
 +
      private static <T extends Entity> EntityType<T> register(String p_20635_, EntityType.Builder<T> p_20636_) {
          return Registry.register(BuiltInRegistries.ENTITY_TYPE, p_20635_, p_20636_.build(p_20635_));
      }
-@@ -645,6 +_,24 @@
+@@ -645,6 +_,25 @@
          int p_273451_,
          FeatureFlagSet p_273518_
      ) {
-+         this(p_273268_, p_272918_, p_273417_, p_273389_, p_273556_, p_272654_, p_273631_, p_272946_, p_272895_, p_273451_, p_273518_, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier);
++         this(p_273268_, p_272918_, p_273417_, p_273389_, p_273556_, p_272654_, p_273631_, p_272946_, p_272895_, p_273451_, p_273518_, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier, () -> false);
 +    }
 +    public EntityType(
 +        EntityType.EntityFactory<T> p_273268_,
@@ -31,18 +32,20 @@
 +        FeatureFlagSet p_273518_,
 +        final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier,
 +        final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
-+        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier
++        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier,
++        final java.util.function.BooleanSupplier isDisabled
 +    ) {
          this.factory = p_273268_;
          this.category = p_272918_;
          this.canSpawnFarFromPlayer = p_272654_;
-@@ -656,6 +_,9 @@
+@@ -656,6 +_,10 @@
          this.clientTrackingRange = p_272895_;
          this.updateInterval = p_273451_;
          this.requiredFeatures = p_273518_;
 +        this.trackDeltasSupplier = trackDeltasSupplier;
 +        this.trackingRangeSupplier = trackingRangeSupplier;
 +        this.updateIntervalSupplier = updateIntervalSupplier;
++        this.isDisabled = isDisabled;
      }
  
      @Nullable
@@ -86,30 +89,48 @@
          return this != PLAYER
              && this != LLAMA_SPIT
              && this != WITHER
-@@ -1001,6 +_,8 @@
+@@ -1001,6 +_,13 @@
          return this.builtInRegistryHolder;
      }
  
 +    public Stream<TagKey<EntityType<?>>> getTags() {return this.builtInRegistryHolder().tags();}
 +
++    @Override
++    public boolean isDisabled() {
++        return isDisabled.getAsBoolean();
++    }
++
      public static class Builder<T extends Entity> {
          private final EntityType.EntityFactory<T> factory;
          private final MobCategory category;
-@@ -1014,6 +_,10 @@
+@@ -1014,6 +_,11 @@
          private EntityDimensions dimensions = EntityDimensions.scalable(0.6F, 1.8F);
          private FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
  
 +        private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultTrackDeltasSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier = EntityType::defaultTrackingRangeSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier = EntityType::defaultUpdateIntervalSupplier;
++        private java.util.function.BooleanSupplier isDisabled = () -> false;
 +
          private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
              this.factory = p_20696_;
              this.category = p_20697_;
-@@ -1073,6 +_,21 @@
+@@ -1068,11 +_,33 @@
              return this;
          }
  
++        /** @deprecated use {@linkplain #isDisabled(java.util.function.BooleanSupplier)} */
++        @java.lang.Deprecated
+         public EntityType.Builder<T> requiredFeatures(FeatureFlag... p_251646_) {
+             this.requiredFeatures = FeatureFlags.REGISTRY.subset(p_251646_);
+             return this;
+         }
+ 
++        public EntityType.Builder<T> isDisabled(java.util.function.BooleanSupplier isDisabled) {
++            this.isDisabled = isDisabled;
++            return this;
++        }
++
 +        public EntityType.Builder<T> setUpdateInterval(int interval) {
 +             this.updateIntervalSupplier = t->interval;
 +             return this;
@@ -128,7 +149,7 @@
          public EntityType<T> build(String p_20713_) {
              if (this.serialize) {
                  Util.fetchChoiceType(References.ENTITY_TREE, p_20713_);
-@@ -1089,7 +_,10 @@
+@@ -1089,7 +_,11 @@
                  this.dimensions,
                  this.clientTrackingRange,
                  this.updateInterval,
@@ -136,7 +157,8 @@
 +                this.requiredFeatures,
 +                velocityUpdateSupplier,
 +                trackingRangeSupplier,
-+                updateIntervalSupplier
++                updateIntervalSupplier,
++                isDisabled
              );
          }
      }
