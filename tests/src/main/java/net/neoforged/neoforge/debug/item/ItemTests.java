@@ -5,21 +5,32 @@
 
 package net.neoforged.neoforge.debug.item;
 
+import com.google.common.collect.ImmutableMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,6 +42,7 @@ import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.DispensibleContainerItem;
@@ -39,7 +51,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MobBucketItem;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.armortrim.TrimMaterial;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -50,6 +64,8 @@ import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -199,5 +215,92 @@ public class ItemTests {
                 .thenExecute(pig -> pig.setHealth(pig.getMaxHealth()))
                 .thenWaitUntil(() -> helper.assertEntityPresent(EntityType.PIG, 1, 2, 1))
                 .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if trim materials can use custom implementations of ArmorMaterial for armor material overrides")
+    static void armorMaterialOverrideTest(final DynamicTest test, final RegistrationHelper reg) {
+        ArmorMaterial testMaterial = new ArmorMaterial() {
+            @Override
+            public int getDurabilityForType(ArmorItem.Type p_266807_) {
+                return 63;
+            }
+
+            @Override
+            public int getDefenseForType(ArmorItem.Type p_267168_) {
+                return 5;
+            }
+
+            @Override
+            public int getEnchantmentValue() {
+                return 10;
+            }
+
+            @Override
+            public SoundEvent getEquipSound() {
+                return SoundEvents.ARMOR_EQUIP_IRON;
+            }
+
+            @Override
+            public Ingredient getRepairIngredient() {
+                return Ingredient.of(Items.COBBLESTONE);
+            }
+
+            @Override
+            public String getName() {
+                return "test_material";
+            }
+
+            @Override
+            public float getToughness() {
+                return 0;
+            }
+
+            @Override
+            public float getKnockbackResistance() {
+                return 0;
+            }
+        };
+
+        final var testChestplate = reg.items().register("custom_material_chestplate", () -> new ArmorItem(testMaterial, ArmorItem.Type.CHESTPLATE, new Item.Properties()) {
+            private static final String LAYER_1 = "minecraft:textures/models/armor/iron_layer_1.png";
+            private static final String LAYER_2 = "minecraft:textures/models/armor/iron_layer_2.png";
+
+            @Override
+            public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
+                return slot == EquipmentSlot.LEGS ? LAYER_2 : LAYER_1;
+            }
+        })
+                .withLang("Custom Material Chestplate").tab(CreativeModeTabs.COMBAT);
+        final RegistrySetBuilder registrySetBuilder = new RegistrySetBuilder()
+                .add(
+                        Registries.TRIM_MATERIAL, context -> {
+                            ImmutableMap<ArmorMaterial, String> overrides = ImmutableMap.<ArmorMaterial, String>builder()
+                                    .put(ArmorMaterials.DIAMOND, "gold_darker")
+                                    .put(testMaterial, "gold_darker")
+                                    .build();
+                            context.register(
+                                    ResourceKey.create(Registries.TRIM_MATERIAL, new ResourceLocation(test.createModId(), "test")),
+                                    TrimMaterial.create("iron_darker", Items.COBBLESTONE, 0.125F, overrides, Component.literal("Test Material")));
+                        });
+
+        reg.addProvider(gatherDataEvent -> new DatapackBuiltinEntriesProvider(gatherDataEvent.getGenerator().getPackOutput(), gatherDataEvent.getLookupProvider(), registrySetBuilder, Set.of(test.createModId())));
+        reg.addProvider(gatherDataEvent -> {
+            BlockTagsProvider blocks = new BlockTagsProvider(gatherDataEvent.getGenerator().getPackOutput(), gatherDataEvent.getLookupProvider(), test.createModId(), gatherDataEvent.getExistingFileHelper()) {
+                @Override
+                protected void addTags(HolderLookup.Provider p_256380_) {}
+            };
+            gatherDataEvent.getGenerator().addProvider(gatherDataEvent.includeServer(), blocks);
+            return new ItemTagsProvider(gatherDataEvent.getGenerator().getPackOutput(), gatherDataEvent.getLookupProvider(), blocks.contentsGetter(), "neotests_trim_material_armor_override_test", gatherDataEvent.getExistingFileHelper()) {
+                @Override
+                protected void addTags(HolderLookup.Provider p_256380_) {
+                    tag(ItemTags.TRIM_MATERIALS).add(Items.COBBLESTONE);
+                    tag(ItemTags.TRIMMABLE_ARMOR).add(testChestplate.asItem());
+                }
+            };
+        });
+
+        test.pass();
     }
 }

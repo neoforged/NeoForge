@@ -1,0 +1,52 @@
+--- a/net/minecraft/world/item/armortrim/TrimMaterial.java
++++ b/net/minecraft/world/item/armortrim/TrimMaterial.java
+@@ -16,23 +_,45 @@
+ import net.minecraft.world.item.Item;
+ 
+ public record TrimMaterial(
+-    String assetName, Holder<Item> ingredient, float itemModelIndex, Map<ArmorMaterials, String> overrideArmorMaterials, Component description
++    String assetName, Holder<Item> ingredient, float itemModelIndex, Map<ArmorMaterials, String> overrideArmorMaterials, Component description, Map<String, String> overrideArmorMaterialNames
+ ) {
+     public static final Codec<TrimMaterial> DIRECT_CODEC = RecordCodecBuilder.create(
+         p_304349_ -> p_304349_.group(
+                     ExtraCodecs.RESOURCE_PATH_CODEC.fieldOf("asset_name").forGetter(TrimMaterial::assetName),
+                     RegistryFixedCodec.create(Registries.ITEM).fieldOf("ingredient").forGetter(TrimMaterial::ingredient),
+                     Codec.FLOAT.fieldOf("item_model_index").forGetter(TrimMaterial::itemModelIndex),
+-                    Codec.unboundedMap(ArmorMaterials.CODEC, Codec.STRING)
++                    Codec.unboundedMap(Codec.STRING, Codec.STRING) // NeoForge: The vanilla server sends ArmorMaterials keys as strings.
+                         .optionalFieldOf("override_armor_materials", Map.of())
+-                        .forGetter(TrimMaterial::overrideArmorMaterials),
++                        .forGetter(TrimMaterial::overrideArmorMaterialNames),
+                     ComponentSerialization.CODEC.fieldOf("description").forGetter(TrimMaterial::description)
+                 )
+-                .apply(p_304349_, TrimMaterial::new)
++                .apply(p_304349_, (asset, ingredient, index, map, component) -> new TrimMaterial(asset, ingredient, index, component, map))
+     );
+     public static final Codec<Holder<TrimMaterial>> CODEC = RegistryFileCodec.create(Registries.TRIM_MATERIAL, DIRECT_CODEC);
+ 
++    /**
++     * @deprecated use {@link TrimMaterial#create(String, Item, float, Map, Component)}
++     */
++    @Deprecated
+     public static TrimMaterial create(String p_268108_, Item p_268361_, float p_268202_, Component p_268273_, Map<ArmorMaterials, String> p_267977_) {
+         return new TrimMaterial(p_268108_, BuiltInRegistries.ITEM.wrapAsHolder(p_268361_), p_268202_, p_267977_, p_268273_);
+     }
++    /*=================================== NEOFORGE START =========================================*/
++    private static final java.util.function.Function<String, ArmorMaterials> LOOKUP = net.minecraft.util.StringRepresentable.createNameLookup(ArmorMaterials.values(), $ -> $);
++    /**
++     * @deprecated Use {@link TrimMaterial#TrimMaterial(String, Holder, float, Component, Map)}
++     */
++    @Deprecated
++    public TrimMaterial(String assetName, Holder<Item> ingredient, float itemModelIndex, Map<ArmorMaterials, String> overrideArmorMaterials, Component description) {
++        this(assetName, ingredient, itemModelIndex, overrideArmorMaterials, description, overrideArmorMaterials.entrySet().stream().collect(java.util.stream.Collectors.toMap(e -> e.getKey().getName(), Map.Entry::getValue)));
++    }
++
++    public TrimMaterial(String assetName, Holder<Item> ingredient, float itemModelIndex, Component description, Map<String, String> overrideArmorMaterialNames) {
++        this(assetName, ingredient, itemModelIndex, overrideArmorMaterialNames.entrySet().stream().filter(entry -> LOOKUP.apply(entry.getKey()) != null).collect(java.util.stream.Collectors.toMap(e -> LOOKUP.apply(e.getKey()), Map.Entry::getValue)), description, overrideArmorMaterialNames);
++    }
++
++    public static TrimMaterial create(String assetName, Item ingredient, float itemModelIndex, Map<net.minecraft.world.item.ArmorMaterial, String> overrideArmorMaterials, Component description) {
++        return new TrimMaterial(assetName, BuiltInRegistries.ITEM.wrapAsHolder(ingredient), itemModelIndex, description, overrideArmorMaterials.entrySet().stream().collect(java.util.stream.Collectors.toMap(e -> e.getKey().getName(), Map.Entry::getValue)));
++    }
++    /*=================================== NEOFORGE END =========================================*/
+ }
