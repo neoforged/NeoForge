@@ -40,11 +40,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
-import net.minecraft.server.packs.repository.BuiltInPackSource;
-import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ExtraCodecs;
@@ -58,8 +54,6 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.flag.FeatureFlagSet;
-import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -151,7 +145,6 @@ import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifiers;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
@@ -631,29 +624,6 @@ public class NeoForgeMod {
 
         modEventBus.register(NeoForgeDataMaps.class);
 
-        modEventBus.addListener(AddPackFindersEvent.class, event -> {
-            if (event.getPackType() != PackType.SERVER_DATA)
-                return;
-
-            // register, opt-in, data pack source for experimental mod elements
-            // this allows the pack to show in the experiments selection screen
-            // via our data-generated data pack
-            event.addRepositorySource(consumer -> consumer.accept(Pack.readMetaAndCreate(
-                    "builtin/mod_experimental_pack",
-                    Component.translatable("pack.neoforge.mod_experimental.title"),
-                    false,
-                    BuiltInPackSource.fromName(path -> new PathPackResources(
-                            path,
-                            container.getModInfo()
-                                    .getOwningFile()
-                                    .getFile()
-                                    .findResource("data", "neoforge", "datapacks", "mod_experimental"),
-                            false)),
-                    PackType.SERVER_DATA,
-                    Pack.Position.BOTTOM,
-                    PackSource.FEATURE)));
-        });
-
         if (isPRBuild(container.getModInfo().getVersion().toString())) {
             isPRBuild = true;
             ModLoader.get().addWarning(new ModLoadingWarning(
@@ -698,17 +668,6 @@ public class NeoForgeMod {
 
         gen.addProvider(event.includeClient(), new NeoForgeSpriteSourceProvider(packOutput, lookupProvider, existingFileHelper));
         gen.addProvider(event.includeClient(), new VanillaSoundDefinitionsProvider(packOutput, existingFileHelper));
-
-        // data pack for experimental features pack
-        // contains nothing but required metadata for the feature flag
-        gen.getVanillaPack(true)
-                .addProvider(pack -> PackMetadataGenerator.forFeaturePack(
-                        new PackOutput(pack.getOutputFolder(PackOutput.Target.DATA_PACK)
-                                .resolve(NeoForgeVersion.MOD_ID)
-                                .resolve("datapacks")
-                                .resolve("mod_experimental")),
-                        Component.translatable("pack.neoforge.mod_experimental.description"),
-                        FeatureFlagSet.of(FeatureFlags.MOD_EXPERIMENTAL)));
     }
 
     // done in an event instead of deferred to only enable if a mod requests it
