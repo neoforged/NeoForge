@@ -70,12 +70,12 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
 
         @Override
         public Component getNarration() {
-            return Component.translatable("narrator.select", Component.translatableWithFallback("fml.menu.mods.info.displayname." + modInfo.getModId(), modInfo.getDisplayName()));
+            return Component.translatable("narrator.select", I18nExtension.getDisplayName(modInfo));
         }
 
         @Override
         public void render(GuiGraphics guiGraphics, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-            Component name = Component.literal(stripControlCodes(I18nExtension.parseMessageWithFallback("fml.menu.mods.info.displayname." + modInfo.getModId(), modInfo::getDisplayName)));
+            Component name = Component.literal(stripControlCodes(I18nExtension.getDisplayName(modInfo)));
             Component version = Component.literal(stripControlCodes(MavenVersionStringHelper.artifactVersionToString(modInfo.getVersion())));
             VersionChecker.CheckResult vercheck = VersionChecker.getResult(modInfo);
             Font font = this.parent.getFontRenderer();

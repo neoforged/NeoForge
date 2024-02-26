@@ -110,6 +110,14 @@ public class I18nExtension {
         return extendedMessageFormat.format(args);
     }
 
+    public static String getDisplayName(final IModInfo modInfo) {
+        return parseMessageWithFallback("fml.menu.mods.info.displayname." + modInfo.getModId(), modInfo::getDisplayName);
+    }
+
+    public static String getDescription(final IModInfo modInfo) {
+        return parseMessageWithFallback("fml.menu.mods.info.description." + modInfo.getModId(), modInfo::getDescription);
+    }
+
     public static String stripSpecialChars(String message) {
         // We can't handle many unicode points in the splash renderer
         return DISALLOWED_CHAR_MATCHER.removeFrom(stripControlCodes(message));
