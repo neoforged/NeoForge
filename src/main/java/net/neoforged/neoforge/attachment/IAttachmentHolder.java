@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.attachment;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,6 +45,22 @@ public interface IAttachmentHolder {
      */
     default <T> T getData(Supplier<AttachmentType<T>> type) {
         return getData(type.get());
+    }
+
+    /**
+     * {@return an optional possibly containing a data attachment value of the given type}
+     *
+     * <p>If there is no data attachment of the given type, an empty optional is returned.
+     */
+    <T> Optional<T> getExistingData(AttachmentType<T> type);
+
+    /**
+     * {@return an optional possibly containing a data attachment value of the given type}
+     *
+     * <p>If there is no data attachment of the given type, an empty optional is returned.
+     */
+    default <T> Optional<T> getExistingData(Supplier<AttachmentType<T>> type) {
+        return getExistingData(type.get());
     }
 
     /**
