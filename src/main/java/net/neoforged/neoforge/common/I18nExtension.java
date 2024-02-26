@@ -74,7 +74,7 @@ public class I18nExtension {
         if (Objects.equals(formatString, "id")) {
             stringBuffer.append(info.getModId());
         } else if (Objects.equals(formatString, "name")) {
-            stringBuffer.append(info.getDisplayName());
+            stringBuffer.append(getDisplayName(info));
         }
     }
 
