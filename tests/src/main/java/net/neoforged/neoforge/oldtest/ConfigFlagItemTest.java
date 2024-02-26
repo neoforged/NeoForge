@@ -22,13 +22,18 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-/*
-    Current known issues
-        When playing on a server elements do not sync their enabled states correctly
-            Since server configs are currently only synced during player login
-            If the config changes live while you are connected to a server
-            elements will remain in their previous enabled state until player relogs or server restarts
-            '/reload' does not fix this issue
+/**
+ * Current known issues
+ * <p>
+ * When playing on a server elements do not sync their enabled states correctly
+ * <ul>
+ * <li>
+ * Since server configs are currently only synced during player login.<br>
+ * If the config changes live while a client is connected to a server elements will
+ * remain in their previous enabled state for that client until they relog or server restarts<br>
+ * '/reload' does not fix this issue
+ * </li>
+ * </ul>
  */
 @Mod(ConfigFlagItemTest.ID)
 public final class ConfigFlagItemTest {
