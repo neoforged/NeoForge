@@ -435,10 +435,10 @@ public class AttachmentTests {
 
         test.onGameTest(helper -> {
             ItemStack stack = Items.APPLE.getDefaultInstance();
-            Optional<Integer> optional = stack.getOptionalData(attachmentType);
+            Optional<Integer> optional = stack.getExistingData(attachmentType);
             helper.assertTrue(optional.isEmpty(), "Optional should be empty");
             stack.setData(attachmentType, 1);
-            optional = stack.getOptionalData(attachmentType);
+            optional = stack.getExistingData(attachmentType);
             helper.assertTrue(optional.isPresent(), "Optional should have attached data");
             helper.succeed();
         });

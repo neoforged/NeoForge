@@ -82,7 +82,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     }
 
     @Override
-    public <T> Optional<T> getOptionalData(AttachmentType<T> type) {
+    public <T> Optional<T> getExistingData(AttachmentType<T> type) {
         validateAttachmentType(type);
         if (attachments == null) {
             return Optional.empty();

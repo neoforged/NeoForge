@@ -66,8 +66,8 @@
 +    }
 +
 +    @Override
-+    public <T> java.util.Optional<T> getOptionalData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        return getAttachmentHolder().getOptionalData(type);
++    public <T> java.util.Optional<T> getExistingData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
++        return getAttachmentHolder().getExistingData(type);
 +    }
 +
 +    @Override

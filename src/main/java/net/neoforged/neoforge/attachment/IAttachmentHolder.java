@@ -52,15 +52,15 @@ public interface IAttachmentHolder {
      *
      * <p>If there is no data attachment of the given type, an empty optional is returned.
      */
-    <T> Optional<T> getOptionalData(AttachmentType<T> type);
+    <T> Optional<T> getExistingData(AttachmentType<T> type);
 
     /**
      * {@return an optional possibly containing a data attachment value of the given type}
      *
      * <p>If there is no data attachment of the given type, an empty optional is returned.
      */
-    default <T> Optional<T> getOptionalData(Supplier<AttachmentType<T>> type) {
-        return getOptionalData(type.get());
+    default <T> Optional<T> getExistingData(Supplier<AttachmentType<T>> type) {
+        return getExistingData(type.get());
     }
 
     /**
