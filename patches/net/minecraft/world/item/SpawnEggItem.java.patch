@@ -44,7 +44,7 @@
      }
  
      public Optional<Mob> spawnOffspringFromSpawnEgg(
-@@ -192,5 +_,9 @@
+@@ -192,5 +_,15 @@
                  }
              }
          }
@@ -52,5 +52,11 @@
 +
 +    protected EntityType<?> getDefaultType() {
 +        return defaultType;
++    }
++
++    @Override
++    public boolean isDisabled() {
++        // NeoForge: Disabled of associated entity type is also disabled
++        return super.isDisabled() || getDefaultType().isDisabled();
      }
  }

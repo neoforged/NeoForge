@@ -31,14 +31,26 @@
      @Nullable
      public BlockPlaceContext updatePlacementContext(BlockPlaceContext p_40609_) {
          return p_40609_;
-@@ -208,6 +_,10 @@
- 
-     public void registerBlocks(Map<Block, Item> p_40607_, Item p_40608_) {
+@@ -210,6 +_,10 @@
          p_40607_.put(this.getBlock(), p_40608_);
-+    }
-+
-+    public void removeFromBlockToItemMap(Map<Block, Item> blockToItemMap, Item itemIn) {
-+        blockToItemMap.remove(this.getBlock());
      }
  
++    public void removeFromBlockToItemMap(Map<Block, Item> blockToItemMap, Item itemIn) {
++        blockToItemMap.remove(this.getBlock());
++    }
++
      @Override
+     public boolean canFitInsideContainerItems() {
+         return !(this.block instanceof ShulkerBoxBlock);
+@@ -244,5 +_,11 @@
+     @Override
+     public FeatureFlagSet requiredFeatures() {
+         return this.getBlock().requiredFeatures();
++    }
++
++    @Override
++    public boolean isDisabled() {
++        // NeoForge: Disabled of associated block is also disabled
++        return super.isDisabled() || getBlock().isDisabled();
+     }
+ }
