@@ -13,12 +13,16 @@ import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
 import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount.Formula;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Fired before setting the drop count of an {@link ItemStack} from the {@link ApplyBonusCount} loot function.
+ * Fired before setting the drop count of an {@link ItemStack} from the {@link ApplyBonusCount} loot function
+ * (for example, Fortune-like enchantments). It allows enchantment levels to be modified, or the drop count to
+ * be set to a specific value. It will run before Global Loot Modifiers are applied.
  * <p>
- * It allows enchantment levels to be modified, or the drop count to be set to a specific value.
+ * When possible, consider using the {@link GetEnchantmentLevelEvent} as it allows non-loot table contexts to
+ * properly query the enchantment.
  */
 public class BonusLootDropsEvent extends Event {
     private final ItemStack itemStack;
