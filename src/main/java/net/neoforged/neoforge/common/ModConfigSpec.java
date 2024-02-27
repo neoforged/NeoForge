@@ -29,7 +29,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Function;
+import java.util.function.IntSupplier;
+import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -959,13 +963,26 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
         }
     }
 
-    public static class BooleanValue extends ConfigValue<Boolean> {
+    public static class BooleanValue extends ConfigValue<Boolean> implements BooleanSupplier {
         BooleanValue(Builder parent, List<String> path, Supplier<Boolean> defaultSupplier) {
             super(parent, path, defaultSupplier);
         }
+
+        @Override
+        public boolean getAsBoolean() {
+            return get();
+        }
+
+        public boolean isTrue() {
+            return getAsBoolean();
+        }
+
+        public boolean isFalse() {
+            return !getAsBoolean();
+        }
     }
 
-    public static class IntValue extends ConfigValue<Integer> {
+    public static class IntValue extends ConfigValue<Integer> implements IntSupplier {
         IntValue(Builder parent, List<String> path, Supplier<Integer> defaultSupplier) {
             super(parent, path, defaultSupplier);
         }
@@ -974,9 +991,14 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
         protected Integer getRaw(Config config, List<String> path, Supplier<Integer> defaultSupplier) {
             return config.getIntOrElse(path, () -> defaultSupplier.get());
         }
+
+        @Override
+        public int getAsInt() {
+            return get();
+        }
     }
 
-    public static class LongValue extends ConfigValue<Long> {
+    public static class LongValue extends ConfigValue<Long> implements LongSupplier {
         LongValue(Builder parent, List<String> path, Supplier<Long> defaultSupplier) {
             super(parent, path, defaultSupplier);
         }
@@ -985,9 +1007,14 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
         protected Long getRaw(Config config, List<String> path, Supplier<Long> defaultSupplier) {
             return config.getLongOrElse(path, () -> defaultSupplier.get());
         }
+
+        @Override
+        public long getAsLong() {
+            return get();
+        }
     }
 
-    public static class DoubleValue extends ConfigValue<Double> {
+    public static class DoubleValue extends ConfigValue<Double> implements DoubleSupplier {
         DoubleValue(Builder parent, List<String> path, Supplier<Double> defaultSupplier) {
             super(parent, path, defaultSupplier);
         }
@@ -996,6 +1023,11 @@ public class ModConfigSpec extends UnmodifiableConfigWrapper<UnmodifiableConfig>
         protected Double getRaw(Config config, List<String> path, Supplier<Double> defaultSupplier) {
             Number n = config.<Number>get(path);
             return n == null ? defaultSupplier.get() : n.doubleValue();
+        }
+
+        @Override
+        public double getAsDouble() {
+            return get();
         }
     }
 
