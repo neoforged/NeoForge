@@ -63,10 +63,10 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
         tag(Biomes.BEACH, Tags.Biomes.IS_WET_OVERWORLD, Tags.Biomes.IS_SANDY);
         tag(Biomes.SNOWY_BEACH, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_SNOWY);
         tag(Biomes.SNOWY_TAIGA, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_CONIFEROUS_TREE, Tags.Biomes.IS_SNOWY);
-        tag(Biomes.FROZEN_RIVER, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_SNOWY);
+        tag(Biomes.FROZEN_RIVER, Tags.Biomes.IS_COLD_OVERWORLD);
         tag(Biomes.WARM_OCEAN, Tags.Biomes.IS_HOT_OVERWORLD);
         tag(Biomes.COLD_OCEAN, Tags.Biomes.IS_COLD_OVERWORLD);
-        tag(Biomes.FROZEN_OCEAN, Tags.Biomes.IS_COLD_OVERWORLD, Tags.Biomes.IS_SNOWY);
+        tag(Biomes.FROZEN_OCEAN, Tags.Biomes.IS_COLD_OVERWORLD);
         tag(Biomes.DEEP_COLD_OCEAN, Tags.Biomes.IS_COLD_OVERWORLD);
         tag(Biomes.DEEP_FROZEN_OCEAN, Tags.Biomes.IS_COLD_OVERWORLD);
         tag(Biomes.MUSHROOM_FIELDS, Tags.Biomes.IS_MUSHROOM, Tags.Biomes.IS_RARE);

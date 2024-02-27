@@ -8,8 +8,6 @@
     "minecraft:frozen_peaks",
     "minecraft:snowy_beach",
     "minecraft:snowy_taiga",
-    "minecraft:frozen_river",
-    "minecraft:frozen_ocean",
     {
       "id": "#forge:is_snowy",
       "required": false
