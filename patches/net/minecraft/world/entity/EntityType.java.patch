@@ -7,7 +7,7 @@
 +    private final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier;
-+    private final java.util.function.BooleanSupplier isDisabled;
++    private final java.util.function.BooleanSupplier isFeatureEnabled;
 +
      private static <T extends Entity> EntityType<T> register(String p_20635_, EntityType.Builder<T> p_20636_) {
          return Registry.register(BuiltInRegistries.ENTITY_TYPE, p_20635_, p_20636_.build(p_20635_));
@@ -16,7 +16,7 @@
          int p_273451_,
          FeatureFlagSet p_273518_
      ) {
-+         this(p_273268_, p_272918_, p_273417_, p_273389_, p_273556_, p_272654_, p_273631_, p_272946_, p_272895_, p_273451_, p_273518_, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier, () -> false);
++         this(p_273268_, p_272918_, p_273417_, p_273389_, p_273556_, p_272654_, p_273631_, p_272946_, p_272895_, p_273451_, p_273518_, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier, net.neoforged.neoforge.common.extensions.IFeatureElementExtension::always);
 +    }
 +    public EntityType(
 +        EntityType.EntityFactory<T> p_273268_,
@@ -33,7 +33,7 @@
 +        final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier,
 +        final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
 +        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier,
-+        final java.util.function.BooleanSupplier isDisabled
++        final java.util.function.BooleanSupplier isFeatureEnabled
 +    ) {
          this.factory = p_273268_;
          this.category = p_272918_;
@@ -45,7 +45,7 @@
 +        this.trackDeltasSupplier = trackDeltasSupplier;
 +        this.trackingRangeSupplier = trackingRangeSupplier;
 +        this.updateIntervalSupplier = updateIntervalSupplier;
-+        this.isDisabled = isDisabled;
++        this.isFeatureEnabled = isFeatureEnabled;
      }
  
      @Nullable
@@ -96,8 +96,8 @@
 +    public Stream<TagKey<EntityType<?>>> getTags() {return this.builtInRegistryHolder().tags();}
 +
 +    @Override
-+    public boolean isDisabled() {
-+        return isDisabled.getAsBoolean();
++    public boolean isFeatureEnabled() {
++        return isFeatureEnabled.getAsBoolean();
 +    }
 +
      public static class Builder<T extends Entity> {
@@ -110,7 +110,7 @@
 +        private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultTrackDeltasSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier = EntityType::defaultTrackingRangeSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier = EntityType::defaultUpdateIntervalSupplier;
-+        private java.util.function.BooleanSupplier isDisabled = () -> false;
++        private java.util.function.BooleanSupplier isFeatureEnabled = net.neoforged.neoforge.common.extensions.IFeatureElementExtension::always;
 +
          private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
              this.factory = p_20696_;
@@ -119,15 +119,15 @@
              return this;
          }
  
-+        /** @deprecated use {@linkplain #isDisabled(java.util.function.BooleanSupplier)} */
++        /** @deprecated use {@linkplain #isFeatureEnabled(java.util.function.BooleanSupplier)} */
 +        @java.lang.Deprecated
          public EntityType.Builder<T> requiredFeatures(FeatureFlag... p_251646_) {
              this.requiredFeatures = FeatureFlags.REGISTRY.subset(p_251646_);
              return this;
          }
  
-+        public EntityType.Builder<T> isDisabled(java.util.function.BooleanSupplier isDisabled) {
-+            this.isDisabled = isDisabled;
++        public EntityType.Builder<T> isFeatureEnabled(java.util.function.BooleanSupplier isFeatureEnabled) {
++            this.isFeatureEnabled = isFeatureEnabled;
 +            return this;
 +        }
 +
@@ -149,7 +149,7 @@
          public EntityType<T> build(String p_20713_) {
              if (this.serialize) {
                  Util.fetchChoiceType(References.ENTITY_TREE, p_20713_);
-@@ -1089,7 +_,11 @@
+@@ -1089,7 +_,10 @@
                  this.dimensions,
                  this.clientTrackingRange,
                  this.updateInterval,
@@ -157,8 +157,7 @@
 +                this.requiredFeatures,
 +                velocityUpdateSupplier,
 +                trackingRangeSupplier,
-+                updateIntervalSupplier,
-+                isDisabled
++                updateIntervalSupplier, isFeatureEnabled
              );
          }
      }

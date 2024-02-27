@@ -13,11 +13,11 @@
      public static final MenuType<StonecutterMenu> STONECUTTER = register("stonecutter", StonecutterMenu::new);
      private final FeatureFlagSet requiredFeatures;
      private final MenuType.MenuSupplier<T> constructor;
-+    private final java.util.function.BooleanSupplier isDisabled;
++    private final java.util.function.BooleanSupplier isFeatureEnabled;
  
      private static <T extends AbstractContainerMenu> MenuType<T> register(String p_39989_, MenuType.MenuSupplier<T> p_39990_) {
          return Registry.register(BuiltInRegistries.MENU, p_39989_, new MenuType<>(p_39990_, FeatureFlags.VANILLA_SET));
-@@ -45,9 +_,18 @@
+@@ -45,9 +_,20 @@
          return Registry.register(BuiltInRegistries.MENU, p_267295_, new MenuType<>(p_266945_, FeatureFlags.REGISTRY.subset(p_267055_)));
      }
  
@@ -26,12 +26,14 @@
      public MenuType(MenuType.MenuSupplier<T> p_267054_, FeatureFlagSet p_266909_) {
          this.constructor = p_267054_;
          this.requiredFeatures = p_266909_;
-+        isDisabled = () -> false;
++        // NeoForge: vanilla menus are marked as always enabled via our hooks, as they use the experiments for this
++        isFeatureEnabled = net.neoforged.neoforge.common.extensions.IFeatureElementExtension::always;
 +    }
 +
-+    public MenuType(MenuType.MenuSupplier<T> constructor, final java.util.function.BooleanSupplier isDisabled) {
++    public MenuType(MenuType.MenuSupplier<T> constructor, final java.util.function.BooleanSupplier isFeatureEnabled) {
 +        this.constructor = constructor;
-+        this.isDisabled = isDisabled;
++        this.isFeatureEnabled = isFeatureEnabled;
++        // NeoForge: modded menus use the default set of feature flags, as they use #isFeatureEnabled instead
 +        requiredFeatures = FeatureFlags.DEFAULT_FLAGS;
      }
  
@@ -53,8 +55,8 @@
 +    }
 +
 +    @Override
-+    public boolean isDisabled() {
-+        return isDisabled.getAsBoolean();
++    public boolean isFeatureEnabled() {
++        return isFeatureEnabled.getAsBoolean();
      }
  
      public interface MenuSupplier<T extends AbstractContainerMenu> {

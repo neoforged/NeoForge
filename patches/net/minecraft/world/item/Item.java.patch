@@ -12,11 +12,20 @@
      protected static final UUID BASE_ATTACK_DAMAGE_UUID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
      protected static final UUID BASE_ATTACK_SPEED_UUID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
      public static final int MAX_STACK_SIZE = 64;
-@@ -92,12 +_,14 @@
+@@ -70,6 +_,7 @@
+     @Nullable
+     private final FoodProperties foodProperties;
+     private final FeatureFlagSet requiredFeatures;
++    private final java.util.function.BooleanSupplier isFeatureEnabled;
+ 
+     public static int getId(Item p_41394_) {
+         return p_41394_ == null ? 0 : BuiltInRegistries.ITEM.getId(p_41394_);
+@@ -92,12 +_,15 @@
          this.foodProperties = p_41383_.foodProperties;
          this.isFireResistant = p_41383_.isFireResistant;
          this.requiredFeatures = p_41383_.requiredFeatures;
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
++        this.isFeatureEnabled = p_41383_.isFeatureEnabled;
 +        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
              String s = this.getClass().getSimpleName();
              if (!s.endsWith("Item")) {
@@ -166,10 +175,15 @@
      @Nullable
      public FoodProperties getFoodProperties() {
          return this.foodProperties;
-@@ -372,6 +_,32 @@
+@@ -372,6 +_,37 @@
          return this.requiredFeatures;
      }
  
++    @Override
++    public boolean isFeatureEnabled() {
++        return isFeatureEnabled.getAsBoolean();
++    }
++
 +    // FORGE START
 +    private Object renderProperties;
 +
@@ -199,23 +213,33 @@
      public static class Properties {
          int maxStackSize = 64;
          int maxDamage;
-@@ -382,6 +_,7 @@
+@@ -382,6 +_,8 @@
          FoodProperties foodProperties;
          boolean isFireResistant;
          FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
 +        private boolean canRepair = true;
++        private java.util.function.BooleanSupplier isFeatureEnabled = net.neoforged.neoforge.common.extensions.IFeatureElementExtension::always;
  
          public Item.Properties food(FoodProperties p_41490_) {
              this.foodProperties = p_41490_;
-@@ -419,6 +_,11 @@
- 
-         public Item.Properties fireResistant() {
-             this.isFireResistant = true;
-+            return this;
-+        }
-+
-+        public Item.Properties setNoRepair() {
-+            canRepair = false;
+@@ -422,8 +_,20 @@
              return this;
          }
  
++        public Item.Properties setNoRepair() {
++            canRepair = false;
++            return this;
++        }
++
++        /** @deprecated use {@linkplain #isFeatureEnabled(java.util.function.BooleanSupplier)} */
++        @java.lang.Deprecated
+         public Item.Properties requiredFeatures(FeatureFlag... p_250948_) {
+             this.requiredFeatures = FeatureFlags.REGISTRY.subset(p_250948_);
++            return this;
++        }
++
++        public Item.Properties isFeatureEnabled(java.util.function.BooleanSupplier isFeatureEnabled) {
++            this.isFeatureEnabled = isFeatureEnabled;
+             return this;
+         }
+     }

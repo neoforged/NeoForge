@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.oldtest;
 
-import java.util.function.Function;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -17,6 +15,7 @@ import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.extensions.IFeatureElementExtension;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -38,14 +37,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 @Mod(ConfigFlagItemTest.ID)
 public final class ConfigFlagItemTest {
     public static final String ID = "config_flag_item_test";
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ID);
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ID);
-
-    // the following elements are always registered to the game
-    // but override the new 'isDisabled' method from IFeatureElementExtension
-    // telling the game to only enable them when the config returns 'true'
-    public static final DeferredItem<ConfigItem> CONFIG_ITEM = ITEMS.registerItem("config_item", ConfigItem::new);
-    public static final DeferredBlock<ConfigBlock> CONFIG_BLOCK = BLOCKS.registerBlock("config_block", ConfigBlock::new, BlockBehaviour.Properties.ofLegacyCopy(Blocks.STONE));
 
     public static final ModConfigSpec.BooleanValue ENABLE_CONFIG_ITEM;
     public static final ModConfigSpec.BooleanValue ENABLE_CONFIG_BLOCK;
@@ -53,19 +44,35 @@ public final class ConfigFlagItemTest {
     static {
         var builder = new ModConfigSpec.Builder();
 
-        Function<ResourceLocation, ModConfigSpec.BooleanValue> config = id -> builder
-                .comment("Enable the Item: '%s'".formatted(id))
-                .define("enable.%s".formatted(id.getPath()), false);
+        ENABLE_CONFIG_ITEM = builder.comment("Enable the Item: '%s:config_item'".formatted(ID))
+                .define("enable.config_item", true);
 
-        // these flags return 'true' when item is enabled
-        // and 'false' when item is disabled
-        // they will need negating in the 'isDisabled' methods
-        // to match the logic 'true' -> 'disabled' not 'true' -> 'enabled'
-        ENABLE_CONFIG_ITEM = config.apply(CONFIG_ITEM.getId());
-        ENABLE_CONFIG_BLOCK = config.apply(CONFIG_BLOCK.getId());
+        ENABLE_CONFIG_BLOCK = builder.comment("Enable the Block: '%s:config_block'".formatted(ID))
+                .define("enable.config_block", true);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, builder.build());
     }
+
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ID);
+
+    // the following elements are always registered to the game
+    // but override the new 'isDisabled' method from IFeatureElementExtension
+    // telling the game to only enable them when the config returns 'true'
+    //
+    // need '::get' as `BooleanValue` does not implement `BooleanSupplier` but `Supplier<Boolean>`
+    public static final DeferredItem<Item> CONFIG_ITEM = ITEMS.registerSimpleItem("config_item", new Item.Properties()
+            .isFeatureEnabled(ENABLE_CONFIG_ITEM::get));
+
+    public static final DeferredBlock<Block> CONFIG_BLOCK = BLOCKS.registerSimpleBlock("config_block", BlockBehaviour.Properties
+            .ofLegacyCopy(Blocks.STONE)
+            .isFeatureEnabled(ENABLE_CONFIG_BLOCK::get));
+
+    // this block (and its associated item) should be registered to the game
+    // but always be disabled, never show up in creative mode tabs, be givable or placeable
+    public static final DeferredBlock<Block> ALWAYS_DISABLED_BLOCK = BLOCKS.registerSimpleBlock("always_disabled", BlockBehaviour.Properties
+            .ofLegacyCopy(Blocks.STONE)
+            .isFeatureEnabled(IFeatureElementExtension::never));
 
     public ConfigFlagItemTest(IEventBus bus) {
         // take note on how we register a bar minimum block item for our block
@@ -89,27 +96,5 @@ public final class ConfigFlagItemTest {
                 event.accept(CONFIG_BLOCK);
             }
         });
-    }
-
-    public static final class ConfigItem extends Item {
-        public ConfigItem(Properties properties) {
-            super(properties);
-        }
-
-        @Override
-        public boolean isDisabled() {
-            return !ENABLE_CONFIG_ITEM.get();
-        }
-    }
-
-    public static final class ConfigBlock extends Block {
-        public ConfigBlock(Properties properties) {
-            super(properties);
-        }
-
-        @Override
-        public boolean isDisabled() {
-            return !ENABLE_CONFIG_BLOCK.get();
-        }
     }
 }

@@ -49,8 +49,8 @@
 +    }
 +
 +    @Override
-+    public boolean isDisabled() {
-+        // NeoForge: Disabled of associated block is also disabled
-+        return super.isDisabled() || getBlock().isDisabled();
++    public boolean isFeatureEnabled() {
++        // NeoForge: Disabled when associated block is also disabled
++        return super.isFeatureEnabled() && getBlock().isFeatureEnabled();
      }
  }

@@ -55,8 +55,8 @@
 +    }
 +
 +    @Override
-+    public boolean isDisabled() {
-+        // NeoForge: Disabled of associated entity type is also disabled
-+        return super.isDisabled() || getDefaultType().isDisabled();
++    public boolean isFeatureEnabled() {
++        // NeoForge: Disabled when associated entity type is also disabled
++        return super.isFeatureEnabled() && getDefaultType().isFeatureEnabled();
      }
  }

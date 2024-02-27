@@ -13,12 +13,12 @@ import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.network.IContainerFactory;
 
 public interface IMenuTypeExtension<T> {
-    static <T extends AbstractContainerMenu> MenuType<T> create(IContainerFactory<T> factory, BooleanSupplier isDisabled) {
-        return new MenuType<>(factory, isDisabled);
+    static <T extends AbstractContainerMenu> MenuType<T> create(IContainerFactory<T> factory, BooleanSupplier isFeatureEnabled) {
+        return new MenuType<>(factory, isFeatureEnabled);
     }
 
     static <T extends AbstractContainerMenu> MenuType<T> create(IContainerFactory<T> factory) {
-        return create(factory, () -> false);
+        return create(factory, IFeatureElementExtension::always);
     }
 
     T create(int windowId, Inventory playerInv, FriendlyByteBuf extraData);
