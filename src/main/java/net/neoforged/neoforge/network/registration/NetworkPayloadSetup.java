@@ -17,25 +17,16 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @param configuration The configuration channels.
  * @param play          The play channels.
- * @param vanilla       Whether this is a vanilla network.
  */
 @ApiStatus.Internal
 public record NetworkPayloadSetup(
         Map<ResourceLocation, NetworkChannel> configuration,
-        Map<ResourceLocation, NetworkChannel> play,
-        boolean vanilla) {
+        Map<ResourceLocation, NetworkChannel> play) {
     /**
      * {@return An empty modded network.}
      */
-    public static NetworkPayloadSetup emptyModded() {
-        return new NetworkPayloadSetup(Map.of(), Map.of(), false);
-    }
-
-    /**
-     * {@return An empty vanilla network.}
-     */
-    public static NetworkPayloadSetup emptyVanilla() {
-        return new NetworkPayloadSetup(Map.of(), Map.of(), true);
+    public static NetworkPayloadSetup empty() {
+        return new NetworkPayloadSetup(Map.of(), Map.of());
     }
 
     /**
@@ -44,7 +35,6 @@ public record NetworkPayloadSetup(
     public static NetworkPayloadSetup from(Set<NetworkChannel> configuration, Set<NetworkChannel> play) {
         return new NetworkPayloadSetup(
                 configuration.stream().collect(Collectors.toMap(NetworkChannel::id, Function.identity())),
-                play.stream().collect(Collectors.toMap(NetworkChannel::id, Function.identity())),
-                false);
+                play.stream().collect(Collectors.toMap(NetworkChannel::id, Function.identity())));
     }
 }

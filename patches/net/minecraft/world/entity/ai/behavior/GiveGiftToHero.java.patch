@@ -1,0 +1,27 @@
+--- a/net/minecraft/world/entity/ai/behavior/GiveGiftToHero.java
++++ b/net/minecraft/world/entity/ai/behavior/GiveGiftToHero.java
+@@ -31,6 +_,7 @@
+     private static final int MIN_TIME_BETWEEN_GIFTS = 600;
+     private static final int MAX_TIME_BETWEEN_GIFTS = 6600;
+     private static final int TIME_TO_DELAY_FOR_HEAD_TO_FINISH_TURNING = 20;
++    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#RAID_HERO_GIFTS data map} instead */
+     private static final Map<VillagerProfession, ResourceLocation> GIFTS = Util.make(Maps.newHashMap(), p_23020_ -> {
+         p_23020_.put(VillagerProfession.ARMORER, BuiltInLootTables.ARMORER_GIFT);
+         p_23020_.put(VillagerProfession.BUTCHER, BuiltInLootTables.BUTCHER_GIFT);
+@@ -121,8 +_,14 @@
+             return ImmutableList.of(new ItemStack(Items.POPPY));
+         } else {
+             VillagerProfession villagerprofession = p_23010_.getVillagerData().getProfession();
+-            if (GIFTS.containsKey(villagerprofession)) {
+-                LootTable loottable = p_23010_.level().getServer().getLootData().getLootTable(GIFTS.get(villagerprofession));
++            LootTable loottable = null;
++            var gift = net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.wrapAsHolder(villagerprofession).getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.RAID_HERO_GIFTS);
++            if (gift != null) {
++                loottable = p_23010_.level().getServer().getLootData().getLootTable(gift.lootTable());
++            } else if (GIFTS.containsKey(villagerprofession)) {
++                loottable = p_23010_.level().getServer().getLootData().getLootTable(GIFTS.get(villagerprofession));
++            }
++            if (loottable != null) {
+                 LootParams lootparams = new LootParams.Builder((ServerLevel)p_23010_.level())
+                     .withParameter(LootContextParams.ORIGIN, p_23010_.position())
+                     .withParameter(LootContextParams.THIS_ENTITY, p_23010_)

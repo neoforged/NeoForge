@@ -4,7 +4,7 @@
      private MessageSignatureCache messageSignatureCache = MessageSignatureCache.createDefault();
      private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
      private final PingDebugMonitor pingDebugMonitor;
-+    private final boolean isModdedConnection;
++    private net.neoforged.neoforge.network.connection.ConnectionType connectionType;
      @Nullable
      private LevelLoadStatusManager levelLoadStatusManager;
      private boolean seenInsecureChatWarning = false;
@@ -12,7 +12,7 @@
          this.advancements = new ClientAdvancements(p_253924_, this.telemetryManager);
          this.suggestionsProvider = new ClientSuggestionProvider(this, p_253924_);
          this.pingDebugMonitor = new PingDebugMonitor(this, p_253924_.getDebugOverlay().getPingLogger());
-+        this.isModdedConnection = p_295121_.isModdedConnection();
++        this.connectionType = p_295121_.connectionType();
      }
  
      public ClientSuggestionProvider getSuggestionsProvider() {
@@ -30,7 +30,7 @@
                          this.serverData,
 -                        this.postDisconnectScreen
 +                        this.postDisconnectScreen,
-+                        this.isModdedConnection
++                        this.connectionType
                      )
                  )
              );
@@ -83,13 +83,23 @@
      }
  
      @Override
-@@ -1916,7 +_,11 @@
+@@ -1916,7 +_,21 @@
      }
  
      @Override
 -    public void handleCustomPayload(CustomPacketPayload p_295851_) {
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295851_) {
-+        if (this.isModdedConnection && net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtClient(this, p_295727_)) {
++        if (p_295851_ instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
++            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
++            return;
++        }
++        if (p_295851_  instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
++            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
++            return;
++        }
++        if (this.connectionType.isNotVanilla() && net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtClient(this, p_295727_)) {
 +            return;
 +        }
 +        PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.
@@ -122,3 +132,13 @@
          Instant instant = Instant.now();
          long i = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
+@@ -2463,5 +_,9 @@
+ 
+     public boolean isFeatureEnabled(FeatureFlagSet p_250605_) {
+         return p_250605_.isSubsetOf(this.enabledFeatures());
++    }
++
++    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
++        return connectionType;
+     }
+ }
