@@ -57,7 +57,7 @@ public final class ConfigFlagItemTest {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ID);
 
     // the following elements are always registered to the game
-    // but override the new 'isDisabled' method from IFeatureElementExtension
+    // but are marked as only being enabled via our configs using the new 'isFeatureEnabled' hooks
     // telling the game to only enable them when the config returns 'true'
     //
     // need '::get' as `BooleanValue` does not implement `BooleanSupplier` but `Supplier<Boolean>`
@@ -75,9 +75,9 @@ public final class ConfigFlagItemTest {
             .isFeatureEnabled(IFeatureElementExtension::never));
 
     public ConfigFlagItemTest(IEventBus bus) {
-        // take note on how we register a bar minimum block item for our block
+        // take note on how we register a bare minimum block item for our blocks
         // this item will still be marked as disabled via the config
-        // as BlockItem delegates its 'isDisabled' to the associated block
+        // as BlockItem delegates its 'isFeatureEnabled' to the associated block
         // this logic should also be true for 'SpawnEgg -> EntityType' bindings
         BLOCKS.getEntries().forEach(ITEMS::registerSimpleBlockItem);
 
