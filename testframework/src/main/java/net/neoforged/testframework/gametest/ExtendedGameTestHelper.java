@@ -66,8 +66,10 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         return sq;
     }
 
-    public void useOn(BlockPos pos, ItemStack item, Player player, Direction direction) {
-        player.setItemInHand(InteractionHand.MAIN_HAND, item);
+    public void useOn(BlockPos pos, ItemStack item, @Nullable Player player, Direction direction) {
+        if (player != null) {
+            player.setItemInHand(InteractionHand.MAIN_HAND, item);
+        }
         pos = this.absolutePos(pos);
         item.useOn(new UseOnContext(
                 this.getLevel(), player, InteractionHand.MAIN_HAND, item, new BlockHitResult(

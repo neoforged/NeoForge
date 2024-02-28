@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.entity.player;
 
+import com.mojang.logging.LogUtils;
 import java.util.Objects;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -78,7 +79,12 @@ public class PlayerEventTests {
                     BlockPos placePos = context.getClickedPos().relative(context.getClickedFace());
                     if (level.getBlockState(placePos.below()).getBlock() == Blocks.DISPENSER) {
                         if (!level.isClientSide) {
-                            context.getPlayer().displayClientMessage(Component.literal("Can't place dirt on dispenser"), false);
+                            String text = "Can't place dirt on dispenser";
+                            if (context.getPlayer() != null) {
+                                context.getPlayer().displayClientMessage(Component.literal(text), false);
+                            } else {
+                                LogUtils.getLogger().info(text);
+                            }
                         }
                         test.pass();
                         event.cancelWithResult(InteractionResult.SUCCESS);
@@ -92,7 +98,7 @@ public class PlayerEventTests {
                 .thenExecute(() -> helper.useOn(
                         new BlockPos(1, 1, 1),
                         Items.DIRT.getDefaultInstance(),
-                        helper.makeMockPlayer(),
+                        null, // Test that null players are allowed too.
                         Direction.UP))
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DIRT, 1, 2, 1))
                 .thenSucceed());

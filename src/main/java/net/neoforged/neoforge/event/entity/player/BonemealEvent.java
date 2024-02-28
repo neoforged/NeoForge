@@ -23,6 +23,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  * setResult(ALLOW) is the same as the old setHandled()
  */
 @Event.HasResult
+// TODO 1.20.5: do not make this event extend PlayerEvent, make Player nullable instead of passing a FakePlayer for dispensers.
 public class BonemealEvent extends PlayerEvent implements ICancellableEvent {
     private final Level level;
     private final BlockPos pos;
