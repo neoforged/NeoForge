@@ -132,8 +132,8 @@ public class ModMismatchDisconnectedScreen extends Screen {
          *
          * @param mismatchedChannelData The raw mismatched channel data received from the server, which might contain quasi-duplicate entries
          * @return A map containing deduplicated channel mismatch entries. For each quasi-duplicate group, only the first encountered channel id is kept,
-         * and all other quasi-duplicate channels then increment the associated repetition count that is mapped to that first channel id.
-         * Finally, the (unchanged) mismatch reason (which is the same for all quasi-duplicate entries) also gets mapped to the channel id.
+         *         and all other quasi-duplicate channels then increment the associated repetition count that is mapped to that first channel id.
+         *         Finally, the (unchanged) mismatch reason (which is the same for all quasi-duplicate entries) also gets mapped to the channel id.
          */
         private Map<ResourceLocation, Pair<Integer, Component>> collapseChannelData(Map<ResourceLocation, Component> mismatchedChannelData) {
             Map<ResourceLocation, Pair<Integer, Component>> repetitions = new LinkedHashMap<>();
@@ -184,9 +184,9 @@ public class ModMismatchDisconnectedScreen extends Screen {
          * Uses the given channel id to return a component with the name of the mod that likely owns the channel. If no such mod is found, the namespace of the channel id is used instead.
          * The style assigned to the returned component contains the color of the entry, a hover event containing the channel id, and an optional click event which, if present, opens the homepage of the mod.
          *
-         * @param id The id of the mismatched channel. Used to query the name of the mod that has likely registered the channel in order to use and display its name and homepage URL.
+         * @param id              The id of the mismatched channel. Used to query the name of the mod that has likely registered the channel in order to use and display its name and homepage URL.
          * @param repetitionCount How many other channels of the same mod failed negotiation with the same error message. Displayed in the hover tooltip.
-         * @param color Defines the color of the returned channel name component.
+         * @param color           Defines the color of the returned channel name component.
          * @return A component with the mod name (if available) as the main text component, and an assigned color which will be used for the whole content row.
          */
         private MutableComponent toChannelNameComponent(ResourceLocation id, int repetitionCount, ChatFormatting color) {
