@@ -22,6 +22,7 @@ import net.neoforged.bus.api.ICancellableEvent;
  *
  * setResult(ALLOW) is the same as the old setHandled()
  */
+// TODO 1.20.5: Make player nullable. Remove extends PlayerEvent and remove the dispenser fake player.
 @Event.HasResult
 public class BonemealEvent extends PlayerEvent implements ICancellableEvent {
     private final Level level;
