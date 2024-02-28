@@ -29,6 +29,7 @@ import net.neoforged.neoforge.common.extensions.IItemExtension;
  * then the normal interaction behavior for that phase will not run,
  * and the specified {@link InteractionResult} will be returned instead.</p>
  */
+// TODO 1.20.5: We want to support nullable player. Remove extends PlayerInteractEvent to support that.
 public class UseItemOnBlockEvent extends PlayerInteractEvent implements ICancellableEvent {
     private final UseOnContext context;
     private final UsePhase usePhase;

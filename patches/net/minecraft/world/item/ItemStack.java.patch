@@ -96,19 +96,23 @@
      }
  
      public boolean is(HolderSet<Item> p_298683_) {
-@@ -262,6 +_,19 @@
+@@ -262,6 +_,23 @@
      }
  
      public InteractionResult useOn(UseOnContext p_41662_) {
-+        var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_AFTER_BLOCK));
-+        if (e.isCanceled()) return e.getCancellationResult();
++        if (p_41662_.getPlayer() != null) { // TODO 1.20.5: Make event accept nullable player, and remove this check.
++            var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_AFTER_BLOCK));
++            if (e.isCanceled()) return e.getCancellationResult();
++        }
 +        if (!p_41662_.getLevel().isClientSide) return net.neoforged.neoforge.common.CommonHooks.onPlaceItemIntoWorld(p_41662_);
 +        return onItemUse(p_41662_, (c) -> getItem().useOn(p_41662_));
 +    }
 +
 +    public InteractionResult onItemUseFirst(UseOnContext p_41662_) {
-+        var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_BEFORE_BLOCK));
-+        if (e.isCanceled()) return e.getCancellationResult();
++        if (p_41662_.getPlayer() != null) { // TODO 1.20.5: Make event accept nullable player, and remove this check.
++            var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(p_41662_, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_BEFORE_BLOCK));
++            if (e.isCanceled()) return e.getCancellationResult();
++        }
 +        return onItemUse(p_41662_, (c) -> getItem().onItemUseFirst(this, p_41662_));
 +    }
 +
