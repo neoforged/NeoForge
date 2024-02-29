@@ -59,14 +59,12 @@ public final class ConfigFlagItemTest {
     // the following elements are always registered to the game
     // but are marked as only being enabled via our configs using the new 'isFeatureEnabled' hooks
     // telling the game to only enable them when the config returns 'true'
-    //
-    // need '::get' as `BooleanValue` does not implement `BooleanSupplier` but `Supplier<Boolean>`
     public static final DeferredItem<Item> CONFIG_ITEM = ITEMS.registerSimpleItem("config_item", new Item.Properties()
-            .isFeatureEnabled(ENABLE_CONFIG_ITEM::get));
+            .isFeatureEnabled(ENABLE_CONFIG_ITEM));
 
     public static final DeferredBlock<Block> CONFIG_BLOCK = BLOCKS.registerSimpleBlock("config_block", BlockBehaviour.Properties
             .ofLegacyCopy(Blocks.STONE)
-            .isFeatureEnabled(ENABLE_CONFIG_BLOCK::get));
+            .isFeatureEnabled(ENABLE_CONFIG_BLOCK));
 
     // this block (and its associated item) should be registered to the game
     // but always be disabled, never show up in creative mode tabs, be givable or placeable
