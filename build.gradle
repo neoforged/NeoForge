@@ -33,6 +33,13 @@ allprojects {
     version gradleutils.version.toString()
     group 'net.neoforged'
     repositories {
+        maven {
+            url "https://repo.spongepowered.org/repository/maven-public/"
+            name "SpongePowered maven"
+            content {
+                includeGroup "org.spongepowered"
+            }
+        }
         mavenLocal()
     }
 }
