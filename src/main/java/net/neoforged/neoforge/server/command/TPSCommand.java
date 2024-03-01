@@ -49,7 +49,7 @@ class TPSCommand {
         final Registry<DimensionType> reg = cs.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE);
         double worldTickTime = mean(times) * 1.0E-6D;
         double worldTPS = TimeUtil.MILLISECONDS_PER_SECOND / Math.max(worldTickTime, dim.tickRateManager().millisecondsPerTick());
-        cs.sendSuccess(() -> Component.translatable("commands.neoforge.tps.summary.named", dim.dimension().location().toString(), reg.getKey(dim.dimensionType()), TIME_FORMATTER.format(worldTickTime), TIME_FORMATTER.format(worldTPS)), false);
+        cs.sendSuccess(() -> Component.translatable("commands.neoforge.tps.summary.named", dim.dimension().location().toString(), reg.getKey(dim.dimensionType()).toString(), TIME_FORMATTER.format(worldTickTime), TIME_FORMATTER.format(worldTPS)), false);
 
         return 1;
     }
