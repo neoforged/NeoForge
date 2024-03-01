@@ -161,6 +161,7 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.level.SaplingGrowTreeEvent;
 import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
+import net.neoforged.neoforge.resource.ContextAwareReloadListener;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -714,7 +715,13 @@ public class EventHooks {
     public static List<PreparableReloadListener> onResourceReload(ReloadableServerResources serverResources, RegistryAccess registryAccess) {
         AddReloadListenerEvent event = new AddReloadListenerEvent(serverResources, registryAccess);
         NeoForge.EVENT_BUS.post(event);
-        return event.getListeners();
+        List<PreparableReloadListener> listeners = event.getListeners();
+        listeners.forEach(listener -> {
+            if (listener instanceof ContextAwareReloadListener contextAwareListener) {
+                contextAwareListener.injectContext(serverResources.getConditionContext(), serverResources.getRegistryAccess());
+            }
+        });
+        return listeners;
     }
 
     public static void onCommandRegister(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection environment, CommandBuildContext context) {

@@ -10,18 +10,12 @@
      }
  
      public ServerFunctionLibrary getFunctionLibrary() {
-@@ -80,8 +_,13 @@
-         Executor p_249601_
+@@ -81,7 +_,7 @@
      ) {
          ReloadableServerResources reloadableserverresources = new ReloadableServerResources(p_251163_, p_250212_, p_249301_, p_251126_);
-+        List<PreparableReloadListener> listeners = new java.util.ArrayList<>(reloadableserverresources.listeners());
-+        listeners.addAll(net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_251163_));
-+        listeners.forEach(rl -> {
-+            if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener srl) srl.injectContext(reloadableserverresources.context, reloadableserverresources.registryAccess);
-+        });
          return SimpleReloadInstance.create(
 -                p_248588_, reloadableserverresources.listeners(), p_249136_, p_249601_, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()
-+                p_248588_, listeners, p_249136_, p_249601_, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()
++                p_248588_, net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_251163_), p_249136_, p_249601_, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()
              )
              .done()
              .whenComplete(
