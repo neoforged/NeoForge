@@ -28,19 +28,28 @@ import net.neoforged.neoforge.common.conditions.ICondition.IContext;
  * For children of {@link SimplePreparableReloadListeners}, it will be available during both {@link SimplePreparableReloadListener#prepare prepare()} and {@link SimplePreparableReloadListener#apply apply()}.
  */
 public abstract class ContextAwareReloadListener implements PreparableReloadListener {
+
+    /**
+     * @deprecated Use {@link #getContext()}
+     */
+    @Deprecated(forRemoval = true)
+    protected ICondition.IContext conditionContext = ICondition.IContext.EMPTY;
+
+    /**
+     * @deprecated Use {@link #getRegistryAccess()}
+     */
+    @Deprecated(forRemoval = true)
+    protected RegistryAccess registryAccess = RegistryAccess.EMPTY;
+
     private WeakReference<ICondition.IContext> context = new WeakReference<>(null);
     private WeakReference<RegistryAccess> regAccess = new WeakReference<>(null);
-    private ConditionalOps<JsonElement> ops;
-
-    protected ContextAwareReloadListener() {
-        this.ops = makeConditionalOps();
-    }
 
     @ApiStatus.Internal
     public void injectContext(ICondition.IContext context, RegistryAccess regAccess) {
+        this.conditionContext = context;
+        this.registryAccess = regAccess;
         this.context = new WeakReference<>(context);
         this.regAccess = new WeakReference<>(regAccess);
-        this.ops = makeConditionalOps();
     }
 
     /**
@@ -58,13 +67,9 @@ public abstract class ContextAwareReloadListener implements PreparableReloadList
     }
 
     /**
-     * @return The stored conditional ops.
+     * Creates a new {@link ConditionalOps} using {@link #getContext()} and {@link #getRegistryAccess()}.
      */
-    protected ConditionalOps<JsonElement> getConditionalOps() {
-        return this.ops;
-    }
-
-    private ConditionalOps<JsonElement> makeConditionalOps() {
+    protected final ConditionalOps<JsonElement> makeConditionalOps() {
         return new ConditionalOps<JsonElement>(RegistryOps.create(JsonOps.INSTANCE, getRegistryAccess()), getContext());
     }
 

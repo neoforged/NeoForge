@@ -1,11 +1,15 @@
 --- a/net/minecraft/server/ServerAdvancementManager.java
 +++ b/net/minecraft/server/ServerAdvancementManager.java
-@@ -44,7 +_,11 @@
+@@ -41,10 +_,15 @@
+     }
+ 
+     protected void apply(Map<ResourceLocation, JsonElement> p_136034_, ResourceManager p_136035_, ProfilerFiller p_136036_) {
++        var ops = this.makeConditionalOps();
          Builder<ResourceLocation, AdvancementHolder> builder = ImmutableMap.builder();
          p_136034_.forEach((p_311532_, p_311533_) -> {
              try {
 -                Advancement advancement = Util.getOrThrow(Advancement.CODEC.parse(JsonOps.INSTANCE, p_311533_), JsonParseException::new);
-+                Advancement advancement = net.neoforged.neoforge.common.conditions.ICondition.getWithWithConditionsCodec(Advancement.CONDITIONAL_CODEC, this.getConditionalOps(), p_311533_).orElse(null);
++                Advancement advancement = net.neoforged.neoforge.common.conditions.ICondition.getWithWithConditionsCodec(Advancement.CONDITIONAL_CODEC, ops, p_311533_).orElse(null);
 +                if (advancement == null) {
 +                    LOGGER.debug("Skipping loading advancement {} as its conditions were not met", p_311532_);
 +                    return;

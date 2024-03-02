@@ -76,7 +76,7 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener {
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> resourceList, ResourceManager resourceManagerIn, ProfilerFiller profilerIn) {
-        final DynamicOps<JsonElement> ops = this.getConditionalOps();
+        DynamicOps<JsonElement> ops = this.makeConditionalOps();
         Builder<ResourceLocation, IGlobalLootModifier> builder = ImmutableMap.builder();
         for (Map.Entry<ResourceLocation, JsonElement> entry : resourceList.entrySet()) {
             ResourceLocation location = entry.getKey();
