@@ -1,11 +1,13 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.network.handling;
 
+import io.netty.channel.ChannelHandlerContext;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
-
-import org.jetbrains.annotations.Nullable;
-
-import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -17,9 +19,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask.Type;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
+import org.jetbrains.annotations.Nullable;
 
 public record ClientPayloadContext(ClientCommonPacketListener listener, ResourceLocation payloadId) implements IPayloadContext {
-
     @Override
     public void reply(CustomPacketPayload payload) {
         listener.send(payload);
@@ -76,5 +78,4 @@ public record ClientPayloadContext(ClientCommonPacketListener listener, Resource
     public ChannelHandlerContext channelHandlerContext() {
         return listener.getConnection().channel().pipeline().lastContext();
     }
-
 }

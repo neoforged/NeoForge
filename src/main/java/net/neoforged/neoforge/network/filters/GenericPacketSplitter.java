@@ -84,7 +84,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
                                 splitter.receivedPacket(payload, context);
                             } else {
                                 LOGGER.error("Received split packet without a splitter");
-                                context.replyHandler().disconnect(Component.translatable("neoforge.network.packet_splitter.unknown"));
+                                context.disconnect(Component.translatable("neoforge.network.packet_splitter.unknown"));
                             }
                         });
     }
@@ -179,13 +179,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
             } else {
                 receivedBuffers.clear();
                 full.release();
-
-                context.workHandler()
-                        .submitAsync(() -> context.packetHandler().handle(packet))
-                        .exceptionally(throwable -> {
-                            LOGGER.error("Error handling packet", throwable);
-                            return null;
-                        });
+                context.enqueueWork(() -> context.handle(packet));
             }
         }
     }

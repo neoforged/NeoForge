@@ -5,14 +5,11 @@
 
 package net.neoforged.neoforge.network.handling;
 
+import io.netty.channel.ChannelHandlerContext;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import org.jetbrains.annotations.Nullable;
-
-import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -20,12 +17,12 @@ import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Defines a phase-less payload context that is passed to a handler for a payload that arrives during the connection.
  */
 public interface IPayloadContext {
-
     /**
      * Sends the given payload back to the player.
      *
@@ -37,7 +34,7 @@ public interface IPayloadContext {
      * Disconnects the player from the network.
      */
     void disconnect(Component reason);
-    
+
     /**
      * Invoked to handle the given packet.
      *
@@ -76,7 +73,7 @@ public interface IPayloadContext {
      * @param type The type of task that was completed.
      */
     void finishCurrentTask(ConfigurationTask.Type type);
-    
+
     /**
      * {@return the flow of the packet}
      */
@@ -99,5 +96,4 @@ public interface IPayloadContext {
      */
     @Nullable
     Player sender();
-
 }

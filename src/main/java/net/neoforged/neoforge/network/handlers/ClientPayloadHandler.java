@@ -28,9 +28,7 @@ import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.ConfigSync;
-import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
@@ -57,37 +55,38 @@ public class ClientPayloadHandler {
 
     private ClientPayloadHandler() {}
 
-    public void handle(FrozenRegistryPayload payload, ConfigurationPayloadContext context) {
+    public void handle(FrozenRegistryPayload payload, IPayloadContext context) {
         synchronizedRegistries.put(payload.registryName(), payload.snapshot());
         toSynchronize.remove(payload.registryName());
     }
 
-    public void handle(FrozenRegistrySyncStartPayload payload, ConfigurationPayloadContext context) {
+    public void handle(FrozenRegistrySyncStartPayload payload, IPayloadContext context) {
         this.toSynchronize.addAll(payload.toAccess());
         this.synchronizedRegistries.clear();
     }
 
-    public void handle(FrozenRegistrySyncCompletedPayload payload, ConfigurationPayloadContext context) {
+    public void handle(FrozenRegistrySyncCompletedPayload payload, IPayloadContext context) {
         if (!this.toSynchronize.isEmpty()) {
-            context.packetHandler().disconnect(Component.translatable("neoforge.network.registries.sync.missing", this.toSynchronize.stream().map(Object::toString).collect(Collectors.joining(", "))));
+            context.disconnect(Component.translatable("neoforge.network.registries.sync.missing", this.toSynchronize.stream().map(Object::toString).collect(Collectors.joining(", "))));
             return;
         }
 
-        context.workHandler().submitAsync(() -> {
-            //This method normally returns missing entries, but we just accept what the server send us and ignore the rest.
-            Set<ResourceKey<?>> keysUnknownToClient = RegistryManager.applySnapshot(synchronizedRegistries, false, false);
-            if (!keysUnknownToClient.isEmpty()) {
-                context.packetHandler().disconnect(Component.translatable("neoforge.network.registries.sync.server-with-unknown-keys", keysUnknownToClient.stream().map(Object::toString).collect(Collectors.joining(", "))));
-                return;
-            }
+        context.enqueueWork(() -> {
+            try {
+                //This method normally returns missing entries, but we just accept what the server send us and ignore the rest.
+                Set<ResourceKey<?>> keysUnknownToClient = RegistryManager.applySnapshot(synchronizedRegistries, false, false);
+                if (!keysUnknownToClient.isEmpty()) {
+                    context.disconnect(Component.translatable("neoforge.network.registries.sync.server-with-unknown-keys", keysUnknownToClient.stream().map(Object::toString).collect(Collectors.joining(", "))));
+                    return;
+                }
 
-            this.toSynchronize.clear();
-            this.synchronizedRegistries.clear();
-        }).exceptionally(e -> {
-            context.packetHandler().disconnect(Component.translatable("neoforge.network.registries.sync.failed", e.getMessage()));
-            return null;
+                this.toSynchronize.clear();
+                this.synchronizedRegistries.clear();
+            } catch (Throwable t) {
+                context.disconnect(Component.translatable("neoforge.network.registries.sync.failed", t.getMessage()));
+            }
         }).thenAccept(v -> {
-            context.replyHandler().send(new FrozenRegistrySyncCompletedPayload());
+            context.reply(new FrozenRegistrySyncCompletedPayload());
         });
     }
 
@@ -99,36 +98,36 @@ public class ClientPayloadHandler {
         TierSortingRegistry.handleSync(payload, context);
     }
 
-    public void handle(AdvancedAddEntityPayload advancedAddEntityPayload, PlayPayloadContext context) {
-        context.workHandler().submitAsync(
+    @SuppressWarnings("resource")
+    public void handle(AdvancedAddEntityPayload advancedAddEntityPayload, IPayloadContext context) {
+        context.enqueueWork(
                 () -> {
-                    Entity entity = Objects.requireNonNull(Minecraft.getInstance().level).getEntity(advancedAddEntityPayload.entityId());
-                    if (entity instanceof IEntityWithComplexSpawn entityAdditionalSpawnData) {
-                        final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(advancedAddEntityPayload.customPayload()));
-                        try {
-                            entityAdditionalSpawnData.readSpawnData(buf);
-                        } finally {
-                            buf.release();
+                    try {
+                        Entity entity = Objects.requireNonNull(Minecraft.getInstance().level).getEntity(advancedAddEntityPayload.entityId());
+                        if (entity instanceof IEntityWithComplexSpawn entityAdditionalSpawnData) {
+                            final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(advancedAddEntityPayload.customPayload()));
+                            try {
+                                entityAdditionalSpawnData.readSpawnData(buf);
+                            } finally {
+                                buf.release();
+                            }
                         }
+                    } catch (Throwable t) {
+                        context.disconnect(Component.translatable("neoforge.network.advanced_add_entity.failed", t.getMessage()));
                     }
-                })
-                .exceptionally(e -> {
-                    context.packetHandler().disconnect(Component.translatable("neoforge.network.advanced_add_entity.failed", e.getMessage()));
-                    return null;
                 });
     }
 
-    public void handle(AdvancedOpenScreenPayload msg, PlayPayloadContext context) {
-        context.workHandler().submitAsync(() -> {
+    public void handle(AdvancedOpenScreenPayload msg, IPayloadContext context) {
+        context.enqueueWork(() -> {
             final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(msg.additionalData()));
             try {
                 createMenuScreen(msg.name(), msg.menuType(), msg.windowId(), buf);
+            } catch (Throwable t) {
+                context.disconnect(Component.translatable("neoforge.network.advanced_open_screen.failed", t.getMessage()));
             } finally {
                 buf.release();
             }
-        }).exceptionally(e -> {
-            context.packetHandler().disconnect(Component.translatable("neoforge.network.advanced_open_screen.failed", e.getMessage()));
-            return null;
         });
     }
 
@@ -141,22 +140,23 @@ public class ClientPayloadHandler {
         });
     }
 
-    public void handle(AuxiliaryLightDataPayload msg, PlayPayloadContext context) {
-        context.workHandler().submitAsync(() -> {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.level == null) return;
+    public void handle(AuxiliaryLightDataPayload msg, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            try {
+                Minecraft mc = Minecraft.getInstance();
+                if (mc.level == null) return;
 
-            AuxiliaryLightManager lightManager = mc.level.getAuxLightManager(msg.pos());
-            if (lightManager instanceof LevelChunkAuxiliaryLightManager manager) {
-                manager.handleLightDataSync(msg.entries());
+                AuxiliaryLightManager lightManager = mc.level.getAuxLightManager(msg.pos());
+                if (lightManager instanceof LevelChunkAuxiliaryLightManager manager) {
+                    manager.handleLightDataSync(msg.entries());
+                }
+            } catch (Throwable t) {
+                context.disconnect(Component.translatable("neoforge.network.aux_light_data.failed", msg.pos(), t.getMessage()));
             }
-        }).exceptionally(e -> {
-            context.packetHandler().disconnect(Component.translatable("neoforge.network.aux_light_data.failed", msg.pos(), e.getMessage()));
-            return null;
         });
     }
 
-    public void handle(AdvancedContainerSetDataPayload msg, PlayPayloadContext context) {
-        context.packetHandler().handle(msg.toVanillaPacket());
+    public void handle(AdvancedContainerSetDataPayload msg, IPayloadContext context) {
+        context.handle(msg.toVanillaPacket());
     }
 }

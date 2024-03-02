@@ -6,14 +6,12 @@
 package net.neoforged.neoforge.network.registration;
 
 import java.util.Optional;
-
-import org.jetbrains.annotations.ApiStatus;
-
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A record that holds the information needed to describe a registered play payload, its reader and handler.
@@ -32,7 +30,6 @@ public record PlayRegistration<T extends CustomPacketPayload>(
         Optional<String> version,
         Optional<PacketFlow> flow,
         boolean optional) implements IPayloadHandler<T>, FriendlyByteBuf.Reader<T> {
-
     @Override
     public T apply(FriendlyByteBuf buffer) {
         return reader.apply(buffer);

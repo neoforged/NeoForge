@@ -13,9 +13,7 @@ import java.util.function.Consumer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IConfigurationPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
-import net.neoforged.neoforge.network.handling.IPlayPayloadHandler;
 
 /**
  * The internal implementation of {@link IPayloadRegistrar} for modded packets.
@@ -53,49 +51,42 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
     }
 
     @Override
-    public <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IPlayPayloadHandler<T> handler) {
-        play(
-                id, new PlayRegistration<>(
-                        reader, handler, version, Optional.empty(), optional));
+    public <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IPayloadHandler<T> handler) {
+        play(id, new PlayRegistration<>(reader, handler, version, Optional.empty(), optional));
         return this;
     }
 
     @Override
-    public <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IConfigurationPayloadHandler<T> handler) {
-        configuration(
-                id, new ConfigurationRegistration<>(
-                        reader, handler, version, Optional.empty(), optional));
+    public <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IPayloadHandler<T> handler) {
+        configuration(id, new ConfigurationRegistration<>(reader, handler, version, Optional.empty(), optional));
         return this;
     }
 
     @Override
-    public <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IPlayPayloadHandler<T>>> handler) {
-        final PlayPayloadHandler.Builder<T> builder = new PlayPayloadHandler.Builder<>();
+    public <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<DirectionalPayloadHandlerBuilder<T>> handler) {
+        DirectionalPayloadHandlerBuilder<T> builder = new DirectionalPayloadHandlerBuilder<>();
         handler.accept(builder);
-        final PlayPayloadHandler<T> innerHandler = builder.create();
-        play(
-                id, new PlayRegistration<>(
-                        reader, innerHandler, version, innerHandler.flow(), optional));
+        DirectionalPayloadHandler<T> innerHandler = builder.build();
+        play(id, new PlayRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
         return this;
     }
 
     @Override
-    public <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IConfigurationPayloadHandler<T>>> handler) {
-        final ConfigurationPayloadHandler.Builder<T> builder = new ConfigurationPayloadHandler.Builder<>();
+    public <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<DirectionalPayloadHandlerBuilder<T>> handler) {
+        DirectionalPayloadHandlerBuilder<T> builder = new DirectionalPayloadHandlerBuilder<>();
         handler.accept(builder);
-        final ConfigurationPayloadHandler<T> innerHandler = builder.create();
-        configuration(
-                id, new ConfigurationRegistration<>(
-                        reader, innerHandler, version, innerHandler.flow(), optional));
+        DirectionalPayloadHandler<T> innerHandler = builder.build();
+        configuration(id, new ConfigurationRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
         return this;
     }
 
     @Override
-    public <T extends CustomPacketPayload> IPayloadRegistrar common(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<IDirectionAwarePayloadHandlerBuilder<T, IPayloadHandler<T>>> handler) {
-        final PayloadHandlerBuilder<T> builder = new PayloadHandlerBuilder<>();
+    public <T extends CustomPacketPayload> IPayloadRegistrar common(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, Consumer<DirectionalPayloadHandlerBuilder<T>> handler) {
+        DirectionalPayloadHandlerBuilder<T> builder = new DirectionalPayloadHandlerBuilder<>();
         handler.accept(builder);
-        configuration(id, reader, builder::handleConfiguration);
-        play(id, reader, builder::handlePlay);
+        DirectionalPayloadHandler<T> innerHandler = builder.build();
+        play(id, new PlayRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
+        configuration(id, new ConfigurationRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
         return this;
     }
 

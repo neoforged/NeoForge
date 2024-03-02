@@ -7,7 +7,7 @@ package net.neoforged.neoforge.network.handlers;
 
 import net.neoforged.neoforge.network.configuration.SyncRegistries;
 import net.neoforged.neoforge.network.configuration.SyncTierSortingRegistry;
-import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.TierSortingRegistrySyncCompletePayload;
 import org.jetbrains.annotations.ApiStatus;
@@ -22,11 +22,11 @@ public class ServerPayloadHandler {
 
     private ServerPayloadHandler() {}
 
-    public void handle(FrozenRegistrySyncCompletedPayload payload, ConfigurationPayloadContext context) {
-        context.taskCompletedHandler().onTaskCompleted(SyncRegistries.TYPE);
+    public void handle(FrozenRegistrySyncCompletedPayload payload, IPayloadContext context) {
+        context.finishCurrentTask(SyncRegistries.TYPE);
     }
 
-    public void handle(TierSortingRegistrySyncCompletePayload payload, ConfigurationPayloadContext context) {
-        context.taskCompletedHandler().onTaskCompleted(SyncTierSortingRegistry.TYPE);
+    public void handle(TierSortingRegistrySyncCompletePayload payload, IPayloadContext context) {
+        context.finishCurrentTask(SyncTierSortingRegistry.TYPE);
     }
 }
