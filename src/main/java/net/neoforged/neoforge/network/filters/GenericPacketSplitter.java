@@ -202,7 +202,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
     }
 
     public static RemoteCompatibility getRemoteCompatibility(Connection manager) {
-        return NetworkRegistry.getInstance().isConnected(manager, ConnectionPhase.ANY, SplitPacketPayload.ID) ? RemoteCompatibility.PRESENT : RemoteCompatibility.ABSENT;
+        return NetworkRegistry.isConnected(manager, ConnectionPhase.ANY, SplitPacketPayload.ID) ? RemoteCompatibility.PRESENT : RemoteCompatibility.ABSENT;
     }
 
     public static boolean isRemoteCompatible(Connection manager) {

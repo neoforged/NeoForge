@@ -99,7 +99,7 @@ public interface IServerCommonPacketListenerExtension {
      * @param payloadId The payload id to check
      */
     default boolean isConnected(final ResourceLocation payloadId) {
-        return NetworkRegistry.getInstance().isConnected(self(), payloadId);
+        return NetworkRegistry.isConnected(self(), payloadId);
     }
 
     /**

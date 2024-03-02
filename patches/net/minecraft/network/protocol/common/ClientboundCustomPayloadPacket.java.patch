@@ -33,7 +33,7 @@
 +     * @return The payload
 +     */
 +    private static CustomPacketPayload readPayload(ResourceLocation p_294367_, FriendlyByteBuf p_294321_, io.netty.channel.ChannelHandlerContext context, net.minecraft.network.ConnectionProtocol protocol) {
-+        FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().getReader(p_294367_, context, protocol, KNOWN_TYPES);
++        FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = net.neoforged.neoforge.network.registration.NetworkRegistry.getReader(p_294367_, context, protocol, KNOWN_TYPES);
 +        return (CustomPacketPayload)(reader != null ? reader.apply(p_294321_) : readUnknownPayload(p_294367_, p_294321_));
 +    }
 +

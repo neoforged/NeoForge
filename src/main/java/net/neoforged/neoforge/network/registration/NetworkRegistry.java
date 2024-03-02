@@ -84,15 +84,9 @@ public class NetworkRegistry {
     private static final AttributeKey<ConnectionType> ATTRIBUTE_CONNECTION_TYPE = AttributeKey.valueOf("neoforge:connection_type");
     private static final AttributeKey<PacketFlow> ATTRIBUTE_FLOW = AttributeKey.valueOf("neoforge:flow");
 
-    private static final NetworkRegistry INSTANCE = new NetworkRegistry();
-
-    public static NetworkRegistry getInstance() {
-        return INSTANCE;
-    }
-
-    private boolean setup = false;
-    private final Map<ResourceLocation, ConfigurationRegistration<?>> knownConfigurationRegistrations = new HashMap<>();
-    private final Map<ResourceLocation, PlayRegistration<?>> knownPlayRegistrations = new HashMap<>();
+    private static boolean setup = false;
+    private static final Map<ResourceLocation, ConfigurationRegistration<?>> knownConfigurationRegistrations = new HashMap<>();
+    private static final Map<ResourceLocation, PlayRegistration<?>> knownPlayRegistrations = new HashMap<>();
 
     private NetworkRegistry() {}
 
@@ -105,7 +99,7 @@ public class NetworkRegistry {
      * This method can only be invoked once.
      * </p>
      */
-    public void setup() {
+    public static void setup() {
         if (setup)
             throw new IllegalStateException("The network registry can only be setup once.");
 
@@ -156,7 +150,7 @@ public class NetworkRegistry {
      * @return A reader for the payload, or null if the payload should be discarded.
      */
     @Nullable
-    public FriendlyByteBuf.Reader<? extends CustomPacketPayload> getReader(ResourceLocation id, ChannelHandlerContext context, ConnectionProtocol protocol, Map<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>> knownTypes) {
+    public static FriendlyByteBuf.Reader<? extends CustomPacketPayload> getReader(ResourceLocation id, ChannelHandlerContext context, ConnectionProtocol protocol, Map<ResourceLocation, FriendlyByteBuf.Reader<? extends CustomPacketPayload>> knownTypes) {
         //Vanilla custom packet, let it deal with it.
         if (knownTypes.containsKey(id)) {
             return knownTypes.get(id);
@@ -278,7 +272,7 @@ public class NetworkRegistry {
      * @param packet   The packet that was received.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void onModdedPacketAtServer(ServerCommonPacketListener listener, ServerboundCustomPayloadPacket packet) {
+    public static void onModdedPacketAtServer(ServerCommonPacketListener listener, ServerboundCustomPayloadPacket packet) {
         final NetworkPayloadSetup payloadSetup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         //Check if this client was even setup properly.
         if (payloadSetup == null) {
@@ -348,7 +342,7 @@ public class NetworkRegistry {
      * @param packet   The packet that was received.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public boolean onModdedPacketAtClient(ClientCommonPacketListener listener, ClientboundCustomPayloadPacket packet) {
+    public static boolean onModdedPacketAtClient(ClientCommonPacketListener listener, ClientboundCustomPayloadPacket packet) {
         if (packet.payload().id().getNamespace().equals("minecraft")) {
             return false;
         }
@@ -426,7 +420,7 @@ public class NetworkRegistry {
      * @param configuration The configuration channels that the client has available.
      * @param play          The play channels that the client has available.
      */
-    public void onModdedConnectionDetectedAtServer(ServerConfigurationPacketListener sender, Set<ModdedNetworkQueryComponent> configuration, Set<ModdedNetworkQueryComponent> play) {
+    public static void onModdedConnectionDetectedAtServer(ServerConfigurationPacketListener sender, Set<ModdedNetworkQueryComponent> configuration, Set<ModdedNetworkQueryComponent> play) {
         final NegotiationResult configurationNegotiationResult = NetworkComponentNegotiator.negotiate(
                 knownConfigurationRegistrations.entrySet().stream()
                         .map(entry -> new NegotiableNetworkComponent(entry.getKey(), entry.getValue().version(), entry.getValue().flow(), entry.getValue().optional()))
@@ -493,7 +487,7 @@ public class NetworkRegistry {
      * @param sender The listener which detected the vanilla connection during the configuration phase.
      * @return True if the vanilla connection should be handled by the server, false otherwise.
      */
-    public boolean onVanillaOrOtherConnectionDetectedAtServer(ServerConfigurationPacketListener sender) {
+    public static boolean onVanillaOrOtherConnectionDetectedAtServer(ServerConfigurationPacketListener sender) {
         NetworkFilters.cleanIfNecessary(sender.getConnection());
 
         final NegotiationResult configurationNegotiationResult = NetworkComponentNegotiator.negotiate(
@@ -551,7 +545,7 @@ public class NetworkRegistry {
      * @param listener The listener that wants to send the packet.
      * @return True if the packet can be sent, false otherwise.
      */
-    public boolean canSendPacket(Packet<?> packet, ServerCommonPacketListener listener) {
+    public static boolean canSendPacket(Packet<?> packet, ServerCommonPacketListener listener) {
         if (!(packet instanceof ClientboundCustomPayloadPacket customPayloadPacket)) {
             return true;
         }
@@ -568,7 +562,7 @@ public class NetworkRegistry {
         return false;
     }
 
-    public boolean shouldSendPacketRaw(Packet<?> packet) {
+    public static boolean shouldSendPacketRaw(Packet<?> packet) {
         if (!(packet instanceof ClientboundCustomPayloadPacket customPayloadPacket)) {
             return true;
         }
@@ -610,7 +604,7 @@ public class NetworkRegistry {
      * @param listener The listener that wants to send the packet.
      * @return True if the packet can be sent, false otherwise.
      */
-    public boolean canSendPacket(Packet<?> packet, ClientCommonPacketListener listener) {
+    public static boolean canSendPacket(Packet<?> packet, ClientCommonPacketListener listener) {
         if (!(packet instanceof ServerboundCustomPayloadPacket customPayloadPacket)) {
             return true;
         }
@@ -643,7 +637,7 @@ public class NetworkRegistry {
     /**
      * Returns a mutable map of the currently known ad-hoc channels.
      */
-    private Set<ResourceLocation> getKnownAdHocChannelsOfOtherEnd(Connection connection) {
+    private static Set<ResourceLocation> getKnownAdHocChannelsOfOtherEnd(Connection connection) {
         var map = connection.channel().attr(ATTRIBUTE_ADHOC_CHANNELS).get();
 
         if (map == null) {
@@ -661,7 +655,7 @@ public class NetworkRegistry {
      * @param flow The flow of the packet.
      * @return True if the packet is ad hoc readable, false otherwise.
      */
-    private boolean isAdhocConfigurationChannelReadable(ResourceLocation id, PacketFlow flow) {
+    private static boolean isAdhocConfigurationChannelReadable(ResourceLocation id, PacketFlow flow) {
         final ConfigurationRegistration<?> known = knownConfigurationRegistrations.get(id);
         if (known == null) {
             return false;
@@ -681,7 +675,7 @@ public class NetworkRegistry {
      * @param flow The flow of the packet.
      * @return True if the packet is ad hoc readable, false otherwise.
      */
-    private boolean isAdhocPlayChannelReadable(ResourceLocation id, PacketFlow flow) {
+    private static boolean isAdhocPlayChannelReadable(ResourceLocation id, PacketFlow flow) {
         final PlayRegistration<?> known = knownPlayRegistrations.get(id);
         if (known == null) {
             return false;
@@ -699,7 +693,7 @@ public class NetworkRegistry {
      *
      * @param listener The listener which received the query.
      */
-    public void onNetworkQuery(ClientConfigurationPacketListener listener) {
+    public static void onNetworkQuery(ClientConfigurationPacketListener listener) {
         final ModdedNetworkQueryPayload payload = new ModdedNetworkQueryPayload(
                 knownConfigurationRegistrations.entrySet().stream()
                         .map(entry -> new ModdedNetworkQueryComponent(entry.getKey(), entry.getValue().version(), entry.getValue().flow(), entry.getValue().optional()))
@@ -721,7 +715,7 @@ public class NetworkRegistry {
      * @param configuration The configuration channels that were negotiated.
      * @param play          The play channels that were negotiated.
      */
-    public void onModdedNetworkConnectionEstablished(ClientConfigurationPacketListener listener, Set<ModdedNetworkComponent> configuration, Set<ModdedNetworkComponent> play) {
+    public static void onModdedNetworkConnectionEstablished(ClientConfigurationPacketListener listener, Set<ModdedNetworkComponent> configuration, Set<ModdedNetworkComponent> play) {
         final NetworkPayloadSetup setup = NetworkPayloadSetup.from(
                 configuration.stream()
                         .map(entry -> new NetworkChannel(entry.id(), entry.version()))
@@ -754,7 +748,7 @@ public class NetworkRegistry {
      * @param sender The listener which received the brand payload.
      * @return True if the vanilla connection should be handled by the client, false otherwise.
      */
-    public boolean onVanillaNetworkConnectionEstablished(ClientConfigurationPacketListener sender) {
+    public static boolean onVanillaNetworkConnectionEstablished(ClientConfigurationPacketListener sender) {
         NetworkFilters.cleanIfNecessary(sender.getConnection());
 
         final NegotiationResult configurationNegotiationResult = NetworkComponentNegotiator.negotiate(
@@ -809,7 +803,7 @@ public class NetworkRegistry {
      * @param payloadId The payload id to check.
      * @return True if the listener has a connection setup that can transmit the given payload id, false otherwise.
      */
-    public boolean isConnected(ServerCommonPacketListener listener, ResourceLocation payloadId) {
+    public static boolean isConnected(ServerCommonPacketListener listener, ResourceLocation payloadId) {
         return isConnected(listener.getConnection(), ConnectionPhase.fromPacketListener(listener), payloadId);
     }
 
@@ -820,7 +814,7 @@ public class NetworkRegistry {
      * @param payloadId The payload id to check.
      * @return True if the listener has a connection setup that can transmit the given payload id, false otherwise.
      */
-    public boolean isConnected(ClientCommonPacketListener listener, ResourceLocation payloadId) {
+    public static boolean isConnected(ClientCommonPacketListener listener, ResourceLocation payloadId) {
         return isConnected(listener.getConnection(), ConnectionPhase.fromPacketListener(listener), payloadId);
     }
 
@@ -832,7 +826,7 @@ public class NetworkRegistry {
      * @param payloadId       The payload id to check.
      * @return True if the connection has a connection setup that can transmit the given payload id, false otherwise.
      */
-    public boolean isConnected(final Connection connection, ConnectionPhase connectionPhase, ResourceLocation payloadId) {
+    public static boolean isConnected(final Connection connection, ConnectionPhase connectionPhase, ResourceLocation payloadId) {
         final NetworkPayloadSetup payloadSetup = connection.channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         if (payloadSetup == null) {
             return getKnownAdHocChannelsOfOtherEnd(connection).contains(payloadId);
@@ -861,7 +855,7 @@ public class NetworkRegistry {
      * @param <T>     The type of the listener.
      * @return The filtered packets.
      */
-    public <T extends PacketListener> List<Packet<?>> filterGameBundlePackets(ChannelHandlerContext context, Iterable<Packet<? super T>> packets) {
+    public static <T extends PacketListener> List<Packet<?>> filterGameBundlePackets(ChannelHandlerContext context, Iterable<Packet<? super T>> packets) {
         final NetworkPayloadSetup payloadSetup = context.channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         if (payloadSetup == null) {
             LOGGER.trace("Somebody tried to filter bundled packets to a client that has not negotiated with the server. Not filtering.");
@@ -898,16 +892,16 @@ public class NetworkRegistry {
      *
      * @param connection The connection to configure.
      */
-    public void configureMockConnection(final Connection connection) {
+    public static void configureMockConnection(final Connection connection) {
         connection.channel().attr(ATTRIBUTE_CONNECTION_TYPE).set(ConnectionType.NEOFORGE);
         connection.channel().attr(ATTRIBUTE_FLOW).set(PacketFlow.SERVERBOUND);
         connection.channel().attr(ATTRIBUTE_PAYLOAD_SETUP).set(NetworkPayloadSetup.empty());
 
         final NetworkPayloadSetup setup = NetworkPayloadSetup.from(
-                this.knownConfigurationRegistrations.entrySet().stream()
+                knownConfigurationRegistrations.entrySet().stream()
                         .map(entry -> new NetworkChannel(entry.getKey(), entry.getValue().version()))
                         .collect(Collectors.toSet()),
-                this.knownPlayRegistrations.entrySet().stream()
+                knownPlayRegistrations.entrySet().stream()
                         .map(entry -> new NetworkChannel(entry.getKey(), entry.getValue().version()))
                         .collect(Collectors.toSet()));
 
@@ -922,7 +916,7 @@ public class NetworkRegistry {
      * @param listener          The listener which received the payload.
      * @param resourceLocations The resource locations that were registered.
      */
-    public void onMinecraftRegister(ClientCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
+    public static void onMinecraftRegister(ClientCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
         onMinecraftRegister(resourceLocations, listener.getConnection());
     }
 
@@ -932,7 +926,7 @@ public class NetworkRegistry {
      * @param listener          The listener which received the payload.
      * @param resourceLocations The resource locations that were registered.
      */
-    public void onMinecraftRegister(ServerCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
+    public static void onMinecraftRegister(ServerCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
         onMinecraftRegister(resourceLocations, listener.getConnection());
     }
 
@@ -942,7 +936,7 @@ public class NetworkRegistry {
      * @param resourceLocations The resource locations to add.
      * @param connection        The connection to add the channels to.
      */
-    private void onMinecraftRegister(Set<ResourceLocation> resourceLocations, Connection connection) {
+    private static void onMinecraftRegister(Set<ResourceLocation> resourceLocations, Connection connection) {
         getKnownAdHocChannelsOfOtherEnd(connection).addAll(resourceLocations);
     }
 
@@ -952,7 +946,7 @@ public class NetworkRegistry {
      * @param listener          The listener which received the payload.
      * @param resourceLocations The resource locations that were unregistered.
      */
-    public void onMinecraftUnregister(ClientCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
+    public static void onMinecraftUnregister(ClientCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
         onMinecraftUnregister(resourceLocations, listener.getConnection());
     }
 
@@ -962,7 +956,7 @@ public class NetworkRegistry {
      * @param listener          The listener which received the payload.
      * @param resourceLocations The resource locations that were unregistered.
      */
-    public void onMinecraftUnregister(ServerCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
+    public static void onMinecraftUnregister(ServerCommonPacketListener listener, Set<ResourceLocation> resourceLocations) {
         onMinecraftUnregister(resourceLocations, listener.getConnection());
     }
 
@@ -972,21 +966,21 @@ public class NetworkRegistry {
      * @param resourceLocations The resource locations to remove.
      * @param connection        The connection to remove the channels from.
      */
-    private void onMinecraftUnregister(Set<ResourceLocation> resourceLocations, Connection connection) {
+    private static void onMinecraftUnregister(Set<ResourceLocation> resourceLocations, Connection connection) {
         getKnownAdHocChannelsOfOtherEnd(connection).removeAll(resourceLocations);
     }
 
     /**
      * {@return the initial channels that the server listens on during the configuration phase.}
      */
-    public Set<ResourceLocation> getInitialServerListeningChannels() {
+    public static Set<ResourceLocation> getInitialServerListeningChannels() {
         return Set.of(
                 MinecraftRegisterPayload.ID,
                 MinecraftUnregisterPayload.ID,
                 ModdedNetworkQueryPayload.ID);
     }
 
-    public Set<ResourceLocation> getInitialServerUnregisterChannels() {
+    public static Set<ResourceLocation> getInitialServerUnregisterChannels() {
         final ImmutableSet.Builder<ResourceLocation> nowForgottenChannels = ImmutableSet.builder();
         nowForgottenChannels.add(MinecraftRegisterPayload.ID);
         nowForgottenChannels.add(MinecraftUnregisterPayload.ID);
@@ -1006,7 +1000,7 @@ public class NetworkRegistry {
                 ModdedNetworkPayload.ID);
     }
 
-    public void onConfigurationFinished(ServerConfigurationPacketListener serverConfigurationPacketListener) {
+    public static void onConfigurationFinished(ServerConfigurationPacketListener serverConfigurationPacketListener) {
         final NetworkPayloadSetup setup = serverConfigurationPacketListener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         if (setup == null) {
             LOGGER.error("Somebody tried to finish the configuration phase of a connection that has not negotiated with the client. Not finishing configuration.");
@@ -1032,7 +1026,7 @@ public class NetworkRegistry {
         serverConfigurationPacketListener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
     }
 
-    public void onConfigurationFinished(ClientConfigurationPacketListener listener) {
+    public static void onConfigurationFinished(ClientConfigurationPacketListener listener) {
         final NetworkPayloadSetup setup = listener.getConnection().channel().attr(ATTRIBUTE_PAYLOAD_SETUP).get();
         if (setup == null) {
             LOGGER.error("Somebody tried to finish the configuration phase of a connection that has not negotiated with the server. Not finishing configuration.");

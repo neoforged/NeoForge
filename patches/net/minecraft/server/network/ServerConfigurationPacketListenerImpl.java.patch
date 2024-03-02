@@ -14,8 +14,8 @@
  
      public void startConfiguration() {
 +        //Unregister all known play channels, and register all known configuration channels, then run negotiation.
-+        this.send(new net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload(net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().getInitialServerUnregisterChannels()));
-+        this.send(new net.neoforged.neoforge.network.payload.MinecraftRegisterPayload(net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().getInitialServerListeningChannels()));
++        this.send(new net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload(net.neoforged.neoforge.network.registration.NetworkRegistry.getInitialServerUnregisterChannels()));
++        this.send(new net.neoforged.neoforge.network.payload.MinecraftRegisterPayload(net.neoforged.neoforge.network.registration.NetworkRegistry.getInitialServerListeningChannels()));
 +        this.send(new net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload());
 +        this.send(new net.minecraft.network.protocol.common.ClientboundPingPacket(0));
 +    }
@@ -38,17 +38,17 @@
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket p_294276_) {
 +        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
 +            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
 +            return;
 +        }
 +        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
 +            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
 +            return;
 +        }
 +        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload moddedEnvironmentPayload) {
 +            this.connectionType = this.connectionType.withNeoForgeQueryPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance()
++            net.neoforged.neoforge.network.registration.NetworkRegistry
 +                    .onModdedConnectionDetectedAtServer(
 +                            this,
 +                            moddedEnvironmentPayload.configuration(),
@@ -62,14 +62,14 @@
 +            return;
 +        }
 +
-+        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtServer(this, p_294276_);
++        net.neoforged.neoforge.network.registration.NetworkRegistry.onModdedPacketAtServer(this, p_294276_);
 +    }
 +
 +    @Override
 +    public void handlePong(net.minecraft.network.protocol.common.ServerboundPongPacket p_295142_) {
 +        super.handlePong(p_295142_);
 +        if (p_295142_.getId() == 0) {
-+            if (!this.connectionType.isNeoForge() && !net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaOrOtherConnectionDetectedAtServer(this)) {
++            if (!this.connectionType.isNeoForge() && !net.neoforged.neoforge.network.registration.NetworkRegistry.onVanillaOrOtherConnectionDetectedAtServer(this)) {
 +                return;
 +            }
 +
@@ -84,9 +84,9 @@
      public void handleConfigurationFinished(ServerboundFinishConfigurationPacket p_294283_) {
 +        if (this.connectionType == net.neoforged.neoforge.network.connection.ConnectionType.OTHER) {
 +            //We need to also initialize this here, as the client may have sent the packet before we have finished our configuration.
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedConnectionDetectedAtServer(this, java.util.Set.of(), java.util.Set.of());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onModdedConnectionDetectedAtServer(this, java.util.Set.of(), java.util.Set.of());
 +        }
-+        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onConfigurationFinished(this);
++        net.neoforged.neoforge.network.registration.NetworkRegistry.onConfigurationFinished(this);
          this.connection.suspendInboundAfterProtocolChange();
          PacketUtils.ensureRunningOnSameThread(p_294283_, this, this.server);
          this.finishCurrentTask(JoinWorldTask.TYPE);

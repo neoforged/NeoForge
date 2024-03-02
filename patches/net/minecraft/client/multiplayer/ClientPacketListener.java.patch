@@ -91,15 +91,15 @@
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket p_295727_, CustomPacketPayload p_295851_) {
 +        if (p_295851_ instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
 +            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
 +            return;
 +        }
 +        if (p_295851_  instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
 +            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
 +            return;
 +        }
-+        if (this.connectionType.isNotVanilla() && net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtClient(this, p_295727_)) {
++        if (this.connectionType.isNotVanilla() && net.neoforged.neoforge.network.registration.NetworkRegistry.onModdedPacketAtClient(this, p_295727_)) {
 +            return;
 +        }
 +        PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft); //Neo: We move this here to ensure that only vanilla packets are handled on the main thread.

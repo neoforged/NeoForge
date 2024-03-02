@@ -165,13 +165,13 @@
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket p_294276_) {
 +        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
 +            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
 +            return;
 +        }
 +
 +        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
 +            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
 +            return;
 +        }
 +
@@ -180,7 +180,7 @@
 +            return;
 +        }
 +
-+        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtServer(
++        net.neoforged.neoforge.network.registration.NetworkRegistry.onModdedPacketAtServer(
 +                this, p_294276_
 +        );
 +    }
