@@ -13,7 +13,7 @@
          Executor p_279148_,
          Executor p_279169_
      ) {
-+        final var decodeOps = net.neoforged.neoforge.common.conditions.ConditionalOps.create(net.minecraft.resources.RegistryOps.create(com.mojang.serialization.JsonOps.INSTANCE, registryAccess), this.conditionContext);
++        final var decodeOps = this.getConditionalOps();
          Map<LootDataType<?>, Map<ResourceLocation, ?>> map = new HashMap<>();
          CompletableFuture<?>[] completablefuture = LootDataType.values()
 -            .map(p_279242_ -> scheduleElementParse(p_279242_, p_279377_, p_279148_, map))

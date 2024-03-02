@@ -10,7 +10,7 @@
 -                RecipeHolder<?> recipeholder = fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"));
 -                map.computeIfAbsent(recipeholder.value().getType(), p_44075_ -> ImmutableMap.builder()).put(resourcelocation, recipeholder);
 -                builder.put(resourcelocation, recipeholder);
-+                Optional<RecipeHolder<?>> recipeHolderOptional = fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"), net.neoforged.neoforge.common.conditions.ConditionalOps.create(net.minecraft.resources.RegistryOps.create(com.mojang.serialization.JsonOps.INSTANCE, registryAccess), conditionContext));
++                Optional<RecipeHolder<?>> recipeHolderOptional = fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"), this.getConditionalOps());
 +                recipeHolderOptional.ifPresentOrElse(recipeholder -> {
 +                    map.computeIfAbsent(recipeholder.value().getType(), p_44075_ -> ImmutableMap.builder()).put(resourcelocation, recipeholder);
 +                    builder.put(resourcelocation, recipeholder);
