@@ -5,13 +5,9 @@
 
 package net.neoforged.neoforge.resource;
 
-import java.lang.ref.WeakReference;
-
-import org.jetbrains.annotations.ApiStatus;
-
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
-
+import java.lang.ref.WeakReference;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -19,6 +15,7 @@ import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.ICondition.IContext;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Reload listeners that descend from this class will have the reload context automatically populated when it is available.
@@ -28,7 +25,6 @@ import net.neoforged.neoforge.common.conditions.ICondition.IContext;
  * For children of {@link SimplePreparableReloadListeners}, it will be available during both {@link SimplePreparableReloadListener#prepare prepare()} and {@link SimplePreparableReloadListener#apply apply()}.
  */
 public abstract class ContextAwareReloadListener implements PreparableReloadListener {
-
     /**
      * @deprecated Use {@link #getContext()}
      */
@@ -72,5 +68,4 @@ public abstract class ContextAwareReloadListener implements PreparableReloadList
     protected final ConditionalOps<JsonElement> makeConditionalOps() {
         return new ConditionalOps<JsonElement>(RegistryOps.create(JsonOps.INSTANCE, getRegistryAccess()), getContext());
     }
-
 }
