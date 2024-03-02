@@ -7,7 +7,6 @@ package net.neoforged.neoforge.resource;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
-import java.lang.ref.WeakReference;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -26,40 +25,39 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public abstract class ContextAwareReloadListener implements PreparableReloadListener {
     /**
+     * TODO: Make private
+     * 
      * @deprecated Use {@link #getContext()}
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     protected ICondition.IContext conditionContext = ICondition.IContext.EMPTY;
 
     /**
+     * TODO: Make private
+     * 
      * @deprecated Use {@link #getRegistryAccess()}
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     protected RegistryAccess registryAccess = RegistryAccess.EMPTY;
-
-    private WeakReference<ICondition.IContext> context = new WeakReference<>(null);
-    private WeakReference<RegistryAccess> regAccess = new WeakReference<>(null);
 
     @ApiStatus.Internal
     public void injectContext(ICondition.IContext context, RegistryAccess regAccess) {
         this.conditionContext = context;
         this.registryAccess = regAccess;
-        this.context = new WeakReference<>(context);
-        this.regAccess = new WeakReference<>(regAccess);
     }
 
     /**
      * @return The context object held by this listener, or {@link IContext#EMPTY} if it is unavailable.
      */
     protected final ICondition.IContext getContext() {
-        return this.context.refersTo(null) ? IContext.EMPTY : this.context.get();
+        return this.conditionContext;
     }
 
     /**
      * @return The context object held by this listener, or {@link RegistryAccess#EMPTY} if it is unavailable.
      */
     protected final RegistryAccess getRegistryAccess() {
-        return this.regAccess.refersTo(null) ? RegistryAccess.EMPTY : this.regAccess.get();
+        return this.registryAccess;
     }
 
     /**
