@@ -94,21 +94,21 @@ public interface IServerCommonPacketListenerExtension {
     }
 
     /**
-     * {@return true if the custom payload type with the given id is usable by this connection}
+     * {@return true if a channel exists to handle the payload type with the given id}
      *
      * @param payloadId The payload id to check
      */
-    default boolean isConnected(final ResourceLocation payloadId) {
+    default boolean hasChannel(final ResourceLocation payloadId) {
         return NetworkRegistry.isConnected(self(), payloadId);
     }
 
     /**
-     * {@return true if the custom payload is usable by this connection}
+     * {@return true if a channel exists to handle the payload}
      * 
      * @param payload The payload to check
      */
-    default boolean isConnected(final CustomPacketPayload payload) {
-        return isConnected(payload.id());
+    default boolean hasChannel(final CustomPacketPayload payload) {
+        return hasChannel(payload.id());
     }
 
     /**

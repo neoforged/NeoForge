@@ -23,13 +23,13 @@ import org.jetbrains.annotations.ApiStatus;
 public class ConfigurationInitialization {
     @SubscribeEvent
     private static void configureModdedClient(OnGameConfigurationEvent event) {
-        if (event.getListener().isConnected(FrozenRegistrySyncStartPayload.ID) &&
-                event.getListener().isConnected(FrozenRegistryPayload.ID) &&
-                event.getListener().isConnected(FrozenRegistrySyncCompletedPayload.ID)) {
+        if (event.getListener().hasChannel(FrozenRegistrySyncStartPayload.ID) &&
+                event.getListener().hasChannel(FrozenRegistryPayload.ID) &&
+                event.getListener().hasChannel(FrozenRegistrySyncCompletedPayload.ID)) {
             event.register(new SyncRegistries());
         }
 
-        if (event.getListener().isConnected(ConfigFilePayload.ID)) {
+        if (event.getListener().hasChannel(ConfigFilePayload.ID)) {
             event.register(new SyncConfig(event.getListener()));
         }
 
