@@ -9,6 +9,7 @@ import java.util.Optional;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import org.jetbrains.annotations.ApiStatus;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * A record that holds the information needed to describe a registered payload, its reader and handler.
  *
+ * @param id       The id of the payload
  * @param reader   The reader for the payload
  * @param handler  The handler for the payload
  * @param version  The version of the payload
@@ -25,6 +27,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record PayloadRegistration<T extends CustomPacketPayload>(
+        ResourceLocation id,
         FriendlyByteBuf.Reader<T> reader,
         IPayloadHandler<T> handler,
         Optional<String> version,

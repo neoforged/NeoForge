@@ -52,13 +52,13 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
 
     @Override
     public <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IPayloadHandler<T> handler) {
-        play(id, new PayloadRegistration<>(reader, handler, version, Optional.empty(), optional));
+        play(id, new PayloadRegistration<>(id, reader, handler, version, Optional.empty(), optional));
         return this;
     }
 
     @Override
     public <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IPayloadHandler<T> handler) {
-        configuration(id, new PayloadRegistration<>(reader, handler, version, Optional.empty(), optional));
+        configuration(id, new PayloadRegistration<>(id, reader, handler, version, Optional.empty(), optional));
         return this;
     }
 
@@ -67,7 +67,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
         DirectionalPayloadHandlerBuilder<T> builder = new DirectionalPayloadHandlerBuilder<>();
         handler.accept(builder);
         DirectionalPayloadHandler<T> innerHandler = builder.build();
-        play(id, new PayloadRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
+        play(id, new PayloadRegistration<>(id, reader, innerHandler, version, innerHandler.flow(), optional));
         return this;
     }
 
@@ -76,7 +76,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
         DirectionalPayloadHandlerBuilder<T> builder = new DirectionalPayloadHandlerBuilder<>();
         handler.accept(builder);
         DirectionalPayloadHandler<T> innerHandler = builder.build();
-        configuration(id, new PayloadRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
+        configuration(id, new PayloadRegistration<>(id, reader, innerHandler, version, innerHandler.flow(), optional));
         return this;
     }
 
@@ -85,8 +85,8 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
         DirectionalPayloadHandlerBuilder<T> builder = new DirectionalPayloadHandlerBuilder<>();
         handler.accept(builder);
         DirectionalPayloadHandler<T> innerHandler = builder.build();
-        play(id, new PayloadRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
-        configuration(id, new PayloadRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
+        play(id, new PayloadRegistration<>(id, reader, innerHandler, version, innerHandler.flow(), optional));
+        configuration(id, new PayloadRegistration<>(id, reader, innerHandler, version, innerHandler.flow(), optional));
         return this;
     }
 

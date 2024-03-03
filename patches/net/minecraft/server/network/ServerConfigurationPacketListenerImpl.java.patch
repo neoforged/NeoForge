@@ -24,13 +24,13 @@
          this.send(new ClientboundCustomPayloadPacket(new BrandPayload(this.server.getServerModName())));
          LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = this.server.registries();
          this.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(this.server.getWorldData().enabledFeatures())));
-@@ -86,6 +_,53 @@
+@@ -86,6 +_,52 @@
  
      private void addOptionalTasks() {
          this.server.getServerResourcePack().ifPresent(p_296496_ -> this.configurationTasks.add(new ServerResourcePackConfigurationTask(p_296496_)));
 +
 +        this.configurationTasks.add(new net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseStarted(this));
-+        this.configurationTasks.addAll(net.neoforged.fml.ModLoader.get().postEventWithReturn(new net.neoforged.neoforge.network.event.OnGameConfigurationEvent(this)).getConfigurationTasks());
++        this.configurationTasks.addAll(net.neoforged.fml.ModLoader.get().postEventWithReturn(new net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent(this)).getConfigurationTasks());
 +        this.configurationTasks.add(new net.neoforged.neoforge.network.configuration.ModdedConfigurationPhaseCompleted(this));
 +    }
 +
@@ -51,8 +51,7 @@
 +            net.neoforged.neoforge.network.registration.NetworkRegistry
 +                    .onModdedConnectionDetectedAtServer(
 +                            this,
-+                            moddedEnvironmentPayload.configuration(),
-+                            moddedEnvironmentPayload.play()
++                            moddedEnvironmentPayload.queries()
 +                    );
 +            return;
 +        }
@@ -84,7 +83,7 @@
      public void handleConfigurationFinished(ServerboundFinishConfigurationPacket p_294283_) {
 +        if (this.connectionType == net.neoforged.neoforge.network.connection.ConnectionType.OTHER) {
 +            //We need to also initialize this here, as the client may have sent the packet before we have finished our configuration.
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.onModdedConnectionDetectedAtServer(this, java.util.Set.of(), java.util.Set.of());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onModdedConnectionDetectedAtServer(this, java.util.Map.of());
 +        }
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.onConfigurationFinished(this);
          this.connection.suspendInboundAfterProtocolChange();

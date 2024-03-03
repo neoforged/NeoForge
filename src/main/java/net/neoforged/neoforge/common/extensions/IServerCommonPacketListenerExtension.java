@@ -99,7 +99,7 @@ public interface IServerCommonPacketListenerExtension {
      * @param payloadId The payload id to check
      */
     default boolean hasChannel(final ResourceLocation payloadId) {
-        return NetworkRegistry.isConnected(self(), payloadId);
+        return NetworkRegistry.hasChannel(self(), payloadId);
     }
 
     /**

@@ -33,7 +33,7 @@
 +        }
 +        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkPayload moddedNetworkPayload) {
 +            this.initializedConnection = true;
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.onModdedNetworkConnectionEstablished(this, moddedNetworkPayload.configuration(), moddedNetworkPayload.play());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onModdedNetworkConnectionEstablished(this, moddedNetworkPayload.setup());
 +            return;
 +        }
 +        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkSetupFailedPayload setupFailedPayload) {

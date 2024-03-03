@@ -9,6 +9,7 @@ import java.util.Optional;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.registration.PayloadRegistration;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -21,6 +22,10 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record ModdedNetworkQueryComponent(ResourceLocation id, Optional<String> version, Optional<PacketFlow> flow, boolean optional) {
+    public ModdedNetworkQueryComponent(PayloadRegistration<?> reg) {
+        this(reg.id(), reg.version(), reg.flow(), reg.optional());
+    }
+
     public ModdedNetworkQueryComponent(FriendlyByteBuf buf) {
         this(
                 buf.readResourceLocation(),
