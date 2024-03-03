@@ -85,8 +85,8 @@ public class NetworkRegistry {
     private static final AttributeKey<PacketFlow> ATTRIBUTE_FLOW = AttributeKey.valueOf("neoforge:flow");
 
     private static boolean setup = false;
-    private static final Map<ResourceLocation, ConfigurationRegistration<?>> knownConfigurationRegistrations = new HashMap<>();
-    private static final Map<ResourceLocation, PlayRegistration<?>> knownPlayRegistrations = new HashMap<>();
+    private static final Map<ResourceLocation, PayloadRegistration<?>> knownConfigurationRegistrations = new HashMap<>();
+    private static final Map<ResourceLocation, PayloadRegistration<?>> knownPlayRegistrations = new HashMap<>();
 
     private NetworkRegistry() {}
 
@@ -109,10 +109,10 @@ public class NetworkRegistry {
         ModLoader.get().postEvent(new RegisterPayloadHandlerEvent(namespace -> registrarsByNamespace.computeIfAbsent(namespace, ModdedPacketRegistrar::new)));
         registrarsByNamespace.values().forEach(ModdedPacketRegistrar::invalidate);
 
-        final ImmutableMap.Builder<ResourceLocation, ConfigurationRegistration<?>> configurationBuilder = ImmutableMap.builder();
+        final ImmutableMap.Builder<ResourceLocation, PayloadRegistration<?>> configurationBuilder = ImmutableMap.builder();
         registrarsByNamespace.values().forEach(registrar -> registrar.getConfigurationRegistrations().forEach(configurationBuilder::put));
 
-        final ImmutableMap.Builder<ResourceLocation, PlayRegistration<?>> playBuilder = ImmutableMap.builder();
+        final ImmutableMap.Builder<ResourceLocation, PayloadRegistration<?>> playBuilder = ImmutableMap.builder();
         registrarsByNamespace.values().forEach(registrar -> registrar.getPlayRegistrations().forEach(playBuilder::put));
 
         knownConfigurationRegistrations.clear();
@@ -197,7 +197,7 @@ public class NetworkRegistry {
                 return null;
             }
 
-            final PlayRegistration<?> registration = knownPlayRegistrations.get(id);
+            final PayloadRegistration<?> registration = knownPlayRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet {} with an unknown or not accepted channel. Not parsing packet.", channel.id());
                 throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -229,7 +229,7 @@ public class NetworkRegistry {
                 return null;
             }
 
-            final ConfigurationRegistration<?> registration = knownConfigurationRegistrations.get(id);
+            final PayloadRegistration<?> registration = knownConfigurationRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet {} with an unknown or not accepted channel. Not parsing packet.", channel.id());
                 throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -296,7 +296,7 @@ public class NetworkRegistry {
 
             final ResourceLocation id = channel != null ? channel.id() : packet.payload().id();
             //We are in the configuration phase, so lookup packet listeners for that
-            final ConfigurationRegistration registration = knownConfigurationRegistrations.get(id);
+            final PayloadRegistration registration = knownConfigurationRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a client with an unknown or not accepted channel. Disconnecting client.");
                 throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -316,7 +316,7 @@ public class NetworkRegistry {
 
             final ResourceLocation id = channel != null ? channel.id() : packet.payload().id();
             //We are in the play phase, so lookup packet listeners for that
-            final PlayRegistration registration = knownPlayRegistrations.get(id);
+            final PayloadRegistration registration = knownPlayRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a client with an unknown or not accepted channel. Disconnecting client.");
                 throw new IllegalStateException("A client sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -370,7 +370,7 @@ public class NetworkRegistry {
 
             final ResourceLocation id = channel != null ? channel.id() : packet.payload().id();
             //We are in the configuration phase, so lookup packet listeners for that
-            final ConfigurationRegistration registration = knownConfigurationRegistrations.get(id);
+            final PayloadRegistration registration = knownConfigurationRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a server with an unknown or not accepted channel. Disconnecting server.");
                 throw new IllegalStateException("A server sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -390,7 +390,7 @@ public class NetworkRegistry {
 
             final ResourceLocation id = channel != null ? channel.id() : packet.payload().id();
             //We are in the play phase, so lookup packet listeners for that
-            final PlayRegistration registration = knownPlayRegistrations.get(id);
+            final PayloadRegistration registration = knownPlayRegistrations.get(id);
             if (registration == null) {
                 LOGGER.error("Received a modded custom payload packet from a server with an unknown or not accepted channel. Disconnecting server.");
                 throw new IllegalStateException("A server sent a packet with an unknown or not accepted channel, while negotiation succeeded. Somebody changed the channels known to NeoForge!");
@@ -656,7 +656,7 @@ public class NetworkRegistry {
      * @return True if the packet is ad hoc readable, false otherwise.
      */
     private static boolean isAdhocConfigurationChannelReadable(ResourceLocation id, PacketFlow flow) {
-        final ConfigurationRegistration<?> known = knownConfigurationRegistrations.get(id);
+        final PayloadRegistration<?> known = knownConfigurationRegistrations.get(id);
         if (known == null) {
             return false;
         }
@@ -676,7 +676,7 @@ public class NetworkRegistry {
      * @return True if the packet is ad hoc readable, false otherwise.
      */
     private static boolean isAdhocPlayChannelReadable(ResourceLocation id, PacketFlow flow) {
-        final PlayRegistration<?> known = knownPlayRegistrations.get(id);
+        final PayloadRegistration<?> known = knownPlayRegistrations.get(id);
         if (known == null) {
             return false;
         }

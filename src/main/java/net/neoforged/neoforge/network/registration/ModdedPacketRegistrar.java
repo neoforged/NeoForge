@@ -21,8 +21,8 @@ import net.neoforged.neoforge.network.handling.IPayloadHandler;
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 class ModdedPacketRegistrar implements IPayloadRegistrar {
     private final String modId;
-    private final Map<ResourceLocation, ConfigurationRegistration<?>> configurationPayloads;
-    private final Map<ResourceLocation, PlayRegistration<?>> playPayloads;
+    private final Map<ResourceLocation, PayloadRegistration<?>> configurationPayloads;
+    private final Map<ResourceLocation, PayloadRegistration<?>> playPayloads;
     private Optional<String> version = Optional.empty();
     private boolean optional = false;
     private boolean valid = true;
@@ -42,23 +42,23 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
         this.valid = source.valid;
     }
 
-    public Map<ResourceLocation, ConfigurationRegistration<?>> getConfigurationRegistrations() {
+    public Map<ResourceLocation, PayloadRegistration<?>> getConfigurationRegistrations() {
         return ImmutableMap.copyOf(configurationPayloads);
     }
 
-    public Map<ResourceLocation, PlayRegistration<?>> getPlayRegistrations() {
+    public Map<ResourceLocation, PayloadRegistration<?>> getPlayRegistrations() {
         return ImmutableMap.copyOf(playPayloads);
     }
 
     @Override
     public <T extends CustomPacketPayload> IPayloadRegistrar play(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IPayloadHandler<T> handler) {
-        play(id, new PlayRegistration<>(reader, handler, version, Optional.empty(), optional));
+        play(id, new PayloadRegistration<>(reader, handler, version, Optional.empty(), optional));
         return this;
     }
 
     @Override
     public <T extends CustomPacketPayload> IPayloadRegistrar configuration(ResourceLocation id, FriendlyByteBuf.Reader<T> reader, IPayloadHandler<T> handler) {
-        configuration(id, new ConfigurationRegistration<>(reader, handler, version, Optional.empty(), optional));
+        configuration(id, new PayloadRegistration<>(reader, handler, version, Optional.empty(), optional));
         return this;
     }
 
@@ -67,7 +67,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
         DirectionalPayloadHandlerBuilder<T> builder = new DirectionalPayloadHandlerBuilder<>();
         handler.accept(builder);
         DirectionalPayloadHandler<T> innerHandler = builder.build();
-        play(id, new PlayRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
+        play(id, new PayloadRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
         return this;
     }
 
@@ -76,7 +76,7 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
         DirectionalPayloadHandlerBuilder<T> builder = new DirectionalPayloadHandlerBuilder<>();
         handler.accept(builder);
         DirectionalPayloadHandler<T> innerHandler = builder.build();
-        configuration(id, new ConfigurationRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
+        configuration(id, new PayloadRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
         return this;
     }
 
@@ -85,18 +85,18 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
         DirectionalPayloadHandlerBuilder<T> builder = new DirectionalPayloadHandlerBuilder<>();
         handler.accept(builder);
         DirectionalPayloadHandler<T> innerHandler = builder.build();
-        play(id, new PlayRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
-        configuration(id, new ConfigurationRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
+        play(id, new PayloadRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
+        configuration(id, new PayloadRegistration<>(reader, innerHandler, version, innerHandler.flow(), optional));
         return this;
     }
 
-    private void configuration(final ResourceLocation id, ConfigurationRegistration<?> registration) {
+    private void configuration(final ResourceLocation id, PayloadRegistration<?> registration) {
         validatePayload(id, configurationPayloads);
 
         configurationPayloads.put(id, registration);
     }
 
-    private void play(final ResourceLocation id, PlayRegistration<?> registration) {
+    private void play(final ResourceLocation id, PayloadRegistration<?> registration) {
         validatePayload(id, playPayloads);
 
         playPayloads.put(id, registration);
