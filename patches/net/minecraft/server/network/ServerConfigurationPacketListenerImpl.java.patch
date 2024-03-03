@@ -24,7 +24,7 @@
          this.send(new ClientboundCustomPayloadPacket(new BrandPayload(this.server.getServerModName())));
          LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = this.server.registries();
          this.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(this.server.getWorldData().enabledFeatures())));
-@@ -86,6 +_,52 @@
+@@ -86,6 +_,48 @@
  
      private void addOptionalTasks() {
          this.server.getServerResourcePack().ifPresent(p_296496_ -> this.configurationTasks.add(new ServerResourcePackConfigurationTask(p_296496_)));
@@ -38,21 +38,17 @@
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket p_294276_) {
 +        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
 +            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftRegister(minecraftRegisterPayload.newChannels(), this.connection);
 +            return;
 +        }
 +        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload minecraftUnregisterPayload) {
 +            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftUnregister(this, minecraftUnregisterPayload.forgottenChannels());
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftUnregister(minecraftUnregisterPayload.forgottenChannels(), this.connection);
 +            return;
 +        }
 +        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload moddedEnvironmentPayload) {
 +            this.connectionType = this.connectionType.withNeoForgeQueryPayload();
-+            net.neoforged.neoforge.network.registration.NetworkRegistry
-+                    .onModdedConnectionDetectedAtServer(
-+                            this,
-+                            moddedEnvironmentPayload.queries()
-+                    );
++            net.neoforged.neoforge.network.registration.NetworkRegistry.onModdedConnectionDetectedAtServer(this, moddedEnvironmentPayload.queries());
 +            return;
 +        }
 +
@@ -61,7 +57,7 @@
 +            return;
 +        }
 +
-+        net.neoforged.neoforge.network.registration.NetworkRegistry.onModdedPacketAtServer(this, p_294276_);
++        net.neoforged.neoforge.network.registration.NetworkRegistry.handleCustomPayload(this, p_294276_);
 +    }
 +
 +    @Override
