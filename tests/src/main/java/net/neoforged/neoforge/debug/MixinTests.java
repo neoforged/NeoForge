@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug;
 
 import net.minecraft.gametest.framework.GameTest;
@@ -21,6 +26,7 @@ public class MixinTests {
 
     public interface InterfaceTarget {
         String MAXINT = "maxint";
+
         default int getNumber(String argument) {
             return 12;
         }
