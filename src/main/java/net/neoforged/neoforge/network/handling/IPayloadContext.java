@@ -5,28 +5,28 @@
 
 package net.neoforged.neoforge.network.handling;
 
-import io.netty.channel.ChannelHandlerContext;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.Nullable;
+
+import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ConfigurationTask;
-import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.Nullable;
 
 /**
- * Defines a phase-less payload context that is passed to a handler for a payload that arrives during the connection.
+ * Common context interface for payload handlers.
  */
 public interface IPayloadContext {
     /**
-     * Sends the given payload back to the player.
+     * Sends the given payload back to the sender.
      *
-     * @param payload The payload to send back.
+     * @param payload The payload to send.
      */
     void reply(CustomPacketPayload payload);
 
@@ -36,27 +36,28 @@ public interface IPayloadContext {
     void disconnect(Component reason);
 
     /**
-     * Invoked to handle the given packet.
+     * Handles a packet using the current context.
+     * <p>
+     * Used to trigger vanilla handling when custom payloads may be transformed into a vanilla packet.
      *
      * @param packet The packet.
      */
     void handle(Packet<?> packet);
 
     /**
-     * Invoked to handle the given custom payload.
+     * Handles a payload using the current context.
+     * <p>
+     * Used to handle sub-payloads if necessary.
      *
      * @param payload The payload.
      */
     void handle(CustomPacketPayload payload);
 
     /**
-     * Submits the given work to be run synchronously on the main thread of the game.
+     * Submits the given task to be run on the main thread of the game.
      * <p>
-     * This method will <bold>not</bold> be guarded against exceptions.
-     * <br>
-     * If you need to guard against exceptions, call {@link CompletableFuture#exceptionally(Function)},
-     * {@link CompletableFuture#exceptionallyAsync(Function)}}, or derivatives on the returned future.
-     * </p>
+     * The returned future will be automatically guarded against exceptions using {@link CompletableFuture#exceptionally}.
+     * If you need to catch your own exceptions, use a try/catch block within your task.
      * 
      * @param task The task to run.
      */
@@ -68,9 +69,10 @@ public interface IPayloadContext {
     <T> CompletableFuture<T> enqueueWork(Supplier<T> task);
 
     /**
-     * Called when a task is completed.
+     * Marks a {@link ConfigurationTask} as completed.
      *
      * @param type The type of task that was completed.
+     * @throws UnsupportedOperationException if called on the client, or called on the server outside of the configuration phase.
      */
     void finishCurrentTask(ConfigurationTask.Type type);
 
@@ -90,10 +92,10 @@ public interface IPayloadContext {
     ChannelHandlerContext channelHandlerContext();
 
     /**
-     * {@return the player that acts within this context}
-     * 
-     * @implNote This {@link Optional} will be filled with the current client side player if the payload was sent by the server, the server will only populate this field if it is not configuring the client.
+     * When available, gets the sender for packets that are sent from a client to the server.
+     * <p>
+     * A sending player is unavailable during the configuration phase.
      */
     @Nullable
-    Player sender();
+    ServerPlayer sender();
 }
