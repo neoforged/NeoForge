@@ -6,9 +6,6 @@
 package net.neoforged.neoforge.network.configuration;
 
 import java.util.function.Consumer;
-
-import org.jetbrains.annotations.ApiStatus;
-
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
@@ -16,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
 import net.neoforged.neoforge.common.TierSortingRegistry;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Syncs the tier sorting registry to the client

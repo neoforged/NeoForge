@@ -6,9 +6,6 @@
 package net.neoforged.neoforge.network.configuration;
 
 import java.util.function.Consumer;
-
-import org.jetbrains.annotations.ApiStatus;
-
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +14,7 @@ import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
 import net.neoforged.neoforge.registries.RegistryManager;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Syncs registries to the client

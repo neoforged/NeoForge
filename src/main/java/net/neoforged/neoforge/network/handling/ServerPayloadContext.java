@@ -5,12 +5,9 @@
 
 package net.neoforged.neoforge.network.handling;
 
+import io.netty.channel.ChannelHandlerContext;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
-
-import org.jetbrains.annotations.Nullable;
-
-import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -24,6 +21,7 @@ import net.minecraft.server.network.ConfigurationTask.Type;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.neoforged.neoforge.common.extensions.IServerConfigurationPacketListenerExtension;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
+import org.jetbrains.annotations.Nullable;
 
 public record ServerPayloadContext(ServerCommonPacketListener listener, ResourceLocation payloadId) implements IPayloadContext {
     @Override

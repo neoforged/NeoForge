@@ -7,13 +7,11 @@ package net.neoforged.neoforge.network.event;
 
 import java.util.LinkedList;
 import java.util.Queue;
-
-import org.jetbrains.annotations.ApiStatus;
-
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.server.network.ConfigurationTask;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Fired when the server configuration packet listener collects all the configuration tasks

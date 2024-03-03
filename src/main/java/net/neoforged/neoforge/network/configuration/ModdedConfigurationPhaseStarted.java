@@ -6,14 +6,12 @@
 package net.neoforged.neoforge.network.configuration;
 
 import java.util.function.Consumer;
-
-import org.jetbrains.annotations.ApiStatus;
-
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Custom configuration task that is run to indicate that the modded configuration phase has started.

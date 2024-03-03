@@ -5,12 +5,9 @@
 
 package net.neoforged.neoforge.network.handling;
 
+import io.netty.channel.ChannelHandlerContext;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
-
-import org.jetbrains.annotations.Nullable;
-
-import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -18,6 +15,7 @@ import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ConfigurationTask;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Common context interface for payload handlers.
