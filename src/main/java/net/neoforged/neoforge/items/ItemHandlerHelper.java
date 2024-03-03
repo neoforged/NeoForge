@@ -30,13 +30,6 @@ public class ItemHandlerHelper {
         return stack;
     }
 
-    public static boolean canItemStacksStack(ItemStack a, ItemStack b) {
-        if (a.isEmpty() || !ItemStack.isSameItem(a, b) || a.hasTag() != b.hasTag())
-            return false;
-
-        return (!a.hasTag() || a.getTag().equals(b.getTag())) && a.areAttachmentsCompatible(b);
-    }
-
     /**
      * A relaxed version of canItemStacksStack that stacks itemstacks with different metadata if they don't have subtypes.
      * This usually only applies when players pick up items.

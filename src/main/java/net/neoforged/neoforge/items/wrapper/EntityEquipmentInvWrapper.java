@@ -70,7 +70,7 @@ public abstract class EntityEquipmentInvWrapper implements IItemHandlerModifiabl
         int limit = getStackLimit(slot, stack);
 
         if (!existing.isEmpty()) {
-            if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
+            if (!stack.stacksWith(existing))
                 return stack;
 
             limit -= existing.getCount();

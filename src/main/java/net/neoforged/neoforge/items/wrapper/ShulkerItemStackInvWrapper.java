@@ -54,7 +54,7 @@ public class ShulkerItemStackInvWrapper implements IItemHandlerModifiable {
         int limit = Math.min(getSlotLimit(slot), stack.getMaxStackSize());
 
         if (!existing.isEmpty()) {
-            if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
+            if (!stack.stacksWith(existing))
                 return stack;
 
             limit -= existing.getCount();

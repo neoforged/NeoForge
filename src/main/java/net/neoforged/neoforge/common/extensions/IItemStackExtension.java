@@ -70,6 +70,16 @@ public interface IItemStackExtension {
     }
 
     /**
+     * {@return true if this item stack stacks with the provided one}
+     */
+    default boolean stacksWith(ItemStack otherStack) {
+        if (self().isEmpty() || !ItemStack.isSameItem(self(), otherStack) || self().hasTag() != otherStack.hasTag())
+            return false;
+
+        return (!self().hasTag() || self().getTag().equals(otherStack.getTag())) && self().areAttachmentsCompatible(otherStack);
+    }
+
+    /**
      * @return the fuel burn time for this itemStack in a furnace. Return 0 to make
      *         it not act as a fuel. Return -1 to let the default vanilla logic
      *         decide.
