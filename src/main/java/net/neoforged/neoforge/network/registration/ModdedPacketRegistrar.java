@@ -5,11 +5,12 @@
 
 package net.neoforged.neoforge.network.registration;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -21,33 +22,26 @@ import net.neoforged.neoforge.network.handling.IPayloadHandler;
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 class ModdedPacketRegistrar implements IPayloadRegistrar {
     private final String modId;
-    private final Map<ResourceLocation, PayloadRegistration<?>> configurationPayloads;
-    private final Map<ResourceLocation, PayloadRegistration<?>> playPayloads;
+    private final Map<ConnectionProtocol, Map<ResourceLocation, PayloadRegistration<?>>> payloads;
     private Optional<String> version = Optional.empty();
     private boolean optional = false;
     private boolean valid = true;
 
     public ModdedPacketRegistrar(String modId) {
         this.modId = modId;
-        playPayloads = Maps.newHashMap();
-        configurationPayloads = Maps.newHashMap();
+        this.payloads = new IdentityHashMap<>();
     }
 
     private ModdedPacketRegistrar(ModdedPacketRegistrar source) {
         this.modId = source.modId;
-        this.playPayloads = source.playPayloads;
-        this.configurationPayloads = source.configurationPayloads;
+        this.payloads = source.payloads;
         this.version = source.version;
         this.optional = source.optional;
         this.valid = source.valid;
     }
 
-    public Map<ResourceLocation, PayloadRegistration<?>> getConfigurationRegistrations() {
-        return ImmutableMap.copyOf(configurationPayloads);
-    }
-
-    public Map<ResourceLocation, PayloadRegistration<?>> getPlayRegistrations() {
-        return ImmutableMap.copyOf(playPayloads);
+    public Map<ConnectionProtocol, Map<ResourceLocation, PayloadRegistration<?>>> getRegistrations() {
+        return this.payloads;
     }
 
     @Override
@@ -90,30 +84,30 @@ class ModdedPacketRegistrar implements IPayloadRegistrar {
         return this;
     }
 
-    private void configuration(final ResourceLocation id, PayloadRegistration<?> registration) {
-        validatePayload(id, configurationPayloads);
+    private <T extends CustomPacketPayload> void register(ConnectionProtocol protocol, ResourceLocation id, PayloadRegistration<T> reg) {
+        if (!this.valid) {
+            throw new RegistrationFailedException(id, this.modId, RegistrationFailedException.Reason.INVALID_REGISTRAR);
+        }
 
-        configurationPayloads.put(id, registration);
+        Map<ResourceLocation, PayloadRegistration<?>> protocolPayloads = this.payloads.computeIfAbsent(protocol, k -> new HashMap<>());
+
+        if (protocolPayloads.containsKey(id)) {
+            throw new RegistrationFailedException(id, this.modId, RegistrationFailedException.Reason.DUPLICATE_ID);
+        }
+
+        if (!id.getNamespace().equals(this.modId)) {
+            throw new RegistrationFailedException(id, this.modId, RegistrationFailedException.Reason.INVALID_NAMESPACE);
+        }
+
+        protocolPayloads.put(id, reg);
+    }
+
+    private void configuration(final ResourceLocation id, PayloadRegistration<?> registration) {
+        register(ConnectionProtocol.CONFIGURATION, id, registration);
     }
 
     private void play(final ResourceLocation id, PayloadRegistration<?> registration) {
-        validatePayload(id, playPayloads);
-
-        playPayloads.put(id, registration);
-    }
-
-    private void validatePayload(ResourceLocation id, final Map<ResourceLocation, ?> payloads) {
-        if (!valid) {
-            throw new RegistrationFailedException(id, modId, RegistrationFailedException.Reason.INVALID_REGISTRAR);
-        }
-
-        if (payloads.containsKey(id)) {
-            throw new RegistrationFailedException(id, modId, RegistrationFailedException.Reason.DUPLICATE_ID);
-        }
-
-        if (!id.getNamespace().equals(modId)) {
-            throw new RegistrationFailedException(id, modId, RegistrationFailedException.Reason.INVALID_NAMESPACE);
-        }
+        register(ConnectionProtocol.PLAY, id, registration);
     }
 
     @Override

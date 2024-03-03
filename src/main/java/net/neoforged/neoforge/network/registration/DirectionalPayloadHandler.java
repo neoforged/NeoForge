@@ -25,7 +25,7 @@ public final class DirectionalPayloadHandler<T extends CustomPacketPayload> impl
         this.serverSide = serverSide;
 
         if (clientSide == null && serverSide == null) {
-            throw new UnsupportedOperationException("Attempted to register directional payload handler with no delegate handlers. At least one must be provided.");
+            throw new UnsupportedOperationException("Attempted to register a directional payload handler with no delegate handlers. At least one must be provided.");
         }
     }
 

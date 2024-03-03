@@ -82,11 +82,10 @@ public class ClientPayloadHandler {
 
                 this.toSynchronize.clear();
                 this.synchronizedRegistries.clear();
+                context.reply(new FrozenRegistrySyncCompletedPayload());
             } catch (Throwable t) {
                 context.disconnect(Component.translatable("neoforge.network.registries.sync.failed", t.getMessage()));
             }
-        }).thenAccept(v -> {
-            context.reply(new FrozenRegistrySyncCompletedPayload());
         });
     }
 

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.network.registration;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
@@ -78,7 +77,7 @@ import org.slf4j.Logger;
  */
 @ApiStatus.Internal
 public class NetworkRegistry {
-    public static final Logger LOGGER = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     private static final AttributeKey<NetworkPayloadSetup> ATTRIBUTE_PAYLOAD_SETUP = AttributeKey.valueOf("neoforge:payload_setup");
     private static final AttributeKey<Set<ResourceLocation>> ATTRIBUTE_ADHOC_CHANNELS = AttributeKey.valueOf("neoforge:adhoc_channels");
@@ -109,14 +108,9 @@ public class NetworkRegistry {
         ModLoader.get().postEvent(new RegisterPayloadHandlerEvent(namespace -> registrarsByNamespace.computeIfAbsent(namespace, ModdedPacketRegistrar::new)));
         registrarsByNamespace.values().forEach(ModdedPacketRegistrar::invalidate);
 
-        final ImmutableMap.Builder<ResourceLocation, PayloadRegistration<?>> configurationBuilder = ImmutableMap.builder();
-        registrarsByNamespace.values().forEach(registrar -> registrar.getConfigurationRegistrations().forEach(configurationBuilder::put));
-
-        final ImmutableMap.Builder<ResourceLocation, PayloadRegistration<?>> playBuilder = ImmutableMap.builder();
-        registrarsByNamespace.values().forEach(registrar -> registrar.getPlayRegistrations().forEach(playBuilder::put));
-
-        PAYLOAD_REGISTRATIONS.put(ConnectionProtocol.CONFIGURATION, configurationBuilder.build());
-        PAYLOAD_REGISTRATIONS.put(ConnectionProtocol.PLAY, playBuilder.build());
+        registrarsByNamespace.values().forEach(registrar -> registrar.getRegistrations().forEach((protocol, registrations) -> {
+            PAYLOAD_REGISTRATIONS.computeIfAbsent(protocol, k -> new HashMap<>()).putAll(registrations);
+        }));
     }
 
     /**
