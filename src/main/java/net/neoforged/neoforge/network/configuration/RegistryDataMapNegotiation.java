@@ -13,19 +13,17 @@ import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.network.ConfigurationTask;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public record RegistryDataMapNegotiation(ServerConfigurationPacketListener listener) implements ConfigurationTask {
+public record RegistryDataMapNegotiation(ServerConfigurationPacketListener listener) implements ICustomConfigurationTask {
     public static final ResourceLocation ID = new ResourceLocation("neoforge:registry_data_map_negotiation");
     public static final Type TYPE = new Type(ID);
 
@@ -35,7 +33,7 @@ public record RegistryDataMapNegotiation(ServerConfigurationPacketListener liste
     }
 
     @Override
-    public void start(Consumer<Packet<?>> sender) {
+    public void run(Consumer<CustomPacketPayload> sender) {
         if (!listener.hasChannel(KnownRegistryDataMapsPayload.ID)) {
             final var mandatory = RegistryManager.getDataMaps().values()
                     .stream()
@@ -64,6 +62,6 @@ public record RegistryDataMapNegotiation(ServerConfigurationPacketListener liste
             });
             dataMaps.put(key, list);
         });
-        sender.accept(new ClientboundCustomPayloadPacket(new KnownRegistryDataMapsPayload(dataMaps)));
+        sender.accept(new KnownRegistryDataMapsPayload(dataMaps));
     }
 }

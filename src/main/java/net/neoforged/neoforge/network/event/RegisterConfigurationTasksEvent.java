@@ -11,6 +11,7 @@ import net.minecraft.network.protocol.configuration.ServerConfigurationPacketLis
 import net.minecraft.server.network.ConfigurationTask;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforge.network.configuration.ICustomConfigurationTask;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -29,6 +30,8 @@ public class RegisterConfigurationTasksEvent extends Event implements IModBusEve
 
     /**
      * Register a configuration task to be run on the server.
+     * <p>
+     * If you need to send payloads during your task, extend {@link ICustomConfigurationTask} instead of {@link ConfigurationTask}.
      * 
      * @param task The task to run.
      */
