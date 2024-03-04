@@ -76,10 +76,11 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
 
         @Override
         public void render(GuiGraphics guiGraphics, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
+            String modid = stripControlCodes(modInfo.getModId());
             String name = stripControlCodes(I18nExtension.getDisplayName(modInfo));
             String version = stripControlCodes(MavenVersionStringHelper.artifactVersionToString(modInfo.getVersion()));
             Component heading = Component.literal(name).withStyle(ChatFormatting.WHITE);
-            Component subheading = Component.literal(version).withStyle(ChatFormatting.GRAY);
+            Component subheading = Component.literal(modid + " " + version).withStyle(ChatFormatting.GRAY);
             VersionChecker.CheckResult vercheck = VersionChecker.getResult(modInfo);
             Font font = this.parent.getFontRenderer();
             guiGraphics.drawString(font, Language.getInstance().getVisualOrder(FormattedText.composite(font.substrByWidth(heading, listWidth))), left + 3, top + 2, 0xFFFFFF, false);
