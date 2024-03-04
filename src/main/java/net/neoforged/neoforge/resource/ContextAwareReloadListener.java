@@ -25,7 +25,7 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public abstract class ContextAwareReloadListener implements PreparableReloadListener {
     /**
-     * TODO: Make private
+     * TODO 1.20.5: Make private
      * 
      * @deprecated Use {@link #getContext()}
      */
