@@ -33,7 +33,7 @@ public abstract class ContextAwareReloadListener implements PreparableReloadList
     protected ICondition.IContext conditionContext = ICondition.IContext.EMPTY;
 
     /**
-     * TODO: Make private
+     * TODO 1.20.5: Make private
      * 
      * @deprecated Use {@link #getRegistryAccess()}
      */
