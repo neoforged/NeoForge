@@ -61,7 +61,7 @@
   "fml.language.missingversion": "Il file della mod {5} richiede il provider di lingua {3}:{4,vr} per essere caricata\n§7Abbiamo trovato {6,i18n,fml.messages.artifactversion}",
   "fml.modloading.missingclasses": "Il File della Mod {3} ha delle mod che non sono state trovate",
   "fml.modloading.missingmetadata": "mods.toml ha metadati mancanti per il modid {3}",
-  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} ha errori di caricamento classe\n§7{2,exc,msg}",
+  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} ({0,modinfo,id}) ha errori di caricamento classe\n§7{2,exc,msg}",
   "fml.modloading.failedtoloadmod": "{0,modinfo,name} ({0,modinfo,id}) non è riuscito a caricarsi correttamente\n§7{2,exc,msg}",
   "fml.modloading.feature.missing": "{0,modinfo,name} ({0,modinfo,id}) manca una funzione che richiede di eseguire\n§7Richiede {3,featurebound} ma {4} è disponibile",
   "fml.modloading.uncaughterror": "Si è verificato un errore di elaborazione parallela.\n§7{2,exc,msg}",

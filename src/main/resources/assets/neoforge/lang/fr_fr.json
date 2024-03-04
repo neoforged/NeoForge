@@ -61,7 +61,7 @@
   "fml.language.missingversion": "Le fichier mod {5} a besoin du fournisseur de langage {3}:{4,vr} pour charger\n§7Nous avons trouvé {6,i18n,fml.messages.artifactversion}",
   "fml.modloading.missingclasses": "Le fichier de mod {3} a des mods qui n'ont pas été trouvés",
   "fml.modloading.missingmetadata": "le fichier mods.toml pour le modid {3} ne possède pas certaines métadonnées",
-  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} a des erreurs de chargement de classes\n§7{2,exc,msg}",
+  "fml.modloading.failedtoloadmodclass": "{0,modinfo,name} ({0,modinfo,id}) a des erreurs de chargement de classes\n§7{2,exc,msg}",
   "fml.modloading.failedtoloadmod": "{0,modinfo,name} ({0,modinfo,id}) n'a pas réussi à se charger correctement\n§7{2,exc,msg}",
   "fml.modloading.feature.missing": "{0,modinfo,name} ({0,modinfo,id}) a besoin d'une fonctionnalité manquante nécessaire pour s'exécuter\n§7Il nécessite {3,featurebound} mais {4} est disponible",
   "fml.modloading.uncaughterror": "Une erreur de traitement parallèle non capturée est survenue.\n§7{2,exc,msg}",
