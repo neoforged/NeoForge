@@ -13,6 +13,7 @@ import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.neoforge.client.gui.ModListScreen;
@@ -77,9 +78,13 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
         @Override
         public void render(GuiGraphics guiGraphics, int entryIdx, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
             String modid = stripControlCodes(modInfo.getModId());
-            String name = stripControlCodes(I18nExtension.getDisplayName(modInfo));
+            String i18nName = stripControlCodes(I18nExtension.getDisplayName(modInfo));
+            String rawName = stripControlCodes(modInfo.getDisplayName());
             String version = stripControlCodes(MavenVersionStringHelper.artifactVersionToString(modInfo.getVersion()));
-            Component heading = Component.literal(name).withStyle(ChatFormatting.WHITE);
+            MutableComponent heading = Component.literal(i18nName).withStyle(ChatFormatting.WHITE);
+            if (!rawName.equals(i18nName)) {
+                heading.append(Component.literal(" (" + rawName + ")").withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));
+            }
             Component subheading = Component.literal(modid + " " + version).withStyle(ChatFormatting.GRAY);
             VersionChecker.CheckResult vercheck = VersionChecker.getResult(modInfo);
             Font font = this.parent.getFontRenderer();
