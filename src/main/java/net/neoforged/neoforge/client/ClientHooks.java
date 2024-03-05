@@ -131,6 +131,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
+import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
@@ -345,6 +346,12 @@ public class ClientHooks {
         var event = new CalculatePlayerTurnEvent(mouseSensitivity, cinematicCameraEnabled);
         NeoForge.EVENT_BUS.post(event);
         return event;
+    }
+    
+    public static double getDetachedCameraDistance(Camera camera, boolean flipped) {
+        var event = new CalculateDetachedCameraDistanceEvent(camera, flipped);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getDistance();
     }
 
     /**
