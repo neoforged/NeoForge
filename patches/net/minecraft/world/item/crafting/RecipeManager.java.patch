@@ -1,6 +1,13 @@
 --- a/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -51,11 +_,16 @@
+@@ -45,17 +_,23 @@
+     }
+ 
+     protected void apply(Map<ResourceLocation, JsonElement> p_44037_, ResourceManager p_44038_, ProfilerFiller p_44039_) {
++        var ops = this.makeConditionalOps();
+         this.hasErrors = false;
+         Map<RecipeType<?>, Builder<ResourceLocation, RecipeHolder<?>>> map = Maps.newHashMap();
+         Builder<ResourceLocation, RecipeHolder<?>> builder = ImmutableMap.builder();
  
          for(Entry<ResourceLocation, JsonElement> entry : p_44037_.entrySet()) {
              ResourceLocation resourcelocation = entry.getKey();
@@ -10,7 +17,7 @@
 -                RecipeHolder<?> recipeholder = fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"));
 -                map.computeIfAbsent(recipeholder.value().getType(), p_44075_ -> ImmutableMap.builder()).put(resourcelocation, recipeholder);
 -                builder.put(resourcelocation, recipeholder);
-+                Optional<RecipeHolder<?>> recipeHolderOptional = fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"), net.neoforged.neoforge.common.conditions.ConditionalOps.create(net.minecraft.resources.RegistryOps.create(com.mojang.serialization.JsonOps.INSTANCE, registryAccess), conditionContext));
++                Optional<RecipeHolder<?>> recipeHolderOptional = fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"), ops);
 +                recipeHolderOptional.ifPresentOrElse(recipeholder -> {
 +                    map.computeIfAbsent(recipeholder.value().getType(), p_44075_ -> ImmutableMap.builder()).put(resourcelocation, recipeholder);
 +                    builder.put(resourcelocation, recipeholder);

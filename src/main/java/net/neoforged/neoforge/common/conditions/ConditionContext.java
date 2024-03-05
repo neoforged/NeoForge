@@ -17,6 +17,7 @@ import net.minecraft.tags.TagManager;
 
 public class ConditionContext implements ICondition.IContext {
     private final TagManager tagManager;
+    // TODO 1.20.5: Clear loaded tags after reloads complete. The context object may leak, but we still want to invalidate it.
     private Map<ResourceKey<?>, Map<ResourceLocation, Collection<Holder<?>>>> loadedTags = null;
 
     public ConditionContext(TagManager tagManager) {
