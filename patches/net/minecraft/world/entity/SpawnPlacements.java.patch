@@ -8,13 +8,17 @@
          EntityType<T> p_21755_, SpawnPlacements.Type p_21756_, Heightmap.Types p_21757_, SpawnPlacements.SpawnPredicate<T> p_21758_
      ) {
          SpawnPlacements.Data spawnplacements$data = DATA_BY_TYPE.put(p_21755_, new SpawnPlacements.Data(p_21757_, p_21756_, p_21758_));
-@@ -67,7 +_,8 @@
+@@ -67,7 +_,12 @@
          EntityType<T> p_217075_, ServerLevelAccessor p_217076_, MobSpawnType p_217077_, BlockPos p_217078_, RandomSource p_217079_
      ) {
          SpawnPlacements.Data spawnplacements$data = DATA_BY_TYPE.get(p_217075_);
 -        return spawnplacements$data == null || ((SpawnPredicate<T>)spawnplacements$data.predicate).test(p_217075_, p_217076_, p_217077_, p_217078_, p_217079_);
 +        boolean vanillaResult = spawnplacements$data == null || spawnplacements$data.predicate.test((EntityType)p_217075_, p_217076_, p_217077_, p_217078_, p_217079_);
 +        return net.neoforged.neoforge.event.EventHooks.checkSpawnPlacements(p_217075_, p_217076_, p_217077_, p_217078_, p_217079_, vanillaResult);
++    }
++
++    public static boolean hasPlacement(EntityType<?> p_21761_) {
++        return DATA_BY_TYPE.containsKey(p_21761_);
      }
  
      static {
