@@ -169,7 +169,7 @@ public class ServerLifecycleHooks {
 
         if (!entitiesWithoutPlacements.isEmpty() && !FMLLoader.isProduction()) {
             LOGGER.error("The following entities have not registered to the SpawnPlacementRegisterEvent, but a spawn entry was found. This will mean that the entity doesn't have restrictions on its spawn location, please register a spawn placement for the entity, you can register with NO_RESTRICTIONS if you don't want any restrictions."
-                + entitiesWithoutPlacements.stream().map(EntityType::getKey).map(ResourceLocation::toString).collect(Collectors.joining("\n\t - ", "\n\t - ", "")));
+                    + entitiesWithoutPlacements.stream().map(EntityType::getKey).map(ResourceLocation::toString).collect(Collectors.joining("\n\t - ", "\n\t - ", "")));
         }
     }
 }
