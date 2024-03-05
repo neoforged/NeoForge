@@ -5,7 +5,7 @@
              }
  
 -            this.move(-this.getMaxZoom(4.0), 0.0, 0.0);
-+            this.move(-this.getMaxZoom(net.neoforged.neoforge.client.ClientHooks.getDetachedCameraDistance(this, p_90579_)), 0.0, 0.0);
++            this.move(-this.getMaxZoom(net.neoforged.neoforge.client.ClientHooks.getDetachedCameraDistance(this, p_90579_, 4.0)), 0.0, 0.0);
          } else if (p_90577_ instanceof LivingEntity && ((LivingEntity)p_90577_).isSleeping()) {
              Direction direction = ((LivingEntity)p_90577_).getBedOrientation();
              this.setRotation(direction != null ? direction.toYRot() - 180.0F : 0.0F, 0.0F);

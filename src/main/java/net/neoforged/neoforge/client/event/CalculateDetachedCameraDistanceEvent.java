@@ -27,12 +27,13 @@ public class CalculateDetachedCameraDistanceEvent extends Event {
     private final Camera camera;
     private final boolean cameraFlipped;
     
-    private double distance = 4D; // might need to be set in constructor if vanilla ever makes this dynamic
+    private double distance;
     
     @ApiStatus.Internal
-    public CalculateDetachedCameraDistanceEvent(Camera camera, boolean cameraFlipped) {
+    public CalculateDetachedCameraDistanceEvent(Camera camera, boolean cameraFlipped, double distance) {
         this.camera = camera;
         this.cameraFlipped = cameraFlipped;
+        this.distance = distance;
     }
     
     /**
