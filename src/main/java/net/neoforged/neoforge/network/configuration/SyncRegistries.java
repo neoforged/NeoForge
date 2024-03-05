@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.network.configuration;
 
 import java.util.function.Consumer;
-
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundUpdateTagsPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
