@@ -119,6 +119,10 @@ public class ExtendedGui extends Gui {
         return minecraft.gameMode.canHurtPlayer() && minecraft.getCameraEntity() instanceof Player;
     }
 
+    public boolean shouldDrawPlayerElements() {
+        return minecraft.getCameraEntity() instanceof Player;
+    }
+
     protected void renderSubtitles(GuiGraphics guiGraphics) {
         this.subtitleOverlay.render(guiGraphics);
     }
