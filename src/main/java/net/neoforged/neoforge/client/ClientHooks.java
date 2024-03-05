@@ -347,7 +347,7 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(event);
         return event;
     }
-    
+
     public static double getDetachedCameraDistance(Camera camera, boolean flipped, double distance) {
         var event = new CalculateDetachedCameraDistanceEvent(camera, flipped, distance);
         NeoForge.EVENT_BUS.post(event);

@@ -23,40 +23,39 @@ import org.jetbrains.annotations.ApiStatus;
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class CalculateDetachedCameraDistanceEvent extends Event {
-    
     private final Camera camera;
     private final boolean cameraFlipped;
-    
+
     private double distance;
-    
+
     @ApiStatus.Internal
     public CalculateDetachedCameraDistanceEvent(Camera camera, boolean cameraFlipped, double distance) {
         this.camera = camera;
         this.cameraFlipped = cameraFlipped;
         this.distance = distance;
     }
-    
+
     /**
      * Returns the {@linkplain Camera camera} instance.
      */
     public Camera getCamera() {
         return camera;
     }
-    
+
     /**
      * Returns `true` if the camera is flipped (ie facing backward instead of forward).
      */
     public boolean isCameraFlipped() {
         return cameraFlipped;
     }
-    
+
     /**
      * Returns the distance from the camera to the {@linkplain Camera#getEntity() camera entity}.
      */
     public double getDistance() {
         return distance;
     }
-    
+
     /**
      * Sets the distance from the camera to the {@linkplain Camera#getEntity() camera entity}.
      * 
@@ -65,5 +64,4 @@ public class CalculateDetachedCameraDistanceEvent extends Event {
     public void setDistance(double distance) {
         this.distance = distance;
     }
-    
 }
