@@ -66,7 +66,7 @@ public class ModMismatchDisconnectedScreen extends Screen {
             Optional<String> modDisplayName = ModList.get().getModContainerById(owningModId).map(mod -> mod.getModInfo().getDisplayName());
             return modDisplayName.isPresent() && !(r.getContents() instanceof TranslatableContents c && c.getKey().equals("neoforge.network.negotiation.failure.mod")) ? Component.translatable("neoforge.network.negotiation.failure.mod", modDisplayName.get(), r) : r;
         });
-        this.mismatchedChannelData.forEach((id, r) -> LOGGER.warn("Channel [{}] failed to connect: {}", id, reason.getString()));
+        this.mismatchedChannelData.forEach((id, r) -> LOGGER.warn("Channel [{}] failed to connect: {}", id, r.getString()));
     }
 
     @Override
