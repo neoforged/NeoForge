@@ -10,7 +10,7 @@
      }
  
      public ServerFunctionLibrary getFunctionLibrary() {
-@@ -80,8 +_,13 @@
+@@ -80,19 +_,33 @@
          Executor p_249601_
      ) {
          ReloadableServerResources reloadableserverresources = new ReloadableServerResources(p_251163_, p_250212_, p_249301_, p_251126_);
@@ -25,7 +25,19 @@
              )
              .done()
              .whenComplete(
-@@ -93,6 +_,7 @@
+                 (p_255534_, p_255535_) -> reloadableserverresources.commandBuildContext.missingTagAccessPolicy(CommandBuildContext.MissingTagAccessPolicy.FAIL)
+             )
++            .thenRun(() -> {
++                // Clear context after reload complete
++                listeners.forEach(rl -> {
++                   if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener srl) {
++                       srl.injectContext(net.neoforged.neoforge.common.conditions.ICondition.IContext.EMPTY, RegistryAccess.EMPTY);
++                   }
++                });
++            })
+             .thenApply(p_214306_ -> reloadableserverresources);
+     }
+ 
      public void updateRegistryTags(RegistryAccess p_206869_) {
          this.tagManager.getResult().forEach(p_214315_ -> updateRegistryTags(p_206869_, p_214315_));
          Blocks.rebuildCache();

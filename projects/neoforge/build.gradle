@@ -52,10 +52,12 @@ dependencies {
 
     installer ("net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}") {
         exclude group: 'org.slf4j'
+        exclude group: 'net.fabricmc'
     }
     installer ("net.neoforged.fancymodloader:earlydisplay:${project.fancy_mod_loader_version}") {
         exclude group: 'org.lwjgl'
         exclude group: 'org.slf4j'
+        exclude group: 'net.fabricmc'
     }
     installer "cpw.mods:securejarhandler:${project.securejarhandler_version}"
     installer "org.ow2.asm:asm:${project.asm_version}"
@@ -75,7 +77,7 @@ dependencies {
     installer "org.apache.maven:maven-artifact:${project.apache_maven_artifact_version}"
     installer "net.jodah:typetools:${project.typetools_version}"
     installer "net.minecrell:terminalconsoleappender:${project.terminalconsoleappender_version}"
-    installer "org.spongepowered:mixin:${project.mixin_version}"
+    installer("net.fabricmc:sponge-mixin:${project.mixin_version}") { transitive = false }
     installer "org.openjdk.nashorn:nashorn-core:${project.nashorn_core_version}"
     installer ("net.neoforged:JarJarSelector:${project.jarjar_version}") {
         exclude group: 'org.slf4j'
