@@ -6,8 +6,6 @@
 package net.neoforged.neoforge.client.event;
 
 import net.minecraft.client.Camera;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.BlockGetter;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -15,7 +13,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Fired in {@linkplain Camera#setup(BlockGetter, Entity, boolean, boolean, float) Camera#setup(BlockGetter, Entity, boolean, boolean, float)} when camera is detached before calculating the distance of the camera from the {@linkplain Camera#getEntity() camera entity} based on a hard-coded maximum and a raycast.
+ * Fired for hooking the maximum distance from the player to the camera in third-person view.
+ * The ray-cast that reduces this distance based on the blocks around the player is invoked after this event is fired.
  *
  * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
  *
