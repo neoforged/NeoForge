@@ -21,6 +21,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public record NegotiableNetworkComponent(
         ResourceLocation id,
+        Optional<String> modid,
         Optional<String> version,
         Optional<PacketFlow> flow,
         boolean optional) {}

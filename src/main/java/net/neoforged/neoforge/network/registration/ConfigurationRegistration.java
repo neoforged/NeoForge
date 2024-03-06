@@ -27,6 +27,7 @@ import org.jetbrains.annotations.ApiStatus;
 public record ConfigurationRegistration<T extends CustomPacketPayload>(
         FriendlyByteBuf.Reader<T> reader,
         IConfigurationPayloadHandler<T> handler,
+        String modId,
         Optional<String> version,
         Optional<PacketFlow> flow,
         boolean optional) implements IConfigurationPayloadHandler<CustomPacketPayload>, FriendlyByteBuf.Reader<CustomPacketPayload> {

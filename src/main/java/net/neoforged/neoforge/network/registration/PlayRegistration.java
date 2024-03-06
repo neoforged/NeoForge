@@ -27,6 +27,7 @@ import org.jetbrains.annotations.ApiStatus;
 public record PlayRegistration<T extends CustomPacketPayload>(
         FriendlyByteBuf.Reader<T> reader,
         IPlayPayloadHandler<T> handler,
+        String modId,
         Optional<String> version,
         Optional<PacketFlow> flow,
         boolean optional) implements IPlayPayloadHandler<CustomPacketPayload>, FriendlyByteBuf.Reader<CustomPacketPayload> {

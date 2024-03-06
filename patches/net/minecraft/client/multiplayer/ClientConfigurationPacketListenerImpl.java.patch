@@ -10,7 +10,7 @@
  
      public ClientConfigurationPacketListenerImpl(Minecraft p_295262_, Connection p_296339_, CommonListenerCookie p_294706_) {
          super(p_295262_, p_296339_, p_294706_);
-@@ -45,7 +_,43 @@
+@@ -45,7 +_,42 @@
      }
  
      @Override
@@ -38,7 +38,6 @@
 +        }
 +        if (p_295411_ instanceof net.neoforged.neoforge.network.payload.ModdedNetworkSetupFailedPayload setupFailedPayload) {
 +            failureReasons = setupFailedPayload.failureReasons();
-+            failureReasons.forEach((r, c) -> LOGGER.warn("Channel [{}] failed to connect: {}", r, c.getString()));
 +            return;
 +        }
 +        if (!this.connectionType.isNeoForge() && p_295411_ instanceof net.minecraft.network.protocol.common.custom.BrandPayload) {

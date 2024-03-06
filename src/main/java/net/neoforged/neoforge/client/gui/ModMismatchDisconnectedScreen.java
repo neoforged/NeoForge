@@ -5,7 +5,9 @@
 
 package net.neoforged.neoforge.client.gui;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.logging.LogUtils;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -20,25 +22,31 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.MultiLineLabel;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.HoverEvent.Action;
+import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
 import net.neoforged.neoforge.common.I18nExtension;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
 
 public class ModMismatchDisconnectedScreen extends Screen {
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final Component reason;
     private MultiLineLabel message = MultiLineLabel.EMPTY;
+    private MismatchInfoPanel scrollList;
     private final Screen parent;
     private int textHeight;
     private final Path modsDir;
@@ -53,6 +61,12 @@ public class ModMismatchDisconnectedScreen extends Screen {
         this.modsDir = FMLPaths.MODSDIR.get();
         this.logFile = FMLPaths.GAMEDIR.get().resolve(Paths.get("logs", "latest.log"));
         this.mismatchedChannelData = mismatchedChannelData;
+        this.mismatchedChannelData.replaceAll((id, r) -> { //Enhance the reason components provided by the server with the info of which mod owns the given channel, if such a mod can be found on the client
+            String owningModId = NetworkRegistry.getInstance().getOwningModId(id);
+            Optional<String> modDisplayName = ModList.get().getModContainerById(owningModId).map(mod -> mod.getModInfo().getDisplayName());
+            return modDisplayName.isPresent() && !(r.getContents() instanceof TranslatableContents c && c.getKey().equals("neoforge.network.negotiation.failure.mod")) ? Component.translatable("neoforge.network.negotiation.failure.mod", modDisplayName.get(), r) : r;
+        });
+        this.mismatchedChannelData.forEach((id, r) -> LOGGER.warn("Channel [{}] failed to connect: {}", id, reason.getString()));
     }
 
     @Override
@@ -65,17 +79,19 @@ public class ModMismatchDisconnectedScreen extends Screen {
 
         int upperButtonHeight = Math.min((this.height + this.listHeight) / 2 + 25, this.height - 50);
         int lowerButtonHeight = Math.min((this.height + this.listHeight) / 2 + 50, this.height - 25);
-        this.addRenderableWidget(new MismatchInfoPanel(minecraft, listWidth, listHeight, (this.height - this.listHeight) / 2, listLeft));
+        this.addRenderableWidget(this.scrollList = new MismatchInfoPanel(minecraft, listWidth, listHeight, (this.height - this.listHeight) / 2, listLeft));
 
         int buttonWidth = Math.min(210, this.width / 2 - 20);
+        this.addRenderableWidget(CycleButton.onOffBuilder(true)
+                .create(Math.max(this.width / 4 - buttonWidth / 2, listLeft), upperButtonHeight, buttonWidth, 20, Component.translatable("fml.modmismatchscreen.simplifiedview"), (b, v) -> scrollList.toggleSimplifiedView()));
         this.addRenderableWidget(Button.builder(Component.literal(I18nExtension.parseMessage("fml.button.open.file", logFile.getFileName())), button -> Util.getPlatform().openFile(logFile.toFile()))
-                .bounds(Math.max(this.width / 4 - buttonWidth / 2, listLeft), upperButtonHeight, buttonWidth, 20)
-                .build());
-        this.addRenderableWidget(Button.builder(Component.literal(I18nExtension.parseMessage("fml.button.open.mods.folder")), button -> Util.getPlatform().openFile(modsDir.toFile()))
                 .bounds(Math.min(this.width * 3 / 4 - buttonWidth / 2, listLeft + listWidth - buttonWidth), upperButtonHeight, buttonWidth, 20)
                 .build());
+        this.addRenderableWidget(Button.builder(Component.literal(I18nExtension.parseMessage("fml.button.open.mods.folder")), button -> Util.getPlatform().openFile(modsDir.toFile()))
+                .bounds(Math.max(this.width / 4 - buttonWidth / 2, listLeft), lowerButtonHeight, buttonWidth, 20)
+                .build());
         this.addRenderableWidget(Button.builder(Component.translatable("gui.toMenu"), button -> this.minecraft.setScreen(this.parent))
-                .bounds((this.width - buttonWidth) / 2, lowerButtonHeight, buttonWidth, 20)
+                .bounds(Math.min(this.width * 3 / 4 - buttonWidth / 2, listLeft + listWidth - buttonWidth), lowerButtonHeight, buttonWidth, 20)
                 .build());
     }
 
@@ -88,29 +104,33 @@ public class ModMismatchDisconnectedScreen extends Screen {
     }
 
     class MismatchInfoPanel extends ScrollPanel {
-        private final List<Pair<FormattedCharSequence, FormattedCharSequence>> lineTable;
-        private final int contentSize;
         private final int nameIndent = 10;
         private final int tableWidth = width - border * 2 - 6 - nameIndent;
         private final int nameWidth = tableWidth / 2;
         private final int versionWidth = tableWidth - nameWidth;
+        private List<Pair<FormattedCharSequence, FormattedCharSequence>> lineTable;
+        private int contentSize;
+        private boolean oneChannelPerEntry = true;
 
         public MismatchInfoPanel(Minecraft client, int width, int height, int top, int left) {
             super(client, width, height, top, left);
+            updateListContent();
+        }
 
-            Map<ResourceLocation, Pair<Integer, Component>> collapsedChannelData = collapseChannelData(mismatchedChannelData);
+        private void updateListContent() {
+            Map<List<ResourceLocation>, Component> mergedChannelData = sortAndMergeChannelData(mismatchedChannelData);
             record Row(MutableComponent name, MutableComponent reason) {}
             //The raw list of the strings in a table row, the components may still be too long for the final table and will be split up later. The first row element may have a style assigned to it that will be used for the whole content row.
             List<Row> rows = new ArrayList<>();
-            if (!collapsedChannelData.isEmpty()) {
-                //Each table row contains the channel namespace and the reason for the corresponding channel mismatch.
+            if (!mergedChannelData.isEmpty()) {
+                //Each table row contains the channel id(s) and the reason for the corresponding channel mismatch.
                 rows.add(new Row(Component.translatable("fml.modmismatchscreen.table.channelname"), Component.translatable("fml.modmismatchscreen.table.reason")));
                 int i = 0;
-                for (Map.Entry<ResourceLocation, Pair<Integer, Component>> channelData : collapsedChannelData.entrySet()) {
-                    rows.add(new Row(toChannelNameComponent(channelData.getKey(), channelData.getValue().getLeft(), i % 2 == 0 ? ChatFormatting.GOLD : ChatFormatting.YELLOW), channelData.getValue().getRight().copy()));
-                    if (++i == 20 && collapsedChannelData.size() > 20) {
-                        //If too many mismatched mod entries are present, append a line referencing how to see the full list and stop rendering any more entries
-                        rows.add(new Row(Component.literal(""), Component.translatable("fml.modmismatchscreen.additional", collapsedChannelData.size() - i).withStyle(ChatFormatting.ITALIC)));
+                for (Map.Entry<List<ResourceLocation>, Component> channelData : mergedChannelData.entrySet()) {
+                    rows.add(new Row(toChannelComponent(channelData.getKey(), i % 2 == 0 ? ChatFormatting.GOLD : ChatFormatting.YELLOW), channelData.getValue().copy()));
+                    if (++i == 30 && mergedChannelData.size() > 30) {
+                        //If too many mismatched channel entries are present, append a line referencing how to see the full list and stop rendering any more entries
+                        rows.add(new Row(Component.literal(""), Component.translatable("fml.modmismatchscreen.additional", mergedChannelData.size() - i).withStyle(ChatFormatting.ITALIC)));
                         break;
                     }
                 }
@@ -119,48 +139,43 @@ public class ModMismatchDisconnectedScreen extends Screen {
 
             this.lineTable = rows.stream().flatMap(p -> splitLineToWidth(p.name(), p.reason()).stream()).collect(Collectors.toList());
             this.contentSize = lineTable.size();
+            this.scrollDistance = 0;
         }
 
         /**
-         * Collapses quasi-duplicate channel mismatch entries into single list entries to reduce repetition of entries in the final list.
-         * Quasi-duplicate channel mismatch entries share the same channel namespace and mismatch reasons. Even though these mismatches do not need to be causally related,
-         * there is a not inconsiderable likelihood that they are, and to increase usability of the screen, we summarize them into one entry to allow mod users
-         * to focus on the likely important parts of the channel mismatch data (which is the namespace of the mismatching channels and the exact mismatch reason).
+         * Iterates over the raw channel mismatch data and merges entries with the same reason component into one channel mismatch entry each.
+         * Due to the reason component always containing the display name of the mod that owns the associated channel, this step effectively groups channels by their owning mod,
+         * so users can see more easily which mods are the culprits of the negotiation failure that caused this screen to appear.
          *
-         * @param mismatchedChannelData The raw mismatched channel data received from the server, which might contain quasi-duplicate entries
-         * @return A map containing deduplicated channel mismatch entries. For each quasi-duplicate group, only the first encountered channel id is kept,
-         *         and all other quasi-duplicate channels then increment the associated repetition count that is mapped to that first channel id.
-         *         The mismatch reason (which remains unchanged and is the same for all quasi-duplicate entries) also gets mapped to the channel id.
+         * @param mismatchedChannelData The raw mismatched channel data received from the server, which might contain entries with duplicate channel mismatch reasons
+         * @return A map containing channel mismatch entries with unique reasons. Each channel mismatch entry contains the list of all channels that share the same reason component,
+         *         mapped to that reason component.
          */
-        private Map<ResourceLocation, Pair<Integer, Component>> collapseChannelData(Map<ResourceLocation, Component> mismatchedChannelData) {
-            Map<ResourceLocation, Pair<Integer, Component>> repetitions = new LinkedHashMap<>();
+        private Map<List<ResourceLocation>, Component> sortAndMergeChannelData(Map<ResourceLocation, Component> mismatchedChannelData) {
+            Map<Component, List<ResourceLocation>> channelsByReason = new LinkedHashMap<>();
             List<ResourceLocation> sortedChannels = mismatchedChannelData.keySet().stream().sorted(Comparator.comparing(ResourceLocation::toString)).toList();
             for (ResourceLocation channel : sortedChannels) {
                 Component channelMismatchReason = mismatchedChannelData.get(channel);
-                List<ResourceLocation> namespaceChannels = repetitions.keySet().stream().filter(r -> r.getNamespace().equals(channel.getNamespace())).toList();
-                boolean matched = false;
-                if (!namespaceChannels.isEmpty()) {
-                    for (ResourceLocation potentialRepetitionChannel : namespaceChannels) {
-                        Pair<Integer, Component> repetitionData = repetitions.get(potentialRepetitionChannel);
-
-                        if (repetitionData.getRight().equals(channelMismatchReason)) {
-                            repetitions.put(potentialRepetitionChannel, Pair.of(repetitionData.getLeft() + 1, repetitionData.getRight()));
-                            matched = true;
-                        }
-                    }
-                }
-                if (!matched)
-                    repetitions.put(channel, Pair.of(1, channelMismatchReason));
+                if (channelsByReason.containsKey(channelMismatchReason))
+                    channelsByReason.get(channelMismatchReason).add(channel);
+                else
+                    channelsByReason.put(channelMismatchReason, Lists.newArrayList(channel));
             }
 
-            return repetitions;
+            Map<List<ResourceLocation>, Component> channelMismatchEntries = new LinkedHashMap<>();
+            List<Component> sortedChannelEntries = channelsByReason.entrySet().stream().sorted(Comparator.comparing(entry -> entry.getValue().get(0).toString())).map(Map.Entry::getKey).toList();
+            for (Component mismatchReason : sortedChannelEntries) {
+                channelMismatchEntries.put(channelsByReason.get(mismatchReason), mismatchReason);
+            }
+
+            return channelMismatchEntries;
         }
 
         /**
          * Splits the raw channel namespace and mismatch reason strings, making them use multiple lines if needed, to fit within the table dimensions.
          * The style assigned to the name element is then applied to the entire content row.
          *
-         * @param name   The first element of the content row, usually representing a table section header or a channel namespace entry
+         * @param name   The first element of the content row, usually representing a table section header or a channel name entry
          * @param reason The second element of the content row, usually representing the reason why the channel is mismatched
          * @return A list of table rows consisting of 2 elements each which consist of the same content as was given by the parameters, but split up to fit within the table dimensions.
          */
@@ -178,22 +193,30 @@ public class ModMismatchDisconnectedScreen extends Screen {
         }
 
         /**
-         * Returns a component with the namespace of the given channel id. The component is colored in the given color, which will be used for the whole content row,
-         * and has a hover text mentioning an exemplary mismatching channel id plus how many other channels with the same namespace were mismatching with the same reason.
+         * Formats the given list of channel ids to a component which, depending on the current display mode of the list, will list either the first or all channel ids.
+         * If only one channel id is shown, the amount of channels that have the same reason component will also be displayed next to the channel id.
+         * The component is colored in the given color, which will be used for the whole content row.
          *
-         * @param id              The id of the exemplary mismatched channel. Its namespace is used for the component text.
-         * @param repetitionCount How many channels with the same namespace failed negotiation with the same error message. Displayed in the hover tooltip.
-         * @param color           Defines the color of the returned channel namespace component.
-         * @return A component with the channel namespace as the main text component, and an assigned color which will be used for the whole content row.
+         * @param ids   The list of channel ids to be formatted to the component. Depending on the current list mode, either the full list or the first entry will be used for the component text.
+         * @param color Defines the color of the returned component.
+         * @return A component with one or all entries of the channel id list as the main text component, and an assigned color which will be used for the whole content row.
          */
-        private MutableComponent toChannelNameComponent(ResourceLocation id, int repetitionCount, ChatFormatting color) {
-            MutableComponent namespaceComponent = Component.literal(id.getNamespace()).withStyle(color);
-            MutableComponent hoverText = Component.literal(id.toString());
-            if (repetitionCount > 1)
-                hoverText.append(Component.literal(" [+%s more]".formatted(repetitionCount)).withStyle(ChatFormatting.GRAY));
+        private MutableComponent toChannelComponent(List<ResourceLocation> ids, ChatFormatting color) {
+            MutableComponent namespaceComponent;
+            if (oneChannelPerEntry) {
+                namespaceComponent = Component.literal(ids.get(0).toString()).withStyle(color);
 
-            namespaceComponent = namespaceComponent.withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, hoverText)));
+                if (ids.size() > 1)
+                    namespaceComponent.append(Component.literal("\n[+%s more]".formatted(ids.size() - 1)).withStyle(ChatFormatting.DARK_GRAY));
+            } else
+                namespaceComponent = ComponentUtils.formatList(ids, ComponentUtils.DEFAULT_SEPARATOR, r -> Component.literal(r.toString())).withStyle(color);
+
             return namespaceComponent;
+        }
+
+        public void toggleSimplifiedView() {
+            this.oneChannelPerEntry = !this.oneChannelPerEntry;
+            updateListContent();
         }
 
         @Override
