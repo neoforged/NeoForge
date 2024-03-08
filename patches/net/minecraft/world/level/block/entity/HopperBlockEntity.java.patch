@@ -17,18 +17,27 @@
          Container container = getSourceContainer(p_155553_, p_155554_, blockpos, blockstate);
          if (container != null) {
              Direction direction = Direction.DOWN;
-@@ -210,6 +_,11 @@
+@@ -210,9 +_,20 @@
      }
 
      public static boolean addItem(Container p_59332_, ItemEntity p_59333_) {
-+        // Neo: Stop hoppers picking up items if pickups are disabled for this item
-+        if(!p_59333_.arePickupsAllowed()) {
-+            return false;
++        if(p_59332_ instanceof Hopper hopper) {
++            if(net.neoforged.neoforge.event.EventHooks.onItemPickupAllowedByHopper(p_59333_, hopper) <= -1) {
++                return false;
++            }
 +        }
 +
          boolean flag = false;
          ItemStack itemstack = p_59333_.getItem().copy();
          ItemStack itemstack1 = addItem(null, p_59332_, itemstack, null);
++
++        if(p_59332_ instanceof Hopper hopper) {
++            net.neoforged.neoforge.event.EventHooks.fireHopperItemPickupEvent(p_59333_, hopper, itemstack);
++        }
++
+         if (itemstack1.isEmpty()) {
+             flag = true;
+             p_59333_.setItem(ItemStack.EMPTY);
 @@ -421,5 +_,9 @@
      @Override
      protected AbstractContainerMenu createMenu(int p_59312_, Inventory p_59313_) {

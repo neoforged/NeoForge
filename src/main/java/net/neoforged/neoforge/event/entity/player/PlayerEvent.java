@@ -375,6 +375,10 @@ public abstract class PlayerEvent extends LivingEvent {
         }
     }
 
+    /**
+     * @deprecated To be replaced with {@linkplain net.neoforged.neoforge.event.entity.item.ItemPickupEvent.ByPlayer}
+     */
+    @Deprecated
     public static class ItemPickupEvent extends PlayerEvent {
         /**
          * Original EntityItem with current remaining stack size
