@@ -9,6 +9,15 @@
              return super.mobInteract(p_35472_, p_35473_);
          } else if (this.isBaby()) {
              this.setUnhappy();
+@@ -593,6 +_,8 @@
+         if (villagerdata.getProfession() != p_35437_.getProfession()) {
+             this.offers = null;
+         }
++        if (villagerdata.getProfession() != p_35437_.getProfession())
++            p_35437_ = p_35437_.setProfession(net.neoforged.neoforge.event.EventHooks.onVillagerProfessionChanged(this, villagerdata.getProfession(), p_35437_.getProfession()));
+ 
+         this.entityData.set(DATA_VILLAGER_DATA, p_35437_);
+     }
 @@ -747,8 +_,9 @@
  
      @Override

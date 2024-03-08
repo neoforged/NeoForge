@@ -62,6 +62,8 @@ import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
@@ -161,6 +163,7 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.level.SaplingGrowTreeEvent;
 import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
+import net.neoforged.neoforge.event.village.VillagerChangeProfessionEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -871,6 +874,12 @@ public class EventHooks {
     @ApiStatus.Internal
     public static void onAdvancementProgressedEvent(Player player, AdvancementHolder progressed, AdvancementProgress advancementProgress, String criterion, ProgressType progressType) {
         NeoForge.EVENT_BUS.post(new AdvancementProgressEvent(player, progressed, advancementProgress, criterion, progressType));
+    }
+
+    @ApiStatus.Internal
+    public static VillagerProfession onVillagerProfessionChanged(Villager villager, VillagerProfession oldProfession, VillagerProfession newProfession) {
+        VillagerChangeProfessionEvent event = new VillagerChangeProfessionEvent(villager, oldProfession, newProfession);
+        return NeoForge.EVENT_BUS.post(event).isCanceled() ? oldProfession : event.getNewProfession();
     }
 
     public static boolean onEffectRemoved(LivingEntity entity, MobEffect effect, @Nullable EffectCure cure) {
