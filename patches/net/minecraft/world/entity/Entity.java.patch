@@ -154,7 +154,7 @@
 -        double d0 = this.level().dimensionType().ultraWarm() ? 0.007 : 0.0023333333333333335;
 -        boolean flag = this.updateFluidHeightAndDoFluidPushing(FluidTags.LAVA, d0);
 -        return this.isInWater() || flag;
-+        if (!(this.getVehicle() instanceof Boat)) {
++        if (this.isInFluidType() && !(this.getVehicle() instanceof Boat)) {
 +            this.fallDistance *= this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().filter(e -> !e.getKey().isAir() && !e.getKey().isVanilla()).map(e -> this.getFluidFallDistanceModifier(e.getKey())).min(Float::compare).orElse(1F);
 +            if (this.isInFluidType((fluidType, height) -> !fluidType.isAir() && !fluidType.isVanilla() && this.canFluidExtinguish(fluidType))) this.clearFire();
 +        }
@@ -410,11 +410,11 @@
          } else {
              AABB aabb = this.getBoundingBox().deflate(0.001);
              int i = Mth.floor(aabb.minX);
-@@ -3093,25 +_,28 @@
+@@ -3093,25 +_,31 @@
              Vec3 vec3 = Vec3.ZERO;
              int k1 = 0;
              BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-+            it.unimi.dsi.fastutil.objects.Object2ObjectMap<net.neoforged.neoforge.fluids.FluidType, org.apache.commons.lang3.tuple.MutableTriple<Double, Vec3, Integer>> interimCalcs = new it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<>(net.neoforged.neoforge.fluids.FluidType.SIZE.get() - 1);
++            it.unimi.dsi.fastutil.objects.Object2ObjectMap<net.neoforged.neoforge.fluids.FluidType, org.apache.commons.lang3.tuple.MutableTriple<Double, Vec3, Integer>> interimCalcs = null;
  
              for(int l1 = i; l1 < j; ++l1) {
                  for(int i2 = k; i2 < l; ++i2) {
@@ -429,6 +429,9 @@
                                  flag1 = true;
 -                                d0 = Math.max(d1 - aabb.minY, d0);
 -                                if (flag) {
++                                if (interimCalcs == null) {
++                                    interimCalcs = new it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<>(net.neoforged.neoforge.fluids.FluidType.SIZE.get() - 1);
++                                }
 +                                org.apache.commons.lang3.tuple.MutableTriple<Double, Vec3, Integer> interim = interimCalcs.computeIfAbsent(fluidType, t -> org.apache.commons.lang3.tuple.MutableTriple.of(0.0D, Vec3.ZERO, 0));
 +                                interim.setLeft(Math.max(d1 - aabb.minY, interim.getLeft()));
 +                                if (this.isPushedByFluid(fluidType)) {
@@ -446,13 +449,14 @@
                                  }
                              }
                          }
-@@ -3119,27 +_,28 @@
+@@ -3119,27 +_,30 @@
                  }
              }
  
 -            if (vec3.length() > 0.0) {
 -                if (k1 > 0) {
 -                    vec3 = vec3.scale(1.0 / (double)k1);
++            if(interimCalcs != null) {
 +            interimCalcs.forEach((fluidType, interim) -> {
 +            if (interim.getMiddle().length() > 0.0D) {
 +                if (interim.getRight() > 0) {
@@ -482,6 +486,7 @@
 -            return flag1;
 +            this.setFluidTypeHeight(fluidType, interim.getLeft());
 +            });
++            }
          }
      }
  
@@ -532,7 +537,7 @@
      public void setMaxUpStep(float p_275672_) {
          this.maxUpStep = p_275672_;
      }
-@@ -3419,6 +_,120 @@
+@@ -3419,6 +_,123 @@
      public boolean mayInteract(Level p_146843_, BlockPos p_146844_) {
          return true;
      }
@@ -615,6 +620,9 @@
 +    }
 +    @Override
 +    public final boolean isInFluidType(java.util.function.BiPredicate<net.neoforged.neoforge.fluids.FluidType, Double> predicate, boolean forAllTypes) {
++        if (this.forgeFluidTypeHeight.isEmpty()) {
++            return false;
++        }
 +        return forAllTypes ? this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().allMatch(e -> predicate.test(e.getKey(), e.getDoubleValue()))
 +                  : this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().anyMatch(e -> predicate.test(e.getKey(), e.getDoubleValue()));
 +    }
