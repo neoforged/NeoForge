@@ -39,6 +39,7 @@ import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -75,7 +76,16 @@ public interface IItemStackExtension {
      *         decide.
      */
     default int getBurnTime(@Nullable RecipeType<?> recipeType) {
-        return self().getItem().getBurnTime(self(), recipeType);
+        if (self().isEmpty()) {
+            return 0;
+        } else {
+            int ret = self().getItem().getBurnTime(self(), recipeType);
+            if (ret == -1) {
+                var fuel = self().getItemHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
+                ret = fuel == null ? 0 : fuel.burnTime();
+            }
+            return EventHooks.getItemBurnTime(self(), ret, recipeType);
+        }
     }
 
     default InteractionResult onItemUseFirst(UseOnContext context) {
