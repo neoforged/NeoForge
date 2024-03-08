@@ -27,15 +27,15 @@ import org.apache.logging.log4j.Logger;
  * <li>Mobs should not be allowed to pickup items when standing on {@linkplain Blocks#DIAMOND_BLOCK}</li>
  * </ul>
  */
-@Mod(DisallowItemSpawnTest.ID)
-public final class DisallowItemSpawnTest {
-    public static final String ID = "disallow_item_spawn_test";
+@Mod(DisallowItemPickupTest.ID)
+public final class DisallowItemPickupTest {
+    public static final String ID = "disallow_item_pickup_test";
     private static final Logger LOGGER = LogManager.getLogger();
     private static final boolean ENABLED = false;
     // set to true to log every item pick up, where it happened and who picked it up
     private static final boolean VERBOSE = false;
 
-    public DisallowItemSpawnTest() {
+    public DisallowItemPickupTest() {
         NeoForge.EVENT_BUS.addListener(ItemPickupAllowedEvent.ByPlayer.class, event -> {
             if (ENABLED && event.getTarget().isShiftKeyDown()) {
                 event.setResult(Event.Result.DENY);
