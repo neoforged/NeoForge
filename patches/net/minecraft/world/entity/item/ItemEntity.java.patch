@@ -139,3 +139,13 @@
      }
  
      public float getSpin(float p_32009_) {
+@@ -455,5 +_,9 @@
+     @Override
+     public float getVisualRotationYInDegrees() {
+         return 180.0F - this.getSpin(0.5F) / (float) (Math.PI * 2) * 360.0F;
++    }
++
++    public boolean isNeverPickup() {
++        return pickupDelay >= INFINITE_PICKUP_DELAY;
+     }
+ }
