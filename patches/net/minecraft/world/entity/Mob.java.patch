@@ -73,8 +73,8 @@
      }
 
      protected void pickUpItem(ItemEntity p_21471_) {
-+        // Neo: Stop mobs picking up items if they are marked 'neverPickup'
-+        if(p_21471_.isNeverPickup()) {
++        // Neo: Stop mobs picking up items if pickups are disabled for this item
++        if(!p_21471_.arePickupsAllowed()) {
 +            return;
 +        }
 +

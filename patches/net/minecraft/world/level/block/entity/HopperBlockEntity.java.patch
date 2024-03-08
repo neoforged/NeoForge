@@ -21,8 +21,8 @@
      }
 
      public static boolean addItem(Container p_59332_, ItemEntity p_59333_) {
-+        // Neo: Stop hoppers picking up items if they are marked 'neverPickup'
-+        if(p_59333_.isNeverPickup()) {
++        // Neo: Stop hoppers picking up items if pickups are disabled for this item
++        if(!p_59333_.arePickupsAllowed()) {
 +            return false;
 +        }
 +

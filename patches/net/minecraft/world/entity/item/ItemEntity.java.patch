@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
-@@ -48,6 +_,10 @@
+@@ -44,6 +_,12 @@
      @Nullable
      private UUID target;
      public final float bobOffs;
@@ -8,7 +8,9 @@
 +     * The maximum age of this EntityItem.  The item is expired once this is reached.
 +     */
 +    public int lifespan = ItemEntity.LIFETIME;
- 
++    // Neo: See 'setPickupsAllowed' below
++    private boolean pickupsAllowed = true;
+
      public ItemEntity(EntityType<? extends ItemEntity> p_31991_, Level p_31992_) {
          super(p_31991_, p_31992_);
 @@ -66,6 +_,7 @@
@@ -82,11 +84,12 @@
                  this.discard();
              }
  
-@@ -294,6 +_,7 @@
+@@ -299,6 +_,8 @@
          p_32050_.putShort("Health", (short)this.health);
          p_32050_.putShort("Age", (short)this.age);
          p_32050_.putShort("PickupDelay", (short)this.pickupDelay);
 +        p_32050_.putInt("Lifespan", this.lifespan);
++        p_32050_.putBoolean("NeoForge_PickUpsAllowed", arePickupsAllowed());
          if (this.thrower != null) {
              p_32050_.putUUID("Thrower", this.thrower);
          }
@@ -100,11 +103,20 @@
  
          if (p_32034_.hasUUID("Owner")) {
              this.target = p_32034_.getUUID("Owner");
-@@ -339,10 +_,17 @@
+@@ -334,15 +_,26 @@
+         if (this.getItem().isEmpty()) {
+             this.discard();
+         }
++
++        if(p_32034_.contains("NeoForge_PickUpsAllowed")) {
++            setPickupsAllowed(p_32034_.getBoolean("NeoForge_PickUpsAllowed"));
++        }
+     }
+
      @Override
      public void playerTouch(Player p_32040_) {
          if (!this.level().isClientSide) {
-+            if (this.pickupDelay > 0) return;
++            if (!arePickupsAllowed() || this.pickupDelay > 0) return;
              ItemStack itemstack = this.getItem();
              Item item = itemstack.getItem();
              int i = itemstack.getCount();
@@ -139,18 +151,30 @@
      }
  
      public float getSpin(float p_32009_) {
-@@ -455,5 +_,14 @@
+@@ -455,5 +_,26 @@
      @Override
      public float getVisualRotationYInDegrees() {
          return 180.0F - this.getSpin(0.5F) / (float) (Math.PI * 2) * 360.0F;
 +    }
 +
 +    /**
-+     * Returns {@code true} if this item should never be picked up.
++     * Returns {@code true} if pickups are allowed for this item.
 +     *
-+     * @return {@code true} if this item should never be picked up, {@code false} otherwise.
++     * @return {@code true} if pickups are allowed for this item, {@code false} otherwise.
 +     */
-+    public boolean isNeverPickup() {
-+        return pickupDelay >= INFINITE_PICKUP_DELAY;
++    public boolean arePickupsAllowed() {
++        return pickupsAllowed;
++    }
++
++    /**
++     * Sets whether or not pickups are allowed for this item.
++     *
++     * <ul>
++     *     <li>{@code true} - Pickups are allowed, Players will not pickup if {@code pickupDelay} is set to {@code INFINITE_PICKUP_DELAY} [<i>default</i>]</li>
++     *     <li>{@code false} - Nothing should be allowed to pickup this item</li>
++     * </ul>
++     */
++    public void setPickupsAllowed(boolean pickupsAllowed) {
++        this.pickupsAllowed = pickupsAllowed;
      }
  }
