@@ -537,7 +537,7 @@
      public void setMaxUpStep(float p_275672_) {
          this.maxUpStep = p_275672_;
      }
-@@ -3419,6 +_,123 @@
+@@ -3419,6 +_,126 @@
      public boolean mayInteract(Level p_146843_, BlockPos p_146844_) {
          return true;
      }
@@ -636,6 +636,9 @@
 +    }
 +    @Override
 +    public net.neoforged.neoforge.fluids.FluidType getMaxHeightFluidType() {
++        if (this.forgeFluidTypeHeight.isEmpty()) {
++            return net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.value();
++        }
 +        return this.forgeFluidTypeHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(Object2DoubleMap.Entry::getDoubleValue)).map(Object2DoubleMap.Entry::getKey).orElseGet(net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE::value);
 +    }
 +
