@@ -5,6 +5,9 @@
 
 package net.neoforged.neoforge.items;
 
+import com.mojang.logging.LogUtils;
+import java.util.Objects;
+import java.util.function.Predicate;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -14,8 +17,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class ItemHandlerHelper {
+    private static final Logger LOGGER = LogUtils.getLogger();
+
     public static ItemStack insertItem(IItemHandler dest, ItemStack stack, boolean simulate) {
         if (dest == null || stack.isEmpty())
             return stack;
@@ -145,5 +151,85 @@ public class ItemHandlerHelper {
             proportion = proportion / (float) inv.getSlots();
             return Mth.floor(proportion * 14.0F) + (itemsFound > 0 ? 1 : 0);
         }
+    }
+
+    /**
+     * Try to move items from one inventory to another.
+     *
+     * @param from          source inventory
+     * @param to            destination inventory
+     * @param filter        a filter to select which items to move; if the filter returns {@code false} for a stack, it won't be moved
+     * @param maxAmount     maximum total amount of items to move
+     * @param stackInTarget {@code true} to try to stack with existing items in the target inventory,
+     *                      {@code false} to insert in the first slot that fits
+     * @return the total amount of moved items
+     */
+    public static int moveItems(
+            @Nullable IItemHandler from,
+            @Nullable IItemHandler to,
+            Predicate<ItemStack> filter,
+            int maxAmount,
+            boolean stackInTarget) {
+        Objects.requireNonNull(filter);
+        if (from == null || to == null || maxAmount <= 0) {
+            return 0;
+        }
+
+        int totalMoved = 0;
+
+        int fromSlots = from.getSlots();
+        slotsLoop:
+        for (int i = 0; i < fromSlots; ++i) {
+            // Check filter
+            if (!filter.test(from.getStackInSlot(i))) {
+                continue;
+            }
+
+            // Repeated extraction because extractItem limits to max stack size
+            while (true) {
+                // Simulate extraction
+                var available = from.extractItem(i, Integer.MAX_VALUE, true);
+                if (available.isEmpty()) {
+                    continue slotsLoop;
+                }
+                int availableCount = available.getCount();
+
+                // Simulate insertion
+                var simulationLeftover = stackInTarget ? insertItemStacked(to, available, true) : insertItem(to, available, true);
+                int canFit = availableCount - simulationLeftover.getCount();
+                if (canFit <= 0) {
+                    continue slotsLoop;
+                }
+
+                // Perform extraction
+                var extracted = from.extractItem(i, canFit, false);
+                if (extracted.isEmpty()) {
+                    continue slotsLoop;
+                }
+                int extractedCount = extracted.getCount();
+
+                // Perform insertion
+                var leftover = stackInTarget ? insertItemStacked(to, extracted, false) : insertItem(to, extracted, false);
+                int movedThisTime = extractedCount - leftover.getCount();
+                totalMoved += movedThisTime;
+
+                if (!leftover.isEmpty()) {
+                    // Try to give overflow back
+                    leftover = from.insertItem(i, leftover, false);
+
+                    if (!leftover.isEmpty()) {
+                        LOGGER.warn(
+                                "Trying to move up to {} items from {} to {}, but destination rejected {} that could not be inserted back in the source.",
+                                maxAmount, from, to, leftover);
+                    }
+                }
+
+                if (movedThisTime <= 0) {
+                    break;
+                }
+            }
+        }
+
+        return totalMoved;
     }
 }
