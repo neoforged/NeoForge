@@ -86,7 +86,7 @@ public class FluidHandlerItemStackSimple implements IFluidHandlerItem {
 
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
-        if (container.getCount() != 1 || resource.isEmpty() || !resource.isFluidEqual(getFluid())) {
+        if (container.getCount() != 1 || resource.isEmpty() || !FluidStack.isSameFluidSameComponents(resource, getFluid())) {
             return FluidStack.EMPTY;
         }
         return drain(resource.getAmount(), action);

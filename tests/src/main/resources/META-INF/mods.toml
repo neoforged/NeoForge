@@ -98,8 +98,6 @@ modId="scaffolding_test"
 [[mods]]
 modId="forge_chunk_manager_test"
 [[mods]]
-modId="forge_codecs_test"
-[[mods]]
 modId="render_local_player_test"
 [[mods]]
 modId="custom_sound_type_test"

@@ -82,7 +82,7 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
 
             return fillAmount;
         } else {
-            if (contained.isFluidEqual(resource)) {
+            if (FluidStack.isSameFluidSameComponents(contained, resource)) {
                 int fillAmount = Math.min(capacity - contained.getAmount(), resource.getAmount());
 
                 if (doFill.execute() && fillAmount > 0) {
@@ -99,7 +99,7 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
 
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
-        if (container.getCount() != 1 || resource.isEmpty() || !resource.isFluidEqual(getFluid())) {
+        if (container.getCount() != 1 || resource.isEmpty() || !FluidStack.isSameFluidSameComponents(resource, getFluid())) {
             return FluidStack.EMPTY;
         }
         return drain(resource.getAmount(), action);
