@@ -230,7 +230,7 @@
   "neoforge.network.negotiation.failure.version.mismatch": "Der Client möchte, dass die Payload die Version: %s hat, aber der Server möchte die Version: %s!",
   "neoforge.network.invalid_flow": "Konnte die Payload nicht verarbeiten, welche mit einer ungültigen Fließrichtung gesendet wurde: %s",
   "neoforge.network.negotiation.failure.vanilla.client.not_supported": "Du versuchst dich mit einem Server zu verbinden, der NeoForge verwendet, aber du tust das nicht. Bitte installiere NeoForge in Version: %s, um dich mit diesem Server zu verbinden.",
-  "neoforge.network.negotiation.failure.vanilla.server.not_supported": "You are trying to connect to a server that is not running NeoForge, but you have mods that require it. A connection could not be established.",
+  "neoforge.network.negotiation.failure.vanilla.server.not_supported": "Sie versuchen, sich mit einem Server zu verbinden, auf dem NeoForge nicht ausgeführt wird, aber Sie haben Mods, die es erfordern. Eine Verbindung konnte nicht hergestellt werden.",
   "neoforge.network.packet_splitter.unknown": "Tried to split a packet without packet splitter!",
   "neoforge.network.advanced_add_entity.failed": "Konnte erweiterte Entity-Spawn-Daten nicht verarbeiten: %s",
   "neoforge.network.advanced_open_screen.failed": "Fehler beim Öffnen eines Bildschirms mit erweiterten Daten: %s",
