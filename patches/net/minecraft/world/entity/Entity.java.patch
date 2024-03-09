@@ -435,7 +435,7 @@
 -                                d0 = Math.max(d1 - aabb.minY, d0);
 -                                if (flag) {
 +                                if (interimCalcs == null) {
-+                                    interimCalcs = new it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<>(net.neoforged.neoforge.fluids.FluidType.SIZE.get() - 1);
++                                    interimCalcs = new it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<>();
 +                                }
 +                                InterimCalculation interim = interimCalcs.computeIfAbsent(fluidType, t -> new InterimCalculation());
 +                                interim.fluidHeight = Math.max(d1 - aabb.minY, interim.fluidHeight);
