@@ -44,7 +44,7 @@ public class AddTableLootModifier extends LootModifier {
 
     private final ResourceLocation table;
 
-    protected AddTableLootModifier(LootItemCondition[] conditionsIn, ResourceLocation table) {
+    public AddTableLootModifier(LootItemCondition[] conditionsIn, ResourceLocation table) {
         super(conditionsIn);
         this.table = table;
     }
