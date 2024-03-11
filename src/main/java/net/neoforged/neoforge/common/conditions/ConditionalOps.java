@@ -13,7 +13,6 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Encoder;
 import com.mojang.serialization.MapCodec;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.ExtraCodecs;
@@ -203,7 +202,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
                 final T conditionsDataCarrier = inputMap.get(conditionalsPropertyKey);
                 if (conditionsDataCarrier == null) {
                     // No conditions, forward to inner codec
-                    return Objects.requireNonNull(innerCodec.decode(ops, input)).map(result -> result.mapFirst(carrier -> Optional.of(new WithConditions<>(carrier))));
+                    return innerCodec.decode(ops, input).map(result -> result.mapFirst(carrier -> Optional.of(new WithConditions<>(carrier))));
                 }
 
                 return conditionsCodec.decode(ops, conditionsDataCarrier).flatMap(conditionsCarrier -> {
