@@ -48,6 +48,7 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -599,7 +600,8 @@ public interface IItemExtension {
      */
     @ApiStatus.OverrideOnly
     default int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-        return -1;
+        var fuel = self().builtInRegistryHolder().getData(NeoForgeDataMaps.FURNACE_FUELS);
+        return fuel == null ? 0 : fuel.burnTime();
     }
 
     /**
