@@ -2,6 +2,9 @@ modLoader="javafml"
 loaderVersion="[1,)"
 license="LGPL v2.1"
 
+[[mixins]]
+    config="neotests.mixins.json"
+
 [[mods]]
     modId="neotests"
 [[mods]]
