@@ -37,6 +37,12 @@ allprojects {
     }
 }
 
+subprojects {
+    apply plugin: 'java'
+
+    java.toolchain.languageVersion.set(JavaLanguageVersion.of(project.java_version))
+}
+
 apply plugin: 'com.diffplug.spotless'
 apply plugin: 'net.neoforged.licenser'
 
