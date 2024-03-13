@@ -34,7 +34,7 @@
      public static CompletableFuture<ReloadableServerResources> loadResources(
          ResourceManager p_248588_,
          RegistryAccess.Frozen p_251163_,
-@@ -87,8 +_,13 @@
+@@ -87,14 +_,27 @@
          Executor p_249601_
      ) {
          ReloadableServerResources reloadableserverresources = new ReloadableServerResources(p_251163_, p_250212_, p_249301_, p_251126_);
@@ -49,6 +49,20 @@
              )
              .done()
              .whenComplete(
+                 (p_323178_, p_323179_) -> reloadableserverresources.registryLookup
+                         .missingTagAccessPolicy(ReloadableServerResources.MissingTagAccessPolicy.FAIL)
+             )
++            .thenRun(() -> {
++                // Clear context after reload completes
++                listeners.forEach(rl -> {
++                    if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener srl) {
++                        srl.injectContext(net.neoforged.neoforge.common.conditions.ICondition.IContext.EMPTY, RegistryAccess.EMPTY);
++                    }
++                });
++            })
+             .thenApply(p_214306_ -> reloadableserverresources);
+     }
+ 
 @@ -102,6 +_,7 @@
          this.tagManager.getResult().forEach(p_214315_ -> updateRegistryTags(p_206869_, p_214315_));
          AbstractFurnaceBlockEntity.invalidateCache();

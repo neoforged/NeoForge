@@ -1,15 +1,16 @@
 --- a/net/minecraft/server/ServerAdvancementManager.java
 +++ b/net/minecraft/server/ServerAdvancementManager.java
-@@ -46,10 +_,15 @@
+@@ -45,11 +_,15 @@
+     }
  
      protected void apply(Map<ResourceLocation, JsonElement> p_136034_, ResourceManager p_136035_, ProfilerFiller p_136036_) {
-         RegistryOps<JsonElement> registryops = this.registries.createSerializationContext(JsonOps.INSTANCE);
-+        var condRegistryops = net.neoforged.neoforge.common.conditions.ConditionalOps.create(registryops, this.conditionContext); // Neo: add condition context
+-        RegistryOps<JsonElement> registryops = this.registries.createSerializationContext(JsonOps.INSTANCE);
++        RegistryOps<JsonElement> registryops = this.makeConditionalOps(); // Neo: add condition context
          Builder<ResourceLocation, AdvancementHolder> builder = ImmutableMap.builder();
          p_136034_.forEach((p_323182_, p_323183_) -> {
              try {
 -                Advancement advancement = Util.getOrThrow(Advancement.CODEC.parse(registryops, p_323183_), JsonParseException::new);
-+                Advancement advancement = net.neoforged.neoforge.common.conditions.ICondition.getWithWithConditionsCodec(Advancement.CONDITIONAL_CODEC, condRegistryops, p_323183_).orElse(null);
++                Advancement advancement = net.neoforged.neoforge.common.conditions.ICondition.getWithWithConditionsCodec(Advancement.CONDITIONAL_CODEC, registryops, p_323183_).orElse(null);
 +                if (advancement == null) {
 +                    LOGGER.debug("Skipping loading advancement {} as its conditions were not met", p_323182_);
 +                    return;
