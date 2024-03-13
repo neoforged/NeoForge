@@ -14,7 +14,7 @@
          Map<LootDataType<?>, Map<ResourceLocation, ?>> map = new HashMap<>();
          CompletableFuture<?>[] completablefuture = LootDataType.values()
 -            .map(p_323463_ -> scheduleElementParse(p_323463_, this.registries, p_279377_, p_279148_, map))
-+            .map(p_323463_ -> scheduleElementParse(p_323463_, this.registries, p_279377_, p_279148_, map, net.neoforged.neoforge.common.conditions.ConditionalOps.create(this.registries.createSerializationContext(JsonOps.INSTANCE), this.conditionContext)))
++            .map(p_323463_ -> scheduleElementParse(p_323463_, this.registries, p_279377_, p_279148_, map, this.makeConditionalOps()))
              .toArray(p_279126_ -> new CompletableFuture[p_279126_]);
          return CompletableFuture.allOf(completablefuture).thenCompose(p_279240_::wait).thenAcceptAsync(p_279096_ -> this.apply(map), p_279169_);
      }

@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -54,16 +_,23 @@
+@@ -53,17 +_,23 @@
+         this.hasErrors = false;
          Map<RecipeType<?>, Builder<ResourceLocation, RecipeHolder<?>>> map = Maps.newHashMap();
          Builder<ResourceLocation, RecipeHolder<?>> builder = ImmutableMap.builder();
-         RegistryOps<JsonElement> registryops = this.registries.createSerializationContext(JsonOps.INSTANCE);
-+        registryops = net.neoforged.neoforge.common.conditions.ConditionalOps.create(registryops, conditionContext); // Neo: add condition context
+-        RegistryOps<JsonElement> registryops = this.registries.createSerializationContext(JsonOps.INSTANCE);
++        RegistryOps<JsonElement> registryops = this.makeConditionalOps(); // Neo: add condition context
  
          for(Entry<ResourceLocation, JsonElement> entry : p_44037_.entrySet()) {
              ResourceLocation resourcelocation = entry.getKey();
