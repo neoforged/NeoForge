@@ -7,6 +7,7 @@ package net.neoforged.neoforge.debug.block;
 
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -14,12 +15,12 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ThreadedLevelLightEngine;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -57,7 +58,7 @@ public class BlockPropertyTests {
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(lightPos, lightBlock.get()))
-                .thenExecute(() -> helper.useBlock(lightPos, helper.makeMockPlayer(), Items.ACACIA_BUTTON.getDefaultInstance()))
+                .thenExecute(() -> helper.useBlock(lightPos, helper.makeMockPlayer(GameType.CREATIVE), Items.ACACIA_BUTTON.getDefaultInstance()))
                 .thenMap(() -> helper.getLevel().getChunkAt(helper.absolutePos(testPos)))
                 .thenMap(chunk -> ((ThreadedLevelLightEngine) helper.getLevel().getLightEngine()).waitForPendingTasks(chunk.getPos().x, chunk.getPos().z))
                 .thenWaitUntil(future -> helper.assertTrue(future.isDone(), "Light engine did not update to lit"))
@@ -111,8 +112,7 @@ public class BlockPropertyTests {
         }
 
         @Override
-        @SuppressWarnings("deprecation")
-        public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
             if (!level.isClientSide() && level.getBlockEntity(pos) instanceof LightBlockEntity be) {
                 be.switchLight();
             }
@@ -163,35 +163,29 @@ public class BlockPropertyTests {
         }
 
         @Override
-        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider holderLookup) {
             CompoundTag tag = pkt.getTag();
-            if (tag != null) {
+            if (!tag.isEmpty()) {
                 setLit(tag.getBoolean("lit"));
             }
         }
 
         @Override
-        public CompoundTag getUpdateTag() {
-            CompoundTag tag = super.getUpdateTag();
+        public CompoundTag getUpdateTag(HolderLookup.Provider holderLookup) {
+            CompoundTag tag = super.getUpdateTag(holderLookup);
             tag.putBoolean("lit", lit);
             return tag;
         }
 
         @Override
-        public void handleUpdateTag(CompoundTag tag) {
-            super.handleUpdateTag(tag);
+        public void load(CompoundTag tag, HolderLookup.Provider holderLookup) {
+            super.load(tag, holderLookup);
             lit = tag.getBoolean("lit");
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            super.load(tag);
-            lit = tag.getBoolean("lit");
-        }
-
-        @Override
-        protected void saveAdditional(CompoundTag tag) {
-            super.saveAdditional(tag);
+        protected void saveAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
+            super.saveAdditional(tag, holderLookup);
             tag.putBoolean("lit", lit);
         }
     }

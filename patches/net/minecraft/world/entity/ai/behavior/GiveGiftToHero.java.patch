@@ -8,7 +8,7 @@
      private static final Map<VillagerProfession, ResourceLocation> GIFTS = Util.make(Maps.newHashMap(), p_23020_ -> {
          p_23020_.put(VillagerProfession.ARMORER, BuiltInLootTables.ARMORER_GIFT);
          p_23020_.put(VillagerProfession.BUTCHER, BuiltInLootTables.BUTCHER_GIFT);
-@@ -121,8 +_,14 @@
+@@ -121,8 +_,12 @@
              return ImmutableList.of(new ItemStack(Items.POPPY));
          } else {
              VillagerProfession villagerprofession = p_23010_.getVillagerData().getProfession();
@@ -18,8 +18,6 @@
 +            var gift = net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.wrapAsHolder(villagerprofession).getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.RAID_HERO_GIFTS);
 +            if (gift != null) {
 +                loottable = p_23010_.level().getServer().getLootData().getLootTable(gift.lootTable());
-+            } else if (GIFTS.containsKey(villagerprofession)) {
-+                loottable = p_23010_.level().getServer().getLootData().getLootTable(GIFTS.get(villagerprofession));
 +            }
 +            if (loottable != null) {
                  LootParams lootparams = new LootParams.Builder((ServerLevel)p_23010_.level())

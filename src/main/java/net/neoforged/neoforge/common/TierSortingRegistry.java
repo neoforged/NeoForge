@@ -301,11 +301,11 @@ public class TierSortingRegistry {
 
     public static void handleSync(TierSortingRegistryPayload payload, IPayloadContext context) {
         setTierOrder(payload.tiers().stream().map(TierSortingRegistry::byName).toList());
-        context.replyHandler().send(new TierSortingRegistrySyncCompletePayload());
+        context.replyHandler().send(TierSortingRegistrySyncCompletePayload.INSTANCE);
     }
 
     public static void sync(ServerConfigurationPacketListener listener, Consumer<CustomPacketPayload> sender) {
-        if (!listener.isConnected(TierSortingRegistryPayload.ID)) {
+        if (!listener.isConnected(TierSortingRegistryPayload.TYPE)) {
             if (allowVanilla()) {
                 listener.finishCurrentTask(SyncTierSortingRegistry.TYPE);
             } else {

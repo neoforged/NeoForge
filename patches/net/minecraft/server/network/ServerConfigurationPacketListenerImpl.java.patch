@@ -1,15 +1,15 @@
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-@@ -41,6 +_,8 @@
-     @Nullable
-     private ConfigurationTask currentTask;
+@@ -45,6 +_,8 @@
      private ClientInformation clientInformation;
+     @Nullable
+     private SynchronizeRegistriesTask synchronizeRegistriesTask;
 +    private net.neoforged.neoforge.network.connection.ConnectionType connectionType = net.neoforged.neoforge.network.connection.ConnectionType.VANILLA;
 +    private boolean isHandlingModdedConfigurationPhase = false;
  
      public ServerConfigurationPacketListenerImpl(MinecraftServer p_294645_, Connection p_295787_, CommonListenerCookie p_302003_) {
          super(p_294645_, p_295787_, p_302003_);
-@@ -65,6 +_,14 @@
+@@ -69,10 +_,20 @@
      }
  
      public void startConfiguration() {
@@ -23,8 +23,14 @@
 +    private void runConfiguration() {
          this.send(new ClientboundCustomPayloadPacket(new BrandPayload(this.server.getServerModName())));
          LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = this.server.registries();
+         List<KnownPack> list = this.server.getResourceManager().listPacks().flatMap(p_325637_ -> p_325637_.location().knownPackInfo().stream()).toList();
          this.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(this.server.getWorldData().enabledFeatures())));
-@@ -86,6 +_,53 @@
++        // Neo: we must sync the registries before vanilla sends tags in SynchronizeRegistriesTask!
++        net.neoforged.neoforge.network.ConfigurationInitialization.configureEarlyTasks(this, this.configurationTasks::add);
+         this.synchronizeRegistriesTask = new SynchronizeRegistriesTask(list, layeredregistryaccess);
+         this.configurationTasks.add(this.synchronizeRegistriesTask);
+         this.addOptionalTasks();
+@@ -87,6 +_,55 @@
  
      private void addOptionalTasks() {
          this.server.getServerResourcePack().ifPresent(p_296496_ -> this.configurationTasks.add(new ServerResourcePackConfigurationTask(p_296496_)));
@@ -57,8 +63,10 @@
 +            return;
 +        }
 +
-+        if (!isHandlingModdedConfigurationPhase) {
++        // Special case our registry sync completed payload because it runs before the modded configuration phase.
++        if (!isHandlingModdedConfigurationPhase && !(p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload)) {
 +            super.handleCustomPayload(p_294276_);
++            LOGGER.warn("Ignoring unexpected custom payload received outside of the modded configuration phase: {}", p_294276_.payload().type().id());
 +            return;
 +        }
 +
@@ -78,28 +86,29 @@
      }
  
      @Override
-@@ -103,6 +_,11 @@
- 
-     @Override
-     public void handleConfigurationFinished(ServerboundFinishConfigurationPacket p_294283_) {
+@@ -118,6 +_,12 @@
+         PacketUtils.ensureRunningOnSameThread(p_294283_, this, this.server);
+         this.finishCurrentTask(JoinWorldTask.TYPE);
+         this.connection.setupOutboundProtocol(GameProtocols.CLIENTBOUND.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess())));
++        // Packets can only be sent after the outbound protocol is set up again
 +        if (this.connectionType == net.neoforged.neoforge.network.connection.ConnectionType.OTHER) {
 +            //We need to also initialize this here, as the client may have sent the packet before we have finished our configuration.
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedConnectionDetectedAtServer(this, java.util.Set.of(), java.util.Set.of());
 +        }
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onConfigurationFinished(this);
-         this.connection.suspendInboundAfterProtocolChange();
-         PacketUtils.ensureRunningOnSameThread(p_294283_, this, this.server);
-         this.finishCurrentTask(JoinWorldTask.TYPE);
-@@ -121,7 +_,7 @@
+ 
+         try {
+             PlayerList playerlist = this.server.getPlayerList();
+@@ -133,7 +_,7 @@
              }
  
              ServerPlayer serverplayer = playerlist.getPlayerForLogin(this.gameProfile, this.clientInformation);
 -            playerlist.placeNewPlayer(this.connection, serverplayer, this.createCookie(this.clientInformation));
 +            playerlist.placeNewPlayer(this.connection, serverplayer, this.createCookie(this.clientInformation, this.connectionType));
-             this.connection.resumeInboundAfterProtocolChange();
          } catch (Exception exception) {
              LOGGER.error("Couldn't place player in world", (Throwable)exception);
-@@ -155,5 +_,19 @@
+             this.connection.send(new ClientboundDisconnectPacket(DISCONNECT_REASON_INVALID_DATA));
+@@ -166,5 +_,19 @@
              this.currentTask = null;
              this.startNextTask();
          }

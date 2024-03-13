@@ -11,7 +11,7 @@ import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.chunk.status.ChunkType;
 import net.minecraft.world.level.chunk.storage.ChunkSerializer;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
@@ -54,14 +54,14 @@ public abstract class ChunkDataEvent extends ChunkEvent {
      * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
      **/
     public static class Load extends ChunkDataEvent {
-        private ChunkStatus.ChunkType status;
+        private ChunkType status;
 
-        public Load(ChunkAccess chunk, CompoundTag data, ChunkStatus.ChunkType status) {
+        public Load(ChunkAccess chunk, CompoundTag data, ChunkType type) {
             super(chunk, data);
-            this.status = status;
+            this.status = type;
         }
 
-        public ChunkStatus.ChunkType getStatus() {
+        public ChunkType getType() {
             return this.status;
         }
     }

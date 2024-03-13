@@ -1,13 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/LootDataType.java
 +++ b/net/minecraft/world/level/storage/loot/LootDataType.java
-@@ -15,19 +_,36 @@
- import net.minecraft.world.level.storage.loot.predicates.LootItemConditions;
- import org.slf4j.Logger;
- 
-+
-+//PATCH 1.20.2: This whole class has to be revalidated. It previously used a very uggly patch with a hack.
-+//This might need to be refactored into a codec. But currently this is reverted to a clean state.
- public class LootDataType<T> {
+@@ -18,15 +_,29 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      public static final LootDataType<LootItemCondition> PREDICATE = new LootDataType<>(LootItemConditions.CODEC, "predicates", createSimpleValidator());
      public static final LootDataType<LootItemFunction> MODIFIER = new LootDataType<>(LootItemFunctions.CODEC, "item_modifiers", createSimpleValidator());
@@ -38,27 +31,22 @@
      }
  
      public String directory() {
-@@ -39,9 +_,16 @@
+@@ -38,9 +_,12 @@
      }
  
-     public Optional<T> deserialize(ResourceLocation p_279253_, JsonElement p_279330_) {
--        DataResult<T> dataresult = this.codec.parse(JsonOps.INSTANCE, p_279330_);
--        dataresult.error().ifPresent(p_297991_ -> LOGGER.error("Couldn't parse element {}:{} - {}", this.directory, p_279253_, p_297991_.message()));
+     public <V> Optional<T> deserialize(ResourceLocation p_279253_, DynamicOps<V> p_324006_, V p_324329_) {
+-        DataResult<T> dataresult = this.codec.parse(p_324006_, p_324329_);
++        var dataresult = this.conditionalCodec.parse(p_324006_, p_324329_);
+         dataresult.error().ifPresent(p_297991_ -> LOGGER.error("Couldn't parse element {}:{} - {}", this.directory, p_279253_, p_297991_.message()));
 -        return dataresult.result();
-+        return deserializeOrDefault(p_279253_, JsonOps.INSTANCE, p_279330_);
-+    }
-+
-+    public <C> Optional<T> deserializeOrDefault(ResourceLocation location, com.mojang.serialization.DynamicOps<C> ops, C object) {
-+        var dataresult = this.conditionalCodec.parse(ops, object);
-+        dataresult.error().ifPresent(p_297991_ -> LOGGER.error("Couldn't parse element {}:{} - {}", this.directory, location, p_297991_.message()));
 +        return dataresult.result().map(it -> {
-+            it.ifPresent(val -> idSetter.accept(val, location));
++            it.ifPresent(val -> idSetter.accept(val, p_279253_));
 +            return it.orElse(defaultValue);
 +        });
      }
  
      public static Stream<LootDataType<?>> values() {
-@@ -55,9 +_,12 @@
+@@ -54,9 +_,12 @@
      }
  
      private static LootDataType.Validator<LootTable> createLootTableValidator() {

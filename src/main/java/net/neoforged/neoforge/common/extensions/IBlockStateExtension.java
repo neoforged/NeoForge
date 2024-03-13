@@ -16,7 +16,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.SpawnPlacements.Type;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
@@ -35,7 +34,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
@@ -152,19 +151,6 @@ public interface IBlockStateExtension {
      */
     default boolean isBed(BlockGetter level, BlockPos pos, @Nullable LivingEntity sleeper) {
         return self().getBlock().isBed(self(), level, pos, sleeper);
-    }
-
-    /**
-     * Determines if a specified mob type can spawn on this block, returning false will
-     * prevent any mob from spawning on the block.
-     *
-     * @param level The current level
-     * @param pos   Block position in level
-     * @param type  The Mob Category Type
-     * @return True to allow a mob of the specified category to spawn, false to prevent it.
-     */
-    default boolean isValidSpawn(LevelReader level, BlockPos pos, Type type, EntityType<?> entityType) {
-        return self().getBlock().isValidSpawn(self(), level, pos, type, entityType);
     }
 
     /**
@@ -564,7 +550,7 @@ public interface IBlockStateExtension {
      * @return the path type of this block
      */
     @Nullable
-    default BlockPathTypes getBlockPathType(BlockGetter level, BlockPos pos, @Nullable Mob mob) {
+    default PathType getBlockPathType(BlockGetter level, BlockPos pos, @Nullable Mob mob) {
         return self().getBlock().getBlockPathType(self(), level, pos, mob);
     }
 
@@ -581,7 +567,7 @@ public interface IBlockStateExtension {
      * @return the path type of this block
      */
     @Nullable
-    default BlockPathTypes getAdjacentBlockPathType(BlockGetter level, BlockPos pos, @Nullable Mob mob, BlockPathTypes originalType) {
+    default PathType getAdjacentBlockPathType(BlockGetter level, BlockPos pos, @Nullable Mob mob, PathType originalType) {
         return self().getBlock().getAdjacentBlockPathType(self(), level, pos, mob, originalType);
     }
 

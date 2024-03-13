@@ -1,14 +1,14 @@
 --- a/net/minecraft/advancements/Advancement.java
 +++ b/net/minecraft/advancements/Advancement.java
-@@ -54,6 +_,7 @@
-         ),
+@@ -58,6 +_,7 @@
          Advancement::validate
      );
+     public static final StreamCodec<RegistryFriendlyByteBuf, Advancement> STREAM_CODEC = StreamCodec.ofMember(Advancement::write, Advancement::read);
 +    public static final Codec<Optional<net.neoforged.neoforge.common.conditions.WithConditions<Advancement>>> CONDITIONAL_CODEC = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(CODEC);
  
      public Advancement(
          Optional<ResourceLocation> p_300893_,
-@@ -113,7 +_,7 @@
+@@ -117,7 +_,7 @@
          });
      }
  

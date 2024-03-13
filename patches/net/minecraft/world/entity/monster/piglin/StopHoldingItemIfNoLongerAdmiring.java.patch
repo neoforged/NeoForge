@@ -3,9 +3,9 @@
 @@ -12,7 +_,7 @@
          return BehaviorBuilder.create(
              p_259197_ -> p_259197_.group(p_259197_.absent(MemoryModuleType.ADMIRING_ITEM))
-                     .apply(p_259197_, p_259512_ -> (p_311695_, p_311696_, p_311697_) -> {
--                            if (!p_311696_.getOffhandItem().isEmpty() && !p_311696_.getOffhandItem().is(Items.SHIELD)) {
-+                            if (!p_311696_.getOffhandItem().isEmpty() && !p_311696_.getOffhandItem().canPerformAction(net.neoforged.neoforge.common.ToolActions.SHIELD_BLOCK)) {
-                                 PiglinAi.stopHoldingOffHandItem(p_311696_, true);
+                     .apply(p_259197_, p_259512_ -> (p_325831_, p_325832_, p_325833_) -> {
+-                            if (!p_325832_.getOffhandItem().isEmpty() && !p_325832_.getOffhandItem().is(Items.SHIELD)) {
++                            if (!p_325832_.getOffhandItem().isEmpty() && !p_325832_.getOffhandItem().canPerformAction(net.neoforged.neoforge.common.ToolActions.SHIELD_BLOCK)) {
+                                 PiglinAi.stopHoldingOffHandItem(p_325832_, true);
                                  return true;
                              } else {

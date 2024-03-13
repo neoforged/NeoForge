@@ -1,11 +1,11 @@
 --- a/net/minecraft/advancements/critereon/EntityPredicate.java
 +++ b/net/minecraft/advancements/critereon/EntityPredicate.java
-@@ -36,9 +_,10 @@
-     Optional<EntityPredicate> vehicle,
+@@ -37,9 +_,10 @@
      Optional<EntityPredicate> passenger,
      Optional<EntityPredicate> targetedEntity,
--    Optional<String> team
-+    Optional<String> team,
+     Optional<String> team,
+-    Optional<SlotsPredicate> slots
++    Optional<SlotsPredicate> slots,
 +    Optional<net.neoforged.neoforge.common.advancements.critereon.ICustomEntityPredicate> customLogic
  ) {
 -    public static final Codec<EntityPredicate> CODEC = ExtraCodecs.recursive(
@@ -13,7 +13,7 @@
          "EntityPredicate",
          p_297888_ -> RecordCodecBuilder.create(
                  p_297890_ -> p_297890_.group(
-@@ -59,8 +_,26 @@
+@@ -61,8 +_,26 @@
                          .apply(p_297890_, EntityPredicate::new)
              )
      );
@@ -29,18 +29,18 @@
 +                com.mojang.datafixers.util.Either::left).orElseGet(() -> com.mojang.datafixers.util.Either.right(predicate)));
      public static final Codec<ContextAwarePredicate> ADVANCEMENT_CODEC = ExtraCodecs.withAlternative(ContextAwarePredicate.CODEC, CODEC, EntityPredicate::wrap);
  
-+    public EntityPredicate(Optional<EntityTypePredicate> entityType, Optional<DistancePredicate> distanceToPlayer, Optional<LocationPredicate> location, Optional<LocationPredicate> steppingOnLocation, Optional<MobEffectsPredicate> effects, Optional<NbtPredicate> nbt, Optional<EntityFlagsPredicate> flags, Optional<EntityEquipmentPredicate> equipment, Optional<EntitySubPredicate> subPredicate, Optional<net.minecraft.advancements.critereon.EntityPredicate> vehicle, Optional<net.minecraft.advancements.critereon.EntityPredicate> passenger, Optional<net.minecraft.advancements.critereon.EntityPredicate> targetedEntity, Optional<String> team) {
-+        this(entityType, distanceToPlayer, location, steppingOnLocation, effects, nbt, flags, equipment, subPredicate, vehicle, passenger, targetedEntity, team, Optional.empty());
++    public EntityPredicate(Optional<EntityTypePredicate> entityType, Optional<DistancePredicate> distanceToPlayer, Optional<LocationPredicate> location, Optional<LocationPredicate> steppingOnLocation, Optional<MobEffectsPredicate> effects, Optional<NbtPredicate> nbt, Optional<EntityFlagsPredicate> flags, Optional<EntityEquipmentPredicate> equipment, Optional<EntitySubPredicate> subPredicate, Optional<net.minecraft.advancements.critereon.EntityPredicate> vehicle, Optional<net.minecraft.advancements.critereon.EntityPredicate> passenger, Optional<net.minecraft.advancements.critereon.EntityPredicate> targetedEntity, Optional<String> team, Optional<SlotsPredicate> slots) {
++        this(entityType, distanceToPlayer, location, steppingOnLocation, effects, nbt, flags, equipment, subPredicate, vehicle, passenger, targetedEntity, team, slots, Optional.empty());
 +    }
 +
 +    public EntityPredicate(net.neoforged.neoforge.common.advancements.critereon.ICustomEntityPredicate customLogic) {
-+        this(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(customLogic));
++        this(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(customLogic));
 +    }
 +
      public static ContextAwarePredicate wrap(EntityPredicate.Builder p_298222_) {
          return wrap(p_298222_.build());
      }
-@@ -83,6 +_,9 @@
+@@ -85,6 +_,9 @@
      }
  
      public boolean matches(ServerLevel p_36608_, @Nullable Vec3 p_36609_, @Nullable Entity p_36610_) {

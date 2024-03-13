@@ -7,6 +7,7 @@ package net.neoforged.neoforge.oldtest.item;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.minecraft.core.HolderLookup;
@@ -67,7 +68,7 @@ public class TagBasedToolTypesTest {
     @SuppressWarnings("unused")
     private static final DeferredItem<BlockItem> ORE_ITEM = ITEMS.registerSimpleBlockItem(STONE);
     private static final DeferredItem<Item> TOOL = ITEMS.register("test_tool", () -> {
-        return new DiggerItem(1, 1, MY_TIER, MINEABLE_TAG, new Item.Properties()) {
+        return new DiggerItem(MY_TIER, MINEABLE_TAG, new Item.Properties().attributes(DiggerItem.createAttributes(MY_TIER, 1, 1))) {
             @Override
             public float getDestroySpeed(ItemStack stack, BlockState state) {
                 if (state.is(BlockTags.MINEABLE_WITH_AXE)) return speed;
@@ -106,9 +107,10 @@ public class TagBasedToolTypesTest {
     public void gatherData(GatherDataEvent event) {
         DataGenerator gen = event.getGenerator();
         ExistingFileHelper existing = event.getExistingFileHelper();
+        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
         final PackOutput output = gen.getPackOutput();
 
-        gen.addProvider(event.includeServer(), new BlockTagsProvider(output, event.getLookupProvider(), MODID, existing) {
+        gen.addProvider(event.includeServer(), new BlockTagsProvider(output, lookupProvider, MODID, existing) {
             @Override
             protected void addTags(HolderLookup.Provider registry) {
                 this.tag(MINEABLE_TAG).add(STONE.get());
@@ -132,7 +134,7 @@ public class TagBasedToolTypesTest {
             }
         }
 
-        gen.addProvider(event.includeServer(), new LootTableProvider(event.getGenerator().getPackOutput(), Set.of(), List.of(new LootTableProvider.SubProviderEntry(TestBlockLootProvider::new, LootContextParamSets.BLOCK))));
+        gen.addProvider(event.includeServer(), new LootTableProvider(output, Set.of(), List.of(new LootTableProvider.SubProviderEntry(TestBlockLootProvider::new, LootContextParamSets.BLOCK)), lookupProvider));
 
         gen.addProvider(event.includeClient(), new BlockStateProvider(output, MODID, existing) {
             @Override

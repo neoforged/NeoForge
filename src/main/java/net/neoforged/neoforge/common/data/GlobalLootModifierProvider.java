@@ -8,9 +8,7 @@ package net.neoforged.neoforge.common.data;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
 import cpw.mods.modlauncher.api.LamdbaExceptionUtils;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -21,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -38,12 +37,14 @@ import net.neoforged.neoforge.common.loot.LootModifier;
 public abstract class GlobalLootModifierProvider implements DataProvider {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private final PackOutput output;
+    private final CompletableFuture<HolderLookup.Provider> registries;
     private final String modid;
-    private final Map<String, JsonElement> toSerialize = new HashMap<>();
+    private final Map<String, WithConditions<IGlobalLootModifier>> toSerialize = new HashMap<>();
     private boolean replace = false;
 
-    public GlobalLootModifierProvider(PackOutput output, String modid) {
+    public GlobalLootModifierProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modid) {
         this.output = output;
+        this.registries = registries;
         this.modid = modid;
     }
 
@@ -60,7 +61,11 @@ public abstract class GlobalLootModifierProvider implements DataProvider {
     protected abstract void start();
 
     @Override
-    public CompletableFuture<?> run(CachedOutput cache) {
+    public final CompletableFuture<?> run(CachedOutput cache) {
+        return this.registries.thenCompose(registries -> this.run(cache, registries));
+    }
+
+    protected CompletableFuture<?> run(CachedOutput cache, HolderLookup.Provider registries) {
         start();
 
         Path forgePath = this.output.getOutputFolder(PackOutput.Target.DATA_PACK).resolve("neoforge").resolve("loot_modifiers").resolve("global_loot_modifiers.json");
@@ -69,10 +74,10 @@ public abstract class GlobalLootModifierProvider implements DataProvider {
 
         ImmutableList.Builder<CompletableFuture<?>> futuresBuilder = new ImmutableList.Builder<>();
 
-        toSerialize.forEach(LamdbaExceptionUtils.rethrowBiConsumer((name, json) -> {
+        toSerialize.forEach(LamdbaExceptionUtils.rethrowBiConsumer((name, lootModifier) -> {
             entries.add(new ResourceLocation(modid, name));
             Path modifierPath = modifierFolderPath.resolve(name + ".json");
-            futuresBuilder.add(DataProvider.saveStable(cache, json, modifierPath));
+            futuresBuilder.add(DataProvider.saveStable(cache, registries, IGlobalLootModifier.CONDITIONAL_CODEC, Optional.of(lootModifier), modifierPath));
         }));
 
         JsonObject forgeJson = new JsonObject();
@@ -92,8 +97,7 @@ public abstract class GlobalLootModifierProvider implements DataProvider {
      * @param conditions a list of conditions to add to the GLM file
      */
     public <T extends IGlobalLootModifier> void add(String modifier, T instance, List<ICondition> conditions) {
-        JsonElement json = IGlobalLootModifier.CONDITIONAL_CODEC.encodeStart(JsonOps.INSTANCE, Optional.of(new WithConditions<>(conditions, instance))).getOrThrow(false, s -> {});
-        this.toSerialize.put(modifier, json);
+        this.toSerialize.put(modifier, new WithConditions<>(conditions, instance));
     }
 
     /**

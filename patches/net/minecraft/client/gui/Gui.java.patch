@@ -1,26 +1,103 @@
 --- a/net/minecraft/client/gui/Gui.java
 +++ b/net/minecraft/client/gui/Gui.java
-@@ -456,6 +_,8 @@
+@@ -69,6 +_,9 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ import org.joml.Matrix4fStack;
+ 
++// Neo: Exceptionally add a static wildcard import to make the patch bearable, and comments to avoid the detection by spotless rules.
++/* space for import change */ import static net.neoforged.neoforge.client.gui.VanillaGuiLayers.* /* space for wildcard import */;
++
+ @OnlyIn(Dist.CLIENT)
+ public class Gui {
+     protected static final ResourceLocation CROSSHAIR_SPRITE = new ResourceLocation("hud/crosshair");
+@@ -151,7 +_,10 @@
+     protected long healthBlinkTime;
+     protected float autosaveIndicatorValue;
+     protected float lastAutosaveIndicatorValue;
++    /** Neo: This is empty and unused, rendering goes through {@link #layerManager} instead. */
++    @Deprecated
+     private final LayeredDraw layers = new LayeredDraw();
++    private final net.neoforged.neoforge.client.gui.GuiLayerManager layerManager = new net.neoforged.neoforge.client.gui.GuiLayerManager();
+     protected float scopeScale;
+ 
+     public Gui(Minecraft p_232355_) {
+@@ -163,28 +_,28 @@
+         this.bossOverlay = new BossHealthOverlay(p_232355_);
+         this.subtitleOverlay = new SubtitleOverlay(p_232355_);
+         this.resetTitleTimes();
+-        LayeredDraw layereddraw = new LayeredDraw()
+-            .add(this::renderCameraOverlays)
+-            .add(this::renderCrosshair)
+-            .add(this::renderHotbarAndDecorations)
+-            .add(this::renderExperienceLevel)
+-            .add(this::renderEffects)
+-            .add((p_315814_, p_315815_) -> this.bossOverlay.render(p_315814_));
+-        LayeredDraw layereddraw1 = new LayeredDraw()
+-            .add(this::renderDemoOverlay)
+-            .add((p_315812_, p_315813_) -> {
++        var layereddraw = new net.neoforged.neoforge.client.gui.GuiLayerManager()
++            .add(CAMERA_OVERLAYS, this::renderCameraOverlays)
++            .add(CROSSHAIR, this::renderCrosshair)
++            .add(HOTBAR_AND_DECORATIONS, this::renderHotbarAndDecorations)
++            .add(EXPERIENCE_LEVEL, this::renderExperienceLevel)
++            .add(EFFECTS, this::renderEffects)
++            .add(BOSS_OVERLAY, (p_315814_, p_315815_) -> this.bossOverlay.render(p_315814_));
++        var layereddraw1 = new net.neoforged.neoforge.client.gui.GuiLayerManager()
++            .add(DEMO_OVERLAY, this::renderDemoOverlay)
++            .add(DEBUG_OVERLAY, (p_315812_, p_315813_) -> {
+                 if (this.debugOverlay.showDebugScreen()) {
+                     this.debugOverlay.render(p_315812_);
+                 }
+             })
+-            .add(this::renderScoreboardSidebar)
+-            .add(this::renderOverlayMessage)
+-            .add(this::renderTitle)
+-            .add(this::renderChat)
+-            .add(this::renderTabList)
+-            .add((p_315816_, p_315817_) -> this.subtitleOverlay.render(p_315816_))
+-            .add(this::renderSavingIndicator);
+-        this.layers.add(layereddraw, () -> !p_232355_.options.hideGui).add(this::renderSleepOverlay).add(layereddraw1, () -> !p_232355_.options.hideGui);
++            .add(SCOREBOARD_SIDEBAR, this::renderScoreboardSidebar)
++            .add(OVERLAY_MESSAGE, this::renderOverlayMessage)
++            .add(TITLE, this::renderTitle)
++            .add(CHAT, this::renderChat)
++            .add(TAB_LIST, this::renderTabList)
++            .add(SUBTITLE_OVERLAY, (p_315816_, p_315817_) -> this.subtitleOverlay.render(p_315816_))
++            .add(SAVING_INDICATOR, this::renderSavingIndicator);
++        this.layerManager.add(layereddraw, () -> !p_232355_.options.hideGui).add(SLEEP_OVERLAY, this::renderSleepOverlay).add(layereddraw1, () -> !p_232355_.options.hideGui);
+     }
+ 
+     public void resetTitleTimes() {
+@@ -195,7 +_,7 @@
+ 
+     public void render(GuiGraphics p_282884_, float p_282611_) {
+         RenderSystem.enableDepthTest();
+-        this.layers.render(p_282884_, p_282611_);
++        this.layerManager.render(p_282884_, p_282611_);
+         RenderSystem.disableDepthTest();
+     }
+ 
+@@ -443,6 +_,8 @@
+             List<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
  
              for(MobEffectInstance mobeffectinstance : Ordering.natural().reverse().sortedCopy(collection)) {
-                 MobEffect mobeffect = mobeffectinstance.getEffect();
 +                var renderer = net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions.of(mobeffectinstance);
 +                if (!renderer.isVisibleInGui(mobeffectinstance)) continue;
+                 Holder<MobEffect> holder = mobeffectinstance.getEffect();
                  if (mobeffectinstance.showIcon()) {
-                     int i = this.screenWidth;
-                     int j = 1;
-@@ -485,6 +_,7 @@
+                     int i = p_282812_.guiWidth();
+@@ -473,6 +_,7 @@
                          }
                      }
  
 +                    if (renderer.renderGuiIcon(mobeffectinstance, this, p_282812_, i, j, 0, f)) continue;
-                     TextureAtlasSprite textureatlassprite = mobeffecttexturemanager.get(mobeffect);
+                     TextureAtlasSprite textureatlassprite = mobeffecttexturemanager.get(holder);
                      int i1 = j;
                      float f1 = f;
-@@ -604,18 +_,23 @@
+@@ -630,18 +_,23 @@
      }
  
-     public void renderSelectedItemName(GuiGraphics p_283501_) {
+     private void renderSelectedItemName(GuiGraphics p_283501_) {
 +        renderSelectedItemName(p_283501_, 0);
 +    }
 +
@@ -31,20 +108,20 @@
                  .append(this.lastToolHighlight.getHoverName())
 -                .withStyle(this.lastToolHighlight.getRarity().color);
 +                .withStyle(this.lastToolHighlight.getRarity().getStyleModifier());
-             if (this.lastToolHighlight.hasCustomHoverName()) {
+             if (this.lastToolHighlight.has(DataComponents.CUSTOM_NAME)) {
                  mutablecomponent.withStyle(ChatFormatting.ITALIC);
              }
  
 -            int i = this.getFont().width(mutablecomponent);
 +            Component highlightTip = this.lastToolHighlight.getHighlightTip(mutablecomponent);
 +            int i = this.getFont().width(highlightTip);
-             int j = (this.screenWidth - i) / 2;
--            int k = this.screenHeight - 59;
-+            int k = this.screenHeight - Math.max(yShift, 59);
+             int j = (p_283501_.guiWidth() - i) / 2;
+-            int k = p_283501_.guiHeight() - 59;
++            int k = p_283501_.guiHeight() - Math.max(yShift, 59);
              if (!this.minecraft.gameMode.canHurtPlayer()) {
                  k += 14;
              }
-@@ -627,7 +_,13 @@
+@@ -653,7 +_,13 @@
  
              if (l > 0) {
                  p_283501_.fill(j - 2, k - 2, j + i + 2, k + 9 + 2, this.minecraft.options.getBackgroundColor(0));
@@ -53,13 +130,13 @@
 +                if (font == null) {
 +                    p_283501_.drawString(this.getFont(), highlightTip, j, k, 16777215 + (l << 24));
 +                } else {
-+                    j = (this.screenWidth - font.width(highlightTip)) / 2;
++                    j = (p_283501_.guiWidth() - font.width(highlightTip)) / 2;
 +                    p_283501_.drawString(font, highlightTip, j, k, 16777215 + (l << 24));
 +                }
              }
          }
  
-@@ -1102,7 +_,7 @@
+@@ -1138,7 +_,7 @@
                  this.toolHighlightTimer = 0;
              } else if (this.lastToolHighlight.isEmpty()
                  || !itemstack.is(this.lastToolHighlight.getItem())
@@ -68,3 +145,15 @@
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
                  --this.toolHighlightTimer;
+@@ -1263,6 +_,11 @@
+                 p_282761_.drawString(font, SAVING_TEXT, p_282761_.guiWidth() - j - 10, p_282761_.guiHeight() - 15, k);
+             }
+         }
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void initModdedOverlays() {
++        this.layerManager.initModdedLayers();
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

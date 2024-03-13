@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/Pig.java
 +++ b/net/minecraft/world/entity/animal/Pig.java
-@@ -215,7 +_,7 @@
+@@ -213,7 +_,7 @@
  
      @Override
      public void thunderHit(ServerLevel p_29473_, LightningBolt p_29474_) {
@@ -9,7 +9,7 @@
              ZombifiedPiglin zombifiedpiglin = EntityType.ZOMBIFIED_PIGLIN.create(p_29473_);
              if (zombifiedpiglin != null) {
                  zombifiedpiglin.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
-@@ -228,6 +_,7 @@
+@@ -226,6 +_,7 @@
                  }
  
                  zombifiedpiglin.setPersistenceRequired();

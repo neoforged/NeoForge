@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.oldtest.misc;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -55,8 +56,8 @@ public class ModMismatchTest implements IConfigurationPayloadHandler<ModMismatch
                     .registrar(MOD_ID)
                     .versioned(CHANNEL_PROTOCOL_VERSION)
                     .configuration(
-                            ModMismatchPayload.ID,
-                            ModMismatchPayload::new,
+                            ModMismatchPayload.TYPE,
+                            ModMismatchPayload.STREAM_CODEC,
                             this);
         }
     }
@@ -67,18 +68,12 @@ public class ModMismatchTest implements IConfigurationPayloadHandler<ModMismatch
     }
 
     public record ModMismatchPayload() implements CustomPacketPayload {
-        private static final ResourceLocation ID = new ResourceLocation(MOD_ID, "mod_mismatch");
-
-        public ModMismatchPayload(FriendlyByteBuf buf) {
-            this();
-        }
+        private static final CustomPacketPayload.Type<ModMismatchPayload> TYPE = new Type<>(new ResourceLocation(MOD_ID, "mod_mismatch"));
+        private static final StreamCodec<FriendlyByteBuf, ModMismatchPayload> STREAM_CODEC = StreamCodec.unit(new ModMismatchTest.ModMismatchPayload());
 
         @Override
-        public void write(FriendlyByteBuf p_294947_) {}
-
-        @Override
-        public ResourceLocation id() {
-            return ID;
+        public CustomPacketPayload.Type<ModMismatchPayload> type() {
+            return TYPE;
         }
     }
 }

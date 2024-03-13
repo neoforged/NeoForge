@@ -9,7 +9,6 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import java.util.function.Function;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.util.ExtraCodecs;
@@ -19,41 +18,13 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 public class CraftingHelper {
     public static final Codec<CompoundTag> TAG_CODEC = ExtraCodecs.withAlternative(TagParser.AS_CODEC, net.minecraft.nbt.CompoundTag.CODEC);
-
     @ApiStatus.Internal
-    public static Codec<ItemStack> smeltingResultCodec() {
-        return ExtraCodecs
-                .either(
-                        BuiltInRegistries.ITEM.byNameCodec(),
-                        ItemStack.ITEM_WITH_COUNT_CODEC)
-                .xmap(
-                        either -> either.map(ItemStack::new, Function.identity()),
-                        stack -> {
-                            if (stack.getCount() != 1) {
-                                return Either.right(stack);
-                            }
-
-                            var tagForWriting = getTagForWriting(stack);
-                            var attachments = stack.serializeAttachments();
-                            return tagForWriting == null && attachments == null ? Either.left(stack.getItem()) : Either.right(stack);
-                        });
-    }
-
-    @Nullable
-    public static CompoundTag getTagForWriting(ItemStack stack) {
-        // Check if not writing the NBT would still give the correct item.
-        // Just checking for tag != null is not enough: damageable items get a tag set in the stack constructor,
-        // but we don't want to write it to the recipe file.
-        if (stack.getTag() == null || stack.getTag().equals(new ItemStack(stack.getItem(), stack.getCount()).getTag())) {
-            return null;
-        } else {
-            return stack.getTag();
-        }
-    }
+    public static final Codec<ItemStack> SMELTING_RESULT_CODEC = ExtraCodecs
+            .either(ItemStack.SINGLE_ITEM_CODEC, ItemStack.CODEC)
+            .xmap(either -> either.map(Function.identity(), Function.identity()), stack -> stack.getCount() != 1 ? Either.right(stack) : Either.left(stack));
 
     @ApiStatus.Internal
     public static Codec<Ingredient> makeIngredientCodec(boolean allowEmpty, Codec<Ingredient> vanillaCodec) {

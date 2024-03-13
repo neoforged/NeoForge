@@ -46,7 +46,8 @@ public class NeoForgeRegistriesSetup {
             BuiltInRegistries.VILLAGER_TYPE, // Required for EntityDataSerializers
             BuiltInRegistries.VILLAGER_PROFESSION, // Required for EntityDataSerializers
             BuiltInRegistries.CAT_VARIANT, // Required for EntityDataSerializers
-            BuiltInRegistries.FROG_VARIANT // Required for EntityDataSerializers
+            BuiltInRegistries.FROG_VARIANT, // Required for EntityDataSerializers
+            BuiltInRegistries.DATA_COMPONENT_TYPE // Required for itemstack sync
     );
 
     private static void registerRegistries(NewRegistryEvent event) {

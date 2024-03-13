@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/ShaderInstance.java
 +++ b/net/minecraft/client/renderer/ShaderInstance.java
-@@ -98,10 +_,14 @@
+@@ -94,10 +_,14 @@
      @Nullable
      public final Uniform CHUNK_OFFSET;
  
@@ -17,7 +17,7 @@
  
          try (Reader reader = p_173336_.openAsReader(resourcelocation)) {
              JsonObject jsonobject = GsonHelper.parse(reader);
-@@ -208,8 +_,10 @@
+@@ -178,8 +_,10 @@
          Program program1 = p_173342_.getPrograms().get(p_173343_);
          Program program;
          if (program1 == null) {
@@ -30,7 +30,7 @@
  
              try (InputStream inputstream = resource.open()) {
                  final String s1 = FileUtil.getFullResourcePath(s);
-@@ -218,11 +_,11 @@
+@@ -188,11 +_,11 @@
  
                      @Override
                      public String applyImport(boolean p_173374_, String p_173375_) {
@@ -45,7 +45,7 @@
  
                              try {
                                  String s2;
-@@ -232,7 +_,8 @@
+@@ -202,7 +_,8 @@
  
                                  return s2;
                              } catch (IOException ioexception) {

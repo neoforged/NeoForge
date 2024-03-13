@@ -38,11 +38,12 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.ChatDecorator;
@@ -90,6 +91,7 @@ import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.EnchantedBookItem;
@@ -101,12 +103,14 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TippedArrowItem;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -343,7 +347,7 @@ public class CommonHooks {
         return event.getEntity();
     }
 
-    public static boolean onVanillaGameEvent(Level level, GameEvent vanillaEvent, Vec3 pos, GameEvent.Context context) {
+    public static boolean onVanillaGameEvent(Level level, Holder<GameEvent> vanillaEvent, Vec3 pos, GameEvent.Context context) {
         return !NeoForge.EVENT_BUS.post(new VanillaGameEvent(level, vanillaEvent, pos, context)).isCanceled();
     }
 
@@ -440,7 +444,7 @@ public class CommonHooks {
     }
 
     public static void dropXpForBlock(BlockState state, ServerLevel level, BlockPos pos, ItemStack stack) {
-        int fortuneLevel = stack.getEnchantmentLevel(Enchantments.BLOCK_FORTUNE);
+        int fortuneLevel = stack.getEnchantmentLevel(Enchantments.FORTUNE);
         int silkTouchLevel = stack.getEnchantmentLevel(Enchantments.SILK_TOUCH);
         int exp = state.getExpDrop(level, level.random, pos, fortuneLevel, silkTouchLevel);
         if (exp > 0)
@@ -460,8 +464,10 @@ public class CommonHooks {
                 preCancelEvent = true;
 
             if (!entityPlayer.mayBuild()) {
-                if (itemstack.isEmpty() || !itemstack.hasAdventureModeBreakTagForBlock(level.registryAccess().registryOrThrow(Registries.BLOCK), new BlockInWorld(level, pos, false)))
+                AdventureModePredicate adventureModePredicate = itemstack.get(DataComponents.CAN_BREAK);
+                if (itemstack.isEmpty() || adventureModePredicate == null || !adventureModePredicate.test(new BlockInWorld(level, pos, false))) {
                     preCancelEvent = true;
+                }
             }
         }
 
@@ -498,15 +504,20 @@ public class CommonHooks {
         Level level = context.getLevel();
 
         Player player = context.getPlayer();
-        if (player != null && !player.getAbilities().mayBuild && !itemstack.hasAdventureModePlaceTagForBlock(level.registryAccess().registryOrThrow(Registries.BLOCK), new BlockInWorld(level, context.getClickedPos(), false)))
-            return InteractionResult.PASS;
+        if (player != null && !player.getAbilities().mayBuild) {
+            AdventureModePredicate adventureModePredicate = itemstack.get(DataComponents.CAN_PLACE_ON);
+            if (adventureModePredicate == null || !adventureModePredicate.test(new BlockInWorld(level, context.getClickedPos(), false))) {
+                return net.minecraft.world.InteractionResult.PASS;
+            }
+        }
 
         // handle all placement events here
         Item item = itemstack.getItem();
         int size = itemstack.getCount();
-        CompoundTag nbt = null;
-        if (itemstack.getTag() != null)
-            nbt = itemstack.getTag().copy();
+        // Porting 1.20.5 redo this for components?
+        //CompoundTag nbt = null;
+        //if (itemstack.getTag() != null)
+        //    nbt = itemstack.getTag().copy();
 
         if (!(itemstack.getItem() instanceof BucketItem)) // if not bucket
             level.captureBlockSnapshots = true;
@@ -521,17 +532,17 @@ public class CommonHooks {
         if (ret.consumesAction()) {
             // save new item data
             int newSize = itemstack.getCount();
-            CompoundTag newNBT = null;
-            if (itemstack.getTag() != null) {
-                newNBT = itemstack.getTag().copy();
-            }
+            //CompoundTag newNBT = null;
+            //if (itemstack.getTag() != null) {
+            //    newNBT = itemstack.getTag().copy();
+            //}
             @SuppressWarnings("unchecked")
             List<BlockSnapshot> blockSnapshots = (List<BlockSnapshot>) level.capturedBlockSnapshots.clone();
             level.capturedBlockSnapshots.clear();
 
             // make sure to set pre-placement item data for event
             itemstack.setCount(size);
-            itemstack.setTag(nbt);
+            //itemstack.setTag(nbt);
             //TODO: Set pre-placement item attachments?
 
             Direction side = context.getClickedFace();
@@ -554,7 +565,7 @@ public class CommonHooks {
             } else {
                 // Change the stack to its new content
                 itemstack.setCount(newSize);
-                itemstack.setTag(newNBT);
+                //itemstack.setTag(newNBT);
 
                 for (BlockSnapshot snap : blockSnapshots) {
                     int updateFlag = snap.getFlag();
@@ -810,9 +821,9 @@ public class CommonHooks {
     }
 
     /**
-     * Hook to fire {@link ItemAttributeModifierEvent}. Modders should use {@link ItemStack#getAttributeModifiers(EquipmentSlot)} instead.
+     * Hook to fire {@link ItemAttributeModifierEvent}. Modders should use {@link ItemStack#forEachModifier(EquipmentSlot, BiConsumer)} instead.
      */
-    public static Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack stack, EquipmentSlot equipmentSlot, Multimap<Attribute, AttributeModifier> attributes) {
+    public static Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(ItemStack stack, EquipmentSlot equipmentSlot, Multimap<Holder<Attribute>, AttributeModifier> attributes) {
         ItemAttributeModifierEvent event = new ItemAttributeModifierEvent(stack, equipmentSlot, attributes);
         NeoForge.EVENT_BUS.post(event);
         return event.getModifiers();
@@ -837,24 +848,25 @@ public class CommonHooks {
         String modId = registryName == null ? null : registryName.getNamespace();
         if ("minecraft".equals(modId)) {
             if (item instanceof EnchantedBookItem) {
-                ListTag enchantmentsNbt = EnchantedBookItem.getEnchantments(itemStack);
-                if (enchantmentsNbt.size() == 1) {
-                    CompoundTag nbttagcompound = enchantmentsNbt.getCompound(0);
-                    ResourceLocation resourceLocation = ResourceLocation.tryParse(nbttagcompound.getString("id"));
-                    if (resourceLocation != null && BuiltInRegistries.ENCHANTMENT.containsKey(resourceLocation)) {
-                        return resourceLocation.getNamespace();
+                Set<Holder<Enchantment>> enchantments = itemStack.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY).keySet();
+                if (enchantments.size() == 1) {
+                    Holder<Enchantment> enchantmentHolder = enchantments.iterator().next();
+                    Optional<ResourceKey<Enchantment>> key = enchantmentHolder.unwrapKey();
+                    if (key.isPresent()) {
+                        return key.get().location().getNamespace();
                     }
                 }
             } else if (item instanceof PotionItem || item instanceof TippedArrowItem) {
-                Potion potionType = PotionUtils.getPotion(itemStack);
-                ResourceLocation resourceLocation = BuiltInRegistries.POTION.getKey(potionType);
-                if (resourceLocation != null) {
-                    return resourceLocation.getNamespace();
+                PotionContents potionContents = itemStack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+                Optional<Holder<Potion>> potionType = potionContents.potion();
+                Optional<ResourceKey<Potion>> key = potionType.flatMap(Holder::unwrapKey);
+                if (key.isPresent()) {
+                    return key.get().location().getNamespace();
                 }
-            } else if (item instanceof SpawnEggItem) {
-                ResourceLocation resourceLocation = BuiltInRegistries.ENTITY_TYPE.getKey(((SpawnEggItem) item).getType(null));
-                if (resourceLocation != null) {
-                    return resourceLocation.getNamespace();
+            } else if (item instanceof SpawnEggItem spawnEggItem) {
+                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(itemStack));
+                if (key.isPresent()) {
+                    return key.get().location().getNamespace();
                 }
             }
         }
@@ -1225,7 +1237,7 @@ public class CommonHooks {
     public static <T> HolderLookup.RegistryLookup<T> wrapRegistryLookup(final HolderLookup.RegistryLookup<T> lookup) {
         return new HolderLookup.RegistryLookup.Delegate<>() {
             @Override
-            protected RegistryLookup<T> parent() {
+            public RegistryLookup<T> parent() {
                 return lookup;
             }
 

@@ -9,7 +9,23 @@
      T value();
  
      boolean isBound();
-@@ -201,6 +_,14 @@
+@@ -41,6 +_,15 @@
+         return this.unwrapKey().map(p_316542_ -> p_316542_.location().toString()).orElse("[unregistered]");
+     }
+ 
++    /**
++     * {@return the holder that this holder wraps}
++     *
++     * Useful for holders that delegate to another holder.
++     */
++    default Holder<T> getDelegate() {
++        return this;
++    }
++
+     static <T> Holder<T> direct(T p_205710_) {
+         return new Holder.Direct<>(p_205710_);
+     }
+@@ -218,6 +_,14 @@
              } else {
                  this.value = p_249418_;
              }

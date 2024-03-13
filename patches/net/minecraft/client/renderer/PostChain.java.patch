@@ -7,7 +7,7 @@
 -                            ResourceLocation resourcelocation = new ResourceLocation("textures/effect/" + s4 + ".png");
 +                            ResourceLocation rl = ResourceLocation.tryParse(s4);
 +                            ResourceLocation resourcelocation = new ResourceLocation(rl.getNamespace(), "textures/effect/" + rl.getPath() + ".png");
-                             this.resourceManager
+                             this.resourceProvider
                                  .getResource(resourcelocation)
                                  .orElseThrow(() -> new ChainedJsonException("Render target or texture '" + s4 + "' does not exist"));
 @@ -256,6 +_,7 @@

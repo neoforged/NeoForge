@@ -13,6 +13,6 @@
     "###"
   ],
   "result": {
-    "item": "minecraft:gold_ingot"
+    "id": "minecraft:gold_ingot"
   }
 }

@@ -1,16 +1,16 @@
 --- a/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
-@@ -26,6 +_,9 @@
-     private final GameProfile localGameProfile;
-     private RegistryAccess.Frozen receivedRegistries;
-     private FeatureFlagSet enabledFeatures;
+@@ -40,6 +_,9 @@
+     private final RegistryDataCollector registryDataCollector = new RegistryDataCollector();
+     @Nullable
+     private KnownPacksManager knownPacks;
 +    private net.neoforged.neoforge.network.connection.ConnectionType connectionType = net.neoforged.neoforge.network.connection.ConnectionType.VANILLA;
 +    private boolean initializedConnection = false;
 +    private java.util.Map<net.minecraft.resources.ResourceLocation, net.minecraft.network.chat.Component> failureReasons = new java.util.HashMap<>();
  
      public ClientConfigurationPacketListenerImpl(Minecraft p_295262_, Connection p_296339_, CommonListenerCookie p_294706_) {
          super(p_295262_, p_296339_, p_294706_);
-@@ -45,7 +_,41 @@
+@@ -54,7 +_,41 @@
      }
  
      @Override
@@ -53,7 +53,7 @@
          this.handleUnknownCustomPayload(p_295411_);
      }
  
-@@ -69,12 +_,23 @@
+@@ -77,6 +_,11 @@
      @Override
      public void handleEnabledFeatures(ClientboundUpdateEnabledFeaturesPacket p_294410_) {
          this.enabledFeatures = FeatureFlags.REGISTRY.fromNames(p_294410_.features());
@@ -65,34 +65,26 @@
      }
  
      @Override
-     public void handleConfigurationFinished(ClientboundFinishConfigurationPacket p_294585_) {
-         this.connection.suspendInboundAfterProtocolChange();
-         PacketUtils.ensureRunningOnSameThread(p_294585_, this, this.minecraft);
-+
-+        if (!this.initializedConnection && !this.connectionType.isNeoForge()) {
-+            //Fallback detection for servers with a delayed brand payload (BungeeCord)
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaNetworkConnectionEstablished(this);
-+        }
-+
-         this.connection
-             .setListener(
-                 new ClientPacketListener(
-@@ -87,11 +_,13 @@
-                         this.enabledFeatures,
+@@ -123,10 +_,17 @@
                          this.serverBrand,
                          this.serverData,
--                        this.postDisconnectScreen
-+                        this.postDisconnectScreen,
+                         this.postDisconnectScreen,
+-                        this.serverCookies
++                        this.serverCookies,
 +                        this.connectionType
                      )
                  )
              );
-         this.connection.resumeInboundAfterProtocolChange();
++        // Packets can only be sent after the outbound protocol is set up again
++        if (!this.initializedConnection && !this.connectionType.isNeoForge()) {
++            //Fallback detection for servers with a delayed brand payload (BungeeCord)
++            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onVanillaNetworkConnectionEstablished(this);
++        }
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onConfigurationFinished(this);
-         this.connection.send(new ServerboundFinishConfigurationPacket());
+         this.connection.send(ServerboundFinishConfigurationPacket.INSTANCE);
+         this.connection.setupOutboundProtocol(GameProtocols.SERVERBOUND.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen)));
      }
- 
-@@ -104,5 +_,18 @@
+@@ -140,5 +_,18 @@
      public void onDisconnect(Component p_314649_) {
          super.onDisconnect(p_314649_);
          this.minecraft.clearDownloadedResourcePacks();

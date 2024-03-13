@@ -126,7 +126,7 @@ public class DataMapLoader implements PreparableReloadListener {
     }
 
     private static Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> load(ResourceManager manager, ProfilerFiller profiler, RegistryAccess access, ICondition.IContext context) {
-        final RegistryOps<JsonElement> ops = ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, access), context);
+        final RegistryOps<JsonElement> ops = new ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, access), context);
 
         final Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> values = new HashMap<>();
         access.registries().forEach(registryEntry -> {

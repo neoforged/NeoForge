@@ -1,63 +1,66 @@
 --- a/net/minecraft/advancements/critereon/ItemPredicate.java
 +++ b/net/minecraft/advancements/critereon/ItemPredicate.java
-@@ -31,13 +_,14 @@
-     List<EnchantmentPredicate> enchantments,
+@@ -32,9 +_,10 @@
      List<EnchantmentPredicate> storedEnchantments,
-     Optional<Holder<Potion>> potion,
--    Optional<NbtPredicate> nbt
-+    Optional<NbtPredicate> nbt,
+     Optional<HolderSet<Potion>> potions,
+     Optional<NbtPredicate> customData,
+-    DataComponentPredicate components
++    DataComponentPredicate components,
 +    Optional<net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate> customLogic
  ) {
-     private static final Codec<HolderSet<Item>> ITEMS_CODEC = BuiltInRegistries.ITEM
-         .holderByNameCodec()
-         .listOf()
-         .xmap(HolderSet::direct, p_297903_ -> p_297903_.stream().toList());
 -    public static final Codec<ItemPredicate> CODEC = RecordCodecBuilder.create(
 +    public static final Codec<ItemPredicate> VANILLA_CODEC = RecordCodecBuilder.create(
-         p_297904_ -> p_297904_.group(
-                     ExtraCodecs.strictOptionalField(TagKey.codec(Registries.ITEM), "tag").forGetter(ItemPredicate::tag),
-                     ExtraCodecs.strictOptionalField(ITEMS_CODEC, "items").forGetter(ItemPredicate::items),
-@@ -51,8 +_,34 @@
-                 )
-                 .apply(p_297904_, ItemPredicate::new)
+         p_329682_ -> p_329682_.group(
+                     ExtraCodecs.strictOptionalField(RegistryCodecs.homogeneousList(Registries.ITEM), "items").forGetter(ItemPredicate::items),
+                     ExtraCodecs.strictOptionalField(MinMaxBounds.Ints.CODEC, "count", MinMaxBounds.Ints.ANY).forGetter(ItemPredicate::count),
+@@ -50,7 +_,41 @@
+                 .apply(p_329682_, ItemPredicate::new)
      );
-+    //TODO - 1.20.5: Make this final
-+    public static Codec<ItemPredicate> CODEC = ExtraCodecs.<net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate, ItemPredicate>either(
+ 
++    public static final Codec<ItemPredicate> CODEC = ExtraCodecs.<net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate, ItemPredicate>either(
 +            net.neoforged.neoforge.registries.NeoForgeRegistries.ITEM_PREDICATE_SERIALIZERS.byNameCodec()
 +                    .dispatch(
 +                            net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate::codec,
 +                            java.util.function.Function.identity()),
 +            VANILLA_CODEC
-+        ).xmap(either -> either.map(ItemPredicate::new, p -> p), predicate -> {
-+            // Serialize using dispatch codec if custom logic is present, otherwise use vanilla codec
-+            if (predicate.customLogic.isPresent()) {
-+                return com.mojang.datafixers.util.Either.left(predicate.customLogic.get());
-+            } else {
-+                return com.mojang.datafixers.util.Either.right(predicate);
-+            }
-+        });
++    ).xmap(either -> either.map(ItemPredicate::new, p -> p), predicate -> {
++        // Serialize using dispatch codec if custom logic is present, otherwise use vanilla codec
++        if (predicate.customLogic.isPresent()) {
++            return com.mojang.datafixers.util.Either.left(predicate.customLogic.get());
++        } else {
++            return com.mojang.datafixers.util.Either.right(predicate);
++        }
++    });
 +
-+    public ItemPredicate(Optional<TagKey<Item>> tag, Optional<HolderSet<Item>> items, MinMaxBounds.Ints count, MinMaxBounds.Ints durability, List<EnchantmentPredicate> enchantments, List<EnchantmentPredicate> storedEnchantments, Optional<Holder<Potion>> potion, Optional<NbtPredicate> nbt) {
-+        this(tag, items, count, durability, enchantments, storedEnchantments, potion, nbt, Optional.empty());
++    public ItemPredicate(
++            Optional<HolderSet<Item>> items,
++            MinMaxBounds.Ints count,
++            MinMaxBounds.Ints durability,
++            List<EnchantmentPredicate> enchantments,
++            List<EnchantmentPredicate> storedEnchantments,
++            Optional<HolderSet<Potion>> potions,
++            Optional<NbtPredicate> customData,
++            DataComponentPredicate components) {
++        this(items, count, durability, enchantments, storedEnchantments, potions, customData, components, Optional.empty());
 +    }
 +
 +    public ItemPredicate(net.neoforged.neoforge.common.advancements.critereon.ICustomItemPredicate customLogic) {
-+        this(Optional.empty(), Optional.empty(), MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY, List.of(), List.of(), Optional.empty(), Optional.empty(), Optional.of(customLogic));
++        this(Optional.empty(), MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY, List.of(), List.of(), Optional.empty(), Optional.empty(), DataComponentPredicate.EMPTY, Optional.of(customLogic));
 +    }
- 
++
      public boolean matches(ItemStack p_45050_) {
 +        if (this.customLogic.isPresent()) {
 +            return this.customLogic.get().test(p_45050_);
 +        }
-         if (this.tag.isPresent() && !p_45050_.is(this.tag.get())) {
+         if (this.items.isPresent() && !p_45050_.is(this.items.get())) {
              return false;
-         } else if (this.items.isPresent() && !p_45050_.is(this.items.get())) {
-@@ -67,7 +_,7 @@
+         } else if (!this.count.matches(p_45050_.getCount())) {
+@@ -63,7 +_,7 @@
              return false;
          } else {
              if (!this.enchantments.isEmpty()) {
--                Map<Enchantment, Integer> map = EnchantmentHelper.deserializeEnchantments(p_45050_.getEnchantmentTags());
-+                Map<Enchantment, Integer> map = p_45050_.getAllEnchantments();
+-                ItemEnchantments itemenchantments = p_45050_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
++                ItemEnchantments itemenchantments = p_45050_.getAllEnchantments();
  
                  for(EnchantmentPredicate enchantmentpredicate : this.enchantments) {
-                     if (!enchantmentpredicate.containedIn(map)) {
+                     if (!enchantmentpredicate.containedIn(itemenchantments)) {

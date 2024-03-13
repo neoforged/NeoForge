@@ -50,8 +50,6 @@ modId="slipperiness_test"
 [[mods]]
 modId="entity_selector_test"
 [[mods]]
-modId="gravity_attribute_test"
-[[mods]]
 modId="new_fluid_test"
 [[mods]]
 modId="milk_fluid_test"

@@ -251,7 +251,10 @@ publishing {
             }
         }
 
-        changelog.publish(it)
+        if (!rootProject.isPreReleaseVersion) {
+            // Only publish a changelog for releases
+            changelog.publish(it)
+        }
 
         versionMapping {
             usage('java-api') {

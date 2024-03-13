@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -84,7 +85,7 @@ public class CustomItemDisplayContextTest {
 
         @SubscribeEvent
         public static void registerContext(final RegisterEvent event) {
-            event.register(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS, helper -> helper.register("hanging", HANGING));
+            event.register(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS, helper -> helper.register(new ResourceLocation(MODID, "hanging"), HANGING));
         }
 
         private static class ItemHangerBlockEntityRenderer
@@ -225,8 +226,8 @@ public class CustomItemDisplayContextTest {
         }
 
         @Override
-        public CompoundTag getUpdateTag() {
-            return saveWithoutMetadata();
+        public CompoundTag getUpdateTag(HolderLookup.Provider holderLookup) {
+            return saveWithoutMetadata(holderLookup);
         }
 
         @Nullable
@@ -236,29 +237,24 @@ public class CustomItemDisplayContextTest {
         }
 
         @Override
-        public void handleUpdateTag(CompoundTag tag) {
-            load(tag);
+        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
+            handleUpdateTag(pkt.getTag(), lookupProvider);
         }
 
         @Override
-        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-            handleUpdateTag(pkt.getTag());
-        }
-
-        @Override
-        protected void saveAdditional(CompoundTag tag) {
+        protected void saveAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
             var c = new CompoundTag();
             if (heldItem != null) {
-                heldItem.save(c);
+                heldItem.save(holderLookup, c);
                 tag.put("item", c);
             }
         }
 
         @Override
-        public void load(CompoundTag tag) {
+        public void load(CompoundTag tag, HolderLookup.Provider holderLookup) {
             if (tag.contains("item")) {
                 var c = tag.getCompound("item");
-                heldItem = ItemStack.of(c);
+                heldItem = ItemStack.parse(holderLookup, c).orElseThrow();
             }
         }
     }

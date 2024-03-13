@@ -115,7 +115,7 @@ public class NeoForgeEventHandler {
                     .registry(registry);
             if (regOpt.isEmpty()) return;
             players.forEach(player -> {
-                if (!player.connection.isConnected(RegistryDataMapSyncPayload.ID)) {
+                if (!player.connection.isConnected(RegistryDataMapSyncPayload.TYPE)) {
                     return;
                 }
                 final var playerMaps = player.connection.connection.channel().attr(RegistryManager.ATTRIBUTE_KNOWN_DATA_MAPS).get();

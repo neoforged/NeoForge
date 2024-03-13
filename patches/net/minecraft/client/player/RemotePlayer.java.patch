@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/player/RemotePlayer.java
 +++ b/net/minecraft/client/player/RemotePlayer.java
-@@ -34,6 +_,7 @@
+@@ -33,6 +_,7 @@
  
      @Override
      public boolean hurt(DamageSource p_108772_, float p_108773_) {

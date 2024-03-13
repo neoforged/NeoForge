@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/npc/AbstractVillager.java
 +++ b/net/minecraft/world/entity/npc/AbstractVillager.java
-@@ -127,6 +_,7 @@
+@@ -123,6 +_,7 @@
          if (this.tradingPlayer instanceof ServerPlayer) {
              CriteriaTriggers.TRADE.trigger((ServerPlayer)this.tradingPlayer, this, p_35274_.getResult());
          }
@@ -8,7 +8,7 @@
      }
  
      protected abstract void rewardTradeXp(MerchantOffer p_35299_);
-@@ -180,9 +_,9 @@
+@@ -185,9 +_,9 @@
  
      @Nullable
      @Override

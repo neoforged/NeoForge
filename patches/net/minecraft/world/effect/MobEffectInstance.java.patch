@@ -1,14 +1,33 @@
 --- a/net/minecraft/world/effect/MobEffectInstance.java
 +++ b/net/minecraft/world/effect/MobEffectInstance.java
-@@ -78,6 +_,7 @@
-         this.showIcon = p_216892_;
-         this.hiddenEffect = p_216893_;
-         this.factorData = p_216894_;
-+        this.effect.fillEffectCures(this.cures, this);
+@@ -84,6 +_,7 @@
+         this.visible = p_19532_;
+         this.showIcon = p_19533_;
+         this.hiddenEffect = p_316863_;
++        this.effect.value().fillEffectCures(this.cures, this);
      }
  
      public MobEffectInstance(MobEffectInstance p_19543_) {
-@@ -96,6 +_,8 @@
+@@ -101,6 +_,8 @@
+             p_324529_.showIcon(),
+             p_324529_.hiddenEffect().map(p_323227_ -> new MobEffectInstance(p_324441_, p_323227_)).orElse(null)
+         );
++        this.cures.clear();
++        p_324529_.cures().ifPresent(this.cures::addAll);
+     }
+ 
+     private MobEffectInstance.Details asDetails() {
+@@ -110,7 +_,8 @@
+             this.isAmbient(),
+             this.isVisible(),
+             this.showIcon(),
+-            Optional.ofNullable(this.hiddenEffect).map(MobEffectInstance::asDetails)
++            Optional.ofNullable(this.hiddenEffect).map(MobEffectInstance::asDetails),
++            Optional.of(this.getCures()).filter(cures -> !cures.isEmpty())
+         );
+     }
+ 
+@@ -124,6 +_,8 @@
          this.ambient = p_19549_.ambient;
          this.visible = p_19549_.visible;
          this.showIcon = p_19549_.showIcon;
@@ -17,46 +36,24 @@
      }
  
      public boolean update(MobEffectInstance p_19559_) {
-@@ -272,6 +_,7 @@
-     public CompoundTag save(CompoundTag p_19556_) {
-         ResourceLocation resourcelocation = BuiltInRegistries.MOB_EFFECT.getKey(this.effect);
-         p_19556_.putString("id", resourcelocation.toString());
-+        net.neoforged.neoforge.common.CommonHooks.saveMobEffect(p_19556_, "neoforge:id", this.getEffect());
-         this.writeDetailsTo(p_19556_);
-         return p_19556_;
-     }
-@@ -295,6 +_,8 @@
-                         .resultOrPartial(LOGGER::error)
-                         .ifPresent(p_216906_ -> p_19568_.put("factor_calculation_data", p_216906_))
-             );
-+
-+        writeCures(p_19568_);
-     }
- 
-     @Nullable
-@@ -332,7 +_,7 @@
-             optional = Optional.empty();
-         }
- 
--        return new MobEffectInstance(p_19546_, j, Math.max(i, 0), flag, flag1, flag2, mobeffectinstance, optional);
-+        return new MobEffectInstance(p_19546_, j, Math.max(i, 0), flag, flag1, flag2, mobeffectinstance, optional).readCures(p_19547_);
-     }
- 
-     public int compareTo(MobEffectInstance p_19566_) {
-@@ -342,12 +_,42 @@
+@@ -313,11 +_,11 @@
                  .compareFalseFirst(this.isAmbient(), p_19566_.isAmbient())
                  .compareFalseFirst(this.isInfiniteDuration(), p_19566_.isInfiniteDuration())
                  .compare(this.getDuration(), p_19566_.getDuration())
--                .compare(this.getEffect().getColor(), p_19566_.getEffect().getColor())
-+                .compare(this.getEffect().getSortOrder(this), p_19566_.getEffect().getSortOrder(p_19566_))
+-                .compare(this.getEffect().value().getColor(), p_19566_.getEffect().value().getColor())
++                .compare(this.getEffect().value().getSortOrder(this), p_19566_.getEffect().value().getSortOrder(p_19566_))
                  .result()
              : ComparisonChain.start()
                  .compare(this.isAmbient(), p_19566_.isAmbient())
--                .compare(this.getEffect().getColor(), p_19566_.getEffect().getColor())
-+                .compare(this.getEffect().getSortOrder(this), p_19566_.getEffect().getSortOrder(p_19566_))
+-                .compare(this.getEffect().value().getColor(), p_19566_.getEffect().value().getColor())
++                .compare(this.getEffect().value().getSortOrder(this), p_19566_.getEffect().value().getSortOrder(p_19566_))
                  .result();
-+    }
-+
+     }
+ 
+@@ -333,6 +_,15 @@
+         this.blendState.setImmediate(this);
+     }
+ 
 +    private final java.util.Set<net.neoforged.neoforge.common.EffectCure> cures = com.google.common.collect.Sets.newIdentityHashSet();
 +
 +    /**
@@ -66,25 +63,52 @@
 +        return cures;
 +    }
 +
-+    private MobEffectInstance readCures(CompoundTag tag) {
-+        cures.clear(); // Overwrite cures with ones stored in NBT, if any
-+        if (tag.contains("neoforge:cures", Tag.TAG_LIST)) {
-+            net.minecraft.nbt.ListTag list = tag.getList("neoforge:cures", Tag.TAG_STRING);
-+            for (int i = 0; i < list.size(); i++) {
-+                cures.add(net.neoforged.neoforge.common.EffectCure.get(list.getString(i)));
-+            }
-+        }
-+        return this;
-+    }
-+
-+    private void writeCures(CompoundTag tag) {
-+        if (!cures.isEmpty()) {
-+            net.minecraft.nbt.ListTag list = new net.minecraft.nbt.ListTag();
-+            for (net.neoforged.neoforge.common.EffectCure cure : cures) {
-+                list.add(net.minecraft.nbt.StringTag.valueOf(cure.name()));
-+            }
-+            tag.put("neoforge:cures", list);
-+        }
+     static class BlendState {
+         private float factor;
+         private float factorPreviousFrame;
+@@ -380,8 +_,7 @@
      }
  
-     public static class FactorData {
+     static record Details(
+-        int amplifier, int duration, boolean ambient, boolean showParticles, boolean showIcon, Optional<MobEffectInstance.Details> hiddenEffect
+-    ) {
++        int amplifier, int duration, boolean ambient, boolean showParticles, boolean showIcon, Optional<MobEffectInstance.Details> hiddenEffect, Optional<java.util.Set<net.neoforged.neoforge.common.EffectCure>> cures) {
+         public static final MapCodec<MobEffectInstance.Details> MAP_CODEC = ExtraCodecs.recursiveMap(
+             "MobEffectInstance.Details",
+             p_323465_ -> RecordCodecBuilder.mapCodec(
+@@ -391,13 +_,14 @@
+                                 ExtraCodecs.strictOptionalField(Codec.BOOL, "ambient", false).forGetter(MobEffectInstance.Details::ambient),
+                                 ExtraCodecs.strictOptionalField(Codec.BOOL, "show_particles", true).forGetter(MobEffectInstance.Details::showParticles),
+                                 ExtraCodecs.strictOptionalField(Codec.BOOL, "show_icon").forGetter(p_323788_ -> Optional.of(p_323788_.showIcon())),
+-                                ExtraCodecs.strictOptionalField(p_323465_, "hidden_effect").forGetter(MobEffectInstance.Details::hiddenEffect)
++                                ExtraCodecs.strictOptionalField(p_323465_, "hidden_effect").forGetter(MobEffectInstance.Details::hiddenEffect),
++                                ExtraCodecs.strictOptionalField(net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.setOf(net.neoforged.neoforge.common.EffectCure.CODEC), "neoforge:cures").forGetter(MobEffectInstance.Details::cures)
+                             )
+                             .apply(p_324063_, MobEffectInstance.Details::create)
+                 )
+         );
+         public static final StreamCodec<ByteBuf, MobEffectInstance.Details> STREAM_CODEC = StreamCodec.recursive(
+-            p_329990_ -> StreamCodec.composite(
++            p_329990_ -> net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.composite(
+                     ByteBufCodecs.VAR_INT,
+                     MobEffectInstance.Details::amplifier,
+                     ByteBufCodecs.VAR_INT,
+@@ -410,14 +_,16 @@
+                     MobEffectInstance.Details::showIcon,
+                     p_329990_.apply(ByteBufCodecs::optional),
+                     MobEffectInstance.Details::hiddenEffect,
++                    net.neoforged.neoforge.common.EffectCure.STREAM_CODEC.<java.util.Set<net.neoforged.neoforge.common.EffectCure>>apply(ByteBufCodecs.collection(java.util.HashSet::new)).apply(ByteBufCodecs::optional),
++                    MobEffectInstance.Details::cures,
+                     MobEffectInstance.Details::new
+                 )
+         );
+ 
+         private static MobEffectInstance.Details create(
+-            int p_323657_, int p_324205_, boolean p_324263_, boolean p_324000_, Optional<Boolean> p_323607_, Optional<MobEffectInstance.Details> p_324604_
++            int p_323657_, int p_324205_, boolean p_324263_, boolean p_324000_, Optional<Boolean> p_323607_, Optional<MobEffectInstance.Details> p_324604_, Optional<java.util.Set<net.neoforged.neoforge.common.EffectCure>> cures
+         ) {
+-            return new MobEffectInstance.Details(p_323657_, p_324205_, p_324263_, p_324000_, p_323607_.orElse(p_324000_), p_324604_);
++            return new MobEffectInstance.Details(p_323657_, p_324205_, p_324263_, p_324000_, p_323607_.orElse(p_324000_), p_324604_, cures);
+         }
+     }
+ }

@@ -8,7 +8,7 @@
 +        if (applyBonemeal(p_40637_.getItemInHand(), level, blockpos, p_40637_.getPlayer())) {
              if (!level.isClientSide) {
                  p_40637_.getPlayer().gameEvent(GameEvent.ITEM_INTERACT_FINISH);
-                 level.levelEvent(1505, blockpos, 0);
+                 level.levelEvent(1505, blockpos, 15);
 @@ -61,8 +_,17 @@
          }
      }

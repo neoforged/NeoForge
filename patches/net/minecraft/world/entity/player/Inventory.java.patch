@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/player/Inventory.java
 +++ b/net/minecraft/world/entity/player/Inventory.java
-@@ -137,7 +_,7 @@
+@@ -134,7 +_,7 @@
  
          for(int k = 0; k < 9; ++k) {
              int l = (this.selected + k) % 9;
@@ -9,17 +9,7 @@
                  return l;
              }
          }
-@@ -186,7 +_,8 @@
-         int i = p_36049_.getCount();
-         ItemStack itemstack = this.getItem(p_36048_);
-         if (itemstack.isEmpty()) {
--            itemstack = new ItemStack(item, 0);
-+            itemstack = p_36049_.copy(); // Forge: Replace Item clone above to preserve item capabilities when picking the item up.
-+            itemstack.setCount(0);
-             if (p_36049_.hasTag()) {
-                 itemstack.setTag(p_36049_.getTag().copy());
-             }
-@@ -230,13 +_,18 @@
+@@ -222,13 +_,18 @@
      }
  
      public void tick() {
@@ -39,7 +29,7 @@
      }
  
      public boolean add(ItemStack p_36055_) {
-@@ -284,6 +_,8 @@
+@@ -276,6 +_,8 @@
              } catch (Throwable throwable) {
                  CrashReport crashreport = CrashReport.forThrowable(throwable, "Adding item to inventory");
                  CrashReportCategory crashreportcategory = crashreport.addCategory("Item being added");

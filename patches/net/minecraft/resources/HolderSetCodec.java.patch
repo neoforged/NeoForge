@@ -20,20 +20,23 @@
      }
  
      @Override
-@@ -51,9 +_,9 @@
+@@ -51,12 +_,12 @@
              Optional<HolderGetter<E>> optional = registryops.getter(this.registryKey);
              if (optional.isPresent()) {
                  HolderGetter<E> holdergetter = optional.get();
 -                return this.registryAwareCodec
 -                    .decode(p_206696_, p_206697_)
--                    .map(p_206682_ -> p_206682_.mapFirst(p_206679_ -> p_206679_.map(holdergetter::getOrThrow, HolderSet::direct)));
-+                // FORGE: use the wrapped codec to decode custom/tag/list instead of just tag/list
++                // NEO: use the wrapped codec to decode custom/tag/list instead of just tag/list
 +                return this.combinedCodec.decode(p_206696_, p_206697_)
-+                    .map(p_206682_ -> p_206682_.mapFirst(p_206679_ -> p_206679_.map(java.util.function.Function.identity(), tagOrList -> tagOrList.map(holdergetter::getOrThrow, HolderSet::direct))));
-             }
-         }
- 
-@@ -68,6 +_,9 @@
+                     .flatMap(
+                         p_332561_ -> {
+                             DataResult<HolderSet<E>> dataresult = p_332561_.getFirst()
+-                                .map(p_332559_ -> lookupTag(holdergetter, p_332559_), p_332564_ -> DataResult.success(HolderSet.direct(p_332564_)));
++                                    .map(DataResult::success, tagOrList -> tagOrList.map(p_332559_ -> lookupTag(holdergetter, p_332559_), p_332564_ -> DataResult.success(HolderSet.direct(p_332564_))));
+                             return dataresult.map(p_332563_ -> Pair.of(p_332563_, (T)p_332561_.getSecond()));
+                         }
+                     );
+@@ -80,6 +_,9 @@
                      return DataResult.error(() -> "HolderSet " + p_206674_ + " is not valid in current registry set");
                  }
  

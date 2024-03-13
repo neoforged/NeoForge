@@ -1,19 +1,19 @@
 --- a/net/minecraft/server/ServerAdvancementManager.java
 +++ b/net/minecraft/server/ServerAdvancementManager.java
-@@ -41,10 +_,15 @@
-     }
+@@ -46,10 +_,15 @@
  
      protected void apply(Map<ResourceLocation, JsonElement> p_136034_, ResourceManager p_136035_, ProfilerFiller p_136036_) {
-+        var ops = this.makeConditionalOps();
+         RegistryOps<JsonElement> registryops = this.registries.createSerializationContext(JsonOps.INSTANCE);
++        var condRegistryops = net.neoforged.neoforge.common.conditions.ConditionalOps.create(registryops, this.conditionContext); // Neo: add condition context
          Builder<ResourceLocation, AdvancementHolder> builder = ImmutableMap.builder();
-         p_136034_.forEach((p_311532_, p_311533_) -> {
+         p_136034_.forEach((p_323182_, p_323183_) -> {
              try {
--                Advancement advancement = Util.getOrThrow(Advancement.CODEC.parse(JsonOps.INSTANCE, p_311533_), JsonParseException::new);
-+                Advancement advancement = net.neoforged.neoforge.common.conditions.ICondition.getWithWithConditionsCodec(Advancement.CONDITIONAL_CODEC, ops, p_311533_).orElse(null);
+-                Advancement advancement = Util.getOrThrow(Advancement.CODEC.parse(registryops, p_323183_), JsonParseException::new);
++                Advancement advancement = net.neoforged.neoforge.common.conditions.ICondition.getWithWithConditionsCodec(Advancement.CONDITIONAL_CODEC, condRegistryops, p_323183_).orElse(null);
 +                if (advancement == null) {
-+                    LOGGER.debug("Skipping loading advancement {} as its conditions were not met", p_311532_);
++                    LOGGER.debug("Skipping loading advancement {} as its conditions were not met", p_323182_);
 +                    return;
 +                }
-                 this.validate(p_311532_, advancement);
-                 builder.put(p_311532_, new AdvancementHolder(p_311532_, advancement));
+                 this.validate(p_323182_, advancement);
+                 builder.put(p_323182_, new AdvancementHolder(p_323182_, advancement));
              } catch (Exception exception) {

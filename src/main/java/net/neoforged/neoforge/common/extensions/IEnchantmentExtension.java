@@ -6,11 +6,11 @@
 package net.neoforged.neoforge.common.extensions;
 
 import java.util.Set;
-import net.minecraft.world.entity.MobType;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
 
 public interface IEnchantmentExtension {
     private Enchantment self() {
@@ -18,16 +18,16 @@ public interface IEnchantmentExtension {
     }
 
     /**
-     * ItemStack aware version of {@link Enchantment#getDamageBonus(int, MobType)}
+     * ItemStack aware version of {@link Enchantment#getDamageBonus(int, EntityType)}
      * 
      * @param level         the level of the enchantment
-     * @param mobType       the mob type being attacked
+     * @param entityType    the entity type being attacked
      * @param enchantedItem the item used for the attack
      * @return the damage bonus
      */
     @SuppressWarnings("deprecation")
-    default float getDamageBonus(int level, MobType mobType, ItemStack enchantedItem) {
-        return self().getDamageBonus(level, mobType);
+    default float getDamageBonus(int level, EntityType<?> entityType, ItemStack enchantedItem) {
+        return self().getDamageBonus(level, entityType);
     }
 
     /**
@@ -37,7 +37,7 @@ public interface IEnchantmentExtension {
      * @param allowedCategories the enchantment categories allowed in the creative tab
      * @return whether item variants of this enchantment can be added to a given creative tab with the allowed categories
      */
-    default boolean allowedInCreativeTab(Item book, Set<EnchantmentCategory> allowedCategories) {
-        return self().isAllowedOnBooks() && allowedCategories.contains(self().category);
+    default boolean allowedInCreativeTab(Item book, Set<TagKey<Item>> allowedCategories) {
+        return self().isAllowedOnBooks() && allowedCategories.contains(self().getMatch());
     }
 }

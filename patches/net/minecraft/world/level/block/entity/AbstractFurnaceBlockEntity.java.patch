@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
-@@ -59,6 +_,7 @@
+@@ -60,6 +_,7 @@
      public static final int NUM_DATA_VALUES = 4;
      public static final int BURN_TIME_STANDARD = 200;
      public static final int BURN_COOL_SPEED = 2;
@@ -8,7 +8,7 @@
      protected NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
      int litTime;
      int litDuration;
-@@ -69,9 +_,14 @@
+@@ -72,9 +_,14 @@
          public int get(int p_58431_) {
              switch(p_58431_) {
                  case 0:
@@ -24,18 +24,29 @@
                  case 2:
                      return AbstractFurnaceBlockEntity.this.cookingProgress;
                  case 3:
-@@ -111,10 +_,26 @@
+@@ -114,18 +_,38 @@
      ) {
          super(p_154991_, p_154992_, p_154993_);
          this.quickCheck = RecipeManager.createCheck((RecipeType<AbstractCookingRecipe>)p_154994_);
 +        this.recipeType = p_154994_;
      }
  
-+    /**@deprecated Forge: get burn times by calling CommonHooks#getBurnTime(ItemStack)*/ @Deprecated
+     public static void invalidateCache() {
+         fuelCache = null;
+     }
+ 
++    /**@deprecated Forge: get burn times by calling CommonHooks#getBurnTime(ItemStack)*/
++    @Deprecated
      public static Map<Item, Integer> getFuel() {
-         Map<Item, Integer> map = Maps.newLinkedHashMap();
-+        buildFuels((e, time) -> e.ifRight(tag -> add(map, tag, time)).ifLeft(item -> add(map, item, time)));
-+        return map;
+         Map<Item, Integer> map = fuelCache;
+         if (map != null) {
+             return map;
+         } else {
+             Map<Item, Integer> map1 = Maps.newLinkedHashMap();
++            buildFuels((e, time) -> e.ifRight(tag -> add(map1, tag, time)).ifLeft(item -> add(map1, item, time)));
++            fuelCache = map1;
++            return map1;
++        }
 +    }
 +
 +    private static void add(java.util.function.ObjIntConsumer<com.mojang.datafixers.util.Either<Item, TagKey<Item>>> consumer, ItemLike item, int time) {
@@ -47,22 +58,24 @@
 +    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+    public static void buildFuels(java.util.function.ObjIntConsumer<com.mojang.datafixers.util.Either<Item, TagKey<Item>>> map) {
-         add(map, Items.LAVA_BUCKET, 20000);
-         add(map, Blocks.COAL_BLOCK, 16000);
-         add(map, Items.BLAZE_ROD, 2400);
-@@ -174,7 +_,6 @@
-         add(map, Blocks.AZALEA, 100);
-         add(map, Blocks.FLOWERING_AZALEA, 100);
-         add(map, Blocks.MANGROVE_ROOTS, 300);
--        return map;
++    public static void buildFuels(java.util.function.ObjIntConsumer<com.mojang.datafixers.util.Either<Item, TagKey<Item>>> map1) {
++        {
+             add(map1, Items.LAVA_BUCKET, 20000);
+             add(map1, Blocks.COAL_BLOCK, 16000);
+             add(map1, Items.BLAZE_ROD, 2400);
+@@ -185,8 +_,6 @@
+             add(map1, Blocks.AZALEA, 100);
+             add(map1, Blocks.FLOWERING_AZALEA, 100);
+             add(map1, Blocks.MANGROVE_ROOTS, 300);
+-            fuelCache = map1;
+-            return map1;
+         }
      }
  
-     private static boolean isNeverAFurnaceFuel(Item p_58398_) {
-@@ -213,9 +_,9 @@
-         super.load(p_155025_);
+@@ -226,9 +_,9 @@
+         super.load(p_155025_, p_323468_);
          this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-         ContainerHelper.loadAllItems(p_155025_, this.items);
+         ContainerHelper.loadAllItems(p_155025_, this.items, p_323468_);
 -        this.litTime = p_155025_.getShort("BurnTime");
 -        this.cookingProgress = p_155025_.getShort("CookTime");
 -        this.cookingTotalTime = p_155025_.getShort("CookTimeTotal");
@@ -72,20 +85,20 @@
          this.litDuration = this.getBurnDuration(this.items.get(1));
          CompoundTag compoundtag = p_155025_.getCompound("RecipesUsed");
  
-@@ -227,9 +_,9 @@
+@@ -240,9 +_,9 @@
      @Override
-     protected void saveAdditional(CompoundTag p_187452_) {
-         super.saveAdditional(p_187452_);
+     protected void saveAdditional(CompoundTag p_187452_, HolderLookup.Provider p_323656_) {
+         super.saveAdditional(p_187452_, p_323656_);
 -        p_187452_.putShort("BurnTime", (short)this.litTime);
 -        p_187452_.putShort("CookTime", (short)this.cookingProgress);
 -        p_187452_.putShort("CookTimeTotal", (short)this.cookingTotalTime);
 +        p_187452_.putInt("BurnTime", this.litTime);
 +        p_187452_.putInt("CookTime", this.cookingProgress);
 +        p_187452_.putInt("CookTimeTotal", this.cookingTotalTime);
-         ContainerHelper.saveAllItems(p_187452_, this.items);
+         ContainerHelper.saveAllItems(p_187452_, this.items, p_323656_);
          CompoundTag compoundtag = new CompoundTag();
          this.recipesUsed.forEach((p_187449_, p_187450_) -> compoundtag.putInt(p_187449_.toString(), p_187450_));
-@@ -255,28 +_,30 @@
+@@ -268,28 +_,30 @@
              }
  
              int i = p_155017_.getMaxStackSize();
@@ -121,7 +134,7 @@
                          p_155017_.setRecipeUsed(recipeholder);
                      }
  
-@@ -300,9 +_,9 @@
+@@ -313,9 +_,9 @@
          }
      }
  
@@ -133,9 +146,9 @@
              if (itemstack.isEmpty()) {
                  return false;
              } else {
-@@ -311,10 +_,10 @@
+@@ -324,10 +_,10 @@
                      return true;
-                 } else if (!ItemStack.isSameItem(itemstack1, itemstack)) {
+                 } else if (!ItemStack.isSameItemSameComponents(itemstack1, itemstack)) {
                      return false;
 -                } else if (itemstack1.getCount() < p_155008_ && itemstack1.getCount() < itemstack1.getMaxStackSize()) {
 +                } else if (itemstack1.getCount() + itemstack.getCount() <= p_155008_ && itemstack1.getCount() + itemstack.getCount() <= itemstack1.getMaxStackSize()) { // Forge fix: make furnace respect stack sizes in furnace recipes
@@ -146,7 +159,7 @@
                  }
              }
          } else {
-@@ -322,15 +_,15 @@
+@@ -335,15 +_,15 @@
          }
      }
  
@@ -160,13 +173,13 @@
              ItemStack itemstack2 = p_267073_.get(2);
              if (itemstack2.isEmpty()) {
                  p_267073_.set(2, itemstack1.copy());
-             } else if (itemstack2.is(itemstack1.getItem())) {
+             } else if (ItemStack.isSameItemSameComponents(itemstack2, itemstack1)) {
 -                itemstack2.grow(1);
 +                itemstack2.grow(itemstack1.getCount());
              }
  
              if (itemstack.is(Blocks.WET_SPONGE.asItem()) && !p_267073_.get(1).isEmpty() && p_267073_.get(1).is(Items.BUCKET)) {
-@@ -349,7 +_,7 @@
+@@ -362,7 +_,7 @@
              return 0;
          } else {
              Item item = p_58343_.getItem();
@@ -175,7 +188,7 @@
          }
      }
  
-@@ -358,7 +_,7 @@
+@@ -371,7 +_,7 @@
      }
  
      public static boolean isFuel(ItemStack p_58400_) {
@@ -184,7 +197,7 @@
      }
  
      @Override
-@@ -444,7 +_,7 @@
+@@ -436,7 +_,7 @@
              return true;
          } else {
              ItemStack itemstack = this.items.get(1);

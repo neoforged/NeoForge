@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/inventory/EffectRenderingInventoryScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/EffectRenderingInventoryScreen.java
-@@ -46,12 +_,17 @@
+@@ -47,12 +_,17 @@
          Collection<MobEffectInstance> collection = this.minecraft.player.getActiveEffects();
          if (!collection.isEmpty() && j >= 32) {
              boolean flag = j >= 120;
@@ -19,7 +19,7 @@
              this.renderBackgrounds(p_281945_, i, k, iterable, flag);
              this.renderIcons(p_281945_, i, k, iterable, flag);
              if (flag) {
-@@ -98,6 +_,11 @@
+@@ -99,6 +_,11 @@
          int i = this.topPos;
  
          for(MobEffectInstance mobeffectinstance : p_282642_) {
@@ -28,10 +28,10 @@
 +                i += p_282291_;
 +                continue;
 +            }
-             MobEffect mobeffect = mobeffectinstance.getEffect();
-             TextureAtlasSprite textureatlassprite = mobeffecttexturemanager.get(mobeffect);
+             Holder<MobEffect> holder = mobeffectinstance.getEffect();
+             TextureAtlasSprite textureatlassprite = mobeffecttexturemanager.get(holder);
              p_282745_.blit(p_282521_ + (p_281536_ ? 6 : 7), i + 7, 0, 18, 18, textureatlassprite);
-@@ -109,6 +_,11 @@
+@@ -110,6 +_,11 @@
          int i = this.topPos;
  
          for(MobEffectInstance mobeffectinstance : p_281986_) {

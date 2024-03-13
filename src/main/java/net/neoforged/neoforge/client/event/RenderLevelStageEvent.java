@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client.event;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -36,17 +35,17 @@ import org.joml.Matrix4f;
 public class RenderLevelStageEvent extends Event {
     private final Stage stage;
     private final LevelRenderer levelRenderer;
-    private final PoseStack poseStack;
+    private final Matrix4f modelViewMatrix;
     private final Matrix4f projectionMatrix;
     private final int renderTick;
     private final float partialTick;
     private final Camera camera;
     private final Frustum frustum;
 
-    public RenderLevelStageEvent(Stage stage, LevelRenderer levelRenderer, PoseStack poseStack, Matrix4f projectionMatrix, int renderTick, float partialTick, Camera camera, Frustum frustum) {
+    public RenderLevelStageEvent(Stage stage, LevelRenderer levelRenderer, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, float partialTick, Camera camera, Frustum frustum) {
         this.stage = stage;
         this.levelRenderer = levelRenderer;
-        this.poseStack = poseStack;
+        this.modelViewMatrix = modelViewMatrix;
         this.projectionMatrix = projectionMatrix;
         this.renderTick = renderTick;
         this.partialTick = partialTick;
@@ -70,10 +69,10 @@ public class RenderLevelStageEvent extends Event {
     }
 
     /**
-     * {@return the pose stack used for rendering}
+     * {@return the model view matrix used for rendering}
      */
-    public PoseStack getPoseStack() {
-        return poseStack;
+    public Matrix4f getModelViewMatrix() {
+        return modelViewMatrix;
     }
 
     /**
@@ -192,7 +191,7 @@ public class RenderLevelStageEvent extends Event {
         public static final Stage AFTER_WEATHER = register("after_weather", null);
         /**
          * Use this to render after everything in the level has been rendered.
-         * Called after {@link LevelRenderer#renderLevel(PoseStack, float, long, boolean, Camera, GameRenderer, LightTexture, Matrix4f)} finishes.
+         * Called after {@link LevelRenderer#renderLevel(float, long, boolean, Camera, GameRenderer, LightTexture, Matrix4f, Matrix4f)} finishes.
          */
         public static final Stage AFTER_LEVEL = register("after_level", null);
 

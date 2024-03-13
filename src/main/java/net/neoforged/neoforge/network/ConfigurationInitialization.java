@@ -5,6 +5,10 @@
 
 package net.neoforged.neoforge.network;
 
+import java.util.function.Consumer;
+import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
+import net.minecraft.server.network.ConfigurationTask;
+import net.minecraft.server.network.config.SynchronizeRegistriesTask;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
@@ -21,15 +25,21 @@ import org.jetbrains.annotations.ApiStatus;
 @Mod.EventBusSubscriber(modid = "neoforge", bus = Mod.EventBusSubscriber.Bus.MOD)
 @ApiStatus.Internal
 public class ConfigurationInitialization {
+    /**
+     * Method called to add configuration tasks that should run before all others,
+     * and most importantly before vanilla's own {@link SynchronizeRegistriesTask}.
+     */
+    public static void configureEarlyTasks(ServerConfigurationPacketListener listener, Consumer<ConfigurationTask> tasks) {
+        if (listener.isConnected(FrozenRegistrySyncStartPayload.TYPE) &&
+                listener.isConnected(FrozenRegistryPayload.TYPE) &&
+                listener.isConnected(FrozenRegistrySyncCompletedPayload.TYPE)) {
+            tasks.accept(new SyncRegistries());
+        }
+    }
+
     @SubscribeEvent
     private static void configureModdedClient(OnGameConfigurationEvent event) {
-        if (event.getListener().isConnected(FrozenRegistrySyncStartPayload.ID) &&
-                event.getListener().isConnected(FrozenRegistryPayload.ID) &&
-                event.getListener().isConnected(FrozenRegistrySyncCompletedPayload.ID)) {
-            event.register(new SyncRegistries());
-        }
-
-        if (event.getListener().isConnected(ConfigFilePayload.ID)) {
+        if (event.getListener().isConnected(ConfigFilePayload.TYPE)) {
             event.register(new SyncConfig(event.getListener()));
         }
 

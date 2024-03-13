@@ -34,7 +34,7 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
         super(parent.getMinecraftInstance(), listWidth, bottom - top, top, parent.getFontRenderer().lineHeight * 2 + 8);
         this.parent = parent;
         this.listWidth = listWidth;
-        this.setRenderBackground(false);
+        //this.setRenderBackground(false); // Porting 1.20.5 still needed?
         this.refreshList();
     }
 

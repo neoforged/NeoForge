@@ -36,7 +36,8 @@ public final class BlockEntityRenderBoundsDebugRenderer {
         }
 
         LevelRenderer levelRenderer = Minecraft.getInstance().levelRenderer;
-        PoseStack poseStack = event.getPoseStack();
+        PoseStack poseStack = new PoseStack();
+        poseStack.mulPose(event.getModelViewMatrix());
         Vec3 camera = event.getCamera().getPosition();
         VertexConsumer consumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.lines());
 

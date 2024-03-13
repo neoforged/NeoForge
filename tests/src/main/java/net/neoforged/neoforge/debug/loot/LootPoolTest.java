@@ -33,8 +33,8 @@ public class LootPoolTest {
                 event.getGenerator().getPackOutput(),
                 Set.of(),
                 List.of(
-                        new LootTableProvider.SubProviderEntry(() -> p_249643_ -> {
-                            p_249643_.accept(
+                        new LootTableProvider.SubProviderEntry(() -> (provider, consumer) -> {
+                            consumer.accept(
                                     TEST_LOOT_TABLE,
                                     LootTable.lootTable()
                                             .withPool(LootPool.lootPool()
@@ -42,7 +42,8 @@ public class LootPoolTest {
                                                     .name("custom_name"))
                                             .withPool(LootPool.lootPool()
                                                     .add(LootItem.lootTableItem(Items.GOLD_NUGGET))));
-                        }, LootContextParamSets.ALL_PARAMS))));
+                        }, LootContextParamSets.ALL_PARAMS)),
+                event.getLookupProvider()));
 
         test.onGameTest(helper -> {
             var testTable = helper.getLevel().getServer().getLootData().getLootTable(TEST_LOOT_TABLE);

@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -33,8 +34,10 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.fml.ModContainer;
@@ -382,7 +385,7 @@ public class ModListScreen extends Screen {
             TextureManager tm = this.minecraft.getTextureManager();
             final Pack.ResourcesSupplier resourcePack = ResourcePackLoader.getPackFor(selectedMod.getModId())
                     .orElse(ResourcePackLoader.getPackFor("neoforge").orElseThrow(() -> new RuntimeException("Can't find neoforge, WHAT!")));
-            try (PackResources packResources = resourcePack.openPrimary("mod:" + selectedMod.getModId())) {
+            try (PackResources packResources = resourcePack.openPrimary(new PackLocationInfo("mod:" + selectedMod.getModId(), Component.empty(), PackSource.BUILT_IN, Optional.empty()))) {
                 NativeImage logo = null;
                 IoSupplier<InputStream> logoResource = packResources.getRootResource(logoFile.split("[/\\\\]"));
                 if (logoResource != null)

@@ -7,13 +7,16 @@ package net.neoforged.neoforge.common.extensions;
 
 import com.google.common.collect.Multimap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -22,7 +25,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
@@ -30,17 +33,18 @@ import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.AnimalArmorItem;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.HorseArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -61,7 +65,7 @@ public interface IItemExtension {
      * ItemStack sensitive version of getItemAttributeModifiers
      */
     @SuppressWarnings("deprecation")
-    default Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+    default Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
         return self().getDefaultAttributeModifiers(slot);
     }
 
@@ -331,14 +335,15 @@ public interface IItemExtension {
      *
      * Returning null from this function will use the default value.
      *
-     * @param stack  ItemStack for the equipped armor
-     * @param entity The entity wearing the armor
-     * @param slot   The slot the armor is in
-     * @param type   The subtype, can be null or "overlay"
+     * @param stack      ItemStack for the equipped armor
+     * @param entity     The entity wearing the armor
+     * @param slot       The slot the armor is in
+     * @param layer      The armor layer
+     * @param innerModel Whether the inner model is used
      * @return Path of texture to bind, or null to use default
      */
     @Nullable
-    default String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
+    default ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
         return null;
     }
 
@@ -360,7 +365,7 @@ public interface IItemExtension {
      * @return the damage value
      */
     default int getDamage(ItemStack stack) {
-        return !stack.hasTag() ? 0 : stack.getTag().getInt("Damage");
+        return stack.getOrDefault(DataComponents.DAMAGE, 0);
     }
 
     /**
@@ -394,7 +399,7 @@ public interface IItemExtension {
      * @param damage the new damage value
      */
     default void setDamage(ItemStack stack, int damage) {
-        stack.getOrCreateTag().putInt("Damage", Math.max(0, damage));
+        stack.set(DataComponents.DAMAGE, Math.max(damage, 0));
     }
 
     /**
@@ -456,7 +461,7 @@ public interface IItemExtension {
      * @return true if the enchantment can be applied to this item
      */
     default boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return enchantment.category.canEnchant(stack.getItem());
+        return stack.getItem().builtInRegistryHolder().is(enchantment.getMatch());
     }
 
     /**
@@ -472,7 +477,8 @@ public interface IItemExtension {
      */
     @ApiStatus.OverrideOnly
     default int getEnchantmentLevel(ItemStack stack, Enchantment enchantment) {
-        return EnchantmentHelper.getTagEnchantmentLevel(enchantment, stack);
+        ItemEnchantments itemenchantments = stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+        return itemenchantments.getLevel(enchantment);
     }
 
     /**
@@ -486,8 +492,8 @@ public interface IItemExtension {
      * @apiNote Call via {@link IItemStackExtension#getAllEnchantments()}.
      */
     @ApiStatus.OverrideOnly
-    default Map<Enchantment, Integer> getAllEnchantments(ItemStack stack) {
-        return EnchantmentHelper.deserializeEnchantments(stack.getEnchantmentTags());
+    default ItemEnchantments getAllEnchantments(ItemStack stack) {
+        return stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
     }
 
     /**
@@ -519,26 +525,24 @@ public interface IItemExtension {
             return true;
 
         if (!newStack.isDamageableItem() || !oldStack.isDamageableItem())
-            return !ItemStack.isSameItemSameTags(newStack, oldStack);
+            return !ItemStack.isSameItemSameComponents(newStack, oldStack);
 
-        CompoundTag newTag = newStack.getTag();
-        CompoundTag oldTag = oldStack.getTag();
+        DataComponentMap newComponents = newStack.getComponents();
+        DataComponentMap oldComponents = oldStack.getComponents();
 
-        if (newTag == null || oldTag == null)
-            return !(newTag == null && oldTag == null);
+        if (newComponents.isEmpty() || oldComponents.isEmpty())
+            return !(newComponents.isEmpty() && oldComponents.isEmpty());
 
-        Set<String> newKeys = new HashSet<>(newTag.getAllKeys());
-        Set<String> oldKeys = new HashSet<>(oldTag.getAllKeys());
+        Set<DataComponentType<?>> newKeys = new HashSet<>(newComponents.keySet());
+        Set<DataComponentType<?>> oldKeys = new HashSet<>(oldComponents.keySet());
 
-        newKeys.remove(ItemStack.TAG_DAMAGE);
-        oldKeys.remove(ItemStack.TAG_DAMAGE);
+        newKeys.remove(DataComponents.DAMAGE);
+        oldKeys.remove(DataComponents.DAMAGE);
 
         if (!newKeys.equals(oldKeys))
             return true;
 
-        return !newKeys.stream().allMatch(key -> Objects.equals(newTag.get(key), oldTag.get(key)));
-        // return !(newStack.is(oldStack.getItem()) && ItemStack.tagMatches(newStack, oldStack)
-        //         && (newStack.isDamageableItem() || newStack.getDamageValue() == oldStack.getDamageValue()));
+        return !newKeys.stream().allMatch(key -> Objects.equals(newComponents.get(key), oldComponents.get(key)));
     }
 
     /**
@@ -603,17 +607,17 @@ public interface IItemExtension {
     }
 
     /**
-     * Called every tick when this item is equipped {@linkplain AbstractHorse#isArmor(ItemStack) as an armor item} by a horse {@linkplain AbstractHorse#canWearArmor() that can wear armor}.
+     * Called every tick when this item is equipped {@linkplain Mob#isBodyArmorItem(ItemStack) as an armor item} by a horse {@linkplain Mob#canWearBodyArmor() that can wear armor}.
      * <p>
-     * In vanilla, only {@linkplain Horse horses} can wear armor, and they can only equip items that extend {@link HorseArmorItem}.
+     * In vanilla, only {@linkplain Horse horses} and {@linkplain Wolf wolves} can wear armor, and they can only equip items that extend {@link AnimalArmorItem}.
      *
      * @param stack The armor stack
      * @param level The level the horse is in
      * @param horse The horse wearing this item
-     * @apiNote Call from {@link IItemStackExtension#onHorseArmorTick(Level, Mob)}.
+     * @apiNote Call from {@link IItemStackExtension#onAnimalArmorTick(Level, Mob)}.
      */
     @ApiStatus.OverrideOnly
-    default void onHorseArmorTick(ItemStack stack, Level level, Mob horse) {}
+    default void onAnimalArmorTick(ItemStack stack, Level level, Mob horse) {}
 
     /**
      * Reduce the durability of this item by the amount given.
@@ -625,7 +629,7 @@ public interface IItemExtension {
      * @param onBroken The on-broken callback from vanilla
      * @return The amount of damage to pass to the vanilla logic
      */
-    default <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
+    default <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Runnable onBroken) {
         return amount;
     }
 

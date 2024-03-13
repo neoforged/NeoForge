@@ -14,6 +14,7 @@ import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
+import net.minecraft.gametest.framework.GameTestRunner;
 import net.minecraft.gametest.framework.TestFunction;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.conf.Feature;
@@ -37,15 +38,21 @@ public final class GameTestRegistration {
                     tests.add(new TestFunction(
                             data.batchName() == null ? batchName : data.batchName(),
                             test.id(), data.structureName(),
-                            data.rotation(), data.maxTicks(), data.setupTicks(),
-                            data.required(), data.requiredSuccesses(), data.maxAttempts(),
+                            data.rotation(),
+                            data.maxTicks(),
+                            data.setupTicks(),
+                            data.required(),
+                            false, // TODO: MATY fix this
+                            data.maxAttempts(),
+                            data.requiredSuccesses(),
+                            data.skyAccess(),
                             rethrow(helper -> {
                                 ReflectionUtils.addListener(helper, new GameTestListener() {
                                     @Override
                                     public void testStructureLoaded(GameTestInfo info) {}
 
                                     @Override
-                                    public void testPassed(GameTestInfo info) {
+                                    public void testPassed(GameTestInfo info, GameTestRunner runner) {
                                         if (framework.tests().getStatus(test.id()).result() == Test.Result.NOT_PROCESSED) {
                                             framework.changeStatus(test, new Test.Status(Test.Result.PASSED, "GameTest passed"), null);
                                         }
@@ -53,10 +60,13 @@ public final class GameTestRegistration {
                                     }
 
                                     @Override
-                                    public void testFailed(GameTestInfo info) {
+                                    public void testFailed(GameTestInfo info, GameTestRunner runner) {
                                         framework.changeStatus(test, new Test.Status(Test.Result.FAILED, "GameTest fail: " + info.getError().getMessage()), null);
                                         disable();
                                     }
+
+                                    @Override
+                                    public void testAddedForRerun(GameTestInfo p_320937_, GameTestInfo p_320294_, GameTestRunner p_320147_) {}
 
                                     private void disable() {
                                         framework.setEnabled(test, false, null);

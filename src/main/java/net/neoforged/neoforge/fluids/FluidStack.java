@@ -12,10 +12,13 @@ import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
@@ -33,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
  * equal.
  *
  */
+// TODO 1.20.5: Add immutable variant?
 public class FluidStack {
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -49,6 +53,14 @@ public class FluidStack {
                         tag.ifPresent(stack::setTag);
                         return stack;
                     }));
+    public static final StreamCodec<RegistryFriendlyByteBuf, FluidStack> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.registry(Registries.FLUID),
+            FluidStack::getFluid,
+            ByteBufCodecs.VAR_INT,
+            FluidStack::getAmount,
+            ByteBufCodecs.OPTIONAL_COMPOUND_TAG,
+            fluidStack -> Optional.ofNullable(fluidStack.getTag()),
+            (fl, amount, tag) -> fl == Fluids.EMPTY ? FluidStack.EMPTY : new FluidStack(fl, amount, tag.orElse(null)));
 
     private boolean isEmpty;
     private int amount;
@@ -123,20 +135,6 @@ public class FluidStack {
             nbt.put("Tag", tag.copy());
         }
         return nbt;
-    }
-
-    public void writeToPacket(FriendlyByteBuf buf) {
-        buf.writeId(BuiltInRegistries.FLUID, getFluid());
-        buf.writeVarInt(getAmount());
-        buf.writeNbt(tag);
-    }
-
-    public static FluidStack readFromPacket(FriendlyByteBuf buf) {
-        Fluid fluid = buf.readById(BuiltInRegistries.FLUID);
-        int amount = buf.readVarInt();
-        CompoundTag tag = buf.readNbt();
-        if (fluid == Fluids.EMPTY) return EMPTY;
-        return new FluidStack(fluid, amount, tag);
     }
 
     public final Fluid getFluid() {

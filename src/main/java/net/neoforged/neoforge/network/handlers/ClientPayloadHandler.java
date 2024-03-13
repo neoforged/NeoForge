@@ -87,7 +87,7 @@ public class ClientPayloadHandler {
             context.packetHandler().disconnect(Component.translatable("neoforge.network.registries.sync.failed", e.getMessage()));
             return null;
         }).thenAccept(v -> {
-            context.replyHandler().send(new FrozenRegistrySyncCompletedPayload());
+            context.replyHandler().send(FrozenRegistrySyncCompletedPayload.INSTANCE);
         });
     }
 
@@ -134,7 +134,7 @@ public class ClientPayloadHandler {
 
     private static <T extends AbstractContainerMenu> void createMenuScreen(Component name, MenuType<T> menuType, int windowId, FriendlyByteBuf buf) {
         Minecraft mc = Minecraft.getInstance();
-        MenuScreens.getScreenFactory(menuType, mc, windowId, name).ifPresent(f -> {
+        MenuScreens.getScreenFactory(menuType).ifPresent(f -> {
             Screen s = f.create(menuType.create(windowId, mc.player.getInventory(), buf), mc.player.getInventory(), name);
             mc.player.containerMenu = ((MenuAccess<?>) s).getMenu();
             mc.setScreen(s);

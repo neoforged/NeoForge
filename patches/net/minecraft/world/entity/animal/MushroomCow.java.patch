@@ -9,7 +9,7 @@
              this.shear(SoundSource.PLAYERS);
              this.gameEvent(GameEvent.SHEAR, p_28941_);
              if (!this.level().isClientSide) {
-@@ -167,8 +_,10 @@
+@@ -165,8 +_,10 @@
      public void shear(SoundSource p_28924_) {
          this.level().playSound(null, this, SoundEvents.MOOSHROOM_SHEAR, p_28924_, 1.0F, 1.0F);
          if (!this.level().isClientSide()) {
@@ -20,7 +20,7 @@
                  ((ServerLevel)this.level()).sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
                  this.discard();
                  cow.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
-@@ -187,10 +_,9 @@
+@@ -185,10 +_,9 @@
                  this.level().addFreshEntity(cow);
  
                  for(int i = 0; i < 5; ++i) {

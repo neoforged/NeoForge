@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -109,7 +_,12 @@
+@@ -118,7 +_,12 @@
          this.send(p_294278_, null);
      }
  
@@ -13,7 +13,7 @@
          boolean flag = !this.suspendFlushingOnServerThread || !this.server.isSameThread();
  
          try {
-@@ -143,7 +_,36 @@
+@@ -152,7 +_,36 @@
          return this.latency;
      }
  
@@ -26,7 +26,7 @@
 +     */
 +    @Deprecated
      protected CommonListenerCookie createCookie(ClientInformation p_301973_) {
-         return new CommonListenerCookie(this.playerProfile(), this.latency, p_301973_);
+         return new CommonListenerCookie(this.playerProfile(), this.latency, p_301973_, this.transferred);
 +    }
 +
 +    /**
@@ -37,7 +37,7 @@
 +     * @return The cookie.
 +     */
 +    protected CommonListenerCookie createCookie(ClientInformation p_301973_, net.neoforged.neoforge.network.connection.ConnectionType connectionType) {
-+        return new CommonListenerCookie(this.playerProfile(), this.latency, p_301973_, connectionType);
++        return new CommonListenerCookie(this.playerProfile(), this.latency, p_301973_, this.transferred, connectionType);
 +    }
 +
 +    @Override

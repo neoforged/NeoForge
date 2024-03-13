@@ -16,7 +16,7 @@
           }
         ],
         "item": {
-          "tag": "minecraft:piglin_loved"
+          "items": "#minecraft:piglin_loved"
         },
         "player": [
           {
@@ -71,7 +71,7 @@
       "translate": "advancements.nether.distract_piglin.description"
     },
     "icon": {
-      "item": "minecraft:gold_ingot"
+      "id": "minecraft:gold_ingot"
     },
     "title": {
       "translate": "advancements.nether.distract_piglin.title"

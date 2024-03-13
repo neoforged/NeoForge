@@ -1,0 +1,30 @@
+--- a/net/minecraft/world/item/ProjectileWeaponItem.java
++++ b/net/minecraft/world/item/ProjectileWeaponItem.java
+@@ -109,7 +_,7 @@
+             abstractarrow.setPierceLevel((byte)j);
+         }
+ 
+-        return abstractarrow;
++        return customArrow(abstractarrow, p_330846_);
+     }
+ 
+     protected static boolean hasInfiniteArrows(ItemStack p_330642_, ItemStack p_332202_, boolean p_331512_) {
+@@ -134,7 +_,7 @@
+     }
+ 
+     protected static ItemStack useAmmo(ItemStack p_331207_, ItemStack p_331434_, LivingEntity p_330302_, boolean p_330934_) {
+-        boolean flag = !p_330934_ && !hasInfiniteArrows(p_331207_, p_331434_, p_330302_.hasInfiniteMaterials());
++        boolean flag = !p_330934_ && !(p_330302_.hasInfiniteMaterials() || (p_331434_.getItem() instanceof ArrowItem && ((ArrowItem)p_331434_.getItem()).isInfinite(p_331434_, p_331207_, p_330302_)));
+         if (!flag) {
+             ItemStack itemstack1 = p_331434_.copyWithCount(1);
+             itemstack1.set(DataComponents.INTANGIBLE_PROJECTILE, Unit.INSTANCE);
+@@ -147,5 +_,9 @@
+ 
+             return itemstack;
+         }
++    }
++
++    public AbstractArrow customArrow(AbstractArrow arrow, net.minecraft.world.item.ItemStack stack) {
++        return arrow;
+     }
+ }

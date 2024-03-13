@@ -5,12 +5,13 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.ItemTags;
@@ -48,8 +49,8 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         fuels.remove(ItemTags.NON_FLAMMABLE_WOOD);
 
         final var vibrationFrequencies = builder(NeoForgeDataMaps.VIBRATION_FREQUENCIES);
-        ((Object2IntMap<GameEvent>) VibrationSystem.VIBRATION_FREQUENCY_FOR_EVENT)
-                .forEach((event, frequency) -> vibrationFrequencies.add(event.builtInRegistryHolder(), new VibrationFrequency(frequency), false));
+        ((Reference2IntMap<ResourceKey<GameEvent>>) VibrationSystem.VIBRATION_FREQUENCY_FOR_EVENT)
+                .forEach((event, frequency) -> vibrationFrequencies.add(event, new VibrationFrequency(frequency), false));
 
         final var imitations = builder(NeoForgeDataMaps.PARROT_IMITATIONS);
         ObfuscationReflectionHelper.<Map<EntityType<?>, SoundEvent>, Parrot>getPrivateValue(Parrot.class, null, "MOB_SOUND_MAP")

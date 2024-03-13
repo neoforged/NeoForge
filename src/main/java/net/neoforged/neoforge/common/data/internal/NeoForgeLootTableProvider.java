@@ -5,16 +5,19 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
+import com.mojang.datafixers.util.Either;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.loot.LootTableSubProvider;
@@ -34,7 +37,7 @@ import net.minecraft.world.level.storage.loot.entries.EntryGroup;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
-import net.minecraft.world.level.storage.loot.entries.LootTableReference;
+import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
 import net.minecraft.world.level.storage.loot.entries.SequentialEntry;
 import net.minecraft.world.level.storage.loot.entries.TagEntry;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
@@ -55,8 +58,8 @@ import org.jetbrains.annotations.Nullable;
 public final class NeoForgeLootTableProvider extends LootTableProvider {
     private final List<Function<LootItemCondition, LootItemCondition.Builder>> conditionReplacers = new ArrayList<>();
 
-    public NeoForgeLootTableProvider(PackOutput packOutput) {
-        super(packOutput, Set.of(), VanillaLootTableProvider.create(packOutput).getTables());
+    public NeoForgeLootTableProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> provider) {
+        super(packOutput, Set.of(), VanillaLootTableProvider.create(packOutput, provider).getTables(), provider);
     }
 
     @Override
@@ -79,7 +82,7 @@ public final class NeoForgeLootTableProvider extends LootTableProvider {
     }
 
     private LootTableSubProvider replaceAndFilterChangesOnly(LootTableSubProvider subProvider) {
-        return newConsumer -> subProvider.generate((resourceLocation, builder) -> {
+        return (lookupProvider, newConsumer) -> subProvider.generate(lookupProvider, (resourceLocation, builder) -> {
             LootTable.Builder newBuilder = findAndReplaceInLootTableBuilder(builder);
             if (newBuilder != null) {
                 newConsumer.accept(resourceLocation, newBuilder);
@@ -198,9 +201,9 @@ public final class NeoForgeLootTableProvider extends LootTableProvider {
                 TagKey<Item> tag = getPrivateValue(TagEntry.class, tagEntry, "tag");
                 boolean expand = getPrivateValue(TagEntry.class, tagEntry, "expand");
                 builder = expand ? TagEntry.expandTag(tag) : TagEntry.tagContents(tag);
-            } else if (singleton instanceof LootTableReference reference) {
-                ResourceLocation name = getPrivateValue(LootTableReference.class, reference, "name");
-                builder = LootTableReference.lootTableReference(name);
+            } else if (singleton instanceof NestedLootTable reference) {
+                Either<ResourceLocation, LootTable> contents = getPrivateValue(NestedLootTable.class, reference, "contents");
+                builder = contents.map(NestedLootTable::lootTableReference, NestedLootTable::inlineLootTable);
             } else {
                 throw new IllegalStateException("Unknown LootPoolSingletonContainer type: " + singleton.getClass().getName());
             }

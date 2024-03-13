@@ -5,16 +5,20 @@
 
 package net.neoforged.neoforge.network.payload;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.util.FriendlyByteBufUtil;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -26,31 +30,25 @@ import org.jetbrains.annotations.ApiStatus;
  * @param additionalData The additional data to pass to the screen.
  */
 @ApiStatus.Internal
-public record AdvancedOpenScreenPayload(
-        int windowId,
-        MenuType<?> menuType,
-        Component name,
-        byte[] additionalData) implements CustomPacketPayload {
+public record AdvancedOpenScreenPayload(int windowId, MenuType<?> menuType, Component name, byte[] additionalData) implements CustomPacketPayload {
 
-    public static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_open_screen");
+    public static final Type<AdvancedOpenScreenPayload> TYPE = new Type<>(new ResourceLocation(NeoForgeVersion.MOD_ID, "advanced_open_screen"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, AdvancedOpenScreenPayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT,
+            AdvancedOpenScreenPayload::windowId,
+            ByteBufCodecs.idMapper(BuiltInRegistries.MENU),
+            AdvancedOpenScreenPayload::menuType,
+            ComponentSerialization.STREAM_CODEC,
+            AdvancedOpenScreenPayload::name,
+            NeoForgeStreamCodecs.UNBOUNDED_BYTE_ARRAY,
+            AdvancedOpenScreenPayload::additionalData,
+            AdvancedOpenScreenPayload::new);
     public AdvancedOpenScreenPayload(int windowId, MenuType<?> menuType, Component name, Consumer<FriendlyByteBuf> dataWriter) {
         this(windowId, menuType, name, FriendlyByteBufUtil.writeCustomData(dataWriter));
     }
 
-    public AdvancedOpenScreenPayload(FriendlyByteBuf buffer) {
-        this(buffer.readVarInt(), Objects.requireNonNull(buffer.readById(BuiltInRegistries.MENU)), buffer.readComponentTrusted(), buffer.readByteArray());
-    }
-
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeVarInt(windowId());
-        buffer.writeId(BuiltInRegistries.MENU, menuType());
-        buffer.writeComponent(name());
-        buffer.writeByteArray(additionalData());
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<AdvancedOpenScreenPayload> type() {
+        return TYPE;
     }
 }

@@ -1,12 +1,12 @@
 --- a/net/minecraft/world/item/ArrowItem.java
 +++ b/net/minecraft/world/item/ArrowItem.java
-@@ -15,4 +_,9 @@
-         arrow.setEffectsFromItem(p_40514_);
-         return arrow;
+@@ -13,4 +_,9 @@
+     public AbstractArrow createArrow(Level p_40513_, ItemStack p_40514_, LivingEntity p_40515_) {
+         return new Arrow(p_40513_, p_40515_, p_40514_.copyWithCount(1));
      }
 +
-+    public boolean isInfinite(ItemStack stack, ItemStack bow, net.minecraft.world.entity.player.Player player) {
-+        int enchant = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.INFINITY_ARROWS, bow);
-+        return enchant <= 0 ? false : this.getClass() == ArrowItem.class;
++    public boolean isInfinite(ItemStack stack, ItemStack bow, net.minecraft.world.entity.LivingEntity livingEntity) {
++        int enchant = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.INFINITY, bow);
++        return enchant > 0 && this.getClass() == net.minecraft.world.item.ArrowItem.class;
 +    }
  }

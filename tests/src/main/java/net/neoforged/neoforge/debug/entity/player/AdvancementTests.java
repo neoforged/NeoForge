@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -106,7 +107,11 @@ public class AdvancementTests {
         test.onGameTest(helper -> {
             final ServerPlayer player = helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL);
             helper.startSequence()
-                    .thenExecute(() -> player.getInventory().add(Items.IRON_HELMET.getDefaultInstance().setHoverName(Component.literal("abcd"))))
+                    .thenExecute(() -> {
+                        ItemStack stack = Items.IRON_HELMET.getDefaultInstance();
+                        stack.set(DataComponents.CUSTOM_NAME, Component.literal("abcd"));
+                        player.getInventory().add(stack);
+                    })
                     .thenExecuteAfter(5, () -> helper.assertTrue(
                             player.getAdvancements().getOrStartProgress(player.server.getAdvancements().get(new ResourceLocation(reg.modId(), "named_item"))).isDone(),
                             "Player did not complete advancement"))
@@ -122,7 +127,7 @@ public class AdvancementTests {
 
         @Override
         public boolean test(ItemStack itemStack) {
-            return itemStack.hasCustomHoverName();
+            return itemStack.has(DataComponents.CUSTOM_NAME);
         }
     }
 }

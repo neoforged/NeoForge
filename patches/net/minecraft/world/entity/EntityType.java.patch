@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
-@@ -620,6 +_,10 @@
+@@ -927,6 +_,10 @@
      private final EntityDimensions dimensions;
      private final FeatureFlagSet requiredFeatures;
  
@@ -11,7 +11,7 @@
      private static <T extends Entity> EntityType<T> register(String p_20635_, EntityType.Builder<T> p_20636_) {
          return Registry.register(BuiltInRegistries.ENTITY_TYPE, p_20635_, p_20636_.build(p_20635_));
      }
-@@ -645,6 +_,24 @@
+@@ -952,6 +_,24 @@
          int p_273451_,
          FeatureFlagSet p_273518_
      ) {
@@ -36,7 +36,7 @@
          this.factory = p_273268_;
          this.category = p_272918_;
          this.canSpawnFarFromPlayer = p_272654_;
-@@ -656,6 +_,9 @@
+@@ -963,6 +_,9 @@
          this.clientTrackingRange = p_272895_;
          this.updateInterval = p_273451_;
          this.requiredFeatures = p_273518_;
@@ -46,10 +46,10 @@
      }
  
      @Nullable
-@@ -760,6 +_,15 @@
+@@ -1049,6 +_,15 @@
                  mob.yHeadRot = mob.getYRot();
                  mob.yBodyRot = mob.getYRot();
-                 mob.finalizeSpawn(p_262637_, p_262637_.getCurrentDifficultyAt(mob.blockPosition()), p_262666_, null, p_262687_);
+                 mob.finalizeSpawn(p_262637_, p_262637_.getCurrentDifficultyAt(mob.blockPosition()), p_262666_, null);
 +
 +                if (mob.isSpawnCancelled()) {
 +                    // Neo: Discard mob, spawn was cancelled
@@ -62,7 +62,7 @@
                  mob.playAmbientSound();
              }
  
-@@ -958,14 +_,23 @@
+@@ -1239,14 +_,23 @@
      }
  
      public int clientTrackingRange() {
@@ -86,7 +86,7 @@
          return this != PLAYER
              && this != LLAMA_SPIT
              && this != WITHER
-@@ -1001,6 +_,8 @@
+@@ -1282,6 +_,8 @@
          return this.builtInRegistryHolder;
      }
  
@@ -95,8 +95,8 @@
      public static class Builder<T extends Entity> {
          private final EntityType.EntityFactory<T> factory;
          private final MobCategory category;
-@@ -1014,6 +_,10 @@
-         private EntityDimensions dimensions = EntityDimensions.scalable(0.6F, 1.8F);
+@@ -1296,6 +_,10 @@
+         private EntityAttachments.Builder attachments = EntityAttachments.builder();
          private FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
  
 +        private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultTrackDeltasSupplier;
@@ -106,7 +106,7 @@
          private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
              this.factory = p_20696_;
              this.category = p_20697_;
-@@ -1073,6 +_,21 @@
+@@ -1398,6 +_,21 @@
              return this;
          }
  
@@ -128,8 +128,8 @@
          public EntityType<T> build(String p_20713_) {
              if (this.serialize) {
                  Util.fetchChoiceType(References.ENTITY_TREE, p_20713_);
-@@ -1089,7 +_,10 @@
-                 this.dimensions,
+@@ -1414,7 +_,10 @@
+                 this.dimensions.withAttachments(this.attachments),
                  this.clientTrackingRange,
                  this.updateInterval,
 -                this.requiredFeatures

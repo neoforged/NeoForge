@@ -1,15 +1,15 @@
 --- a/net/minecraft/resources/ResourceKey.java
 +++ b/net/minecraft/resources/ResourceKey.java
-@@ -7,7 +_,7 @@
- import net.minecraft.core.Registry;
+@@ -9,7 +_,7 @@
  import net.minecraft.core.registries.Registries;
+ import net.minecraft.network.codec.StreamCodec;
  
 -public class ResourceKey<T> {
 +public class ResourceKey<T> implements Comparable<ResourceKey<?>> {
      private static final ConcurrentMap<ResourceKey.InternKey, ResourceKey<?>> VALUES = new MapMaker().weakValues().makeMap();
      private final ResourceLocation registryName;
      private final ResourceLocation location;
-@@ -54,6 +_,13 @@
+@@ -60,6 +_,13 @@
  
      public ResourceLocation registry() {
          return this.registryName;

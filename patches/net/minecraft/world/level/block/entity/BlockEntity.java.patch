@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -15,7 +_,7 @@
+@@ -17,7 +_,7 @@
  import net.minecraft.world.level.block.state.BlockState;
  import org.slf4j.Logger;
  
@@ -9,30 +9,31 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      private final BlockEntityType<?> type;
      @Nullable
-@@ -23,6 +_,7 @@
+@@ -25,6 +_,8 @@
      protected final BlockPos worldPosition;
      protected boolean remove;
      private BlockState blockState;
++    @Nullable
 +    private CompoundTag customPersistentData;
  
      public BlockEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
          this.type = p_155228_;
-@@ -48,9 +_,14 @@
+@@ -50,9 +_,14 @@
      }
  
-     public void load(CompoundTag p_155245_) {
+     public void load(CompoundTag p_155245_, HolderLookup.Provider p_323967_) {
 +        if (p_155245_.contains("NeoForgeData", net.minecraft.nbt.Tag.TAG_COMPOUND)) this.customPersistentData = p_155245_.getCompound("NeoForgeData");
-+        if (p_155245_.contains(ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND)) deserializeAttachments(p_155245_.getCompound(ATTACHMENTS_NBT_KEY));
++        if (p_155245_.contains(ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND)) deserializeAttachments(p_323967_, p_155245_.getCompound(ATTACHMENTS_NBT_KEY));
      }
  
-     protected void saveAdditional(CompoundTag p_187471_) {
+     protected void saveAdditional(CompoundTag p_187471_, HolderLookup.Provider p_323635_) {
 +        if (this.customPersistentData != null) p_187471_.put("NeoForgeData", this.customPersistentData.copy());
-+        var attachmentsTag = serializeAttachments();
++        var attachmentsTag = serializeAttachments(p_323635_);
 +        if (attachmentsTag != null) p_187471_.put(ATTACHMENTS_NBT_KEY, attachmentsTag);
      }
  
-     public final CompoundTag saveWithFullMetadata() {
-@@ -161,10 +_,14 @@
+     public final CompoundTag saveWithFullMetadata(HolderLookup.Provider p_323767_) {
+@@ -166,10 +_,14 @@
  
      public void setRemoved() {
          this.remove = true;
@@ -47,7 +48,7 @@
      }
  
      public boolean triggerEvent(int p_58889_, int p_58890_) {
-@@ -185,6 +_,27 @@
+@@ -190,6 +_,27 @@
  
      public BlockEntityType<?> getType() {
          return this.type;

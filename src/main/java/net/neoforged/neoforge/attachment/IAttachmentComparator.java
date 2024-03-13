@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.attachment;
 
+import net.minecraft.core.HolderLookup;
+
 /**
  * Custom comparator for data attachments, to improve efficiency compared to the default
  * {@code Objects.equals(serializer.write(first), serializer.write(second))} implementation.
@@ -20,5 +22,5 @@ public interface IAttachmentComparator<T> {
      * with {@code Objects.equals(serializer.write(first), serializer.write(second))},
      * but will often be faster and allocate less.
      */
-    boolean areCompatible(T first, T second);
+    boolean areCompatible(HolderLookup.Provider provider, T first, T second);
 }

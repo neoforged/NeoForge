@@ -70,6 +70,8 @@
     "minecraft:creative_mode_tab",
     "minecraft:trigger_type",
     "minecraft:number_format_type",
+    "minecraft:armor_material",
+    "minecraft:data_component_type",
     "neoforge:attachment_types",
     "neoforge:biome_modifier_serializers",
     "neoforge:condition_codecs",

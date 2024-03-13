@@ -15,6 +15,6 @@
     "###"
   ],
   "result": {
-    "item": "minecraft:jukebox"
+    "id": "minecraft:jukebox"
   }
 }

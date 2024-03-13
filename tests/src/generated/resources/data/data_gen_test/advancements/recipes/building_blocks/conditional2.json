@@ -29,9 +29,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:dirt"
-            ]
+            "items": "minecraft:dirt"
           }
         ]
       },

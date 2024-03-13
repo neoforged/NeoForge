@@ -157,7 +157,7 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
         } else // Draw dark dirt background
         {
             RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-            RenderSystem.setShaderTexture(0, Screen.BACKGROUND_LOCATION);
+            RenderSystem.setShaderTexture(0, Screen.MENU_BACKGROUND);
             final float texScale = 32.0F;
             worldr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
             worldr.vertex(this.left, this.bottom, 0.0D).uv(this.left / texScale, (this.bottom + (int) this.scrollDistance) / texScale).color(0x20, 0x20, 0x20, 0xFF).endVertex();

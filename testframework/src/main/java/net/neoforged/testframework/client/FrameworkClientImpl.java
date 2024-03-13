@@ -15,7 +15,7 @@ import net.minecraft.client.ToggleKeyMapping;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.testframework.conf.ClientConfiguration;
 import net.neoforged.testframework.impl.FrameworkClient;
@@ -45,7 +45,7 @@ public class FrameworkClientImpl implements FrameworkClient {
             overlayEnabled = () -> true;
         }
 
-        modBus.addListener((final RegisterGuiOverlaysEvent event) -> event.registerAboveAll(impl.id().getPath(), new TestsOverlay(impl, overlayEnabled)));
+        modBus.addListener((final RegisterGuiLayersEvent event) -> event.registerAboveAll(impl.id(), new TestsOverlay(impl, overlayEnabled)));
 
         if (configuration.openManagerKey() != 0) {
             final KeyMapping openManagerKey = new KeyMapping("key.testframework.openmanager", configuration.openManagerKey(), keyCategory) {

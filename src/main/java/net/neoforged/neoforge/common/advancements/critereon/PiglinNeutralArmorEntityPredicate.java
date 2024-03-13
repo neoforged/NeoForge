@@ -27,7 +27,7 @@ public class PiglinNeutralArmorEntityPredicate implements ICustomEntityPredicate
     @Override
     public boolean test(ServerLevel level, @Nullable Vec3 position, Entity entity) {
         if (entity instanceof LivingEntity living) {
-            for (ItemStack armor : entity.getArmorSlots()) {
+            for (ItemStack armor : living.getArmorSlots()) {
                 if (!armor.isEmpty() && armor.makesPiglinsNeutral(living)) {
                     return true;
                 }

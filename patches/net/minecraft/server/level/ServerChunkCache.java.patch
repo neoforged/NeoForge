@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -45,7 +_,7 @@
+@@ -43,7 +_,7 @@
  import net.minecraft.world.level.storage.DimensionDataStorage;
  import net.minecraft.world.level.storage.LevelStorageSource;
  
@@ -9,7 +9,7 @@
      private static final List<ChunkStatus> CHUNK_STATUSES = ChunkStatus.getStatusList();
      private final DistanceManager distanceManager;
      public final ServerLevel level;
-@@ -150,6 +_,10 @@
+@@ -148,6 +_,10 @@
                  }
              }
  
@@ -18,17 +18,17 @@
 +                return chunkholder.currentlyLoading; // Neo: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
 +
              profilerfiller.incrementCounter("getChunkCacheMiss");
-             CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> completablefuture = this.getChunkFutureMainThread(
-                 p_8360_, p_8361_, p_8362_, p_8363_
-@@ -187,6 +_,7 @@
+             CompletableFuture<ChunkResult<ChunkAccess>> completablefuture = this.getChunkFutureMainThread(p_8360_, p_8361_, p_330876_, p_8363_);
+             this.mainThreadProcessor.managedBlock(completablefuture::isDone);
+@@ -182,6 +_,7 @@
              if (chunkholder == null) {
                  return null;
              } else {
 +                if (chunkholder.currentlyLoading != null) return chunkholder.currentlyLoading; // Forge: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
-                 Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure> either = chunkholder.getFutureIfPresent(ChunkStatus.FULL).getNow(null);
-                 if (either == null) {
+                 ChunkResult<ChunkAccess> chunkresult = chunkholder.getFutureIfPresent(ChunkStatus.FULL).getNow(null);
+                 if (chunkresult == null) {
                      return null;
-@@ -383,7 +_,7 @@
+@@ -374,7 +_,7 @@
                  for(ServerChunkCache.ChunkAndHolder serverchunkcache$chunkandholder : list) {
                      LevelChunk levelchunk1 = serverchunkcache$chunkandholder.chunk;
                      ChunkPos chunkpos = levelchunk1.getPos();
@@ -37,7 +37,7 @@
                          levelchunk1.incrementInhabitedTime(j);
                          if (flag1 && (this.spawnEnemies || this.spawnFriendlies) && this.level.getWorldBorder().isWithinBounds(chunkpos)) {
                              NaturalSpawner.spawnForChunk(this.level, levelchunk1, naturalspawner$spawnstate, this.spawnFriendlies, this.spawnEnemies, flag);
-@@ -462,11 +_,17 @@
+@@ -453,11 +_,17 @@
      }
  
      public <T> void addRegionTicket(TicketType<T> p_8388_, ChunkPos p_8389_, int p_8390_, T p_8391_) {

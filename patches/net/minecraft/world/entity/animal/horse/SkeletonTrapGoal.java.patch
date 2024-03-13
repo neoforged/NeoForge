@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/horse/SkeletonTrapGoal.java
 +++ b/net/minecraft/world/entity/animal/horse/SkeletonTrapGoal.java
-@@ -28,6 +_,10 @@
+@@ -30,6 +_,10 @@
      @Override
      public void tick() {
          ServerLevel serverlevel = (ServerLevel)this.horse.level();
@@ -11,7 +11,7 @@
          DifficultyInstance difficultyinstance = serverlevel.getCurrentDifficultyAt(this.horse.blockPosition());
          this.horse.setTrap(false);
          this.horse.setTamed(true);
-@@ -55,6 +_,7 @@
+@@ -57,6 +_,7 @@
                  }
              }
          }

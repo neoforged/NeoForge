@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/Sheep.java
 +++ b/net/minecraft/world/entity/animal/Sheep.java
-@@ -206,7 +_,7 @@
+@@ -202,7 +_,7 @@
      @Override
      public InteractionResult mobInteract(Player p_29853_, InteractionHand p_29854_) {
          ItemStack itemstack = p_29853_.getItemInHand(p_29854_);

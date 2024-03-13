@@ -11,7 +11,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -44,7 +46,7 @@ public class EntityTests {
                 .sized(1, 1)).withLang("Simple spawn egg").withRenderer(() -> NoopRenderer::new);
 
         reg.eventListeners().accept((Consumer<RegisterPayloadHandlerEvent>) event -> event.registrar("test")
-                .play(CustomSyncPayload.ID, CustomSyncPayload::new, (payload, context) -> {}));
+                .play(EntityTests.CustomSyncPayload.TYPE, CustomSyncPayload.STREAM_CODEC, (payload, context) -> {}));
 
         test.onGameTest(helper -> {
             helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
@@ -87,7 +89,7 @@ public class EntityTests {
         }
 
         @Override
-        protected void defineSynchedData() {}
+        protected void defineSynchedData(SynchedEntityData.Builder builder) {}
 
         @Override
         protected void readAdditionalSaveData(CompoundTag tag) {}
@@ -108,7 +110,7 @@ public class EntityTests {
         }
 
         @Override
-        protected void defineSynchedData() {}
+        protected void defineSynchedData(SynchedEntityData.Builder builder) {}
 
         @Override
         protected void readAdditionalSaveData(CompoundTag tag) {}
@@ -128,7 +130,7 @@ public class EntityTests {
         }
 
         @Override
-        protected void defineSynchedData() {}
+        protected void defineSynchedData(SynchedEntityData.Builder builder) {}
 
         @Override
         protected void readAdditionalSaveData(CompoundTag tag) {}
@@ -138,18 +140,12 @@ public class EntityTests {
     }
 
     public record CustomSyncPayload() implements CustomPacketPayload {
-        private static final ResourceLocation ID = new ResourceLocation("test", "custom_sync_payload");
-
-        public CustomSyncPayload(FriendlyByteBuf buf) {
-            this();
-        }
+        private static final CustomPacketPayload.Type<CustomSyncPayload> TYPE = new CustomPacketPayload.Type<>(new ResourceLocation("test", "custom_sync_payload"));
+        private static final StreamCodec<FriendlyByteBuf, CustomSyncPayload> STREAM_CODEC = StreamCodec.unit(new EntityTests.CustomSyncPayload());
 
         @Override
-        public void write(FriendlyByteBuf buf) {}
-
-        @Override
-        public ResourceLocation id() {
-            return ID;
+        public CustomPacketPayload.Type<CustomSyncPayload> type() {
+            return TYPE;
         }
     }
 }

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client.event;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -17,6 +16,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
+import org.joml.Matrix4f;
 
 /**
  * Fired before a selection highlight is rendered.
@@ -30,16 +30,16 @@ public abstract class RenderHighlightEvent extends Event {
     private final Camera camera;
     private final HitResult target;
     private final float partialTick;
-    private final PoseStack poseStack;
+    private final Matrix4f modelViewMatrix;
     private final MultiBufferSource multiBufferSource;
 
     @ApiStatus.Internal
-    protected RenderHighlightEvent(LevelRenderer levelRenderer, Camera camera, HitResult target, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource) {
+    protected RenderHighlightEvent(LevelRenderer levelRenderer, Camera camera, HitResult target, float partialTick, Matrix4f modelViewMatrix, MultiBufferSource multiBufferSource) {
         this.levelRenderer = levelRenderer;
         this.camera = camera;
         this.target = target;
         this.partialTick = partialTick;
-        this.poseStack = poseStack;
+        this.modelViewMatrix = modelViewMatrix;
         this.multiBufferSource = multiBufferSource;
     }
 
@@ -72,10 +72,10 @@ public abstract class RenderHighlightEvent extends Event {
     }
 
     /**
-     * {@return the pose stack used for rendering}
+     * {@return the model view matrix used for rendering}
      */
-    public PoseStack getPoseStack() {
-        return poseStack;
+    public Matrix4f getModelViewMatrix() {
+        return modelViewMatrix;
     }
 
     /**
@@ -96,8 +96,8 @@ public abstract class RenderHighlightEvent extends Event {
      */
     public static class Block extends RenderHighlightEvent implements ICancellableEvent {
         @ApiStatus.Internal
-        public Block(LevelRenderer levelRenderer, Camera camera, BlockHitResult target, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource) {
-            super(levelRenderer, camera, target, partialTick, poseStack, bufferSource);
+        public Block(LevelRenderer levelRenderer, Camera camera, BlockHitResult target, float partialTick, Matrix4f modelViewMatrix, MultiBufferSource bufferSource) {
+            super(levelRenderer, camera, target, partialTick, modelViewMatrix, bufferSource);
         }
 
         /**
@@ -119,8 +119,8 @@ public abstract class RenderHighlightEvent extends Event {
      */
     public static class Entity extends RenderHighlightEvent {
         @ApiStatus.Internal
-        public Entity(LevelRenderer levelRenderer, Camera camera, EntityHitResult target, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource) {
-            super(levelRenderer, camera, target, partialTick, poseStack, bufferSource);
+        public Entity(LevelRenderer levelRenderer, Camera camera, EntityHitResult target, float partialTick, Matrix4f modelViewMatrix, MultiBufferSource bufferSource) {
+            super(levelRenderer, camera, target, partialTick, modelViewMatrix, bufferSource);
         }
 
         /**

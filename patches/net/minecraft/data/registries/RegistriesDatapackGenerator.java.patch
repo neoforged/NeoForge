@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/registries/RegistriesDatapackGenerator.java
 +++ b/net/minecraft/data/registries/RegistriesDatapackGenerator.java
-@@ -19,12 +_,23 @@
+@@ -18,12 +_,23 @@
  import net.minecraft.resources.ResourceKey;
  import org.slf4j.Logger;
  
@@ -24,17 +24,17 @@
          this.registries = p_255780_;
          this.output = p_256643_;
      }
-@@ -36,8 +_,7 @@
-                 p_256533_ -> {
-                     DynamicOps<JsonElement> dynamicops = RegistryOps.create(JsonOps.INSTANCE, p_256533_);
+@@ -35,8 +_,7 @@
+                 p_326736_ -> {
+                     DynamicOps<JsonElement> dynamicops = p_326736_.createSerializationContext(JsonOps.INSTANCE);
                      return CompletableFuture.allOf(
 -                        RegistryDataLoader.WORLDGEN_REGISTRIES
 -                            .stream()
-+                             net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistriesWithDimensions()
-                             .flatMap(p_256552_ -> this.dumpRegistryCap(p_255785_, p_256533_, dynamicops, p_256552_).stream())
++                        net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistriesWithDimensions()
+                             .flatMap(p_256552_ -> this.dumpRegistryCap(p_255785_, p_326736_, dynamicops, p_256552_).stream())
                              .toArray(p_255809_ -> new CompletableFuture[p_255809_])
                      );
-@@ -53,9 +_,10 @@
+@@ -52,9 +_,10 @@
              .map(
                  p_255847_ -> {
                      PackOutput.PathProvider packoutput$pathprovider = this.output

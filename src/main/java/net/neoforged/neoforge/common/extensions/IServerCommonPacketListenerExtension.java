@@ -103,12 +103,21 @@ public interface IServerCommonPacketListenerExtension {
     }
 
     /**
+     * {@return true if the custom payload type is usable by this connection}
+     *
+     * @param type The payload to check
+     */
+    default boolean isConnected(final CustomPacketPayload.Type<?> type) {
+        return isConnected(type.id());
+    }
+
+    /**
      * {@return true if the custom payload is usable by this connection}
-     * 
+     *
      * @param payload The payload to check
      */
     default boolean isConnected(final CustomPacketPayload payload) {
-        return isConnected(payload.id());
+        return isConnected(payload.type());
     }
 
     /**

@@ -8,8 +8,13 @@ package net.neoforged.neoforge.common;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import io.netty.buffer.ByteBuf;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 
 /**
@@ -54,5 +59,12 @@ public interface IExtensibleEnum {
                             return num >= 0 && num < values.length ? DataResult.success(values[num]) : DataResult.error(() -> "Unknown enum id: " + num);
                         }),
                 value -> Either.left(value.getSerializedName()));
+    }
+
+    /**
+     * Use this instead of {@link ByteBufCodecs#idMapper(IntFunction, ToIntFunction)} for extensible enums because this not cache the enum values on construction
+     */
+    static <E extends Enum<E> & StringRepresentable> StreamCodec<ByteBuf, E> createStreamCodecForExtensibleEnum(Supplier<E[]> valuesSupplier) {
+        return ByteBufCodecs.INT.map(i -> valuesSupplier.get()[i], Enum::ordinal);
     }
 }

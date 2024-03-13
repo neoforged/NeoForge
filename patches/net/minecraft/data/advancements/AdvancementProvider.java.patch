@@ -13,11 +13,11 @@
      private final PackOutput.PathProvider pathProvider;
      private final List<AdvancementSubProvider> subProviders;
 @@ -36,7 +_,7 @@
-                     throw new IllegalStateException("Duplicate advancement " + p_311516_.id());
+                     throw new IllegalStateException("Duplicate advancement " + p_323113_.id());
                  } else {
-                     Path path = this.pathProvider.json(p_311516_.id());
--                    list.add(DataProvider.saveStable(p_254268_, Advancement.CODEC, p_311516_.value(), path));
-+                    list.add(DataProvider.saveStable(p_254268_, Advancement.CODEC, p_311516_.value(), path));// TODO: make conditional
+                     Path path = this.pathProvider.json(p_323113_.id());
+-                    list.add(DataProvider.saveStable(p_254268_, p_323115_, Advancement.CODEC, p_323113_.value(), path));
++                    list.add(DataProvider.saveStable(p_254268_, p_323115_, Advancement.CODEC, p_323113_.value(), path));// TODO: make conditional
                  }
              };
  

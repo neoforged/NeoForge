@@ -1,14 +1,21 @@
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -110,6 +_,7 @@
+@@ -104,6 +_,8 @@
+     private volatile Component delayedDisconnect;
+     @Nullable
+     BandwidthDebugMonitor bandwidthDebugMonitor;
++    @Nullable
++    private ProtocolInfo<?> inboundProtocol;
+ 
+     public Connection(PacketFlow p_129482_) {
+         this.receiving = p_129482_;
+@@ -117,11 +_,13 @@
          if (this.delayedDisconnect != null) {
              this.disconnect(this.delayedDisconnect);
          }
 +        net.neoforged.neoforge.network.connection.ConnectionUtils.setConnection(p_129525_, this);
      }
  
-     public static void setInitialProtocolAttributes(Channel p_294962_) {
-@@ -120,6 +_,7 @@
      @Override
      public void channelInactive(ChannelHandlerContext p_129527_) {
          this.disconnect(Component.translatable("disconnect.endOfStream"));
@@ -16,7 +23,7 @@
      }
  
      @Override
-@@ -135,6 +_,7 @@
+@@ -137,6 +_,7 @@
                      this.disconnect(Component.translatable("disconnect.timeout"));
                  } else {
                      Component component = Component.translatable("disconnect.genericReason", "Internal Exception: " + p_129534_);
@@ -24,7 +31,23 @@
                      if (flag) {
                          LOGGER.debug("Failed to sent packet", p_129534_);
                          if (this.getSending() == PacketFlow.CLIENTBOUND) {
-@@ -380,7 +_,7 @@
+@@ -203,6 +_,7 @@
+         if (p_320903_.flow() != this.getReceiving()) {
+             throw new IllegalStateException("Invalid inbound protocol: " + p_320903_.id());
+         } else {
++            this.inboundProtocol = p_320903_;
+             this.packetListener = p_320940_;
+             this.disconnectListener = null;
+             UnconfiguredPipelineHandler.InboundConfigurationTask unconfiguredpipelinehandler$inboundconfigurationtask = UnconfiguredPipelineHandler.setupInboundProtocol(
+@@ -233,6 +_,7 @@
+                 unconfiguredpipelinehandler$outboundconfigurationtask = unconfiguredpipelinehandler$outboundconfigurationtask.andThen(
+                     p_319516_ -> p_319516_.pipeline().addAfter("encoder", "unbundler", packetbundleunpacker)
+                 );
++                net.neoforged.neoforge.network.filters.NetworkFilters.injectIfNecessary(this); // Neo: our handlers must be between the encoder and the unbundler, so re-inject them
+             }
+ 
+             boolean flag = p_319974_.id() == ConnectionProtocol.LOGIN;
+@@ -405,7 +_,7 @@
          if (this.address == null) {
              return "local";
          } else {
@@ -33,7 +56,7 @@
          }
      }
  
-@@ -419,6 +_,7 @@
+@@ -444,6 +_,7 @@
      }
  
      public static ChannelFuture connect(InetSocketAddress p_290034_, boolean p_290035_, final Connection p_290031_) {
@@ -41,10 +64,10 @@
          Class<? extends SocketChannel> oclass;
          EventLoopGroup eventloopgroup;
          if (Epoll.isAvailable() && p_290035_) {
-@@ -569,6 +_,14 @@
+@@ -602,5 +_,17 @@
  
-     public float getAverageSentPackets() {
-         return this.averageSentPackets;
+     public void setBandwidthLogger(LocalSampleLogger p_323799_) {
+         this.bandwidthDebugMonitor = new BandwidthDebugMonitor(p_323799_);
 +    }
 +
 +    public Channel channel() {
@@ -53,6 +76,9 @@
 +
 +    public PacketFlow getDirection() {
 +        return this.receiving;
++    }
++
++    public ProtocolInfo<?> getInboundProtocol() {
++        return Objects.requireNonNull(this.inboundProtocol, "Inbound protocol not set?");
      }
- 
-     public void setBandwidthLogger(SampleLogger p_299187_) {
+ }

@@ -28,7 +28,7 @@
 @@ -79,6 +_,8 @@
  
      @Override
-     public boolean canSurvive(BlockState p_57175_, LevelReader p_57176_, BlockPos p_57177_) {
+     protected boolean canSurvive(BlockState p_57175_, LevelReader p_57176_, BlockPos p_57177_) {
 +        BlockState soil = p_57176_.getBlockState(p_57177_.below());
 +        if (soil.canSustainPlant(p_57176_, p_57177_.below(), Direction.UP, this)) return true;
          BlockState blockstate = p_57176_.getBlockState(p_57177_.below());

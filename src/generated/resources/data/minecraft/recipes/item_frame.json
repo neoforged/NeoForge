@@ -15,6 +15,6 @@
     "###"
   ],
   "result": {
-    "item": "minecraft:item_frame"
+    "id": "minecraft:item_frame"
   }
 }

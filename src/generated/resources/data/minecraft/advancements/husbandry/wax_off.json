@@ -66,8 +66,7 @@
       "translate": "advancements.husbandry.wax_off.description"
     },
     "icon": {
-      "item": "minecraft:stone_axe",
-      "nbt": "{Damage:0}"
+      "id": "minecraft:stone_axe"
     },
     "title": {
       "translate": "advancements.husbandry.wax_off.title"

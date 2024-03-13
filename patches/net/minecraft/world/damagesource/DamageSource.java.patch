@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/damagesource/DamageSource.java
 +++ b/net/minecraft/world/damagesource/DamageSource.java
-@@ -88,6 +_,10 @@
+@@ -89,6 +_,10 @@
          return this.type().msgId();
      }
  

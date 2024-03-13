@@ -12,6 +12,6 @@
     "###"
   ],
   "result": {
-    "item": "minecraft:cauldron"
+    "id": "minecraft:cauldron"
   }
 }
