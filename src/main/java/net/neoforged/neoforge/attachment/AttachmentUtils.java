@@ -5,14 +5,11 @@
 
 package net.neoforged.neoforge.attachment;
 
+import java.util.function.Predicate;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.function.Predicate;
-
 public final class AttachmentUtils {
-
-    private AttachmentUtils() {
-    }
+    private AttachmentUtils() {}
 
     /**
      * Copy some attachments to another holder.

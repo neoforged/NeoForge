@@ -13,7 +13,7 @@
          this.setAllStarts(p_196851_.getAllStarts());
          this.setAllReferences(p_196851_.getAllReferences());
  
-+        net.neoforged.neoforge.attachment.AttachmentInternals.copyChunkAttachmentsOnPromotion(p_196851_.getAttachmentHolder(), this.getAttachmentHolder());
++        net.neoforged.neoforge.attachment.AttachmentUtils.copyChunkAttachmentsOnPromotion(p_196851_.getAttachmentHolder(), this.getAttachmentHolder());
          for(Entry<Heightmap.Types, Heightmap> entry : p_196851_.getHeightmaps()) {
              if (ChunkStatus.FULL.heightmapsAfter().contains(entry.getKey())) {
                  this.setHeightmap(entry.getKey(), entry.getValue().getRawData());

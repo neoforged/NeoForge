@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.attachment;
 
-import java.util.function.Predicate;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.Item;

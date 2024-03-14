@@ -203,7 +203,7 @@
              return EMPTY;
          } else {
              ItemStack itemstack = new ItemStack(this.getItem(), this.count);
-+            net.neoforged.neoforge.attachment.AttachmentInternals.copyStackAttachments(this, itemstack);
++            net.neoforged.neoforge.attachment.AttachmentUtils.copyStackAttachments(this, itemstack);
              itemstack.setPopTime(this.getPopTime());
              if (this.tag != null) {
                  itemstack.tag = this.tag.copy();
