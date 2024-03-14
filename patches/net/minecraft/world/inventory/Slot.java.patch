@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/inventory/Slot.java
 +++ b/net/minecraft/world/inventory/Slot.java
+@@ -8,7 +_,7 @@
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.ItemStack;
+ 
+-public class Slot {
++public class Slot implements net.neoforged.neoforge.client.extensions.ISlotExtensions {
+     private final int slot;
+     public final Container container;
+     public int index;
 @@ -81,7 +_,7 @@
  
      @Nullable
@@ -9,7 +18,7 @@
      }
  
      public ItemStack remove(int p_40227_) {
-@@ -94,6 +_,38 @@
+@@ -94,6 +_,29 @@
  
      public boolean isActive() {
          return true;
@@ -23,15 +32,6 @@
 +     */
 +    public int getSlotIndex() {
 +        return slot;
-+    }
-+
-+    /**
-+     * Checks if the other slot is in the same inventory, by comparing the inventory reference.
-+     * @param other
-+     * @return true if the other slot is in the same inventory
-+     */
-+    public boolean isSameInventory(Slot other) {
-+        return this.container == other.container;
 +    }
 +
 +    private Pair<ResourceLocation, ResourceLocation> backgroundPair;
