@@ -53,12 +53,6 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
         parent.buildModList(this::addEntry, mod -> new ModEntry(mod, this.parent));
     }
 
-    @Override
-    public void renderWidget(GuiGraphics p_282708_, int p_283242_, int p_282891_, float p_283683_) {
-        this.parent.renderBackground(p_282708_, p_283242_, p_282891_, p_283683_);
-        super.renderWidget(p_282708_, p_283242_, p_282891_, p_283683_);
-    }
-
     public class ModEntry extends ObjectSelectionList.Entry<ModEntry> {
         private final IModInfo modInfo;
         private final ModListScreen parent;

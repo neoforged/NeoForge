@@ -39,8 +39,6 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
 
     private final int barWidth;
     private final int barLeft;
-    private final int bgColorFrom;
-    private final int bgColorTo;
     private final int barBgColor;
     private final int barColor;
     private final int barBorderColor;
@@ -69,33 +67,6 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
     }
 
     /**
-     * @param client   the minecraft instance this ScrollPanel should use
-     * @param width    the width
-     * @param height   the height
-     * @param top      the offset from the top (y coord)
-     * @param left     the offset from the left (x coord)
-     * @param border   the size of the border
-     * @param barWidth the width of the scroll bar
-     */
-    public ScrollPanel(Minecraft client, int width, int height, int top, int left, int border, int barWidth) {
-        this(client, width, height, top, left, border, barWidth, 0xC0101010, 0xD0101010);
-    }
-
-    /**
-     * @param client   the minecraft instance this ScrollPanel should use
-     * @param width    the width
-     * @param height   the height
-     * @param top      the offset from the top (y coord)
-     * @param left     the offset from the left (x coord)
-     * @param border   the size of the border
-     * @param barWidth the width of the scroll bar
-     * @param bgColor  the color for the background
-     */
-    public ScrollPanel(Minecraft client, int width, int height, int top, int left, int border, int barWidth, int bgColor) {
-        this(client, width, height, top, left, border, barWidth, bgColor, bgColor);
-    }
-
-    /**
      * @param client      the minecraft instance this ScrollPanel should use
      * @param width       the width
      * @param height      the height
@@ -106,8 +77,8 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * @param bgColorFrom the start color for the background gradient
      * @param bgColorTo   the end color for the background gradient
      */
-    public ScrollPanel(Minecraft client, int width, int height, int top, int left, int border, int barWidth, int bgColorFrom, int bgColorTo) {
-        this(client, width, height, top, left, border, barWidth, bgColorFrom, bgColorTo, 0xFF000000, 0xFF808080, 0xFFC0C0C0);
+    public ScrollPanel(Minecraft client, int width, int height, int top, int left, int border, int barWidth) {
+        this(client, width, height, top, left, border, barWidth, 0xFF000000, 0xFF808080, 0xFFC0C0C0);
     }
 
     /**
@@ -126,7 +97,7 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * @param barColor       the color for the scroll bar handle
      * @param barBorderColor the border color for the scroll bar handle
      */
-    public ScrollPanel(Minecraft client, int width, int height, int top, int left, int border, int barWidth, int bgColorFrom, int bgColorTo, int barBgColor, int barColor, int barBorderColor) {
+    public ScrollPanel(Minecraft client, int width, int height, int top, int left, int border, int barWidth, int barBgColor, int barColor, int barBorderColor) {
         this.client = client;
         this.width = width;
         this.height = height;
@@ -137,8 +108,6 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
         this.barLeft = this.left + this.width - barWidth;
         this.border = border;
         this.barWidth = barWidth;
-        this.bgColorFrom = bgColorFrom;
-        this.bgColorTo = bgColorTo;
         this.barBgColor = barBgColor;
         this.barColor = barColor;
         this.barBorderColor = barBorderColor;
@@ -150,22 +119,7 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * Draws the background of the scroll panel. This runs AFTER Scissors are enabled.
      */
     protected void drawBackground(GuiGraphics guiGraphics, Tesselator tess, float partialTick) {
-        BufferBuilder worldr = tess.getBuilder();
-
-        if (this.client.level != null) {
-            this.drawGradientRect(guiGraphics, this.left, this.top, this.right, this.bottom, bgColorFrom, bgColorTo);
-        } else // Draw dark dirt background
-        {
-            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-            RenderSystem.setShaderTexture(0, Screen.MENU_BACKGROUND);
-            final float texScale = 32.0F;
-            worldr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-            worldr.vertex(this.left, this.bottom, 0.0D).uv(this.left / texScale, (this.bottom + (int) this.scrollDistance) / texScale).color(0x20, 0x20, 0x20, 0xFF).endVertex();
-            worldr.vertex(this.right, this.bottom, 0.0D).uv(this.right / texScale, (this.bottom + (int) this.scrollDistance) / texScale).color(0x20, 0x20, 0x20, 0xFF).endVertex();
-            worldr.vertex(this.right, this.top, 0.0D).uv(this.right / texScale, (this.top + (int) this.scrollDistance) / texScale).color(0x20, 0x20, 0x20, 0xFF).endVertex();
-            worldr.vertex(this.left, this.top, 0.0D).uv(this.left / texScale, (this.top + (int) this.scrollDistance) / texScale).color(0x20, 0x20, 0x20, 0xFF).endVertex();
-            tess.end();
-        }
+        Screen.renderMenuBackgroundTexture(guiGraphics, this.left, this.top, this.width, this.height);
     }
 
     /**
