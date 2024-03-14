@@ -14,6 +14,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -33,6 +35,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.ResourceLocationException;
+import net.minecraft.SharedConstants;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -1298,6 +1301,36 @@ public class CommonHooks {
 
         if (!isAir && !entity.level().isClientSide && entity.isPassenger() && entity.getVehicle() != null && !entity.getVehicle().canBeRiddenUnderFluidType(entity.getEyeInFluidType(), entity)) {
             entity.stopRiding();
+        }
+    }
+
+    private static final Set<Class<?>> checkedComponentClasses = ConcurrentHashMap.newKeySet();
+
+    /**
+     * Checks that all data components override equals and hashCode.
+     */
+    @ApiStatus.Internal
+    public static void validateComponent(@Nullable Object dataComponent) {
+        if (!SharedConstants.IS_RUNNING_IN_IDE || dataComponent == null) {
+            return;
+        }
+
+        Class<?> clazz = dataComponent.getClass();
+        if (checkedComponentClasses.add(clazz)) {
+            if (clazz.isRecord() || clazz.isEnum()) {
+                return; // records and enums are always ok
+            }
+
+            try {
+                Method equals = clazz.getMethod("equals", Object.class);
+                Method hashCode = clazz.getMethod("hashCode");
+                // Hard check that the base methods are overridden
+                if (equals.getDeclaringClass() == Object.class || hashCode.getDeclaringClass() == Object.class) {
+                    throw new IllegalArgumentException("Data components must implement equals and hashCode. Keep in mind they must also be immutable. Problematic class: " + clazz);
+                }
+            } catch (ReflectiveOperationException exception) {
+                throw new RuntimeException("Failed to check for component equals and hashCode", exception);
+            }
         }
     }
 }
