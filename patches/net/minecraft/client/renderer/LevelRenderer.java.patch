@@ -26,7 +26,7 @@
          profilerfiller.popPush("sky");
          RenderSystem.setShader(GameRenderer::getPositionShader);
          this.renderSky(p_254120_, p_323920_, f, p_109604_, flag1, () -> FogRenderer.setupFog(p_109604_, FogRenderer.FogMode.FOG_SKY, f1, flag1, f));
-+        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_SKY, this, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
++        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_SKY, this, null, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
          profilerfiller.popPush("fog");
          FogRenderer.setupFog(p_109604_, FogRenderer.FogMode.FOG_TERRAIN, Math.max(f1, 32.0F), flag1, f);
          profilerfiller.popPush("terrain_setup");
@@ -54,7 +54,7 @@
          multibuffersource$buffersource.endBatch(RenderType.entityCutout(TextureAtlas.LOCATION_BLOCKS));
          multibuffersource$buffersource.endBatch(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS));
          multibuffersource$buffersource.endBatch(RenderType.entitySmoothCutout(TextureAtlas.LOCATION_BLOCKS));
-+        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_ENTITIES, this, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
++        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_ENTITIES, this, posestack, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
          profilerfiller.popPush("blockentities");
  
          for(SectionRenderDispatcher.RenderSection sectionrenderdispatcher$rendersection : this.visibleSections) {
@@ -93,7 +93,7 @@
              this.minecraft.getMainRenderTarget().bindWrite(false);
          }
  
-+        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES, this, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
++        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES, this, posestack, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
          profilerfiller.popPush("destroyProgress");
  
          for(Entry<SortedSet<BlockDestructionProgress>> entry : this.destructionProgress.long2ObjectEntrySet()) {
@@ -113,13 +113,13 @@
              profilerfiller.popPush("outline");
              BlockPos blockpos1 = ((BlockHitResult)hitresult).getBlockPos();
              BlockState blockstate = this.level.getBlockState(blockpos1);
-+            if (!net.neoforged.neoforge.client.ClientHooks.onDrawHighlight(this, p_109604_, hitresult, p_109601_, p_254120_, multibuffersource$buffersource))
++            if (!net.neoforged.neoforge.client.ClientHooks.onDrawHighlight(this, p_109604_, hitresult, p_109601_, posestack, multibuffersource$buffersource))
              if (!blockstate.isAir() && this.level.getWorldBorder().isWithinBounds(blockpos1)) {
                  VertexConsumer vertexconsumer2 = multibuffersource$buffersource.getBuffer(RenderType.lines());
                  this.renderHitOutline(posestack, vertexconsumer2, p_109604_.getEntity(), d0, d1, d2, blockpos1, blockstate);
              }
 +        } else if (hitresult != null && hitresult.getType() == HitResult.Type.ENTITY) {
-+            net.neoforged.neoforge.client.ClientHooks.onDrawHighlight(this, p_109604_, hitresult, p_109601_, p_254120_, multibuffersource$buffersource);
++            net.neoforged.neoforge.client.ClientHooks.onDrawHighlight(this, p_109604_, hitresult, p_109601_, posestack, multibuffersource$buffersource);
          }
  
          this.minecraft.debugRenderer.render(posestack, multibuffersource$buffersource, d0, d1, d2);
@@ -129,7 +129,7 @@
              profilerfiller.popPush("particles");
 -            this.minecraft.particleEngine.render(p_109606_, p_109604_, f);
 +            this.minecraft.particleEngine.render(p_109606_, p_109604_, f, frustum);
-+            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES, this, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
++            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES, this, posestack, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
              RenderStateShard.PARTICLES_TARGET.clearRenderState();
          } else {
              profilerfiller.popPush("translucent");
@@ -139,7 +139,7 @@
              profilerfiller.popPush("particles");
 -            this.minecraft.particleEngine.render(p_109606_, p_109604_, f);
 +            this.minecraft.particleEngine.render(p_109606_, p_109604_, f, frustum);
-+            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES, this, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
++            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES, this, posestack, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
          }
  
          if (this.minecraft.options.getCloudsType() != CloudStatus.OFF) {
@@ -147,7 +147,7 @@
              RenderStateShard.WEATHER_TARGET.setupRenderState();
              profilerfiller.popPush("weather");
              this.renderSnowAndRain(p_109606_, f, d0, d1, d2);
-+            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_WEATHER, this, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
++            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_WEATHER, this, posestack, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
              this.renderWorldBorder(p_109604_);
              RenderStateShard.WEATHER_TARGET.clearRenderState();
              this.transparencyChain.process(f);
@@ -155,7 +155,7 @@
              RenderSystem.depthMask(false);
              profilerfiller.popPush("weather");
              this.renderSnowAndRain(p_109606_, f, d0, d1, d2);
-+            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_WEATHER, this, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
++            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_WEATHER, this, posestack, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
              this.renderWorldBorder(p_109604_);
              RenderSystem.depthMask(true);
          }

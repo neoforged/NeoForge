@@ -244,32 +244,32 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(new ClientPauseUpdatedEvent(paused));
     }
 
-    public static boolean onDrawHighlight(LevelRenderer context, Camera camera, HitResult target, float partialTick, Matrix4f modelViewMatrix, MultiBufferSource bufferSource) {
+    public static boolean onDrawHighlight(LevelRenderer context, Camera camera, HitResult target, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource) {
         switch (target.getType()) {
             case BLOCK:
                 if (!(target instanceof BlockHitResult blockTarget)) return false;
-                return NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, blockTarget, partialTick, modelViewMatrix, bufferSource)).isCanceled();
+                return NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, blockTarget, partialTick, poseStack, bufferSource)).isCanceled();
             case ENTITY:
                 if (!(target instanceof EntityHitResult entityTarget)) return false;
-                NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Entity(context, camera, entityTarget, partialTick, modelViewMatrix, bufferSource));
+                NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Entity(context, camera, entityTarget, partialTick, poseStack, bufferSource));
                 return false;
             default:
                 return false; // NO-OP - This doesn't even get called for anything other than blocks and entities
         }
     }
 
-    public static void dispatchRenderStage(RenderLevelStageEvent.Stage stage, LevelRenderer levelRenderer, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
+    public static void dispatchRenderStage(RenderLevelStageEvent.Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
         var mc = Minecraft.getInstance();
         var profiler = mc.getProfiler();
         profiler.push(stage.toString());
-        NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, levelRenderer, modelViewMatrix, projectionMatrix, renderTick, mc.getPartialTick(), camera, frustum));
+        NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, mc.getPartialTick(), camera, frustum));
         profiler.pop();
     }
 
     public static void dispatchRenderStage(RenderType renderType, LevelRenderer levelRenderer, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
         RenderLevelStageEvent.Stage stage = RenderLevelStageEvent.Stage.fromRenderType(renderType);
         if (stage != null)
-            dispatchRenderStage(stage, levelRenderer, modelViewMatrix, projectionMatrix, renderTick, camera, frustum);
+            dispatchRenderStage(stage, levelRenderer, null, modelViewMatrix, projectionMatrix, renderTick, camera, frustum);
     }
 
     public static boolean renderSpecificFirstPersonHand(InteractionHand hand, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float partialTick, float interpPitch, float swingProgress, float equipProgress, ItemStack stack) {
