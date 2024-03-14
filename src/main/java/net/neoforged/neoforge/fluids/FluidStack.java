@@ -55,6 +55,9 @@ public final class FluidStack implements DataComponentHolder {
     private static final Codec<Holder<Fluid>> FLUID_NON_EMPTY_CODEC = ExtraCodecs.validate(
             BuiltInRegistries.FLUID.holderByNameCodec(),
             holder -> holder.is(Fluids.EMPTY.builtInRegistryHolder()) ? DataResult.error(() -> "Fluid must not be minecraft:empty") : DataResult.success(holder));
+    /**
+     * A standard codec for fluid stacks that does not accept empty stacks.
+     */
     public static final Codec<FluidStack> CODEC = ExtraCodecs.lazyInitializedCodec(
             () -> RecordCodecBuilder.create(
                     instance -> instance.group(
@@ -63,8 +66,14 @@ public final class FluidStack implements DataComponentHolder {
                             ExtraCodecs.strictOptionalField(DataComponentPatch.CODEC, "components", DataComponentPatch.EMPTY)
                                     .forGetter(stack -> stack.components.asPatch()))
                             .apply(instance, FluidStack::new)));
+    /**
+     * A standard codec for fluid stacks that accepts empty stacks, serializing them as {@code {}}.
+     */
     public static final Codec<FluidStack> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC)
             .xmap(optional -> optional.orElse(FluidStack.EMPTY), stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack));
+    /**
+     * A stream codec for fluid stacks that accepts empty stacks.
+     */
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidStack> OPTIONAL_STREAM_CODEC = new StreamCodec<>() {
         private static final StreamCodec<RegistryFriendlyByteBuf, Holder<Fluid>> FLUID_STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.FLUID);
 
@@ -91,6 +100,9 @@ public final class FluidStack implements DataComponentHolder {
             }
         }
     };
+    /**
+     * A stream codec for fluid stacks that does not accept empty stacks.
+     */
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidStack> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public FluidStack decode(RegistryFriendlyByteBuf buf) {
