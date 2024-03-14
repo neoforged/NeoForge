@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.fluids.capability.templates;
 
 import java.util.function.Predicate;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
@@ -58,14 +59,14 @@ public class FluidTank implements IFluidHandler, IFluidTank {
         return fluid.getAmount();
     }
 
-    public FluidTank readFromNBT(CompoundTag nbt) {
-        FluidStack fluid = FluidStack.loadFluidStackFromNBT(nbt);
+    public FluidTank readFromNBT(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
+        FluidStack fluid = FluidStack.parseOptional(lookupProvider, nbt);
         setFluid(fluid);
         return this;
     }
 
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        fluid.writeToNBT(nbt);
+    public CompoundTag writeToNBT(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
+        fluid.save(lookupProvider, nbt);
 
         return nbt;
     }
@@ -99,17 +100,17 @@ public class FluidTank implements IFluidHandler, IFluidTank {
             if (fluid.isEmpty()) {
                 return Math.min(capacity, resource.getAmount());
             }
-            if (!fluid.isFluidEqual(resource)) {
+            if (!FluidStack.isSameFluidSameComponents(fluid, resource)) {
                 return 0;
             }
             return Math.min(capacity - fluid.getAmount(), resource.getAmount());
         }
         if (fluid.isEmpty()) {
-            fluid = new FluidStack(resource, Math.min(capacity, resource.getAmount()));
+            fluid = resource.copyWithAmount(Math.min(capacity, resource.getAmount()));
             onContentsChanged();
             return fluid.getAmount();
         }
-        if (!fluid.isFluidEqual(resource)) {
+        if (!FluidStack.isSameFluidSameComponents(fluid, resource)) {
             return 0;
         }
         int filled = capacity - fluid.getAmount();
@@ -127,7 +128,7 @@ public class FluidTank implements IFluidHandler, IFluidTank {
 
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
-        if (resource.isEmpty() || !resource.isFluidEqual(fluid)) {
+        if (resource.isEmpty() || !FluidStack.isSameFluidSameComponents(resource, fluid)) {
             return FluidStack.EMPTY;
         }
         return drain(resource.getAmount(), action);
@@ -139,7 +140,7 @@ public class FluidTank implements IFluidHandler, IFluidTank {
         if (fluid.getAmount() < drained) {
             drained = fluid.getAmount();
         }
-        FluidStack stack = new FluidStack(fluid, drained);
+        FluidStack stack = fluid.copyWithAmount(drained);
         if (action.execute() && drained > 0) {
             fluid.shrink(drained);
             onContentsChanged();

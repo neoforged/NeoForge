@@ -324,7 +324,7 @@ public class FluidUtil {
      */
     public static FluidStack tryFluidTransfer(IFluidHandler fluidDestination, IFluidHandler fluidSource, FluidStack resource, boolean doTransfer) {
         FluidStack drainable = fluidSource.drain(resource, IFluidHandler.FluidAction.SIMULATE);
-        if (!drainable.isEmpty() && resource.isFluidEqual(drainable)) {
+        if (!drainable.isEmpty() && FluidStack.isSameFluidSameComponents(resource, drainable)) {
             return tryFluidTransfer_Internal(fluidDestination, fluidSource, drainable, doTransfer);
         }
         return FluidStack.EMPTY;
@@ -553,7 +553,7 @@ public class FluidUtil {
      *         Returns empty itemStack if none of the enabled buckets can hold the fluid.
      */
     public static ItemStack getFilledBucket(FluidStack fluidStack) {
-        if (!fluidStack.hasTag() || fluidStack.getTag().isEmpty()) {
+        if (fluidStack.getComponents().isEmpty()) {
             if (fluidStack.is(Fluids.WATER)) {
                 return new ItemStack(Items.WATER_BUCKET);
             } else if (fluidStack.is(Fluids.LAVA)) {
