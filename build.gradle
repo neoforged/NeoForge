@@ -12,10 +12,7 @@ apply plugin: 'net.neoforged.gradleutils'
 ext.isPreReleaseVersion = project.minecraft_version.contains("w") || project.minecraft_version.contains("-")
 
 if (isPreReleaseVersion) {
-    project.version = "%s.0-alpha.%s.%s".formatted(
-            project.neoforge_snapshot_next_stable,
-            project.minecraft_version,
-            (new Date()).format('yyyyMMdd.HHmmss', TimeZone.getTimeZone('UTC')))
+    project.version = "${project.neoforge_snapshot_next_stable}.0-alpha.${project.minecraft_version}.${(new Date()).format('yyyyMMdd.HHmmss', TimeZone.getTimeZone('UTC'))}"
 } else {
     gradleutils.version {
         minecraftVersion project.minecraft_version
