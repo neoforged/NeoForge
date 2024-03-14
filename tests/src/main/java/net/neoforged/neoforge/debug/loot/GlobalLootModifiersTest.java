@@ -9,12 +9,16 @@ import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
+import net.minecraft.advancements.critereon.ItemEnchantmentsPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.ItemSubPredicates;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -236,10 +240,12 @@ public class GlobalLootModifiersTest {
     static void smeltingModifierTest(final DynamicTest test) {
         HELPER.provider(GlobalLootModifierProvider.class, prov -> prov.add("smelting", new SmeltingEnchantmentModifier(
                 new LootItemCondition[] {
-                        MatchTool.toolMatches(
-                                ItemPredicate.Builder.item().hasEnchantment(
-                                        new EnchantmentPredicate(SMELT.get(), MinMaxBounds.Ints.atLeast(1))))
-                                .build(),
+                        MatchTool.toolMatches(ItemPredicate.Builder.item().withSubPredicate(
+                                ItemSubPredicates.ENCHANTMENTS,
+                                ItemEnchantmentsPredicate.enchantments(
+                                        List.of(new EnchantmentPredicate(SMELT.get(), MinMaxBounds.Ints.atLeast(1)))
+                                )
+                        )).build(),
                         new TestEnabledLootCondition(test)
                 })));
 

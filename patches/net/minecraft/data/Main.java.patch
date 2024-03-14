@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/Main.java
 +++ b/net/minecraft/data/Main.java
-@@ -80,8 +_,15 @@
+@@ -82,8 +_,15 @@
          OptionSpec<Void> optionspec6 = optionparser.accepts("all", "Include all generators");
          OptionSpec<String> optionspec7 = optionparser.accepts("output", "Output folder").withRequiredArg().defaultsTo("generated");
          OptionSpec<String> optionspec8 = optionparser.accepts("input", "Input folder").withRequiredArg();
@@ -17,7 +17,7 @@
              Path path = Paths.get(optionspec7.value(optionset));
              boolean flag = optionset.has(optionspec6);
              boolean flag1 = flag || optionset.has(optionspec2);
-@@ -89,9 +_,16 @@
+@@ -91,9 +_,16 @@
              boolean flag3 = flag || optionset.has(optionspec3);
              boolean flag4 = flag || optionset.has(optionspec4);
              boolean flag5 = flag || optionset.has(optionspec5);
@@ -36,7 +36,7 @@
                  flag1,
                  flag2,
                  flag3,
-@@ -101,6 +_,7 @@
+@@ -103,6 +_,7 @@
                  true
              );
              datagenerator.run();

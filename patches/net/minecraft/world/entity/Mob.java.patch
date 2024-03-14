@@ -107,7 +107,7 @@
          return p_21437_;
      }
  
-@@ -1512,14 +_,24 @@
+@@ -1517,14 +_,24 @@
      }
  
      @Override
@@ -133,7 +133,7 @@
      @VisibleForTesting
      public void removeFreeWill() {
          this.removeAllGoals(p_262562_ -> true);
-@@ -1546,5 +_,40 @@
+@@ -1551,5 +_,40 @@
      public ItemStack getPickResult() {
          SpawnEggItem spawneggitem = SpawnEggItem.byId(this.getType());
          return spawneggitem == null ? null : new ItemStack(spawneggitem);

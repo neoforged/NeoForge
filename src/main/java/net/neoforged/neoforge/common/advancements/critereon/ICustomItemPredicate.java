@@ -13,6 +13,7 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 /**
  * Interface that mods can use to define {@link ItemPredicate}s with custom matching logic.
+ * Porting 1.20.5 remove
  */
 public interface ICustomItemPredicate extends Predicate<ItemStack> {
     /**
@@ -26,6 +27,6 @@ public interface ICustomItemPredicate extends Predicate<ItemStack> {
      * Convert to a vanilla {@link ItemPredicate}.
      */
     default ItemPredicate toVanilla() {
-        return new ItemPredicate(this);
+        return null;
     }
 }

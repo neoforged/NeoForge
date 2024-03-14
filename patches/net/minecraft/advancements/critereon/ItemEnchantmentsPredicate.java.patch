@@ -1,0 +1,14 @@
+--- a/net/minecraft/advancements/critereon/ItemEnchantmentsPredicate.java
++++ b/net/minecraft/advancements/critereon/ItemEnchantmentsPredicate.java
+@@ -23,6 +_,11 @@
+         return this.enchantments;
+     }
+ 
++    @Override // NEO: use getAllEnchantments for enchantments
++    public boolean matches(ItemStack p_333958_) {
++        return matches(p_333958_, p_333958_.getAllEnchantments());
++    }
++
+     public boolean matches(ItemStack p_333811_, ItemEnchantments p_334059_) {
+         for(EnchantmentPredicate enchantmentpredicate : this.enchantments) {
+             if (!enchantmentpredicate.containedIn(p_334059_)) {

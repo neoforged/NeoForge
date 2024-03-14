@@ -21,7 +21,7 @@
      protected float scopeScale;
  
      public Gui(Minecraft p_232355_) {
-@@ -163,28 +_,28 @@
+@@ -163,27 +_,28 @@
          this.bossOverlay = new BossHealthOverlay(p_232355_);
          this.subtitleOverlay = new SubtitleOverlay(p_232355_);
          this.resetTitleTimes();
@@ -54,8 +54,7 @@
 -            .add(this::renderTitle)
 -            .add(this::renderChat)
 -            .add(this::renderTabList)
--            .add((p_315816_, p_315817_) -> this.subtitleOverlay.render(p_315816_))
--            .add(this::renderSavingIndicator);
+-            .add((p_315816_, p_315817_) -> this.subtitleOverlay.render(p_315816_));
 -        this.layers.add(layereddraw, () -> !p_232355_.options.hideGui).add(this::renderSleepOverlay).add(layereddraw1, () -> !p_232355_.options.hideGui);
 +            .add(SCOREBOARD_SIDEBAR, this::renderScoreboardSidebar)
 +            .add(OVERLAY_MESSAGE, this::renderOverlayMessage)
@@ -68,7 +67,7 @@
      }
  
      public void resetTitleTimes() {
-@@ -195,7 +_,7 @@
+@@ -194,7 +_,7 @@
  
      public void render(GuiGraphics p_282884_, float p_282611_) {
          RenderSystem.enableDepthTest();
@@ -77,7 +76,7 @@
          RenderSystem.disableDepthTest();
      }
  
-@@ -443,6 +_,8 @@
+@@ -442,6 +_,8 @@
              List<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
  
              for(MobEffectInstance mobeffectinstance : Ordering.natural().reverse().sortedCopy(collection)) {
@@ -86,7 +85,7 @@
                  Holder<MobEffect> holder = mobeffectinstance.getEffect();
                  if (mobeffectinstance.showIcon()) {
                      int i = p_282812_.guiWidth();
-@@ -473,6 +_,7 @@
+@@ -472,6 +_,7 @@
                          }
                      }
  
@@ -94,7 +93,7 @@
                      TextureAtlasSprite textureatlassprite = mobeffecttexturemanager.get(holder);
                      int i1 = j;
                      float f1 = f;
-@@ -630,18 +_,23 @@
+@@ -629,18 +_,23 @@
      }
  
      private void renderSelectedItemName(GuiGraphics p_283501_) {
@@ -121,7 +120,7 @@
              if (!this.minecraft.gameMode.canHurtPlayer()) {
                  k += 14;
              }
-@@ -653,7 +_,13 @@
+@@ -652,7 +_,13 @@
  
              if (l > 0) {
                  p_283501_.fill(j - 2, k - 2, j + i + 2, k + 9 + 2, this.minecraft.options.getBackgroundColor(0));
@@ -136,7 +135,7 @@
              }
          }
  
-@@ -1138,7 +_,7 @@
+@@ -1137,7 +_,7 @@
                  this.toolHighlightTimer = 0;
              } else if (this.lastToolHighlight.isEmpty()
                  || !itemstack.is(this.lastToolHighlight.getItem())
@@ -145,7 +144,7 @@
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
                  --this.toolHighlightTimer;
-@@ -1263,6 +_,11 @@
+@@ -1262,6 +_,11 @@
                  p_282761_.drawString(font, SAVING_TEXT, p_282761_.guiWidth() - j - 10, p_282761_.guiHeight() - 15, k);
              }
          }

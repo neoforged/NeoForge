@@ -1,25 +1,25 @@
 --- a/net/minecraft/world/effect/MobEffect.java
 +++ b/net/minecraft/world/effect/MobEffect.java
-@@ -17,7 +_,7 @@
+@@ -23,7 +_,7 @@
  import net.minecraft.world.entity.ai.attributes.AttributeMap;
  import net.minecraft.world.entity.ai.attributes.AttributeModifier;
  
 -public class MobEffect {
 +public class MobEffect implements net.neoforged.neoforge.common.extensions.IMobEffectExtension {
+     private static final int AMBIENT_ALPHA = Mth.floor(38.25F);
      private final Map<Holder<Attribute>, MobEffect.AttributeTemplate> attributeModifiers = new Object2ObjectOpenHashMap<>();
      private final MobEffectCategory category;
-     private final int color;
-@@ -28,6 +_,7 @@
-     protected MobEffect(MobEffectCategory p_19451_, int p_19452_) {
-         this.category = p_19451_;
-         this.color = p_19452_;
+@@ -40,6 +_,7 @@
+             int i = p_333517_.isAmbient() ? AMBIENT_ALPHA : 255;
+             return ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(i, p_19452_));
+         };
 +        initClient();
      }
  
-     public int getBlendDurationTicks() {
-@@ -113,6 +_,28 @@
-     public boolean isBeneficial() {
-         return this.category == MobEffectCategory.BENEFICIAL;
+     protected MobEffect(MobEffectCategory p_333963_, int p_333864_, ParticleOptions p_333716_) {
+@@ -135,6 +_,28 @@
+     public ParticleOptions createParticleOptions(MobEffectInstance p_333815_) {
+         return this.particleFactory.apply(p_333815_);
      }
 +
 +    // NEO START

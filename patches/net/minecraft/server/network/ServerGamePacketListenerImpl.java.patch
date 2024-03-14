@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -230,6 +_,7 @@
+@@ -232,6 +_,7 @@
      private final MessageSignatureCache messageSignatureCache = MessageSignatureCache.createDefault();
      private final FutureChain chatMessageChain;
      private boolean waitingForSwitchToConfig;
@@ -8,7 +8,7 @@
  
      public ServerGamePacketListenerImpl(MinecraftServer p_9770_, Connection p_9771_, ServerPlayer p_9772_, CommonListenerCookie p_301978_) {
          super(p_9770_, p_9771_, p_301978_);
-@@ -239,6 +_,7 @@
+@@ -241,6 +_,7 @@
          p_9772_.getTextFilter().join();
          this.signedMessageDecoder = SignedMessageChain.Decoder.unsigned(p_9772_.getUUID(), p_9770_::enforceSecureProfile);
          this.chatMessageChain = new FutureChain(p_9770_);
@@ -16,7 +16,7 @@
      }
  
      @Override
-@@ -436,9 +_,11 @@
+@@ -438,9 +_,11 @@
                  }
  
                  entity.absMoveTo(d3, d4, d5, f, f1);
@@ -28,7 +28,7 @@
                      this.send(new ClientboundMoveVehiclePacket(entity));
                      return;
                  }
-@@ -457,6 +_,23 @@
+@@ -459,6 +_,23 @@
          }
      }
  
@@ -52,7 +52,7 @@
      private boolean noBlocksAround(Entity p_9794_) {
          return p_9794_.level()
              .getBlockStates(p_9794_.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
-@@ -1022,8 +_,10 @@
+@@ -1031,8 +_,10 @@
              case SWAP_ITEM_WITH_OFFHAND:
                  if (!this.player.isSpectator()) {
                      ItemStack itemstack = this.player.getItemInHand(InteractionHand.OFF_HAND);
@@ -65,7 +65,7 @@
                      this.player.stopUsingItem();
                  }
  
-@@ -1051,7 +_,7 @@
+@@ -1060,7 +_,7 @@
                      .handleBlockBreakAction(
                          blockpos, serverboundplayeractionpacket$action, p_9889_.getDirection(), this.player.level().getMaxBuildHeight(), p_9889_.getSequence()
                      );
@@ -74,7 +74,7 @@
                  return;
              default:
                  throw new IllegalArgumentException("Invalid player action");
-@@ -1070,7 +_,7 @@
+@@ -1079,7 +_,7 @@
      @Override
      public void handleUseItemOn(ServerboundUseItemOnPacket p_9930_) {
          PacketUtils.ensureRunningOnSameThread(p_9930_, this, this.player.serverLevel());
@@ -83,7 +83,7 @@
          ServerLevel serverlevel = this.player.serverLevel();
          InteractionHand interactionhand = p_9930_.getHand();
          ItemStack itemstack = this.player.getItemInHand(interactionhand);
-@@ -1220,8 +_,9 @@
+@@ -1229,8 +_,9 @@
                      }
  
                      CompletableFuture<FilteredText> completablefuture = this.filterTextPacket(playerchatmessage.signedContent());
@@ -94,7 +94,7 @@
                          PlayerChatMessage playerchatmessage1 = playerchatmessage.withUnsignedContent(component).filter(p_300785_.mask());
                          this.broadcastChatMessage(playerchatmessage1);
                      });
-@@ -1498,7 +_,11 @@
+@@ -1507,7 +_,11 @@
      
                          @Override
                          public void onInteraction(InteractionHand p_143682_, Vec3 p_143683_) {
@@ -107,7 +107,7 @@
                          }
      
                          @Override
-@@ -1743,7 +_,7 @@
+@@ -1752,7 +_,7 @@
              this.connection
                  .setupInboundProtocol(
                      ConfigurationProtocols.SERVERBOUND,
@@ -116,14 +116,12 @@
                  );
          }
      }
-@@ -1784,5 +_,33 @@
-     @FunctionalInterface
-     interface EntityInteraction {
-         InteractionResult run(ServerPlayer p_143695_, Entity p_143696_, InteractionHand p_143697_);
-+    }
-+
-+    @Override
-+    public void handleCustomPayload(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket p_294276_) {
+@@ -1786,7 +_,27 @@
+     }
+ 
+     @Override
+-    public void handleCustomPayload(ServerboundCustomPayloadPacket p_333887_) {
++    public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) {
 +        if (p_294276_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
 +            this.connectionType = this.connectionType.withMinecraftRegisterPayload();
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onMinecraftRegister(this, minecraftRegisterPayload.newChannels());
@@ -144,6 +142,13 @@
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.getInstance().onModdedPacketAtServer(
 +                this, p_294276_
 +        );
+     }
+ 
+     @Override
+@@ -1797,5 +_,9 @@
+     @FunctionalInterface
+     interface EntityInteraction {
+         InteractionResult run(ServerPlayer p_143695_, Entity p_143696_, InteractionHand p_143697_);
 +    }
 +
 +    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {

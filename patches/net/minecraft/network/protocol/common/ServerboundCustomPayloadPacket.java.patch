@@ -1,20 +1,21 @@
 --- a/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
 +++ b/net/minecraft/network/protocol/common/ServerboundCustomPayloadPacket.java
-@@ -14,7 +_,16 @@
-     private static final int MAX_PAYLOAD_SIZE = 32767;
+@@ -17,7 +_,17 @@
      public static final StreamCodec<FriendlyByteBuf, ServerboundCustomPayloadPacket> STREAM_CODEC = CustomPacketPayload.<FriendlyByteBuf>codec(
              p_319841_ -> DiscardedPayload.codec(p_319841_, 32767),
--            List.of(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC))
-+            List.of(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)),
+             Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)), p_333493_ -> {
+-            })
++            }),
 +            net.minecraft.network.ConnectionProtocol.PLAY,
 +            net.minecraft.network.protocol.PacketFlow.SERVERBOUND
 +        )
 +        .map(ServerboundCustomPayloadPacket::new, ServerboundCustomPayloadPacket::payload);
 +    public static final StreamCodec<FriendlyByteBuf, ServerboundCustomPayloadPacket> CONFIG_STREAM_CODEC = CustomPacketPayload.<FriendlyByteBuf>codec(
-+             p_319841_ -> DiscardedPayload.codec(p_319841_, 32767),
-+             List.of(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)),
-+             net.minecraft.network.ConnectionProtocol.CONFIGURATION,
-+             net.minecraft.network.protocol.PacketFlow.SERVERBOUND
++            p_319841_ -> DiscardedPayload.codec(p_319841_, 32767),
++            Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)), p_333493_ -> {
++            }),
++            net.minecraft.network.ConnectionProtocol.CONFIGURATION,
++            net.minecraft.network.protocol.PacketFlow.SERVERBOUND
          )
          .map(ServerboundCustomPayloadPacket::new, ServerboundCustomPayloadPacket::payload);
  

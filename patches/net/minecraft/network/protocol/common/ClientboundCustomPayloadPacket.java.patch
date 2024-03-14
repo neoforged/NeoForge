@@ -1,9 +1,9 @@
 --- a/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
 +++ b/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
-@@ -53,12 +_,16 @@
-                 new CustomPacketPayload.TypeAndCodec<>(StructuresDebugPayload.TYPE, StructuresDebugPayload.STREAM_CODEC),
-                 new CustomPacketPayload.TypeAndCodec<>(VillageSectionsDebugPayload.TYPE, VillageSectionsDebugPayload.STREAM_CODEC),
-                 new CustomPacketPayload.TypeAndCodec<>(WorldGenAttemptDebugPayload.TYPE, WorldGenAttemptDebugPayload.STREAM_CODEC)
+@@ -60,12 +_,16 @@
+                 ),
+                 p_333492_ -> {
+                 }
 -            )
 +            ),
 +            net.minecraft.network.ConnectionProtocol.PLAY,

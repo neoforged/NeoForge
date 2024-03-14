@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/effect/MobEffectInstance.java
 +++ b/net/minecraft/world/effect/MobEffectInstance.java
-@@ -84,6 +_,7 @@
+@@ -85,6 +_,7 @@
          this.visible = p_19532_;
          this.showIcon = p_19533_;
          this.hiddenEffect = p_316863_;
@@ -8,7 +8,7 @@
      }
  
      public MobEffectInstance(MobEffectInstance p_19543_) {
-@@ -101,6 +_,8 @@
+@@ -102,6 +_,8 @@
              p_324529_.showIcon(),
              p_324529_.hiddenEffect().map(p_323227_ -> new MobEffectInstance(p_324441_, p_323227_)).orElse(null)
          );
@@ -17,7 +17,7 @@
      }
  
      private MobEffectInstance.Details asDetails() {
-@@ -110,7 +_,8 @@
+@@ -111,7 +_,8 @@
              this.isAmbient(),
              this.isVisible(),
              this.showIcon(),
@@ -27,7 +27,7 @@
          );
      }
  
-@@ -124,6 +_,8 @@
+@@ -129,6 +_,8 @@
          this.ambient = p_19549_.ambient;
          this.visible = p_19549_.visible;
          this.showIcon = p_19549_.showIcon;
@@ -36,7 +36,7 @@
      }
  
      public boolean update(MobEffectInstance p_19559_) {
-@@ -313,11 +_,11 @@
+@@ -318,11 +_,11 @@
                  .compareFalseFirst(this.isAmbient(), p_19566_.isAmbient())
                  .compareFalseFirst(this.isInfiniteDuration(), p_19566_.isInfiniteDuration())
                  .compare(this.getDuration(), p_19566_.getDuration())
@@ -50,7 +50,7 @@
                  .result();
      }
  
-@@ -333,6 +_,15 @@
+@@ -338,6 +_,15 @@
          this.blendState.setImmediate(this);
      }
  
@@ -66,7 +66,7 @@
      static class BlendState {
          private float factor;
          private float factorPreviousFrame;
-@@ -380,8 +_,7 @@
+@@ -385,8 +_,7 @@
      }
  
      static record Details(
@@ -76,7 +76,7 @@
          public static final MapCodec<MobEffectInstance.Details> MAP_CODEC = ExtraCodecs.recursiveMap(
              "MobEffectInstance.Details",
              p_323465_ -> RecordCodecBuilder.mapCodec(
-@@ -391,13 +_,14 @@
+@@ -396,13 +_,14 @@
                                  ExtraCodecs.strictOptionalField(Codec.BOOL, "ambient", false).forGetter(MobEffectInstance.Details::ambient),
                                  ExtraCodecs.strictOptionalField(Codec.BOOL, "show_particles", true).forGetter(MobEffectInstance.Details::showParticles),
                                  ExtraCodecs.strictOptionalField(Codec.BOOL, "show_icon").forGetter(p_323788_ -> Optional.of(p_323788_.showIcon())),
@@ -93,7 +93,7 @@
                      ByteBufCodecs.VAR_INT,
                      MobEffectInstance.Details::amplifier,
                      ByteBufCodecs.VAR_INT,
-@@ -410,14 +_,16 @@
+@@ -415,14 +_,16 @@
                      MobEffectInstance.Details::showIcon,
                      p_329990_.apply(ByteBufCodecs::optional),
                      MobEffectInstance.Details::hiddenEffect,

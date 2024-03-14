@@ -119,7 +119,7 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * Draws the background of the scroll panel. This runs AFTER Scissors are enabled.
      */
     protected void drawBackground(GuiGraphics guiGraphics, Tesselator tess, float partialTick) {
-        Screen.renderMenuBackgroundTexture(guiGraphics, this.left, this.top, this.width, this.height);
+        Screen.renderMenuBackgroundTexture(guiGraphics, Screen.MENU_BACKGROUND, this.left, this.top, 0f, 0f, this.width, this.height);
     }
 
     /**

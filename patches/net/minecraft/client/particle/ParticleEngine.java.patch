@@ -14,7 +14,7 @@
      private final Queue<Particle> particlesToAdd = Queues.newArrayDeque();
      private final Map<ResourceLocation, ParticleEngine.MutableSpriteSet> spriteSets = Maps.newHashMap();
      private final TextureAtlas textureAtlas;
-@@ -207,10 +_,14 @@
+@@ -206,10 +_,14 @@
          this.register(ParticleTypes.VAULT_CONNECTION, FlyTowardsPositionParticle.VaultConnectionProvider::new);
      }
  
@@ -30,7 +30,7 @@
      public <T extends ParticleOptions> void register(ParticleType<T> p_273423_, ParticleProvider.Sprite<T> p_273134_) {
          this.register(
              p_273423_,
-@@ -227,10 +_,12 @@
+@@ -226,10 +_,12 @@
          );
      }
  
@@ -44,7 +44,7 @@
      }
  
      @Override
-@@ -356,7 +_,7 @@
+@@ -355,7 +_,7 @@
      private <T extends ParticleOptions> Particle makeParticle(
          T p_107396_, double p_107397_, double p_107398_, double p_107399_, double p_107400_, double p_107401_, double p_107402_
      ) {
@@ -53,7 +53,7 @@
          return particleprovider == null
              ? null
              : particleprovider.createParticle(p_107396_, this.level, p_107397_, p_107398_, p_107399_, p_107400_, p_107401_, p_107402_);
-@@ -432,11 +_,21 @@
+@@ -431,11 +_,21 @@
          }
      }
  
@@ -76,7 +76,7 @@
              Iterable<Particle> iterable = this.particles.get(particlerendertype);
              if (iterable != null) {
                  RenderSystem.setShader(GameRenderer::getParticleShader);
-@@ -445,6 +_,7 @@
+@@ -444,6 +_,7 @@
                  particlerendertype.begin(bufferbuilder, this.textureManager);
  
                  for(Particle particle : iterable) {
@@ -84,7 +84,7 @@
                      try {
                          particle.render(bufferbuilder, p_107340_, p_107341_);
                      } catch (Throwable throwable) {
-@@ -472,7 +_,7 @@
+@@ -471,7 +_,7 @@
      }
  
      public void destroy(BlockPos p_107356_, BlockState p_107357_) {
@@ -93,7 +93,7 @@
              VoxelShape voxelshape = p_107357_.getShape(this.level, p_107356_);
              double d0 = 0.25;
              voxelshape.forAllBoxes(
-@@ -504,7 +_,7 @@
+@@ -503,7 +_,7 @@
                                          d6 - 0.5,
                                          p_107357_,
                                          p_107356_
@@ -102,7 +102,7 @@
                                  );
                              }
                          }
-@@ -549,12 +_,18 @@
+@@ -548,12 +_,18 @@
                  d0 = (double)i + aabb.maxX + 0.1F;
              }
  

@@ -16,9 +16,9 @@
 +            net.neoforged.neoforge.event.EventHooks.onAdvancementProgressedEvent(this.player, p_300979_, advancementprogress, p_135990_, net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent.ProgressType.GRANT);
              if (!flag1 && advancementprogress.isDone()) {
                  p_300979_.value().rewards().grant(this.player);
-                 p_300979_.value().display().ifPresent(p_325562_ -> {
-                     if (p_325562_.shouldAnnounceChat() && this.player.level().getGameRules().getBoolean(GameRules.RULE_ANNOUNCE_ADVANCEMENTS)) {
-                         this.playerList.broadcastSystemMessage(p_325562_.getType().createAnnouncement(p_300979_, this.player), false);
+                 p_300979_.value().display().ifPresent(p_333495_ -> {
+                     if (p_333495_.shouldAnnounceChat() && this.player.level().getGameRules().getBoolean(GameRules.RULE_ANNOUNCE_ADVANCEMENTS)) {
+                         this.playerList.broadcastSystemMessage(p_333495_.getType().createAnnouncement(p_300979_, this.player), false);
                      }
 +                    net.neoforged.neoforge.event.EventHooks.onAdvancementEarnedEvent(this.player, p_300979_);
                  });

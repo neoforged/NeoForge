@@ -179,18 +179,18 @@
          }
      }
  
-@@ -1066,10 +_,6 @@
+@@ -1066,9 +_,7 @@
              LOGGER.error("setScreen called from non-game thread");
          }
  
 -        if (this.screen != null) {
 -            this.screen.removed();
--        }
--
-         if (p_91153_ == null && this.clientLevelTeardownInProgress) {
-             throw new IllegalStateException("Trying to return to in-game GUI during disconnection");
-         } else {
-@@ -1083,6 +_,19 @@
+-        } else {
++        if (this.screen == null) {
+             this.setLastInputType(InputType.NONE);
+         }
+ 
+@@ -1085,6 +_,19 @@
                  }
              }
  
@@ -210,7 +210,7 @@
              this.screen = p_91153_;
              if (this.screen != null) {
                  this.screen.added();
-@@ -1228,9 +_,12 @@
+@@ -1230,9 +_,12 @@
          this.mouseHandler.handleAccumulatedMovement();
          this.profiler.pop();
          if (!this.noRender) {
@@ -223,7 +223,7 @@
          }
  
          if (this.fpsPieResults != null) {
-@@ -1272,6 +_,7 @@
+@@ -1274,6 +_,7 @@
              }
  
              this.pause = flag1;
@@ -231,7 +231,7 @@
          }
  
          long l = Util.getNanos();
-@@ -1364,10 +_,12 @@
+@@ -1366,10 +_,12 @@
          this.window.setGuiScale((double)i);
          if (this.screen != null) {
              this.screen.resize(this, this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
@@ -244,7 +244,7 @@
          this.gameRenderer.resize(this.window.getWidth(), this.window.getHeight());
          this.mouseHandler.setIgnoreFirstMove();
      }
-@@ -1643,6 +_,7 @@
+@@ -1645,6 +_,7 @@
      }
  
      public void stop() {
@@ -252,7 +252,7 @@
          this.running = false;
      }
  
-@@ -1672,9 +_,17 @@
+@@ -1674,9 +_,17 @@
                  BlockHitResult blockhitresult = (BlockHitResult)this.hitResult;
                  BlockPos blockpos = blockhitresult.getBlockPos();
                  if (!this.level.getBlockState(blockpos).isAir()) {
@@ -272,7 +272,7 @@
                          this.player.swing(InteractionHand.MAIN_HAND);
                      }
                  }
-@@ -1702,6 +_,8 @@
+@@ -1704,6 +_,8 @@
                  return false;
              } else {
                  boolean flag = false;
@@ -281,7 +281,7 @@
                  switch(this.hitResult.getType()) {
                      case ENTITY:
                          this.gameMode.attack(this.player, ((EntityHitResult)this.hitResult).getEntity());
-@@ -1722,8 +_,10 @@
+@@ -1724,8 +_,10 @@
                          }
  
                          this.player.resetAttackStrengthTicker();
@@ -292,7 +292,7 @@
                  this.player.swing(InteractionHand.MAIN_HAND);
                  return flag;
              }
-@@ -1739,6 +_,11 @@
+@@ -1741,6 +_,11 @@
                  }
  
                  for(InteractionHand interactionhand : InteractionHand.values()) {
@@ -304,7 +304,7 @@
                      ItemStack itemstack = this.player.getItemInHand(interactionhand);
                      if (!itemstack.isItemEnabled(this.level.enabledFeatures())) {
                          return;
-@@ -1759,7 +_,7 @@
+@@ -1761,7 +_,7 @@
                                  }
  
                                  if (interactionresult.consumesAction()) {
@@ -313,7 +313,7 @@
                                          this.player.swing(interactionhand);
                                      }
  
-@@ -1771,7 +_,7 @@
+@@ -1773,7 +_,7 @@
                                  int i = itemstack.getCount();
                                  InteractionResult interactionresult1 = this.gameMode.useItemOn(this.player, interactionhand, blockhitresult);
                                  if (interactionresult1.consumesAction()) {
@@ -322,7 +322,7 @@
                                          this.player.swing(interactionhand);
                                          if (!itemstack.isEmpty() && (itemstack.getCount() != i || this.gameMode.hasInfiniteItems())) {
                                              this.gameRenderer.itemInHandRenderer.itemUsed(interactionhand);
-@@ -1787,6 +_,9 @@
+@@ -1789,6 +_,9 @@
                          }
                      }
  
@@ -332,7 +332,7 @@
                      if (!itemstack.isEmpty()) {
                          InteractionResult interactionresult2 = this.gameMode.useItem(this.player, interactionhand);
                          if (interactionresult2.consumesAction()) {
-@@ -1817,6 +_,8 @@
+@@ -1819,6 +_,8 @@
              --this.rightClickDelay;
          }
  
@@ -341,7 +341,7 @@
          this.profiler.push("gui");
          this.chatListener.tick();
          this.gui.tick(this.pause);
-@@ -1902,6 +_,7 @@
+@@ -1904,6 +_,7 @@
  
                  this.tutorial.tick();
  
@@ -349,7 +349,7 @@
                  try {
                      this.level.tick(() -> true);
                  } catch (Throwable throwable) {
-@@ -1915,6 +_,7 @@
+@@ -1917,6 +_,7 @@
  
                      throw new ReportedException(crashreport);
                  }
@@ -357,7 +357,7 @@
              }
  
              this.profiler.popPush("animateTick");
-@@ -1934,6 +_,8 @@
+@@ -1936,6 +_,8 @@
          this.profiler.popPush("keyboard");
          this.keyboardHandler.tick();
          this.profiler.pop();
@@ -366,7 +366,7 @@
      }
  
      private boolean isMultiplayerServer() {
-@@ -2126,6 +_,7 @@
+@@ -2128,6 +_,7 @@
      }
  
      public void setLevel(ClientLevel p_91157_) {
@@ -374,7 +374,7 @@
          ProgressScreen progressscreen = new ProgressScreen(true);
          progressscreen.progressStartNoAbort(Component.translatable("connect.joining"));
          this.updateScreenAndTick(progressscreen);
-@@ -2165,6 +_,7 @@
+@@ -2167,6 +_,7 @@
          IntegratedServer integratedserver = this.singleplayerServer;
          this.singleplayerServer = null;
          this.gameRenderer.resetData();
@@ -382,7 +382,7 @@
          this.gameMode = null;
          this.narrator.clear();
          this.clientLevelTeardownInProgress = true;
-@@ -2172,6 +_,7 @@
+@@ -2174,6 +_,7 @@
          try {
              this.updateScreenAndTick(p_320248_);
              if (this.level != null) {
@@ -390,7 +390,7 @@
                  if (integratedserver != null) {
                      this.profiler.push("waitForServer");
  
-@@ -2332,6 +_,7 @@
+@@ -2334,6 +_,7 @@
  
      private void pickBlock() {
          if (this.hitResult != null && this.hitResult.getType() != HitResult.Type.MISS) {
@@ -398,7 +398,7 @@
              boolean flag = this.player.getAbilities().instabuild;
              BlockEntity blockentity = null;
              HitResult.Type hitresult$type = this.hitResult.getType();
-@@ -2344,7 +_,7 @@
+@@ -2346,7 +_,7 @@
                  }
  
                  Block block = blockstate.getBlock();
@@ -407,7 +407,7 @@
                  if (itemstack.isEmpty()) {
                      return;
                  }
-@@ -2358,7 +_,7 @@
+@@ -2360,7 +_,7 @@
                  }
  
                  Entity entity = ((EntityHitResult)this.hitResult).getEntity();
@@ -416,7 +416,7 @@
                  if (itemstack == null) {
                      return;
                  }
-@@ -2895,6 +_,19 @@
+@@ -2897,6 +_,19 @@
  
      public void updateMaxMipLevel(int p_91313_) {
          this.modelManager.updateMaxMipLevel(p_91313_);

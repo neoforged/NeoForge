@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/CreativeModeTabs.java
 +++ b/net/minecraft/world/item/CreativeModeTabs.java
-@@ -1826,7 +_,7 @@
+@@ -1836,7 +_,7 @@
      ) {
          p_270903_.listElements()
              .map(Holder::value)
@@ -9,7 +9,7 @@
              .map(p_270038_ -> EnchantedBookItem.createForEnchantment(new EnchantmentInstance(p_270038_, p_270038_.getMaxLevel())))
              .forEach(p_269989_ -> p_270868_.accept(p_269989_, p_270407_));
      }
-@@ -1836,7 +_,7 @@
+@@ -1846,7 +_,7 @@
      ) {
          p_270628_.listElements()
              .map(Holder::value)

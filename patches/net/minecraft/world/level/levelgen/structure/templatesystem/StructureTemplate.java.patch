@@ -37,7 +37,7 @@
                  }
  
                  return true;
-@@ -392,12 +_,20 @@
+@@ -402,12 +_,20 @@
      }
  
      public static List<StructureTemplate.StructureBlockInfo> processBlockInfos(
@@ -58,7 +58,7 @@
          List<StructureTemplate.StructureBlockInfo> list = new ArrayList<>();
          List<StructureTemplate.StructureBlockInfo> list1 = new ArrayList<>();
  
-@@ -412,7 +_,7 @@
+@@ -422,7 +_,7 @@
  
              while(structuretemplate$structureblockinfo1 != null && iterator.hasNext()) {
                  structuretemplate$structureblockinfo1 = iterator.next()
@@ -67,7 +67,7 @@
              }
  
              if (structuretemplate$structureblockinfo1 != null) {
-@@ -428,21 +_,29 @@
+@@ -438,21 +_,29 @@
          return list1;
      }
  
@@ -111,7 +111,7 @@
                  ListTag listtag = new ListTag();
                  listtag.add(DoubleTag.valueOf(vec31.x));
                  listtag.add(DoubleTag.valueOf(vec31.y));
-@@ -450,10 +_,10 @@
+@@ -460,10 +_,10 @@
                  compoundtag.put("Pos", listtag);
                  compoundtag.remove("UUID");
                  createEntityIgnoreException(p_74524_, compoundtag).ifPresent(p_275190_ -> {
