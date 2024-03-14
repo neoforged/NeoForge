@@ -9,7 +9,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public interface ISlotExtensions {
-    default Slot self() {
+    private Slot self() {
         return (Slot) this;
     }
 
