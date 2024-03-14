@@ -345,14 +345,9 @@ public class ModListScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.modList.render(guiGraphics, mouseX, mouseY, partialTick);
-        if (this.modInfo != null)
-            this.modInfo.render(guiGraphics, mouseX, mouseY, partialTick);
-
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
         Component text = Component.translatable("fml.menu.mods.search");
         int x = modList.getX() + ((modList.getRight() - modList.getX()) / 2) - (getFontRenderer().width(text) / 2);
-        this.search.render(guiGraphics, mouseX, mouseY, partialTick);
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.drawString(getFontRenderer(), text.getVisualOrderText(), x, search.getY() - getFontRenderer().lineHeight, 0xFFFFFF, false);
     }
 
