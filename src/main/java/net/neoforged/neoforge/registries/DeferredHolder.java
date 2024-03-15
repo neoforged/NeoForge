@@ -173,7 +173,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        return obj instanceof DeferredHolder<?, ?> dh && dh.key == this.key;
+        return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.unwrapKey().orElseThrow() == this.key;
     }
 
     @Override

@@ -25,18 +25,37 @@
      static <T> Holder<T> direct(T p_205710_) {
          return new Holder.Direct<>(p_205710_);
      }
-@@ -218,6 +_,14 @@
-             } else {
-                 this.value = p_249418_;
+@@ -220,6 +_,14 @@
              }
-+        }
-+
+         }
+ 
 +        @org.jetbrains.annotations.Nullable
 +        public <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<T, A> type) {
 +            if (owner instanceof HolderLookup.RegistryLookup<T> lookup) {
 +                return lookup.getData(type, key());
 +            }
 +            return null;
++        }
++
+         public void bindTags(Collection<TagKey<T>> p_205770_) {
+             this.tags = Set.copyOf(p_205770_);
+         }
+@@ -232,6 +_,18 @@
+         @Override
+         public String toString() {
+             return "Reference{" + this.key + "=" + this.value + "}";
++        }
++
++        // Neo: Add DeferredHolder-compatible hashCode() and equals() overrides
++        @Override
++        public int hashCode() {
++            return key().hashCode();
++        }
++
++        @Override
++        public boolean equals(Object obj) {
++            if (this == obj) return true;
++            return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.unwrapKey().orElseThrow() == this.key();
          }
  
-         public void bindTags(Collection<TagKey<T>> p_205770_) {
+         public static enum Type {

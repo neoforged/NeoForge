@@ -127,6 +127,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.WorldData;
@@ -1307,6 +1308,38 @@ public class CommonHooks {
     private static final Set<Class<?>> checkedComponentClasses = ConcurrentHashMap.newKeySet();
 
     /**
+     * Marks a class as being safe to use as a {@link DataComponents data component}.
+     * Keep in mind that data components are compared with {@link Object#equals(Object)}
+     * and hashed with {@link Object#hashCode()}.
+     * <b>They must also be immutable.</b>
+     *
+     * <p>Only call this method if the default implementations of {@link Object#equals(Object)}
+     * and {@link Object#hashCode()} are suitable for this class,
+     * and if instances of this class are immutable.
+     * Typically, this is only the case for singletons such as {@link Block} instances.
+     */
+    public static void markComponentClassAsValid(Class<?> clazz) {
+        if (clazz.isRecord() || clazz.isEnum()) {
+            throw new IllegalArgumentException("Records and enums are always valid components");
+        }
+
+        if (overridesEqualsAndHashCode(clazz)) {
+            throw new IllegalArgumentException("Class " + clazz + " already overrides equals and hashCode");
+        }
+
+        checkedComponentClasses.add(clazz);
+    }
+
+    static {
+        // Mark common singletons as valid
+        markComponentClassAsValid(Block.class);
+        markComponentClassAsValid(BlockState.class);
+        markComponentClassAsValid(Fluid.class);
+        markComponentClassAsValid(FluidState.class);
+        markComponentClassAsValid(Item.class);
+    }
+
+    /**
      * Checks that all data components override equals and hashCode.
      */
     @ApiStatus.Internal
@@ -1316,21 +1349,27 @@ public class CommonHooks {
         }
 
         Class<?> clazz = dataComponent.getClass();
-        if (checkedComponentClasses.add(clazz)) {
+        if (!checkedComponentClasses.contains(clazz)) {
             if (clazz.isRecord() || clazz.isEnum()) {
+                checkedComponentClasses.add(clazz);
                 return; // records and enums are always ok
             }
 
-            try {
-                Method equals = clazz.getMethod("equals", Object.class);
-                Method hashCode = clazz.getMethod("hashCode");
-                // Hard check that the base methods are overridden
-                if (equals.getDeclaringClass() == Object.class || hashCode.getDeclaringClass() == Object.class) {
-                    throw new IllegalArgumentException("Data components must implement equals and hashCode. Keep in mind they must also be immutable. Problematic class: " + clazz);
-                }
-            } catch (ReflectiveOperationException exception) {
-                throw new RuntimeException("Failed to check for component equals and hashCode", exception);
+            if (overridesEqualsAndHashCode(clazz)) {
+                checkedComponentClasses.add(clazz);
+            } else {
+                throw new IllegalArgumentException("Data components must implement equals and hashCode. Keep in mind they must also be immutable. Problematic class: " + clazz);
             }
+        }
+    }
+
+    private static boolean overridesEqualsAndHashCode(Class<?> clazz) {
+        try {
+            Method equals = clazz.getMethod("equals", Object.class);
+            Method hashCode = clazz.getMethod("hashCode");
+            return equals.getDeclaringClass() != Object.class && hashCode.getDeclaringClass() != Object.class;
+        } catch (ReflectiveOperationException exception) {
+            throw new RuntimeException("Failed to check for component equals and hashCode", exception);
         }
     }
 }
