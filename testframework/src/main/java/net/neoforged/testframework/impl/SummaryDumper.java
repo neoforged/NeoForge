@@ -13,9 +13,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.testframework.Test;
-import net.neoforged.testframework.summary.FileSummaryFormatter;
+import net.neoforged.testframework.summary.FileSummaryDumper;
 import net.neoforged.testframework.summary.FormattingUtil;
-import net.neoforged.testframework.summary.SummaryFormatter;
 import net.neoforged.testframework.summary.TestSummary;
 import net.neoforged.testframework.summary.md.Alignment;
 import net.neoforged.testframework.summary.md.Table;
@@ -24,10 +23,10 @@ import org.slf4j.Logger;
 
 @ApiStatus.Internal
 public final class SummaryDumper {
-    static final SummaryFormatter DEFAULT_LOG_FORMATTER = new DefaultLogSummaryFormatter();
-    static final FileSummaryFormatter DEFAULT_SUMMARY_FILE_FORMATTER = new DefaultMarkdownFileSummaryFormatter();
+    static final net.neoforged.testframework.summary.SummaryDumper DEFAULT_LOG_FORMATTER = new DefaultLogSummaryDumper();
+    static final FileSummaryDumper DEFAULT_SUMMARY_FILE_FORMATTER = new DefaultMarkdownFileSummaryDumper();
 
-    private static class DefaultMarkdownFileSummaryFormatter implements FileSummaryFormatter {
+    private static class DefaultMarkdownFileSummaryDumper implements FileSummaryDumper {
         @Override
         public Path outputPath(ResourceLocation frameworkId) {
             return Path.of("logs/tests/" + frameworkId.toString().replace(":", "_") + "/summary_" + Instant.now().truncatedTo(ChronoUnit.SECONDS).toString().replaceAll("[:TZ-]", "") + ".md");
@@ -77,9 +76,9 @@ public final class SummaryDumper {
         }
     }
 
-    private static class DefaultLogSummaryFormatter implements SummaryFormatter {
+    private static class DefaultLogSummaryDumper implements net.neoforged.testframework.summary.SummaryDumper {
         @Override
-        public void format(TestSummary summary, Logger logger) {
+        public void dump(TestSummary summary, Logger logger) {
             String text = summary.testInfos()
                     .stream()
                     .map(test -> MessageFormat.format("\tTest {0}:\n\t\t{1}", test.testId(), FormattingUtil.componentToAnsiFormattedText(test.status().asComponent())))

@@ -28,10 +28,10 @@ import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class JUnitSummaryFormatter implements FileSummaryFormatter {
+public class JUnitSummaryDumper implements FileSummaryDumper {
     private final Path outputDir;
 
-    public JUnitSummaryFormatter(Path outputDir) {
+    public JUnitSummaryDumper(Path outputDir) {
         this.outputDir = outputDir;
     }
 

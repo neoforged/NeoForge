@@ -59,7 +59,7 @@ import net.neoforged.testframework.group.Group;
 import net.neoforged.testframework.impl.packet.ChangeEnabledPayload;
 import net.neoforged.testframework.impl.packet.ChangeStatusPayload;
 import net.neoforged.testframework.impl.packet.TestFrameworkPayloadInitialization;
-import net.neoforged.testframework.summary.SummaryFormatter;
+import net.neoforged.testframework.summary.SummaryDumper;
 import net.neoforged.testframework.summary.TestSummary;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
@@ -174,12 +174,12 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
     private void processSummary(TestSummary summary) {
         if (configuration().useDefaultFormatters()) {
-            SummaryDumper.DEFAULT_LOG_FORMATTER.format(summary, logger);
-            SummaryDumper.DEFAULT_SUMMARY_FILE_FORMATTER.format(summary, logger);
+            net.neoforged.testframework.impl.SummaryDumper.DEFAULT_LOG_FORMATTER.dump(summary, logger);
+            net.neoforged.testframework.impl.SummaryDumper.DEFAULT_SUMMARY_FILE_FORMATTER.dump(summary, logger);
         }
-        for (SummaryFormatter formatter : configuration().formatters()) {
+        for (SummaryDumper formatter : configuration().formatters()) {
             if (formatter.enabled(summary))
-                formatter.format(summary, logger);
+                formatter.dump(summary, logger);
         }
     }
 

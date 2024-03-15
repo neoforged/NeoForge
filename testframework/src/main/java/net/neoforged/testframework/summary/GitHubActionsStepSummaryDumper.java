@@ -18,18 +18,18 @@ import net.neoforged.testframework.summary.md.Alignment;
 import net.neoforged.testframework.summary.md.Table;
 import org.slf4j.Logger;
 
-public class GitHubActionsStepSummaryFormatter implements FileSummaryFormatter {
+public class GitHubActionsStepSummaryDumper implements FileSummaryDumper {
     private final Function<TestSummary, String> heading;
 
-    public GitHubActionsStepSummaryFormatter() {
+    public GitHubActionsStepSummaryDumper() {
         this("Test Summary");
     }
 
-    public GitHubActionsStepSummaryFormatter(String heading) {
+    public GitHubActionsStepSummaryDumper(String heading) {
         this(summary -> heading);
     }
 
-    public GitHubActionsStepSummaryFormatter(Function<TestSummary, String> heading) {
+    public GitHubActionsStepSummaryDumper(Function<TestSummary, String> heading) {
         this.heading = heading;
     }
 

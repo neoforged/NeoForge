@@ -16,7 +16,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.testframework.impl.MutableTestFramework;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
-import net.neoforged.testframework.summary.SummaryFormatter;
+import net.neoforged.testframework.summary.SummaryDumper;
 import org.jetbrains.annotations.Nullable;
 
 @ParametersAreNonnullByDefault
@@ -28,7 +28,7 @@ public record FrameworkConfiguration(
         List<String> enabledTests,
         @Nullable Supplier<ClientConfiguration> clientConfiguration,
         boolean useDefaultFormatters,
-        List<SummaryFormatter> formatters) {
+        List<SummaryDumper> formatters) {
 
     public static Builder builder(ResourceLocation id) {
         return new Builder(id);
@@ -47,7 +47,7 @@ public record FrameworkConfiguration(
 
         private int commandRequiredPermission = Commands.LEVEL_GAMEMASTERS;
         private final List<String> enabledTests = new ArrayList<>();
-        private final List<SummaryFormatter> formatters = new ArrayList<>();
+        private final List<SummaryDumper> formatters = new ArrayList<>();
         private boolean useDefaultFormatters = true;
 
         private @Nullable Supplier<ClientConfiguration> clientConfiguration;
@@ -85,7 +85,7 @@ public record FrameworkConfiguration(
             return this;
         }
 
-        public Builder formatters(SummaryFormatter... formatters) {
+        public Builder formatters(SummaryDumper... formatters) {
             this.formatters.addAll(List.of(formatters));
             return this;
         }

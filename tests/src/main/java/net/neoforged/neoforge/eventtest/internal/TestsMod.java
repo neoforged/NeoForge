@@ -23,8 +23,8 @@ import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.conf.FrameworkConfiguration;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.impl.MutableTestFramework;
-import net.neoforged.testframework.summary.GitHubActionsStepSummaryFormatter;
-import net.neoforged.testframework.summary.JUnitSummaryFormatter;
+import net.neoforged.testframework.summary.GitHubActionsStepSummaryDumper;
+import net.neoforged.testframework.summary.JUnitSummaryDumper;
 import org.lwjgl.glfw.GLFW;
 
 @Mod("neotests")
@@ -50,7 +50,7 @@ public class TestsMod {
                         .openManagerKey(GLFW.GLFW_KEY_N)
                         .build())
                 .enable(Feature.CLIENT_SYNC, Feature.CLIENT_MODIFICATIONS, Feature.TEST_STORE)
-                .formatters(new JUnitSummaryFormatter(Path.of("tests/")), new GitHubActionsStepSummaryFormatter())
+                .formatters(new JUnitSummaryDumper(Path.of("tests/")), new GitHubActionsStepSummaryDumper())
                 .build().create();
 
         framework.init(modBus, container);
