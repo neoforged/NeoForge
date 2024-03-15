@@ -64,19 +64,19 @@ public final class FormattingUtil {
             text = text.replaceAll("\\w", "*");
         }
         if (style.isBold()) {
-            text = "<b>" + text + "</b>";
+            text = "**" + text + "**";
         }
         if (style.isItalic()) {
-            text = "<i>" + text + "</i>";
+            text = "*" + text + "*";
         }
         if (style.isStrikethrough()) {
-            text = "<s>" + text + "</s>";
+            text = "~~" + text + "~~";
         }
         if (style.isUnderlined()) {
             text = "<u>" + text + "</u>";
         }
         if (style.getColor() != null) {
-            text = "<font color=#" + style.getColor().toString() + ">" + text + "</font>";
+            text = "<font color=\"" + style.getColor().toString() + "\">" + text + "</font>";
         }
         return text;
     }
