@@ -58,22 +58,38 @@
          p_282567_.pose().popPose();
      }
  
-@@ -228,6 +_,7 @@
-             }
-         }
- 
-+        if(p_282613_.shouldRenderItem(itemstack)) {
-         if (!flag1) {
-             if (flag) {
+@@ -233,19 +_,23 @@
                  p_281607_.fill(i, j, i + 16, j + 16, -2130706433);
-@@ -242,6 +_,7 @@
+             }
  
-             p_281607_.renderItemDecorations(this.font, itemstack, i, j, s);
+-            int j1 = p_282613_.x + p_282613_.y * this.imageWidth;
+-            if (p_282613_.isFake()) {
+-                p_281607_.renderFakeItem(itemstack, i, j, j1);
+-            } else {
+-                p_281607_.renderItem(itemstack, i, j, j1);
+-            }
+-
+-            p_281607_.renderItemDecorations(this.font, itemstack, i, j, s);
++            renderSlotContents(p_281607_, itemstack, p_282613_, s);
          }
-+        }
  
          p_281607_.pose().popPose();
      }
+ 
++    protected void renderSlotContents(GuiGraphics guiGraphics, ItemStack itemstack, Slot slot, @Nullable String countString) {
++        int j1 = slot.x + slot.y * this.imageWidth;
++        if (slot.isFake()) {
++            guiGraphics.renderFakeItem(itemstack, slot.x, slot.y, j1);
++        } else {
++            guiGraphics.renderItem(itemstack, slot.x, slot.y, j1);
++        }
++
++        guiGraphics.renderItemDecorations(this.font, itemstack, slot.x, slot.y, countString);
++    }
++
+     private void recalculateQuickCraftRemaining() {
+         ItemStack itemstack = this.menu.getCarried();
+         if (!itemstack.isEmpty() && this.isQuickCrafting) {
 @@ -282,7 +_,8 @@
          if (super.mouseClicked(p_97748_, p_97749_, p_97750_)) {
              return true;
