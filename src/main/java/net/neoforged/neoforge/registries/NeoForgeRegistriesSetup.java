@@ -61,7 +61,6 @@ public class NeoForgeRegistriesSetup {
         event.register(NeoForgeRegistries.INGREDIENT_TYPES);
         event.register(NeoForgeRegistries.CONDITION_SERIALIZERS);
         event.register(NeoForgeRegistries.ENTITY_PREDICATE_SERIALIZERS);
-        event.register(NeoForgeRegistries.ITEM_PREDICATE_SERIALIZERS);
         event.register(NeoForgeRegistries.ATTACHMENT_TYPES);
     }
 

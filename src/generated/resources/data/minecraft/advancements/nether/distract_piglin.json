@@ -48,7 +48,9 @@
           }
         ],
         "item": {
-          "type": "neoforge:piglin_currency"
+          "predicates": {
+            "neoforge:piglin_currency": {}
+          }
         },
         "player": [
           {
@@ -71,6 +73,7 @@
       "translate": "advancements.nether.distract_piglin.description"
     },
     "icon": {
+      "count": 1,
       "id": "minecraft:gold_ingot"
     },
     "title": {

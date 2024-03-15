@@ -64,7 +64,6 @@
     "minecraft:worldgen/pool_alias_binding",
     "minecraft:cat_variant",
     "minecraft:frog_variant",
-    "minecraft:banner_pattern",
     "minecraft:instrument",
     "minecraft:decorated_pot_patterns",
     "minecraft:creative_mode_tab",
@@ -72,6 +71,8 @@
     "minecraft:number_format_type",
     "minecraft:armor_material",
     "minecraft:data_component_type",
+    "minecraft:entity_sub_predicate_type",
+    "minecraft:item_sub_predicate_type",
     "neoforge:attachment_types",
     "neoforge:biome_modifier_serializers",
     "neoforge:condition_codecs",
@@ -82,7 +83,6 @@
     "neoforge:global_loot_modifier_serializers",
     "neoforge:holder_set_type",
     "neoforge:ingredient_serializer",
-    "neoforge:item_predicates",
     "neoforge:structure_modifier_serializers"
   ]
 }
