@@ -28,8 +28,7 @@ public record FrameworkConfiguration(
         List<String> enabledTests,
         @Nullable Supplier<ClientConfiguration> clientConfiguration,
         boolean useDefaultFormatters,
-        List<SummaryFormatter> formatters
-) {
+        List<SummaryFormatter> formatters) {
 
     public static Builder builder(ResourceLocation id) {
         return new Builder(id);
@@ -42,14 +41,13 @@ public record FrameworkConfiguration(
     public MutableTestFramework create() {
         return new TestFrameworkImpl(this);
     }
-
     public static final class Builder {
         private final ResourceLocation id;
         private final Collection<Feature> features = EnumSet.noneOf(Feature.class);
 
         private int commandRequiredPermission = Commands.LEVEL_GAMEMASTERS;
         private final List<String> enabledTests = new ArrayList<>();
-        private final List<SummaryFormatter> formatters = new ArrayList<>(); 
+        private final List<SummaryFormatter> formatters = new ArrayList<>();
         private boolean useDefaultFormatters = true;
 
         private @Nullable Supplier<ClientConfiguration> clientConfiguration;

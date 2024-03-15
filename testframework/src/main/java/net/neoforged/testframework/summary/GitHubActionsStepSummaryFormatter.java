@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.summary;
 
 import java.io.PrintWriter;
@@ -11,7 +16,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.summary.md.Table;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 public class GitHubActionsStepSummaryFormatter implements FileSummaryFormatter {
@@ -59,8 +63,7 @@ public class GitHubActionsStepSummaryFormatter implements FileSummaryFormatter {
                         failedTest.testId(),
                         FormattingUtil.componentToMarkdownFormattedText(status),
                         failedTest.status().message(),
-                        getDescription(failedTest)
-                );
+                        getDescription(failedTest));
             }
         }
         if (!passedTests.isEmpty()) {
@@ -69,8 +72,7 @@ public class GitHubActionsStepSummaryFormatter implements FileSummaryFormatter {
                         passedTest.testId(),
                         FormattingUtil.componentToMarkdownFormattedText(passedTest.status().result().asComponent()),
                         passedTest.status().message(),
-                        getDescription(passedTest)
-                );
+                        getDescription(passedTest));
             }
         }
         if (!passedTests.isEmpty() && failedTests.isEmpty()) {
@@ -80,7 +82,7 @@ public class GitHubActionsStepSummaryFormatter implements FileSummaryFormatter {
         writer.println(builder.build());
     }
 
-    private static @NotNull String getDescription(TestSummary.TestInfo failedTest) {
+    private static String getDescription(TestSummary.TestInfo failedTest) {
         return FormattingUtil.componentsToMarkdownFormattedText(failedTest.description().stream().filter(c -> !c.getString().equals("GameTest-only")).toList());
     }
 }

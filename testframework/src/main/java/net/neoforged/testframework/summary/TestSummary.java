@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.summary;
 
 import com.google.common.collect.ImmutableList;
@@ -7,7 +12,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.testframework.Test;
 
 public record TestSummary(ResourceLocation frameworkId, boolean isGameTestRun, List<TestInfo> testInfos) {
-    
     public record TestInfo(
             String testId,
             Component name,
@@ -16,11 +20,11 @@ public record TestSummary(ResourceLocation frameworkId, boolean isGameTestRun, L
             List<String> groups,
             boolean enabled,
             boolean manual,
-            boolean required
-    ) {
+            boolean required) {
         public Test.Result result() {
             return status().result();
         }
+
         public String message() {
             return status().message();
         }
@@ -35,7 +39,6 @@ public record TestSummary(ResourceLocation frameworkId, boolean isGameTestRun, L
             this.frameworkId = frameworkId;
             this.isGameTestRun = isGameTestRun;
         }
-
 
         public void addTest(String testId, Component name, List<Component> description, Test.Status status, List<String> groups, boolean enabled, boolean manual, boolean required) {
             this.tests.add(new TestInfo(testId, name, List.copyOf(description), status, groups, enabled, manual, required));

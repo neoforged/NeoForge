@@ -12,10 +12,10 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.testframework.Test;
 import net.neoforged.testframework.summary.FileSummaryFormatter;
 import net.neoforged.testframework.summary.FormattingUtil;
 import net.neoforged.testframework.summary.SummaryFormatter;
-import net.neoforged.testframework.Test;
 import net.neoforged.testframework.summary.TestSummary;
 import net.neoforged.testframework.summary.md.Alignment;
 import net.neoforged.testframework.summary.md.Table;
@@ -60,21 +60,20 @@ public final class SummaryDumper {
                 builder.addRow(
                         test.testId(),
                         FormattingUtil.componentToMarkdownFormattedText(status.result().asComponent()),
-                        status.result() == Test.Result.FAILED ? "<font color=red>" + actualMessage + "</red>" : actualMessage
-                );
+                        status.result() == Test.Result.FAILED ? "<font color=red>" + actualMessage + "</red>" : actualMessage);
             }
 
             writer.format("""
-            # Test Summary
-    
-            ## Disabled Tests
-            %s
-    
-            ## Enabled Tests
-            %s
-    
-            %s
-            """, disabledList, enabledList, builder.build());
+                    # Test Summary
+
+                    ## Disabled Tests
+                    %s
+
+                    ## Enabled Tests
+                    %s
+
+                    %s
+                    """, disabledList, enabledList, builder.build());
         }
     }
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.summary;
 
 import java.util.List;
@@ -8,7 +13,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 
 public final class FormattingUtil {
-
     public static String componentToString(Component component, Style baseStyle, BiFunction<Style, String, String> formatter) {
         StringBuilder builder = new StringBuilder();
         component.visit((style, text) -> {

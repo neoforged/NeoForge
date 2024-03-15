@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.testframework.summary;
 
 import java.io.PrintWriter;
@@ -43,7 +48,7 @@ public class JUnitSummaryFormatter implements FileSummaryFormatter {
         }
         List<TestSuite> suites = new ArrayList<>();
         if (!root.testCases.isEmpty()) {
-            TestSuite d = new TestSuite(null,"default");
+            TestSuite d = new TestSuite(null, "default");
             root.testCases.values().forEach(d::addToSuite);
             suites.add(d);
         }
@@ -91,7 +96,7 @@ public class JUnitSummaryFormatter implements FileSummaryFormatter {
         Element properties = document.createElement("properties");
         Element desc = document.createElement("property");
         desc.setAttribute("name", "description");
-        desc.setTextContent("\n"+FormattingUtil.componentsToPlainString(testCase.info.description())+"\n");
+        desc.setTextContent("\n" + FormattingUtil.componentsToPlainString(testCase.info.description()) + "\n");
         properties.appendChild(desc);
         Element step = document.createElement("property");
         switch (testCase.type) {
@@ -170,7 +175,7 @@ public class JUnitSummaryFormatter implements FileSummaryFormatter {
                 default -> this.type = Type.SKIPPED;
             }
         }
-        
+
         enum Type {
             PASSED, FAILURE, SKIPPED
         }
