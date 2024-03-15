@@ -9,7 +9,6 @@ import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -243,9 +242,8 @@ public class GlobalLootModifiersTest {
                         MatchTool.toolMatches(ItemPredicate.Builder.item().withSubPredicate(
                                 ItemSubPredicates.ENCHANTMENTS,
                                 ItemEnchantmentsPredicate.enchantments(
-                                        List.of(new EnchantmentPredicate(SMELT.get(), MinMaxBounds.Ints.atLeast(1)))
-                                )
-                        )).build(),
+                                        List.of(new EnchantmentPredicate(SMELT.get(), MinMaxBounds.Ints.atLeast(1))))))
+                                .build(),
                         new TestEnabledLootCondition(test)
                 })));
 
