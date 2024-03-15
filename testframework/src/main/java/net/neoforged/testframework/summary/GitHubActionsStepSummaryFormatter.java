@@ -14,6 +14,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.testframework.Test;
+import net.neoforged.testframework.summary.md.Alignment;
 import net.neoforged.testframework.summary.md.Table;
 import org.slf4j.Logger;
 
@@ -51,6 +52,7 @@ public class GitHubActionsStepSummaryFormatter implements FileSummaryFormatter {
         List<TestSummary.TestInfo> failedTests = testsByStatus.getOrDefault(Test.Result.FAILED, List.of());
         List<TestSummary.TestInfo> passedTests = testsByStatus.getOrDefault(Test.Result.PASSED, List.of());
         Table.Builder builder = Table.builder()
+                .withAlignments(Alignment.LEFT, Alignment.CENTER, Alignment.LEFT, Alignment.LEFT)
                 .addRow("Test Id", "Test Result", "Status message", "Test description");
         if (!failedTests.isEmpty()) {
             for (TestSummary.TestInfo failedTest : failedTests) {
