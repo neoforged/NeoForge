@@ -25,7 +25,9 @@
               "condition": "minecraft:entity_properties",
               "entity": "this",
               "predicate": {
-                "type": "neoforge:piglin_neutral_armor"
+                "type_specific": {
+                  "type": "neoforge:piglin_neutral_armor"
+                }
               }
             }
           }
@@ -59,7 +61,9 @@
               "condition": "minecraft:entity_properties",
               "entity": "this",
               "predicate": {
-                "type": "neoforge:piglin_neutral_armor"
+                "type_specific": {
+                  "type": "neoforge:piglin_neutral_armor"
+                }
               }
             }
           }

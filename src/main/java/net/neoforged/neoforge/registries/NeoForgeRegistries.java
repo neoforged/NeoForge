@@ -14,7 +14,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.common.advancements.critereon.ICustomEntityPredicate;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
@@ -45,7 +44,6 @@ public class NeoForgeRegistries {
             .create();
     public static final Registry<IngredientType<?>> INGREDIENT_TYPES = new RegistryBuilder<>(Keys.INGREDIENT_TYPES).create();
     public static final Registry<Codec<? extends ICondition>> CONDITION_SERIALIZERS = new RegistryBuilder<>(Keys.CONDITION_CODECS).create();
-    public static final Registry<Codec<? extends ICustomEntityPredicate>> ENTITY_PREDICATE_SERIALIZERS = new RegistryBuilder<>(Keys.ENTITY_PREDICATE_SERIALIZERS).create();
     public static final Registry<AttachmentType<?>> ATTACHMENT_TYPES = new RegistryBuilder<>(Keys.ATTACHMENT_TYPES).create();
 
     // Reminder: If you add a registry to NeoForge itself, remember to add it to NeoForgeRegistriesSetup#registerRegistries.
@@ -61,7 +59,6 @@ public class NeoForgeRegistries {
         public static final ResourceKey<Registry<ItemDisplayContext>> DISPLAY_CONTEXTS = key("display_contexts");
         public static final ResourceKey<Registry<IngredientType<?>>> INGREDIENT_TYPES = key("ingredient_serializer");
         public static final ResourceKey<Registry<Codec<? extends ICondition>>> CONDITION_CODECS = key("condition_codecs");
-        public static final ResourceKey<Registry<Codec<? extends ICustomEntityPredicate>>> ENTITY_PREDICATE_SERIALIZERS = key("entity_predicates");
         public static final ResourceKey<Registry<AttachmentType<?>>> ATTACHMENT_TYPES = key("attachment_types");
 
         // NeoForge Dynamic
