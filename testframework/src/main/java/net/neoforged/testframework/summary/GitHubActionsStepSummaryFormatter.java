@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.summary.md.Table;
@@ -55,13 +54,9 @@ public class GitHubActionsStepSummaryFormatter implements FileSummaryFormatter {
                 .addRow("Test Id", "Test Result", "Status message", "Test description");
         if (!failedTests.isEmpty()) {
             for (TestSummary.TestInfo failedTest : failedTests) {
-                MutableComponent status = failedTest.status().result().asComponent();
-                if (!failedTest.manual() && !failedTest.required()) {
-                    status.withColor(0x888800).append("(optional)");
-                }
                 builder.addRow(
                         failedTest.testId(),
-                        FormattingUtil.componentToMarkdownFormattedText(status),
+                        formatStatus(failedTest.result(), !failedTest.manual() && !failedTest.required()),
                         failedTest.status().message(),
                         getDescription(failedTest));
             }
@@ -70,7 +65,7 @@ public class GitHubActionsStepSummaryFormatter implements FileSummaryFormatter {
             for (TestSummary.TestInfo passedTest : passedTests) {
                 builder.addRow(
                         passedTest.testId(),
-                        FormattingUtil.componentToMarkdownFormattedText(passedTest.status().result().asComponent()),
+                        formatStatus(passedTest.status().result(), false),
                         passedTest.status().message(),
                         getDescription(passedTest));
             }
@@ -82,7 +77,16 @@ public class GitHubActionsStepSummaryFormatter implements FileSummaryFormatter {
         writer.println(builder.build());
     }
 
+    protected String formatStatus(Test.Result result, boolean optional) {
+        if (result.failed() && !optional) {
+            return "❌";
+        } else if (result.passed()) {
+            return "✅";
+        }
+        return "⚠️";
+    }
+
     private static String getDescription(TestSummary.TestInfo failedTest) {
-        return FormattingUtil.componentsToMarkdownFormattedText(failedTest.description().stream().filter(c -> !c.getString().equals("GameTest-only")).toList());
+        return FormattingUtil.componentsToPlainString(failedTest.description().stream().filter(c -> !c.getString().equals("GameTest-only")).toList());
     }
 }

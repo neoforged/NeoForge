@@ -65,7 +65,7 @@ public final class FormattingUtil {
 
     private static String toMarkdown(Style style, String text) {
         if (style.isObfuscated()) {
-            text = text.replaceAll("\\w", "*");
+            text = "\\*\\*\\*\\*\\*";
         }
         if (style.isBold()) {
             text = "**" + text + "**";
