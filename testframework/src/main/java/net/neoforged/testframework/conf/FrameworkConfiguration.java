@@ -14,8 +14,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.commands.Commands;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.testframework.impl.DefaultMarkdownFileSummaryDumper;
 import net.neoforged.testframework.impl.MutableTestFramework;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
+import net.neoforged.testframework.summary.DefaultLogSummaryDumper;
 import net.neoforged.testframework.summary.SummaryDumper;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,8 +29,7 @@ public record FrameworkConfiguration(
         int commandRequiredPermission,
         List<String> enabledTests,
         @Nullable Supplier<ClientConfiguration> clientConfiguration,
-        boolean useDefaultFormatters,
-        List<SummaryDumper> formatters) {
+        List<SummaryDumper> dumpers) {
 
     public static Builder builder(ResourceLocation id) {
         return new Builder(id);
@@ -41,14 +42,14 @@ public record FrameworkConfiguration(
     public MutableTestFramework create() {
         return new TestFrameworkImpl(this);
     }
+
     public static final class Builder {
         private final ResourceLocation id;
         private final Collection<Feature> features = EnumSet.noneOf(Feature.class);
 
         private int commandRequiredPermission = Commands.LEVEL_GAMEMASTERS;
         private final List<String> enabledTests = new ArrayList<>();
-        private final List<SummaryDumper> formatters = new ArrayList<>();
-        private boolean useDefaultFormatters = true;
+        private final List<SummaryDumper> dumpers = new ArrayList<>();
 
         private @Nullable Supplier<ClientConfiguration> clientConfiguration;
 
@@ -58,6 +59,8 @@ public record FrameworkConfiguration(
             for (final Feature value : Feature.values()) {
                 if (value.isEnabledByDefault()) enable(value);
             }
+
+            dumpers(new DefaultLogSummaryDumper(), new DefaultMarkdownFileSummaryDumper());
         }
 
         public Builder enable(Feature... features) {
@@ -85,18 +88,18 @@ public record FrameworkConfiguration(
             return this;
         }
 
-        public Builder formatters(SummaryDumper... formatters) {
-            this.formatters.addAll(List.of(formatters));
+        public Builder dumpers(SummaryDumper... dumpers) {
+            this.dumpers.addAll(List.of(dumpers));
             return this;
         }
 
-        public Builder useDefaultFormatters(boolean useDefaultFormatters) {
-            this.useDefaultFormatters = useDefaultFormatters;
-            return this;
+        public Builder setDumpers(SummaryDumper... dumpers) {
+            this.dumpers.clear();
+            return dumpers(dumpers);
         }
 
         public FrameworkConfiguration build() {
-            return new FrameworkConfiguration(id, features, commandRequiredPermission, enabledTests, clientConfiguration, useDefaultFormatters, formatters);
+            return new FrameworkConfiguration(id, features, commandRequiredPermission, enabledTests, clientConfiguration, dumpers);
         }
     }
 }

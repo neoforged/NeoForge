@@ -50,7 +50,7 @@ public class TestsMod {
                         .openManagerKey(GLFW.GLFW_KEY_N)
                         .build())
                 .enable(Feature.CLIENT_SYNC, Feature.CLIENT_MODIFICATIONS, Feature.TEST_STORE)
-                .formatters(new JUnitSummaryDumper(Path.of("tests/")), new GitHubActionsStepSummaryDumper())
+                .dumpers(new JUnitSummaryDumper(Path.of("tests/")), new GitHubActionsStepSummaryDumper())
                 .build().create();
 
         framework.init(modBus, container);

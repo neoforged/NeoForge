@@ -173,11 +173,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
     }
 
     private void processSummary(TestSummary summary) {
-        if (configuration().useDefaultFormatters()) {
-            net.neoforged.testframework.impl.SummaryDumper.DEFAULT_LOG_FORMATTER.dump(summary, logger);
-            net.neoforged.testframework.impl.SummaryDumper.DEFAULT_SUMMARY_FILE_FORMATTER.dump(summary, logger);
-        }
-        for (SummaryDumper formatter : configuration().formatters()) {
+        for (SummaryDumper formatter : configuration().dumpers()) {
             if (formatter.enabled(summary))
                 formatter.dump(summary, logger);
         }
