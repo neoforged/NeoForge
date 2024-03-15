@@ -62,8 +62,8 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
     private static List<AdvancementGenerator> getVanillaAdvancementProviders(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         List<BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>>> criteriaReplacers = new ArrayList<>();
         criteriaReplacers.add(replaceMatchToolCriteria(ToolActions.AXE_WAX_OFF, getPrivateValue(VanillaHusbandryAdvancements.class, null, "WAX_SCRAPING_TOOLS")));
-        criteriaReplacers.add(replaceInteractCriteria(PiglinCurrencyItemPredicate.INSTANCE.toVanilla(), PiglinAi.BARTERING_ITEM));
-        criteriaReplacers.add(replaceWearingPredicate(PiglinNeutralArmorEntityPredicate.INSTANCE.toVanilla(), predicate -> {
+        criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withSubPredicate(PiglinCurrencyItemPredicate.TYPE, PiglinCurrencyItemPredicate.INSTANCE).build(), PiglinAi.BARTERING_ITEM));
+        criteriaReplacers.add(replaceWearingPredicate(EntityPredicate.Builder.entity().subPredicate(PiglinNeutralArmorEntityPredicate.INSTANCE).build(), predicate -> {
             if (predicate.head().filter(item -> predicateMatches(item, Items.GOLDEN_HELMET)).isPresent()) {
                 return true;
             } else if (predicate.chest().filter(item -> predicateMatches(item, Items.GOLDEN_CHESTPLATE)).isPresent()) {
@@ -83,7 +83,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
     private static BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>> replaceMatchToolCriteria(ToolAction toolAction, ItemLike... targetItem) {
         UnaryOperator<LootItemCondition> replacer = condition -> {
             if (condition instanceof MatchTool toolMatch && toolMatch.predicate().filter(predicate -> predicateMatches(predicate, targetItem)).isPresent()) {
-                return new MatchTool(Optional.of(new ToolActionItemPredicate(toolAction).toVanilla()));
+                return new MatchTool(Optional.of(ItemPredicate.Builder.item().withSubPredicate(ToolActionItemPredicate.TYPE, new ToolActionItemPredicate(toolAction)).build()));
             }
             return null;
         };

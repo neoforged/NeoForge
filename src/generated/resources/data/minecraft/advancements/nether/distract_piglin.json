@@ -25,7 +25,9 @@
               "condition": "minecraft:entity_properties",
               "entity": "this",
               "predicate": {
-                "type": "neoforge:piglin_neutral_armor"
+                "type_specific": {
+                  "type": "neoforge:piglin_neutral_armor"
+                }
               }
             }
           }
@@ -48,7 +50,9 @@
           }
         ],
         "item": {
-          "type": "neoforge:piglin_currency"
+          "predicates": {
+            "neoforge:piglin_currency": {}
+          }
         },
         "player": [
           {
@@ -57,7 +61,9 @@
               "condition": "minecraft:entity_properties",
               "entity": "this",
               "predicate": {
-                "type": "neoforge:piglin_neutral_armor"
+                "type_specific": {
+                  "type": "neoforge:piglin_neutral_armor"
+                }
               }
             }
           }
@@ -71,6 +77,7 @@
       "translate": "advancements.nether.distract_piglin.description"
     },
     "icon": {
+      "count": 1,
       "id": "minecraft:gold_ingot"
     },
     "title": {

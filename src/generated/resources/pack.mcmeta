@@ -3,7 +3,7 @@
     "description": {
       "translate": "pack.neoforge.description"
     },
-    "pack_format": 33,
+    "pack_format": 35,
     "supported_formats": [
       0,
       2147483647
