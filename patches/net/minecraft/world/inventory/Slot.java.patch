@@ -9,7 +9,7 @@
      }
  
      public ItemStack remove(int p_40227_) {
-@@ -94,6 +_,39 @@
+@@ -94,6 +_,38 @@
  
      public boolean isActive() {
          return true;
@@ -27,7 +27,6 @@
 +
 +    /**
 +     * Checks if the other slot is in the same inventory, by comparing the inventory reference.
-+     *
 +     * @param other
 +     * @return true if the other slot is in the same inventory
 +     */
