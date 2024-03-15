@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.eventtest.internal;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import java.nio.file.Path;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.resources.ResourceLocation;
@@ -22,6 +23,8 @@ import net.neoforged.testframework.conf.Feature;
 import net.neoforged.testframework.conf.FrameworkConfiguration;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.impl.MutableTestFramework;
+import net.neoforged.testframework.summary.GitHubActionsStepSummaryFormatter;
+import net.neoforged.testframework.summary.JUnitSummaryFormatter;
 import org.lwjgl.glfw.GLFW;
 
 @Mod("neotests")
@@ -46,8 +49,8 @@ public class TestsMod {
                         .toggleOverlayKey(GLFW.GLFW_KEY_J)
                         .openManagerKey(GLFW.GLFW_KEY_N)
                         .build())
-
                 .enable(Feature.CLIENT_SYNC, Feature.CLIENT_MODIFICATIONS, Feature.TEST_STORE)
+                .formatters(new JUnitSummaryFormatter(Path.of("tests/")), new GitHubActionsStepSummaryFormatter())
                 .build().create();
 
         framework.init(modBus, container);

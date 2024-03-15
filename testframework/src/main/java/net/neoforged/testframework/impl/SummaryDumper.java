@@ -5,90 +5,87 @@
 
 package net.neoforged.testframework.impl;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.io.PrintWriter;
+import java.nio.file.Path;
+import java.text.MessageFormat;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.stream.Collectors;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.testframework.summary.FileSummaryFormatter;
+import net.neoforged.testframework.summary.FormattingUtil;
+import net.neoforged.testframework.summary.SummaryFormatter;
 import net.neoforged.testframework.Test;
-import net.neoforged.testframework.impl.md.Alignment;
-import net.neoforged.testframework.impl.md.Table;
+import net.neoforged.testframework.summary.TestSummary;
+import net.neoforged.testframework.summary.md.Alignment;
+import net.neoforged.testframework.summary.md.Table;
 import org.jetbrains.annotations.ApiStatus;
+import org.slf4j.Logger;
 
 @ApiStatus.Internal
-public record SummaryDumper(MutableTestFramework framework) {
-    public String dumpTable() {
-        final Table.Builder builder = Table.builder()
-                .useFirstRowAsHeader(true)
-                .withAlignment(Alignment.CENTER)
-                .addRow("Test ID", "Status", "Extra Information");
+public final class SummaryDumper {
+    static final SummaryFormatter DEFAULT_LOG_FORMATTER = new DefaultLogSummaryFormatter();
+    static final FileSummaryFormatter DEFAULT_SUMMARY_FILE_FORMATTER = new DefaultMarkdownFileSummaryFormatter();
 
-        framework.tests().all().forEach(test -> {
-            final Test.Status status = framework.tests().getStatus(test.id());
-            if (!framework.tests().isEnabled(test.id()) && status.result() == Test.Result.NOT_PROCESSED) return;
-
-            final String actualMessage = status.message().isBlank() ? "-" : status.message();
-            builder.addRow(test.id(), colouredStatusResult(status), switch (status.result()) {
-                case FAILED -> "<font color=red>" + actualMessage + "</red>";
-                default -> actualMessage;
-            });
-        });
-
-        return builder.toString();
-    }
-
-    public String createLoggingSummary() {
-        final StringBuilder summary = new StringBuilder();
-
-        final Iterator<Test> itr = framework.tests().all().iterator();
-        while (itr.hasNext()) {
-            final Test test = itr.next();
-            final Test.Status status = framework.tests().getStatus(test.id());
-            summary.append("\tTest ").append(test.id()).append(":\n");
-            summary.append("\t\t").append(status.result()).append(status.message().isBlank() ? "" : " - " + status.message());
-            if (itr.hasNext()) summary.append('\n');
+    private static class DefaultMarkdownFileSummaryFormatter implements FileSummaryFormatter {
+        @Override
+        public Path outputPath(ResourceLocation frameworkId) {
+            return Path.of("logs/tests/" + frameworkId.toString().replace(":", "_") + "/summary_" + Instant.now().truncatedTo(ChronoUnit.SECONDS).toString().replaceAll("[:TZ-]", "") + ".md");
         }
 
-        return summary.toString();
-    }
+        @Override
+        public void write(TestSummary summary, Logger logger, PrintWriter writer) {
+            String disabledList = summary.testInfos()
+                    .stream()
+                    .filter(info -> !info.enabled())
+                    .map(info -> "- %s".formatted(info.testId()))
+                    .collect(Collectors.joining("\n"));
 
-    public String createEnabledList() {
-        final StringBuilder summary = new StringBuilder();
+            String enabledList = summary.testInfos()
+                    .stream()
+                    .filter(TestSummary.TestInfo::enabled)
+                    .map(info -> MessageFormat.format("- {0}:\n\t\t{1}", info.testId(), FormattingUtil.componentToMarkdownFormattedText(info.status().asComponent())))
+                    .collect(Collectors.joining("\n"));
 
-        final Iterator<Test> itr = enabledTests().iterator();
-        while (itr.hasNext()) {
-            final Test test = itr.next();
-            final Test.Status status = framework.tests().getStatus(test.id());
-            summary.append("- ").append(test.id()).append(":\n");
-            summary.append("\t\t").append(colouredStatusResult(status)).append(status.message().isBlank() ? "" : " - " + status.message());
-            if (itr.hasNext()) summary.append('\n');
+            Table.Builder builder = Table.builder()
+                    .useFirstRowAsHeader(true)
+                    .withAlignment(Alignment.CENTER)
+                    .addRow("Test ID", "Status", "Extra Information");
+
+            for (TestSummary.TestInfo test : summary.testInfos()) {
+                Test.Status status = test.status();
+                if (!test.enabled() && status.result() == Test.Result.NOT_PROCESSED) continue;
+
+                String actualMessage = status.message().isBlank() ? "-" : status.message();
+                builder.addRow(
+                        test.testId(),
+                        FormattingUtil.componentToMarkdownFormattedText(status.result().asComponent()),
+                        status.result() == Test.Result.FAILED ? "<font color=red>" + actualMessage + "</red>" : actualMessage
+                );
+            }
+
+            writer.format("""
+            # Test Summary
+    
+            ## Disabled Tests
+            %s
+    
+            ## Enabled Tests
+            %s
+    
+            %s
+            """, disabledList, enabledList, builder.build());
         }
-
-        return summary.toString();
     }
 
-    public String createDisabledList() {
-        return String.join(", ", framework.tests().all().stream()
-                .map(Test::id)
-                .filter(id -> !framework.tests().isEnabled(id))
-                .toList());
-    }
-
-    private Stream<Test> enabledTests() {
-        final Predicate<Test> testPredicate = unique().and(test -> framework.tests().isEnabled(test.id()));
-        return framework.tests().allGroups()
-                .stream()
-                .flatMap(group -> group.resolveAsStream().filter(testPredicate));
-    }
-
-    private static Predicate<Test> unique() {
-        return new HashSet<Test>()::add;
-    }
-
-    private static String colouredStatusResult(Test.Status status) {
-        return switch (status.result()) {
-            case PASSED -> "<font color=green>" + status.result().asHumanReadable() + "</font>";
-            case FAILED -> "<font color=red>" + status.result().asHumanReadable() + "</font>";
-            default -> status.result().asHumanReadable();
-        };
+    private static class DefaultLogSummaryFormatter implements SummaryFormatter {
+        @Override
+        public void format(TestSummary summary, Logger logger) {
+            String text = summary.testInfos()
+                    .stream()
+                    .map(test -> MessageFormat.format("\tTest {0}:\n\t\t{1}", test.testId(), FormattingUtil.componentToAnsiFormattedText(test.status().asComponent())))
+                    .collect(Collectors.joining("\n"));
+            logger.info("Test summary:\n{}", text);
+        }
     }
 }

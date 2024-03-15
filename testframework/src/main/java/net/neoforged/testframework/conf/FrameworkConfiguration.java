@@ -16,13 +16,20 @@ import net.minecraft.commands.Commands;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.testframework.impl.MutableTestFramework;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
+import net.neoforged.testframework.summary.SummaryFormatter;
 import org.jetbrains.annotations.Nullable;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public record FrameworkConfiguration(
-        ResourceLocation id, Collection<Feature> enabledFeatures, int commandRequiredPermission,
-        List<String> enabledTests, @Nullable Supplier<ClientConfiguration> clientConfiguration) {
+        ResourceLocation id,
+        Collection<Feature> enabledFeatures,
+        int commandRequiredPermission,
+        List<String> enabledTests,
+        @Nullable Supplier<ClientConfiguration> clientConfiguration,
+        boolean useDefaultFormatters,
+        List<SummaryFormatter> formatters
+) {
 
     public static Builder builder(ResourceLocation id) {
         return new Builder(id);
@@ -35,12 +42,15 @@ public record FrameworkConfiguration(
     public MutableTestFramework create() {
         return new TestFrameworkImpl(this);
     }
+
     public static final class Builder {
         private final ResourceLocation id;
         private final Collection<Feature> features = EnumSet.noneOf(Feature.class);
 
         private int commandRequiredPermission = Commands.LEVEL_GAMEMASTERS;
         private final List<String> enabledTests = new ArrayList<>();
+        private final List<SummaryFormatter> formatters = new ArrayList<>(); 
+        private boolean useDefaultFormatters = true;
 
         private @Nullable Supplier<ClientConfiguration> clientConfiguration;
 
@@ -77,10 +87,18 @@ public record FrameworkConfiguration(
             return this;
         }
 
+        public Builder formatters(SummaryFormatter... formatters) {
+            this.formatters.addAll(List.of(formatters));
+            return this;
+        }
+
+        public Builder useDefaultFormatters(boolean useDefaultFormatters) {
+            this.useDefaultFormatters = useDefaultFormatters;
+            return this;
+        }
+
         public FrameworkConfiguration build() {
-            return new FrameworkConfiguration(
-                    id, features, commandRequiredPermission,
-                    enabledTests, clientConfiguration);
+            return new FrameworkConfiguration(id, features, commandRequiredPermission, enabledTests, clientConfiguration, useDefaultFormatters, formatters);
         }
     }
 }
