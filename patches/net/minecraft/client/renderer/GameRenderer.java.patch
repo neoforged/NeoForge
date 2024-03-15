@@ -75,7 +75,7 @@
              .prepareCullFrustum(camera.getPosition(), matrix4f1, this.getProjectionMatrix(Math.max(d0, (double)this.minecraft.options.fov().get().intValue())));
          this.minecraft.levelRenderer.renderLevel(p_109090_, p_109091_, flag, camera, this, this.lightTexture, matrix4f1, matrix4f);
 +        this.minecraft.getProfiler().popPush("neoforge_render_last");
-+        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL, this.minecraft.levelRenderer, matrix4f1, matrix4f, this.minecraft.levelRenderer.getTicks(), camera, this.minecraft.levelRenderer.getFrustum());
++        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL, this.minecraft.levelRenderer, null, matrix4f1, matrix4f, this.minecraft.levelRenderer.getTicks(), camera, this.minecraft.levelRenderer.getFrustum());
          this.minecraft.getProfiler().popPush("hand");
          if (this.renderHand) {
              RenderSystem.clear(256, Minecraft.ON_OSX);

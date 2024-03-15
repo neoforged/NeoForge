@@ -128,8 +128,7 @@ public class RenderableTest {
 
             Vec3 cam = event.getCamera().getPosition();
             if (xOffset > -1) {
-                PoseStack poseStack = new PoseStack();
-                poseStack.mulPose(event.getModelViewMatrix());
+                PoseStack poseStack = event.getPoseStack();
                 render(stage, poseStack, event.getRenderTick(), event.getPartialTick(), cam.x, cam.y, cam.z, xOffset);
             }
         }

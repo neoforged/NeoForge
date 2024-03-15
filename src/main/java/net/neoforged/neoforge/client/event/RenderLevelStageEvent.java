@@ -5,9 +5,9 @@
 
 package net.neoforged.neoforge.client.event;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -21,6 +21,7 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.common.NeoForge;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 /**
@@ -35,6 +36,7 @@ import org.joml.Matrix4f;
 public class RenderLevelStageEvent extends Event {
     private final Stage stage;
     private final LevelRenderer levelRenderer;
+    private final PoseStack poseStack;
     private final Matrix4f modelViewMatrix;
     private final Matrix4f projectionMatrix;
     private final int renderTick;
@@ -42,9 +44,10 @@ public class RenderLevelStageEvent extends Event {
     private final Camera camera;
     private final Frustum frustum;
 
-    public RenderLevelStageEvent(Stage stage, LevelRenderer levelRenderer, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, float partialTick, Camera camera, Frustum frustum) {
+    public RenderLevelStageEvent(Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, float partialTick, Camera camera, Frustum frustum) {
         this.stage = stage;
         this.levelRenderer = levelRenderer;
+        this.poseStack = poseStack != null ? poseStack : new PoseStack();
         this.modelViewMatrix = modelViewMatrix;
         this.projectionMatrix = projectionMatrix;
         this.renderTick = renderTick;
@@ -66,6 +69,13 @@ public class RenderLevelStageEvent extends Event {
      */
     public LevelRenderer getLevelRenderer() {
         return levelRenderer;
+    }
+
+    /**
+     * {@return the pose stack used for rendering}
+     */
+    public PoseStack getPoseStack() {
+        return poseStack;
     }
 
     /**
