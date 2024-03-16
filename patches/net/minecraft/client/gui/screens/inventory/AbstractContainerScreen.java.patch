@@ -58,38 +58,31 @@
          p_282567_.pose().popPose();
      }
  
-@@ -233,19 +_,23 @@
+@@ -233,6 +_,14 @@
                  p_281607_.fill(i, j, i + 16, j + 16, -2130706433);
              }
  
--            int j1 = p_282613_.x + p_282613_.y * this.imageWidth;
--            if (p_282613_.isFake()) {
--                p_281607_.renderFakeItem(itemstack, i, j, j1);
--            } else {
--                p_281607_.renderItem(itemstack, i, j, j1);
--            }
--
--            p_281607_.renderItemDecorations(this.font, itemstack, i, j, s);
-+            renderSlotContents(p_281607_, itemstack, p_282613_, s);
-         }
- 
-         p_281607_.pose().popPose();
-     }
- 
-+    protected void renderSlotContents(GuiGraphics guiGraphics, ItemStack itemstack, Slot slot, @Nullable String countString) {
-+        int j1 = slot.x + slot.y * this.imageWidth;
-+        if (slot.isFake()) {
-+            guiGraphics.renderFakeItem(itemstack, slot.x, slot.y, j1);
-+        } else {
-+            guiGraphics.renderItem(itemstack, slot.x, slot.y, j1);
++            renderSlotContents(p_281607_, itemstack, p_282613_, i, j, s);
 +        }
 +
-+        guiGraphics.renderItemDecorations(this.font, itemstack, slot.x, slot.y, countString);
++        p_281607_.pose().popPose();
 +    }
 +
++    protected void renderSlotContents(GuiGraphics guiGraphics, ItemStack itemstack, Slot slot, int i, int j, @Nullable String countString) {
++            GuiGraphics p_281607_ = guiGraphics; Slot p_282613_ = slot; String s = countString;
+             int j1 = p_282613_.x + p_282613_.y * this.imageWidth;
+             if (p_282613_.isFake()) {
+                 p_281607_.renderFakeItem(itemstack, i, j, j1);
+@@ -241,9 +_,6 @@
+             }
+ 
+             p_281607_.renderItemDecorations(this.font, itemstack, i, j, s);
+-        }
+-
+-        p_281607_.pose().popPose();
+     }
+ 
      private void recalculateQuickCraftRemaining() {
-         ItemStack itemstack = this.menu.getCarried();
-         if (!itemstack.isEmpty() && this.isQuickCrafting) {
 @@ -282,7 +_,8 @@
          if (super.mouseClicked(p_97748_, p_97749_, p_97750_)) {
              return true;
