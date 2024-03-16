@@ -43,6 +43,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingStage;
 import net.neoforged.fml.ModLoadingWarning;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.language.IModInfo;
 import net.neoforged.neoforgespi.locating.IModFile;
@@ -59,6 +60,15 @@ public class ResourcePackLoader {
         return Optional.ofNullable(ModList.get().getModFileById(modId)).map(IModFileInfo::getFile).map(mf -> modResourcePacks.get(mf));
     }
 
+    public static void populatePackRepository(PackRepository resourcePacks, PackType packType) {
+        findResourcePacks();
+        // First add the mod's builtin packs
+        resourcePacks.addPackFinder(buildPackFinder(modResourcePacks, packType));
+        // Then fire the event to add more packs
+        ModLoader.get().postEvent(new AddPackFindersEvent(packType, resourcePacks::addPackFinder));
+    }
+
+    @Deprecated(forRemoval = true, since = "1.20.4")
     public static void loadResourcePacks(PackRepository resourcePacks, Function<Map<IModFile, Pack.ResourcesSupplier>, RepositorySource> packFinder) {
         findResourcePacks();
         resourcePacks.addPackFinder(packFinder.apply(modResourcePacks));

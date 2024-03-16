@@ -9,6 +9,15 @@
      }
  
      public void reload() {
+@@ -33,7 +_,7 @@
+     }
+ 
+     private Map<String, Pack> discoverAvailable() {
+-        Map<String, Pack> map = Maps.newTreeMap();
++        Map<String, Pack> map = Maps.newLinkedHashMap(); // Neo: use a linked hash map to preserve ordering
+ 
+         for(RepositorySource repositorysource : this.sources) {
+             repositorysource.loadPacks(p_143903_ -> map.put(p_143903_.getId(), p_143903_));
 @@ -71,11 +_,12 @@
      }
  
