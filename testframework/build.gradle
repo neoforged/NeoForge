@@ -31,6 +31,18 @@ license {
     include '**/*.java'
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(ProcessResources).configureEach {
+    inputs.properties version: version
+
+    filesMatching(['META-INF/mods.toml']) {
+        expand version: version
+    }
+}
+
 publishing {
     publications.create('TestFramework', MavenPublication) {
         groupId = project.group
