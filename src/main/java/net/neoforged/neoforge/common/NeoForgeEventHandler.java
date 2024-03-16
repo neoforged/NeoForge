@@ -133,7 +133,8 @@ public class NeoForgeEventHandler {
             if (attach == null || attach.networkCodec() == null) return;
             att.put(key, registry.getDataMap(attach));
         });
-        if (!att.isEmpty()) {
+        // Note: don't send data maps over in-memory connections, else the client-side handling will wipe non-synced data maps.
+        if (!att.isEmpty() && !player.connection.getConnection().isMemoryConnection()) {
             PacketDistributor.PLAYER.with(player).send(new RegistryDataMapSyncPayload<>(registry.key(), att));
         }
     }
