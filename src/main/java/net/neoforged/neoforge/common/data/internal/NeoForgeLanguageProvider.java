@@ -304,6 +304,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.EntityTypes.MINECARTS, "Minecarts");
         add(Tags.EntityTypes.BOATS, "Boats");
         add(Tags.EntityTypes.CAPTURING_NOT_SUPPORTED, "Capturing Not Supported");
+        add(Tags.EntityTypes.TELEPORTING_NOT_SUPPORTED, "Teleporting Not Supported");
 
         // Enchantments
         add(Tags.Enchantments.INCREASE_BLOCK_DROPS, "Increase Block Drops");
