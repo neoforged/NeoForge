@@ -89,6 +89,6 @@ public class GitHubActionsStepSummaryDumper implements FileSummaryDumper {
     }
 
     private static String getDescription(TestSummary.TestInfo failedTest) {
-        return FormattingUtil.componentsToPlainString(failedTest.description().stream().filter(c -> !c.getString().equals("GameTest-only")).toList());
+        return failedTest.description().stream().filter(c -> !c.getString().equals("GameTest-only")).map(FormattingUtil::componentToPlainString).collect(Collectors.joining("<br/>"));
     }
 }
