@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
 import net.neoforged.neoforge.client.RenderTypeHelper;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -40,12 +41,37 @@ public interface IBakedModelExtension {
         return self().getQuads(state, side, rand);
     }
 
+    /**
+     * @deprecated Use {@link #useAmbientOcclusion(BlockState, ModelData, RenderType)} instead
+     */
+    @Deprecated(forRemoval = true)
     default boolean useAmbientOcclusion(BlockState state) {
         return self().useAmbientOcclusion();
     }
 
+    /**
+     * @deprecated Use {@link #useAmbientOcclusion(BlockState, ModelData, RenderType)} instead
+     */
+    @Deprecated(forRemoval = true)
     default boolean useAmbientOcclusion(BlockState state, RenderType renderType) {
         return self().useAmbientOcclusion(state);
+    }
+
+    /**
+     * Controls the AO behavior for all quads of this model. The default behavior is to use AO unless the block emits light,
+     * {@link TriState#TRUE} and {@link TriState#FALSE} force AO to be enabled and disabled respectively, regardless of
+     * the block emitting light or not. {@link BakedQuad#hasAmbientOcclusion()} can be used to disable AO for a specific
+     * quad even if this method says otherwise.
+     * <p>
+     * This method cannot force AO if the global smooth lighting video setting is disabled.
+     *
+     * @param state      the block state this model is being rendered for
+     * @param data       the model data used to render this model
+     * @param renderType the render type the model is being rendered with
+     * @return {@link TriState#TRUE} to force-enable AO, {@link TriState#FALSE} to force-disable AO or {@link TriState#DEFAULT} to use vanilla AO behavior
+     */
+    default TriState useAmbientOcclusion(BlockState state, ModelData data, RenderType renderType) {
+        return useAmbientOcclusion(state, renderType) ? TriState.DEFAULT : TriState.FALSE;
     }
 
     /**
