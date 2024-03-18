@@ -16,11 +16,15 @@
      }
  
      @Override
-@@ -135,6 +_,7 @@
+@@ -135,6 +_,11 @@
                      this.disconnect(Component.translatable("disconnect.timeout"));
                  } else {
                      Component component = Component.translatable("disconnect.genericReason", "Internal Exception: " + p_129534_);
-+                    LOGGER.error("Exception caught in connection", p_129534_); // Neo: Always log critical network exceptions
++                    ConnectionProtocol protocol = this.channel.attr(getProtocolKey(this.getSending())).get().protocol();
++                    if (protocol == ConnectionProtocol.CONFIGURATION || protocol == ConnectionProtocol.PLAY) {
++                        // Neo: Always log critical network exceptions for config and play packets
++                        LOGGER.error("Exception caught in connection", p_129534_);
++                    }
                      if (flag) {
                          LOGGER.debug("Failed to sent packet", p_129534_);
                          if (this.getSending() == PacketFlow.CLIENTBOUND) {
