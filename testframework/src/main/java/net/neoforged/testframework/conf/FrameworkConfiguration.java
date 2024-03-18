@@ -14,15 +14,22 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.commands.Commands;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.testframework.impl.DefaultMarkdownFileSummaryDumper;
 import net.neoforged.testframework.impl.MutableTestFramework;
 import net.neoforged.testframework.impl.TestFrameworkImpl;
+import net.neoforged.testframework.summary.DefaultLogSummaryDumper;
+import net.neoforged.testframework.summary.SummaryDumper;
 import org.jetbrains.annotations.Nullable;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public record FrameworkConfiguration(
-        ResourceLocation id, Collection<Feature> enabledFeatures, int commandRequiredPermission,
-        List<String> enabledTests, @Nullable Supplier<ClientConfiguration> clientConfiguration) {
+        ResourceLocation id,
+        Collection<Feature> enabledFeatures,
+        int commandRequiredPermission,
+        List<String> enabledTests,
+        @Nullable Supplier<ClientConfiguration> clientConfiguration,
+        List<SummaryDumper> dumpers) {
 
     public static Builder builder(ResourceLocation id) {
         return new Builder(id);
@@ -41,6 +48,7 @@ public record FrameworkConfiguration(
 
         private int commandRequiredPermission = Commands.LEVEL_GAMEMASTERS;
         private final List<String> enabledTests = new ArrayList<>();
+        private final List<SummaryDumper> dumpers = new ArrayList<>();
 
         private @Nullable Supplier<ClientConfiguration> clientConfiguration;
 
@@ -50,6 +58,8 @@ public record FrameworkConfiguration(
             for (final Feature value : Feature.values()) {
                 if (value.isEnabledByDefault()) enable(value);
             }
+
+            dumpers(new DefaultLogSummaryDumper(), new DefaultMarkdownFileSummaryDumper());
         }
 
         public Builder enable(Feature... features) {
@@ -77,10 +87,18 @@ public record FrameworkConfiguration(
             return this;
         }
 
+        public Builder dumpers(SummaryDumper... dumpers) {
+            this.dumpers.addAll(List.of(dumpers));
+            return this;
+        }
+
+        public Builder setDumpers(SummaryDumper... dumpers) {
+            this.dumpers.clear();
+            return dumpers(dumpers);
+        }
+
         public FrameworkConfiguration build() {
-            return new FrameworkConfiguration(
-                    id, features, commandRequiredPermission,
-                    enabledTests, clientConfiguration);
+            return new FrameworkConfiguration(id, features, commandRequiredPermission, enabledTests, clientConfiguration, dumpers);
         }
     }
 }

@@ -221,7 +221,7 @@ public abstract class AbstractTestScreen extends Screen {
 
             @Override
             public void reset() {
-                framework.changeStatus(test, new Test.Status(Test.Result.NOT_PROCESSED, ""), null);
+                framework.changeStatus(test, Test.Status.DEFAULT, null);
             }
         }
 
@@ -333,7 +333,7 @@ public abstract class AbstractTestScreen extends Screen {
 
             @Override
             public void reset() {
-                group.resolveAll().forEach(test -> framework.changeStatus(test, new Test.Status(Test.Result.NOT_PROCESSED, ""), null));
+                group.resolveAll().forEach(test -> framework.changeStatus(test, Test.Status.DEFAULT, null));
             }
         }
     }

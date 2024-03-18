@@ -47,14 +47,14 @@ public final class GameTestRegistration {
                                     @Override
                                     public void testPassed(GameTestInfo info) {
                                         if (framework.tests().getStatus(test.id()).result() == Test.Result.NOT_PROCESSED) {
-                                            framework.changeStatus(test, new Test.Status(Test.Result.PASSED, "GameTest passed"), null);
+                                            framework.changeStatus(test, Test.Status.passed("GameTest passed"), null);
                                         }
                                         disable();
                                     }
 
                                     @Override
                                     public void testFailed(GameTestInfo info) {
-                                        framework.changeStatus(test, new Test.Status(Test.Result.FAILED, "GameTest fail: " + info.getError().getMessage()), null);
+                                        framework.changeStatus(test, Test.Status.failed("GameTest fail: " + info.getError().getMessage()), null);
                                         disable();
                                     }
 
@@ -69,7 +69,7 @@ public final class GameTestRegistration {
                                 try {
                                     data.function().accept(helper);
                                 } catch (GameTestAssertException assertion) {
-                                    framework.tests().setStatus(test.id(), new Test.Status(Test.Result.FAILED, "GameTest fail: " + assertion.getMessage()));
+                                    framework.tests().setStatus(test.id(), Test.Status.failed("GameTest fail: " + assertion.getMessage()));
                                     throw assertion;
                                 }
                             }, GameTestAssertException.class, ex -> framework.setEnabled(test, false, null))));
