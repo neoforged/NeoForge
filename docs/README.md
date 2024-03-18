@@ -47,8 +47,15 @@ Please ensure you have a valid email address associated with your GitHub account
 
 [CLA]: https://cla-assistant.io/neoforged/NeoForge
 [Crowdin]: https://crowdin.neoforged.net/neoforge
+
 [Contributing]: ../docs/CONTRIBUTING.md
 [Discord]: https://discord.neoforged.net/
 [Documentation]: https://docs.neoforged.net/
 [Download]: https://neoforged.net/
 [Getting-Started]: https://docs.neoforged.net/docs/gettingstarted/
+
+## Test Framework
+Recently, NeoForge has recently created its own test framework, and we figured out modders might find it useful to test their own mods. To use the framework, simply add this line to your `dependencies` block:
+```gradle
+testCompileOnly "net.neoforged:testframework:${neo_version}"
+```
