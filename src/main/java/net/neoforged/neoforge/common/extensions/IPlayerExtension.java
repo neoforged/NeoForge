@@ -127,6 +127,7 @@ public interface IPlayerExtension {
         return OptionalInt.empty();
     }
 
+    @SuppressWarnings("deprecation")
     default boolean mayFly() {
         return self().getAbilities().mayfly || self().getAttributeValue(NeoForgeMod.CREATIVE_FLIGHT) > 0;
     }
