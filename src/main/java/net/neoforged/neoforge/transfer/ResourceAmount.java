@@ -1,6 +1,9 @@
 package net.neoforged.neoforge.transfer;
 
 import java.util.Objects;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 
@@ -11,10 +14,20 @@ import net.neoforged.neoforge.fluids.FluidStack;
  * @param <T> the held resource type
  */
 public record ResourceAmount<T extends IResource>(T resource, int amount) {
-    // TODO: currently very awkward to use without codecs and stream codecs
-    // TODO: also very painful to convert to/from ItemStack/FluidStack
     public ResourceAmount {
         Objects.requireNonNull(resource, "resource");
+    }
+
+    /**
+     * Creates a standard stream codec for a resource amount.
+     */
+    public static <B extends FriendlyByteBuf, T extends IResource> StreamCodec<B, ResourceAmount<T>> streamCodec(StreamCodec<? super B, T> resourceCodec) {
+        return StreamCodec.composite(
+                resourceCodec,
+                ResourceAmount::resource,
+                ByteBufCodecs.VAR_INT,
+                ResourceAmount::amount,
+                ResourceAmount::new);
     }
 
     /**
@@ -25,5 +38,12 @@ public record ResourceAmount<T extends IResource>(T resource, int amount) {
      */
     public boolean isEmpty() {
         return amount <= 0 || resource.isBlank();
+    }
+
+    /**
+     * Returns a copy of this instance with an updated amount.
+     */
+    public ResourceAmount<T> withAmount(int newAmount) {
+        return new ResourceAmount<>(resource, newAmount);
     }
 }

@@ -41,6 +41,7 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.transfer.ResourceAmount;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -66,6 +67,23 @@ public final class FluidStack implements DataComponentHolder {
                             ExtraCodecs.strictOptionalField(DataComponentPatch.CODEC, "components", DataComponentPatch.EMPTY)
                                     .forGetter(stack -> stack.components.asPatch()))
                             .apply(instance, FluidStack::new)));
+
+    /**
+     * A standard codec for fluid stacks that always deserializes with a fixed amount,
+     * and does not accept empty stacks.
+     *
+     * <p>Fluid equivalent of {@link ItemStack#SINGLE_ITEM_CODEC}.
+     */
+    public static Codec<FluidStack> fixedAmountCodec(int amount) {
+        return ExtraCodecs.lazyInitializedCodec(
+                () -> RecordCodecBuilder.create(
+                        instance -> instance.group(
+                                FLUID_NON_EMPTY_CODEC.fieldOf("id").forGetter(FluidStack::getFluidHolder),
+                                ExtraCodecs.strictOptionalField(DataComponentPatch.CODEC, "components", DataComponentPatch.EMPTY)
+                                        .forGetter(stack -> stack.components.asPatch()))
+                                .apply(instance, (holder, patch) -> new FluidStack(holder, amount, patch))));
+    }
+
     /**
      * A standard codec for fluid stacks that accepts empty stacks, serializing them as {@code {}}.
      */
@@ -136,6 +154,10 @@ public final class FluidStack implements DataComponentHolder {
 
     public DataComponentPatch getComponentsPatch() {
         return !this.isEmpty() ? this.components.asPatch() : DataComponentPatch.EMPTY;
+    }
+
+    public static FluidStack of(ResourceAmount<FluidResource> resourceAmount) {
+        return resourceAmount.resource().toStack(resourceAmount.amount());
     }
 
     public FluidStack(Holder<Fluid> fluid, int amount, DataComponentPatch patch) {
@@ -445,6 +467,13 @@ public final class FluidStack implements DataComponentHolder {
     }
 
     // Extra methods that are not directly adapted from ItemStack go below
+
+    /**
+     * Creates a new {@link ResourceAmount} that represents this fluid stack.
+     */
+    public ResourceAmount<FluidResource> immutable() {
+        return new ResourceAmount<>(FluidResource.of(this), getAmount());
+    }
 
     /**
      * Returns the fluid type of this stack.

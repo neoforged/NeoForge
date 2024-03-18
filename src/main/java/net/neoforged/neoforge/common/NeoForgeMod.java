@@ -150,7 +150,6 @@ import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
 import net.neoforged.neoforge.fluids.FluidResource;
-import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
@@ -213,9 +212,8 @@ public class NeoForgeMod {
      * Inter-mod fluid container interactions should happen using {@link Capabilities.FluidHandler#ITEM}.</b>
      */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceAmount<FluidResource>>> FLUID_STACK_COMPONENT = DATA_COMPONENTS.register("fluid_stack", () -> DataComponentType.<ResourceAmount<FluidResource>>builder()
-            // TODO: we need proper codec support somewhere
-            .persistent(FluidStack.CODEC.xmap(fs -> new ResourceAmount<>(FluidResource.of(fs), fs.getAmount()), ra -> ra.resource().toStack(ra.amount())))
-            // TODO restore .networkSynchronized(FluidStack.STREAM_CODEC)
+            .persistent(FluidResource.OPTIONAL_WITH_AMOUNT_CODEC)
+            .networkSynchronized(ResourceAmount.streamCodec(FluidResource.OPTIONAL_STREAM_CODEC))
             .build());
 
     /**

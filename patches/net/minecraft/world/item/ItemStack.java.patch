@@ -9,6 +9,17 @@
      private static final Codec<Holder<Item>> ITEM_NON_AIR_CODEC = ExtraCodecs.validate(
          BuiltInRegistries.ITEM.holderByNameCodec(),
          p_330100_ -> p_330100_.is(Items.AIR.builtInRegistryHolder()) ? DataResult.error(() -> "Item must not be minecraft:air") : DataResult.success(p_330100_)
+@@ -204,6 +_,10 @@
+         return !this.isEmpty() ? this.components.asPatch() : DataComponentPatch.EMPTY;
+     }
+ 
++    public static ItemStack of(net.neoforged.neoforge.transfer.ResourceAmount<net.neoforged.neoforge.items.ItemResource> resourceAmount) {
++        return resourceAmount.resource().toStack(resourceAmount.amount());
++    }
++
+     public ItemStack(ItemLike p_41599_) {
+         this(p_41599_, 1);
+     }
 @@ -291,7 +_,7 @@
      }
  
