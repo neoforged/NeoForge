@@ -87,6 +87,9 @@ dependencies {
     installer ("net.neoforged:JarJarMetadata:${project.jarjar_version}") {
         exclude group: 'org.slf4j'
     }
+    // Manually override log4j since the version coming from other `installer` dependencies is outdated
+    installer "org.apache.logging.log4j:log4j-api:${project.log4j_version}"
+    installer "org.apache.logging.log4j:log4j-core:${project.log4j_version}"
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
 
