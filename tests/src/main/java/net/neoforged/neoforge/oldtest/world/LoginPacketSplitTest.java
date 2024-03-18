@@ -19,7 +19,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.EncoderException;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.Util;
 import net.minecraft.commands.Commands;

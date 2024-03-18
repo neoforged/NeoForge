@@ -37,7 +37,6 @@ import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.flag.FeatureFlagSet;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class InMemoryResourcePack implements PackResources {
@@ -87,7 +86,7 @@ public final class InMemoryResourcePack implements PackResources {
         return openResource(this.data.get(type), loc);
     }
 
-    private <T> @Nullable IoSupplier<InputStream> openResource(Map<T, Supplier<byte[]>> map, @NotNull T key) {
+    private <T> @Nullable IoSupplier<InputStream> openResource(Map<T, Supplier<byte[]>> map, T key) {
         final Supplier<byte[]> supplier = map.get(key);
         if (supplier == null) {
             return null;

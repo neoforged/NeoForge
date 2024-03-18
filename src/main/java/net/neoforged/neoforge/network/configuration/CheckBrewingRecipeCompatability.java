@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.network.configuration;
 
 import java.util.Collection;
@@ -19,7 +24,7 @@ public record CheckBrewingRecipeCompatability(ServerConfigurationPacketListener 
     public static final Type TYPE = new Type(ID);
 
     public static Collection<RecipeHolder<?>> filterCompatible(ServerGamePacketListenerImpl serverGamePacketListener, Collection<RecipeHolder<?>> holders) {
-        if (!serverGamePacketListener.isVanillaConnection()) return holders;
+        if (serverGamePacketListener.getConnectionType().isNeoForge()) return holders;
         return holders.stream().filter(holder -> !(holder.value() instanceof IBrewingRecipe)).toList();
     }
 
@@ -30,7 +35,7 @@ public record CheckBrewingRecipeCompatability(ServerConfigurationPacketListener 
 
     @Override
     public void run(Consumer<CustomPacketPayload> sender) {
-        if (listener().isVanillaConnection() && vanillaIncompatible()) {
+        if (!listener().getConnectionType().isNeoForge() && vanillaIncompatible()) {
             listener().disconnect(Component.translatableWithFallback("neoforge.network.negotiation.failure.vanilla.client.not_supported", Language.getInstance().getOrDefault("neoforge.network.negotiation.failure.vanilla.client.not_supported"), NeoForgeVersion.getVersion()));
         } else {
             listener().finishCurrentTask(type());

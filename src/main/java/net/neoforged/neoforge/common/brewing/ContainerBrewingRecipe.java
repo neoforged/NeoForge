@@ -15,7 +15,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
-import org.jetbrains.annotations.NotNull;
 
 public record ContainerBrewingRecipe(Ingredient input, Ingredient catalyst, ItemStack output) implements IBrewingRecipe {
 
@@ -39,14 +38,12 @@ public record ContainerBrewingRecipe(Ingredient input, Ingredient catalyst, Item
         return isInput(input) && isCatalyst(catalyst) ? makeOutput(input) : ItemStack.EMPTY;
     }
 
-    @NotNull
     private ItemStack makeOutput(ItemStack input) {
         ItemStack stack = this.output();
         PotionUtils.setPotion(stack, PotionUtils.getPotion(input));
         PotionUtils.setCustomEffects(stack, PotionUtils.getCustomEffects(input));
         return stack;
     }
-
     public static class Serializer implements RecipeSerializer<ContainerBrewingRecipe> {
         private static final Codec<ContainerBrewingRecipe> CODEC = RecordCodecBuilder.create(inst -> inst.group(
                 Ingredient.CODEC_NONEMPTY.fieldOf("input").forGetter(ContainerBrewingRecipe::input),

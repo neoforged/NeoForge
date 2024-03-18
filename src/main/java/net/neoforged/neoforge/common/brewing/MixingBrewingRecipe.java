@@ -66,7 +66,6 @@ public record MixingBrewingRecipe(
         }
         return stack;
     }
-
     public static class Serializer implements RecipeSerializer<MixingBrewingRecipe> {
         private static final Codec<MobEffectInstance> MOB_EFFECT_INSTANCE_CODEC = ExtraCodecs.converter(NbtOps.INSTANCE).comapFlatMap(tag -> tag instanceof CompoundTag compoundTag ? DataResult.success(MobEffectInstance.load(compoundTag)) : DataResult.error(() -> "Not an object!"), m -> m.save(new CompoundTag()));
         private static final Codec<MixingBrewingRecipe> CODEC = RecordCodecBuilder.create(inst -> inst.group(

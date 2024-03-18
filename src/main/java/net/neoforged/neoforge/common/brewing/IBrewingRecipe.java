@@ -15,7 +15,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 public interface IBrewingRecipe extends Recipe<IBrewingRecipe.IBrewingContainer> {
-
     /**
      * Returns true is the passed ItemStack is an input for this recipe. "Input"
      * being the item that goes in one of the three bottom slots of the brewing
@@ -62,7 +61,6 @@ public interface IBrewingRecipe extends Recipe<IBrewingRecipe.IBrewingContainer>
     }
 
     interface IBrewingContainer extends Container {
-
         ItemStack getInput();
 
         ItemStack getCatalyst();

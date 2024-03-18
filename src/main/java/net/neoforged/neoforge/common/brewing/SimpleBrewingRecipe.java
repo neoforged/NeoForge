@@ -34,7 +34,6 @@ public record SimpleBrewingRecipe(Ingredient input, Ingredient catalyst, ItemSta
     public ItemStack getOutput(ItemStack input, ItemStack catalyst) {
         return isInput(input) && isCatalyst(catalyst) ? output().copy() : ItemStack.EMPTY;
     }
-
     public static class Serializer implements RecipeSerializer<SimpleBrewingRecipe> {
         private static final Codec<SimpleBrewingRecipe> CODEC = RecordCodecBuilder.create(inst -> inst.group(
                 Ingredient.CODEC_NONEMPTY.fieldOf("input").forGetter(SimpleBrewingRecipe::input),

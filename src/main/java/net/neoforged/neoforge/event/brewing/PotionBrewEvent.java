@@ -15,7 +15,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
 
 public abstract class PotionBrewEvent extends Event {
-
     private final Level level;
     private final IBrewingRecipe.IBrewingContainer brewingContainer;
     private final RecipeHolder<IBrewingRecipe> recipe;
