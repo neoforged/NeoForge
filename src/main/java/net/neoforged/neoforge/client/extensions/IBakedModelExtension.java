@@ -44,7 +44,7 @@ public interface IBakedModelExtension {
     /**
      * @deprecated Use {@link #useAmbientOcclusion(BlockState, ModelData, RenderType)} instead
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "1.20.4")
     default boolean useAmbientOcclusion(BlockState state) {
         return self().useAmbientOcclusion();
     }
@@ -52,7 +52,7 @@ public interface IBakedModelExtension {
     /**
      * @deprecated Use {@link #useAmbientOcclusion(BlockState, ModelData, RenderType)} instead
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "1.20.4")
     default boolean useAmbientOcclusion(BlockState state, RenderType renderType) {
         return self().useAmbientOcclusion(state);
     }
