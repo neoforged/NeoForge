@@ -230,15 +230,15 @@
   "neoforge.network.negotiation.failure.version.mismatch": "Klient chce, aby bola užitočná časť verzie: %s, ale server chce aby ti bola verzia %s!",
   "neoforge.network.invalid_flow": "Zlyhanie spracovania dát ktoré boli poslané nesprávnym tokom: %s",
   "neoforge.network.negotiation.failure.vanilla.client.not_supported": "Snažíte sa pripojiť na server, ktorý používa NeoForge, no vy nie. Prosím nainštalujte NeoForge Verzie: %s pre pripojenie na tento server.",
-  "neoforge.network.negotiation.failure.vanilla.server.not_supported": "You are trying to connect to a server that is not running NeoForge, but you have mods that require it. A connection could not be established.",
-  "neoforge.network.packet_splitter.unknown": "Tried to split a packet without packet splitter!",
+  "neoforge.network.negotiation.failure.vanilla.server.not_supported": "Pokúšate sa pripojiť k serveru, na ktorý nepoužíva NeoForge, ale máte módy, ktoré to vyžadujú. Spojenie sa nepodarilo nadviazať.",
+  "neoforge.network.packet_splitter.unknown": "Pokúsili ste sa rozdeliť paket bez rozdeľovača paketov!",
   "neoforge.network.advanced_add_entity.failed": "Zlyhalo spracovanie pokročilých spawnovacích dát pre entity: %s",
   "neoforge.network.advanced_open_screen.failed": "Zlyhanie otvorenia obrazovky s pokročilými dátami: %s",
   "neoforge.network.registries.sync.missing": "Neboli doručené všetky očakávané registre zo serveru! (chýbajúce: %s)",
   "neoforge.network.registries.sync.server-with-unknown-keys": "Server poslal registre s neznámymi kľúčmi: %s",
   "neoforge.network.registries.sync.failed": "Zlyhanie zosúladenia registrov zo serveru: %s",
   "neoforge.network.aux_light_data.failed": "Zlyhali spracovanie údajov pomocných dát svetla pre chunk %s: %s",
-  "neoforge.network.data_maps.failed": "Failed to handle registry data map sync for registry %s: %s",
-  "neoforge.network.data_maps.missing_our": "Cannot connect to server as it is missing mandatory registry data maps present on the client: %s",
-  "neoforge.network.data_maps.missing_their": "Cannot connect to server as it has mandatory registry data maps not present on the client: %s"
+  "neoforge.network.data_maps.failed": "Zlyhalo spracovanie synchronizácie mapy údajov databázy Registry pre databázy Registry %s: %s",
+  "neoforge.network.data_maps.missing_our": "Nemožno pripojiť sa na server, nakoľko chýbajú povinné registratúrne dátové mapy prítomné na klientovi: %s",
+  "neoforge.network.data_maps.missing_their": "Nemožno pripojiť sa na server, nakoľko obsahuje povinné registratúrne dátové mapy neprítomné na klientovi: %s"
 }
