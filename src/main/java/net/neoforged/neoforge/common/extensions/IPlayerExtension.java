@@ -126,4 +126,8 @@ public interface IPlayerExtension {
     default OptionalInt openMenu(MenuProvider menuProvider, Consumer<FriendlyByteBuf> extraDataWriter) {
         return OptionalInt.empty();
     }
+
+    default boolean mayFly() {
+        return self().getAbilities().mayfly || self().getAttributeValue(NeoForgeMod.CREATIVE_FLIGHT) > 0;
+    }
 }
