@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.testframework.impl.md;
+package net.neoforged.testframework.summary.md;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,7 +13,7 @@ public class TableRow<T> {
     private final List<T> columns;
 
     public TableRow() {
-        this.columns = new ArrayList<>();
+        this(new ArrayList<>());
     }
 
     public TableRow(List<T> columns) {

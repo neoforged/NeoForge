@@ -58,6 +58,31 @@
          p_282567_.pose().popPose();
      }
  
+@@ -233,6 +_,14 @@
+                 p_281607_.fill(i, j, i + 16, j + 16, -2130706433);
+             }
+ 
++            renderSlotContents(p_281607_, itemstack, p_282613_, i, j, s);
++        }
++
++        p_281607_.pose().popPose();
++    }
++
++    protected void renderSlotContents(GuiGraphics guiGraphics, ItemStack itemstack, Slot slot, int i, int j, @Nullable String countString) {
++            GuiGraphics p_281607_ = guiGraphics; Slot p_282613_ = slot; String s = countString;
+             int j1 = p_282613_.x + p_282613_.y * this.imageWidth;
+             if (p_282613_.isFake()) {
+                 p_281607_.renderFakeItem(itemstack, i, j, j1);
+@@ -241,9 +_,6 @@
+             }
+ 
+             p_281607_.renderItemDecorations(this.font, itemstack, i, j, s);
+-        }
+-
+-        p_281607_.pose().popPose();
+     }
+ 
+     private void recalculateQuickCraftRemaining() {
 @@ -282,7 +_,8 @@
          if (super.mouseClicked(p_97748_, p_97749_, p_97750_)) {
              return true;
