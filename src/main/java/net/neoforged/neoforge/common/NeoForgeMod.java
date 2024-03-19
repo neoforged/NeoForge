@@ -212,8 +212,17 @@ public class NeoForgeMod {
     /**
      * Grants the player the ability to use creative flight when not in creative mode.
      * Anything above zero allows flight.
-     *
-     * @see net.neoforged.neoforge.common.extensions.IPlayerExtension#mayFly
+     * <p></p>
+     * For this attribute, you should only use the following modifier values:
+     * <ul>
+     * <li>A value of 1 with {@link net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation#ADDITION} to enable the effect.</li>
+     * <li>A value of -1 with {@link net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation#MULTIPLY_TOTAL} to forcibly disable the effect.</li>
+     * </ul>
+     * This behavior allows for multiple enables to coexist, not removing the effect unless all enabling modifiers are removed.<br>
+     * Additionally, it permits forcibly disabling the attribute through multiply total.
+     * <p></p>
+     * To determine if a player has flight access via game mode or attribute, use {@link net.neoforged.neoforge.common.extensions.IPlayerExtension#mayFly}<br>
+     * Game mode flight cannot be disabled via this attribute.
      */
     public static final Holder<Attribute> CREATIVE_FLIGHT = ATTRIBUTES.register("creative_flight", () -> new RangedAttribute("neoforge.creative_flight", 0D, 0D, Double.MAX_VALUE).setSyncable(true));
 

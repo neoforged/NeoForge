@@ -11,6 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.phys.AABB;
@@ -127,8 +128,16 @@ public interface IPlayerExtension {
         return OptionalInt.empty();
     }
 
+    /**
+     * Determine whether a player is allowed creative flight via game mode or attribute.<br>
+     * Modders are discouraged from setting {@link Abilities#mayfly} directly.
+     *
+     * @return true when creative flight is available
+     * @see NeoForgeMod#CREATIVE_FLIGHT
+     */
     @SuppressWarnings("deprecation")
     default boolean mayFly() {
+        // TODO 1.20.5: consider forcing mods to use the attribute
         return self().getAbilities().mayfly || self().getAttributeValue(NeoForgeMod.CREATIVE_FLIGHT) > 0;
     }
 }
