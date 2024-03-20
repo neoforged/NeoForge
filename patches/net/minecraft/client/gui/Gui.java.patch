@@ -23,11 +23,11 @@
 +    /**
 +     * Neo: This variable controls the height of overlays on the left of the hotbar (e.g. health, armor).
 +     */
-+    public int leftHeight = 39;
++    public int leftHeight;
 +    /**
 +     * Neo: This variable controls the height of overlays on the right of the hotbar (e.g. food, vehicle health, air).
 +     */
-+    public int rightHeight = 39;
++    public int rightHeight;
 +
      public Gui(Minecraft p_232355_) {
          this.minecraft = p_232355_;
