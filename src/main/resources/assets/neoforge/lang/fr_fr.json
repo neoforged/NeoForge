@@ -209,6 +209,7 @@
   "neoforge.block_reach": "Portée des blocs",
   "neoforge.entity_reach": "Portée des entités",
   "neoforge.step_height": "Hauteur des pas",
+  "neoforge.creative_flight": "Creative Flight",
   "fluid_type.minecraft.milk": "Lait",
   "fluid_type.minecraft.flowing_milk": "Lait",
   "neoforge.froge.warningScreen.title": "Notification de snapshot NeoForge",
