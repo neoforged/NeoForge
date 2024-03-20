@@ -209,6 +209,7 @@
   "neoforge.block_reach": "Raggio d'interazione blocchi",
   "neoforge.entity_reach": "Raggio d'interazione Entità",
   "neoforge.step_height": "Altezza Passo",
+  "neoforge.creative_flight": "Creative Flight",
   "fluid_type.minecraft.milk": "Latte",
   "fluid_type.minecraft.flowing_milk": "Latte",
   "neoforge.froge.warningScreen.title": "Notifica snapshot NeoForge",
