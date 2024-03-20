@@ -201,7 +201,7 @@ public final class RegistryObject<T> implements Supplier<T>
     public T get()
     {
         T ret = this.value;
-        Objects.requireNonNull(ret, () -> "Registry Object not present: " + this.name);
+        if (ret == null) throw new NullPointerException("Registry Object not present: " + this.name);
         return ret;
     }
 
