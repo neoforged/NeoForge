@@ -17,7 +17,16 @@ import net.minecraft.resources.ResourceLocation;
 public final class VanillaGuiLayers {
     public static final ResourceLocation CAMERA_OVERLAYS = new ResourceLocation("camera_overlays");
     public static final ResourceLocation CROSSHAIR = new ResourceLocation("crosshair");
-    public static final ResourceLocation HOTBAR_AND_DECORATIONS = new ResourceLocation("hotbar_and_decorations");
+    public static final ResourceLocation HOTBAR = new ResourceLocation("hotbar");
+    public static final ResourceLocation JUMP_METER = new ResourceLocation("jump_meter");
+    public static final ResourceLocation EXPERIENCE_BAR = new ResourceLocation("experience_bar");
+    public static final ResourceLocation PLAYER_HEALTH = new ResourceLocation("player_health");
+    public static final ResourceLocation ARMOR_LEVEL = new ResourceLocation("armor_level");
+    public static final ResourceLocation FOOD_LEVEL = new ResourceLocation("food_level");
+    public static final ResourceLocation VEHICLE_HEALTH = new ResourceLocation("vehicle_health");
+    public static final ResourceLocation AIR_LEVEL = new ResourceLocation("air_level");
+    public static final ResourceLocation SELECTED_ITEM_NAME = new ResourceLocation("selected_item_name");
+    public static final ResourceLocation SPECTATOR_TOOLTIP = new ResourceLocation("spectator_tooltip");
     public static final ResourceLocation EXPERIENCE_LEVEL = new ResourceLocation("experience_level");
     public static final ResourceLocation EFFECTS = new ResourceLocation("effects");
     public static final ResourceLocation BOSS_OVERLAY = new ResourceLocation("boss_overlay");
