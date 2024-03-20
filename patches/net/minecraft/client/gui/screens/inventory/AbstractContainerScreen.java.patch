@@ -32,7 +32,7 @@
          ItemStack itemstack = this.draggingItem.isEmpty() ? this.menu.getCarried() : this.draggingItem;
          if (!itemstack.isEmpty()) {
              int l1 = 8;
-@@ -156,13 +_,21 @@
+@@ -156,13 +_,25 @@
      }
  
      public static void renderSlotHighlight(GuiGraphics p_283692_, int p_281453_, int p_281915_, int p_283504_) {
@@ -42,6 +42,10 @@
 +    public static void renderSlotHighlight(GuiGraphics p_283692_, int p_281453_, int p_281915_, int p_283504_, int color) {
 +        p_283692_.fillGradient(RenderType.guiOverlay(), p_281453_, p_281915_, p_281453_ + 16, p_281915_ + 16, color, color, p_283504_);
 +    }
++
++    /**
++     * Renders a highlight for the given slot to indicate the mouse is currently hovering over it.
++     */
 +    protected void renderSlotHighlight(GuiGraphics guiGraphics, Slot slot, int mouseX, int mouseY, float partialTick) {
 +        if (slot.isHighlightable()) {
 +            renderSlotHighlight(guiGraphics, slot.x, slot.y, 0, getSlotColor(slot.index));
