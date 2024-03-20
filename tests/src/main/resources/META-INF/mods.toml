@@ -217,5 +217,7 @@ modId="custom_fluid_container_test"
 modId="player_spawn_phantoms_event_test"
 [[mods]]
 modId="conditional_codec_test"
+[[mods]]
+modId="may_fly_attribute_item"
 
 # ADD ABOVE THIS LINE
