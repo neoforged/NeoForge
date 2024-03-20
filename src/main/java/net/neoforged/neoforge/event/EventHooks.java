@@ -850,10 +850,14 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new TickEvent.ServerTickEvent(TickEvent.Phase.END, haveTime, server));
     }
 
+    private static final WeightedRandomList<MobSpawnSettings.SpawnerData> NO_SPAWNS = WeightedRandomList.create();
+
     public static WeightedRandomList<MobSpawnSettings.SpawnerData> getPotentialSpawns(LevelAccessor level, MobCategory category, BlockPos pos, WeightedRandomList<MobSpawnSettings.SpawnerData> oldList) {
         LevelEvent.PotentialSpawns event = new LevelEvent.PotentialSpawns(level, category, pos, oldList);
         if (NeoForge.EVENT_BUS.post(event).isCanceled())
-            return WeightedRandomList.create();
+            return NO_SPAWNS;
+        else if (event.getSpawnerDataList() == oldList.unwrap())
+            return oldList;
         return WeightedRandomList.create(event.getSpawnerDataList());
     }
 
